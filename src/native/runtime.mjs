@@ -3,6 +3,7 @@ import { readKCS, nativeReply, formatNative, formatNativeAt, encodeCP932 } from 
 import { KCSScheduler } from '../kcs/scheduler.mjs';
 import { nativeCatalog } from './catalog.mjs';
 import { nativeABI } from './abi/index.mjs';
+import { NATIVE_SEMANTICS } from './abi/semantics.mjs';
 import { NativeHandles } from './handles.mjs';
 import { NativeBufferMemory } from './buffer-memory.mjs';
 import { nativeStandard } from './standard.mjs';
@@ -197,11 +198,22 @@ export class NativeRuntime {
     });
   }
   register(table, id, handler) {
-    if (!this.tables.get(table)?.[id] || typeof handler !== 'function')
+    const entries = this.tables.get(table);
+    if (
+      !entries ||
+      !Number.isSafeInteger(id) ||
+      id < 0 ||
+      typeof handler !== 'function' ||
+      (!entries[id] && !Object.hasOwn(NATIVE_SEMANTICS[table], id))
+    )
       throw new Error('Invalid native registration');
+    // Installers share implementations across versions. A later catalogue
+    // operation does not create a slot or handler in a shorter native table.
+    if (!entries[id]) return false;
     const key = `${table}:${id}`;
     if (this.handlers.has(key)) throw new Error(`Duplicate native registration ${key}`);
     this.handlers.set(key, handler);
+    return true;
   }
   native(table, id, args, machine, task, scheduler) {
     const annotate = (error) => {

@@ -7,7 +7,7 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 
 const layouts = Object.freeze(
   Object.fromEntries(
-    Object.entries(NATIVE_ABIS).map(([profile, abi]) => [profile, abi.layouts.motionCheckpoint]),
+    Object.entries(NATIVE_ABIS).map(([profile, abi]) => [profile, abi.layouts?.motionCheckpoint]),
   ),
 );
 const layoutFor = (profile) => {

@@ -104,6 +104,23 @@ export default {
     },
   },
   configuration: {
+    defaults: {
+      font: 'ＭＳ ゴシック',
+      title: 'CS2',
+      message: [4, 4, 0, 15, 5, 1, 0, 1, 0, 100, 0, 0xffffffff, 0, 0, 0],
+      effect: [0, 0, 1, 1, 1, 5, 0],
+      window: [0xffffffff, 1, 1],
+      voiceRecords: {
+        count: 48,
+        firstByte: 20,
+        stride: 116,
+        enabled: 1,
+        masterPercent: 100,
+        group: 100,
+      },
+      contVoice: 1,
+      rawVolumePercent: 100,
+    },
     blockSizes: [5628, 72, 32, 12],
     memory: {
       layout: {
@@ -216,6 +233,9 @@ export default {
     extendedQueries: true,
   },
   sound: {
+    legacyTypes: ['bgm', 'se', 'voice', 'sysvoice'],
+    legacyVolumeAliases: { bgm: 0, se: 1, voice: 2, sysvoice: 2 },
+    filenamePolicy: { classification: 'ascii-byte-directory', pairs: 'standard' },
     banks: 64,
     controlBytes: 140,
     firstMessage: 179,
@@ -265,6 +285,16 @@ export default {
     taskDumpTopWriter: false,
   },
   startup: {
+    applicationServices: [
+      'steam-if-capable',
+      'startup-sound',
+      'textures',
+      'global-strings',
+      'title',
+      'm2',
+      'root-script',
+    ],
+    titleMode: 'global-string',
     verification: {
       cipher: 'blowfish-le32',
       codeEncoding: 'utf8',

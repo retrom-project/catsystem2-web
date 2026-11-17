@@ -16,12 +16,38 @@ const layouts = {
 // WinMain consults the active Settings after translating the resource.
 const optionalCommands = Object.freeze(
   Object.fromEntries(
-    Object.entries(NATIVE_ABIS).map(([profile, abi]) => [
-      profile,
-      abi.layouts.optionalMenuCommands,
-    ]),
+    Object.entries(NATIVE_ABIS).flatMap(([profile, abi]) => {
+      const descriptor = abi.layouts;
+      return descriptor &&
+        Object.hasOwn(descriptor, 'optionalMenuCommands') &&
+        descriptor.optionalMenuCommands != null
+        ? [[profile, descriptor.optionalMenuCommands]]
+        : [];
+    }),
   ),
 );
+
+function startupMenuLayout(engine) {
+  const profile = engine.profile,
+    abi = nativeABI(profile),
+    menu = layouts[profile],
+    block = NATIVE_STARTUP_BLOCKS[profile],
+    configuration = NATIVE_CONFIGURATION_MEMORY_LAYOUTS[profile],
+    commands = optionalCommands[profile];
+  if (
+    !Object.hasOwn(layouts, profile) ||
+    !Object.hasOwn(NATIVE_STARTUP_BLOCKS, profile) ||
+    !Object.hasOwn(NATIVE_CONFIGURATION_MEMORY_LAYOUTS, profile) ||
+    !Object.hasOwn(optionalCommands, profile) ||
+    !Number.isSafeInteger(block) ||
+    block <= 0 ||
+    !Number.isSafeInteger(configuration?.authorMode) ||
+    configuration.authorMode < 0 ||
+    !Array.isArray(commands)
+  )
+    throw new Error('Original startup menu requires reviewed own descriptors');
+  return { abi, menu, block, authorMode: configuration.authorMode, commands };
+}
 
 // The game builds all three language groups from its original Settings.
 function runGameLanguageMenu(engine, remove) {
@@ -33,11 +59,10 @@ function runGameLanguageMenu(engine, remove) {
 }
 
 export async function initializeNativeStartupMenu(engine) {
-  const p = engine.process,
-    block = NATIVE_STARTUP_BLOCKS[engine.profile],
+  const { abi, menu, block, authorMode, commands } = startupMenuLayout(engine),
+    p = engine.process,
     slot = block + 36,
-    [construct, load, vtable, localize, bind] = layouts[engine.profile],
-    { authorMode } = NATIVE_CONFIGURATION_MEMORY_LAYOUTS[engine.profile];
+    [construct, load, vtable, localize, bind] = menu;
   if (p.load(slot)) throw new Error('Original startup menu already has an owner');
   const owner = p.allocate(16, true);
   try {
@@ -53,20 +78,21 @@ export async function initializeNativeStartupMenu(engine) {
     if ((await engine.call(bind, [block], owner)) !== block)
       throw new Error('Original menu did not retain its startup block');
     const remove = engine.kernel.resolve({ dll: 'USER32.dll', name: 'DeleteMenu' });
-    for (const [offset, id] of optionalCommands[engine.profile])
+    for (const [offset, id] of commands)
       if (!p.load(engine.refs.settings + offset)) await engine.call(remove, [handle, id, 0]);
-    if (nativeABI(engine.profile).language.dynamicMenus) await runGameLanguageMenu(engine, remove);
+    if (abi.language.dynamicMenus) await runGameLanguageMenu(engine, remove);
   } finally {
     if (p.load(slot) !== owner) p.free(owner);
   }
 }
 
 export async function releaseNativeStartupMenu(engine) {
-  const p = engine.process,
-    slot = NATIVE_STARTUP_BLOCKS[engine.profile] + 36,
+  const { menu, block } = startupMenuLayout(engine),
+    p = engine.process,
+    slot = block + 36,
     owner = p.load(slot);
   if (!owner) return;
-  const vtable = layouts[engine.profile][2];
+  const vtable = menu[2];
   if (p.allocations.get(owner) !== 16 || p.load(owner) !== vtable)
     throw new Error('Original startup menu lost its C++ owner');
   const handle = p.load(owner + 8);
@@ -77,8 +103,8 @@ export async function releaseNativeStartupMenu(engine) {
 }
 
 export async function refreshNativeLanguageMenu(engine) {
-  if (!nativeABI(engine.profile).language.dynamicMenus) return;
-  const block = NATIVE_STARTUP_BLOCKS[engine.profile];
+  const { abi, block } = startupMenuLayout(engine);
+  if (!abi.language.dynamicMenus) return;
   if (!engine.process.load(block + 36)) return;
   // The original checkmark pass reads the live Settings and writes only the
   // three language groups. The surrounding task locks and broadcast are separate.

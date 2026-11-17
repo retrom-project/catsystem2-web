@@ -21,7 +21,14 @@ export const NATIVE_CONFIGURATION_QUERY_CONTRACTS = Object.freeze(
 );
 export const NATIVE_CONFIGURATION_QUERY_LAYOUTS = Object.freeze(
   Object.fromEntries(
-    Object.entries(NATIVE_ABIS).map(([profile, abi]) => [profile, abi.layouts.configurationQuery]),
+    Object.entries(NATIVE_ABIS).flatMap(([profile, abi]) => {
+      const descriptor = abi.layouts;
+      return descriptor &&
+        Object.hasOwn(descriptor, 'configurationQuery') &&
+        descriptor.configurationQuery != null
+        ? [[profile, descriptor.configurationQuery]]
+        : [];
+    }),
   ),
 );
 const byID = new Map(NATIVE_CONFIGURATION_QUERY_CONTRACTS.map((spec) => [spec.id, spec]));
@@ -30,9 +37,9 @@ const current = ['volume', 'play', 'sysplay', 'voicevol', 'skipvol', 'mute'];
 
 export class NativeConfigurationQueries {
   constructor(engine, world) {
-    Object.assign(this, { engine, world, process: engine.process });
-    this.layout = NATIVE_CONFIGURATION_QUERY_LAYOUTS[engine.profile];
-    if (!this.layout) throw new Error('Configuration queries require a reviewed engine');
+    const layout = NATIVE_CONFIGURATION_QUERY_LAYOUTS[engine.profile];
+    if (!layout) throw new Error('Configuration queries require a reviewed engine');
+    Object.assign(this, { engine, world, process: engine.process, layout });
     this.sdk = engine.profile.startsWith('sdk-');
     engine.refs.configurationQueries ??= {
       allocations: new Set(),
