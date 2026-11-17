@@ -37,6 +37,16 @@ Reports and raw disassembly remain in ignored local storage.
 
 ## Audio playback checkpoints
 
+Cold reconstruction preserves the mixer's next playback sequence. The snapshot
+orders retained channels by their existing playback sequence, even after a bank
+swap or replay changes Map insertion order. Recreating them uses the preceding
+sequence range in that saved order; it does not consume new playback commands.
+Absolute gaps between old channel sequence values are not used by selection;
+their relative order and the next playback sequence are preserved. Deferred Core restore still has one
+live channel per bank and starts each playing source once at activation. The next
+real play receives the saved next sequence and follows every restored channel.
+This changes no checkpoint fields, media clock, or native bank ownership.
+
 The playback cursor belongs to the actual `AudioMixer` and its `AudioContext`.
 It is independent of the system timer used by PLV above. After pending resources
 and movies settle, `Core.snapshot()` samples that context clock once and passes

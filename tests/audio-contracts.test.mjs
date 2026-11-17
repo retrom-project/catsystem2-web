@@ -393,6 +393,174 @@ test('audio checkpoint banks and cursor components share one context clock sampl
   }
 });
 
+test('Core native-bank cold restore preserves complete playback chronology without guest execution', async () => {
+  const environment = startupEnvironment(),
+    oldContext = fixture().context,
+    coldContext = fixture().context,
+    profile = 'nekopara-vol3-engine-2.6.1.76';
+  let core, cold;
+  const play = AudioMixer.prototype.play,
+    trace = [],
+    owners = new Map();
+  let restoring = false;
+  AudioMixer.prototype.play = function (...args) {
+    if (!restoring) return play.apply(this, args);
+    if (!owners.has(this)) owners.set(this, owners.size);
+    const entry = {
+      owner: owners.get(this),
+      bank: args[0].bank,
+      beforeSequence: this.sequence,
+      deferPlayback: this.deferPlayback,
+    };
+    trace.push(entry);
+    const result = play.apply(this, args);
+    result.then(() => {
+      entry.afterSequence = this.sequence;
+      entry.channels = this.channels.size;
+    });
+    return result;
+  };
+  try {
+    const game = await ordinaryStartupGame(profile, {
+      sound: false,
+      files: { 'first.wav': new Uint8Array([1]), 'second.wav': new Uint8Array([2]) },
+    });
+    const make = (context) =>
+      new CatSystem2({
+        game,
+        canvas: new StartupCanvas(),
+        audioContext: context,
+        nativeProfile: profile,
+        randomSeed: 17,
+        transitionalExe: {
+          open() {
+            throw new Error('Unexpected original CPU');
+          },
+        },
+      });
+    core = make(oldContext);
+    await core.initialize();
+    for (const [bank, file] of [
+      [0, 'first.wav'],
+      [16, 'second.wav'],
+    ]) {
+      assert.equal(await core.world.sound.load(bank, file, 1), true);
+      assert.equal(await core.world.sound.play(bank, 1, {}), true);
+    }
+    // A later play in an existing bank must remain distinct from first insertion.
+    assert.equal(await core.world.sound.play(0, 1, {}), true);
+    core.world.sound.swap(0, 16);
+    oldContext.advance(0.25);
+    const saved = await core.snapshot();
+    assert.deepEqual(
+      saved.audio.channels.map((channel) => channel.channel),
+      ['native:0', 'native:16'],
+    );
+    cold = make(coldContext);
+    const create = cold.createNativeWorld,
+      replay = { tick: 0, scheduler: 0, native: 0, random: 0 };
+    cold.createNativeWorld = function (...args) {
+      const world = create.apply(this, args);
+      for (const [object, name, field] of [
+        [world, 'tick', 'tick'],
+        [world.runtime.scheduler, 'execute', 'scheduler'],
+        [world.runtime, 'native', 'native'],
+        [world.random.integer, 'nextUint32', 'random'],
+        [world.random.real, 'nextUint32', 'random'],
+      ]) {
+        const original = object[name];
+        object[name] = function (...parameters) {
+          if (restoring) replay[field]++;
+          return original.apply(this, parameters);
+        };
+      }
+      return world;
+    };
+    restoring = true;
+    try {
+      await cold.initialize({ checkpoint: saved });
+    } finally {
+      restoring = false;
+    }
+    const current = await cold.snapshot();
+    console.log(
+      JSON.stringify({
+        kind: 'owned-native-bank-cold-witness',
+        savedSequence: saved.audio.sequence,
+        currentSequence: current.audio.sequence,
+        restoredBanks: [...cold.audio.channels.values()].map((channel) => channel.bank),
+        sourceStarts: coldContext.sources.length,
+        liveSources: coldContext.sources.filter((source) => !source.stopped).length,
+        trace,
+        replay,
+      }),
+    );
+    assert.deepEqual(replay, { tick: 0, scheduler: 0, native: 0, random: 0 });
+    assert.equal(coldContext.sources.length, 2);
+    assert.equal(new Set(cold.audio.channels.keys()).size, 2);
+    assert.deepEqual(current.world, saved.world);
+    assert.deepEqual(current, saved);
+    assert.equal(cold.audio.sequence, saved.audio.sequence);
+    assert.deepEqual(
+      [...cold.audio.channels.values()].map((channel) => channel.sequence),
+      [1, 2],
+    );
+    assert.equal(await cold.world.sound.play(16, 1, {}), true);
+    assert.equal(cold.audio.channels.get('native:16').sequence, saved.audio.sequence);
+    assert.equal(cold.audio.sequence, saved.audio.sequence + 1);
+    assert.equal(core.world.closed, undefined);
+    await core.dispose();
+    core = null;
+    assert.equal(cold.world.closed, undefined);
+    assert.equal(cold.audio.channels.size, 2);
+  } finally {
+    restoring = false;
+    AudioMixer.prototype.play = play;
+    await cold?.dispose();
+    await core?.dispose();
+    environment.restore();
+  }
+});
+
+test('restored voice chronology keeps the next real play newer than retained channels', async () => {
+  const { mixer, context } = fixture(),
+    next = fixture();
+  let cold;
+  try {
+    await command(mixer, 'pcm', [0], 'play', ['voice-first']);
+    await command(mixer, 'pcm', [1], 'play', ['voice-second']);
+    await command(mixer, 'se', [0], 'play', ['discarded-effect']);
+    mixer.stop('se:0');
+    await command(mixer, 'pcm', [0], 'play', ['voice-latest']);
+    context.advance(0.25);
+    const saved = mixer.snapshot();
+    assert.equal(saved.sequence, 4);
+    assert.deepEqual(
+      [...mixer.channels.values()].map((channel) => channel.sequence),
+      [1, 3],
+    );
+    cold = new AudioMixer(mixer.game, next.context, { deferPlayback: true });
+    await cold.restore(saved);
+    assert.deepEqual(cold.snapshot(), saved);
+    assert.equal(cold.voiceInfo().file, 'voice-latest');
+    assert.equal(next.context.sources.length, 0);
+    cold.activate();
+    assert.equal(next.context.sources.length, 2);
+    cold.activate();
+    assert.equal(next.context.sources.length, 2);
+    await command(cold, 'pcm', [2], 'play', ['voice-after-restore']);
+    assert.equal(cold.voiceInfo().file, 'voice-after-restore');
+    assert.equal(cold.channels.get('pcm:2').sequence, saved.sequence);
+    assert.equal(cold.sequence, saved.sequence + 1);
+    await mixer.dispose();
+    assert.equal(cold.channels.size, 3);
+    next.context.advance(0.125);
+    assert.equal(cold.voiceInfo().time, 0.125);
+  } finally {
+    await cold?.dispose();
+  }
+});
+
 test('Core cold audio keeps one checkpoint projection and resumes the actual source once', async () => {
   const environment = startupEnvironment(),
     { context } = fixture();

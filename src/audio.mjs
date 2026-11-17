@@ -763,7 +763,10 @@ export class AudioMixer {
       groups: structuredClone(this.groups),
       defaults: structuredClone([...this.defaults]),
       loopPoints: structuredClone([...this.loopPoints]),
-      channels: [...this.channels].map(([key, channel]) => this.channelState(key, channel, time)),
+      // Bank swaps can change Map insertion order without starting playback.
+      channels: [...this.channels]
+        .sort(([, a], [, b]) => a.sequence - b.sequence)
+        .map(([key, channel]) => this.channelState(key, channel, time)),
     };
   }
   channelState(key, c, time = this.context.currentTime) {
@@ -804,7 +807,9 @@ export class AudioMixer {
   async restore(state) {
     this.stopAll();
     this.frame = state.frame;
-    this.sequence = state.sequence;
+    // Rebuilding retained channels is not a new playback command. Preserve
+    // their relative order below the next real play, without consuming it.
+    this.sequence = state.sequence - state.channels.length;
     this.master = state.master;
     this.groups = structuredClone(state.groups);
     this.defaults = new Map(structuredClone(state.defaults));
