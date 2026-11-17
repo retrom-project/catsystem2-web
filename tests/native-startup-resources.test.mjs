@@ -411,7 +411,12 @@ test('startup verification is explicit registered ABI data and rejects incomplet
   assert.deepEqual(
     startupProfiles.map((profile) => nativeABI(profile).startup.verification),
     [
-      { cipher: 'blowfish-le32', codeEncoding: 'cp932', comparison: 'open-cs2-literal' },
+      {
+        cipher: 'blowfish-le32',
+        codeEncoding: 'cp932',
+        comparison: 'open-cs2-literal',
+        defaultCodeBytes: [111, 112, 101, 110, 95, 99, 115, 50],
+      },
       { cipher: 'blowfish-le32', codeEncoding: 'utf8', comparison: 'decrypted-c-string' },
     ],
   );
@@ -582,8 +587,11 @@ for (const profile of startupProfiles)
     }
   });
 
-for (const profile of startupProfiles)
-  test(`ordinary startup never substitutes an unreviewed APP code default: ${profile}`, async () => {
+for (const [profile, reviewedDefault] of [
+  [startupProfiles[0], 'open_cs2'],
+  [startupProfiles[1], null],
+])
+  test(`ordinary startup consumes only its own reviewed APP code default: ${profile}`, async () => {
     const environment = startupEnvironment();
     let player;
     let opens = 0;
@@ -591,6 +599,11 @@ for (const profile of startupProfiles)
       const game = await ordinaryStartupGame(profile, {
         sound: false,
         includeOwnedVerificationCode: false,
+        files: {
+          'authored-default.exe': startupVersionImage(nativeABI(profile).engineVersion, [
+            { type: 'V_CODE', name: 'DATA', bytes: cipher('default-public-key') },
+          ]),
+        },
       });
       player = new CatSystem2({
         game,
@@ -605,7 +618,21 @@ for (const profile of startupProfiles)
           },
         },
       });
-      await assert.rejects(player.initialize(), /Startup code default is not reviewed/);
+      if (reviewedDefault === null)
+        await assert.rejects(player.initialize(), /Startup code default is not reviewed/);
+      else {
+        await player.initialize();
+        assert.equal(findNativeXML(player.world.startupDocument, 'APP/v_code'), null);
+        assert.deepEqual(
+          nativeStartupCode(player.world.startupDocument, nativeABI(profile).startup.verification),
+          new TextEncoder().encode(reviewedDefault),
+        );
+        assert.equal(player.world.frame, 1);
+        assert.equal(
+          player.world.runtime.variableBank(player.world.main, false).get(7),
+          0x12345678,
+        );
+      }
       assert.equal(opens, 0);
       const abi = nativeABI(profile),
         verification = abi.startup.verification;

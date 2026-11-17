@@ -56,11 +56,16 @@ Element-name alias lookup is outside that text ownership proof.
 
 `APP/v_code` defaults are separate from the public `KEY_CODE` fallback and the
 SDK decrypted-output overwrite. Neither proves this Settings default. The current
-registered data does not specify `startup.verification.defaultCodeBytes`, so its
-ordinary entry requires an explicit APP value. A future reviewed default is a
+SDK74 data specifies its independently reviewed `defaultCodeBytes`: `open_cs2`.
+Its own Settings constructor copies that CString from `9B2008..9B2010` into
+`Settings+2`; the initial XML reader passes the same field as fallback and
+destination for `APP/v_code`. An absent node preserves it, while an explicit
+node supplies its original narrow bytes. Game76's default remains unknown and
+its ordinary entry requires an explicit APP value. A reviewed default is a
 JSON byte array, preserving narrow aliases and the first NUL without a Unicode
 roundtrip; an empty array is a known empty default, and an omitted field is unknown.
 The registered profiles and native slots are unchanged. Owned test startup
 creators explicitly author their public APP bytes; actual mounted game XML is
 never injected or rewritten to bypass a missing default. This restriction does
-not claim that either original engine lacks a compiled default.
+not claim that Game76 or an unregistered engine lacks a compiled default. The
+resource checks, author CRC/32 draws/reset and preference timing are unchanged.

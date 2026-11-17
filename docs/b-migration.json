@@ -49916,7 +49916,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "a89f40cc6e0c868a9a201228a5b23e20955428819d1dd300dcef44a5b69026ed",
+      "sourceSha256": "30bc9ad7cf617ea3074c543842a560850fc64e4cd6c99d6539018528d27ce050",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

@@ -236,6 +236,7 @@ export default {
       cipher: 'blowfish-le32',
       codeEncoding: 'cp932',
       comparison: 'open-cs2-literal',
+      defaultCodeBytes: [111, 112, 101, 110, 95, 99, 115, 50],
     },
     resourceCheck: 'before-defaults',
     accelerators: 'ansi-resource',
