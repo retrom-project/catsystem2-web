@@ -97,7 +97,7 @@ async function runGame(page) {
   expect((await gameplay(page)).language.main).toBe(2);
   await button(page, 'system_langage[1]');
   await until(page, 'config#SYSTEM_LANG_WAIT', 240);
-  await button(page, 'system_main[0]');
+  await button(page, 'system_main[1]');
   await until(page, 'config#WAIT', 240);
   expect((await gameplay(page)).language.main).toBe(0);
   await button(page, 'system_langage[1]');
