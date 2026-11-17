@@ -792,13 +792,14 @@ D2 Base-to-child traversal and typed model/MOT owner remain the authority.
 `NativeGraphicsPacket` has one explicit unwritten-word set; existing numeric
 callers default to all-known data. Main85 starts its three query words unwritten.
 A Plane without a graph leaves the query untouched, so a late unloaded child
-cannot overwrite an earlier loaded responder. An uninitialized preserved Z is
-an unsupported finite boundary, rather than an invented zero or a skipped Base
-with valid children. `load` can report `undefined`; raw data/view/byte reads reject
-unknown bytes, known slices cannot expose their backing storage, and constructors,
-stores and float consumers reject implicit conversion of unwritten words to zero.
-Only the ordinary loaded model domain is claimed. Other backends, rare entries
-without a selected model and other unreviewed SDK slots remain outside this leaf.
+preserves the value from an earlier loaded responder. Both sends also complete
+when the nonzero target is missing or no recipient has a graph. The unwritten
+Z survives the setter packet. An unloaded Plane skips the graph assignment and
+continues its normal inheritance, input area and child updates. A loaded
+graph's assignment still requires a known Z. `load` can report `undefined`.
+Raw data, view and byte reads reject unknown bytes, and known slices isolate
+their backing storage. Constructors, stores and float consumers require known
+values where they read or write a word.
 
 SDK Main84 independently recovers `plane.setPosition(task,x,y,z,coordinateMode)`.
 The SDK and Game wrappers both skip target zero before reading the remaining

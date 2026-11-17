@@ -2793,7 +2793,7 @@ async function baseXYCaller(scene, target, selector, x, y) {
 }
 
 for (const profile of rectangleProfiles)
-  test(`${profile} main85 GCALL retains initialized query words across real child responders and cold owners`, async () => {
+  test(`${profile} main85 GCALL preserves query words across child responders, missing targets and cold owners`, async () => {
     const files = { 'case.kcs': kcsProgram([[59]]), 'rectangle.kcs': baseXYCode },
       scene = await dataWorld(profile, files);
     let fresh;
@@ -3020,18 +3020,21 @@ for (const profile of rectangleProfiles)
         parent: scene.root,
         nativeID: 0x00850100,
       });
-      for (const missing of [scene.nativeTaskID(ids[2]), scene.nativeTaskID(empty)]) {
+      for (const missing of [scene.nativeTaskID(ids[2]), scene.nativeTaskID(empty), 0x00850101]) {
         const caller = await baseXYCaller(scene, missing, 0, 1.5, 2.5),
           start = traces.length;
-        await assert.rejects(scene.runtime.scheduler.execute(caller.task), /unwritten|initialized/);
+        await scene.runtime.scheduler.execute(caller.task);
+        rectangleContinuation(caller);
         assert.deepEqual(
-          traces.slice(start).map(({ destination, number, flags }) => [destination, number, flags]),
-          [[missing, 61, 1]],
-          'No uninitialized Z reaches a setter',
+          traces
+            .slice(start)
+            .map(({ destination, number, flags, words }) => [destination, number, flags, words]),
+          [
+            [missing, 61, 1, [undefined, undefined, undefined]],
+            [missing, 49, 1, [floatBits(1.5), floatBits(2.5), undefined]],
+          ],
         );
-        assert.equal(caller.machine.load(512), 73);
-        assert.equal(caller.machine.load(516), 0);
-        assert.deepEqual([...caller.machine.bytes(800, 8)], Array(8).fill(0xa5));
+        assert.deepEqual(await replies.at(-1), { control: 2 });
       }
       assert.deepEqual(planes[2].state, unloaded);
       await scene.objects.release(base);

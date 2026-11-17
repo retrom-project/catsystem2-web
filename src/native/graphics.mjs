@@ -962,7 +962,7 @@ export class NativeGraphicTask {
         return 0;
       case 49:
         if (this.state.inheritPosition && !w) this.inheritTransform();
-        else setVector(MOTION_ABI.base, floats(l, 3));
+        else if (this.graph) setVector(MOTION_ABI.base, floats(l, 3));
         this.sync();
         this.updateGraphInputArea();
         await this.broadcast(50, w, l, context);
@@ -1595,11 +1595,9 @@ export async function nativeGraphics(id, args, machine, task, world) {
       await send(51, args[4], 0, packet(args.slice(1, 4)), 1);
       return done();
     case 0x55: {
-      if (!args[0]) return done();
       const p = new NativeGraphicsPacket([], { unwritten: [0, 1, 2] });
       await send(61, args[3], 0, p, 1);
-      if (p.load(8) === undefined)
-        throw new Error('Native plane base query has an unwritten third word');
+      // Unloaded or missing targets leave Z unwritten. A graph reads it only when applying the setter.
       p.store(0, args[1]);
       p.store(4, args[2]);
       await send(49, args[3], 0, p, 1);
