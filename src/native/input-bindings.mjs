@@ -164,7 +164,7 @@ export class NativeInputBindings {
   }
   acceptsKeyboard(event) {
     const code = browserVirtualKey(event),
-      limit = this.configuration.authorMode ? 80 : 32;
+      limit = this.configuration.authorMode ? this.configuration.keys.rows.length : 32;
     return (
       !!code &&
       this.configuration.keys.rows
@@ -193,14 +193,19 @@ export class NativeInputBindings {
   // Mouse and touch callbacks test both maps, preferring a touch-map match.
   apply(category, code, down, sourceOverride) {
     const source = sourceOverride ?? sources[categories.indexOf(category)],
-      limit = this.configuration.authorMode ? 80 : 32;
+      limit = this.configuration.authorMode ? this.configuration.keys.rows.length : 32;
     for (let index = 0; index < limit; index++) {
       const row = this.configuration.keys.rows[index];
       if (!row.enabled) continue;
       for (let slot = 0; slot < 4; slot++) {
         let selected = category;
         if (category === 'mouse' || category === 'touch')
-          selected = row.touch[slot] === code ? 'touch' : row.mouse[slot] === code ? 'mouse' : null;
+          selected =
+            row.touch && row.touch[slot] === code
+              ? 'touch'
+              : row.mouse[slot] === code
+                ? 'mouse'
+                : null;
         else if (row[category][slot] !== code) selected = null;
         if (!selected) continue;
         const at = index * 4 + slot;

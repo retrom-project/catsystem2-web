@@ -92,11 +92,15 @@ export class NativeConfigurationFields {
     this.uiLanguage = uiLanguage === undefined ? undefined : uiLanguage & 65535;
     this.fontAvailability = fontAvailability;
     this.displayModes = displayModes;
+    const keyRows = layout.keyRows ?? 80,
+      systemVoiceRows = abi.configuration.systemVoiceRows ?? 48;
+    this.keyGroups =
+      layout.keyStride === 28 ? categories.filter((name) => !name.endsWith('touch')) : categories;
     this.data = new Uint8Array(layout.bytes);
     this.view = new DataView(this.data.buffer);
     this.styleOffset = layout.fontBytes * 2;
     this.keyNameOffset = this.styleOffset + 24;
-    this.keyOffset = this.keyNameOffset + 80 * layout.keyNameBytes;
+    this.keyOffset = this.keyNameOffset + keyRows * layout.keyNameBytes;
     this.style = new Uint32Array(this.data.buffer, this.styleOffset, 5);
     this.style.set([1, 1, 0, 1, 1]);
     this.configType = 0;
@@ -234,10 +238,10 @@ export class NativeConfigurationFields {
       textureCompression: 0,
     };
     this.paths = { picture: '', export: '', imageImport: '' };
-    this.systemVoice = new Uint8Array(3264);
-    this.sysplay = new Uint32Array(this.systemVoice.buffer, 1536, 48);
+    this.systemVoice = new Uint8Array(systemVoiceRows * 68);
+    this.sysplay = new Uint32Array(this.systemVoice.buffer, systemVoiceRows * 32, systemVoiceRows);
     this.sysplay.fill(1);
-    this.keys = { rows: Array.from({ length: 80 }, (_, i) => this.keyRow(i)) };
+    this.keys = { rows: Array.from({ length: keyRows }, (_, i) => this.keyRow(i)) };
     Object.defineProperty(this.keys, 'enableJoypad', {
       enumerable: true,
       get: () => this.view.getUint32(this.styleOffset + 20, true),
@@ -290,8 +294,8 @@ export class NativeConfigurationFields {
         this.view.setUint32(base, value >>> 0, true);
       },
     });
-    for (let group = 0; group < categories.length; group++)
-      row[categories[group]] = this.data.subarray(base + 4 + group * 4, base + 8 + group * 4);
+    for (const [group, name] of this.keyGroups.entries())
+      row[name] = this.data.subarray(base + 4 + group * 4, base + 8 + group * 4);
     if (this.abi.configuration.keyHide)
       Object.defineProperty(row, 'hide', {
         enumerable: true,
@@ -415,21 +419,21 @@ export class NativeConfigurationFields {
     this.style[1] = integer(root, 'FONT/shadow/rightdown', this.style[1]);
     this.window.drag = integer(root, 'ETC/dragwnd', 1);
     this.keys.enableJoypad = 0;
-    for (let i = 0; i < 80; i++) {
-      const row = this.keys.rows[i],
-        path = `KEYCUSTOMIZE/key${two(i)}`;
+    for (const [i, row] of this.keys.rows.entries()) {
+      const path = `KEYCUSTOMIZE/key${two(i)}`;
       row.name = text(root, `${path}/name`, '');
-      for (const category of categories)
+      for (const category of this.keyGroups)
         for (let key = 0; key < 4; key++)
           row[category][key] = integer(root, `${path}/${category}${key + 1}`, 0) & 255;
       row.enabled = Number(row.name.length !== 0);
       if (this.abi.configuration.keyHide) row.hide = integer(root, `${path}/hide`, 0);
     }
-    for (let i = 0; i < 48; i++) {
+    const archiveNames = this.sysplay.byteOffset + this.sysplay.byteLength;
+    for (let i = 0; i < this.sysplay.length; i++) {
       const path = `SYSTEMVOICE/ch${two(i)}`;
       for (const [name, offset] of [
         ['name', i * 32],
-        ['int', 1728 + i * 32],
+        ['int', archiveNames + i * 32],
       ]) {
         const source = node(root, `${path}/${name}`);
         if (!source) continue;
@@ -568,8 +572,8 @@ export class NativeConfigurationFields {
     // Both native builds pass the newly read proportional value as fixed's fallback.
     this.style[4] = integer(root, 'FONT/fixed', this.style[3]);
     this.keys.enableJoypad = integer(root, 'KEY/enable_joypad', this.keys.enableJoypad);
-    for (let i = 0; i < 80; i++)
-      if (this.keys.rows[i].enabled)
+    for (const [i, row] of this.keys.rows.entries())
+      if (row.enabled)
         for (const [field, prefix] of [
           ['keyboard', 'kb'],
           ['mouse', 'ms'],
@@ -578,7 +582,6 @@ export class NativeConfigurationFields {
           ['rep_mouse', 'msr'],
           ['rep_joypad', 'jpr'],
         ]) {
-          const row = this.keys.rows[i];
           for (let key = 0; key < 4; key++) {
             const name = prefix.endsWith('r')
               ? `${prefix.slice(0, -1)}${key + 1}r_${two(i)}`
@@ -588,7 +591,7 @@ export class NativeConfigurationFields {
         }
   }
   applyAdvancedPreferences(root) {
-    for (let i = 0; i < 48; i++)
+    for (let i = 0; i < this.sysplay.length; i++)
       this.sysplay[i] = integer(root, `SYSTEMVOICE/play${two(i)}`, this.sysplay[i]);
     this.scene.autoSelect = integer(root, 'GAME/autoselect', this.scene.autoSelect);
     if (this.abi.configuration.windowActive)
@@ -651,7 +654,8 @@ export class NativeConfigurationFields {
         throw new Error('Native configuration scalar setter requires a numeric field');
       this[family][field] = value >>> 0;
     } else if (name === 'voice.sysplay') {
-      if (value.length !== 48) throw new Error('Native system voice flags require 48 words');
+      if (value.length !== this.sysplay.length)
+        throw new Error(`Native system voice flags require ${this.sysplay.length} words`);
       this.sysplay.set(value);
     } else if (name === 'key.enableJoypad') this.keys.enableJoypad = value;
     else if (name === 'configuration.type') this.configType = value >>> 0;

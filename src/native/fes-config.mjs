@@ -122,12 +122,12 @@ export class NativeFESConfiguration {
         : read(config.blocks[0], config.voiceRecordByte(index) / 4);
     }
     if (name === 'sysplay') {
-      const index = ((ex1 | 0) + (ex2 | 0)) | 0;
-      if (index < 0 || index >= 48) return 0;
+      const index = ((ex1 | 0) + (ex2 | 0)) | 0,
+        rows = config.getField('voice.sysplay');
+      if (index < 0 || index >= rows.length) return 0;
       // Native checks ex1+ex2, then indexes by ex1 alone.
-      const rows = config.getField('voice.sysplay');
-      if ((ex1 | 0) < 0 || (ex1 | 0) >= 48)
-        throw new RangeError('Native FES sysplay indexes outside its 48-row backing');
+      if ((ex1 | 0) < 0 || (ex1 | 0) >= rows.length)
+        throw new RangeError(`Native FES sysplay indexes outside its ${rows.length}-row backing`);
       return rows[ex1 | 0];
     }
     if (name === 'fshadow') {
@@ -168,11 +168,14 @@ export class NativeFESConfiguration {
         if (index >= 0 && index < config.voiceLayout.count)
           write(config.blocks[0], config.voiceRecordByte(index) / 4, word);
       } else if (name === 'sysplay') {
-        const index = ((ex1 | 0) + (ex2 | 0)) | 0;
-        if (index >= 0 && index < 48) {
-          if ((ex1 | 0) < 0 || (ex1 | 0) >= 48)
-            throw new RangeError('Native FES sysplay indexes outside its 48-row backing');
-          config.getField('voice.sysplay')[ex1 | 0] = word;
+        const index = ((ex1 | 0) + (ex2 | 0)) | 0,
+          rows = config.getField('voice.sysplay');
+        if (index >= 0 && index < rows.length) {
+          if ((ex1 | 0) < 0 || (ex1 | 0) >= rows.length)
+            throw new RangeError(
+              `Native FES sysplay indexes outside its ${rows.length}-row backing`,
+            );
+          rows[ex1 | 0] = word;
         }
       } else if (name === 'fshadow') {
         const index = Math.min(2, ex1 | 0);

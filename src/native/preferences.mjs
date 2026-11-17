@@ -124,9 +124,10 @@ function system(configuration, extended) {
 }
 
 function objects(configuration, extended) {
-  const { count: voiceRows, volumeWord, muteWord } = configuration.voiceLayout;
+  const { count: voiceRows, volumeWord, muteWord } = configuration.voiceLayout,
+    systemVoice = configuration.getField('voice.sysplay');
   const keyRows = [];
-  for (let row = 79; row >= 0; row--)
+  for (let row = configuration.keys.rows.length - 1; row >= 0; row--)
     if (configuration.keys.rows[row].enabled)
       for (let key = 3; key >= 0; key--)
         for (const [prefix, field, repeat] of [
@@ -171,9 +172,10 @@ function objects(configuration, extended) {
   return [
     node(
       'SYSTEMVOICE',
-      Array.from({ length: 48 }, (_, i) =>
-        leaf(`play${two(47 - i)}`, configuration.getField('voice.sysplay')[47 - i]),
-      ),
+      Array.from({ length: systemVoice.length }, (_, i) => {
+        const row = systemVoice.length - 1 - i;
+        return leaf(`play${two(row)}`, systemVoice[row]);
+      }),
     ),
     node('GAME', [
       ...(extended

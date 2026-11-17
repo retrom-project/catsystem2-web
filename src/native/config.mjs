@@ -454,7 +454,7 @@ export function nativeConfiguration(id, args, machine, services = {}) {
     // The native wrappers do not clamp the index. Neighboring system-voice
     // strings share this same mapped byte region, including negative indices.
     const bytes = config.fields.systemVoice,
-      offset = 1536 + Math.imul(args[0], 4);
+      offset = config.fields.sysplay.byteOffset + Math.imul(args[0], 4);
     if (offset < 0 || offset + 4 > bytes.length)
       throw new Error('Native system voice word is outside recovered mapped configuration');
     const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
