@@ -18,7 +18,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.63 | 938        | 11        | 0             | 0             | 927     | 45 / 44 / 51 unknown       |
+| 2.6.1.63 | 938        | 16        | 0             | 0             | 922     | 45 / 44 / 51 unknown       |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered  |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
@@ -928,6 +928,20 @@ control 2. Main68 returns the Script's native identity. Main71 stores the
 translated packet pointer and suspends the Script with control 4. The
 owned startup test covers these operations through guest GCALLs, then
 delivers one packet to resume the waiting Script.
+
+## 2.6.1.63 FES task entry
+
+Main66 creates and attaches the selected task, including a kind 34 FES
+child of the calling Script. Its reply contains the task's native identity.
+The .63 Main447 sends raw 319 to initialize the interpreter with the
+Script's variable bank and raw 320 to load the formatted source. Main448
+updates that interpreter through raw 321. Main449 binds its draw target
+through raw 322. The ordinary wrappers use the corresponding typed receiver
+operations and return control 2. Main67 requests destruction with message 3.
+
+The owned path loads a small FES script into a real draw owner, updates the
+borrowed Script bank and removes the FES task and drawing binding on
+destruction. The Script keeps ownership of its bank.
 
 ## 2.6.1.67 first-title entry and normal services
 

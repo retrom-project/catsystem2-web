@@ -1178,6 +1178,53 @@ for (const [version, profile] of versions) {
   );
 }
 
+test('63 FES GCALLs bind a real draw owner and update the attached Script bank', async () => {
+  const { world, audio } = await oldTitleWorld(
+    { 'entry.fes': bytes('#START\n$8=73\n') },
+    undefined,
+    'rebellions-jp-engine-2.6.1.63',
+  );
+  try {
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, machine, main);
+    assert.deepEqual(call(209, [64]), { control: 2 });
+    const bank = world.runtime.variableBank(main, false);
+    machine.writeString('owned FES', 128);
+    machine.writeString('entry', 160);
+    const created = await call(66, [34, world.nativeTaskID(main.id), 128]);
+    assert.equal(created.control, 1);
+    const fesID = world.resolveTaskID(created.value, main.id),
+      record = world.objects.objects.get(fesID),
+      fes = record.implementation,
+      drawID = await world.objects.create({ kind: 15, parent: main.id });
+    assert.equal(record.parent, main.id);
+    await world.sendEngine(drawID, main.id, 279, 4, 3);
+    await world.sendEngine(drawID, main.id, 283, 0, 0);
+    assert.deepEqual(await call(449, [created.value, world.nativeTaskID(drawID)]), { control: 2 });
+    assert.equal(fes.surface, drawID);
+    assert.deepEqual(await call(447, [created.value, 160]), { control: 2 });
+    assert.equal(fes.variableBank(), bank);
+    assert.equal(world.graphics.fesSurfaces.get(drawID).get(fesID), fes.player);
+    assert.equal(bank.get(8), 0);
+    assert.deepEqual(await call(448, [created.value]), { control: 2 });
+    assert.equal(bank.get(8), 73);
+
+    assert.deepEqual(await call(67, [created.value]), { control: 2 });
+    assert.equal(record.destroyRequested, true);
+    await world.tick();
+    assert.equal(world.objects.objects.has(fesID), false);
+    assert.equal(world.graphics.fesSurfaces.get(drawID)?.has(fesID) ?? false, false);
+    assert.equal(bank.get(8), 73);
+  } finally {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  }
+});
+
 test('67 first-title models use real FES services and restore without warm replay', async (t) => {
   t.mock.method(Date, 'now', () => Date.UTC(2026, 10, 17, 3, 4, 5));
   const pixels = new Uint8Array(4 * 3 * 4);
