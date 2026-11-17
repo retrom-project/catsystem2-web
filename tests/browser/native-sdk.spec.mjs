@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { test, expect } from './native-performance.mjs';
+import { checkpointDifference } from './checkpoint-observation.mjs';
 import {
   frameClock,
   state,
@@ -222,7 +223,8 @@ async function startSDK(page) {
 
 async function restoreFresh(page) {
   const restored = await page.evaluate(async () => {
-    const engine = window.catSystem2,
+    const { serializeCheckpoint } = await import('/src/checkpoint.mjs'),
+      engine = window.catSystem2,
       old = engine.world,
       saved = await engine.snapshot(),
       trace = window.normalSDKObservation,
@@ -257,15 +259,15 @@ async function restoreFresh(page) {
         engine.random === world.random,
       frame: world.frame,
       savedFrame: saved.world.frame,
-      current,
-      saved: saved.world,
+      current: await serializeCheckpoint(current, engine.checkpointLimit),
+      saved: await serializeCheckpoint(saved.world, engine.checkpointLimit),
       freshCalls: calls.filter((entry) => entry.owner === owner),
       oldCleanupCalls: calls.filter((entry) => entry.owner !== owner),
     };
   });
   expect(restored).toMatchObject({ fresh: true, oldReleased: true, ordinary: true, aliases: true });
   expect(restored.frame).toBe(restored.savedFrame);
-  expect(restored.current).toEqual(restored.saved);
+  expect(checkpointDifference(restored.current, restored.saved)).toBeNull();
   expect(restored.freshCalls).toEqual([]);
   // Old-owner teardown is recorded separately, never relabelled as fresh replay.
   await page.evaluate(() => window.catSystem2.render());

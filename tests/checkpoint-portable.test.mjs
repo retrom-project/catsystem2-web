@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
+import { checkpointDifference } from './browser/checkpoint-observation.mjs';
 
 test('portable checkpoint budgets apply to encode, compressed files and decoded state', async () => {
   const state = { bytes: new Uint8Array(400) };
@@ -76,4 +77,89 @@ test('portable checkpoints reject lossy values and malformed compressed files', 
   const file = await serializeCheckpoint({ frame: 17 });
   file[file.length - 1] ^= 255;
   await assert.rejects(deserializeCheckpoint(file));
+});
+
+test('complete checkpoint observations compare every byte and retain type and alias differences', async () => {
+  const fixture = () => {
+    const bytes = new Uint8Array(2 * 1024 * 1024),
+      words = new Uint32Array(bytes.buffer, 4, 3),
+      sparse = new Array(3),
+      state = {
+        frame: 573,
+        bytes,
+        alias: bytes,
+        words,
+        view: new DataView(bytes.buffer, 1, 7),
+        sparse,
+        record: Object.assign(Object.create(null), { word: 17 }),
+        missing: undefined,
+        values: [NaN, Infinity, -Infinity, -0, -1n],
+        map: new Map(),
+        set: new Set(),
+      };
+    bytes[bytes.length - 1] = 91;
+    sparse[1] = undefined;
+    state.self = state;
+    state.map.set(state, words);
+    state.set.add(state.map);
+    return state;
+  };
+  const saved = await serializeCheckpoint(fixture()),
+    equal = await serializeCheckpoint(fixture());
+  assert.equal(checkpointDifference(equal, saved), null);
+  const lastByte = equal.slice();
+  lastByte[lastByte.length - 1] ^= 1;
+  assert.deepEqual(checkpointDifference(lastByte, saved), {
+    offset: saved.length - 1,
+    currentByte: lastByte.at(-1),
+    savedByte: saved.at(-1),
+  });
+  assert.deepEqual(checkpointDifference(equal.subarray(1), saved), {
+    currentLength: equal.length - 1,
+    savedLength: saved.length,
+  });
+  for (const mutate of [
+    (state) => state.bytes[state.bytes.length - 1]++,
+    (state) => {
+      state.alias = state.bytes.slice();
+    },
+    (state) => {
+      state.words = new Int32Array(state.bytes.buffer, 4, 3);
+    },
+    (state) => {
+      state.view = new DataView(state.bytes.buffer, 2, 7);
+    },
+    (state) => {
+      state.sparse[0] = undefined;
+    },
+    (state) => {
+      delete state.missing;
+    },
+    (state) => {
+      state.values[3] = 0;
+    },
+    (state) => {
+      state.map.set(state, state.bytes);
+    },
+    (state) => {
+      state.set.clear();
+    },
+    (state) => {
+      state.self = {};
+    },
+    (state) => {
+      state.record = { ...state.record };
+    },
+    (state) => {
+      state.frame = '573';
+    },
+  ]) {
+    const state = fixture();
+    mutate(state);
+    const different = await serializeCheckpoint(state);
+    assert.notEqual(checkpointDifference(different, saved), null);
+    assert.notEqual(checkpointDifference(saved, different), null);
+  }
+  assert.throws(() => checkpointDifference([], saved), /encoded Uint8Array/);
+  assert.throws(() => checkpointDifference(saved, []), /encoded Uint8Array/);
 });
