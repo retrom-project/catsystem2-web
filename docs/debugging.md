@@ -283,3 +283,35 @@ The performance batch observed 1536 retained entries by route frame 883. An auth
 20.87 MB before the bound and 0.096 MB afterwards. Median logging cost was
 0.000091 ms/tick before and 0.000290 ms/tick afterwards. GC ran outside the timed
 loops. These values describe the host logging operation.
+
+## Touch-entry failure evidence
+
+The ordinary Game test's first extra touch-button gesture records evidence before
+the unchanged click. `touch-before.json` identifies the selected FES and Input
+owners in both task number spaces, the actual input region, its raw enable/mask
+and priority, pointer/warp state, and the existing center point's hit result.
+Earlier regions are possible hits, not proof that they consume an event. Neither
+`active` nor a successful RAF callback is used as a new readiness gate.
+
+`touch-events.ndjson` is written by the test worker as bounded numeric Input,
+FES event and Script packet observations arrive. The observers delegate the
+original methods once and return their original values or Promises. At most 128
+events and an explicit limit record are kept. Missing records remain unavailable;
+they must not be interpreted as proof that a gesture or callback did not run.
+No dialogue, script source, resource bytes or typed input is written to this log.
+
+`touch-before.cs2web` contains the complete production checkpoint before that
+gesture. Transfer uses 64 KiB byte chunks and verifies the browser and file SHA-256;
+the companion metadata records the actual frame and resource identity. The
+transfer adds no step, render, warm-up, pause or guest command. Partial files from
+a capture failure are not valid checkpoints. This diagnostic does not replace
+any full raw DTO, pixel, audio or gameplay assertion.
+
+A separately authorized finite recovery mounts the identical resource namespace
+and selected source view, verifies the attachment digest and identity, and starts
+a new Core with `initialize({ checkpoint })`. It must establish fresh owners,
+the saved frame, no restore execution or RNG replay and complete DTO consistency
+before issuing the original touch gesture and its original 240-frame wait.
+It must not jump the VM, patch a bank, run warm frames or relax an assertion.
+Source/custody changes or an unavailable checkpoint stop that recovery. A finite
+touch recovery remains separate from complete Game or Route acceptance.

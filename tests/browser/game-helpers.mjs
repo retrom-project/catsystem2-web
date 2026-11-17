@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { expect } from '@playwright/test';
+import { captureTouchBeforeClick } from './touch-evidence.mjs';
 import {
   frameClock,
   until,
@@ -20,7 +21,7 @@ export async function clickGame(page, x, y) {
 export async function button(page, name, extra = false) {
   if (await page.evaluate(() => Boolean(window.catSystem2?.world))) {
     if (!extra) return clickNativeButton(page, name);
-    const point = await page.evaluate((key) => {
+    const selected = await page.evaluate((key) => {
       const e = window.catSystem2,
         player = [...e.nativeFES.values()].find((p) =>
           p.stack.some((label) => label.startsWith('touch#')),
@@ -29,9 +30,10 @@ export async function button(page, name, extra = false) {
         region = object && e.world.inputFor(player.root.runtimeID)?.get(object.nativeInputTaskID);
       if (!region) throw new Error('Missing native touch input ' + key);
       const [l, t, r, b] = region.bounds;
-      return [(l + r) / 2, (t + b) / 2];
+      return { point: [(l + r) / 2, (t + b) / 2], owner: player.root.runtimeID };
     }, name);
-    return clickGame(page, ...point);
+    await captureTouchBeforeClick(page, { key: name, owner: selected.owner });
+    return clickGame(page, ...selected.point);
   }
   await page.waitForFunction(
     ({ name, extra }) => {
