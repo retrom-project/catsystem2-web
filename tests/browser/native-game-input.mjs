@@ -4,8 +4,19 @@ import { ProgressBudget, FrameBudgetReached } from './progress-budget.mjs';
 const progress = new WeakMap();
 const budgets = new WeakMap();
 
+export function fullAcceptanceMode(value = process.env.CATSYSTEM2_FULL_ACCEPTANCE) {
+  if (value === undefined) return false;
+  if (value !== '1') throw new Error('CATSYSTEM2_FULL_ACCEPTANCE must be explicitly 1');
+  return true;
+}
+
 export async function progressAcceptance(page, info, name, run) {
-  const budget = new ProgressBudget(process.env.CATSYSTEM2_FULL_ACCEPTANCE ? null : name);
+  const full = fullAcceptanceMode(),
+    budget = new ProgressBudget(full ? null : name);
+  info.annotations?.push({
+    type: 'acceptance-mode',
+    description: JSON.stringify({ mode: full ? 'full' : 'progress', FULL: full ? '1' : null }),
+  });
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   budgets.set(page, budget);

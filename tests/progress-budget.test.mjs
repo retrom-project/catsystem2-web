@@ -2,7 +2,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ProgressBudget, FrameBudgetReached } from './browser/progress-budget.mjs';
-import { progressAcceptance, step, state } from './browser/native-game-input.mjs';
+import {
+  fullAcceptanceMode,
+  progressAcceptance,
+  step,
+  state,
+} from './browser/native-game-input.mjs';
 
 test('progress gates retain reviewed floors and stop at the fixed extra frame budget', () => {
   const budget = new ProgressBudget('route');
@@ -93,4 +98,68 @@ test('frame and wall no-progress conditions stop independently at the earlier bo
   time += 100000;
   moving.observe({ frame: 1, position: ['a'] });
   assert.equal(moving.remainingWallMS(), 180000);
+});
+
+test('full campaign mode is explicit and the actual acceptance process reports its selected mode', async () => {
+  const previous = process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+  assert.equal(fullAcceptanceMode('1'), true);
+  for (const value of ['', '0', 'true', 'yes', ' 1'])
+    assert.throws(() => fullAcceptanceMode(value), /must be explicitly 1/);
+  const page = { on() {} },
+    info = {
+      annotations: [],
+      setTimeout(value) {
+        assert.equal(value, 0);
+      },
+    };
+  try {
+    delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+    assert.equal(fullAcceptanceMode(), false);
+    let calls = 0;
+    await progressAcceptance(page, info, 'game', () => {
+      calls++;
+    });
+    process.env.CATSYSTEM2_FULL_ACCEPTANCE = '1';
+    await progressAcceptance(page, info, 'route', () => {
+      calls++;
+    });
+    assert.equal(calls, 2);
+    assert.deepEqual(
+      info.annotations.map((a) => JSON.parse(a.description)),
+      [
+        { mode: 'progress', FULL: null },
+        { mode: 'full', FULL: '1' },
+      ],
+    );
+  } finally {
+    if (previous === undefined) delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+    else process.env.CATSYSTEM2_FULL_ACCEPTANCE = previous;
+  }
+});
+
+test('explicit full campaign retains the original wall stall deadline and failure cleanup', async (t) => {
+  const previous = process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  process.env.CATSYSTEM2_FULL_ACCEPTANCE = '1';
+  let closed = false;
+  const page = {
+      on() {},
+      evaluate: () => new Promise(() => {}),
+      context: () => ({
+        close: async () => {
+          closed = true;
+        },
+      }),
+    },
+    info = { annotations: [], setTimeout() {}, async attach() {} };
+  try {
+    const operation = progressAcceptance(page, info, 'game', () => step(page));
+    t.mock.timers.tick(180000);
+    await assert.rejects(operation, /wall stall/);
+    assert.equal(closed, true);
+    assert.deepEqual(JSON.parse(info.annotations[0].description), { mode: 'full', FULL: '1' });
+  } finally {
+    if (previous === undefined) delete process.env.CATSYSTEM2_FULL_ACCEPTANCE;
+    else process.env.CATSYSTEM2_FULL_ACCEPTANCE = previous;
+  }
 });
