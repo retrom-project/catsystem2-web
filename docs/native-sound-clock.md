@@ -72,3 +72,9 @@ owned browser witness decodes authored WAV PCM with the real AudioContext,
 compares the complete cold World DTO, observes exactly one restored source start,
 and records later media-time progress. It is not a native sound-oracle rerun or
 a claim about the complete SDK tutorial campaign.
+
+## Reviewed version behavior
+
+The ordinary sound task requires reviewed `sound.crossfade` behavior before selecting an extended load packet or reading its optional level sidecar. An unreviewed value does not select the non-crossfade path. Invalid bank rejection still precedes that packet-layout decision.
+
+The later elapsed-frame bookkeeping runs only for a reviewed boolean `sound.completionFrame` policy. An unreviewed policy leaves those later bookkeeping words unchanged; it does not select the modern false branch. An elapsed-time request must still pass its own version message mapping and reviewed policy. The .67 first-title evidence covers its own bank frame and sparse messages, without enabling the later elapsed query or supplying physical control layouts.

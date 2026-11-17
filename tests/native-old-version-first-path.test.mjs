@@ -10,6 +10,7 @@ import { nativeABI, abiForEngineVersion } from '../src/native/abi/index.mjs';
 import { NativeRuntime } from '../src/native/runtime.mjs';
 import { NativeGraphics } from '../src/native/graphics.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { NativeSoundPacket } from '../src/native/sound.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 import { nativeStartupCode } from '../src/native/startup-author.mjs';
 import { kif, kcsProgram } from './helpers.mjs';
@@ -630,6 +631,44 @@ test('old ABI 67 owns its absent APP default, explicit override and cold startup
   } finally {
     restoring = false;
     for (const instance of [other, fresh, source]) await instance?.dispose();
+    environment.restore();
+  }
+});
+
+test('old sound consumers reject unreviewed crossfade and do not invent elapsed tracking', async () => {
+  const environment = startupEnvironment(),
+    attempted = { cpu: 0 };
+  try {
+    for (const [version, profile] of versions) {
+      const source = core(await ownedGame(version), profile, attempted);
+      try {
+        await source.initialize();
+        const world = source.world,
+          sound = world.sound.primary(world.main.id),
+          controls = structuredClone(sound.snapshot().controls);
+        assert.equal(nativeABI(profile).sound.completionFrame, null);
+        if (version === '2.6.1.63') {
+          const packet = new NativeSoundPacket([], 280);
+          packet.store(0, 0);
+          packet.writeString('owned.wav', 12);
+          await assert.rejects(sound.load(packet, 1), /Unreviewed.*sound.crossfade/);
+          assert.deepEqual(sound.snapshot().controls, controls);
+        }
+        await sound.tick(73);
+        await sound.tick(77);
+        assert.equal(sound.snapshot().frame, 77);
+        assert.deepEqual(sound.snapshot().controls, controls);
+        await assert.rejects(
+          sound.message([world.main.nativeID, 219, 0, 0]),
+          /Unmapped|unreviewed|unsupported/i,
+        );
+        assert.deepEqual(sound.snapshot().controls, controls);
+        assert.equal(attempted.cpu, 0);
+      } finally {
+        await source.dispose();
+      }
+    }
+  } finally {
     environment.restore();
   }
 });

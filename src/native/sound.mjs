@@ -497,7 +497,7 @@ export class NativeSoundTask {
       control.plv = plv.slice(16, 16 + count * 2);
     }
     control.lpb = (await this.sound.readAux(filename, 'lpb'))?.slice() ?? null;
-    if (!control.lpb && this.sound.abi.sound.crossfade)
+    if (!control.lpb && nativeABIBehavior(this.sound.abi.profile, 'sound.crossfade'))
       control.lv = (await this.sound.readAux(filename, 'lv'))?.slice() ?? null;
     for (const [field, offset, lengthOffset] of [
       ['lpb', C.lpb, C.lpbSize],
@@ -511,10 +511,12 @@ export class NativeSoundTask {
     }
   }
   async load(packet, type, allocated = false) {
-    const bank = packet.load(0),
-      crossfade = this.sound.abi.sound.crossfade ? packet.load(280) : 0,
+    const bank = packet.load(0);
+    if (!this.valid(bank)) return 0;
+    const hasCrossfade = nativeABIBehavior(this.sound.abi.profile, 'sound.crossfade'),
+      crossfade = hasCrossfade ? packet.load(280) : 0,
       target = bank + (crossfade ? 32 : 0);
-    if (!this.valid(bank) || !this.valid(target)) return 0;
+    if (!this.valid(target)) return 0;
     const file = packet.string(12),
       loaded = await this.sound.load(target, file, type, packet.load(276));
     if (allocated && !loaded) return 0;
@@ -524,7 +526,7 @@ export class NativeSoundTask {
     for (const at of [C.releasePending, C.stopPending, C.pausePending, C.endAfterPlayback])
       control.word(at, 0);
     control.word(C.crossfade, crossfade);
-    control.word(C.crossfadeMilliseconds, this.sound.abi.sound.crossfade ? packet.load(284) : 0);
+    control.word(C.crossfadeMilliseconds, hasCrossfade ? packet.load(284) : 0);
     control.word(C.linkedBank, allocated && crossfade ? target : -1);
     if (crossfade && (!allocated || type !== 1)) this.controls[bank].word(C.linkedBank, target);
     control.loopStart = 0n;
@@ -645,13 +647,16 @@ export class NativeSoundTask {
           );
         if (control.word(C.flags) & 2)
           fade(C.currentPan, C.targetPan, C.panRemaining, 2, (n) => this.sound.setPan(bank, n));
-        if (!this.sound.abi.sound.completionFrame && control.word(C.lastTimeFrame) === 0xffffffff)
-          control.word(C.lastTimeFrame, frame - 1);
-        control.word(
-          C.elapsedFrames,
-          control.word(C.elapsedFrames) + ((frame - control.word(C.lastTimeFrame)) >>> 0),
-        );
-        control.word(C.lastTimeFrame, frame);
+        const completionFrame = this.sound.abi.sound.completionFrame;
+        if (typeof completionFrame === 'boolean') {
+          if (!completionFrame && control.word(C.lastTimeFrame) === 0xffffffff)
+            control.word(C.lastTimeFrame, frame - 1);
+          control.word(
+            C.elapsedFrames,
+            control.word(C.elapsedFrames) + ((frame - control.word(C.lastTimeFrame)) >>> 0),
+          );
+          control.word(C.lastTimeFrame, frame);
+        }
       } else if (control.float(C.volumeRemaining) > 0) {
         fade(
           C.currentVolume,
@@ -722,7 +727,10 @@ export class NativeSoundTask {
       const allocated = this.allocate(group.min, group.max);
       packet.store(0, allocated);
       return (await this.load(packet, id === 205 || id === 207 ? 1 : 2, true))
-        ? allocated + (this.sound.abi.sound.crossfade && packet.load(280) ? 32 : 0)
+        ? allocated +
+            (nativeABIBehavior(this.sound.abi.profile, 'sound.crossfade') && packet.load(280)
+              ? 32
+              : 0)
         : 0xffffffff;
     }
     if (id === 194) {
@@ -830,7 +838,9 @@ export class NativeSoundTask {
         c.word(C.stopPending, 0);
         c.word(C.pausePending, 0);
         if (c.word(C.wallStart) === 0xffffffff) c.word(C.wallStart, this.sound.now());
-        c.word(C.lastTimeFrame, this.sound.abi.sound.completionFrame ? this.frame : -1);
+        const completionFrame = this.sound.abi.sound.completionFrame;
+        if (typeof completionFrame === 'boolean')
+          c.word(C.lastTimeFrame, completionFrame ? this.frame : -1);
         return 0;
       }
       case 185:
@@ -979,6 +989,7 @@ export class NativeSoundTask {
         await this.sound.setLoop(selected[0], l >>> 0, control);
         return 0;
       case 219:
+        nativeABIBehavior(this.sound.abi.profile, 'sound.completionFrame');
         return control.word(C.releasePending) ||
           control.word(C.stopPending) ||
           control.word(C.pausePending)
