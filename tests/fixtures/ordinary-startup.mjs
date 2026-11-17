@@ -265,7 +265,7 @@ function createGL() {
       },
       // CPU storage read-back only; this is not a GPU raster/pixel oracle.
       readPixels(x, y, width, height, _format, _type, output) {
-        const framebuffer = bound('Framebuffer', gl.FRAMEBUFFER),
+        const framebuffer = bound('Framebuffer', gl.READ_FRAMEBUFFER),
           texture = require('Texture', framebuffer.attachments.get(gl.COLOR_ATTACHMENT0));
         if (
           x < 0 ||

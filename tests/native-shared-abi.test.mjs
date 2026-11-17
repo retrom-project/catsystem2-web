@@ -162,8 +162,8 @@ for (const [id, message] of [
           assert.deepEqual(reply, { control: 2 });
           assert.deepEqual(sends.at(-1), [nativeTarget, task.id, message, 0, flag]);
           if (id === 262) {
-            assert.equal(receiver.state.pending, Boolean(flag));
-            assert.equal(receiver.state.enabled, Boolean(flag));
+            assert.equal(receiver.state.pending, flag >>> 0);
+            assert.equal(receiver.state.enabled, flag >>> 0);
             assert.equal(receiver.state.dirty, true);
           } else {
             assert.equal(receiver.state.dirty, Boolean(flag));

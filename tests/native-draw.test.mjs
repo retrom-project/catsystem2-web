@@ -411,7 +411,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
         empty = await forceOutputCall(world, target);
       assert.equal(draw.state.renderer, null);
       assert.equal(draw.state.dirty, true, 'a missing renderer still receives the dirty store');
-      assert.equal(draw.state.pending, true, 'the missing-renderer branch does not clear pending');
+      assert.equal(draw.state.pending, 1, 'the missing-renderer branch does not clear pending');
       assert.deepEqual(messages.at(-1), [target, empty.id, 292, 0, 0, 0]);
       const call = (id, args) =>
         world.runtime.native('main', id, args, world.main.machine, world.main);
@@ -450,7 +450,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       await forceOutputCall(world, target);
       const firstPixels = [0, 0, 0, 0, ...color, 0, 0, 0, 0, 0, 0, 0, 0];
       assert.deepEqual(Array.from(await drawPixels(world, surfaceID)), firstPixels);
-      assert.equal(draw.state.pending, false);
+      assert.equal(draw.state.pending, 0);
       assert.equal(outputs.length, 1);
       assert.deepEqual(outputs[0].offset, [2, 1]);
       assert.equal(outputs[0].region, null, 'force output copies the complete surface');
@@ -464,7 +464,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       await forceOutputCall(world, target);
       const expected = [0, 0, 0, 0, ...changed, 0, 0, 0, 0, 0, 0, 0, 0];
       assert.deepEqual(Array.from(await drawPixels(world, surfaceID)), expected);
-      assert.equal(draw.state.enabled, false);
+      assert.equal(draw.state.enabled, 0);
       assert.equal(outputs.length, 2, 'disabled ordinary output is overridden by this command');
       const vram = world.graphics.images.get(world.graphics.vramHandle),
         pixels = await vram.pixels();
@@ -1265,8 +1265,8 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
         firstPixels = [...Array(20).fill(0), 17, 33, 65, 255, ...Array(24).fill(0)];
       assert.deepEqual([...(await drawPixels(world, surfaceID))], firstPixels);
       assert.equal(outputs.length, 0, 'ordinary rendering honors disabled output');
-      assert.equal(draw.state.enabled, false);
-      assert.equal(draw.state.pending, false);
+      assert.equal(draw.state.enabled, 0);
+      assert.equal(draw.state.pending, 0);
       assert.deepEqual(
         [
           messages.at(-1).destination,
@@ -1286,7 +1286,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       assert.deepEqual([...(await drawPixels(world, surfaceID))], pixels);
       assert.equal(outputs.length, 1, 'the enabled ordinary compositor reaches the real output');
       assert.equal(typeof outputs[0].promise?.then, 'function');
-      assert.equal(draw.state.pending, false);
+      assert.equal(draw.state.pending, 0);
       assert.deepEqual(sibling.state, siblingBefore);
       const saved = world.snapshot(),
         decoded = await deserializeCheckpoint(await serializeCheckpoint(saved));

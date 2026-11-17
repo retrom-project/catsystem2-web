@@ -367,7 +367,10 @@ for (const [version, count] of [
       assert.throws(() => validateFESCommonHeads(invalid), /FES common head registration/);
     }
     const abi = abiAPI.abiForEngineVersion(version);
-    assert.deepEqual(abi.fes.commonHeads, registration);
+    assert.deepEqual(abi.fes.commonHeads, {
+      ...registration,
+      reviewedBindings: version === '2.6.1.67' ? ['engine67-common-wait-owned-parameters'] : [],
+    });
     assert.equal(abi.tables.main.entries[0x181].status, 'unknown');
     assert.equal(abi.tables.main.entries[0x358].status, 'unknown');
   });

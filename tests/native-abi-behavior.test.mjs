@@ -325,6 +325,6 @@ test('finite old ABI normal requirements reject missing data and do not invent u
     }
     assert.equal(abi.capabilities.steam, null);
     assert.equal(typeof abi.unreviewed['capabilities.steam'], 'string');
-    assert.equal(abi.tables.main.entries[0x350].status, 'unknown');
+    assert.equal(abi.tables.main.entries[0x181].status, 'unknown');
   }
 });
