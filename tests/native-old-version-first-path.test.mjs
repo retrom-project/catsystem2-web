@@ -967,7 +967,7 @@ test('67 first-title entry GCALLs preserve VM zero and real task identity', asyn
   }
 });
 
-function title67Audio() {
+function oldTitleAudio() {
   return {
     currentTime: 0,
     state: 'running',
@@ -1010,7 +1010,11 @@ function title67Wave() {
   for (let offset = 44; offset < result.length; offset += 2) view.setInt16(offset, 8192, true);
   return result;
 }
-async function title67World(files, storage = { read: async () => null, write: async () => true }) {
+async function oldTitleWorld(
+  files,
+  storage = { read: async () => null, write: async () => true },
+  profile = title67Profile,
+) {
   const entries = {
       'startup.xml': bytes(
         '<?xml version="1.0" encoding="shift_jis"?><document><INT>' +
@@ -1047,36 +1051,40 @@ async function title67World(files, storage = { read: async () => null, write: as
     );
   await game.open();
   const random = new ParticleRandom(),
-    audio = new AudioMixer(game, title67Audio(), { deferPlayback: true }),
+    audio = new AudioMixer(game, oldTitleAudio(), { deferPlayback: true }),
     world = new NativeWorld({
-      profile: title67Profile,
+      profile,
       game,
       random,
       audio,
       host: {},
       images: {},
       configuration: new NativeConfiguration({
-        profile: title67Profile,
+        profile,
         startup: parseNativeXML(entries['startup.xml']),
       }),
-      motionLibrary: new MotionLibrary(game, { profile: title67Profile, random }),
+      motionLibrary: new MotionLibrary(game, { profile, random }),
       storage,
     });
   return { world, audio };
 }
 
-test('67 Input cursor changes reach the Sound, Script and FES receivers', async (t) => {
-  const { world, audio } = await title67World({
-    'main.kcs': kcsProgram([
-      [37, 512],
-      [43, 71, 4],
-      [37, 528],
-      [43, 71, 4],
-      [37, 544],
-      [43, 71, 4],
-      [59],
-    ]),
-  });
+async function verifyCursorVisibility(t, profile) {
+  const { world, audio } = await oldTitleWorld(
+    {
+      'main.kcs': kcsProgram([
+        [37, 512],
+        [43, 71, 4],
+        [37, 528],
+        [43, 71, 4],
+        [37, 544],
+        [43, 71, 4],
+        [59],
+      ]),
+    },
+    undefined,
+    profile,
+  );
   try {
     const main = await world.initialize('main.kcs'),
       records = world.objects.objects,
@@ -1162,7 +1170,13 @@ test('67 Input cursor changes reach the Sound, Script and FES receivers', async 
       await audio.dispose();
     }
   }
-});
+}
+
+for (const [version, profile] of versions) {
+  test(version + ' Input cursor changes reach the Sound, Script and FES receivers', (t) =>
+    verifyCursorVisibility(t, profile),
+  );
+}
 
 test('67 first-title models use real FES services and restore without warm replay', async (t) => {
   t.mock.method(Date, 'now', () => Date.UTC(2026, 10, 17, 3, 4, 5));
@@ -1180,7 +1194,7 @@ test('67 first-title models use real FES services and restore without warm repla
         '#PRELOAD\natlas\n#DEFINE\nCPLANE overlay\nPLANE plane\nCIMAGE solid\nIMAGE image\nBUTTON button\nSOUND tone\n#OBJECT SIZE COLOR DISP PRI\noverlay 4,3 0xffffffff 0 90\n#OBJECT SIZE VRAM PRI DISP\nplane 4,3 0,0 10 1\n#OBJECT SIZE COLOR PL DISP PRI\nsolid 4,3 0xff112233 plane 1 11\n#OBJECT FILE ID.0 PL DISP PRI\nimage atlas 0 plane 1 12\n#OBJECT FILE ID.0 ID.1 ID.2 ID.3 PRI TYPE ENABLE DISP\nbutton atlas 0 0 0 0 30 1 0 0\n#OBJECT CHANNEL STYPE FILE\ntone 0 0 bgm_owned.wav\n#START\ntone[0] play 1\nwait 1\nplane wipe 1 mask\nwait\nnext WAIT\n#WAIT\n',
       ),
     },
-    source = await title67World(files),
+    source = await oldTitleWorld(files),
     sent = [];
   let fresh;
   const cleanupErrors = [];
@@ -1247,7 +1261,7 @@ test('67 first-title models use real FES services and restore without warm repla
     assert.ok([...source.audio.channels.values()].some((channel) => channel.playing));
     const state = world.snapshot(0),
       audioState = source.audio.snapshot(0);
-    fresh = await title67World(files);
+    fresh = await oldTitleWorld(files);
     let replay = 0;
     const native = NativeRuntime.prototype.native,
       step = KCSMachine.prototype.step;
@@ -1376,7 +1390,7 @@ test('67 close GCALLs persist real banks and raw database bytes through a cold o
     ),
     files = new SaveSlotFiles(),
     owned = { 'close-owned.kcs': program },
-    source = await title67World(owned, files);
+    source = await oldTitleWorld(owned, files);
   let fresh,
     restoring = false;
   const warm = { native: 0, step: 0, tick: 0, random: 0 },
@@ -1421,7 +1435,7 @@ test('67 close GCALLs persist real banks and raw database bytes through a cold o
     assert.equal(memory.load(pointer - 4), 1);
     assert.equal(memory.allocations.has(pointer - 4), true);
     const state = source.world.snapshot(0);
-    fresh = await title67World(owned, files);
+    fresh = await oldTitleWorld(owned, files);
     restoring = true;
     await fresh.world.restore(structuredClone(state));
     restoring = false;
@@ -1503,7 +1517,7 @@ test('67 close results keep empty text and growth own while refusing an unwritte
       0x82000,
     ),
     nullProgram = close67Program([...title67Call(872, [0, 0], 64), [59]]),
-    source = await title67World({ 'limits.kcs': program, 'null-export.kcs': nullProgram });
+    source = await oldTitleWorld({ 'limits.kcs': program, 'null-export.kcs': nullProgram });
   try {
     const world = source.world;
     await world.initialize('empty.kcs');

@@ -29,7 +29,7 @@ sender and flags padding is allowed because the decoder replaces those fields.
 The decoded message, w and l must be initialized DWORDs; an unwritten operand is
 rejected before invoking any receiver, rather than becoming a numeric zero.
 
-In 2.6.1.67, Input uses envelope 11 to announce a cursor visibility change
+In 2.6.1.63 and 2.6.1.67, Input uses envelope 11 to announce a cursor visibility change
 with raw message 22. The embedded message carries Input's native sender ID,
 a zero wParam and the visibility word as lParam. With an audio owner, the
 Sound receiver leaves the output word untouched and passes the message to
@@ -39,7 +39,7 @@ Script forwards the sender and visibility to its attached interpreter in
 immediate KCS message `0xffff0014`, with a zero third word. It writes the
 interpreter's result. A Script without an interpreter consumes message 22
 and leaves the output word untouched. FES leaves the word untouched and
-allows Base handling. These receiver behaviors are reviewed for 2.6.1.67.
+allows Base handling. Each older profile registers its independently reviewed receivers.
 
 ## Identity and route maps
 

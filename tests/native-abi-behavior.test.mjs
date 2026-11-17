@@ -238,21 +238,19 @@ test('ABI message data retains every original control, screen and area boundary 
   );
 });
 
-test('67 admits the reviewed Sound and Script cursor message without admitting its neighbors', () => {
-  const profile = 'bokutomo-engine-2.6.1.67',
-    other = 'rebellions-jp-engine-2.6.1.63';
-  for (const direction of ['canonical', 'raw']) {
-    assert.equal(mapABIMessage(profile, 'sound', direction, 22), 22);
-    assert.throws(() => mapABIMessage(profile, 'sound', direction, 21), /Unreviewed ABI message/);
-    assert.throws(() => mapABIMessage(other, 'sound', direction, 22), /Unreviewed ABI message/);
-  }
-  for (const field of ['soundBaseOnly', 'scriptForward']) {
-    assert.deepEqual(nativeABIBehavior(profile, 'messages.' + field), [22]);
-    assert.throws(() => nativeABIBehavior(other, 'messages.' + field), /Unreviewed ABI behavior/);
-    for (const words of [22, [22, 22], [-1], [0x100000000]]) {
-      const invalid = structuredClone(nativeABI(profile));
-      invalid.messages[field] = words;
-      assert.throws(() => validateABI(invalid), /Invalid ABI message policy/);
+test('the .63 and .67 cursor announcements have individually registered receivers', () => {
+  for (const profile of ['rebellions-jp-engine-2.6.1.63', 'bokutomo-engine-2.6.1.67']) {
+    for (const direction of ['canonical', 'raw']) {
+      assert.equal(mapABIMessage(profile, 'sound', direction, 22), 22);
+      assert.throws(() => mapABIMessage(profile, 'sound', direction, 21), /Unreviewed ABI message/);
+    }
+    for (const field of ['soundBaseOnly', 'scriptForward']) {
+      assert.deepEqual(nativeABIBehavior(profile, 'messages.' + field), [22]);
+      for (const words of [22, [22, 22], [-1], [0x100000000]]) {
+        const invalid = structuredClone(nativeABI(profile));
+        invalid.messages[field] = words;
+        assert.throws(() => validateABI(invalid), /Invalid ABI message policy/);
+      }
     }
   }
 });

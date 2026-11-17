@@ -361,6 +361,11 @@ export default {
             offset: 0,
           },
           {
+            min: 22,
+            max: 22,
+            offset: 0,
+          },
+          {
             min: 23,
             max: 23,
             offset: 0,
@@ -463,6 +468,11 @@ export default {
             offset: 0,
           },
           {
+            min: 22,
+            max: 22,
+            offset: 0,
+          },
+          {
             min: 23,
             max: 23,
             offset: 0,
@@ -535,6 +545,8 @@ export default {
       captionWide: false,
       soundReset: 188,
     },
+    soundBaseOnly: [22],
+    scriptForward: [22],
     screenEvent: null,
     tilePlaneCommand: null,
   },
