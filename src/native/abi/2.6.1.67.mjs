@@ -52,6 +52,9 @@ export default {
     extendedQueries: null,
     fontPreferenceLimit: null,
   },
+  globalFile: { growthBytes: 524288 },
+  stringBank: { emptyGetResult: 0 },
+  database: { nullExportPolicy: 'reject-unwritten' },
   sound: {
     banks: 32,
     firstMessage: 174,

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABIBehavior } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { parseNativeIntegerPrefix } from './standard.mjs';
@@ -102,7 +103,10 @@ export function nativeStringBank(id, args, machine, services = {}) {
     const bytes = bank.getBytes(args[0]);
     if (bytes !== undefined) {
       if (mapped(machine, args[1])) machine.writeStringBytes(bytes, args[1]);
-      return nativeReply(1, 1);
+      const emptyResult = services.profile
+        ? nativeABIBehavior(services.profile, 'stringBank.emptyGetResult')
+        : 1;
+      return nativeReply(1, bytes.length ? 1 : emptyResult);
     }
     machine.store(args[1], 0, 1);
     return nativeReply(1, 0);

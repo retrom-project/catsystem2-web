@@ -52,6 +52,9 @@ export default {
     extendedQueries: null,
     fontPreferenceLimit: null,
   },
+  globalFile: { growthBytes: null },
+  stringBank: { emptyGetResult: null },
+  database: { nullExportPolicy: null },
   sound: {
     banks: 32,
     firstMessage: 173,
@@ -907,6 +910,9 @@ export default {
     },
   },
   unreviewed: {
+    'globalFile.growthBytes': 'No own global-file operation admitted in this version.',
+    'stringBank.emptyGetResult': 'No own string getter admitted in this version.',
+    'database.nullExportPolicy': 'No own database exporter admitted in this version.',
     'graphics.drawEnablePendingPolicy':
       'The old .63 Draw enable receiver is not reviewed; reject at actual Draw286 consumption.',
     'text.fesLayouts':

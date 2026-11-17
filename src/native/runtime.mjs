@@ -2,7 +2,7 @@
 import { readKCS, nativeReply, formatNative, formatNativeAt, encodeCP932 } from '../kcs.mjs';
 import { KCSScheduler } from '../kcs/scheduler.mjs';
 import { nativeCatalog } from './catalog.mjs';
-import { nativeABI } from './abi/index.mjs';
+import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import { NATIVE_SEMANTICS } from './abi/semantics.mjs';
 import { NativeHandles } from './handles.mjs';
 import { NativeBufferMemory } from './buffer-memory.mjs';
@@ -70,6 +70,7 @@ export class NativeRuntime {
       handles: this.handles,
       read,
       xmlEncoding: abi.xmlEncoding,
+      profile,
       format:
         services.format || ((address, machine) => formatNative(machine.string(address), machine)),
       formatBytes:
@@ -139,7 +140,10 @@ export class NativeRuntime {
     handles.registerType('global-file', {
       snapshot: (file) => file.snapshot(),
       restore: (state) => {
-        const file = new NativeGlobalFile();
+        const file = new NativeGlobalFile(
+          0,
+          nativeABIBehavior(this.profile, 'globalFile.growthBytes'),
+        );
         file.restore(state);
         return file;
       },

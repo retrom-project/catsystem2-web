@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABIBehavior } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeCompiledTable } from './compiled-table.mjs';
@@ -135,6 +136,13 @@ export async function nativeDatabase(id, args, machine, services) {
     if (handle) handles.release(handle, 'database');
     return nativeReply(2);
   }
+  if (
+    !handle &&
+    id === 0x368 &&
+    services.profile &&
+    nativeABIBehavior(services.profile, 'database.nullExportPolicy') === 'reject-unwritten'
+  )
+    throw new Error('Native database NULL-handle export has an unwritten result');
   if (!handle)
     return nativeReply(
       id === 0x367 || id === 0x36e ? 2 : 1,

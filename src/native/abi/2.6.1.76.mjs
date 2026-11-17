@@ -232,6 +232,9 @@ export default {
     fontPreferenceLimit: 126,
     extendedQueries: true,
   },
+  globalFile: { growthBytes: 65536 },
+  stringBank: { emptyGetResult: 1 },
+  database: { nullExportPolicy: 'sentinel' },
   sound: {
     legacyTypes: ['bgm', 'se', 'voice', 'sysvoice'],
     legacyVolumeAliases: { bgm: 0, se: 1, voice: 2, sysvoice: 2 },

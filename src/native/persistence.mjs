@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { Binary, inflate } from '../binary.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABIBehavior } from './abi/index.mjs';
 import { nativeDeflate } from './zlib.mjs';
 import { nativeFileTime, nativeSystemTime } from './file-time.mjs';
 
@@ -26,7 +27,10 @@ const mapped = (machine, address) => {
 };
 
 export class NativeGlobalFile {
-  constructor(tag = 0) {
+  constructor(tag = 0, growthBytes = 0x10000) {
+    if (![0x10000, 0x80000].includes(growthBytes))
+      throw new Error('Unreviewed global-file growth size');
+    this.growthBytes = growthBytes;
     this.tag = tag >>> 0;
     this.capacity = 0x80000;
     this.records = [];
@@ -42,7 +46,7 @@ export class NativeGlobalFile {
     this.records = [];
   }
   clone() {
-    const copy = new NativeGlobalFile();
+    const copy = new NativeGlobalFile(0, this.growthBytes);
     copy.restore(this.snapshot());
     return copy;
   }
@@ -52,7 +56,7 @@ export class NativeGlobalFile {
     for (const size of [8, bytes.length]) {
       const previousBucket = used >>> 19,
         nextBucket = (used + size) >>> 19;
-      capacity += (nextBucket - previousBucket) * 0x10000;
+      capacity += (nextBucket - previousBucket) * this.growthBytes;
       used += size;
       if (used > capacity)
         throw new Error('Native global-file capacity growth would overflow its buffer');
@@ -95,10 +99,15 @@ export class NativeGlobalFile {
     out.set(this.payload(), 16);
     return out;
   }
-  static fromPayload(bytes, tag = 0, capacity = ((bytes.length >>> 19) + 1) * 0x80000) {
+  static fromPayload(
+    bytes,
+    tag = 0,
+    capacity = ((bytes.length >>> 19) + 1) * 0x80000,
+    growthBytes = 0x10000,
+  ) {
     if (!Number.isInteger(capacity) || capacity < bytes.length || capacity > 256 * 1024 * 1024)
       throw new Error('Invalid native global-file capacity');
-    const file = new NativeGlobalFile(tag),
+    const file = new NativeGlobalFile(tag, growthBytes),
       b = new Binary(bytes, 'global-file records');
     file.capacity = capacity;
     for (let at = 0; at < bytes.length; ) {
@@ -109,9 +118,9 @@ export class NativeGlobalFile {
     }
     return file;
   }
-  static fromRaw(bytes) {
+  static fromRaw(bytes, growthBytes = 0x10000) {
     const b = new Binary(bytes, 'global-file memory record');
-    return NativeGlobalFile.fromPayload(b.range(16, b.u32(8)), b.u32(12), b.u32(4));
+    return NativeGlobalFile.fromPayload(b.range(16, b.u32(8)), b.u32(12), b.u32(4), growthBytes);
   }
   async file() {
     const payload = this.payload();
@@ -127,14 +136,15 @@ export class NativeGlobalFile {
     out.set(compressed, 16);
     return out;
   }
-  static async fromFile(bytes) {
+  static async fromFile(bytes, growthBytes = 0x10000) {
     const b = new Binary(bytes, 'CSS saved file');
     if (b.u32(0) !== 0x00535343 /* CSS file signature  */)
       throw new Error('Invalid CSS saved-file signature');
     const compressed = b.range(16, b.u32(4));
-    if (!b.u32(8)) return NativeGlobalFile.fromPayload(new Uint8Array(), b.u32(12));
+    if (!b.u32(8))
+      return NativeGlobalFile.fromPayload(new Uint8Array(), b.u32(12), undefined, growthBytes);
     const payload = await inflate(compressed, b.u32(8));
-    return NativeGlobalFile.fromPayload(payload, b.u32(12));
+    return NativeGlobalFile.fromPayload(payload, b.u32(12), undefined, growthBytes);
   }
   snapshot() {
     return { tag: this.tag, capacity: this.capacity, records: structuredClone(this.records) };
@@ -231,8 +241,11 @@ export function nativePersistence(id, args, machine, services = {}) {
   const handles = services.handles;
   if (!handles) return undefined;
   const result = (value) => nativeReply(1, value >>> 0);
-  const file = (handle) => handles.get(handle, 'global-file');
-  if (id === 0xee) return result(handles.add('global-file', new NativeGlobalFile(args[0])));
+  const file = (handle) => handles.get(handle, 'global-file'),
+    growth = () =>
+      services.profile ? nativeABIBehavior(services.profile, 'globalFile.growthBytes') : 0x10000;
+  if (id === 0xee)
+    return result(handles.add('global-file', new NativeGlobalFile(args[0], growth())));
   if (id === 0x185) {
     if (args[0]) file(args[0]).clear();
     return result(Number(Boolean(args[0])));
@@ -286,7 +299,7 @@ export function nativePersistence(id, args, machine, services = {}) {
         return result(1);
       }
       try {
-        return result(handles.add('global-file', await NativeGlobalFile.fromFile(bytes)));
+        return result(handles.add('global-file', await NativeGlobalFile.fromFile(bytes, growth())));
       } catch (error) {
         services.diagnostic?.({ resource: name, native: id, error: error.message });
         return result(0);
@@ -314,7 +327,9 @@ export function nativePersistence(id, args, machine, services = {}) {
   }
   if (id === 0xfc) {
     const bytes = container.read(args[1]);
-    return result(bytes === null ? 0 : handles.add('global-file', NativeGlobalFile.fromRaw(bytes)));
+    return result(
+      bytes === null ? 0 : handles.add('global-file', NativeGlobalFile.fromRaw(bytes, growth())),
+    );
   }
   if (id === 0xf3 || id === 0xfd) {
     if (!services.strings) return undefined;
