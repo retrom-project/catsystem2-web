@@ -1680,7 +1680,7 @@ test('67 first-title motion runs own round linear triangle and clear contracts',
   assert.equal(motion.machine.sp, initialSP);
 });
 
-const close67Program = (body, strings = [], dataSize = 16384) => {
+const oldCloseProgram = (body, strings = [], dataSize = 16384) => {
   const program = kcsProgram(body, strings);
   new DataView(program.buffer, program.byteOffset, program.byteLength).setUint32(
     32,
@@ -1689,7 +1689,7 @@ const close67Program = (body, strings = [], dataSize = 16384) => {
   );
   return program;
 };
-async function close67Caller(world, name) {
+async function oldCloseCaller(world, name) {
   const id = await world.objects.create({
       kind: 12,
       parent: world.main.id,
@@ -1700,7 +1700,7 @@ async function close67Caller(world, name) {
   return implementation.task;
 }
 
-test('67 close GCALLs persist real banks and raw database bytes through a cold owner', async (t) => {
+async function verifyClosePersistence(t, profile) {
   t.mock.method(Date, 'now', () => Date.UTC(2026, 10, 17, 3, 4, 5));
   const prefix = [
       ...title67Call(238, [0x81234567], 512),
@@ -1708,7 +1708,7 @@ test('67 close GCALLs persist real banks and raw database bytes through a cold o
       ...title67Call(833, [300], 536),
     ],
     waitPC = (await readKCS(kcsProgram(prefix))).codeSize,
-    program = close67Program(
+    program = oldCloseProgram(
       [
         ...prefix,
         [37, 384],
@@ -1739,7 +1739,7 @@ test('67 close GCALLs persist real banks and raw database bytes through a cold o
     ),
     files = new SaveSlotFiles(),
     owned = { 'close-owned.kcs': program },
-    source = await oldTitleWorld(owned, files);
+    source = await oldTitleWorld(owned, files, profile);
   let fresh,
     restoring = false;
   const warm = { native: 0, step: 0, tick: 0, random: 0 },
@@ -1759,7 +1759,7 @@ test('67 close GCALLs persist real banks and raw database bytes through a cold o
     if (typeof prototype[method] === 'function') observe(prototype, method, counter);
   try {
     await source.world.initialize('empty.kcs');
-    const task = await close67Caller(source.world, 'close-owned.kcs'),
+    const task = await oldCloseCaller(source.world, 'close-owned.kcs'),
       machine = task.machine,
       initialSP = machine.sp,
       database = new NativeDatabase();
@@ -1783,8 +1783,21 @@ test('67 close GCALLs persist real banks and raw database bytes through a cold o
     memory.write(pointer, new Uint8Array(300).fill(0xa5));
     assert.equal(memory.load(pointer - 4), 1);
     assert.equal(memory.allocations.has(pointer - 4), true);
+    if (profile === 'rebellions-jp-engine-2.6.1.63') {
+      const call = (id, args) => source.world.runtime.native('main', id, args, machine, task);
+      machine.store(64, 0xa5a5a5a5);
+      assert.deepEqual(await call(836, [fileHandle, 15, 64]), { control: 1, value: 0 });
+      assert.equal(machine.load(64), 0xa5a5a5a5);
+      const data = await call(836, [fileHandle, 16384, 64]);
+      assert.equal(data.control, 1);
+      assert.equal(machine.load(64), 4);
+      assert.deepEqual([...memory.read(data.value, 4)], [0xfe, 0xca, 0, 0x81]);
+      assert.equal(memory.load(data.value - 4), 1);
+      assert.deepEqual(await call(834, [data.value]), { control: 2 });
+      assert.equal(memory.allocations.has(data.value - 4), false);
+    }
     const state = source.world.snapshot(0);
-    fresh = await oldTitleWorld(owned, files);
+    fresh = await oldTitleWorld(owned, files, profile);
     restoring = true;
     await fresh.world.restore(structuredClone(state));
     restoring = false;
@@ -1850,10 +1863,10 @@ test('67 close GCALLs persist real banks and raw database bytes through a cold o
     await source.world.close();
     await source.audio.dispose();
   }
-});
+}
 
-test('67 close results keep empty text and growth own while refusing an unwritten database result', async () => {
-  const program = close67Program(
+async function verifyCloseBoundaries(profile, emptyStringResult) {
+  const program = oldCloseProgram(
       [
         [37, title67Sentinel],
         ...title67Call(277, [8, 64], 512),
@@ -1865,12 +1878,16 @@ test('67 close results keep empty text and growth own while refusing an unwritte
       [],
       0x82000,
     ),
-    nullProgram = close67Program([...title67Call(872, [0, 0], 64), [59]]),
-    source = await oldTitleWorld({ 'limits.kcs': program, 'null-export.kcs': nullProgram });
+    nullProgram = oldCloseProgram([...title67Call(872, [0, 0], 64), [59]]),
+    source = await oldTitleWorld(
+      { 'limits.kcs': program, 'null-export.kcs': nullProgram },
+      undefined,
+      profile,
+    );
   try {
     const world = source.world;
     await world.initialize('empty.kcs');
-    const task = await close67Caller(world, 'limits.kcs'),
+    const task = await oldCloseCaller(world, 'limits.kcs'),
       machine = task.machine,
       initialSP = machine.sp;
     world.runtime.stringBank(task).set(8, '');
@@ -1878,7 +1895,10 @@ test('67 close results keep empty text and growth own while refusing an unwritte
     machine.bytes(96, 8).fill(0xa5);
     machine.bytes(1024, 0x80001).fill(0x5a);
     await world.runtime.scheduler.execute(task);
-    assert.deepEqual([machine.load(512), machine.load(516), machine.load(524)], [0, 0, 1]);
+    assert.deepEqual(
+      [machine.load(512), machine.load(516), machine.load(524)],
+      [emptyStringResult, 0, 1],
+    );
     assert.deepEqual([...machine.bytes(64, 3)], [0, 0xa5, 0xa5]);
     assert.deepEqual([...machine.bytes(96, 3)], [0, 0xa5, 0xa5]);
     const file = world.runtime.handles.get(machine.load(520), 'global-file');
@@ -1887,20 +1907,26 @@ test('67 close results keep empty text and growth own while refusing an unwritte
     assert.equal(file.read(1).length, 0x80001);
     assert.equal(machine.pop(), title67Sentinel);
     assert.equal(machine.sp, initialSP);
-    const empty = await close67Caller(world, 'null-export.kcs');
+    const empty = await oldCloseCaller(world, 'null-export.kcs');
     empty.machine.store(64, 0xa5a5a5a5);
     const before = world.runtime.handles.snapshot();
     await assert.rejects(() => world.runtime.scheduler.execute(empty), /unwritten|uninitialized/);
     assert.equal(empty.machine.load(64), 0xa5a5a5a5);
     assert.deepEqual(world.runtime.handles.snapshot(), before);
-    assert.equal(
-      nativeABI('rebellions-jp-engine-2.6.1.63').tables.main.entries[238].status,
-      'unknown',
-    );
-    for (const id of [239, 385, 856, 869, 871, 873])
-      assert.equal(nativeABI(title67Profile).tables.main.entries[id].status, 'unknown');
+    for (const id of [239, 385, 856, 871])
+      assert.equal(nativeABI(profile).tables.main.entries[id].status, 'unknown');
+    if (profile === title67Profile)
+      for (const id of [836, 869, 873])
+        assert.equal(nativeABI(profile).tables.main.entries[id].status, 'unknown');
   } finally {
     await source.world.close();
     await source.audio.dispose();
   }
-});
+}
+
+for (const [version, profile] of versions) {
+  test(`${version} close GCALLs persist real banks and raw database bytes through a cold owner`, (t) =>
+    verifyClosePersistence(t, profile));
+  test(`${version} close preserves string results, growth and the NULL database boundary`, () =>
+    verifyCloseBoundaries(profile, version === '2.6.1.63' ? 1 : 0));
+}

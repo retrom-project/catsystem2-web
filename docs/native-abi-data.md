@@ -18,7 +18,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.63 | 938        | 44        | 0             | 0             | 894     | 45 / 44 / 51 unknown       |
+| 2.6.1.63 | 938        | 56        | 0             | 0             | 882     | 45 / 44 / 51 unknown       |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered  |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
@@ -1002,6 +1002,21 @@ its enabled word. A rising edge sets the pending word. The own FES common
 the `frame` and `tag` selectors. The tag uses record 32 and a 32-byte field.
 The owned control reaches timed, frame-relative and no-argument suspensions
 with the attached Script bank and Draw owner active.
+
+## 2.6.1.63 close and persistence
+
+The window-close message selects the Script's persistence callback. Main
+238, 240, 244, 245 and 469 handle CSS creation, variable export, raw VM
+bytes, save and tagged-entry removal. Main 833–836 own reference-prefixed
+host buffers, including a tagged-entry copy with a separate VM byte-count
+output. A missing entry leaves the byte-count word intact. Main 277 returns
+1 for an existing empty string and 0 for a missing entry. Main 870 releases
+the database, and Main 872 returns or copies a record count followed by
+268-byte rows. A NULL database leaves its export result unwritten.
+
+An owned Script waits for the close message, persists its banks and releases
+its typed handles. A fresh World restores the complete saved fixture before
+running its own close and produces the same bytes.
 
 ## 2.6.1.67 first-title entry and normal services
 
