@@ -443,6 +443,28 @@ test('Core cold audio keeps one checkpoint projection and resumes the actual sou
     const live = core.audio.channelState('native:0', core.audio.channels.get('native:0'));
     assert.equal(live.offset, 0.5, 'Real playback must continue on the media clock after restore');
     assert.equal(live.remainingDuration, native.remainingDuration - 0.125);
+    // Seek owns the real source and PCM origin; snapshot sampling must not pin it.
+    await core.audio.seek('native:0', 0.75);
+    const channel = core.audio.channels.get('native:0'),
+      seeked = core.audio.channelState('native:0', channel);
+    assert.equal(channel.source.offset, 0.75);
+    assert.equal(seeked.offset, 0.75);
+    assert.equal(seeked.remainingDuration, 1.25);
+    assert.equal(seeked.pcmState.origin, 0.75);
+    assert.equal(seeked.pcmState.progress, 0);
+    context.advance(0.125);
+    core.audio.pause('native:0');
+    const paused = core.audio.snapshot();
+    assert.equal(paused.channels[0].offset, 0.875);
+    assert.equal(paused.channels[0].remainingDuration, 1.125);
+    context.advance(0.25);
+    assert.deepEqual(core.audio.snapshot(), paused);
+    await core.audio.replay('native:0');
+    assert.equal(core.audio.channels.get('native:0'), channel);
+    context.advance(0.125);
+    const resumed = core.audio.snapshot().channels[0];
+    assert.equal(resumed.offset, 1);
+    assert.equal(resumed.remainingDuration, 1);
   } finally {
     await core?.dispose();
     environment.restore();
