@@ -134,8 +134,8 @@ full tick/step/render clock.
 CATSYSTEM2_TICK_PROFILE=.local/perf/route CATSYSTEM2_FRAME_METRICS=1 npm run test:route -- --grep 'main route reaches'
 ```
 
-The observer delegates each production `Core.step`, `Core.render`, `World.tick`
-and snapshot call once, with the original receiver, returned value or Promise,
+The observer delegates each production `Core.step`, `Core.render`, `World.tick`,
+renderer `present` and snapshot call once, with the original receiver, returned value or Promise,
 and thrown/rejected error. `nativeGameFrame` retains its profiling envelope;
 it awaits CDP start/stop around the existing frame driver without adding frames.
 `window.nativePerformance.attach()` can attach to an already-created ordinary
@@ -151,9 +151,11 @@ separately. The two populations are labeled rather than mixing a lifetime mean
 with a recent p95. An empty population has null durations.
 
 Ordinary snapshots report current World objects/tasks, handle counts by type,
-resident bitmap-data RGBA bytes without counting bitmap aliases twice, graphics,
-audio and movie counts. Unavailable collections are null. RGBA bytes are a lower
-bound and exclude encoded sources, canvases, GPU memory and audio buffers.
+bitmap-data RGBA view lengths, graphics, audio and movie counts. The sum of view
+lengths can overlap when different records share storage. A separate backing-buffer
+count/byte total deduplicates actual referenced buffers and includes their unused
+prefix/trailing bytes. Neither is total heap, canvas, encoded-source, GPU or audio
+memory. Unavailable collections are null.
 Chrome's optional `performance.memory` supplies JS heap used/total/limit when
 available; other browsers report null, never invented zero bytes. Conditions
 record the clock, bounded sample size, frame driver, user agent, device memory
@@ -174,6 +176,100 @@ ticks. Snapshots are bounded to forty entries and raw profiles stay outside Git.
 Observations do not change the case's functional frame bounds or timeout.
 The earlier native particle acceptance used the explicit original owner's
 transitional capacity; it is a separate historical functional result.
+
+### Real RAF scene windows
+
+`CATSYSTEM2_RAF_PROFILE=<ignored-directory>` opts into the same method observer
+and a real RAF sampler without CDP profiling. It is mutually exclusive with
+`CATSYSTEM2_TICK_PROFILE`. The fixture installs both observers in one init script
+before application code. It does not install `frameClock`, replace RAF/cancelRAF,
+advance the guest, or request a render. An already installed or later substituted
+controlled frame driver makes the window ineligible.
+
+An actual scene driver starts a window in the page:
+
+```js
+const measurement = await page.evaluate(() =>
+  window.nativeRAF.start({
+    scene: 'title',
+    durationMS: 5000,
+    criteria: 'actual title WAIT with a visible title button owner',
+    probe() {
+      const engine = window.catSystem2,
+        player = [...engine.nativeFES.values()].find((p) => p.stack.includes('title#WAIT')),
+        button = player?.root.byKey.get('btn1[0]'),
+        shown = Boolean(button?.disp && player.root.placement(button).shown);
+      return {
+        arrived: shown,
+        facts: { rootID: player?.root.runtimeID ?? null, shown },
+      };
+    },
+  }),
+);
+```
+
+The example is a read-only arrival check, not a new way to open a title menu.
+The existing real browser loop and input driver must first reach the requested
+state. Do not call `nativeGameFrame/step` or a controlled test clock to fill a
+performance window. Each synchronous probe must read actual owners/state and
+return bounded numbers/booleans/null or short identifiers, never dialogue,
+resource bytes or script contents. It is checked at arrival and each RAF.
+Frame numbers alone, caller labels and a bare `arrived: true` are not scene proof.
+
+| Scene         | Arrival and continued-state evidence required from its actual driver                                                                                |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| logo          | Actual startup logo/FES owner, its visible placement and current startup state; distinguish language selection or a blank canvas.                   |
+| title         | Actual title WAIT/root and visible title UI owners, as in the example.                                                                              |
+| dialogue      | Actual message-window WAIT, real scene-reader position and a nonempty active text owner; record only IDs/positions/counts, not text.                |
+| m2            | The actual loaded M2 model/controller, visible actor and real pose/draw progress; a kind54 placeholder or task count is insufficient.               |
+| dense-effects | Actual active effect/particle owners and rendered geometry/work counts; state the density criterion before sampling and retain its observed values. |
+
+Before the actual target performance batch, sample a short environment baseline
+in the **same page/browser and renderer configuration**, preferably after navigation
+and before mounting/starting the runtime:
+
+```js
+const baseline = await page.evaluate(() => window.nativeRAF.baseline({ durationMS: 1000 }));
+```
+
+An equivalent already-mounted idle owner is also allowed, but the observer never
+pauses it to manufacture idle time. Any observed step/tick/render/present/snapshot
+call, World frame change, owner/viewport/visibility/RAF change invalidates the
+baseline. Keep its actual callback cadence and conditions separate from scene
+method costs. Before mount, unavailable renderer/context fields stay null and
+are paired with the later actual context information under the same capture
+session; do not invent a GPU identity. This is part of the future actual performance
+batch, not another current smoke, one of the five scenes or60fps evidence.
+
+`owned-control` is reserved for tool smoke tests and is never one of the five
+target measurements. Leaving a scene, hiding the document, changing viewport,
+replacing RAF or changing Core/World/renderer invalidates the window. A callback
+stream without World frame advance and actual render completion is also invalid.
+An invalid window still retains its measurements and reason; it is not zero fps.
+
+The report separates RAF timestamp intervals/callback rate, World frame delta and
+successful step/tick calls, render completions and available renderer.present
+completions. Each interval/method population has its full-window count/mean/max,
+the last at most4096 observations' nearest-rank p95, and the count exceeding the
+exact1000/60ms budget. Sampling bounds are labeled and configurable up to16384;
+no epsilon or estimated missing frame is inserted. Failed method calls remain
+timed and invalidate the window. Present means completion of the existing Canvas
+present call; physical display timestamps remain null. No report field turns
+these observations alone into a60fps pass.
+
+Snapshots at each boundary retain optional real browser JS heap and the bounded
+resource counts/byte scopes above. Capture metadata includes actual OS/CPU and
+physical RAM, Node/browser version, configured launch/headless arguments and
+viewport, observed viewport/device scale/visibility/focus, renderer class and
+available values from the _existing_ WebGL context. No extra GPU context is made.
+GPU/audio/worker/whole-process memory remains unavailable. Default SwiftShader
+headless runs must be identified as such rather than called hardware results.
+
+Each completed scene is written through an exposed evidence sink before page
+teardown; the final file also records any observer/sink errors. If the page closes
+before a window completes, absent scene data stays unavailable and the already
+written windows remain evidence. The sampler's duration timer stops only its own
+observation and never cancels the app loop, changes a case timeout or kills a host.
 
 ### Diagnostic log retention
 
