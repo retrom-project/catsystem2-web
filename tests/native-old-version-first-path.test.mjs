@@ -6,6 +6,8 @@ import { CatSystem2 } from '../src/engine.mjs';
 import { KCSMachine, encodeCP932 } from '../src/kcs.mjs';
 import { NativeWorld } from '../src/native/world.mjs';
 import { NativeMT19937 } from '../src/ppi/random.mjs';
+import { ParticleRandom } from '../src/ppi/random.mjs';
+import { MotionLibrary } from '../src/motion/library.mjs';
 import { nativeABI, abiForEngineVersion } from '../src/native/abi/index.mjs';
 import { NativeRuntime } from '../src/native/runtime.mjs';
 import { NativeGraphics } from '../src/native/graphics.mjs';
@@ -13,7 +15,7 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeSoundPacket } from '../src/native/sound.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 import { nativeStartupCode } from '../src/native/startup-author.mjs';
-import { kif, kcsProgram } from './helpers.mjs';
+import { kif, kcsProgram, memoryGame } from './helpers.mjs';
 import {
   StartupCanvas,
   startupEnvironment,
@@ -670,5 +672,51 @@ test('old sound consumers reject unreviewed crossfade and do not invent elapsed 
     }
   } finally {
     environment.restore();
+  }
+});
+
+test('ordinary Draw enable follows each own pending policy and preserves raw storage', async () => {
+  const profiles = [
+    ['bokutomo-engine-2.6.1.67', [0, 0, 1, 0]],
+    ['sdk-4.01-engine-2.6.1.74', [1, 0, 0x80000005, 0x80000005]],
+    ['nekopara-vol3-engine-2.6.1.76', [1, 0, 0x80000005, 0x80000005]],
+    ['rebellions-jp-engine-2.6.1.63', null],
+  ];
+  for (const [profile, expected] of profiles) {
+    const game = memoryGame({ 'empty.kcs': kcsProgram([[59]]) }),
+      random = new ParticleRandom(),
+      world = new NativeWorld({
+        profile,
+        game,
+        images: {},
+        host: {},
+        configuration: new NativeConfiguration({ profile }),
+        storage: { read: async () => null, write: async () => true },
+        random,
+        motionLibrary: new MotionLibrary(game, { profile, random }),
+      });
+    try {
+      await world.initialize('empty.kcs');
+      const id = await world.objects.create({ kind: 15, parent: world.root }),
+        draw = world.graphics.drawTasks.get(id),
+        send = (value) => world.sendEngine(id, world.main.id, 286, 0, value);
+      assert.equal(draw.state.enabled >>> 0, 1);
+      assert.equal(draw.state.pending >>> 0, 0);
+      if (expected === null) {
+        const before = structuredClone(draw.snapshot());
+        await assert.rejects(send(1), /Unreviewed.*drawEnablePendingPolicy/);
+        assert.deepEqual(draw.snapshot(), before);
+        continue;
+      }
+      const words = [1, 0, 0x80000005, 0x80000005];
+      for (let i = 0; i < words.length; i++) {
+        await send(words[i]);
+        assert.equal(draw.state.pending >>> 0, expected[i]);
+        assert.equal(draw.state.enabled, words[i]);
+      }
+      assert.equal(world.nativeEngine, undefined);
+    } finally {
+      await world.close();
+    }
   }
 });

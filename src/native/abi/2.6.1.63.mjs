@@ -677,6 +677,7 @@ export default {
     controlResources: null,
   },
   graphics: {
+    drawEnablePendingPolicy: null,
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: null,
   },
@@ -906,6 +907,8 @@ export default {
     },
   },
   unreviewed: {
+    'graphics.drawEnablePendingPolicy':
+      'The old .63 Draw enable receiver is not reviewed; reject at actual Draw286 consumption.',
     'text.fesLayouts':
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'text.layoutModes':

@@ -250,6 +250,7 @@ function validateBehavior(abi) {
       ['fes.fileList.keyEncoding', oneOf('cp932', 'utf16le')],
       ['fes.macroLiterals.string', oneOf('raw', 'unescape-quote')],
       ['fes.macroLiterals.character', oneOf('raw', 'wrap-raw')],
+      ['graphics.drawEnablePendingPolicy', oneOf(null, 'value', 'rising-edge')],
       ['graphics.textureCapsPolicy', oneOf(null, 'virtual-d3d9')],
       ['graphics.texturedBoundsQuery', oneOf(null, 'model-and-pages')],
       ['floatingPoint.x87ControlWord', oneOf(0x7f)],

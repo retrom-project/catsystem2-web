@@ -679,6 +679,7 @@ export default {
     controlResources: null,
   },
   graphics: {
+    drawEnablePendingPolicy: 'rising-edge',
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: null,
   },

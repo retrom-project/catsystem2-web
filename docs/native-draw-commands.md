@@ -186,3 +186,17 @@ and owner release, and strict missing responses. Cold restoration may load the
 owned KCS code and probe the explicitly absent M2 configuration; it executes no
 native commands or RNG draws. These short checks do not replace the original
 SDK gallery, music and replay acceptance.
+
+## Per-version Draw enable storage
+
+The ordinary Draw receiver keeps the enabled word as an unsigned DWORD.
+Its pending word follows the reviewed
+`graphics.drawEnablePendingPolicy`: SDK 2.6.1.74 and Game 2.6.1.76 copy
+the supplied word; 2.6.1.67 records 1 only for a transition from zero to
+nonzero, otherwise 0. Construction starts with enabled 1 and pending 0.
+Rendering consumes pending by clearing it to 0; renderer decisions continue
+to use zero or nonzero values.
+
+2.6.1.63 has no reviewed policy and rejects the actual enable request before
+changing Draw state. The policy describes an existing receiver; it does not
+admit Main 262 or any other unknown wrapper for a version.

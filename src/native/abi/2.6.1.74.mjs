@@ -377,6 +377,7 @@ export default {
     },
   },
   graphics: {
+    drawEnablePendingPolicy: 'value',
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: 'model-and-pages',
     resizeRGB24: false,

@@ -3,6 +3,7 @@ import { originalFeature, originalView } from './original-adapter.mjs';
 // Drawing task constructor/message entry: game 5F3C00/5F3F50.
 import { truncateFloat32 } from '../ppi/numeric.mjs';
 import { mapABIMessage } from './abi/messages.mjs';
+import { nativeABIBehavior } from './abi/index.mjs';
 import { bitsFloat, floatBits, nativeReply } from '../kcs.mjs';
 import { affineBitmap, prepareBitmapAffine } from './image-affine.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
@@ -16,8 +17,8 @@ export class NativeDrawTask {
     this.state = {
       renderer: null,
       offset: null,
-      enabled: true,
-      pending: false,
+      enabled: 1,
+      pending: 0,
       baseImage: null,
       baseVisible: false,
       basePlane: 0,
@@ -150,11 +151,17 @@ export class NativeDrawTask {
         );
         return 0;
       }
-      case 286:
-        this.state.pending = Boolean(l);
-        this.state.enabled = Boolean(l);
-        if (l) this.state.dirty = true;
+      case 286: {
+        const policy = nativeABIBehavior(this.world.profile, 'graphics.drawEnablePendingPolicy');
+        if (policy !== 'value' && policy !== 'rising-edge')
+          throw new Error('Unreviewed Draw enable pending policy');
+        const value = l >>> 0;
+        this.state.pending =
+          policy === 'value' ? value : Number(this.state.enabled === 0 && value !== 0);
+        this.state.enabled = value;
+        if (value) this.state.dirty = true;
         return 0;
+      }
       case 288:
         return this.state.renderer?.items.length || 0;
       case 287: {
@@ -569,7 +576,7 @@ export class NativeDrawTask {
       }
     if (!nativeRenderer && enabled && this.state.pending && !areas.length)
       await this.graphics.output(bitmap, offset);
-    this.state.pending = false;
+    this.state.pending = 0;
     renderer.dirty = false;
     renderer.externalPaint = false;
     if (!region) renderer.dirtyRects = [];
