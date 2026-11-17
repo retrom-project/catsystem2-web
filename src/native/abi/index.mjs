@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import engine23 from './2.6.1.23.mjs';
 import engine63 from './2.6.1.63.mjs';
 import engine67 from './2.6.1.67.mjs';
 import engine74 from './2.6.1.74.mjs';
@@ -68,7 +69,7 @@ function freeze(value) {
 
 export const NATIVE_ABIS = freeze(
   Object.fromEntries(
-    [engine74, engine76, engine63, engine67].map((abi) => [abi.profile, resolveABI(abi)]),
+    [engine74, engine76, engine63, engine67, engine23].map((abi) => [abi.profile, resolveABI(abi)]),
   ),
 );
 

@@ -31,5 +31,19 @@ trees, filenames, mute/group state, raw query words and aliased outputs. Pure JS
 World tests check snapshot restore and independent live mutation. The old wrapper
 is preserved in `oracle/configuration-query.mjs`.
 
+## 2.6.1.23 compact configuration
+
+Main 359 copies the 2,856-byte voice, 56-byte message, 28-byte effect and
+12-byte window blocks to its four VM destinations. Main 360 accepts the voice,
+message and effect blocks as its three inputs. The voice block begins its
+32 records at byte 20 with an 88-byte stride. The five raw volume words begin
+at byte 2,836.
+
+The text configuration stores 64 key records at a 28-byte binding stride. The
+system voice table stores 32 rows in 2,176 bytes. Main 582 reads the row's play
+word, Main 583 selects among eligible rows with the existing RNG and Main 584
+writes the mapped play word. The configuration tests exercise the final row,
+the first out-of-range index and the neighboring block boundaries through KCS.
+
 Run `node --test tests/native-configuration-query.test.mjs` and, with private images,
 `node --test tests/differential/native-configuration-query.test.mjs`.

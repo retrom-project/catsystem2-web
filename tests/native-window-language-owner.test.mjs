@@ -3,7 +3,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativeWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NATIVE_ABIS, nativeABI, validateABI } from '../src/native/abi/index.mjs';
+import {
+  NATIVE_ABIS,
+  nativeABI,
+  nativeABIBehavior,
+  validateABI,
+} from '../src/native/abi/index.mjs';
 import { NativeInputBindings } from '../src/native/input-bindings.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
@@ -364,6 +369,14 @@ test('registered base101 shortcuts route all four commands through normal World 
     const missing = structuredClone(abi);
     delete missing.capabilities.windowBaseAccelerators;
     assert.throws(() => validateABI(missing), /Invalid ABI behavior data/);
+    if (Object.hasOwn(abi.unreviewed ?? {}, 'capabilities.windowBaseAccelerators')) {
+      assert.equal(abi.capabilities.windowBaseAccelerators, null);
+      assert.throws(
+        () => nativeABIBehavior(abi.profile, 'capabilities.windowBaseAccelerators'),
+        /Unreviewed ABI behavior/,
+      );
+      continue;
+    }
     for (const value of [null, 0, 'true']) {
       const invalid = structuredClone(abi);
       invalid.capabilities.windowBaseAccelerators = value;

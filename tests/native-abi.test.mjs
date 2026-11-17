@@ -12,7 +12,7 @@ import { nativeCatalog } from '../src/native/catalog.mjs';
 test('per-version ABI data covers every slot and preserves unresolved facts', () => {
   assert.deepEqual(
     Object.values(NATIVE_ABIS).map((abi) => abi.engineVersion),
-    ['2.6.1.74', '2.6.1.76', '2.6.1.63', '2.6.1.67'],
+    ['2.6.1.74', '2.6.1.76', '2.6.1.63', '2.6.1.67', '2.6.1.23'],
   );
   let slots = 0;
   for (const abi of Object.values(NATIVE_ABIS)) {
@@ -24,7 +24,7 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
       assert.ok(definition.entries.every((entry, id) => entry.id === id));
     }
   }
-  assert.equal(slots, 4500);
+  assert.equal(slots, 5509);
   assert.equal(
     ['2.6.1.74', '2.6.1.76']
       .flatMap((version) => Object.values(abiForEngineVersion(version).tables))
@@ -39,6 +39,16 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     assert.equal(abi.tables.main.entries[0x358].signature.argumentWords, 7);
     assert.equal(abi.tables.main.entries[0x358].status, 'unknown');
   }
+  const base = abiForEngineVersion('2.6.1.23').tables;
+  assert.deepEqual(
+    Object.values(base).map(({ count }) => count),
+    [869, 45, 44, 51],
+  );
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 50);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 819);
+  for (const table of [base.generic, base['particle-v1'], base['particle-v2']])
+    assert.ok(table.entries.every(({ status }) => status === 'unknown'));
+  for (const id of [287, 288, 629]) assert.equal(base.main.entries[id].status, 'unknown');
   const unknown = nativeABI('sdk-4.01-engine-2.6.1.74').tables.main.entries[0x52];
   assert.equal(unknown.name, null);
   assert.equal(unknown.signature.parameters, null);

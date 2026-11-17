@@ -8,7 +8,8 @@ These are the union of the registered engines' recovered declarations, not a
 list of functions enabled in every engine. Project descriptive names do not
 claim to recover the compiler's original symbols.
 
-The engine modules [2.6.1.63.mjs](../src/native/abi/2.6.1.63.mjs),
+The engine modules [2.6.1.23.mjs](../src/native/abi/2.6.1.23.mjs),
+[2.6.1.63.mjs](../src/native/abi/2.6.1.63.mjs),
 [2.6.1.67.mjs](../src/native/abi/2.6.1.67.mjs),
 [2.6.1.74.mjs](../src/native/abi/2.6.1.74.mjs) and
 [2.6.1.76.mjs](../src/native/abi/2.6.1.76.mjs) explicitly register their own slots,
@@ -18,17 +19,34 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2             |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------------------- |
+| 2.6.1.23 | 869        | 50        | 0             | 0             | 819     | 45 / 44 / 51 unknown                   |
 | 2.6.1.63 | 938        | 61        | 0             | 0             | 877     | 3 generic and 15 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered              |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                           |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                           |
 
-All 4,500 registered slots remain represented, including the unchanged 2,344
-SDK74/Game76 slots. The older registrations retain unknown auxiliary slots and
+The registry represents 5,509 slots, including 2,344 SDK74/Game76 slots.
+The older registrations retain unknown auxiliary slots and
 unadmitted stub observations; their zero reserved/constant columns describe
 admission, not absence of native stubs. SDK74/Game76 auxiliary generic entries
 retain `recovered` and particle entries retain `declared`. Neither status
 establishes that a native body is implemented.
+
+## 2.6.1.23 startup and title
+
+The Grisaia base profile selects the exact loose `config/startup.xml` and
+checks its executable resources after applying preferences. Startup then
+initializes Sound and textures, publishes the raw window title and starts
+the Root Script. The native Root protocol starts at message 29. Its Input and
+Sound queries are 31 and 32, with the Sound reset routed to message 181.
+
+Its title draws through the caller-owned Input, Plane, Draw and FES tasks.
+Sound load messages carry the selected bank or group in W and the filename in
+L. The grouped stream uses the low word for the group ID and the high word to
+skip the loop-point lookup. Ranges are clamped to the 32 banks and exclude the
+upper limit. A full range can reuse the first bank pending release. The
+configuration layout and bounded voice operations are documented with the
+[configuration queries](native-configuration-queries.md#26123-compact-configuration).
 
 ## Registration data
 
