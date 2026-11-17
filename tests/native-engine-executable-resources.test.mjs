@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import test from 'node:test';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 
 for (const [profile, variable, resourceImport, copyLength] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 'FindResourceA', 10],

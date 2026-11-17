@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { CatSystem2 } from '../src/engine.mjs';
 import { CHECKPOINT_LIMIT } from '../src/checkpoint.mjs';
 import { transitionalExe } from '../web/transitional-entry.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
 
 test('mixed snapshots budget guest state separately from the JS-owned graph', async () => {
   // Size accounting reads byteLength. The large zero buffer stays untouched.

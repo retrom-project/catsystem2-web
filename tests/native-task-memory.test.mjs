@@ -2,12 +2,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeTaskMemory } from '../src/native/task-memory.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NativeTaskMemory } from '../oracle/task-memory.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { KCSMachine } from '../src/kcs/vm.mjs';
 import { KCSScheduler } from '../src/kcs/scheduler.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 import { NativeEngineMessages } from '../src/native/engine-message.mjs';
 
 for (const [profile, variable, construct, receive, destroy] of [

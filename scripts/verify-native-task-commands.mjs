@@ -3,9 +3,9 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { nativeTaskCommand, NATIVE_TASK_COMMAND_IDS } from '../src/native/task-command.mjs';
 import { nativeDraw } from '../src/native/draw-task.mjs';
 import { KCSMachine, encodeCP932 } from '../src/kcs.mjs';

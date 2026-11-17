@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { RetainedAnimation } from '../../src/native/retained-animation.mjs';
 import { ParticleRandom } from '../../src/ppi/random.mjs';
-import { NativeRandomMemory } from '../../src/native/random-memory.mjs';
+import { NativeRandomMemory } from '../../oracle/random-memory.mjs';
 import { engineFixtureSet } from '../fixtures/oracle-fixtures.mjs';
 import { renderSourceFixture } from '../fixtures/render-sources-fixture.mjs';
 

@@ -2,7 +2,7 @@
 import { floatBits } from '../src/kcs.mjs';
 import { identity } from '../src/motion/matrix.mjs';
 import { readPTCLQuad, writePTCLQuad } from '../src/ppi/abi.mjs';
-import { nearestX87Precision } from '../src/ppi/floating-point.mjs';
+import { nearestX87Precision } from './ppi-floating-point.mjs';
 import { particleDepthOrder } from '../src/ppi/geometry.mjs';
 import { projectNativeParticle } from '../src/ppi/native-projection-math.mjs';
 import { nativeParticleNear } from '../src/ppi/numeric.mjs';

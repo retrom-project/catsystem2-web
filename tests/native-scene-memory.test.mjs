@@ -2,10 +2,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame, translation } from './helpers.mjs';

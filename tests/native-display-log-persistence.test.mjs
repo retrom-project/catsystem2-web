@@ -2,10 +2,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeGlobalStringsBridge } from '../src/native/global-strings-bridge.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NativeGlobalStringsBridge } from '../oracle/global-strings-bridge.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';

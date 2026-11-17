@@ -5,8 +5,8 @@ import { dirname, resolve } from 'node:path';
 import test from 'node:test';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { loadNativeGameStartupLanguage } from '../src/native/engine-language.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { loadNativeGameStartupLanguage } from '../oracle/engine-language.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 
 function lookupGameLabel(engine, value) {

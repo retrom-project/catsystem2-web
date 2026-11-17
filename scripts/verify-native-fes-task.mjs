@@ -3,9 +3,9 @@
 // address conversion are supplied by this authored boundary probe.
 import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { nativeFES, NATIVE_FES_IDS } from '../src/native/fes.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';

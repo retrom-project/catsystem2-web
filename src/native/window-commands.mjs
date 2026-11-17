@@ -1,11 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeReply } from '../kcs/vm.mjs';
 
-export const NATIVE_WINDOW_COMMAND_CALLBACKS = Object.freeze({
-  'sdk-4.01-engine-2.6.1.74': 0x442a30,
-  'nekopara-vol3-engine-2.6.1.76': 0x531670,
-});
-
 export const isNativeWindowCommandMessage = (message) => message >= 0x469 && message <= 0x46c;
 
 const scriptMessages = new Map([

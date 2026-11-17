@@ -2,15 +2,15 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import {
   NativeScreenCapture as OriginalScreenCapture,
   NATIVE_SCREEN_CAPTURE_LAYOUTS,
   NATIVE_SCREEN_CAPTURE_CONTRACTS,
 } from '../oracle/screen-capture-original.mjs';
 import { NativeScreenCapture } from '../src/native/screen-capture.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { KCSMachine, readKCS, formatNativeAt, encodeCP932 } from '../src/kcs.mjs';
 import { kcsProgram } from '../tests/helpers.mjs';
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
-import { NativeEngineFiles } from '../../src/native/engine-files.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
+import { NativeEngineFiles } from '../../oracle/engine-files.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
 import { NativeSceneCheckpoints } from '../../oracle/scene-checkpoint.mjs';
 import { NativeConfiguration } from '../../src/native/config.mjs';
@@ -8,8 +8,8 @@ import { NativeSceneHistory } from '../../src/native/scene-data.mjs';
 import { NativeVariableBank } from '../../src/native/bank.mjs';
 import { NativeStringBank } from '../../src/native/string-bank.mjs';
 import { importStringBank } from '../../src/native/persistence.mjs';
-import { NativeKCSMemory } from '../../src/native/kcs-memory.mjs';
-import { NATIVE_EXE_PROFILES } from '../../src/native/catalog.mjs';
+import { NativeKCSMemory } from '../../oracle/kcs-memory.mjs';
+import { NATIVE_EXE_PROFILES } from '../../oracle/executable-catalog.mjs';
 import { Binary } from '../../src/binary.mjs';
 import { KCSMachine } from '../../src/kcs.mjs';
 

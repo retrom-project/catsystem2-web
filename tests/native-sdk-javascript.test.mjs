@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 
 test(
   'the original SDK initializes and restores its V8 platform and ArrayBuffer allocator',

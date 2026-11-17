@@ -6,8 +6,8 @@ import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { Binary } from '../src/binary.mjs';
 import { KCSMachine } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 
 const [filename, output] = process.argv.slice(2);
 if (!output)

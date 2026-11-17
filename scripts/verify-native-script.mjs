@@ -5,12 +5,12 @@
 import assert from 'node:assert/strict';
 import { writeFile } from 'node:fs/promises';
 import { nodeGame } from './node-files.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { memoryGame, kcsProgram } from '../tests/helpers.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';

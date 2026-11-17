@@ -5,7 +5,7 @@ import { NativeGraphicsDevice } from '../src/native/graphics-device.mjs';
 import { ParticlesGL } from '../src/render/particles-gl.mjs';
 import { StageRenderer } from '../src/render/stage.mjs';
 import { NativeScreenEffectRenderer } from '../src/native/screen-effect-render.mjs';
-import { EmoteD3D9 } from '../src/emote/native-d3d.mjs';
+import { EmoteD3D9 } from '../oracle/m2-native-d3d.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import {
   setup as gpuFixture,

@@ -3,8 +3,8 @@
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { nativeReply } from '../src/kcs/vm.mjs';
 import { formatNativeAt } from '../src/kcs.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_STARTUP_BLOCKS } from '../src/native/engine-startup-block.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 
 export const NATIVE_SCREEN_CAPTURE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x71, words: 0, control: 1, handlers: [0x64b690, 0x518290] }),

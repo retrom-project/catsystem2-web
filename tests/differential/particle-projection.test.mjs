@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { engineFixtureSet } from '../fixtures/oracle-fixtures.mjs';
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
 import { NativeParticleProjection as OriginalProjection } from '../../oracle/particle-projection-original.mjs';
 import { NativeParticleProjection } from '../../src/native/particle-projection.mjs';
 import { nativeParticleBounds } from '../../src/native/particle-bounds.mjs';

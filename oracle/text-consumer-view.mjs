@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Explicit remaining Windows/GDI consumer view. World owns JS text writers;
 // this view owns only the already-mounted engine's Windows handle checkpoint.
-import { NativeTextWindows } from '../src/native/text-windows.mjs';
+import { NativeTextWindows } from './text-windows.mjs';
 
 export class NativeTextConsumerView {
   constructor(engine, core) {
@@ -15,7 +15,17 @@ export class NativeTextConsumerView {
     });
     // Only this explicit legacy boundary supplies process-backed byte inputs.
     // Ordinary text creation and drawing never request or attach the engine.
-    core.process = engine.process;
+    core.originalStringBytes = this.stringBytes = (address) => engine.process.stringBytes(address);
+    core.originalInput = this.inputBytes = async (bytes, fn) => {
+      const p = engine.process,
+        at = p.allocate(bytes.length, true);
+      try {
+        p.write(at, bytes);
+        return await fn(at);
+      } finally {
+        p.free(at);
+      }
+    };
     for (const [name, definition] of this.windows.definitions)
       engine.registerWindows(
         /^(?:SetRect|CopyRect|IsRect|EqualRect|IntersectRect|UnionRect|OffsetRect|InflateRect|GetDC|ReleaseDC|FillRect)/.test(
@@ -50,6 +60,7 @@ export class NativeTextConsumerView {
     this.windows.restore(state.windows);
   }
   close() {
-    if (this.core.process === this.engine.process) this.core.process = undefined;
+    if (this.core.originalStringBytes === this.stringBytes) delete this.core.originalStringBytes;
+    if (this.core.originalInput === this.inputBytes) delete this.core.originalInput;
   }
 }

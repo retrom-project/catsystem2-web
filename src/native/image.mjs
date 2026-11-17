@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalView } from './original-adapter.mjs';
 // Native bitmap fields and CPU operations: 68BE00, 68C760, 68D450, 68D9E0.
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
 import { NativeBitmapFactories } from './bitmap-factory.mjs';
@@ -317,8 +318,8 @@ export class NativeBitmap {
       this.state.bpp !== 4 &&
       !(
         this.state.bpp === 3 &&
-        nativeABI(this.registry.world.profile ?? this.registry.world.nativeEngine.profile).graphics
-          .resizeRGB24
+        nativeABI(this.registry.world.profile ?? originalView(this.registry.world, 'profile'))
+          .graphics.resizeRGB24
       )
     )
       return;
@@ -510,7 +511,7 @@ export class NativeImages {
     });
   }
   get nativeMemory() {
-    return this.world.nativeEngine?.features.get('bitmap-memory');
+    return originalView(this.world, 'bitmapMemory');
   }
   get(handle) {
     return this.handles.get(handle, 'bitmap');
@@ -549,69 +550,7 @@ export class NativeImages {
       }),
     );
   }
-  async importNative(wrapper, owner = null, { rowOrder } = {}) {
-    if (!['top-down', 'bottom-up'].includes(rowOrder))
-      throw new Error('Native bitmap import requires its pixel row order');
-    const buffers = await this.world.getNativeFeature('data-buffers'),
-      p = buffers.process,
-      pointer = p.load(wrapper),
-      width = p.load(pointer + 4),
-      height = p.load(pointer + 8),
-      data = p.load(pointer + 12),
-      stride = p.load(pointer + 20),
-      bpp = p.load(pointer + 24);
-    size(width, height, true);
-    if (![3, 4].includes(bpp) || stride < width * bpp)
-      throw new Error(
-        `Native decoded bitmap layout is unavailable: ${width}x${height}/${bpp}/${stride}`,
-      );
-    const rgba = new Uint8ClampedArray(width * height * 4);
-    for (let y = 0; y < height; y++) {
-      const row = p.read(
-        data + (rowOrder === 'bottom-up' ? height - y - 1 : y) * stride,
-        width * bpp,
-      );
-      for (let x = 0; x < width; x++) {
-        const at = (y * width + x) * 4,
-          src = x * bpp;
-        rgba[at] = row[src + 2];
-        rgba[at + 1] = row[src + 1];
-        rgba[at + 2] = row[src];
-        rgba[at + 3] = bpp === 4 ? row[src + 3] : 255;
-      }
-    }
-    const handle = this.add(
-      new NativeBitmap(this, {
-        width,
-        height,
-        bpp: 4,
-        rgba,
-        canvasWidth: p.load(pointer + 28),
-        canvasHeight: p.load(pointer + 32),
-        offsetX: p.load(pointer + 36) | 0,
-        offsetY: p.load(pointer + 40) | 0,
-        baseX: p.load(pointer + 48) | 0,
-        baseY: p.load(pointer + 52) | 0,
-        clip: Array.from({ length: 4 }, (_, i) => p.load(pointer + 56 + i * 4) | 0),
-        source: null,
-        attributes: [],
-        owner,
-      }),
-    );
-    try {
-      const memory =
-        this.nativeMemory ||
-        (this.world.nativeFeatureFactories?.has('bitmap-memory')
-          ? await this.world.getNativeFeature('bitmap-memory')
-          : null);
-      if (memory) await memory.adopt(handle, pointer);
-      await buffers.releaseBitmapPointer(wrapper);
-    } catch (error) {
-      await this.release(handle);
-      throw error;
-    }
-    return handle;
-  }
+
   snapshotAssets() {
     return [...this.assets].map(([key, state]) => [
       key,
@@ -707,7 +646,7 @@ export class NativeImages {
   }
   async release(handle, options) {
     const bitmap = this.handles.release(handle, 'bitmap');
-    this.world.nativeEngine?.features.get('graphics-platform')?.forgetImageHandle(handle);
+    originalView(this.world, 'forgetImage', handle);
     if (
       ![...this.handles.records.values()].some(
         (record) => record.type === 'bitmap' && record.value.dataHandle === bitmap.dataHandle,
@@ -720,7 +659,7 @@ export class NativeImages {
   async releaseOwner(owner) {
     for (const [handle, resource] of this.handles.records)
       if (resource.type === 'bitmap' && resource.value.owner === owner) await this.release(handle);
-    await this.world.nativeEngine?.features.get('bitmap-factories')?.disposeContext?.(owner);
+    await originalView(this.world, 'disposeBitmapContext', owner);
   }
 }
 

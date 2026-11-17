@@ -3,9 +3,13 @@ import { readFile } from 'node:fs/promises';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Linter } from 'eslint';
-import { transitionalRuntimeFiles } from './transitional-runtime.mjs';
 
-export async function nativeEntryGraph(root, entry = 'src/engine.mjs', importCache = new Map()) {
+export async function nativeEntryGraph(
+  root,
+  entry = 'src/engine.mjs',
+  importCache = new Map(),
+  { strict = false } = {},
+) {
   const visited = new Set();
   async function visit(file) {
     if (visited.has(file)) return;
@@ -45,7 +49,7 @@ export async function nativeEntryGraph(root, entry = 'src/engine.mjs', importCac
                             : object.property.name;
                           if (property !== 'env') return;
                           const name = node.computed ? node.property.value : node.property.name;
-                          if (typeof name !== 'string' || name.startsWith('CATSYSTEM2_'))
+                          if (typeof name !== 'string' || /^(?:CATSYSTEM2_|CAT2_)/i.test(name))
                             facts.privateFixtureReads = true;
                         },
                       };
@@ -62,25 +66,43 @@ export async function nativeEntryGraph(root, entry = 'src/engine.mjs', importCac
       if (messages.length) throw new Error(`${file}: ${messages[0].message}`);
       importCache.set(file, facts);
     }
-    for (const target of facts.imports.filter((target) => target.startsWith('.')))
-      await visit(relative(root, resolve(root, dirname(file), target)));
+    if (strict && facts.privateFixtureReads)
+      throw new Error('Product source reads private fixture environment: ' + file);
+    for (const target of facts.imports) {
+      if (!target.startsWith('.')) {
+        if (strict)
+          throw new Error('Product source imports an external capability: ' + file + ': ' + target);
+        continue;
+      }
+      const dependency = relative(root, resolve(root, dirname(file), target));
+      if (dependency.startsWith('..'))
+        throw new Error('Product import leaves its source root: ' + file);
+      await visit(dependency);
+    }
   }
   await visit(entry);
   return [...visited].sort();
 }
 
-export async function checkNativeEntry(root) {
-  const graph = await nativeEntryGraph(root);
-  const forbidden = graph.filter(
-    (file) => file.startsWith('oracle/') || file.endsWith('/engine-process.mjs'),
+export function isOriginalExecutionPath(file) {
+  return (
+    file.startsWith('oracle/') ||
+    file === 'web/transitional-entry.mjs' ||
+    /(?:^|\/)(?:engine-process|backend|backend-artifact|pe32|floating-point|native-services)\.mjs$/.test(
+      file,
+    )
   );
+}
+
+export async function checkNativeEntry(root) {
+  const cache = new Map(),
+    graph = await nativeEntryGraph(root, 'src/engine.mjs', cache, { strict: true }),
+    app = await nativeEntryGraph(root, 'web/app.mjs', cache, { strict: true }),
+    forbidden = [...new Set([...graph, ...app])].filter(isOriginalExecutionPath);
   if (forbidden.length)
-    throw new Error(`Pure entry reaches the EXE backend\n${forbidden.join('\n')}`);
-  const includes = new Set(await transitionalRuntimeFiles(root));
-  const mixed = await nativeEntryGraph(root, 'web/app.mjs');
-  const unlisted = mixed.filter((file) => !file.startsWith('src/') && !includes.has(file));
-  if (unlisted.length)
-    throw new Error(`Uncounted shipped transitional dependency\n${unlisted.join('\n')}`);
+    throw new Error(`Ordinary product entry reaches original execution\n${forbidden.join('\n')}`);
+  if (!app.includes('src/engine.mjs'))
+    throw new Error('The actual application does not consume the ordinary Core');
   return graph;
 }
 

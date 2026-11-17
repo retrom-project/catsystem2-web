@@ -4,7 +4,7 @@
 // the allocation list are the mounted engine's original instructions.
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 
 const profiles = [
   {

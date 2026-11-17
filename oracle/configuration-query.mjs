@@ -4,7 +4,7 @@
 import { nativeABI, NATIVE_ABIS } from '../src/native/abi/index.mjs';
 import { nativeReply } from '../src/kcs/vm.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 import { syncNativeStartupSoundConfiguration } from '../src/native/engine-startup-sound.mjs';
 
 export const NATIVE_CONFIGURATION_QUERY_CONTRACTS = Object.freeze(

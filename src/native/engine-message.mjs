@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalOperation, originalView } from './original-adapter.mjs';
 import { nativeABI } from './abi/index.mjs';
 // Task packet routing: game 5DD130..5DEC70; SDK 4B9360..4BB030.
 import { encodeCP932 } from '../kcs/strings.mjs';
@@ -9,41 +10,7 @@ export function nativeEngineWord(value, label = 'Native engine query') {
     throw new Error(`${label} has no initialized 32-bit output word`);
   return value >>> 0;
 }
-const SDK = 'sdk-4.01-engine-2.6.1.74',
-  GAME = 'nekopara-vol3-engine-2.6.1.76',
-  RELEASED_BRANCH = 'released native task branch';
-export const NATIVE_ENGINE_MESSAGE_LAYOUTS = Object.freeze({
-  [SDK]: Object.freeze({
-    base: 0x4b9360,
-    route: 0x4b96e0,
-    packet: 0x4b9610,
-    send: 0x4b9aa0,
-    up: 0x4b9b80,
-    topUp: 0x4bb030,
-    root: 0x4baba0,
-    rootCtor: 0x4b9d50,
-    baseCtor: 0x4b8cd0,
-    rootStart: nativeABI('sdk-4.01-engine-2.6.1.74').messages.root.start,
-    captionWide: nativeABI('sdk-4.01-engine-2.6.1.74').messages.root.captionWide,
-    rootField: nativeABI('sdk-4.01-engine-2.6.1.74').messages.root.field,
-    soundReset: nativeABI('sdk-4.01-engine-2.6.1.74').messages.root.soundReset,
-  }),
-  [GAME]: Object.freeze({
-    base: 0x5dd130,
-    route: 0x5dd4a0,
-    packet: 0x5dd3e0,
-    send: 0x5dd860,
-    up: 0x5dd940,
-    topUp: 0x5dec70,
-    root: 0x5deac0,
-    rootCtor: 0x5ddaf0,
-    baseCtor: 0x5dcab0,
-    rootStart: nativeABI('nekopara-vol3-engine-2.6.1.76').messages.root.start,
-    captionWide: nativeABI('nekopara-vol3-engine-2.6.1.76').messages.root.captionWide,
-    rootField: nativeABI('nekopara-vol3-engine-2.6.1.76').messages.root.field,
-    soundReset: nativeABI('nekopara-vol3-engine-2.6.1.76').messages.root.soundReset,
-  }),
-});
+const RELEASED_BRANCH = 'released native task branch';
 const idOf = (record) => nativeEngineWord(record.nativeID ?? record.id, 'Native task identity');
 export const nativeTaskKeyOrder = (left, right) => (left | 0) - (right | 0);
 const bytesAt = (memory, address, count) => {
@@ -156,8 +123,8 @@ export class NativeEngineMessages {
     const record = this.records.get(id);
     if (!record) throw new Error('Native query caller is absent');
     if (record.queryCallerAddress) return record.queryCallerAddress;
-    const projection = this.world.nativeEngine?.features.get('task-memory')?.refs.entries.get(id);
-    if (projection) return projection.pointer;
+    const projectedAddress = originalView(this.world, 'callerAddress', id);
+    if (projectedAddress !== undefined) return projectedAddress;
     const memory = this.world.runtime.imageDataBuffers.process;
     record.queryCallerAddress = memory.allocate(4);
     memory.store(record.queryCallerAddress, record.queryCallerAddress);
@@ -263,7 +230,7 @@ export class NativeEngineMessages {
     if (!reference.length) return new Uint8Array();
     const memory =
       reference.kind === 'engine'
-        ? this.world.nativeEngine?.process
+        ? originalView(this.world, 'sharedMemory')
         : reference.kind === 'vm' || reference.kind === 'vm-block'
           ? (this.world.runtime?.scheduler.tasks.get(reference.taskID)?.machine ??
             this.world.objects.machine?.(reference.taskID))
@@ -350,15 +317,8 @@ export class NativeEngineMessages {
     const vm = this.world.objects.machine?.(sender);
     const data = length ? bytesAt(memory, address, length) : new Uint8Array();
     let reference =
-      context.nativePointer && this.world.nativeEngine
-        ? { kind: 'engine', address, length }
-        : !length
-          ? null
-          : memory === this.world.nativeEngine?.process
-            ? { kind: 'engine', address, length }
-            : memory === vm
-              ? { kind: 'vm', taskID: sender, address, length }
-              : null;
+      originalView(this.world, 'sharedReference', context.nativePointer, memory, address, length) ??
+      (!length ? null : memory === vm ? { kind: 'vm', taskID: sender, address, length } : null);
     let storage = data;
     if (reference?.kind === 'vm') {
       const normalized = this.normalizeSharedVM(sender, address, length);
@@ -405,7 +365,7 @@ export class NativeEngineMessages {
             child.parent = record.id;
             record.nativeTaskRoutes.set(w, child.id);
             try {
-              await protocol.world.nativeEngine?.features.get('task-memory')?.sync(child);
+              await originalView(protocol.world, 'syncTask', child);
               await child.implementation.parentAssigned?.(record.id);
             } catch (error) {
               child.parent = previousParent;
@@ -668,18 +628,16 @@ export class NativeEngineMessages {
       // The PE reply starts with the allocated pointer, even if routing
       // cannot find the parent. It must survive an ID lookup miss.
       const out = context.nativePointer && context.nativeResult,
-        p = out && this.world.nativeEngine.process;
-      if (p) {
-        const tasks = await this.world.getNativeFeature('task-memory');
-        p.store(out, await tasks.pointer(id));
-      }
+        originalOutput = out
+          ? await originalOperation(this.world, 'registerTaskOutput', out, id)
+          : null;
       const control = await this.route(top, packet, context, output);
       if (output.value === NATIVE_UNWRITTEN_WORD) {
         output.value = nativeID;
         context.nativeCreatedTask = id;
       } else {
         if (output.value !== 0) throw new Error('Unexpected native task registration result');
-        if (p) p.store(out, 0);
+        if (originalOutput) originalOutput(0);
         context.nativeCreatedTask = null;
       }
       return control;

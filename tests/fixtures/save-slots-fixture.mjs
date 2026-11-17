@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Authored, deterministic virtual files and FES host boundaries for save tests.
 import { SaveSlotFiles } from './save-slot-files.mjs';
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
 import { NativeFESObjectRuntime } from '../../oracle/fes-objects-original.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';

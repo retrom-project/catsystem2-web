@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original matrix inversion/copy and in-place four-component vector wrappers.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 
 export const NATIVE_GEOMETRY_CONTRACTS = Object.freeze(
   [

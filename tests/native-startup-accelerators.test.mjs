@@ -4,12 +4,12 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { transitionalExe } from '../web/transitional-entry.mjs';
-import { initializeNativeAccelerators } from '../src/native/engine-startup-accelerators.mjs';
-import { NATIVE_STARTUP_BLOCKS } from '../src/native/engine-startup-block.mjs';
+import { initializeNativeAccelerators } from '../oracle/engine-startup-accelerators.mjs';
+import { NATIVE_STARTUP_BLOCKS } from '../oracle/engine-startup-block.mjs';
 import {
   initializeNativeWindowOwner,
   releaseNativeWindowOwner,
-} from '../src/native/engine-startup-window.mjs';
+} from '../oracle/engine-startup-window.mjs';
 
 const base = [
   [0x13, 112, 40021],

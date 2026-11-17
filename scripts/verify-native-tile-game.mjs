@@ -4,10 +4,10 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { KCSMachine, readKCS } from '../src/kcs.mjs';
 import { NativeTileGame, nativeTileGameCodec } from '../src/native/tile-game.mjs';
 import { NATIVE_TILE_GAME_ABI, NATIVE_TILE_GAME_LAYOUTS } from '../oracle/tile-game.mjs';

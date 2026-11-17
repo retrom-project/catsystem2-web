@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 
 test('a separate PE32 thread resumes its original import frame in a fresh process', async () => {
   const unicorn = await loadUnicorn(),

@@ -2,8 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
 import { NativeEmoteBlocks } from '../oracle/m2-driver-blocks-original.mjs';
 import { NativeEmoteMeshBlocks } from '../oracle/m2-driver-mesh-original.mjs';

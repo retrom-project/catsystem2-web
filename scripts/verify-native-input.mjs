@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeInput, nativeInput, nativeInputBitmapMask } from '../src/native/input.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';

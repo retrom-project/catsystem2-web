@@ -3,11 +3,9 @@
 import { nativeABI } from './abi/index.mjs';
 import {
   isNativeWindowCommandMessage,
-  NATIVE_WINDOW_COMMAND_CALLBACKS,
   nativeWindowLanguageCommand,
   nativeWindowMessageCommand,
 } from './window-commands.mjs';
-import { NATIVE_STARTUP_BLOCKS } from './engine-startup-block.mjs';
 import { browserVirtualKey } from './input-bindings.mjs';
 import { virtualKeyCharacter } from './windows-keyboard.mjs';
 import {
@@ -42,24 +40,9 @@ export class NativeWindow {
     // One browser game view is the application's virtual Win32 window.
     return 1;
   }
-  get opened() {
-    return this.world.nativeEngine?.kernel?.windowViews.windows.has(this.handle) ?? false;
-  }
+
   post(message, wParam = 0, lParam = 0, keyboard) {
     if (this.world.closed || this.world.disposalRequested) return;
-    if (this.opened) {
-      if (
-        !this.world.nativeEngine.kernel.messageQueue.post(
-          this.handle,
-          message,
-          wParam,
-          lParam,
-          keyboard,
-        )
-      )
-        throw new Error(`Could not post native window message ${message}`);
-      return;
-    }
     this.world.windowMessages.push({
       message: message >>> 0,
       wParam: wParam >>> 0,
@@ -68,8 +51,7 @@ export class NativeWindow {
     });
   }
   handlesBrowserMessage(message, wParam) {
-    if (isNativeWindowCommandMessage(message))
-      return !this.world.nativeEngine?.refs.applicationWindowHook;
+    if (isNativeWindowCommandMessage(message)) return true;
     if (message === 0x111) {
       const command = wParam & 0xffff;
       return (
@@ -117,7 +99,7 @@ export class NativeWindow {
     return rows;
   }
   keyboardCommand({ message, wParam, lParam, keyboard }) {
-    if (!keyboard || this.opened) return null;
+    if (!keyboard) return null;
     const rows = this.acceleratorRows,
       command = matchNativeAcceleratorRows(rows, message, wParam, lParam, keyboard.modifiers);
     if (command !== null) return command;
@@ -152,10 +134,8 @@ export class NativeWindow {
   }
   keyboardShortcut(event) {
     if (this.world.closed || this.world.disposalRequested) return null;
-    const engine = this.world.nativeEngine,
-      owner = engine?.kernel.windowViews.windows.get(this.handle)?.userData,
-      key = browserVirtualKey(event);
-    if ((!owner && !this.acceleratorRows.length) || !key || event.metaKey) return null;
+    const key = browserVirtualKey(event);
+    if (!this.acceleratorRows.length || !key || event.metaKey) return null;
     const modifiers = (event.shiftKey ? 4 : 0) | (event.ctrlKey ? 8 : 0) | (event.altKey ? 16 : 0),
       extended =
         /^(?:AltRight|ControlRight|Insert|Delete|Home|End|PageUp|PageDown|Arrow\w+|NumpadEnter|NumpadDivide)$/.test(
@@ -172,16 +152,7 @@ export class NativeWindow {
               numLock: Boolean(event.getModifierState?.('NumLock')),
             }),
       keyboard = { modifiers, character };
-    if (owner) {
-      const table = engine.process.load(owner + 12),
-        accelerators = engine.kernel.accelerators;
-      if (
-        accelerators.match(table, message, key, data, modifiers) !== null ||
-        (character !== null &&
-          accelerators.match(table, message + 2, character, data, modifiers) !== null)
-      )
-        return [message, key, data, keyboard];
-    } else if (this.keyboardCommand({ message, wParam: key, lParam: data, keyboard }) !== null)
+    if (this.keyboardCommand({ message, wParam: key, lParam: data, keyboard }) !== null)
       return [message, key, data, keyboard];
     return null;
   }
@@ -196,54 +167,30 @@ export class NativeWindow {
   async sendEvent(event, w = 0, l = 0, options) {
     const world = this.world;
     if (world.root === undefined || !world.objects.objects.has(world.root)) return 0;
-    if (!world.nativeEngine && !world.nativeEngineLoading) {
-      const { taskType } = options ?? {},
-        data = new Uint8Array(24),
-        view = new DataView(data.buffer);
-      [0, 0, event, w, l].forEach((word, i) => view.setUint32(i * 4, word >>> 0, true));
-      const context = {
-        payload: {
-          load: (at) => view.getUint32(at, true),
-          bytes: (at, size) => data.subarray(at, at + size),
-        },
-        fromHost: true,
-        flags: 0,
-      };
-      // sendEngine accepts World identities and supplies the native Root's
-      // zero sender. The copied source tail is padding; D2 clears decoded flags.
-      await world.sendEngine(
-        world.root,
-        world.root,
-        taskType === undefined ? 11 : 12,
-        taskType ?? 0,
-        0,
-        context,
-      );
-      return Number(context.nativeRouted);
-    }
-    if (world.bootstrapOwner) {
-      // JS startup does not construct the original window/Settings/random
-      // owners. A supplied transitional host must not silently create only
-      // part of that old startup and then enter its application event helper.
-      const engine = world.nativeEngine,
-        refs = engine?.refs,
-        random = engine?.features.get('random-memory');
-      if (
-        !this.opened ||
-        !refs?.nativeOwner ||
-        !refs.owner ||
-        !refs.settings ||
-        !refs.randomOwner ||
-        refs.applicationWindowHook !== this.handle ||
-        random?.engine !== engine ||
-        random?.random !== world.random ||
-        random?.closed
-      )
-        throw new Error(
-          `Unmigrated ${world.profile} operation window-events requires initialized original application, Settings and random owners; ordinary JS startup does not provide them`,
-        );
-    }
-    return (await world.getNativeFeature('window-events')).send(event, w, l, options);
+
+    const { taskType } = options ?? {},
+      data = new Uint8Array(24),
+      view = new DataView(data.buffer);
+    [0, 0, event, w, l].forEach((word, i) => view.setUint32(i * 4, word >>> 0, true));
+    const context = {
+      payload: {
+        load: (at) => view.getUint32(at, true),
+        bytes: (at, size) => data.subarray(at, at + size),
+      },
+      fromHost: true,
+      flags: 0,
+    };
+    // sendEngine accepts World identities and supplies the native Root's
+    // zero sender. The copied source tail is padding; D2 clears decoded flags.
+    await world.sendEngine(
+      world.root,
+      world.root,
+      taskType === undefined ? 11 : 12,
+      taskType ?? 0,
+      0,
+      context,
+    );
+    return Number(context.nativeRouted);
   }
   async broadcast() {
     const world = this.world;
@@ -253,10 +200,7 @@ export class NativeWindow {
       await world.steamService.observeBroadcastQuery();
       if (!world.configuration.authorMode) return 0;
     }
-    if (world.nativeEngine || world.nativeEngineLoading) {
-      const engine = await world.ensureNativeEngine();
-      return engine.call(0x713f70, [], engine.refs.owner);
-    }
+
     return this.broadcastFlag;
   }
   async command(word) {
@@ -279,13 +223,7 @@ export class NativeWindow {
       return true;
     }
     if (command === 40096 && nativeABI(world.profile).capabilities.windowReturnTitle) {
-      let next;
-      if (world.nativeEngine || world.nativeEngineLoading) {
-        const engine = await world.ensureNativeEngine(),
-          old = await engine.call(0x713f70, [], engine.refs.owner);
-        next = Number(!old);
-        await engine.call(0x713f60, [next], engine.refs.owner);
-      } else next = this.broadcastFlag = Number(!this.broadcastFlag);
+      const next = (this.broadcastFlag = Number(!this.broadcastFlag));
       if (world.configuration.authorMode) world.host.nativeMenuChecked?.(40096, Boolean(next));
       return true;
     }
@@ -310,12 +248,6 @@ export class NativeWindow {
       case 40008:
       case 40009:
       case 40012: {
-        // The native desktop survey can force fullscreen on unsupported color depths.
-        if (
-          command === 40012 &&
-          world.nativeEngine?.process.load(NATIVE_STARTUP_BLOCKS[world.profile] + 44)
-        )
-          break;
         const screen = world.configuration.screen,
           fullscreen = command === 40012 ? !screen.fullscreen : command === 40008;
         if (Boolean(screen.fullscreen) === fullscreen) break;
@@ -366,21 +298,6 @@ export class NativeWindow {
       return true;
     }
     if (isNativeWindowCommandMessage(message.message)) {
-      if (this.world.nativeEngine?.refs.applicationWindowHook) return true;
-      if (this.opened) {
-        const { nativeEngine, profile } = this.world;
-        // These four branches only post their command and never write the
-        // optional LRESULT. WinMain supplies its startup record as context.
-        await nativeEngine.call(NATIVE_WINDOW_COMMAND_CALLBACKS[profile], [
-          NATIVE_STARTUP_BLOCKS[profile],
-          this.handle,
-          message.message,
-          message.wParam,
-          message.lParam,
-          0,
-        ]);
-        return true;
-      }
       const command = nativeWindowMessageCommand(message.message, message.lParam);
       if (command !== null) this.post(0x111, command);
       return true;

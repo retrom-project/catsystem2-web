@@ -10,14 +10,7 @@ export function createNativeInputBrowserServices(world, record, input, options =
     dimensions = () => world.graphics?.view?.virtualSize() ?? [world.game.width, world.game.height];
   return {
     poll: async () => {
-      const pending = bindings()?.touchEvents;
-      if (world.nativeEngine || world.nativeEngineLoading) {
-        if (pending?.length) {
-          const device = await world.getNativeFeature('input-device');
-          while (pending.length) await device.touch([pending.shift()]);
-        }
-        await world.nativeEngine?.features.get('input-device')?.poll();
-      } else bindings()?.pollTouch();
+      bindings()?.pollTouch();
       bindings()?.sync(input);
       input.foreground = foreground();
     },
@@ -68,10 +61,8 @@ export function createNativeInputBrowserServices(world, record, input, options =
         input.keys.fill(0);
         input.sources.fill(0);
       }
-      await world.nativeEngine?.features.get('input-device')?.control('clear');
     },
     finishFrame: async () => {
-      await world.nativeEngine?.features.get('input-device')?.finishFrame();
       bindings()?.finishFrame();
     },
     mouseState: () => {
@@ -89,27 +80,14 @@ export function createNativeInputBrowserServices(world, record, input, options =
     },
     joypad: async (enabled) => {
       bindings()?.setJoypad(enabled);
-      await world.nativeEngine?.features.get('input-device')?.control('joypad', enabled);
     },
     killTouch: async () => {
-      if (world.nativeEngine || world.nativeEngineLoading) {
-        const device = await world.getNativeFeature('input-device');
-        await device.control('touchReset');
-        if (bindings()) bindings().touchActive = false;
-      } else bindings()?.killTouch();
+      bindings()?.killTouch();
     },
     touchHold: async (enabled) => {
-      if (world.nativeEngine || world.nativeEngineLoading) {
-        const device = await world.getNativeFeature('input-device');
-        await device.control('touchEnable', enabled);
-      }
       bindings()?.touchHold(enabled);
     },
     cancelWheel: async () => {
-      if (world.nativeEngine || world.nativeEngineLoading) {
-        const device = await world.getNativeFeature('input-device');
-        await device.control('wheelCancel');
-      }
       bindings()?.cancelWheel();
     },
     notifyCursor: (visible) =>
@@ -119,33 +97,9 @@ export function createNativeInputBrowserServices(world, record, input, options =
             [0, 0, world.nativeTaskID(record.id), 22, 0, visible, 0][address / 4] >>> 0,
         },
       }),
-    alphaMask: async (bitmap, context) => {
-      if (context.nativePointer) {
-        const engine = await world.ensureNativeEngine(),
-          p = engine.process,
-          output = p.allocate(12, true),
-          sdk = world.profile.startsWith('sdk-'),
-          call =
-            context.fromHost || engine.process.awaitingHost
-              ? engine.callFromHost.bind(engine)
-              : engine.call.bind(engine);
-        try {
-          await call(sdk ? 0x4c2fa0 : 0x5e6ce0, [bitmap, output]);
-          const bytes = p.load(output),
-            width = p.load(output + 4),
-            height = p.load(output + 8);
-          if (!bytes) return null;
-          const alpha = {
-            width,
-            height,
-            bytes: p.read(bytes, Math.ceil(width / 8) * height).slice(),
-          };
-          await call(sdk ? 0x575e10 : 0x6a4b00, [bytes]);
-          return alpha;
-        } finally {
-          p.free(output);
-        }
-      }
+    alphaMask: async (bitmap, context = {}) => {
+      if (context.nativePointer)
+        throw new Error('Physical input bitmap pointers require the explicit oracle Input service');
       return nativeInputBitmapMask(world.graphics.images.get(bitmap));
     },
     cursorEnabled: () => world.graphics.cursor.state.visibleWord,
@@ -156,11 +110,9 @@ export function createNativeInputBrowserServices(world, record, input, options =
     },
     devicePointer: async () => {
       if (options.devicePointer) return options.devicePointer();
-      if (!world.nativeEngine && !world.nativeEngineLoading)
-        throw new Error(
-          'A physical Input device pointer requires explicit original-engine ownership',
-        );
-      return (await world.getNativeFeature('input-device')).pointer();
+      throw new Error(
+        'A physical Input device pointer requires explicit original-engine ownership',
+      );
     },
   };
 }

@@ -5,15 +5,15 @@ import { dirname, resolve } from 'node:path';
 import test from 'node:test';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { loadNativeGameStartupLanguage } from '../src/native/engine-language.mjs';
+import { loadNativeGameStartupLanguage } from '../oracle/engine-language.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NATIVE_STARTUP_BLOCKS } from '../src/native/engine-startup-block.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NATIVE_STARTUP_BLOCKS } from '../oracle/engine-startup-block.mjs';
 import {
   initializeNativeStartupMenu,
   refreshNativeLanguageMenu,
   releaseNativeStartupMenu,
-} from '../src/native/engine-startup-menu.mjs';
+} from '../oracle/engine-startup-menu.mjs';
 import { nativeWindowLanguageCommand } from '../src/native/window-commands.mjs';
 
 for (const [profile, variable, normalCount, load, suffix] of [

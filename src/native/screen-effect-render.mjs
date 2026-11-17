@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalView } from './original-adapter.mjs';
 // JS owns callback phases, captures, model ordering and submission.
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
 import {
@@ -101,12 +102,12 @@ export class NativeScreenEffectRenderer {
         if (item.drawGPU)
           await item.drawGPU(gpu, {
             ...options,
-            fromHost: Boolean(this.world.nativeEngine?.process.asyncEnabled),
+            fromHost: Boolean(originalView(this.world, 'fromHost')),
           });
         else
           await this.world.graphics.get(item.p?.nativeTaskWorldID ?? Number(item.n)).drawGPU(gpu, {
             ...options,
-            fromHost: Boolean(this.world.nativeEngine?.process.asyncEnabled),
+            fromHost: Boolean(originalView(this.world, 'fromHost')),
           });
       },
     };

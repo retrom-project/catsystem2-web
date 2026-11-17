@@ -2,8 +2,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 
 const api = (engine, name, ...args) =>
   engine.call(engine.resolve({ dll: 'kernel32.dll', name }), args);

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalFeature } from './original-adapter.mjs';
 import { FESPlayer } from '../fes/player.mjs';
 import { fesPreloadLine } from '../fes/program.mjs';
 import { fesNarrowText, fesByteView } from '../fes/tokens.mjs';
@@ -460,8 +461,7 @@ export function createNativeFESTask(world, record) {
         if (this.player && bank) {
           let key = context.nativeVariableContextKey;
           if (key === undefined && context.nativePointer) {
-            const tasks = await world.getNativeFeature('task-memory');
-            key = tasks.worldID(lParam);
+            key = await originalFeature(world, 'task-memory', 'worldID', lParam);
           }
           if (key === undefined)
             throw new Error('Native FES context copy requires the caller private-context identity');

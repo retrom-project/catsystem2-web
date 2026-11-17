@@ -3,7 +3,7 @@
 // loaded model, its history and the auxiliary graphs used to draw it.
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 
 const commands = new Map([
   [0x51, { words: 2, message: 69, addresses: [0x640ce0, 0x5133c0] }],

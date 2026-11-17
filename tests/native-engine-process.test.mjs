@@ -2,29 +2,29 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeEngineWindows } from '../src/native/windows-services.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NativeEngineWindows } from '../oracle/windows-services.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import {
   NATIVE_SYSTEM_INFORMATION,
   checkNativeDirectXStartup,
-} from '../src/native/engine-system-information.mjs';
-import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from '../src/native/config-memory.mjs';
+} from '../oracle/engine-system-information.mjs';
+import { NATIVE_CONFIGURATION_MEMORY_LAYOUTS } from '../oracle/config-memory.mjs';
 import { serializeNativePreferences } from '../src/native/preferences.mjs';
 import { readNativeStartupPreferences } from '../src/native/engine-preferences.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
-import { initializeNativeDesktop } from '../src/native/engine-desktop.mjs';
+import { initializeNativeDesktop } from '../oracle/engine-desktop.mjs';
 import {
   initializeNativeWindowClass,
   releaseNativeWindowClass,
-} from '../src/native/engine-window-class.mjs';
+} from '../oracle/engine-window-class.mjs';
 import {
   initializeNativeStartupInstance,
   releaseNativeStartupInstance,
-} from '../src/native/engine-startup-instance.mjs';
+} from '../oracle/engine-startup-instance.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';

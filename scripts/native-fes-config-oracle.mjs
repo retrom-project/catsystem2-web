@@ -3,9 +3,9 @@
 // Only parser/expression/variable/string-bank/event boundaries are host traps.
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { PPIWindowsServices } from '../src/ppi/native-services.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { PPIWindowsServices } from '../oracle/ppi-native-services.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import {
   fesConfigurationFixture,

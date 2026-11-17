@@ -4,11 +4,11 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { KCSMachine } from '../src/kcs/vm.mjs';
 import { Binary } from '../src/binary.mjs';
 import { nativeStandard } from '../src/native/standard.mjs';
-import { NativeTaskMemory } from '../src/native/task-memory.mjs';
+import { NativeTaskMemory } from '../oracle/task-memory.mjs';
 
 const [filename, output] = process.argv.slice(2);
 if (!output)

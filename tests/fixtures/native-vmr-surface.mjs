@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
-import { EmoteD3D9 } from '../../src/emote/native-d3d.mjs';
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
+import { EmoteD3D9 } from '../../oracle/m2-native-d3d.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
 import { nativeRectangleDefinitions } from '../../src/native/windows-rectangles.mjs';
 
 export const profiles = [

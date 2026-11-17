@@ -2,8 +2,8 @@
 // Authored hand/round inputs. These records seed the independent native model
 // and JS model before execution. Observations use the actual native table.
 import assert from 'node:assert/strict';
-import { NativeKCSMemory } from '../../src/native/kcs-memory.mjs';
-import { NATIVE_EXE_PROFILES } from '../../src/native/catalog.mjs';
+import { NativeKCSMemory } from '../../oracle/kcs-memory.mjs';
+import { NATIVE_EXE_PROFILES } from '../../oracle/executable-catalog.mjs';
 import { NATIVE_TILE_GAME_LAYOUTS } from '../../oracle/tile-game.mjs';
 import { observeDataSequence } from './data-sequence.mjs';
 export function tileCards(text) {

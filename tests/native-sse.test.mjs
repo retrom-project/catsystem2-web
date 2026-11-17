@@ -2,8 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 
 const word = (value) => [value & 255, (value >>> 8) & 255, (value >>> 16) & 255, value >>> 24],
   operations = [

@@ -99,7 +99,7 @@ for (const [profile, variable, texture, format] of profiles.flatMap(([profile, v
           import('/src/render/stage.mjs'),
           import('/src/files.mjs'),
           import('/src/native/movie-browser.mjs'),
-          import('/src/native/engine-process.mjs'),
+          import('/oracle/engine-process.mjs'),
           import('/src/checkpoint.mjs'),
         ]);
         const resources = new Map(

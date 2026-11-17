@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 // The original kcXml document and its node storage belong to the guest heap.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
-import { installNativeEngineFiles } from '../src/native/engine-files.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NATIVE_EXE_PROFILES } from './executable-catalog.mjs';
+import { installNativeEngineFiles } from './engine-files.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 
 const open = 0x24e,
   release = 0x24f,

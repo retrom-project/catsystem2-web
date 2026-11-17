@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { bitmapMemoryFixture } from './bitmap-memory-fixture.mjs';
 import { NativeBitmapFactories } from '../../oracle/bitmap-factory.mjs';
-import { NativeEngineFiles } from '../../src/native/engine-files.mjs';
+import { NativeEngineFiles } from '../../oracle/engine-files.mjs';
 import { imageOwnerFiles } from './image-owner-fixture.mjs';
 export async function bitmapFactoryFixture(bytes, profile) {
   const fixture = await bitmapMemoryFixture(bytes, profile, { uploadBoundary: true }),

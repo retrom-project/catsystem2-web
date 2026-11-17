@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeRasterKernels } from '../oracle/raster-kernel-projection.mjs';
 import { floatBits } from '../src/kcs.mjs';
 

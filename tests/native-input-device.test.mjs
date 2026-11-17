@@ -2,12 +2,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
 import { NativeInput } from '../src/native/input.mjs';
 import { NativeInputBindings } from '../src/native/input-bindings.mjs';
-import { NativeInputDevice } from '../src/native/input-device.mjs';
+import { NativeInputDevice } from '../oracle/input-device.mjs';
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],

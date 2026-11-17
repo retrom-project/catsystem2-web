@@ -3,8 +3,8 @@
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+import { NATIVE_EXE_PROFILES } from './executable-catalog.mjs';
 
 export const NATIVE_AREA_EFFECT_COMMANDS = Object.freeze(
   [

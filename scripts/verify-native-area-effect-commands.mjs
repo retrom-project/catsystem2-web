@@ -2,12 +2,12 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
-import { NATIVE_ENGINE_IMAGES, NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NATIVE_ENGINE_IMAGES, NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeAreaEffectCommands } from '../src/native/area-effect-commands.mjs';
 import { NativeBufferMemory } from '../src/native/buffer-memory.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeEngineFiles } from '../src/native/engine-files.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeEngineFiles } from '../oracle/engine-files.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
 import { bitsFloat, floatBits, KCSMachine, readKCS } from '../src/kcs.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';

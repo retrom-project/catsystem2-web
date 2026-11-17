@@ -2,7 +2,7 @@
 // Actual Steam broadcast helper, menu flag toggle/refresh and main41E.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeWindow } from '../src/native/window.mjs';
 import { NativeSteam } from '../src/native/steam.mjs';
 const [filename, output] = process.argv.slice(2),

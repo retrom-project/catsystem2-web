@@ -8,7 +8,8 @@ import {
   NATIVE_UNWRITTEN_WORD,
   nativeEngineWord,
 } from '../src/native/engine-message.mjs';
-import { NativeTaskDump } from '../src/native/task-dump.mjs';
+import { NativeTaskDump } from '../oracle/task-dump-original.mjs';
+import { originalWorldState } from '../oracle/world-operations.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { kcsProgram } from './helpers.mjs';
@@ -161,6 +162,7 @@ test('Root shared bytes remain live and restore VM references against the new ta
   assert.equal(root.implementation.sharedData[0], 0x9a);
   const process = { read: (address, count) => memory.bytes(address, count).slice() };
   next.world.nativeEngine = { process };
+  next.world.transitionalExe = { worldState: originalWorldState };
   const payload = { bytes: (...args) => process.read(...args) };
   await next.messages.send(0, 3, 30, 4, messageMemoryBase + 256, { payload, nativePointer: true });
   memory.data[256] = 0x4c;

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { NativeEngineWindows } from '../src/native/windows-services.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { NativeEngineWindows } from '../oracle/windows-services.mjs';
 import { nativeFileTime, nativeSystemTime } from '../src/native/file-time.mjs';
 
 test('FILETIME epoch, submillisecond truncation and signed-limit rejection retain Win32 calendar fields', () => {

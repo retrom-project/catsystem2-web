@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeGlobalStrings } from '../src/native/global-strings.mjs';
-import { NativeGlobalStringsBridge } from '../src/native/global-strings-bridge.mjs';
+import { NativeGlobalStringsBridge } from '../oracle/global-strings-bridge.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 
 for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.74'])

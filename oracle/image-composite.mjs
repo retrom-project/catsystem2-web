@@ -2,8 +2,8 @@
 // The original selector/layer factory returns an owned image wrapper. Unlike
 // main 6F, main 1CC does not register it in the Script automatic bitmap list.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { installNativeEngineFiles } from '../src/native/engine-files.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+import { installNativeEngineFiles } from './engine-files.mjs';
 
 export const NATIVE_IMAGE_COMPOSITE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x1cc, words: 1, control: 1, handlers: [0x64c470, 0x518fb0] }),

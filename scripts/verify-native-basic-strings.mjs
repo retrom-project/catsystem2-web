@@ -5,9 +5,9 @@ import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { Binary } from '../src/binary.mjs';
 import { KCSMachine, encodeCP932, formatNative, formatNativeAt } from '../src/kcs.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { nativeStandard } from '../src/native/standard.mjs';
 
 const [filename, output] = process.argv.slice(2);

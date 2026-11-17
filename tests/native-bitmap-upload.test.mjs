@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NativeGraphicsPlatform } from '../src/native/graphics-process.mjs';
+import { NativeGraphicsPlatform } from '../oracle/graphics-process.mjs';
 import { NativeGraphics } from '../src/native/graphics.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeTexturePages } from '../src/native/texture-layout.mjs';

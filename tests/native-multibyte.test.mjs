@@ -3,9 +3,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { PPIWindowsServices } from '../src/ppi/native-services.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { PPIWindowsServices } from '../oracle/ppi-native-services.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 
 const golden = JSON.parse(
   await readFile(new URL('./fixtures/native-multibyte-golden.json', import.meta.url)),

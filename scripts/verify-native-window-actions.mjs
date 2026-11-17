@@ -3,7 +3,7 @@
 // Native dialogs, shell, display mode and configuration UI are host boundaries.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { nativeWindowMenuCommand } from '../src/native/window-commands.mjs';
 
 const [filename, profile, output] = process.argv.slice(2);

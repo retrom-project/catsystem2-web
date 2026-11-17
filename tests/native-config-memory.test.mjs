@@ -6,7 +6,7 @@ import {
   NativeConfigurationMemory,
   NATIVE_CONFIGURATION_MEMORY_LAYOUTS,
   validateNativeConfigurationMemory,
-} from '../src/native/config-memory.mjs';
+} from '../oracle/config-memory.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { parseXML } from '../src/xml.mjs';
 

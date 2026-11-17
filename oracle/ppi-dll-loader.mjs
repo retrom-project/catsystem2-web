@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Existing DLL mapping is available only to explicitly imported oracle code.
-import { parsePE32 } from '../src/ppi/pe32.mjs';
+import { parsePE32 } from './ppi-pe32.mjs';
 export function loadOracleDLL(process, bytes, resolveImport, name = 'particle.ppi') {
   const pe = parsePE32(bytes);
   let base = pe.base;

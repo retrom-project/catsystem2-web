@@ -2,7 +2,7 @@
 // Explicit private-fixture tool; never imported by the runtime or public lane.
 import { readFile, writeFile } from 'node:fs/promises';
 import { format, resolveConfig } from 'prettier';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { engineFixtureSet } from '../tests/fixtures/oracle-fixtures.mjs';
 import { nativeScalarCases } from '../tests/fixtures/scalar-cases.mjs';
 import { nativeGeometryCases } from '../tests/fixtures/geometry-cases.mjs';

@@ -8,7 +8,7 @@ import {
   NativeDataBuffers,
   NATIVE_DATA_BUFFER_LAYOUTS,
 } from '../oracle/data-buffer.mjs';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import {
   dataBufferFixture,
   dataBufferPayload,

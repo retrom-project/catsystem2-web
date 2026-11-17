@@ -2,10 +2,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeEngineFiles } from '../src/native/engine-files.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NativeEngineFiles } from '../oracle/engine-files.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
-import { installNativeEngineWorkers } from '../src/native/engine-workers.mjs';
+import { installNativeEngineWorkers } from '../oracle/engine-workers.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 
 const PROFILES = [

@@ -2,10 +2,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
-import { NativeEngineWindows } from '../src/native/windows-services.mjs';
-import { installNativeVersionAPIs } from '../src/native/windows-version.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
+import { NativeEngineWindows } from '../oracle/windows-services.mjs';
+import { installNativeVersionAPIs } from '../oracle/windows-version-original.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
 import { u32 } from './helpers.mjs';
 
 const word = (n) => [n & 255, n >>> 8],

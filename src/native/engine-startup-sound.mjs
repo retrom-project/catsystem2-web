@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from './abi/index.mjs';
 // The opening application callback reads the native SOUNDGROUP/MASTER/PART tree.
-import { initializeNativeApplicationServices } from './engine-startup-application.mjs';
+import { initializeNativeApplicationServices } from '../../oracle/engine-startup-application.mjs';
 
 const layouts = {
   'sdk-4.01-engine-2.6.1.74': {

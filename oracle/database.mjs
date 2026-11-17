@@ -2,8 +2,8 @@
 // The compiled KCDB parser and indexed flag map execute in the shared engine.
 // Handles contain identity only; title/index strings and flags stay in PE RAM.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { installNativeEngineFiles } from '../src/native/engine-files.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+import { installNativeEngineFiles } from './engine-files.mjs';
 
 export const NATIVE_DATABASE_IDS = Object.freeze([0x365, 0x366, 0x367, 0x368, 0x369, 0x36d, 0x36e]);
 export const NATIVE_DATABASE_LAYOUTS = Object.freeze({

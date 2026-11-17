@@ -2,7 +2,7 @@
 // Platform records shared with the reconstructed graph manager. M2 animation
 // and its graph callback remain original executable code.
 import { NativeGraphicTask } from '../src/native/graphics.mjs';
-import { conditionalNativeGraphicsBoundary } from '../src/native/exe-boundary.mjs';
+import { conditionalNativeGraphicsBoundary } from './exe-boundary.mjs';
 import { advanceD3DContext } from '../src/ppi/render-state.mjs';
 export class NativeEmoteGraphics {
   constructor(owner, platform) {

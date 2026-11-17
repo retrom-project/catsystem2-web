@@ -156,7 +156,7 @@ export async function checkPluginBoundary(root) {
   const particle = await readFile(resolve(root, 'src/particles.mjs'), 'utf8');
   if (/NativePPI|nativeThread|unicornFactory/.test(particle))
     throw new Error('Particles retains a DLL sandbox dependency');
-  const cpu = await readFile(resolve(root, 'src/ppi/pe32.mjs'), 'utf8');
+  const cpu = await readFile(resolve(root, 'oracle/ppi-pe32.mjs'), 'utf8');
   if (/loadModule\(/.test(cpu)) throw new Error('Shared process retains its old DLL loader entry');
   console.log(
     'Plugin boundary: JS E-mote/PPI, explicit unsupported names, no runtime DLL execution or domain-9 projection.',

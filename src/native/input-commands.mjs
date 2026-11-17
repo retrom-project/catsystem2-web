@@ -1,120 +1,21 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original input-owner query, bitmap mask and wheel-cancel KCS envelopes.
-import { mapABIMessage } from './abi/messages.mjs';
+import { originalOwner, originalFeature } from './original-adapter.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeEngineWord } from './engine-message.mjs';
 
 export const NATIVE_INPUT_COMMAND_CONTRACTS = Object.freeze(
   [
-    [0x5f, 2, 2, 0x6411b0, 0x513890],
-    [0x6b, 1, 1, 0x649010, 0x5157e0],
-    [0x18a, 2, 2, 0x649070, 0x515840],
-    [0x3a9, 0, 2, 0x656ab0, 0x521c20],
-  ].map(([id, words, control, game, sdk]) =>
-    Object.freeze({ id, words, control, handlers: [game, sdk] }),
-  ),
+    [0x5f, 2, 2],
+    [0x6b, 1, 1],
+    [0x18a, 2, 2],
+    [0x3a9, 0, 2],
+  ].map(([id, words, control]) => Object.freeze({ id, words, control })),
 );
-const byID = new Map(NATIVE_INPUT_COMMAND_CONTRACTS.map((spec) => [spec.id, spec]));
-
-export class NativeInputCommands {
-  constructor(engine, world) {
-    Object.assign(this, { engine, world, process: engine.process });
-    this.sdk = engine.profile.startsWith('sdk-');
-    const p = this.process;
-    this.memory = {
-      load: (at) => p.load(at),
-      store: (at, word) => p.store(at, word),
-      bytes: (at, size) => p.read(at, size),
-      write: (at, bytes) => p.write(at, bytes),
-    };
-    this.transport = p.trap(
-      'KCS input-command task transport',
-      7,
-      async ([sender, target, raw, w, l, flags, out]) => {
-        const message = mapABIMessage(this.engine.profile, 'base', 'canonical', raw),
-          origin = engine.currentTaskID,
-          senderWorldID = world.resolveTaskID(sender, origin);
-        if (senderWorldID == null)
-          throw new Error('Native input command sender is outside its Top');
-        if (
-          ![nativeABI(this.engine.profile).messages.movieInput.query, 89, 97, 133, 157].includes(
-            message,
-          )
-        )
-          throw new Error('Native input command emitted an unreviewed task message');
-        const context = {
-            payload: this.memory,
-            nativePointer: true,
-            nativeResult: out,
-            fromHost: true,
-            nativeSenderWorldID: senderWorldID,
-            graphInputRegistration: message === 89,
-            flags,
-          },
-          value = await world.sendNativeEngine(target, senderWorldID, message, w, l, context);
-        if (out && Number.isInteger(value)) p.store(out, value);
-        if (typeof context.nativeRouted !== 'boolean')
-          throw new Error('Native input command transport has no routing result');
-        return Number(context.nativeRouted);
-      },
-    );
-    this.vtable = p.allocate(32, true);
-    p.store(this.vtable + 16, this.transport);
-    engine.registerFeature('input-commands', this);
-  }
-  async apply(id, args, machine, task) {
-    const spec = byID.get(id);
-    if (!spec) return undefined;
-    const words = Array.from(args);
-    if (id === 0x5f && !words.length) words.push(machine.nativeArgument(0));
-    const count = id === 0x5f && !words[0] ? 1 : spec.words;
-    while (words.length < count) words.push(machine.nativeArgument(words.length));
-    if (id === 0x18a && words[1])
-      words[1] = await (await this.world.getNativeFeature('bitmap-memory')).wrapper(words[1]);
-    const p = this.process,
-      argv = p.allocate(words.length * 4),
-      out = p.allocate(12),
-      host = p.allocate(120, true);
-    try {
-      words.forEach((word, i) => p.store(argv + i * 4, word));
-      p.write(out, new Uint8Array(12).fill(0xcc));
-      p.store(host, this.vtable);
-      p.store(host + 4, this.world.nativeTaskID(task.id));
-      const parameters = [0, host, argv, out + 4],
-        options = { task: task.id },
-        control = p.asyncEnabled
-          ? await this.engine.callFromHost(
-              spec.handlers[Number(this.sdk)],
-              parameters,
-              undefined,
-              options,
-            )
-          : await this.engine.call(spec.handlers[Number(this.sdk)], parameters, undefined, options);
-      if (control !== spec.control || p.load(out) !== 0xcccccccc || p.load(out + 8) !== 0xcccccccc)
-        throw new Error('Native input command changed its reviewed output contract');
-      return nativeReply(control, control === 1 ? p.load(out + 4) : undefined);
-    } finally {
-      p.free(host);
-      p.free(out);
-      p.free(argv);
-    }
-  }
-  snapshot() {
-    return { vtable: this.vtable };
-  }
-  restore(state) {
-    this.vtable = state.vtable;
-  }
-  close() {
-    this.process.free(this.vtable);
-  }
-}
 export function installNativeInputCommands(world) {
-  world.registerNativeFeature('input-commands', (engine) => new NativeInputCommands(engine, world));
   for (const { id } of NATIVE_INPUT_COMMAND_CONTRACTS)
     world.runtime.register('main', id, async (args, machine, task) => {
-      if ((id === 0x6b || id === 0x3a9) && !world.nativeEngine && !world.nativeEngineLoading) {
+      if ((id === 0x6b || id === 0x3a9) && !originalOwner(world)) {
         const input = nativeEngineWord(
           await world.sendNativeEngine(
             0,
@@ -133,11 +34,11 @@ export function installNativeInputCommands(world) {
         await world.sendNativeEngine(input, task.id, 157, 0, 0, { flags: 0 });
         return nativeReply(2);
       }
-      if (id === 0x18a && !world.nativeEngine && !world.nativeEngineLoading) {
+      if (id === 0x18a && !originalOwner(world)) {
         await world.sendNativeEngine(args[0], task.id, 97, 0, args[1], { flags: 0 });
         return nativeReply(2);
       }
-      if (id === 0x5f && !world.nativeEngine && !world.nativeEngineLoading) {
+      if (id === 0x5f && !originalOwner(world)) {
         if (args[0] === 0) return nativeReply(2);
         const top = world.engineMessages.closestTop(task.id);
         if (top?.nativeID !== 0)
@@ -150,6 +51,6 @@ export function installNativeInputCommands(world) {
         });
         return nativeReply(2);
       }
-      return (await world.getNativeFeature('input-commands')).apply(id, args, machine, task);
+      return originalFeature(world, 'input-commands', 'apply', id, args, machine, task);
     });
 }

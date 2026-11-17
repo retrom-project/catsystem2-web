@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
-import { readdir, readFile, writeFile, lstat, rename, rm } from 'node:fs/promises';
+import { readFile, writeFile, lstat, rename, rm } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
-import { join, relative, resolve, sep } from 'node:path';
+import { join, resolve, sep } from 'node:path';
 import { execFile as execute } from 'node:child_process';
 import { promisify } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { Linter } from 'eslint';
+import { runtimeSourceFiles } from './runtime-source-files.mjs';
 import { transitionalRuntimeFiles } from './transitional-runtime.mjs';
 export { transitionalRuntimeFiles } from './transitional-runtime.mjs';
 const execFile = promisify(execute);
@@ -29,9 +30,9 @@ export const IMAGE_RANGES = Object.freeze([
   },
 ]);
 
-// Every src/ module and each explicit transitional-runtime.json include is
-// shipped runtime code. Oracle-only tools and tests remain outside this set.
-// Shipped transition modules keep their full address/call/reference counts.
+// The actual ordinary app ESM graph is shipped runtime code. Explicit oracle
+// includes, tools and tests remain outside this set. Every selected module
+// retains its full address/call/reference counts; no tag suppresses a source.
 // Numeric literals in either image range are conservatively counted, regardless
 // of notation. Comments, strings, regexes and negative numbers are not addresses.
 // If a literal is demonstrably an ordinary constant, attach exactly one block
@@ -188,22 +189,8 @@ async function assertRuntimeFile(root, name) {
 }
 
 export async function scanRuntime(root) {
-  const src = join(root, 'src');
   const files = {};
-  async function visit(directory) {
-    for (const entry of await readdir(directory, { withFileTypes: true })) {
-      const path = join(directory, entry.name);
-      if (entry.isSymbolicLink()) throw new Error(`Symlink in runtime tree: ${path}`);
-      if (entry.isDirectory()) await visit(path);
-      else if (entry.isFile() && /\.(?:[cm]?js|jsx)$/.test(entry.name)) {
-        const name = relative(root, path).split('\\').join('/');
-        const counts = scanSource(await readFile(path, 'utf8'), name);
-        if (categories.some((category) => counts[category])) files[name] = counts;
-      }
-    }
-  }
-  await visit(src);
-  for (const name of await transitionalRuntimeFiles(root)) {
+  for (const name of await runtimeSourceFiles(root)) {
     await assertRuntimeFile(root, name);
     const counts = scanSource(await readFile(join(root, name), 'utf8'), name);
     if (categories.some((category) => counts[category])) files[name] = counts;

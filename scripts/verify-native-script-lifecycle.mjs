@@ -4,10 +4,10 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
-import { NativeEngineFiles } from '../src/native/engine-files.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeEngineFiles } from '../oracle/engine-files.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';

@@ -2,8 +2,8 @@
 // Original retained-source draw packets and animation file/enable commands.
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { installNativeEngineFiles } from '../src/native/engine-files.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+import { installNativeEngineFiles } from './engine-files.mjs';
 
 export const NATIVE_DRAW_COMMAND_CONTRACTS = Object.freeze(
   [

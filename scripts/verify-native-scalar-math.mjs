@@ -4,13 +4,13 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { NativeScalarMath, NATIVE_SCALAR_MATH_CONTRACTS } from '../oracle/scalar-math.mjs';
 import { invokeNative } from '../oracle/scalar-invoke.mjs';
 const transitionalExe = { invokeNative };
 import { scalarHandler } from '../oracle/scalar-handlers.mjs';
-import { captureFloatingPoint } from '../src/ppi/floating-point.mjs';
+import { captureFloatingPoint } from '../oracle/ppi-floating-point.mjs';
 import { floatBits } from '../src/kcs.mjs';
 
 export async function verifyScalarMath(bytes, profile) {

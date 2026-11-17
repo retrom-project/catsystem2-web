@@ -34,13 +34,9 @@ const payload = (bytes) => {
   };
 };
 export class NativeLegacyTextRuntime {
-  static async open(engine, world) {
-    return new NativeLegacyTextRuntime(engine, world);
-  }
-  constructor(engine, world) {
-    Object.assign(this, { engine, world });
+  constructor(world) {
+    this.world = world;
     this.tasks = new Map();
-    engine.registerFeature('legacy-text', this);
   }
   async create(record) {
     const task = new NativeLegacyTextTask(this, record);
@@ -185,12 +181,9 @@ export class NativeLegacyTextTask {
   memory(sender, context) {
     if (context.payload || context.machine) return context.payload ?? context.machine;
     if (context.nativePointer) {
-      const p = this.owner.engine.process;
-      return {
-        load: (at) => p.load(at),
-        store: (at, n) => p.store(at, n),
-        bytes: (at, n) => p.read(at, n),
-      };
+      if (typeof this.owner.originalMemory !== 'function')
+        throw new Error('Legacy text original pointer input requires its explicit oracle owner');
+      return this.owner.originalMemory();
     }
     return this.world.objects.machine(context.nativeSenderWorldID ?? sender);
   }
@@ -460,16 +453,10 @@ export class NativeLegacyTextTask {
   }
 }
 export function installNativeLegacyText(world) {
-  world.registerNativeFeature('legacy-text', (engine) =>
-    NativeLegacyTextRuntime.open(engine, world),
-  );
-  world.objects.register(8, async (record) =>
-    (await world.getNativeFeature('legacy-text')).create(record),
-  );
+  const runtime = (world.legacyText = new NativeLegacyTextRuntime(world));
+  world.objects.register(8, (record) => runtime.create(record));
   for (const id of NATIVE_LEGACY_TEXT_IDS)
     world.runtime.register('main', id, (args, machine, task) =>
-      world
-        .getNativeFeature('legacy-text')
-        .then((runtime) => runtime.apply(id, args, machine, task)),
+      runtime.apply(id, args, machine, task),
     );
 }

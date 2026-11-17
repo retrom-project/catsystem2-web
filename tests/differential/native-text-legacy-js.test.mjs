@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { engineFixtureSet } from '../fixtures/oracle-fixtures.mjs';
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
 import { LegacyTextState } from '../../src/native/legacy-text-state.mjs';
 import { encodeCP932 } from '../../src/kcs/strings.mjs';
 for (const f of await engineFixtureSet())

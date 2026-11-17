@@ -3,8 +3,8 @@
 // reveal schedule and bitmap. It does not share the later STRING writer ABI.
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { NativeGraphicTask } from '../src/native/graphics.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { installNativeTaskMemory } from '../src/native/task-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+import { installNativeTaskMemory } from './task-memory.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { nativeReply } from '../src/kcs.mjs';
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Seed and draw are original instructions; JS never binds to this state.
-import { NATIVE_RANDOM_LAYOUTS } from '../../src/native/random-memory.mjs';
+import { NATIVE_RANDOM_LAYOUTS } from '../../oracle/random-memory.mjs';
 export const randomOracle = {
   prepare(engine, fixture) {
     const p = engine.process,

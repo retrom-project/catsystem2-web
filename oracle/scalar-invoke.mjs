@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeReply } from '../src/kcs/vm.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 import { scalarHandler } from './scalar-handlers.mjs';
 export async function invokeNative(operation, { engine, world, args, machine, task }) {
   if (typeof operation !== 'string')

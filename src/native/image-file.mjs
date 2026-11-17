@@ -85,10 +85,6 @@ export class NativeImageFiles {
 }
 export function installNativeImageFiles(world) {
   const files = (world.imageFiles = new NativeImageFiles(world));
-  world.registerNativeFeature('image-files', (engine) => {
-    engine.registerFeature('image-files', files);
-    return files;
-  });
   world.runtime.register('main', 0x1ae, (args, machine, task) =>
     files.apply(0x1ae, args, machine, task),
   );

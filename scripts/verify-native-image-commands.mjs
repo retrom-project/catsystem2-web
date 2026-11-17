@@ -2,8 +2,8 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { NATIVE_IMAGE_COMMAND_CONTRACTS } from '../oracle/image-commands.mjs';
 import { imageCommandsFixture } from '../tests/fixtures/image-commands-fixture.mjs';
 import { installNativeRasterKernels } from '../oracle/raster-kernel-projection.mjs';

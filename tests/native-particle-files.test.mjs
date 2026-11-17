@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { BlobFile, GameFiles } from '../src/files.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeEngineProcess, nativeImageIdentity } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess, nativeImageIdentity } from '../oracle/engine-process.mjs';
 import { NativeResources } from '../src/native/resources.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 import { Particles } from '../src/particles.mjs';

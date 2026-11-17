@@ -3,15 +3,15 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeEngineFiles } from '../src/native/engine-files.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NativeEngineFiles } from '../oracle/engine-files.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import {
   NATIVE_CONTENT_DATABASE_CONTRACTS as SPECS,
   NATIVE_CONTENT_DATABASE_FAMILIES as FAMILIES,
 } from '../oracle/content-databases.mjs';
-import { NATIVE_RANDOM_LAYOUTS } from '../src/native/random-memory.mjs';
+import { NATIVE_RANDOM_LAYOUTS } from '../oracle/random-memory.mjs';
 import { KCSMachine, readKCS } from '../src/kcs.mjs';
 import { kcsProgram } from '../tests/helpers.mjs';
 import {

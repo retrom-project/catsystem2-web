@@ -3,9 +3,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeMT19937, ParticleRandom } from '../src/ppi/random.mjs';
-import { NativeRandomMemory, NATIVE_RANDOM_LAYOUTS } from '../src/native/random-memory.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeRandomMemory, NATIVE_RANDOM_LAYOUTS } from '../oracle/random-memory.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { floatBits } from '../src/kcs.mjs';
 
 test('MT providers reacquire words after an index read grows RAM and preserve one shared state', () => {

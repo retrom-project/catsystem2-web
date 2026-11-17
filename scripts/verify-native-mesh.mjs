@@ -4,9 +4,9 @@
 import assert from 'node:assert/strict';
 import { writeFile } from 'node:fs/promises';
 import { nodeGame } from './node-files.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import {
   nativeMesh,
   packNativeMesh,

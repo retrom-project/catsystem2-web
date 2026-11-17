@@ -66,7 +66,7 @@ for (const profile of profiles) {
       assert.strictEqual(core.get(task.text.writer), writer);
       assert.ok(pixels.some((value) => value !== 0));
       assert.equal(world.nativeEngine, undefined);
-      assert.equal(saved.nativeEngine, null);
+      assert.equal(Object.hasOwn(saved, 'nativeEngine'), false);
       assert.equal(saved.text.writers.length, 1);
       assert.equal(Object.hasOwn(saved.text, 'windows'), false);
       fresh = await dataWorld(profile, {}, { initialize: false, glyphs });

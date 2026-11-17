@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { nativeDeflate } from '../src/native/zlib.mjs';
 import { authoredDeflateBytes, authoredDeflateCases } from '../tests/fixtures/deflate-fixture.mjs';
 const [filename, output] = process.argv.slice(2);

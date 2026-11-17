@@ -8,7 +8,7 @@ import { invokeNative } from '../oracle/scalar-invoke.mjs';
 import { invokeRegion } from '../oracle/transitional-exe.mjs';
 import { TRANSITIONAL_HEAP_POLICY } from '../oracle/transitional-heap.mjs';
 import { transitionalExe } from '../web/transitional-entry.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 
 test('only the explicit mixed host selects the temporary M2 heap capacity', async () => {
   const open = NativeEngineProcess.open;

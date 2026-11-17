@@ -2,8 +2,8 @@
 // Original serializer and refresh wrapper against authored manager/VM memory.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { encodeMotionRecords, decodeMotionRecords } from '../src/motion/checkpoint.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { MOTION_ABI } from '../src/motion/abi.mjs';

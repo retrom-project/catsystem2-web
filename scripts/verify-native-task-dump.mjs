@@ -3,14 +3,12 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
-import {
-  NATIVE_ENGINE_MESSAGE_LAYOUTS,
-  NATIVE_UNWRITTEN_WORD,
-} from '../src/native/engine-message.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NativeTaskDump, NATIVE_TASK_DUMP } from '../src/native/task-dump.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
+import { NATIVE_ENGINE_MESSAGE_LAYOUTS } from '../oracle/engine-message-layouts.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
+import { NativeTaskDump, NATIVE_TASK_DUMP } from '../oracle/task-dump-original.mjs';
 import { encodeCP932, KCSMachine, readKCS } from '../src/kcs.mjs';
 import { kcsProgram } from '../tests/helpers.mjs';
 

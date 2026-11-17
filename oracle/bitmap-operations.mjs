@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original bitmap base operations share persistent wrappers and guest pixels.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 export const NATIVE_BITMAP_OPERATION_CONTRACTS = Object.freeze(
   [
     [0x7a, 3, 2, 0x64c8b0, 0x519270],

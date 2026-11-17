@@ -3,7 +3,7 @@
 // descriptors and canonical D3D pixels at the existing FES transport boundary.
 // Both reviewed ABIs have this same data layout. Removed with FES in phase7.
 import { bitsFloat } from '../src/kcs.mjs';
-import { conditionalNativeGraphicsBoundary } from '../src/native/exe-boundary.mjs';
+import { conditionalNativeGraphicsBoundary } from './exe-boundary.mjs';
 const captures = {
   'nekopara-vol3-engine-2.6.1.76': [0x675ce0, 0x6760a0, 0x676050],
   'sdk-4.01-engine-2.6.1.74': [0x54cdf0, 0x54d140, 0x54d0f0],

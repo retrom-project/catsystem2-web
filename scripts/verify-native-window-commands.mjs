@@ -2,13 +2,13 @@
 // Runs original Script wrappers and the application's private-message dispatch.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import {
   installNativeWindowCommands,
-  NATIVE_WINDOW_COMMAND_CALLBACKS,
   nativeWindowMessageCommand,
 } from '../src/native/window-commands.mjs';
+import { NATIVE_WINDOW_COMMAND_CALLBACKS } from '../oracle/window-command-addresses.mjs';
 const [filename, profile, output] = process.argv.slice(2);
 if (!output)
   throw new Error(

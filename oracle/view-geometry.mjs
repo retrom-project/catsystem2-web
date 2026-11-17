@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Dimensions, perspective distance, drawing rectangle and view positions.
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 
 export const NATIVE_VIEW_GEOMETRY_CONTRACTS = Object.freeze([
   Object.freeze({ id: 8, words: 2, handlers: [0x650260, 0x51b8b0] }),

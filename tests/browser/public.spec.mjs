@@ -2363,7 +2363,7 @@ test('the fixed x86 backend lazy-loads once and executes authored 32-bit code', 
 }) => {
   await page.goto('/');
   const result = await page.evaluate(async () => {
-    const { loadUnicorn } = await import('/src/ppi/backend.mjs');
+    const { loadUnicorn } = await import('/oracle/ppi-backend.mjs');
     const [uc, again] = await Promise.all([loadUnicorn(), loadUnicorn()]);
     const cpu = new uc.Unicorn(uc.ARCH_X86, uc.MODE_32);
     try {

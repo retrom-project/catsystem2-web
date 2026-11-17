@@ -5,8 +5,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeEngineFiles } from '../src/native/engine-files.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NativeEngineFiles } from '../oracle/engine-files.mjs';
 import { nativeHistoryCursor } from '../src/native/history-cursor.mjs';
 import {
   historyCursorFixture,

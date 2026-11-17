@@ -6,7 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
 import { NativePPI } from '../oracle/ppi-native-original.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 import { recordEmoteFrames, recordPPIFrames } from '../oracle/plugin-frames.mjs';
 import { emotePSBFixture } from '../tests/fixtures/emote-psb-fixture.mjs';
 

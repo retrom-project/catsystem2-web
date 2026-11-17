@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalOwner, originalFeature } from './original-adapter.mjs';
 // Main ABI task/message bridge, recovered from 0x65A430..0x65A876.
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
@@ -93,14 +94,11 @@ export function nativeTask(id, args, machine, task, services) {
             if (value !== NATIVE_UNWRITTEN_WORD) return result(nativeEngineWord(value));
             // The original wrapper passes its initialized caller pointer as
             // the reply word. A routed receiver can leave that word intact.
-            if (!world.nativeEngine && !world.nativeEngineLoading)
+            if (!originalOwner(world))
               throw new Error(
                 'A retained Root query caller pointer requires explicit original-engine ownership',
               );
-            return then(
-              world.getNativeFeature('task-memory').then((memory) => memory.pointer(task.id)),
-              result,
-            );
+            return then(originalFeature(world, 'task-memory', 'pointer', task.id), result);
           });
         }
         if (record.kind === 1)

@@ -65,7 +65,7 @@ for (const [profile, record] of Object.entries(golden.profiles)) {
       });
       await original.runtime.native('main', 12, [0x7fa01234], original.main.machine, original.main);
       const saved = structuredClone(original.snapshot());
-      assert.equal(saved.nativeEngine, null);
+      assert.equal(Object.hasOwn(saved, 'nativeEngine'), false);
       await fresh.restore(saved);
       assert.equal(
         fresh.graphics.cameraNearWord,

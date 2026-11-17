@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { floatBits } from '../src/kcs.mjs';
-import { nearestX87Precision } from '../src/ppi/floating-point.mjs';
+import { nearestX87Precision } from './ppi-floating-point.mjs';
 import { nativeParticleNear, projectionBounds } from '../src/ppi/numeric.mjs';
 
 const layouts = {

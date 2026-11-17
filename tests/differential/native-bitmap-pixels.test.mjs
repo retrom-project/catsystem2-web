@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { bitmapMemoryFixture } from '../fixtures/bitmap-memory-fixture.mjs';
 import { dataWorld } from '../fixtures/data-world.mjs';
 import { engineFixtureSet } from '../fixtures/oracle-fixtures.mjs';
-import { NATIVE_EXE_PROFILES } from '../../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../../oracle/executable-catalog.mjs';
 import { NATIVE_BITMAP_OPERATION_CONTRACTS } from '../../oracle/bitmap-operations.mjs';
 const fields = [
   'width',

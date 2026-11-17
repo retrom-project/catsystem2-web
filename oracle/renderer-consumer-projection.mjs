@@ -2,10 +2,10 @@
 // The transitional view projects records consumed by remaining EXE features.
 // StageRenderer owns texture/surface bytes, exposed through bounded PE consumer locks.
 import { nativeABI } from '../src/native/abi/index.mjs';
-import { EmoteD3D9 } from '../src/emote/native-d3d.mjs';
+import { EmoteD3D9 } from './m2-native-d3d.mjs';
 import { resetD3DContext } from '../src/render/particles-gl.mjs';
 import { NativeGraphicsPlatform } from './graphics-consumer-projection.mjs';
-import { installNativeDirectSound } from '../src/native/windows-directsound.mjs';
+import { installNativeDirectSound } from './windows-directsound.mjs';
 
 export const NATIVE_RENDERER_LAYOUTS = Object.freeze({
   'nekopara-vol3-engine-2.6.1.76': Object.freeze({

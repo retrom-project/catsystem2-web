@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Transitional scalar wrappers. Arithmetic remains original until phase 3.
 import { nativeABI } from '../src/native/abi/index.mjs';
-import { requireTransitionalHost } from '../src/native/transitional-exe.mjs';
+import { requireTransitionalHost } from './require-original-host.mjs';
 export const NATIVE_SCALAR_MATH_CONTRACTS = Object.freeze(
   [
     { id: 50, name: 'sin', words: 1, control: 1, memory: false },

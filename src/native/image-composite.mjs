@@ -156,10 +156,6 @@ export class NativeImageComposites {
 }
 export function installNativeImageComposites(world) {
   const composites = (world.imageComposites = new NativeImageComposites(world));
-  world.registerNativeFeature('image-composites', (engine) => {
-    engine.registerFeature('image-composites', composites);
-    return composites;
-  });
   world.runtime.register('main', 0x1cc, (args, machine, task) =>
     composites.apply(0x1cc, args, machine, task),
   );

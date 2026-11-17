@@ -2,12 +2,10 @@
 // String tasks 48 / 63: game 634D00 / 6359F0; SDK 50BE90.
 // Task messages here use the World's canonical game numbering. SDK wrappers
 // translate their independently recovered message numbers at the boundary.
-import { installNativeEngineFiles } from './engine-files.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicTask } from './graphics.mjs';
 import { NativeBitmap } from './image.mjs';
 import { NativeTextRuntime } from './text.mjs';
-import { NativeTextWindows } from './text-windows.mjs';
 import { CanvasTextGlyphs } from '../render/native-text.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
 import { nativeReply } from '../kcs.mjs';
@@ -17,18 +15,7 @@ import { installNativeDisplayLogs } from './text-log.mjs';
 export class NativeTextService {
   constructor(world, { glyphs = new CanvasTextGlyphs() } = {}) {
     this.world = world;
-    const windows = new NativeTextWindows(null, {
-      glyphs,
-      kernel: {
-        resolve() {
-          throw new Error('Text Windows imports require an explicit consumer view');
-        },
-      },
-    });
-    this.core = new NativeTextRuntime(
-      { profile: world.profile, textWindows: windows },
-      { world, glyphs },
-    );
+    this.core = new NativeTextRuntime({ profile: world.profile }, { world, glyphs });
     this.fes = null;
     this.log = null;
   }
@@ -283,8 +270,8 @@ export class NativeTextTask {
           await writer.userFont(context.resourceBytes);
           context.consumeResource?.();
         } else if (!l) await writer.resourceMessage(9, 0, 0);
-        else if (context.nativePointer)
-          await writer.userFont((await this.world.getNativeFeature('data-buffers')).data(l));
+        else if (context.nativePointer && this.world.transitionalExe?.readTextResource)
+          await writer.userFont(await this.world.transitionalExe.readTextResource(this.world, l));
         else throw new Error('Native text image font requires a mounted image-data resource');
         return 0;
       case 10:
@@ -545,8 +532,8 @@ export class NativeNVTextTask extends NativeTextTask {
           await writer.userFont(context.resourceBytes);
           context.consumeResource?.();
         } else if (!l) await writer.userFont(null);
-        else if (context.nativePointer)
-          await writer.userFont((await this.world.getNativeFeature('data-buffers')).data(l));
+        else if (context.nativePointer && this.world.transitionalExe?.readTextResource)
+          await writer.userFont(await this.world.transitionalExe.readTextResource(this.world, l));
         else throw new Error('Native NV image font requires its owned native image-data resource');
         return 0;
       case 11:
@@ -583,13 +570,8 @@ export class NativeNVTextTask extends NativeTextTask {
 }
 
 export function installNativeText(world, { glyphs } = {}) {
-  installNativeEngineFiles(world);
   installNativeLegacyText(world);
   installNativeDisplayLogs(world);
-  world.registerNativeFeature('text', async (engine) => {
-    const core = await world.text.runtime();
-    return engine.createTextConsumerView(core);
-  });
   const service = new NativeTextService(world, { glyphs });
   world.text = service;
   for (const kind of [48, 49, 63]) world.objects.register(kind, (record) => service.create(record));

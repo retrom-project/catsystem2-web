@@ -10,8 +10,8 @@ import { HG2, encodeHG2 } from '../src/formats/hg2.mjs';
 import { packHGPixels } from '../src/formats/hg-codec.mjs';
 import { openImage } from '../src/formats/hg3.mjs';
 import { unpackKCLZ } from '../src/formats/raster.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
 
 const [exe, output] = process.argv.slice(2);
 if (!exe || !output)

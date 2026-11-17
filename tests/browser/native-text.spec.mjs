@@ -35,7 +35,7 @@ for (const [profile, variable] of [
             { StageRenderer },
             { MOTION_ABI, setMotionVector },
           ] = await Promise.all([
-            import('/src/native/engine-process.mjs'),
+            import('/oracle/engine-process.mjs'),
             import('/src/native/graphics.mjs'),
             import('/src/native/retained-draw.mjs'),
             import('/src/native/draw-task.mjs'),
@@ -177,7 +177,7 @@ for (const [profile, variable] of [
           { CanvasTextGlyphs },
           { ParticlesGL },
         ] = await Promise.all([
-          import('/src/native/engine-process.mjs'),
+          import('/oracle/engine-process.mjs'),
           import('/src/native/text.mjs'),
           import('/src/render/native-text.mjs'),
           import('/src/render/particles-gl.mjs'),

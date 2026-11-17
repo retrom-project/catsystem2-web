@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalOperation } from './original-adapter.mjs';
 import { mapABIMessage } from './abi/messages.mjs';
 import { installNativeAreaEffectCommands } from './area-effect-commands.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
@@ -99,9 +100,7 @@ export class NativeAreaEffectTask {
     this.state.work = 0;
     for (const { handle } of this.state.imports) await this.world.graphics.images.release(handle);
     if (this.state.imports.length)
-      await this.world.nativeEngine?.features
-        .get('graphics-platform')
-        ?.releaseOwnerImages(this.record.id);
+      await originalOperation(this.world, 'releaseOwnerImages', this.record.id);
     this.state.imports = [];
   }
   async readPacket(message, l, context) {
@@ -125,8 +124,12 @@ export class NativeAreaEffectTask {
   async bitmap(handle, context) {
     if (!handle) return 0;
     if (!context.nativePointer) return handle;
-    const platform = await this.world.getNativeFeature('graphics-platform'),
-      borrowed = platform.imageHandle(platform.process.load(handle), this.record.id),
+    const borrowed = await originalOperation(
+        this.world,
+        'unwrapBitmapWrapper',
+        handle,
+        this.record.id,
+      ),
       imported = this.world.graphics.images.alias(borrowed, this.record.id);
     this.state.imports.push({ wrapper: handle, handle: imported });
     return imported;
@@ -484,9 +487,7 @@ export class NativeAreaEffectTask {
   }
   async refreshImports() {
     if (!this.state.imports.length) return;
-    const platform = await this.world.getNativeFeature('graphics-platform');
-    for (const { wrapper } of this.state.imports)
-      platform.imageHandle(platform.process.load(wrapper), this.record.id);
+    await originalOperation(this.world, 'refreshBitmapImports', this.state.imports, this.record.id);
   }
   async calculate(elapsed) {
     const state = this.state,

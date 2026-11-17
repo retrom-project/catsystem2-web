@@ -47,13 +47,13 @@ import { nativeInputBitmapMask } from '../src/native/input.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { NativeTexturePageView } from './texture-memory-original.mjs';
 import { NativeGraphicsPacket, NativePlaneReceiver } from './graphics-task-original.mjs';
-import { installNativeEngineWorkers } from '../src/native/engine-workers.mjs';
-import { NativeVMR9 } from '../src/native/vmr9.mjs';
-import { NativeDirectShow } from '../src/native/directshow.mjs';
+import { installNativeEngineWorkers } from './engine-workers.mjs';
+import { NativeVMR9 } from './vmr9.mjs';
+import { NativeDirectShow } from './directshow.mjs';
 import { installNativePlaneMovieCommands } from '../src/native/plane-movie-command.mjs';
 import { installNativePlaneModelCommands } from '../src/native/plane-model-command.mjs';
 import { nativePlaneInputGeometry } from '../src/native/plane-input-geometry.mjs';
-import { NativeTextureMovieRenderer } from '../src/native/movie-texture-renderer.mjs';
+import { NativeTextureMovieRenderer } from './movie-texture-renderer.mjs';
 const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
 const BASE_PLANE_MESSAGES = new Set([
   3, 4, 5, 6, 7, 8, 19, 47, 48, 50, 52, 53, 54, 89, 90, 92, 93, 94, 95, 96, 97, 98, 99, 100,

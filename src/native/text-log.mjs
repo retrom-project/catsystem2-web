@@ -523,10 +523,6 @@ export class NativeDisplayLogs {
 }
 export function installNativeDisplayLogs(world) {
   const logs = (world.displayLogs = new NativeDisplayLogs(world));
-  world.registerNativeFeature('display-logs', (engine) => {
-    engine.registerFeature('display-logs', logs);
-    return logs;
-  });
   for (const id of NATIVE_DISPLAY_LOG_IDS)
     if (id < nativeABI(world.profile).tables.main.count)
       world.runtime.register('main', id, (args, machine, task) =>

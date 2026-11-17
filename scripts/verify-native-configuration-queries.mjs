@@ -4,14 +4,14 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import {
   NativeConfigurationQueries,
   NATIVE_CONFIGURATION_QUERY_CONTRACTS,
   NATIVE_CONFIGURATION_QUERY_LAYOUTS,
 } from '../oracle/configuration-query.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import {
   configurationQueryState,

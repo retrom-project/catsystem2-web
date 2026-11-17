@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 
 const api = (engine, name, ...args) =>
   engine.process.call(engine.resolve({ dll: 'kernel32.dll', name }), args);

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { transitionalRuntimeFiles } from './transitional-runtime.mjs';
 import { walk, NodeFile } from './node-files.mjs';
 import { sourceIdentity } from '../src/identity.mjs';
-import { PPI_BACKEND_FILES } from '../src/ppi/backend-artifact.mjs';
+import { PPI_BACKEND_FILES } from '../oracle/ppi-backend-artifact.mjs';
 import { NATIVE_ZLIB_FILES } from '../src/native/zlib-artifact.mjs';
 import { NATIVE_FREETYPE_FILES } from '../src/native/freetype-artifact.mjs';
 const args = process.argv.slice(2),

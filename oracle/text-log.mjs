@@ -2,11 +2,11 @@
 // The display-log cache is an original engine object, separate from the CST
 // history. Rebuilds import a temporary view of that history and discard it.
 import { nativeABI } from '../src/native/abi/index.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 import { nativeReply } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 import { evaluateNativeExpression } from '../src/native/expression.mjs';
-import { installNativeEngineFiles } from '../src/native/engine-files.mjs';
+import { installNativeEngineFiles } from './engine-files.mjs';
 
 export const NATIVE_DISPLAY_LOG_IDS = Object.freeze([
   0x2b8, 0x2b9, 0x2ba, 0x2bb, 0x2bc, 0x311, 0x352, 0x353, 0x36c, 0x3d1, 0x40a,

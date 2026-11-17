@@ -50,11 +50,7 @@ export class NativeDrawCommands {
   restore() {}
 }
 export function installNativeDrawCommands(world) {
-  const drawCommands = new NativeDrawCommands(world);
-  world.registerNativeFeature('draw-commands', (engine) => {
-    engine.registerFeature('draw-commands', drawCommands);
-    return drawCommands;
-  });
+  const drawCommands = (world.drawCommands = new NativeDrawCommands(world));
   for (const { id } of NATIVE_DRAW_COMMAND_CONTRACTS)
     world.runtime.register('main', id, (args, machine, task) =>
       drawCommands.apply(id, args, machine, task),

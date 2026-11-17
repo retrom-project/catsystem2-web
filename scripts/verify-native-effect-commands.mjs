@@ -4,12 +4,12 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { NATIVE_EFFECT_COMMAND_CONTRACTS } from '../oracle/effect-commands-original.mjs';
 import { NativeEffectCommands } from '../src/native/effect-commands.mjs';
 import { NativeBufferMemory } from '../src/native/buffer-memory.mjs';
 import { floatBits } from '../src/kcs.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { imageOwnerFixture } from '../tests/fixtures/image-owner-fixture.mjs';
 
 const [filename, output] = process.argv.slice(2);

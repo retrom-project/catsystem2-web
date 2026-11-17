@@ -4,8 +4,8 @@
 // and their always-one status query in the shared native process.
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+import { NATIVE_EXE_PROFILES } from './executable-catalog.mjs';
 export const NATIVE_RECORD_QUEUE_IDS = Object.freeze([0x3f2, 0x3f3, 0x3f4, 0x3f5, 0x400]);
 export class NativeRecordQueues {
   constructor(engine, world) {

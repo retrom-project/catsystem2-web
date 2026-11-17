@@ -3,11 +3,11 @@
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { NativeBitmap } from '../src/native/image.mjs';
-import { NativeGraphicsPlatform as BitmapUploads } from '../src/native/graphics-process.mjs';
+import { NativeGraphicsPlatform as BitmapUploads } from './graphics-process.mjs';
 import { MOTION_ABI, setMotionVector } from '../src/motion/abi.mjs';
 import { bitsFloat } from '../src/kcs.mjs';
 import { NATIVE_UNWRITTEN_WORD, nativeTaskKeyOrder } from '../src/native/engine-message.mjs';
-import { conditionalNativeGraphicsBoundary } from '../src/native/exe-boundary.mjs';
+import { conditionalNativeGraphicsBoundary } from './exe-boundary.mjs';
 
 const ABI = {
   'nekopara-vol3-engine-2.6.1.76': {

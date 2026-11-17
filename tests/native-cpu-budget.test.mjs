@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 test('native faults retain guest registers and return stack before host restoration', async () => {
   const p = new PE32Process(await loadUnicorn()),
     code = p.allocate(64, true);

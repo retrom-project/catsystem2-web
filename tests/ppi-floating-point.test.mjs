@@ -3,8 +3,8 @@ import { PPIRegistry } from '../src/ppi/plugin-identity.mjs';
 import { authoredPPI } from './fixtures/ppi-js-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { PE32Process, parsePE32 } from '../src/ppi/pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { PE32Process, parsePE32 } from '../oracle/ppi-pe32.mjs';
 import { NativePPIRuntime } from '../oracle/ppi-native-original.mjs';
 import { nativeParticleFixture } from './fixtures/ppi-native-fixture.mjs';
 import { readFile } from 'node:fs/promises';
@@ -18,7 +18,7 @@ import {
   FLOATING_POINT_REGISTERS,
   captureFloatingPoint,
   restoreFloatingPoint,
-} from '../src/ppi/floating-point.mjs';
+} from '../oracle/ppi-floating-point.mjs';
 
 test('complete x87 metadata and SIMD registers retain their exact ABI widths through process restore', async () => {
   const unicorn = await loadUnicorn(),

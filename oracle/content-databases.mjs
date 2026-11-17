@@ -2,8 +2,8 @@
 // Original question/configuration, selection, KCDB and mission-table families.
 // Every persistent field stays in the World's shared original-engine process.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { installNativeEngineFiles } from '../src/native/engine-files.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+import { installNativeEngineFiles } from './engine-files.mjs';
 
 export const NATIVE_CONTENT_DATABASE_FAMILIES = Object.freeze({
   question: { bytes: 620, create: 0x2e6, release: 0x2e7, destroy: [0x796b00, 0x62f020] },

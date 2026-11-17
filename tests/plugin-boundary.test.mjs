@@ -53,8 +53,8 @@ test('completed plugin implementation and deployment boundary agree', () =>
 
 test('the retained engine mapper accepts an EXE without altering its header and rejects DLL loading', async () => {
   const [{ PE32Process }, { loadUnicorn }, { nativeParticleFixture }] = await Promise.all([
-    import('../src/ppi/pe32.mjs'),
-    import('../src/ppi/backend.mjs'),
+    import('../oracle/ppi-pe32.mjs'),
+    import('../oracle/ppi-backend.mjs'),
     import('./fixtures/ppi-native-fixture.mjs'),
   ]);
   const p = new PE32Process(await loadUnicorn()),

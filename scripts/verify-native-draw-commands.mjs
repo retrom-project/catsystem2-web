@@ -2,13 +2,13 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import {
   NativeDrawCommands,
   NATIVE_DRAW_COMMAND_CONTRACTS,
 } from '../oracle/draw-commands-original.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { NativeRenderSources } from '../oracle/render-sources-original.mjs';
 import { imageOwnerFixture } from '../tests/fixtures/image-owner-fixture.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';

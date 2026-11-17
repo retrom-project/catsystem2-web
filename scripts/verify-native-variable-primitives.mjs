@@ -4,9 +4,9 @@ import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { KCSMachine } from '../src/kcs/vm.mjs';
 import { NativeVariableBank, nativeBank } from '../src/native/bank.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 
 const [exe, output] = process.argv.slice(2);
 if (!exe || !output)

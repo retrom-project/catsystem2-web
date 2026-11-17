@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalFeature, originalView } from './original-adapter.mjs';
 // Drawing task constructor/message entry: game 5F3C00/5F3F50.
 import { truncateFloat32 } from '../ppi/numeric.mjs';
 import { mapABIMessage } from './abi/messages.mjs';
@@ -107,7 +108,10 @@ export class NativeDrawTask {
           return 0;
         }
         if (context.nativePointer)
-          fields[0] = (await this.world.getNativeFeature('graphics-platform')).imageHandle(
+          fields[0] = await originalFeature(
+            this.world,
+            'graphics-platform',
+            'imageHandle',
             fields[0],
             context.nativeSenderWorldID ?? sender,
           );
@@ -141,7 +145,7 @@ export class NativeDrawTask {
         store(
           l,
           handle && context.nativePointer
-            ? await (await this.world.getNativeFeature('bitmap-memory')).wrapper(handle)
+            ? await originalFeature(this.world, 'bitmap-memory', 'wrapper', handle)
             : handle,
         );
         return 0;
@@ -222,7 +226,10 @@ export class NativeDrawTask {
       case 296: {
         const image =
           context.nativePointer && l
-            ? (await this.world.getNativeFeature('graphics-platform')).imageHandle(
+            ? await originalFeature(
+                this.world,
+                'graphics-platform',
+                'imageHandle',
                 load(l),
                 this.record.id,
               )
@@ -585,9 +592,7 @@ export class NativeDrawTask {
   async releaseRenderer() {
     for (const item of [...this.state.renderer.items]) await this.removeEntry(item.key);
     await this.retained()?.removeSurface(this);
-    await this.world.nativeEngine?.features
-      .get('graphics-platform')
-      ?.releaseOwnerImages(this.record.id);
+    await originalView(this.world, 'releaseOwnerImages', this.record.id);
     await this.graphics.images.release(this.state.renderer.bitmap);
     this.state.renderer = null;
   }

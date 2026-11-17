@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeEngineWindows } from '../src/native/windows-services.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NativeEngineWindows } from '../oracle/windows-services.mjs';
 import { floatBits } from '../src/kcs.mjs';
 
 async function fixture() {

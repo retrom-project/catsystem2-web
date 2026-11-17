@@ -2,13 +2,13 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { NATIVE_BITMAP_OPERATION_CONTRACTS } from '../oracle/bitmap-operations.mjs';
 import { bitmapMemoryFixture } from '../tests/fixtures/bitmap-memory-fixture.mjs';
 import { contentAllocations } from '../tests/fixtures/content-databases-fixture.mjs';
 import { installNativeRasterKernels } from '../oracle/raster-kernel-projection.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 const [filename, output] = process.argv.slice(2);
 if (!output) throw new Error('Usage: verify-native-bitmap-operations.mjs FIXED_EXE IGNORED_REPORT');
 const bytes = new Uint8Array(await readFile(filename)),

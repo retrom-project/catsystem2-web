@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalFeature } from './original-adapter.mjs';
 // Script bitmap commands operate on the one logical pixel and metadata model.
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
@@ -40,7 +41,10 @@ export class NativeBitmapOperations {
     const a = (i) => nativeDataArgument(args, machine, i),
       first = a(0) >>> 0;
     if (first && rawIDs.has(id) && !this.world.runtime.handles.records.has(first))
-      return (await this.world.getNativeFeature('render-sources')).withBitmapOperation(
+      return originalFeature(
+        this.world,
+        'render-sources',
+        'withBitmapOperation',
         first,
         (bitmap) => this.operation(id, a, machine, task, bitmap),
         id === 0x1d4 ? 'rotation' : id === 0x281 ? 'alpha' : 'resize',
@@ -121,10 +125,6 @@ export class NativeBitmapOperations {
 }
 export function installNativeBitmapOperations(world) {
   const operations = (world.bitmapOperations = new NativeBitmapOperations(world));
-  world.registerNativeFeature('bitmap-operations', (engine) => {
-    engine.registerFeature('bitmap-operations', operations);
-    return operations;
-  });
   for (const { id } of NATIVE_BITMAP_OPERATION_CONTRACTS)
     if (id !== 0x7a && (id !== 0x402 || nativeABI(world.profile).capabilities.bitmapColorQuery))
       world.runtime.register('main', id, (args, machine, task) =>

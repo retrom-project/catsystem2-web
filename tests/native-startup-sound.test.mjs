@@ -10,8 +10,8 @@ import {
   NativeConfigurationQueries,
 } from '../oracle/configuration-query.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
-import { NativeEngineFiles } from '../src/native/engine-files.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineFiles } from '../oracle/engine-files.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { readNativeStartupSoundConfiguration } from '../src/native/engine-startup-sound.mjs';
 import {
   NativeSoundConfiguration,

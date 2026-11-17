@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalView } from './original-adapter.mjs';
 // Mounted-file resolution shared by JS decoders and the transitional IFile host.
 export function nativeCategoryFilename(game, name, category) {
   if (game.nativeResources) return game.nativeResources.resolve(name, category);
@@ -8,7 +9,7 @@ export async function readNativeResource(
   world,
   path,
   mode = 3,
-  kernel = world.nativeEngine?.kernel,
+  kernel = originalView(world, 'resourceKernel'),
 ) {
   const validate = (bytes) => {
     if (bytes !== null && !(bytes instanceof Uint8Array))

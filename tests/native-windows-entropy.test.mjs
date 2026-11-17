@@ -2,9 +2,9 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { installNativeEntropy } from '../src/native/windows-entropy.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { installNativeEntropy } from '../oracle/windows-entropy.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 
 test('the dynamic Windows entropy export fills exactly the caller bytes across chunks', async () => {
   const engine = new NativeEngineProcess(await loadUnicorn()),

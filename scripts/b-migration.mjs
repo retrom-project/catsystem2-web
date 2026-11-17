@@ -3,6 +3,7 @@
 // run here. No engine, DLL, resource, task or browser is opened.
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { nativeTestGroups } from './test-native.mjs';
+import { runtimeSourceFiles } from './runtime-source-files.mjs';
 import { TRANSITIONAL_HEAP_POLICY } from '../oracle/transitional-heap.mjs';
 import { NATIVE_IMAGE_OWNER_JS_IDS } from '../src/native/image-owner.mjs';
 import { reviewedRenderRoute, reviewRenderIndirect } from './render-route-audit.mjs';
@@ -13,12 +14,7 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Linter } from 'eslint';
 import { format, resolveConfig } from 'prettier';
-import {
-  IMAGE_RANGES,
-  scanRuntime,
-  compareBaseline,
-  transitionalRuntimeFiles,
-} from './check-no-exe-addresses.mjs';
+import { IMAGE_RANGES, scanRuntime, compareBaseline } from './check-no-exe-addresses.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const output = join(root, 'docs/b-migration.json');
@@ -72,17 +68,6 @@ function walk(node, visit) {
   }
 }
 
-async function filesBelow(directory) {
-  const result = [];
-  for (const entry of await readdir(join(root, directory), { withFileTypes: true })) {
-    const file = `${directory}/${entry.name}`;
-    if (entry.isDirectory()) result.push(...(await filesBelow(file)));
-    else if (entry.isFile() && file.endsWith('.mjs')) result.push(file);
-    else throw new Error(`Unclassified runtime input ${file}`);
-  }
-  return result.sort();
-}
-
 // These are migration ownership decisions, independent of EXE address counts.
 // Infrastructure is assigned to phase 8, with its cross-cutting role recorded.
 const domains = {
@@ -118,7 +103,7 @@ function domain(file) {
   if (['src/native/data-buffer-projection.mjs', 'oracle/data-buffer-projection.mjs'].includes(file))
     return 8;
   if (['oracle/bitmap-memory.mjs', 'oracle/bitmap-projection.mjs'].includes(file)) return 8;
-  if (['src/emote/native-d3d.mjs', 'src/emote/native-adapter.mjs'].includes(file)) return 8;
+  if (['oracle/m2-native-d3d.mjs', 'oracle/m2-native-adapter.mjs'].includes(file)) return 8;
   if (
     file.startsWith('src/emote/') ||
     file === 'oracle/plugin-frames.mjs' ||
@@ -354,7 +339,9 @@ function resolveFeatures(names, features, modules, visited = new Set()) {
 
 function classify(file, id, callback, features, modules) {
   const name = basename(file);
-  const ownerTransition = name === 'image-owner' && !NATIVE_IMAGE_OWNER_JS_IDS.includes(id);
+  const ordinary = !modules.has('web/transitional-entry.mjs');
+  const ownerTransition =
+    !ordinary && name === 'image-owner' && !NATIVE_IMAGE_OWNER_JS_IDS.includes(id);
   const capturedGraph =
     name === 'effect-commands' &&
     [0x238, 0x35b].includes(id) &&
@@ -362,7 +349,7 @@ function classify(file, id, callback, features, modules) {
   const areaUpload =
     name === 'area-effect-commands' &&
     [0xc6, 0xcb].includes(id) &&
-    modules.get('src/native/graphics-process.mjs')?.executionSites.length;
+    modules.get('oracle/graphics-process.mjs')?.executionSites.length;
   const planeModelReceiver =
     name === 'plane-model-command' &&
     modules.get('src/native/graphics-task.mjs')?.executionSites.length;
@@ -405,7 +392,11 @@ function classify(file, id, callback, features, modules) {
     );
     names.push(areaUpload ? 'graphics-platform' : 'task-memory');
   } else if (originalWrappers.has(name)) {
-    implementation = 'original-handler';
+    implementation = ordinary ? 'pure-js' : 'original-handler';
+    if (ordinary)
+      reasons.push(
+        '实际 ordinary World 注册的 JS 包装器；原进程工厂/物理实现不在产品入口图内。此分类不证明有限域外调用成功。',
+      );
   } else if (reviewedRegions.has(name)) {
     implementation = 'exe-region';
     names = unique([...names, ...reviewedRegions.get(name)]);
@@ -425,7 +416,7 @@ function classify(file, id, callback, features, modules) {
   } else if (name === 'window-commands' || (name === 'world' && id === 0x41e)) {
     implementation = 'pure-js';
     reasons.push('本体只投递窗口消息，消息泵/WndProc 的后续 EXE 行为另列于非 native 入口。');
-  } else if (name === 'script-message-box') implementation = 'exe-region';
+  } else if (name === 'script-message-box') implementation = ordinary ? 'pure-js' : 'exe-region';
   else if (name === 'image-persistence') {
     implementation = 'pure-js';
   } else {
@@ -469,7 +460,10 @@ function documentation(files, docs) {
 
 async function nativeEntries(profile, world, unmounted, api, modules, docs) {
   const features = new Map(
-    [...world.nativeFeatureFactories].map(([name, fn]) => [name, functionLocation(fn, modules)]),
+    [...(world.nativeFeatureFactories ?? [])].map(([name, fn]) => [
+      name,
+      functionLocation(fn, modules),
+    ]),
   );
   const entries = [];
   for (const [table, declaration] of Object.entries(api.NATIVE_ABIS[profile].tables)) {
@@ -595,9 +589,9 @@ async function nativeEntries(profile, world, unmounted, api, modules, docs) {
         (table === 'generic' && [39, 40].includes(entry.id)) ||
         (table.startsWith('particle-') && [33, 34].includes(entry.id))
       ) {
-        dependencies = unique([...dependencies, 'src/native/random-memory.mjs']);
+        dependencies = unique([...dependencies, 'src/ppi/random.mjs']);
         (table.startsWith('particle-') ? reviewEvidence : reasons).push(
-          'JS 随机数使用共享 ParticleRandom，World 可将随机状态绑定到原 EXE RAM。已登记的 phase-10 数据页投影，不执行原随机数处理器。',
+          '普通 World 的 Motion/Particle 使用共享 ParticleRandom 与完整双 MT checkpoint 状态。物理 EXE RAM 绑定仅在显式 oracle 适配器中，普通依赖图不包含该投影。',
         );
       }
       const phase =
@@ -1216,7 +1210,7 @@ function profileSelections(modules) {
 
 async function build() {
   const modules = new Map();
-  for (const file of [...(await filesBelow('src')), ...(await transitionalRuntimeFiles(root))])
+  for (const file of await runtimeSourceFiles(root))
     modules.set(file, moduleFacts(file, await readFile(join(root, file), 'utf8')));
   const docs = new Map();
   for (const file of (await readdir(join(root, 'docs')))
@@ -1324,6 +1318,7 @@ async function build() {
         group.directories?.some((directory) => file.startsWith(directory)),
     );
     for (const { file } of selected) assigned.add(file);
+    if (!selected.length) return null;
     return {
       name: group.name,
       domain: group.domain,
@@ -1363,6 +1358,8 @@ async function build() {
     reason:
       '余下执行站点可能由 native 本体或生命周期调用，全部保留以供逐函数迁移，不能以未命中分组为由漏掉。',
   });
+  for (let i = nonNativeEntries.length - 1; i >= 0; i--)
+    if (nonNativeEntries[i] === null) nonNativeEntries.splice(i, 1);
   const entries = profiles.flatMap((profile) => profile.entries);
   const profileAudit = profileSelections(modules);
   const remaining = new Map();
@@ -1387,7 +1384,7 @@ async function build() {
       command: 'node scripts/b-migration.mjs',
       check: 'node scripts/b-migration.mjs --check',
       method:
-        'Actual NativeWorld registration in mounted/unmounted scenarios; instrumented actual NativeRuntime fallback dispatch with empty arguments; source AST feature-factory edges and execution sites; check-no-exe-addresses.scanRuntime counts.',
+        'Actual ordinary app ESM graph; actual NativeWorld registration in mounted/unmounted scenarios; instrumented actual NativeRuntime fallback dispatch with empty arguments; source AST feature-factory edges and execution sites; graph-scoped check-no-exe-addresses.scanRuntime counts. Explicit oracle includes are not product modules.',
       limitations:
         'Fallback probes establish ownership at ID/argument/service guards, not successful behavior. Generic/PTCL use their separate dispatchers. Message receivers, input-dependent calls, PE-backed data and unresolved semantic names remain needs-review. Direct checker counts are syntactic and include plugin-host calls. No private EXE is required.',
       baselineComparison: comparison,

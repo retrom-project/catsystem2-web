@@ -2,7 +2,7 @@
 // Complete KCS screen-effect wrappers use the original packet layouts and view.
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 
 export const NATIVE_EFFECT_COMMAND_CONTRACTS = Object.freeze(
   [

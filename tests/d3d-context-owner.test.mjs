@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { EmoteD3D9 } from '../src/emote/native-d3d.mjs';
+import { EmoteD3D9 } from '../oracle/m2-native-d3d.mjs';
 import { StageRenderer } from '../src/render/stage.mjs';
 import {
   createD3DContext,
@@ -321,7 +321,7 @@ test('JS-only fresh World restores once without requesting an engine and keeps e
     set(h, 3, 6, 2);
     h.d3d.close();
     const saved = world.snapshot();
-    assert.equal(saved.nativeEngine, null);
+    assert.equal(Object.hasOwn(saved, 'nativeEngine'), false);
     await fresh.restore(saved);
     assert.equal(restores, 1);
     assert.equal(fresh.nativeEngine, undefined);

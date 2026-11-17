@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { engineFixtureSet } from '../fixtures/oracle-fixtures.mjs';
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
 import { NativeLegacyTextRuntime as RawLegacy } from '../../oracle/text-legacy.mjs';
 import { NativeLegacyTextRuntime, NATIVE_LEGACY_TEXT_IDS } from '../../src/native/text-legacy.mjs';
 import { KCSMachine } from '../../src/kcs/vm.mjs';

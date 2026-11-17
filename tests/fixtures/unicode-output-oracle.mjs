@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { imageMemory, imageWrites } from './native-differential.mjs';
 import { NativeUnicodeOutput } from '../../oracle/unicode-output.mjs';
-import { NATIVE_EXE_PROFILES } from '../../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../../oracle/executable-catalog.mjs';
 export function unicodeOutputOracle(engine, id) {
   const invoke = async (world, args, machine, task) => {
     const p = engine.process,

@@ -2,7 +2,7 @@
 // Execute the original RECT wrappers and VM translator. USER32 rectangle
 // semantics and persistent image wrappers are shared with the other tasks.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
 
 export const NATIVE_RECTANGLE_CONTRACTS = Object.freeze(

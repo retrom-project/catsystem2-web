@@ -3,7 +3,7 @@ import { dataWorld } from './fixtures/data-world.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeConfigurationQueries } from '../oracle/configuration-query.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import {

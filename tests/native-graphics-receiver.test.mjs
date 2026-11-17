@@ -2,9 +2,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { conditionalNativeGraphicsBoundary } from '../src/native/exe-boundary.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { conditionalNativeGraphicsBoundary } from '../oracle/exe-boundary.mjs';
 import { installGraphicsOracle } from './fixtures/graphics-oracle-world.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';

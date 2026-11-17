@@ -6,7 +6,7 @@ import {
   restoreSceneCheckpoint,
   pruneSceneCheckpoints,
 } from '../src/native/scene-checkpoint.mjs';
-import { installNativeEngineFiles } from '../src/native/engine-files.mjs';
+import { installNativeEngineFiles } from './engine-files.mjs';
 const bounded = (size) => {
   if (!Number.isSafeInteger(size) || size < 0 || size > 0x10000000)
     throw new RangeError('Native scene checkpoint exceeds its resource limit');

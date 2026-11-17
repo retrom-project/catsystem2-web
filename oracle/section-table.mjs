@@ -2,8 +2,8 @@
 // Original section/key tables retain repeated values in source order.
 // Handles contain identity only; section maps and value strings stay in PE RAM.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { installNativeEngineFiles } from '../src/native/engine-files.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+import { installNativeEngineFiles } from './engine-files.mjs';
 
 export const NATIVE_SECTION_TABLE_IDS = Object.freeze([0x2ab, 0x2ac, 0x2ad]);
 export const NATIVE_SECTION_TABLE_LAYOUTS = Object.freeze({

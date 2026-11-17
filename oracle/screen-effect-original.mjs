@@ -4,7 +4,7 @@
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
-import { installNativeTaskMemory } from '../src/native/task-memory.mjs';
+import { installNativeTaskMemory } from './task-memory.mjs';
 import { NativeScreenEffectRenderer } from './screen-effect-render-original.mjs';
 
 const layouts = (rows) =>

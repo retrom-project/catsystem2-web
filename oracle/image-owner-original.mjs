@@ -3,9 +3,9 @@
 // Pixel/decoder/retained-renderer state remains in the shared engine process.
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 import { nativeHG3DecodeContext } from './hg3-delta.mjs';
-import { sameNativeBitmap } from '../src/native/bitmap-memory.mjs';
+import { sameNativeBitmap } from './bitmap-pointers.mjs';
 
 const rows = [
   [0x2c6, 1, 1, 0x654110, 0x51ef30],

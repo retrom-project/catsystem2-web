@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
-import { NativeTextWindows } from '../src/native/text-windows.mjs';
-import { createNativeDataProjection } from '../src/native/data-buffer-projection.mjs';
+import { NativeTextWindows } from './text-windows.mjs';
+import { createNativeDataProjection } from './data-projection-host.mjs';
 import { NativeFESTextLayout } from '../src/native/fes-text-layout.mjs';
 
 export const NATIVE_TEXT_CORES = Object.freeze({

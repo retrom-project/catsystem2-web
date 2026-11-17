@@ -3,7 +3,7 @@
 // unchanged. Only the wrapper's private OS calls cross to browser services.
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 
 export const NATIVE_UNICODE_OUTPUT_IDS = Object.freeze([0x40f, 0x410]);
 const HANDLERS = Object.freeze({ 0x40f: 0x64fc70, 0x410: 0x650ad0 });

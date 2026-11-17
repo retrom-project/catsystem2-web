@@ -4,7 +4,7 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
 import { NATIVE_SOUND_CONTROL as C } from '../src/native/sound.mjs';
 import { soundClockFixture } from '../tests/fixtures/sound-clock-fixture.mjs';

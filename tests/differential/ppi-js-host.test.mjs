@@ -3,7 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativePPIRuntime } from '../../oracle/ppi-native-original.mjs';
-import { loadUnicorn } from '../../src/ppi/backend.mjs';
+import { loadUnicorn } from '../../oracle/ppi-backend.mjs';
 import { JSPluginRuntime } from '../../src/ppi/js-runtime.mjs';
 import { PPIRegistry, ppiIdentity } from '../../src/ppi/plugin-identity.mjs';
 import { recordPPIFrames } from '../../oracle/plugin-frames.mjs';

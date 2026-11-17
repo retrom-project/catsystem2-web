@@ -3,7 +3,7 @@
 // backend and base clock boundary are substituted; glyph/layout code is original.
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeTextRuntime, NativeNVTextWriter } from '../oracle/text.mjs';
 import { NativeTextRuntime as JSTextRuntime } from '../src/native/text.mjs';
 import { NativeNVTextTask } from '../src/native/text-task.mjs';

@@ -278,9 +278,9 @@ test('async native graph drawing holds the current render target through nested 
   await page.goto('/');
   const result = await page.evaluate(async () => {
     const [{ loadUnicorn }, { PE32Process }, { EmoteD3D9 }, { ParticlesGL }] = await Promise.all([
-        import('/src/ppi/backend.mjs'),
-        import('/src/ppi/pe32.mjs'),
-        import('/src/emote/native-d3d.mjs'),
+        import('/oracle/ppi-backend.mjs'),
+        import('/oracle/ppi-pe32.mjs'),
+        import('/oracle/m2-native-d3d.mjs'),
         import('/src/render/particles-gl.mjs'),
       ]),
       p = new PE32Process(await loadUnicorn()),
@@ -358,9 +358,9 @@ test('the shared native device creates a lockable XRGB/D16 back buffer and resto
   await page.goto('/');
   const result = await page.evaluate(async () => {
     const [{ loadUnicorn }, { PE32Process }, { EmoteD3D9 }, { ParticlesGL }] = await Promise.all([
-        import('/src/ppi/backend.mjs'),
-        import('/src/ppi/pe32.mjs'),
-        import('/src/emote/native-d3d.mjs'),
+        import('/oracle/ppi-backend.mjs'),
+        import('/oracle/ppi-pe32.mjs'),
+        import('/oracle/m2-native-d3d.mjs'),
         import('/src/render/particles-gl.mjs'),
       ]),
       unicorn = await loadUnicorn(),
@@ -1080,9 +1080,9 @@ test('native D3D9 line lists and strips match pinned device coverage and restore
   await page.goto('/');
   const result = await page.evaluate(async (golden) => {
     const [{ loadUnicorn }, { PE32Process }, { EmoteD3D9 }, { ParticlesGL }] = await Promise.all([
-        import('/src/ppi/backend.mjs'),
-        import('/src/ppi/pe32.mjs'),
-        import('/src/emote/native-d3d.mjs'),
+        import('/oracle/ppi-backend.mjs'),
+        import('/oracle/ppi-pe32.mjs'),
+        import('/oracle/m2-native-d3d.mjs'),
         import('/src/render/particles-gl.mjs'),
       ]),
       unicorn = await loadUnicorn(),

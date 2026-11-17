@@ -9,14 +9,14 @@ import { KCSMachine } from '../src/kcs/vm.mjs';
 import { invokeNative } from '../oracle/scalar-invoke.mjs';
 const transitionalExe = { invokeNative };
 import { scalarHandler } from '../oracle/scalar-handlers.mjs';
-import { captureFloatingPoint } from '../src/ppi/floating-point.mjs';
+import { captureFloatingPoint } from '../oracle/ppi-floating-point.mjs';
 import {
   NativeEngineProcess,
   NATIVE_ENGINE_IMAGES,
   nativeImageIdentity,
-} from '../src/native/engine-process.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+} from '../oracle/engine-process.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { NativeScalarMath, NATIVE_SCALAR_MATH_CONTRACTS } from '../oracle/scalar-math.mjs';
 
 export async function verifyWordUnpacking(bytes, profile) {

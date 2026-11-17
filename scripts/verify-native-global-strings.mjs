@@ -4,10 +4,10 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { NativeGlobalStrings } from '../src/native/global-strings.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeConfigurationMemory } from '../src/native/config-memory.mjs';
+import { NativeConfigurationMemory } from '../oracle/config-memory.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 
 const [exe, output] = process.argv.slice(2);

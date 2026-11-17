@@ -2,14 +2,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeEngineFiles, NATIVE_MEMORY_FILE_LAYOUTS } from '../src/native/engine-files.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NativeEngineFiles, NATIVE_MEMORY_FILE_LAYOUTS } from '../oracle/engine-files.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { memoryGame, kif, kcsProgram } from './helpers.mjs';
 import { GameFiles, BlobFile } from '../src/files.mjs';
 import { NativeResourceCache } from '../src/native/resource-cache.mjs';
-import { initializeNativeSystemInformation } from '../src/native/engine-system-information.mjs';
+import { initializeNativeSystemInformation } from '../oracle/engine-system-information.mjs';
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
 import { engineFixture } from '../fixtures/oracle-fixtures.mjs';
 import { nativeSDKStandardCases, SDK_STANDARD_PROFILE } from '../fixtures/sdk-standard-cases.mjs';
 import { observeNativeCase } from '../fixtures/native-differential.mjs';

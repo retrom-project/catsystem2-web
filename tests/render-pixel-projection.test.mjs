@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { PPIWindowsServices } from '../src/ppi/native-services.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { PPIWindowsServices } from '../oracle/ppi-native-services.mjs';
 import { nativeRendererPixelMemory } from '../oracle/renderer-consumer-projection.mjs';
 
 test('a large renderer projection commits one nonexecutable span during a guest COM callback', async () => {

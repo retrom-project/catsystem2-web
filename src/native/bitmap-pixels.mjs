@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalOwner, originalOperation } from './original-adapter.mjs';
 // Integer bitmap arithmetic follows the reviewed packed-pixel algorithms.
 import { resampleBitmap } from './image.mjs';
 const f = Math.fround;
@@ -123,13 +124,8 @@ export async function bitmapTransform(bitmap, mode, argument) {
 }
 export async function bitmapTransfer(world, destination, source, args, copy, task) {
   if (!destination) {
-    const platform = await world.getNativeFeature('graphics-platform');
-    await platform.ensureRenderer();
-    return platform.withBitmap(
-      source,
-      (p) => platform.copyBitmap(p, ...args.slice(6, 10), args[1], args[2]),
-      task.id,
-    );
+    if (originalOwner(world)) return originalOperation(world, 'bitmapVRAM', source, args, task);
+    return copyBitmapToVRAM(world.graphics, source, ...args.slice(6, 10), args[1], args[2]);
   }
   let [sx, sy, width, height] = args.slice(6, 10).map((v) => v | 0);
   let dx = (args[1] + source.state.offsetX) | 0,
@@ -319,4 +315,27 @@ export async function bitmapExpand(bitmap, left, right, bottom, top) {
   });
   await bitmap.changed();
   return true;
+}
+
+// Same clipped upload geometry as the accepted graphics-process copyBitmap
+// projection; the bitmap and VRAM are the actual ordinary graphics owners.
+export async function copyBitmapToVRAM(graphics, bitmap, sx, sy, width, height, dx, dy) {
+  if (!bitmap || (width | 0) <= 0 || (height | 0) <= 0) return 0;
+  const ox = bitmap.state.offsetX | 0,
+    oy = bitmap.state.offsetY | 0,
+    left = Math.max(sx | 0, ox),
+    top = Math.max(sy | 0, oy),
+    right = Math.min(((sx | 0) + (width | 0)) | 0, (ox + bitmap.width) | 0),
+    bottom = Math.min(((sy | 0) + (height | 0)) | 0, (oy + bitmap.height) | 0);
+  if (left >= right || top >= bottom) return 0;
+  const area = [left - ox, top - oy, right - ox, bottom - oy],
+    x = ((dx | 0) + ox) | 0,
+    y = ((dy | 0) + oy) | 0;
+  if (x < 0) area[0] = Math.min(area[2], area[0] - x);
+  if (y < 0) area[1] = Math.min(area[3], area[1] - y);
+  if (area[0] < area[2] && area[1] < area[3])
+    await graphics.output(bitmap, [Math.max(x, 0) - area[0], Math.max(y, 0) - area[1]], area, {
+      upload: true,
+    });
+  return 1;
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Authored KCDB question/selection/mission tables and independent native fixtures.
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
-import { NativeEngineFiles } from '../../src/native/engine-files.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
+import { NativeEngineFiles } from '../../oracle/engine-files.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
 import {
   NativeContentDatabases,
@@ -9,7 +9,7 @@ import {
 } from '../../oracle/content-databases.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
 import { ParticleRandom } from '../../src/ppi/random.mjs';
-import { NativeRandomMemory } from '../../src/native/random-memory.mjs';
+import { NativeRandomMemory } from '../../oracle/random-memory.mjs';
 import { KCSMachine, readKCS } from '../../src/kcs.mjs';
 import { kcsProgram } from '../helpers.mjs';
 export * from './content-database-data.mjs';

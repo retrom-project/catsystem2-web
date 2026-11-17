@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeConfigurationMemory } from '../src/native/config-memory.mjs';
+import { NativeConfigurationMemory } from '../oracle/config-memory.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 

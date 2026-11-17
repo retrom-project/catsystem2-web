@@ -6,8 +6,8 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { Binary } from '../src/binary.mjs';
 import { NativePCMWindows } from '../src/native/audio-pcm.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
 
 const [exe, output] = process.argv.slice(2);
 if (!exe || !output)

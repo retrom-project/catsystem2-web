@@ -60,9 +60,9 @@ test('StretchRect copies a live GPU rectangle and keeps the target pixels outsid
   await page.goto('/');
   const result = await page.evaluate(async () => {
     const [{ loadUnicorn }, { PE32Process }, { EmoteD3D9 }, { ParticlesGL }] = await Promise.all([
-      import('/src/ppi/backend.mjs'),
-      import('/src/ppi/pe32.mjs'),
-      import('/src/emote/native-d3d.mjs'),
+      import('/oracle/ppi-backend.mjs'),
+      import('/oracle/ppi-pe32.mjs'),
+      import('/oracle/m2-native-d3d.mjs'),
       import('/src/render/particles-gl.mjs'),
     ]);
     const p = new PE32Process(await loadUnicorn()),

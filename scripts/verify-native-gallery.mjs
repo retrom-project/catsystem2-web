@@ -9,8 +9,8 @@ import { Binary } from '../src/binary.mjs';
 import { CGRegistry, CGGallery, parseCGReference, readCGList } from '../src/gallery.mjs';
 import { registerNativeCG } from '../src/native/gallery.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
 
 const [exe, output, ...lists] = process.argv.slice(2);
 if (!exe || !output)

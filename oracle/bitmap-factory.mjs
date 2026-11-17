@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Original image wrappers and the Script-owned automatic bitmap list.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 
 export const NATIVE_BITMAP_FACTORY_CONTRACTS = Object.freeze(
   [

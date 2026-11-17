@@ -4,11 +4,9 @@
 // Base constructor; no device behavior is claimed by this protocol probe.
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import {
-  NATIVE_ENGINE_MESSAGE_LAYOUTS,
-  NATIVE_UNWRITTEN_WORD,
-} from '../src/native/engine-message.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
+import { NATIVE_ENGINE_MESSAGE_LAYOUTS } from '../oracle/engine-message-layouts.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import {
   engineMessageFixture,

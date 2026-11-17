@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
 import { NativeUnicodeOutput } from '../../oracle/unicode-output.mjs';
 import { KCSMachine, readKCS } from '../../src/kcs.mjs';
 import { kcsProgram } from '../helpers.mjs';

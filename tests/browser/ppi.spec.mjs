@@ -233,7 +233,7 @@ test('an authored PE32 particle runs in the browser and restores a new process w
     async (fixture) => {
       const [{ NativePPI }, { loadUnicorn }] = await Promise.all([
         import('/oracle/ppi-native-original.mjs'),
-        import('/src/ppi/backend.mjs'),
+        import('/oracle/ppi-backend.mjs'),
       ]);
       const bytes = Uint8Array.from(fixture),
         options = {

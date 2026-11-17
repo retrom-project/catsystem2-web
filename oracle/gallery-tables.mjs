@@ -2,7 +2,7 @@
 // Legacy binary gallery-name/variant tables use their original native parsers.
 // Bytes and heap references belong to the shared engine, not to handle copies.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 
 export const NATIVE_GALLERY_TABLE_IDS = Object.freeze(
   Array.from({ length: 12 }, (_, i) => 0x195 + i),

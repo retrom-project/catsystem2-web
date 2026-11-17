@@ -5,13 +5,13 @@ import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { Binary } from '../src/binary.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { NativeObjects } from '../src/native/objects.mjs';
 import { nativeTask } from '../src/native/task.mjs';
 import { nativeFES } from '../src/native/fes.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
 
 const [exe, output] = process.argv.slice(2);
 if (!exe || !output)

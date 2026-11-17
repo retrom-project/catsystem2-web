@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 import { loadOracleDLL } from './ppi-dll-loader.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { PPIWindowsServices } from '../src/ppi/native-services.mjs';
+import { PE32Process } from './ppi-pe32.mjs';
+import { PPIWindowsServices } from './ppi-native-services.mjs';
 import { PPI_ABI } from '../src/ppi/abi.mjs';
 import { PPI_HOST_CONTRACTS } from '../src/ppi/contracts.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { NativePPI } from './ppi-native-original.mjs';
-import { withFloatingPointThread } from '../src/ppi/floating-point.mjs';
+import { withFloatingPointThread } from './ppi-floating-point.mjs';
 
 const realSlots = new Set([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 27, 29, 30]);
 const contextSlots = new Set([0, 1, 31, 33, 34]);

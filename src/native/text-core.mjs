@@ -5,7 +5,7 @@ import { textVisible } from './text-layout.mjs';
 import { textConfig, textPacket } from './text-config.mjs';
 import { NativeTextFonts } from './font-backend.mjs';
 import { CanvasTextGlyphs } from '../render/native-text.mjs';
-import { NativeTextWindows } from './text-windows.mjs';
+import { NativeTextObjects } from './text-objects.mjs';
 import { rasterTextGlyph, compositeTextGlyph } from './text-raster.mjs';
 import { openImage } from '../formats/hg3.mjs';
 import { nativeTextUnits } from './text-scanner.mjs';
@@ -20,7 +20,7 @@ const join = (arrays) => {
 };
 export class JSTextRuntime {
   constructor(engine, { world, glyphs, rate } = {}) {
-    Object.assign(this, { engine, world, profile: engine.profile, process: engine.process });
+    Object.assign(this, { engine, world, profile: engine.profile });
     this.glyphs = new NativeTextFonts(
       glyphs ?? engine.textWindows?.glyphs ?? new CanvasTextGlyphs(),
       world,
@@ -29,21 +29,20 @@ export class JSTextRuntime {
     this.rate = rate ?? world?.configuration?.getField?.('scene.textFrame') ?? 0;
     this.writers = new Map();
     this.nextWriter = 1;
-    this.windows =
-      engine.textWindows ??
-      new NativeTextWindows(engine.process, { glyphs: this.glyphs, kernel: engine.kernel });
-    for (const [name, definition] of this.windows.definitions)
-      engine.registerWindows?.(
-        /^(?:SetRect|CopyRect|IsRect|EqualRect|IntersectRect|UnionRect|OffsetRect|InflateRect|GetDC|ReleaseDC|FillRect)/.test(
+    this.windows = engine.textWindows ?? new NativeTextObjects({ glyphs: this.glyphs });
+    if (engine.registerWindows)
+      for (const [name, definition] of this.windows.definitions)
+        engine.registerWindows?.(
+          /^(?:SetRect|CopyRect|IsRect|EqualRect|IntersectRect|UnionRect|OffsetRect|InflateRect|GetDC|ReleaseDC|FillRect)/.test(
+            name,
+          )
+            ? 'USER32.dll'
+            : /^lstr/.test(name)
+              ? 'KERNEL32.dll'
+              : 'GDI32.dll',
           name,
-        )
-          ? 'USER32.dll'
-          : /^lstr/.test(name)
-            ? 'KERNEL32.dll'
-            : 'GDI32.dll',
-        name,
-        definition,
-      );
+          definition,
+        );
     engine.registerFeature?.('text', this);
   }
   async ready() {
@@ -138,9 +137,6 @@ export class JSTextWriter {
   }
   get bindings() {
     return this.runtime.bindings(this.mode);
-  }
-  get process() {
-    return this.runtime.process;
   }
   enginePointer() {
     return this.pointer;
@@ -412,21 +408,18 @@ export class JSTextWriter {
       return 0;
     }
     if (operation === 13) {
-      const bytes = this.process.stringBytes(l);
+      if (typeof this.runtime.originalStringBytes !== 'function')
+        throw new Error('Text category bytes require their actual JS resource owner');
+      const bytes = this.runtime.originalStringBytes(l);
       await this.category(w, bytes);
       return 0;
     }
     throw new Error('Text resource bytes must be supplied by their JS owner');
   }
   async input(bytes, fn) {
-    const p = this.process,
-      at = p.allocate(bytes.length, true);
-    try {
-      p.write(at, bytes);
-      return await fn(at);
-    } finally {
-      p.free(at);
-    }
+    if (typeof this.runtime.originalInput !== 'function')
+      throw new Error('Text pointer input requires an explicit original oracle adapter');
+    return this.runtime.originalInput(bytes, fn);
   }
   async endPosition() {
     return this.parser.cachedEnd.slice();

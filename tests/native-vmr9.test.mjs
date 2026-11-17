@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { EmoteD3D9 } from '../src/emote/native-d3d.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeVMR9 } from '../src/native/vmr9.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { EmoteD3D9 } from '../oracle/m2-native-d3d.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NativeVMR9 } from '../oracle/vmr9.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 
 test('the VMR9 notify vtable allocates its three surface kinds through the one D3D device', async () => {
   const engine = new NativeEngineProcess(await loadUnicorn()),

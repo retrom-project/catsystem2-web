@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalOwner, originalFeature } from './original-adapter.mjs';
 // Cursor visibility and per-key gates are separate native input-task fields.
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
@@ -16,11 +17,11 @@ export async function nativeInputControl(id, args, _machine, task, world) {
     throw new Error(`Native input control 0x${id.toString(16)} expects ${count} arguments`);
   let input = await world.sendNativeEngine(0, task.id, world.engineMessages.layout.rootStart + 2);
   if (input === NATIVE_UNWRITTEN_WORD) {
-    if (!world.nativeEngine && !world.nativeEngineLoading)
+    if (!originalOwner(world))
       throw new Error(
         'An unwritten Input query caller pointer requires explicit original-engine ownership',
       );
-    input = await (await world.getNativeFeature('task-memory')).pointer(task.id);
+    input = await originalFeature(world, 'task-memory', 'pointer', task.id);
   }
   await world.sendNativeEngine(
     nativeEngineWord(input),

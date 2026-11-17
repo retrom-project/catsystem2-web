@@ -3,7 +3,7 @@
 // unchanged. Only token, expression and global-variable bank boundaries trap.
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import {
   NativeFESSoundConfiguration,
   tokenizeNativeFESSoundConfiguration,

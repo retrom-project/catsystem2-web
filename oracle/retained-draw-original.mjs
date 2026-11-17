@@ -5,7 +5,7 @@ import { nativeABI } from '../src/native/abi/index.mjs';
 import { floatBits } from '../src/kcs.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
 import { installNativeRasterKernels } from './raster-kernel-projection.mjs';
-import { installNativeEngineWorkers } from '../src/native/engine-workers.mjs';
+import { installNativeEngineWorkers } from './engine-workers.mjs';
 
 const ABI = {
   game: {

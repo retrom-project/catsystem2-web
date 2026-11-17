@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalOwner, requireCheckpointRestoreOwner } from './original-adapter.mjs';
 import { findNativeFileEntries } from './file-search.mjs';
 import { nativeVirtualFilePath } from './file-path.mjs';
 import { StageRenderer } from '../render/stage.mjs';
@@ -18,7 +19,6 @@ import {
 import { nativeReply } from '../kcs/vm.mjs';
 import { NATIVE_FES_IDS, nativeFES } from './fes.mjs';
 import { createNativeFESTask } from './fes-task.mjs';
-import { installNativeTaskMemory } from './task-memory.mjs';
 import { createNativeScriptTask, installNativeScripts } from './script-task.mjs';
 import { installNativeSDKJavaScriptTasks } from './sdk-javascript-task.mjs';
 import { installNativeGraphics } from './graphics.mjs';
@@ -37,28 +37,18 @@ import { NativeFESSound } from './fes-sound.mjs';
 import { installFESCoordinator } from './fes-coordinator.mjs';
 import { installNativeImagePersistence } from './image-persistence.mjs';
 import { NativeFESSourceArena } from './fes-source.mjs';
-import { requireTransitionalHost } from './transitional-exe.mjs';
-import { refreshNativeLanguageMenu } from './engine-startup-menu.mjs';
-import { NATIVE_APPLICATION_SERVICES_MESSAGE } from './engine-startup-application.mjs';
-import { runNativeWindowPump } from './engine-window-pump.mjs';
-import { setNativeWindowCaption } from './engine-startup-window.mjs';
+import { NATIVE_APPLICATION_SERVICES_MESSAGE } from './application-services-message.mjs';
 import { installNativeMatrices } from './matrix.mjs';
 import { installNativeText } from './text-task.mjs';
 import { NativeGlobalStrings } from './global-strings.mjs';
-import { NativeGlobalStringsBridge } from './global-strings-bridge.mjs';
-import { NativeScriptReplacementsBridge } from './script-replacements-bridge.mjs';
-import { NativeRandomMemory } from './random-memory.mjs';
 import { NativeFESSoundConfiguration } from './fes-sound-config.mjs';
 import { installNativeM2 } from './emote.mjs';
-import { createNativeDataProjection } from './data-buffer-projection.mjs';
-import { NativeInputDevice } from './input-device.mjs';
 import { NativeResourceCache } from './resource-cache.mjs';
 import { installNativeMovies } from './movie.mjs';
 import { installNativeMotionPersistence } from './motion-persistence.mjs';
 import { installNativeScriptReplacements } from './script-replacement.mjs';
 import { installNativePlainText } from './text-plain.mjs';
 import { installNativeUTF8 } from './utf8.mjs';
-import { installNativeWindowEvents } from './window-events.mjs';
 import { NativeWindow } from './window.mjs';
 import { installNativeWindowCommands } from './window-commands.mjs';
 import { installNativeSteam } from './steam.mjs';
@@ -147,11 +137,12 @@ export class NativeWorld {
       startupDocument,
       transitionalExe,
     });
+    this.transitionalExe?.installWorldRuntime?.(this);
     this.dispatchContext = new NativeDispatchContext();
     this.nativeModule = nativeModuleMetadata(profile, nativeModule);
     this.effekseer = new EffekseerWorld({
       dispatch: this.dispatchContext,
-      hasNativeProcess: () => !!(this.nativeEngine || this.nativeEngineLoading),
+      hasNativeProcess: () => originalOwner(this),
       resourceServices: () => ({
         resolveCategory: (name, category) => nativeCategoryFilename(this.game, name, category),
         readNative: (name, mode) => readNativeResource(this, name, mode),
@@ -223,7 +214,7 @@ export class NativeWorld {
     this.frame = 0;
     this.running = false;
     this.windowMessages = [];
-    this.window = new NativeWindow(this);
+    this.window = this.transitionalExe?.createWindow?.(this) ?? new NativeWindow(this);
     this.configurationDirty = false;
     this.preferencesName = 'setup.xml';
     this.configurationFlush = null;
@@ -257,22 +248,7 @@ export class NativeWorld {
         this.audio?.refresh?.();
       },
     });
-    this.nativeFeatureFactories = new Map();
     this.saveSlots = new NativeSaveSlots(this);
-    this.nativeFeatureLoading = new Map();
-    this.registerNativeFeature(
-      'global-strings',
-      (engine) => new NativeGlobalStringsBridge(engine, this.globalStrings),
-    );
-    this.registerNativeFeature(
-      'script-replacements',
-      (engine) => new NativeScriptReplacementsBridge(engine, this.configuration),
-    );
-    this.registerNativeFeature(
-      'random-memory',
-      (engine) => new NativeRandomMemory(engine, this.random),
-    );
-    this.registerNativeFeature('input-device', (engine) => new NativeInputDevice(engine, this));
     const globalFile = async (name) => {
       const bytes = await storage.read(name);
       if (!bytes) return new NativeGlobalFile();
@@ -339,20 +315,6 @@ export class NativeWorld {
       library: motionLibrary,
     });
     this.runtime.services.world = this;
-    this.registerNativeFeature('data-buffers', (engine) =>
-      createNativeDataProjection(engine, {
-        source: this.runtime.imageDataBuffers,
-        handles: this.runtime.handles,
-        read: this.runtime.read,
-        diagnostic: (detail) => this.host.nativeDiagnostic?.(detail),
-      }),
-    );
-    this.runtime.services.dataBuffers = async () =>
-      (await this.getNativeFeature('data-buffers')).attachServices({
-        handles: this.runtime.handles,
-        read: this.runtime.read,
-        diagnostic: (detail) => this.host.nativeDiagnostic?.(detail),
-      });
     for (const id of [5, 7])
       this.runtime.register('main', id, (args, _machine, task) => {
         if (args.length) throw new Error(`Native task clock ${id} expects no arguments`);
@@ -410,8 +372,6 @@ export class NativeWorld {
       bitmap.state.rgba = new Uint8ClampedArray(frame.rgba);
       return handle;
     };
-    this.runtime.services.importNativeBitmap = (pointer, owner, options) =>
-      this.graphics.images.importNative(pointer, owner, options);
     this.runtime.services.view = this.graphics.view;
     installNativeImagePersistence(this);
     installNativeSound(this);
@@ -420,7 +380,6 @@ export class NativeWorld {
     installNativeScriptReplacements(this);
     installNativePlainText(this);
     installNativeUTF8(this);
-    installNativeWindowEvents(this);
     installNativeWindowCommands(this);
     installNativeSteam(this, steam);
     installNativeRecordQueues(this);
@@ -465,11 +424,11 @@ export class NativeWorld {
     installNativeParticles(this, { registry: particleRegistry });
     installNativeMatrices(this);
     installNativeText(this, { glyphs: host.nativeTextGlyphs?.() });
-    installNativeTaskMemory(this);
     installM2(this);
     installFESCoordinator(this);
     for (const [kind, factory] of Object.entries(factories))
       this.objects.register(Number(kind), factory);
+    this.transitionalExe?.installWorldFeatures?.(this);
   }
   base(record) {
     return this.engineMessages.base(record);
@@ -499,7 +458,9 @@ export class NativeWorld {
     input.frameRate = record.frameRate;
     input.dispatch = (id, message, w, l, context = {}) =>
       this.engineMessages.dispatch(id, record.id, message, w, l, context);
-    input.services = createNativeInputBrowserServices(this, record, input);
+    input.services = (
+      this.transitionalExe?.createInputBrowserServices ?? createNativeInputBrowserServices
+    )(this, record, input);
     return {
       ...base,
       inputState: input,
@@ -540,7 +501,7 @@ export class NativeWorld {
   findNativeFiles(pattern) {
     // The platform directory/provider state is already JS-owned. Reading it
     // never constructs the transitional engine or executes a Win32 thunk.
-    const context = this.nativeEngine?.kernel ?? {
+    const context = {
       path: (name) => nativeVirtualFilePath(name),
       directories: new Set(['']),
       read: (name) => this.storage.read(name),
@@ -549,88 +510,12 @@ export class NativeWorld {
     };
     return findNativeFileEntries(context, pattern);
   }
-  registerNativeFeature(name, factory) {
-    if (!name || typeof factory !== 'function' || this.nativeFeatureFactories.has(name))
-      throw new Error(`Invalid or duplicate native process feature ${name}`);
-    this.nativeFeatureFactories.set(name, factory);
-  }
-  ensureNativeEngine() {
-    if (this.closed) throw new Error('Native world is closed');
-    if (!this.nativeEngineLoading)
-      this.nativeEngineLoading = requireTransitionalHost(
-        this.transitionalExe,
-        this.profile,
-        'process.open',
-      )
-        .open({
-          game: this.game,
-          profile: this.profile,
-          configuration: this.configuration,
-          bootstrapOwner: this.bootstrapOwner && {
-            ...this.bootstrapOwner,
-            displaySize: () => this.graphics.view.virtualSize(),
-            touchPoints: () => this.host.nativeTouchPoints?.(),
-            mountFiles: async (engine) => {
-              // The native game defaults open through the same mounted file
-              // adapter as gameplay. These factories do not await the World.
-              for (const name of ['data-buffers', 'engine-files'])
-                await this.nativeFeatureFactories.get(name)(engine, this);
-            },
-          },
-          readFile: (name) => this.storage.read(name),
-          writeFile: (name, bytes) => this.storage.write(name, bytes),
-          statFile: (name) => this.storage.stat?.(name) ?? null,
-          removeFile: (name) => this.storage.remove?.(name) ?? false,
-          setFileTimes: (name, times) => this.storage.setTimes?.(name, times) ?? false,
-          setFileAttributes: (name, attributes) =>
-            this.storage.setAttributes?.(name, attributes) ?? false,
-          copyFile: (from, to, fail) => this.storage.copy?.(from, to, fail) ?? false,
-          moveFile: (from, to) => this.storage.move?.(from, to) ?? false,
-          diskSpace: () => this.storage.diskSpace?.() ?? null,
-          listFiles: () => this.storage.list?.() ?? [],
-          random: this.random,
-          clock: this.clock,
-          now: () => this.clock.now(),
-          epoch: this.clock.epoch,
-          configurationChanged: () => this.markConfigurationDirty(),
-        })
-        .then(async (engine) => {
-          try {
-            new NativeGlobalStringsBridge(engine, this.globalStrings);
-            new NativeScriptReplacementsBridge(engine, this.configuration);
-            new NativeRandomMemory(engine, this.random);
-          } catch (error) {
-            try {
-              await engine.close();
-            } catch (cleanup) {
-              error.cleanup = cleanup;
-            }
-            throw error;
-          }
-          this.nativeEngine = engine;
-          return engine;
-        })
-        .catch((error) => {
-          this.nativeEngineLoading = null;
-          throw error;
-        });
-    return this.nativeEngineLoading;
-  }
+
   nativeDefaultFontBytes() {
     const provider = this.host.nativeDefaultFontBytes;
-    let bytes;
-    if (provider !== undefined) {
-      if (typeof provider !== 'function')
-        throw new TypeError('Default font provider must be a synchronous byte reader');
-      bytes = provider.call(this.host, this);
-    } else {
-      const engine = this.nativeEngine,
-        view = engine?.configurationMemory,
-        settings = engine?.refs?.defaultSettings;
-      if (typeof view?.defaultFontBytes !== 'function' || !settings)
-        throw new Error('Default Settings font data view is unavailable');
-      bytes = view.defaultFontBytes(settings);
-    }
+    if (typeof provider !== 'function')
+      throw new TypeError('Default font provider must be a synchronous byte reader');
+    const bytes = provider.call(this.host, this);
     if (!(bytes instanceof Uint8Array))
       throw new TypeError('Default font provider must return synchronous CP932 bytes');
     return new Uint8Array(nativeDataString(bytes));
@@ -638,26 +523,7 @@ export class NativeWorld {
   getNativeGPU() {
     return this.stageRenderer?.gpu ?? this.host.nativeGPU?.(this);
   }
-  getNativeFeature(name) {
-    const factory = this.nativeFeatureFactories.get(name);
-    if (!factory) throw new Error(`Native process feature ${name} is not installed`);
-    if (!this.nativeFeatureLoading.has(name)) {
-      const pending = (async () => {
-        const engine = await this.ensureNativeEngine(),
-          existing = engine.features.get(name);
-        if (existing) return existing;
-        const feature = await factory(engine, this);
-        if (engine.features.get(name) !== feature)
-          throw new Error(`Native process feature ${name} did not register its owner`);
-        return feature;
-      })().catch((error) => {
-        this.nativeFeatureLoading.delete(name);
-        throw error;
-      });
-      this.nativeFeatureLoading.set(name, pending);
-    }
-    return this.nativeFeatureLoading.get(name);
-  }
+
   withExecutor(executor, operation) {
     return this.dispatchContext.run(executor, operation);
   }
@@ -678,9 +544,7 @@ export class NativeWorld {
     if (main) player.languageMain = main.prefix;
   }
   refreshTitle() {
-    const title =
-      this.nativeEngine?.kernel.windowViews.windows.get(this.window.handle)?.title ??
-      this.globalStrings.get(this.configuration.getField('application.title'));
+    const title = this.globalStrings.get(this.configuration.getField('application.title'));
     this.host.nativeTitleChanged?.(title, this);
     return title;
   }
@@ -713,25 +577,17 @@ export class NativeWorld {
   async applyNativeLanguage(field, { reloadMainFirst = false } = {}) {
     const language = this.configuration.language,
       index = language[field] >>> 0,
-      valid = index < language.entries.length,
-      bridge = this.nativeEngine?.features.get('global-strings');
+      valid = index < language.entries.length;
     if (reloadMainFirst) {
       // Private message 46F reloads the option table before calling the
       // range-checked main-language handler, unlike the menu command.
-      bridge?.invalidate([1]);
       await this.globalStrings.reload(1, this.globalStrings.optionFilename());
     }
     if (field === 'sub') language.sub = valid ? index : 0xffffffff;
     else {
       if (!valid) return;
-      bridge?.invalidate(field === 'ui' ? [0, 1] : [1]);
       await this.globalStrings.languageChanged(field);
       if (field === 'ui') {
-        if (this.nativeEngine?.kernel.windowViews.windows.has(this.window.handle))
-          await setNativeWindowCaption(
-            this.nativeEngine,
-            this.globalStrings.get(this.configuration.getField('application.title')),
-          );
         this.refreshTitle();
       }
       for (const record of this.objects.objects.values()) {
@@ -742,23 +598,11 @@ export class NativeWorld {
       }
     }
     this.markConfigurationDirty();
-    if (this.nativeEngine) await refreshNativeLanguageMenu(this.nativeEngine);
-    if (!this.window.opened) this.window.refreshLanguageMenu();
+    this.window.refreshLanguageMenu();
   }
   async processWindowMessages(context = {}) {
     if (this.closed || this.disposalRequested) {
       this.windowMessages.length = 0;
-      return;
-    }
-    if (this.window.opened) {
-      const exit = await runNativeWindowPump(this.nativeEngine, this.window.handle, {
-        handles: (message, wParam) =>
-          (message === NATIVE_APPLICATION_SERVICES_MESSAGE && this.startupScript !== undefined) ||
-          this.window.handlesBrowserMessage(message, wParam),
-        deliver: (message) => this.dispatchWindowMessage(message, context),
-        stopping: () => this.disposalRequested || this.quitRequested,
-      });
-      if (exit !== null) this.quitRequested = true;
       return;
     }
     let processed = 0;
@@ -1035,7 +879,7 @@ export class NativeWorld {
       configuration: this.configuration.snapshot(),
       soundConfiguration: this.soundConfiguration.snapshot(),
       fesSources: this.fesSources.snapshot(),
-      nativeEngine: this.nativeEngine?.snapshot() ?? null,
+      ...(this.transitionalExe?.snapshotWorld?.(this) ?? {}),
       platformRegistry: snapshotNativeRegistry(this),
       nativeModule: this.nativeModule && {
         name: this.nativeModule.name,
@@ -1052,6 +896,7 @@ export class NativeWorld {
   async restore(state) {
     if (this.running || this.objects.objects.size)
       throw new Error('Native world restore requires a fresh, idle world');
+    const originalCheckpoint = requireCheckpointRestoreOwner(state, this.transitionalExe);
     this.window.restore(state.window);
     const module = nativeModuleMetadata(this.profile, state.nativeModule);
     if (
@@ -1091,17 +936,11 @@ export class NativeWorld {
         .filter(([, record]) => record.type === 'variable-bank')
         .map(([handle, record]) => [handle, record.value.selectedContext]),
     );
-    await this.graphics.restore(state.graphics, { restoreContext: !state.nativeEngine });
+    await this.graphics.restore(state.graphics, {
+      restoreContext: !originalCheckpoint,
+    });
     this.fesSources.restore(state.fesSources);
-    if (state.nativeEngine) {
-      for (const [name] of state.nativeEngine.features) await this.getNativeFeature(name);
-      const engine = await this.ensureNativeEngine();
-      // Feature construction may initialize the shared device's defaults. Its
-      // owner restores the saved context once, after construction and before
-      // borrowers restore their own non-context state.
-      this.graphics.restoreD3DContext(state.graphics.d3dContext);
-      engine.restore(state.nativeEngine);
-    }
+    await this.transitionalExe?.restoreWorld?.(this, state);
     await this.effekseer.restore(state.effekseer);
     if (state.m2) await this.m2.restore(state.m2);
     this.restoring = true;
@@ -1115,10 +954,7 @@ export class NativeWorld {
     // Restore the providers before exposing any VM to callers. Lazy binding on
     // its first native call would discard writes made to its checkpoint copy
     // after restore returned, and would temporarily split borrowed aliases.
-    const taskMemory = this.nativeEngine?.features.get('task-memory');
-    if (taskMemory)
-      for (const task of this.runtime.scheduler.tasks.values())
-        taskMemory.mapMachine(task.id, task.machine);
+    this.transitionalExe?.bindWorldMachines?.(this);
     for (const record of this.objects.objects.values())
       if (record.kind === 34 && record.implementation.player)
         await this.graphics.syncFES(record, record.implementation.player, { restoring: true });
@@ -1170,8 +1006,7 @@ export class NativeWorld {
     await attempt(() => this.screenEffects.close());
     await attempt(() => this.resourceCache.close());
     if (this.ownsSteam) await attempt(() => this.steamService.close());
-    if (this.nativeEngineLoading)
-      await attempt(async () => (await this.nativeEngineLoading).close());
+    await attempt(() => this.transitionalExe?.closeWorld?.(this));
     await attempt(() => this.graphics.texturePages?.close());
     await attempt(() => this.stageRenderer?.dispose());
     await attempt(() => this.effekseer.close());

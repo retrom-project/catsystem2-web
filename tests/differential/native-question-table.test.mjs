@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
-import { NativeRandomMemory } from '../../src/native/random-memory.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
+import { NativeRandomMemory } from '../../oracle/random-memory.mjs';
 import { encodeCP932 } from '../../src/kcs/strings.mjs';
 import { engineFixtureSet } from '../fixtures/oracle-fixtures.mjs';
 import {

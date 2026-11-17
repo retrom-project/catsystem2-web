@@ -3,24 +3,24 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { releaseNativeConfigurationEvent } from '../src/native/engine-configuration-event.mjs';
-import { initializeNativeDesktop } from '../src/native/engine-desktop.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { releaseNativeConfigurationEvent } from '../oracle/engine-configuration-event.mjs';
+import { initializeNativeDesktop } from '../oracle/engine-desktop.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import {
   initializeNativeApplicationServices,
   initializeNativeApplicationWindow,
   NATIVE_APPLICATION_SERVICES_MESSAGE,
   releaseNativeApplicationWindow,
-} from '../src/native/engine-startup-application.mjs';
-import { NATIVE_STARTUP_BLOCKS } from '../src/native/engine-startup-block.mjs';
-import { initializeNativeStartupMenu } from '../src/native/engine-startup-menu.mjs';
+} from '../oracle/engine-startup-application.mjs';
+import { NATIVE_STARTUP_BLOCKS } from '../oracle/engine-startup-block.mjs';
+import { initializeNativeStartupMenu } from '../oracle/engine-startup-menu.mjs';
 import {
   createNativeStartupWindow,
   initializeNativeWindowOwner,
-} from '../src/native/engine-startup-window.mjs';
-import { initializeNativeWindowClass } from '../src/native/engine-window-class.mjs';
-import { runNativeWindowPump } from '../src/native/engine-window-pump.mjs';
-import { installNativeDirectSound } from '../src/native/windows-directsound.mjs';
+} from '../oracle/engine-startup-window.mjs';
+import { initializeNativeWindowClass } from '../oracle/engine-window-class.mjs';
+import { runNativeWindowPump } from '../oracle/engine-window-pump.mjs';
+import { installNativeDirectSound } from '../oracle/windows-directsound.mjs';
 
 for (const [profile, variable] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],

@@ -3,7 +3,7 @@
 // D3D device/texture COM methods and Windows rectangle functions are hosts.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
 import {
   BITMAP_UPLOAD_LAYOUT,

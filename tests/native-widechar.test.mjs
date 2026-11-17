@@ -3,10 +3,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { PPIWindowsServices } from '../src/ppi/native-services.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { PPIWindowsServices } from '../oracle/ppi-native-services.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 
 const golden = JSON.parse(

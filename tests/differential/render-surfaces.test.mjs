@@ -4,9 +4,9 @@ import assert from 'node:assert/strict';
 import { StageRenderer } from '../../src/render/stage.mjs';
 import { ParticlesGL } from '../../src/render/particles-gl.mjs';
 import { NativeGraphicsDevice } from '../../src/native/graphics-device.mjs';
-import { EmoteD3D9 } from '../../src/emote/native-d3d.mjs';
-import { PE32Process } from '../../src/ppi/pe32.mjs';
-import { loadUnicorn } from '../../src/ppi/backend.mjs';
+import { EmoteD3D9 } from '../../oracle/m2-native-d3d.mjs';
+import { PE32Process } from '../../oracle/ppi-pe32.mjs';
+import { loadUnicorn } from '../../oracle/ppi-backend.mjs';
 import { com } from '../fixtures/native-vmr-surface.mjs';
 
 // This exercises the existing COM oracle harness with and without renderer

@@ -4,7 +4,7 @@
 // access are supplied by the host. All images below are authored probe data.
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { NativeDataBuffers, nativeDataBuffer } from '../oracle/data-buffer.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { encodeHG2, HG2 } from '../src/formats/hg2.mjs';

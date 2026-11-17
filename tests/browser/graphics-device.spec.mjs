@@ -38,7 +38,7 @@ test('shared Stage device restores real resources without reviving undefined tar
       import('/src/native/config.mjs'),
       import('/src/ppi/random.mjs'),
       import('/src/motion/library.mjs'),
-      import('/src/emote/native-d3d.mjs'),
+      import('/oracle/m2-native-d3d.mjs'),
       import('/src/render/particles-gl.mjs'),
     ]);
     let assertions = 0;

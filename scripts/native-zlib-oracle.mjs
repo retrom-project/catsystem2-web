@@ -5,7 +5,7 @@ import {
   NativeEngineProcess,
   nativeImageIdentity,
   NATIVE_ENGINE_IMAGES,
-} from '../src/native/engine-process.mjs';
+} from '../oracle/engine-process.mjs';
 const option = (name) => process.argv[process.argv.indexOf(name) + 1];
 if (!process.argv.includes('--exe') || !process.argv.includes('--output'))
   throw new Error(

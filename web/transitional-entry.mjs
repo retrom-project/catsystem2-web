@@ -6,16 +6,48 @@ import {
   NativeEngineProcess,
   NATIVE_ENGINE_IMAGES,
   nativeImageIdentity,
-} from '../src/native/engine-process.mjs';
+} from '../oracle/engine-process.mjs';
 import { invokeRegion, syncViewGeometry } from '../oracle/transitional-exe.mjs';
-import { parsePE32 } from '../src/ppi/pe32.mjs';
+import { installOriginalWorldFeatures } from '../oracle/native-world-features.mjs';
+import { parsePE32 } from '../oracle/ppi-pe32.mjs';
 import {
   transitionalHeapSize,
   transitionalCheckpointBytes,
   transitionalCheckpointLimit,
 } from '../oracle/transitional-heap.mjs';
 
+import {
+  installOriginalWorldRuntime,
+  snapshotOriginalWorld,
+  hasOriginalWorldCheckpoint,
+  restoreOriginalWorld,
+  bindOriginalWorldMachines,
+  closeOriginalWorld,
+} from '../oracle/native-world-runtime.mjs';
+import { OriginalNativeWindow } from '../oracle/window-original.mjs';
+
+import {
+  ownsOriginalWorld,
+  originalWorldOperation,
+  originalWorldState,
+} from '../oracle/world-operations.mjs';
+import { createOriginalInputBrowserServices } from '../oracle/input-browser-original.mjs';
 export const transitionalExe = Object.freeze({
+  ownsWorld: ownsOriginalWorld,
+  directShow: (world) => world.nativeEngine?.features.get('directshow'),
+  worldOperation: originalWorldOperation,
+  worldState: originalWorldState,
+  createInputBrowserServices: createOriginalInputBrowserServices,
+  installWorldRuntime: installOriginalWorldRuntime,
+  createWindow: (world) => new OriginalNativeWindow(world),
+  snapshotWorld: snapshotOriginalWorld,
+  hasWorldCheckpoint: hasOriginalWorldCheckpoint,
+  restoreWorld: restoreOriginalWorld,
+  bindWorldMachines: bindOriginalWorldMachines,
+  closeWorld: closeOriginalWorld,
+  installWorldFeatures: installOriginalWorldFeatures,
+  readTextResource: async (world, pointer) =>
+    (await world.getNativeFeature('data-buffers')).data(pointer),
   checkpointBytes: transitionalCheckpointBytes,
   checkpointLimit: transitionalCheckpointLimit,
   async open(options) {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';
-import { NATIVE_ENGINE_IMAGES } from '../../src/native/engine-process.mjs';
+import { NATIVE_ENGINE_IMAGES } from '../../oracle/engine-process.mjs';
 
 export class DataBufferMemory {
   constructor() {

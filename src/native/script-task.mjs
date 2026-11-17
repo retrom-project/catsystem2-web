@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: MPL-2.0
+import {
+  originalOwner,
+  originalOperation,
+  originalFeature,
+  originalView,
+} from './original-adapter.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from './engine-message.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
-import { NativeSceneMemory } from './scene-memory.mjs';
-import { installNativeEngineFiles } from './engine-files.mjs';
 import { readKCS } from '../kcs.mjs';
 
 const bytesAt = (memory, address, count) =>
@@ -59,21 +63,26 @@ export function createNativeScriptTask(world, record) {
   world.runtime.stringBank({ context: record.context });
   Object.assign(implementation, {
     async dataAddress() {
-      if (world.nativeEngine || world.nativeEngineLoading)
-        return (await world.getNativeFeature('task-memory')).guestAddress(
-          record.id,
-          this.machine,
-          0,
-        );
+      if (originalOwner(world))
+        return originalFeature(world, 'task-memory', 'guestAddress', record.id, this.machine, 0);
       return world.runtime.vmDataAddress(record.id, this.machine);
     },
     async bindMachineShared() {
       const machine = this.machine,
         reference = record.sharedDataRef;
       if (!machine || !record.scriptSharedBound) return;
-      if (reference && (reference.kind === 'engine' || world.nativeEngine)) {
-        const memory = await world.getNativeFeature('task-memory');
-        if (memory.bindSharedMachine(record.id, machine, reference)) return;
+      if (reference && (reference.kind === 'engine' || originalView(world, 'hasEngine'))) {
+        if (
+          await originalFeature(
+            world,
+            'task-memory',
+            'bindSharedMachine',
+            record.id,
+            machine,
+            reference,
+          )
+        )
+          return;
         if (reference.kind === 'engine')
           throw new Error('Native shared RAM binding is unavailable');
       }
@@ -178,7 +187,7 @@ export function createNativeScriptTask(world, record) {
         world.runtime.scheduler.tasks.delete(record.id);
       }
       world.runtime.releaseVMData(record.id);
-      world.nativeEngine?.features.get('task-memory')?.releaseMachine(record.id);
+      originalView(world, 'releaseMachine', record.id);
       const inherited = {
         variableBank: previousContext?.variableBank || 0,
         stringBank: previousContext?.stringBank || 0,
@@ -418,13 +427,13 @@ export function createNativeScriptTask(world, record) {
       }
       if (id === 174) {
         if (this.task) {
-          if (!world.nativeEngine && !world.nativeEngineLoading)
+          if (!originalOwner(world))
             throw new Error(
               'A physical KCS interpreter pointer requires explicit original-engine ownership',
             );
           memory().store(
             lParam,
-            (await world.getNativeFeature('task-memory')).vmPointer(record.id),
+            await originalFeature(world, 'task-memory', 'vmPointer', record.id),
           );
         }
         return NATIVE_UNWRITTEN_WORD;
@@ -512,12 +521,12 @@ export function createNativeScriptTask(world, record) {
       }
       if (id === 175) {
         const handle = record.context.sceneData;
-        if (handle && !world.nativeEngine && !world.nativeEngineLoading)
+        if (handle && !originalOwner(world))
           throw new Error(
             'Physical CST reader/history pointers require explicit original-engine ownership',
           );
         const [reader, history] = handle
-          ? await (await world.getNativeFeature('scene-memory')).pointers(handle)
+          ? await originalFeature(world, 'scene-memory', 'pointers', handle)
           : [0, 0];
         memory().store(wParam, reader);
         memory().store(lParam, history);
@@ -542,14 +551,14 @@ export function createNativeScriptTask(world, record) {
           world.runtime.scheduler.tasks.delete(record.id);
         }
         world.runtime.releaseVMData(record.id);
-        world.nativeEngine?.features.get('task-memory')?.releaseMachine(record.id);
+        originalView(world, 'releaseMachine', record.id);
         const bank = world.runtime.variableBank(task ?? { context: record.context }, false);
         bank?.unregisterContext(record.id);
         if (bank && record.context.allowVariableInitialization !== false)
           world.runtime.handles.release(record.context.variableBank, 'variable-bank');
       }
       if (record.context.sceneData) {
-        await world.nativeEngine?.features.get('scene-memory')?.release(record.context.sceneData);
+        await originalView(world, 'releaseScene', record.context.sceneData);
         world.runtime.handles.release(record.context.sceneData, 'scene-data');
         record.context.sceneData = 0;
       }
@@ -578,8 +587,6 @@ export function createNativeScriptTask(world, record) {
 }
 
 export function installNativeScripts(world) {
-  installNativeEngineFiles(world);
-  world.registerNativeFeature('scene-memory', (engine) => new NativeSceneMemory(engine, world));
   const game = world.game;
   world.runtime.register('main', 0x8f, async (args, machine, task) => {
     if (args.length !== 3) throw new Error('KCS script load expects three arguments');
@@ -610,11 +617,11 @@ export function installNativeScripts(world) {
         const memory = world.runtime.imageDataBuffers.process;
         if (memory.contains(args[1], 4)) value = memory.load(args[1]);
         else {
-          if (!world.nativeEngine && !world.nativeEngineLoading)
+          if (!originalOwner(world))
             throw new Error(
               'An external Script data address requires explicit original-engine ownership',
             );
-          value = (await world.ensureNativeEngine()).process.load(args[1]);
+          value = await originalOperation(world, 'externalWord', args[1]);
         }
       }
       await world.sendNativeEngine(args[0], task.id, message, 0, value);

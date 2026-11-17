@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { NativeEngineWindows } from '../src/native/windows-services.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
+import { NativeEngineWindows } from '../oracle/windows-services.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
 
 test('Win32 menu queries preserve buffer boundaries and deletion releases submenu handles', async () => {
   const p = new PE32Process(await loadUnicorn()),

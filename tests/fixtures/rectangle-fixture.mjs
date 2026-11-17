@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
 import { NativeRectangles } from '../../oracle/rectangles.mjs';
-import { NativeKCSMemory } from '../../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from '../../oracle/kcs-memory.mjs';
 import { configurationQueryMachine } from './configuration-query-fixture.mjs';
 
 export const RECTANGLE_INPUTS = Object.freeze([

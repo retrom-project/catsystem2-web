@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalOwner, originalFeature, originalView } from './original-adapter.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicsDevice } from './graphics-device.mjs';
 import { nativeEngineWord } from './engine-message.mjs';
 // Native task graphics own graph state; construction alone does not load a
 // graph. Message contracts come from 5DF010/5E0920 and renderer graph setters.
 import { Stage } from '../stage.mjs';
-import { NativeRenderer } from './renderer.mjs';
 import { MOTION_ABI, initialMotionObject, motionVector, setMotionVector } from '../motion/abi.mjs';
 import { applyObjectMotionState } from '../motion/target.mjs';
 import { bitsFloat, floatBits, nativeReply } from '../kcs.mjs';
@@ -44,15 +44,11 @@ import {
 import { NativeCursor } from './cursor.mjs';
 import { nativeInputBitmapMask } from './input.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
-import { installNativeEngineWorkers } from './engine-workers.mjs';
-import { NativeVMR9 } from './vmr9.mjs';
-import { NativeDirectShow } from './directshow.mjs';
 import { installNativePlaneMovieCommands } from './plane-movie-command.mjs';
 import { installNativePlaneModelCommands } from './plane-model-command.mjs';
 import { nativePlaneInputGeometry } from './plane-input-geometry.mjs';
 import { decodePlaneKX2, NativePlaneTrail } from './plane-models.mjs';
 import { readNativeResource } from './resource-file.mjs';
-import { NativeTextureMovieRenderer } from './movie-texture-renderer.mjs';
 const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
 // One current registration field: boolean is known, null has a verified record
 // but an unknown enable value, and this tag has unverified record existence.
@@ -65,7 +61,7 @@ const BASE_PLANE_MESSAGES = new Set([
 
 export class NativeGraphics {
   synchronizeView() {
-    this.world.nativeEngine?.features.get('graphics-platform')?.syncView?.();
+    originalView(this.world, 'syncView');
   }
   get cameraNear() {
     return bitsFloat(this.cameraNearWord);
@@ -704,7 +700,7 @@ export class NativeGraphicTask {
   async message(words, context = {}) {
     const [sender, id, w, l] = words;
     if ([3, 41, 42, 45, 46, 68, 69, 70, 83].includes(id)) {
-      await this.world.nativeEngine?.features.get('plane-movie-projection')?.release(this);
+      await originalView(this.world, 'movieRelease', this);
       await this.world.planeMovies.release(this);
     }
     if (this.record.kind === 6 && !BASE_PLANE_MESSAGES.has(id))
@@ -819,10 +815,12 @@ export class NativeGraphicTask {
           if (at >= 2048) throw new RangeError('Plane movie filename is too long');
           name.push(byte);
         }
-        const projection =
-            this.world.nativeEngine || this.world.nativeEngineLoading
-              ? await this.world.getNativeFeature('plane-movie-projection')
-              : this.world.planeMovies,
+        const projection = originalOwner(this.world)
+            ? {
+                load: (...args) =>
+                  originalFeature(this.world, 'plane-movie-projection', 'load', ...args),
+              }
+            : this.world.planeMovies,
           source = await projection.load(
             this,
             id - 43,
@@ -1401,7 +1399,7 @@ export class NativeGraphicTask {
     if (inputGraph.movie) {
       const frame = inputGraph.movie.handle
         ? await this.world.planeMovies.frame(inputGraph.movie)
-        : this.world.nativeEngine.features.get('plane-movie-projection').frame(inputGraph.movie);
+        : originalView(this.world, 'movieFrame', inputGraph.movie);
       if (!frame) return;
       gpu.drawGeometry(
         nativeGraphGeometry(inputGraph, state, this.graphics.projection(), frame),
@@ -1473,7 +1471,7 @@ export class NativeGraphicTask {
   }
   async close() {
     if (this.nativeClosed) return;
-    await this.world.nativeEngine?.features.get('plane-movie-projection')?.release(this);
+    await originalView(this.world, 'movieRelease', this);
     await this.world.planeMovies.release(this);
     this.closeGraph();
     this.nativeClosed = true;
@@ -1481,31 +1479,8 @@ export class NativeGraphicTask {
 }
 
 export function installNativeGraphics(world) {
-  if (world.registerNativeFeature) {
-    world.registerNativeFeature('renderer', (engine) => NativeRenderer.open(engine, world));
-    world.registerNativeFeature('plane-movie-projection', async (engine) => {
-      await world.getNativeFeature('graphics-platform');
-      await world.getNativeFeature('directshow');
-      await world.getNativeFeature('texture-movie-renderer');
-      return engine.createPlaneMovieProjection(world);
-    });
-    world.registerNativeFeature('vmr9', (engine) => new NativeVMR9(engine));
-    world.registerNativeFeature(
-      'texture-movie-renderer',
-      (engine) => new NativeTextureMovieRenderer(engine),
-    );
-    world.registerNativeFeature('directshow', async (engine) => {
-      await world.getNativeFeature('engine-workers');
-      return new NativeDirectShow(engine, world, await world.getNativeFeature('vmr9'));
-    });
-    installNativePlaneMovieCommands(world);
-    installNativePlaneModelCommands(world);
-    world.registerNativeFeature('engine-workers', (engine) => installNativeEngineWorkers(engine));
-    world.registerNativeFeature('graphics-platform', async (engine) => {
-      await world.getNativeFeature('bitmap-memory');
-      return engine.createGraphicsProjection(world);
-    });
-  }
+  installNativePlaneMovieCommands(world);
+  installNativePlaneModelCommands(world);
   const graphics = new NativeGraphics(world);
   world.graphics = graphics;
   world.retainedDraw = new NativeRetainedDraw(world);

@@ -6,9 +6,9 @@ import { createHash } from 'node:crypto';
 import { emotePSBFixture } from './fixtures/emote-psb-fixture.mjs';
 import { PSB } from '../src/formats/psb.mjs';
 import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
-import { EmoteD3D9 } from '../src/emote/native-d3d.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { EmoteD3D9 } from '../oracle/m2-native-d3d.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 import { floatBits } from '../src/kcs.mjs';
 
 const golden = JSON.parse(

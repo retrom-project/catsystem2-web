@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalView } from './original-adapter.mjs';
 // Renderless Plane movies borrow the shared movie controls and bitmap authority.
 import { nativeABI } from './abi/index.mjs';
 import { readNativeResource } from './resource-file.mjs';
@@ -316,7 +317,7 @@ export class NativePlaneMovies {
     for (const [handle, entry] of this.handles.records) {
       if (entry.type !== type) continue;
       if (typeof entry.value !== 'object' || entry.value === null) {
-        if (this.world.nativeEngine && Number.isInteger(entry.value)) continue;
+        if (originalView(this.world, 'hasEngine') && Number.isInteger(entry.value)) continue;
         throw new Error('Ordinary Plane movie checkpoint cannot contain an original pointer');
       }
       const record = entry.value,

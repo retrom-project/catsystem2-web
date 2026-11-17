@@ -8,7 +8,7 @@ import { pathToFileURL, fileURLToPath } from 'node:url';
 import { format, resolveConfig } from 'prettier';
 import { resolve } from 'node:path';
 import { NativePPIRuntime } from '../oracle/ppi-native-original.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
 import { capturePPIFrame } from '../oracle/plugin-frames.mjs';
 import { reviewedPPIState } from '../oracle/ppi-private-state.mjs';
 import { PPI_SCENARIOS, scenarioPlist } from '../tests/fixtures/ppi-js-scenarios.mjs';

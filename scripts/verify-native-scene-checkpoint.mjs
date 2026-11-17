@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { NativeSceneCheckpoints } from '../src/native/scene-checkpoint.mjs';
 import { sceneCheckpointFixture } from '../tests/fixtures/scene-checkpoint-fixture.mjs';
 import { nativeInflate } from '../src/native/zlib.mjs';

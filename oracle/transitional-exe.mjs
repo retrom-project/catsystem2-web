@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from '../src/native/abi/index.mjs';
-import { runNativeGameWinMainSpan } from '../src/native/engine-startup-block.mjs';
+import { runNativeGameWinMainSpan } from './engine-startup-block.mjs';
 export async function invokeRegion(operation, { engine }) {
   if (engine.profile !== 'nekopara-vol3-engine-2.6.1.76' || operation !== 'startup.accelerators')
     throw new Error(`Unreviewed transitional region ${operation}`);

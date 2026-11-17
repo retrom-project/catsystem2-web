@@ -80,8 +80,4 @@ export class NativeBitmapFactories {
 export function installNativeBitmapFactories(world) {
   const factories = new NativeBitmapFactories(world);
   world.bitmapFactories = factories;
-  world.registerNativeFeature('bitmap-factories', (engine) => {
-    engine.registerFeature('bitmap-factories', factories);
-    return factories;
-  });
 }

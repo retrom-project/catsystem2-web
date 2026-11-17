@@ -7,7 +7,7 @@ import { imageOwnerFixture } from '../fixtures/image-owner-fixture.mjs';
 import { imageOwnerFiles } from '../fixtures/image-files.mjs';
 import { dataWorld } from '../fixtures/data-world.mjs';
 import { engineFixtureSet } from '../fixtures/oracle-fixtures.mjs';
-import { NATIVE_EXE_PROFILES } from '../../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../../oracle/executable-catalog.mjs';
 import { NATIVE_BITMAP_FACTORY_CONTRACTS } from '../../oracle/bitmap-factory.mjs';
 
 const fields = [

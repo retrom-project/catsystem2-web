@@ -156,10 +156,8 @@ for (const [profile, variable] of [
           );
           await world.graphics.images.release(gdiShot);
           p.store(platform.refs.view + displayGate, 0);
-          const { initializeNativeStartupMenu } = await import(
-            '/src/native/engine-startup-menu.mjs'
-          );
-          const { initializeNativeLanguage } = await import('/src/native/engine-language.mjs');
+          const { initializeNativeStartupMenu } = await import('/oracle/engine-startup-menu.mjs');
+          const { initializeNativeLanguage } = await import('/oracle/engine-language.mjs');
           await initializeNativeLanguage(world.nativeEngine);
           await initializeNativeStartupMenu(world.nativeEngine);
           const saveBitmap = async () => {

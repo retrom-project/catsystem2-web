@@ -3,10 +3,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { engineFixtureSet } from '../fixtures/oracle-fixtures.mjs';
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
 import { NativeTextRuntime } from '../../oracle/text.mjs';
 import { JSTextRuntime } from '../../src/native/text-core.mjs';
-import { NativeEngineFiles } from '../../src/native/engine-files.mjs';
+import { NativeEngineFiles } from '../../oracle/engine-files.mjs';
 const font = new Uint8Array(
   await readFile(new URL('../../third_party/fonts/noto-sans-jp/NotoSansJP.ttf', import.meta.url)),
 );

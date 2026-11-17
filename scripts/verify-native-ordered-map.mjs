@@ -3,12 +3,12 @@
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { NativeRuntime } from '../src/native/runtime.mjs';
 import { nativeOrderedMap } from '../src/native/ordered-map.mjs';
 import { nativeDictionary } from '../src/native/dictionary.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { KCSMachine, formatNativeAt, encodeCP932 } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 

@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeParticleProjection } from '../oracle/particle-projection-original.mjs';
 import { writePTCLQuad } from '../src/ppi/abi.mjs';
 import { projectionInput } from './fixtures/particle-projection-cases.mjs';

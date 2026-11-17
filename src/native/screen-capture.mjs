@@ -120,10 +120,6 @@ export class NativeScreenCapture {
 }
 export function installNativeScreenCapture(world) {
   const capture = (world.screenCapture = new NativeScreenCapture(world));
-  world.registerNativeFeature('screen-capture', (engine) => {
-    engine.registerFeature('screen-capture', capture);
-    return capture;
-  });
   for (const { id } of NATIVE_SCREEN_CAPTURE_CONTRACTS)
     world.runtime.register('main', id, (args, machine, task) =>
       capture.apply(id, args, machine, task),

@@ -3,7 +3,7 @@
 // accessors, expressions and main 292/293 wrappers in the frozen image.
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { NativeVariableBank, nativeBank } from '../src/native/bank.mjs';
 import { evaluateNativeExpression } from '../src/native/expression.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';

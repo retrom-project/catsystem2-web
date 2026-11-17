@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { inspectNativeM2Bootstrap } from '../oracle/m2-bootstrap-original.mjs';
 import { transitionalExe } from '../web/transitional-entry.mjs';
-import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { nativeParticleFixture } from './fixtures/ppi-native-fixture.mjs';
 import { memoryGame } from './helpers.mjs';
 

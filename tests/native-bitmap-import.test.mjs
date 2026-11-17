@@ -44,7 +44,7 @@ for (const [profile, variable] of [
           });
           world.ensureNativeEngine = () => {
             if (!world.nativeEngineLoading)
-              world.nativeEngineLoading = import('../src/native/engine-process.mjs').then(
+              world.nativeEngineLoading = import('../oracle/engine-process.mjs').then(
                 async ({ NativeEngineProcess }) => {
                   const engine = await NativeEngineProcess.open({
                     profile,

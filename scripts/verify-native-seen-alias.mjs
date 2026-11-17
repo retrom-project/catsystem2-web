@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { encodeCP932, formatNativeAt } from '../src/kcs.mjs';
-import { NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeSceneData, nativeSceneData } from '../src/native/scene-data.mjs';
 import { decodeNativeSceneHistory } from '../src/native/scene-history.mjs';

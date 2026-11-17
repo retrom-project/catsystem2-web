@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 export const NATIVE_FORMATTED_FILE_OUTPUT = Object.freeze({
   id: 0x237,
   handlers: Object.freeze({

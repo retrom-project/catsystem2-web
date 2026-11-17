@@ -3,7 +3,7 @@
 // the harness intercepts task transport, VM pointer conversion and formatting.
 import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { nativeText } from '../src/native/text-task.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 

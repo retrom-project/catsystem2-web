@@ -35,7 +35,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       const pending = (await invoke(first, 0x1d9, [handle])).value;
       await invoke(first, 0x1f5, [handle]);
       const snapshot = structuredClone(first.snapshot());
-      assert.equal(snapshot.nativeEngine, null);
+      assert.equal(Object.hasOwn(snapshot, 'nativeEngine'), false);
       assert.equal(snapshot.tileGame.random.words.length, 624);
       assert.equal(
         snapshot.runtime.handles.records.filter(([, record]) => record.type === 'tile-game').length,

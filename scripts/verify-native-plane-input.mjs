@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { nativePlaneInputGeometry } from '../src/native/plane-input-geometry.mjs';
 import { floatBits } from '../src/kcs.mjs';
 

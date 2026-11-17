@@ -3,17 +3,17 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { NativeConfiguration } from '../src/native/config.mjs';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NATIVE_STARTUP_BLOCKS } from '../src/native/engine-startup-block.mjs';
-import { initializeNativeStartupMenu } from '../src/native/engine-startup-menu.mjs';
-import { initializeNativeWindowClass } from '../src/native/engine-window-class.mjs';
-import { NativeInputDevice } from '../src/native/input-device.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NATIVE_STARTUP_BLOCKS } from '../oracle/engine-startup-block.mjs';
+import { initializeNativeStartupMenu } from '../oracle/engine-startup-menu.mjs';
+import { initializeNativeWindowClass } from '../oracle/engine-window-class.mjs';
+import { NativeInputDevice } from '../oracle/input-device.mjs';
 import {
   createNativeStartupWindow,
   initializeNativeWindowOwner,
   releaseNativeWindowOwner,
   setNativeWindowCaption,
-} from '../src/native/engine-startup-window.mjs';
+} from '../oracle/engine-startup-window.mjs';
 
 for (const [profile, variable, suffix] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 'A'],

@@ -2,11 +2,11 @@
 // Original queue wrappers versus typed handles and the VM/process adapter.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NativeKCSMemory } from '../oracle/kcs-memory.mjs';
 import { NativeRecordQueues } from '../oracle/record-queue.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { KCSMachine } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 const [filename, output] = process.argv.slice(2),

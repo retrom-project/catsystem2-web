@@ -3,7 +3,7 @@
 // helpers. VM pointer conversion is the only domain service boundary.
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import { NATIVE_RECORD_STACK_HANDLERS } from '../oracle/record-stack-handlers.mjs';
 import {
   recordStackSpecifications,

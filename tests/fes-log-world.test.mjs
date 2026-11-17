@@ -38,7 +38,7 @@ for (const profile of profiles)
           'retained writer was moved without source rebind',
         );
         const saved = first.snapshot();
-        assert.equal(saved.world.nativeEngine, null);
+        assert.equal(Object.hasOwn(saved.world, 'nativeEngine'), false);
         fresh = await realFixture(profile, type, structuredClone(saved));
         assert.equal(fresh.world.nativeEngine, undefined);
         assert.equal(fresh.children().length, type === 38 ? 6 : 3);

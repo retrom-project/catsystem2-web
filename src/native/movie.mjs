@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { originalOwner, originalFeature } from './original-adapter.mjs';
 // Movie wrappers 655170..655600 / 521590..5219E0. DirectShow is a host boundary.
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
@@ -348,7 +349,7 @@ export function installNativeMovies(world) {
     cursorVisible: (word) => world.graphics.cursor.setVisible(word),
     dimensions: () => [world.graphics.view.clientWidth, world.graphics.view.clientHeight],
     diagnostic: (detail) => world.host.nativeDiagnostic?.(detail),
-    directShow: () => world.nativeEngine?.features.get('directshow'),
+    directShow: () => world.transitionalExe?.directShow?.(world),
     planeMovies: () => world.planeMovies,
   });
   for (const id of NATIVE_MOVIE_IDS)
@@ -358,9 +359,9 @@ export function installNativeMovies(world) {
           id !== 0x109 &&
           id !== 0x3e5 &&
           world.runtime.handles.records.get(args[0])?.type === 'plane-movie' &&
-          (world.nativeEngine || world.nativeEngineLoading)
+          originalOwner(world)
         )
-          return (await world.getNativeFeature('plane-movie-commands')).control(id, args, task);
+          return originalFeature(world, 'plane-movie-commands', 'control', id, args, task);
         if (world.runtime.handles.records.get(args[0])?.type === 'plane-movie') {
           if (id === 0x10c) throw new Error('The Plane owns this movie lifetime');
           if (id === 0x3e4 && args[1])

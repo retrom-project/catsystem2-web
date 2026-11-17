@@ -106,10 +106,6 @@ export class NativeImageCommands {
 }
 export function installNativeImageCommands(world) {
   const commands = (world.imageCommands = new NativeImageCommands(world));
-  world.registerNativeFeature('image-commands', (engine) => {
-    engine.registerFeature('image-commands', commands);
-    return commands;
-  });
   for (const { id } of NATIVE_IMAGE_COMMAND_CONTRACTS)
     world.runtime.register('main', id, (args, machine, task) =>
       commands.apply(id, args, machine, task),

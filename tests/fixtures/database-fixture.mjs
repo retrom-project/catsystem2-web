@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Authored compiled KCDB tables, independent of any game's database assets.
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
-import { NativeEngineFiles } from '../../src/native/engine-files.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
+import { NativeEngineFiles } from '../../oracle/engine-files.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
 import { NativeDatabases, nativeDatabaseCodec } from '../../oracle/database.mjs';
 import { NativeHandles } from '../../src/native/handles.mjs';

@@ -3,8 +3,8 @@
 // and CP932-to-UTF8 search-key conversion, including CRT/Windows boundaries.
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+import { NATIVE_EXE_PROFILES } from './executable-catalog.mjs';
 export const NATIVE_UTF8_IDS = Object.freeze([0x415, 0x416, 0x41b]);
 export async function nativeUTF8(id, args, machine, task, world) {
   if (!NATIVE_UTF8_IDS.includes(id) || !nativeABI(world.profile).capabilities.utf8Primitives)

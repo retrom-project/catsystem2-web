@@ -2,8 +2,8 @@
 // Original render-source arrays stay in KCS memory with their PE pointers.
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { NATIVE_RESULT_SENTINEL, nativeReply } from '../src/kcs/vm.mjs';
-import { installNativeEngineFiles } from '../src/native/engine-files.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
+import { installNativeEngineFiles } from './engine-files.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
 
 export const NATIVE_RENDER_SOURCE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x2bf, words: 3, control: 1, handlers: [0x64c520, 0x519040] }),

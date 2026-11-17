@@ -264,10 +264,6 @@ export class NativeImageOwners {
 export function installNativeImageOwners(world) {
   const owners = new NativeImageOwners(world);
   world.imageOwners = owners;
-  world.registerNativeFeature('image-owners', (engine) => {
-    engine.registerFeature('image-owners', owners);
-    return owners;
-  });
   for (const id of NATIVE_IMAGE_OWNER_IDS)
     world.runtime.register('main', id, (args, machine, task) =>
       owners.apply(id, args, machine, task),

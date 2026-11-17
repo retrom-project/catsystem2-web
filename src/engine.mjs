@@ -26,6 +26,7 @@ import { nativeABI } from './native/abi/index.mjs';
 import { NativeInputBindings } from './native/input-bindings.mjs';
 import { browserWindowsLanguageID } from './native/windows-language-ids.mjs';
 import { NativeSteam } from './native/steam.mjs';
+import { requireCheckpointRestoreOwner } from './native/original-adapter.mjs';
 
 export class CatSystem2 {
   constructor({
@@ -87,6 +88,7 @@ export class CatSystem2 {
   async initialize({ checkpoint } = {}) {
     let selected, identity;
     if (checkpoint) {
+      requireCheckpointRestoreOwner(checkpoint.world, this.transitionalExe);
       identity = await this.game.fingerprint();
       if (
         checkpoint.format !== 'catsystem2-web' ||
@@ -722,6 +724,7 @@ export class CatSystem2 {
         !saved.world
       )
         throw new Error('Checkpoint does not match the current game or format');
+      requireCheckpointRestoreOwner(saved.world, this.transitionalExe);
       this.checkpointSize(saved);
       const previous = this.world,
         previousAudio = this.audio,

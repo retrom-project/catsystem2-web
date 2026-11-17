@@ -2,7 +2,7 @@
 // Original rettitle handlers with their event-deque enqueue boundary supplied.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 const profiles = [
     ['--game', 'nekopara-vol3-engine-2.6.1.76', 0x77ee30, 0x77a310, 19],
     ['--sdk', 'sdk-4.01-engine-2.6.1.74', 0x618100, 0x613cc0, 22],

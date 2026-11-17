@@ -247,10 +247,6 @@ export class NativeRenderSources {
 }
 export function installNativeRenderSources(world) {
   const sources = (world.renderSources = new NativeRenderSources(world));
-  world.registerNativeFeature('render-sources', (engine) => {
-    engine.registerFeature('render-sources', sources);
-    return sources;
-  });
   for (const { id } of NATIVE_RENDER_SOURCE_CONTRACTS)
     world.runtime.register('main', id, (args, machine, task, scheduler) =>
       sources.apply(id, args, machine, task, scheduler),

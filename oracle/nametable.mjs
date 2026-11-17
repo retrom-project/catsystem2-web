@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // One original four-byte name-table owner, including its filename rules.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { installNativeEngineFiles } from '../src/native/engine-files.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+import { installNativeEngineFiles } from './engine-files.mjs';
 
 export const NATIVE_NAME_TABLE_CONTRACTS = Object.freeze(
   [

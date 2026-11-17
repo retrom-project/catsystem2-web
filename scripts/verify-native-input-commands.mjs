@@ -4,11 +4,11 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess, NATIVE_ENGINE_IMAGES } from '../oracle/engine-process.mjs';
 import {
   NativeInputCommands,
   NATIVE_INPUT_COMMAND_CONTRACTS,
-} from '../src/native/input-commands.mjs';
+} from '../oracle/input-commands-original.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 
 export async function verifyInputCommands(bytes, profile) {

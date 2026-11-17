@@ -2,7 +2,7 @@
 // Only the private lane imports this PE layout. Every projected byte is also
 // observed as independent domain state; all other PE writes remain exact.
 import assert from 'node:assert/strict';
-import { captureFloatingPoint, restoreFloatingPoint } from '../../src/ppi/floating-point.mjs';
+import { captureFloatingPoint, restoreFloatingPoint } from '../../oracle/ppi-floating-point.mjs';
 const freshFloatingPoint = new WeakMap();
 const matrixLayouts = {
   'sdk-4.01-engine-2.6.1.74': { index: 0xc95190, matrices: 0xc95198 },

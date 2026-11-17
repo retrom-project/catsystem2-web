@@ -3,9 +3,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
-import { EmoteD3D9 } from '../src/emote/native-d3d.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
+import { EmoteD3D9 } from '../oracle/m2-native-d3d.mjs';
 import { NativeEmoteDevice } from '../oracle/m2-device-original.mjs';
 
 const invalid = 0x8876086c,

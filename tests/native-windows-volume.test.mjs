@@ -2,10 +2,10 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
-import { NativeEngineWindows } from '../src/native/windows-services.mjs';
-import { loadUnicorn } from '../src/ppi/backend.mjs';
-import { PE32Process } from '../src/ppi/pe32.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
+import { NativeEngineWindows } from '../oracle/windows-services.mjs';
+import { loadUnicorn } from '../oracle/ppi-backend.mjs';
+import { PE32Process } from '../oracle/ppi-pe32.mjs';
 
 const dll = 'kernel32.dll',
   resolve = (kernel, name) => kernel.resolve({ dll, name });

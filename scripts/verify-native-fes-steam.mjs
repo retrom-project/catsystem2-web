@@ -3,7 +3,7 @@
 // variable storage and SCRIPT replacement are declared boundary services.
 import assert from 'node:assert/strict';
 import { readFile, writeFile } from 'node:fs/promises';
-import { NativeEngineProcess } from '../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { FESInstance } from '../src/fes/instance.mjs';
 import { parseProgram } from '../src/fes/program.mjs';
 import { evaluate } from '../src/fes/expression.mjs';

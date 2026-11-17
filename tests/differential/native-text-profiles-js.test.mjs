@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { engineFixtureSet } from '../fixtures/oracle-fixtures.mjs';
-import { NativeEngineProcess } from '../../src/native/engine-process.mjs';
+import { NativeEngineProcess } from '../../oracle/engine-process.mjs';
 import { NativeTextRuntime } from '../../oracle/text.mjs';
 import { JSTextRuntime } from '../../src/native/text-core.mjs';
 import { encodeCP932 } from '../../src/kcs/strings.mjs';

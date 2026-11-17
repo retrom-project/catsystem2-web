@@ -2,8 +2,8 @@
 // Main 1D6..201 is the engine's built-in tile-rules context. Its model is a
 // process global shared by all 32-byte contexts, not a per-script JS copy.
 import { nativeReply } from '../src/kcs/vm.mjs';
-import { NativeKCSMemory } from '../src/native/kcs-memory.mjs';
-import { NATIVE_EXE_PROFILES } from '../src/native/catalog.mjs';
+import { NativeKCSMemory } from './kcs-memory.mjs';
+import { NATIVE_EXE_PROFILES } from './executable-catalog.mjs';
 
 export const NATIVE_TILE_GAME_IDS = Object.freeze(
   Array.from({ length: 44 }, (_, index) => 0x1d6 + index),
