@@ -621,14 +621,16 @@ test('browser window services apply native preferences, manage real save files, 
   await expect(dialog).toBeVisible();
   await dialog.locator('[name=vol_master]').fill('37');
   await dialog.locator('[name=font]').fill('Arial');
+  await dialog.getByRole('checkbox', { name: 'Enable gamepad' }).check();
   await dialog.getByRole('button', { name: 'Apply', exact: true }).click();
   expect(await page.evaluate(() => window.windowResult)).toBe(true);
   expect(
     await page.evaluate(() => ({
       volume: window.windowEngine.world.fesConfiguration.get('vol_master'),
       font: window.windowEngine.world.configuration.font.name,
+      gamepad: window.windowEngine.world.configuration.keys.enableJoypad,
     })),
-  ).toEqual({ volume: 37, font: 'Arial' });
+  ).toEqual({ volume: 37, font: 'Arial', gamepad: 1 });
   await page.evaluate(async () => {
     const e = window.windowEngine;
     await e.world.storage.write('authored.sav', Uint8Array.of(1, 2, 3));
@@ -691,13 +693,14 @@ test('browser window services apply native preferences, manage real save files, 
         return {
           volume: e.world.fesConfiguration.get('vol_master'),
           font: e.world.configuration.font.name,
+          gamepad: e.world.configuration.keys.enableJoypad,
           file: [...(await e.world.storage.readSaved('imported.sav'))],
         };
       } finally {
         await e.dispose();
       }
     }),
-  ).toEqual({ volume: 37, font: 'Arial', file: [4, 5, 6] });
+  ).toEqual({ volume: 37, font: 'Arial', gamepad: 1, file: [4, 5, 6] });
 });
 
 test('script message boxes display literal text and acknowledge OK and Escape', async ({

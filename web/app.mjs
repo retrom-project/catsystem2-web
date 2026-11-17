@@ -80,6 +80,7 @@ function updateStatus(state) {
   );
   for (const id of ['next', 'quick-save']) $(id).disabled = !state.story && !nativeReady;
   $('export').disabled = state.mode !== 'running';
+  $('system-settings').disabled = state.mode !== 'running' || !engine?.world || !running;
   for (const id of ['quick-load', 'backlog', 'settings', 'import']) $(id).disabled = !engine;
   const now = performance.now();
   if (now - statusTime < 400) return;
@@ -97,6 +98,7 @@ async function launch(getGame) {
   $('error').hidden = true;
   $('language-controls').hidden = true;
   $('start').disabled = true;
+  $('system-settings').disabled = true;
   $('status').textContent = 'Loading game resources…';
   const audioContext = new AudioContext();
   await audioContext.resume();
@@ -112,6 +114,7 @@ async function launch(getGame) {
         running = false;
         $('welcome').hidden = false;
         $('start').disabled = false;
+        $('system-settings').disabled = true;
         $('status').textContent = 'Game closed';
         updateLanguageControls();
       },
@@ -156,6 +159,7 @@ async function loop(now) {
     await engine.render();
   } catch (e) {
     running = false;
+    $('system-settings').disabled = true;
     fail(e);
   }
   if (running) requestAnimationFrame(loop);
@@ -181,6 +185,15 @@ $('settings').onclick = () =>
   enqueue(() => (engine.world ? engine.host.systemAction(23) : engine.openModal('config'))).catch(
     () => {},
   );
+$('system-settings').onclick = () => {
+  const world = engine?.world;
+  if (!running || !world || world.closed || world.disposalRequested) return;
+  $('system-settings').disabled = true;
+  canvas.focus({ preventScroll: true });
+  enqueue(() => {
+    if (world === engine.world) world.window.post(0x46c, 0, 21);
+  }).catch(() => {});
+};
 $('backlog').onclick = () =>
   enqueue(() =>
     engine.world

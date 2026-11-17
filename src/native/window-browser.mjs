@@ -38,7 +38,7 @@ const element = (tag, text) => {
         ['vol_se', 'Effects volume'],
         ['vol_voice', 'Voice volume'],
         ['vol_play', 'Playback volume'],
-        ['mute_master', 'Mute all audio', 'check'],
+        ['mute_master', 'Mute audio output', 'check'],
         ['mute_bgm', 'Mute music', 'check'],
         ['mute_se', 'Mute effects', 'check'],
         ['mute_voice', 'Mute voice', 'check'],
@@ -58,6 +58,7 @@ const element = (tag, text) => {
         ['enable_sceneanm', 'Scene animation', 'check'],
       ],
     ],
+    ['Input', [['enable_joypad', 'Enable gamepad', 'check', 'key.enableJoypad']]],
     [
       'Window',
       [
@@ -243,11 +244,18 @@ export class BrowserNativeWindow {
           if (!system && !volume && title === 'Text and language') continue;
           const group = element('fieldset');
           group.append(element('legend', title));
-          for (const [name, label, kind = 'number'] of items) {
-            if (!service.recognized(name)) continue;
+          for (const [name, label, kind = 'number', field] of items) {
+            if (field ? !system : !service.recognized(name)) continue;
+            if (
+              system &&
+              title === 'Audio' &&
+              world.soundConfiguration?.master &&
+              name !== 'mute_master'
+            )
+              continue;
             const row = element('label'),
               input = element(kind === 'language' ? 'select' : 'input'),
-              value = service.get(name);
+              value = field ? config.getField(field) : service.get(name);
             row.className = 'native-setting';
             row.append(element('span', label), input);
             input.name = name;
@@ -283,7 +291,7 @@ export class BrowserNativeWindow {
               }
             }
             group.append(row);
-            controls.push({ name, input, kind, previous: value });
+            controls.push({ name, input, kind, field, previous: value });
           }
           if (group.children.length > 1) body.append(group);
         }
@@ -301,7 +309,7 @@ export class BrowserNativeWindow {
               languages: () => copy.language?.entries ?? [],
               emit: (event) => pending.push(event),
             });
-            for (const { name, input, kind, previous } of controls) {
+            for (const { name, input, kind, field, previous } of controls) {
               if (!input.checkValidity()) {
                 input.reportValidity();
                 return;
@@ -318,7 +326,9 @@ export class BrowserNativeWindow {
                 throw new Error(
                   'Choose a valid value for ' + input.previousElementSibling.textContent,
                 );
-              if (value !== previous) await draft.set(name, value);
+              if (field) {
+                if (value !== Number(Boolean(previous))) copy.setField(field, value);
+              } else if (value !== previous) await draft.set(name, value);
             }
             if (this.dialog !== dialog) return;
             config.restore(copy.snapshot());

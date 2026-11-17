@@ -132,6 +132,12 @@ download and deletion, audio controls, version/system information, fullscreen
 and a resumable pause view. Game and system configuration are separate host
 operations; the controls edit the recovered FES preferences and persist native
 setup XML. Browser fullscreen state determines its resulting dimensions/state.
+The standalone toolbar opens system configuration through the native menu
+selector. Its gamepad checkbox edits `KEY/enable_joypad` and gates browser
+gamepad samples alongside the script's own input gate. When the game loads a
+sound configuration tree, its authored menu owns the group levels. The system
+configuration offers master mute there, which updates the browser mix while
+keeping playback positions and sources live.
 The Windows external configuration executable receives an explicit unavailable
 notice. This does not claim to execute `cs2confx.dll`, shell programs, Windows
 property-page resources or alter the operating system's volume/window manager.
