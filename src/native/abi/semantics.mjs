@@ -9039,7 +9039,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     261: {
-      name: 'draw.count',
+      name: 'draw.bitmap',
       family: 'draw',
       signature: {
         argumentWords: 1,
@@ -9057,11 +9057,11 @@ export const NATIVE_SEMANTICS = freeze({
         ],
         result: {
           bits: 32,
-          description: 'u32',
+          description: 'borrowed Draw bitmap handle',
           kind: 'integer',
           signed: false,
         },
-        resultWritten: null,
+        resultWritten: true,
         review: 'declared',
       },
     },
@@ -12167,7 +12167,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     340: {
-      name: 'draw.push',
+      name: 'draw.render',
       family: 'draw',
       signature: {
         argumentWords: 1,

@@ -140,3 +140,49 @@ A direct message with a null RECT follows the native setter branch without
 the manager's before/after invalidation. Required RECT words must be defined
 before any state change; a missing entry reads none. The existing retained
 source, bitmap, snapshot and close owners remain responsible for their data.
+
+## Draw bitmap query and ordinary output
+
+Main261 is `draw.bitmap`, not a retained-item count. Its single DWORD is the
+native task ID. Both recovered wrappers send even for target zero, using the
+current caller's native sender, w=0 and transport flags=0. SDK51CAF0 sends raw280;
+Game644440 sends canonical285. The responding Draw reads its renderer's owned
+bitmap wrapper, stores it through L and returns0; the wrapper copies that stored
+word to the VM and returns control1. The ordinary implementation returns the
+existing borrowed bitmap handle as a u32. Querying does not allocate, retain,
+render, dirty or transfer ownership. The separate item-count message is288.
+
+The wrapper's L aliases its original self argument slot, initially a C++ object
+address. The separate transport-Q word is discarded. A missing response therefore
+cannot be replaced by zero or a World/native ID. Ordinary Main261 uses the shared
+NativeGraphicsPacket unwritten-word authority and strict nativeEngineWord read:
+only an actual L store can become a VM result. A responding Draw's explicit zero
+is valid; it is distinct from an unwritten output. An unresponsive zero target,
+missing target or released owner fails explicitly because its physical self
+address is outside this ordinary handle domain. Draw285's existing bitmap store
+and lifetime remain the authority.
+
+Main340 is `draw.render`, not a push operation. Its one-DWORD native target is
+sent without a zero-target shortcut, with w/l/flags=0 (SDK51C9E0 raw285,
+Game644330 canonical290). Control2 writes no VM result. Draw marks its dirty flag
+before checking the renderer and invokes the existing ordinary compositor, with
+its enabled output, pending state and dirty regions. This can update offscreen
+pixels while output is disabled; it does not force the full-surface output used
+by Main342/canonical292. Neither command changes Draw285/288/290/292, bitmap
+ownership, the compositor or its release order.
+
+Only SDK74 Main261/340 are newly admitted; Game76 already admits both. The other
+unknown slots and unregistered profiles remain guarded. Existing route-audit
+names `draw.bitmap` and `draw.render` already match these consumers. The selected
+SDK sscript has seven bitmap-query sites and no item-count GCALL264; its actual
+Main261 site609773 is followed, after existing bitmap operations and a helper
+returns, by Main340 at610188. This static prerequisite is not a claim that a
+previous failed gallery run reached that second call.
+
+Owned dual-ABI GCALL coverage checks raw sender/target domains, returned bitmap
+pixels and unchanged bitmap records, a real zero store, ordinary enabled/disabled
+output, VM sentinels, complete cold DTO equality before any warm frame, isolation
+and owner release, and strict missing responses. Cold restoration may load the
+owned KCS code and probe the explicitly absent M2 configuration; it executes no
+native commands or RNG draws. These short checks do not replace the original
+SDK gallery, music and replay acceptance.

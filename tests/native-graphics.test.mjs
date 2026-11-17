@@ -2725,7 +2725,7 @@ for (const profile of rectangleProfiles)
       assert.equal(declaration.signature.resultWritten, false);
       for (const field of declaration.signature.parameters.slice(1))
         assert.deepEqual(field.type, { kind: 'float', bits: 32 });
-      for (const unknown of [109, 110, 279, 340, 361, 467])
+      for (const unknown of [109, 110, 279, 264, 361, 467])
         assert.equal(
           nativeABI(rectangleProfiles[0]).tables.main.entries[unknown].status,
           'unknown',
@@ -2952,7 +2952,7 @@ for (const profile of rectangleProfiles)
       assert.equal(declaration.signature.argumentWords, 4);
       assert.deepEqual(declaration.controlCodes, [2]);
       assert.equal(declaration.signature.resultWritten, false);
-      for (const id of [109, 110, 279, 340, 361, 467])
+      for (const id of [109, 110, 279, 264, 361, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
 
       const saved = scene.snapshot(),
@@ -3267,7 +3267,7 @@ for (const profile of rectangleProfiles)
       assert.equal(declaration.signature.argumentWords, 5);
       assert.deepEqual(declaration.controlCodes, [2]);
       assert.equal(declaration.signature.resultWritten, false);
-      for (const id of [109, 110, 279, 340, 361, 467])
+      for (const id of [109, 110, 279, 264, 361, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       const saved = scene.snapshot(),
         decoded = await deserializeCheckpoint(await serializeCheckpoint(saved));

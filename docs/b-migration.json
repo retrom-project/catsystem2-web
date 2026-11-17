@@ -7945,7 +7945,7 @@
           "id": 261,
           "hexID": "0x105",
           "semanticName": "draw.bitmap",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.bitmap",
           "renderRoute": {
             "id": 261,
             "semanticName": "draw.bitmap",
@@ -7969,8 +7969,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -9527,7 +9526,7 @@
           "id": 340,
           "hexID": "0x154",
           "semanticName": "draw.render",
-          "catalogSemanticName": null,
+          "catalogSemanticName": "draw.render",
           "renderRoute": {
             "id": 340,
             "semanticName": "draw.render",
@@ -9551,8 +9550,7 @@
               }
             ]
           },
-          "catalogStatus": "unknown",
-          "runtimeAdmission": "blocked-unknown",
+          "catalogStatus": "recovered",
           "implementation": "pure-js",
           "module": "src/native/draw-task.mjs",
           "domain": 6,
@@ -30565,7 +30563,7 @@
           "id": 261,
           "hexID": "0x105",
           "semanticName": "draw.bitmap",
-          "catalogSemanticName": "draw.count",
+          "catalogSemanticName": "draw.bitmap",
           "renderRoute": {
             "id": 261,
             "semanticName": "draw.bitmap",
@@ -32185,7 +32183,7 @@
           "id": 340,
           "hexID": "0x154",
           "semanticName": "draw.render",
-          "catalogSemanticName": "draw.push",
+          "catalogSemanticName": "draw.render",
           "renderRoute": {
             "id": 340,
             "semanticName": "draw.render",
@@ -49916,7 +49914,7 @@
     },
     {
       "file": "src/native/abi/2.6.1.74.mjs",
-      "sourceSha256": "30bc9ad7cf617ea3074c543842a560850fc64e4cd6c99d6539018528d27ce050",
+      "sourceSha256": "744646426bd13c508de9e3593062b9352d527190af78a77f9fb158f0b8bef4a3",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -49981,7 +49979,7 @@
     },
     {
       "file": "src/native/abi/semantics.mjs",
-      "sourceSha256": "0ad051aafd38f045ab9b3ed1d2edf7252bde1cea6861a8710bce16b1ae041163",
+      "sourceSha256": "6ab64b73dd37bd0c0a6e7b15f3f72cef1b2f60b7ed730489c0f6b4fb756f64c9",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50748,7 +50746,7 @@
     },
     {
       "file": "src/native/draw-task.mjs",
-      "sourceSha256": "d1dfce0b9fc2fb1104cc6800f2e3c6896cf042d2b93a2a35c4cb9ba9b260dd26",
+      "sourceSha256": "8491a9c249b8c79030a1aa43cbc947e28cd71e768945556609f0f6f3b42373c0",
       "domain": 6,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

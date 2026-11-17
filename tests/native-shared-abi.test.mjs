@@ -460,7 +460,7 @@ test('registered drawing family inherits reviewed arity and output contracts wit
     });
     assert.equal(entries[69].signature.resultWritten, true);
   }
-  for (const id of [259, 261, 264]) {
+  for (const id of [259, 94, 264]) {
     assert.equal(sdk.tables.main.entries[id].status, 'unknown');
     assert.equal(sdk.tables.main.entries[id].name, null);
     assert.equal(game.tables.main.entries[id].status, 'recovered');

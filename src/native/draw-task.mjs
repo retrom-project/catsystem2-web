@@ -633,14 +633,9 @@ export async function nativeDraw(id, args, _machine, task, world) {
       await graphics.send(args[0], task.id, 283, args[1], args[2]);
       return done();
     case 0x105: {
-      const output = {
-        value: 0,
-        store(_address, value) {
-          this.value = value;
-        },
-      };
+      const output = new NativeGraphicsPacket([], { unwritten: [0] });
       await graphics.send(args[0], task.id, 285, 0, 0, output);
-      return nativeReply(1, output.value);
+      return nativeReply(1, nativeEngineWord(output.load(0), 'Draw bitmap query'));
     }
     case 0x106:
       await graphics.send(args[0], task.id, 286, 0, args[1]);

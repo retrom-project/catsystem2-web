@@ -1099,3 +1099,291 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       }
     },
   );
+
+const bitmapQueryCode = kcsProgram([
+  [37, forceOutputSentinel],
+  [37, [0x13, 128]],
+  [43, 261, 4],
+  [38, [0x13, 512]],
+  [37, 89],
+  [38, [0x13, 516]],
+  [59],
+]);
+const ordinaryDrawCode = kcsProgram([
+  [37, forceOutputSentinel],
+  [37, [0x13, 128]],
+  [43, 340, 4],
+  [37, 89],
+  [38, [0x13, 516]],
+  [59],
+]);
+let drawQueryCaller = 0;
+async function drawQueryCall(world, target, query = true) {
+  const name = query ? 'bitmap-query.kcs' : 'ordinary-draw.kcs',
+    id = await world.objects.create({
+      kind: 12,
+      parent: world.main.id,
+      nativeID: 0x01051000 + ++drawQueryCaller,
+      name,
+    }),
+    record = world.objects.objects.get(id);
+  await record.implementation.loadScript(name);
+  const task = record.implementation.task,
+    machine = task.machine,
+    sp = machine.sp;
+  machine.store(128, target);
+  machine.store(512, 0x89abcdef);
+  machine.bytes(800, 16).fill(0xa5);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.halted, true);
+  assert.equal(machine.load(128), target >>> 0);
+  assert.equal(machine.load(516), 89);
+  assert.equal(machine.pop(), forceOutputSentinel);
+  assert.equal(machine.sp, sp);
+  assert.deepEqual([...machine.bytes(800, 16)], Array(16).fill(0xa5));
+  if (!query) assert.equal(machine.load(512), 0x89abcdef, 'control2 writes no VM result');
+  return { task, value: machine.load(512) };
+}
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+  test(`${profile} gallery Draw bitmap query and ordinary render keep owned pixels and cold state`, async () => {
+    const files = {
+        'case.kcs': kcsProgram([[59]]),
+        'bitmap-query.kcs': bitmapQueryCode,
+        'ordinary-draw.kcs': ordinaryDrawCode,
+      },
+      world = await dataWorld(profile, files);
+    let fresh;
+    try {
+      const texture = world.configuration.fields.texture;
+      texture.size.set([64, 64]);
+      texture.grid.set([1, 1]);
+      texture.bppY.set([0, 1]);
+      texture.areas[0].set([0, 0, 1, 1]);
+      texture.bpp = 32;
+      const surfaceID = await world.objects.create({
+          kind: 15,
+          parent: world.main.id,
+          nativeID: 0x01050001,
+          name: 'gallery bitmap surface',
+        }),
+        emptyID = await world.objects.create({
+          kind: 15,
+          parent: world.main.id,
+          nativeID: 0x01050002,
+          name: 'gallery empty surface',
+        }),
+        target = world.nativeTaskID(surfaceID),
+        emptyTarget = world.nativeTaskID(emptyID),
+        draw = world.graphics.drawTasks.get(surfaceID),
+        sibling = world.graphics.drawTasks.get(emptyID),
+        siblingBefore = structuredClone(sibling.state),
+        messages = [],
+        send = world.sendNativeEngine,
+        outputs = [],
+        output = world.graphics.output;
+      assert.notEqual(surfaceID, target);
+      world.sendNativeEngine = function (destination, sender, message, w, l, context) {
+        const promise = send.call(this, destination, sender, message, w, l, context);
+        if (message === 285 || message === 290)
+          messages.push({
+            destination,
+            sender,
+            message,
+            w,
+            l,
+            flags: context?.flags ?? 0,
+            promise,
+          });
+        return promise;
+      };
+      world.graphics.output = function (...args) {
+        const promise = output.apply(this, args);
+        outputs.push({ promise });
+        return promise;
+      };
+      const call = (id, args) =>
+          world.runtime.native('main', id, args, world.main.machine, world.main),
+        bitmapRecords = () =>
+          world.runtime.handles
+            .snapshot()
+            .records.filter(([, r]) => ['bitmap', 'bitmap-data'].includes(r.type));
+      await call(256, [target, 4, 3]);
+      await call(260, [target, 1, 2]);
+      await call(262, [target, 0]);
+      const sourceHandle = world.graphics.images.create(1, 1, world.main.id),
+        source = world.graphics.images.get(sourceHandle),
+        bind = () =>
+          call(257, [
+            target,
+            7,
+            sourceHandle,
+            floatBits(1),
+            floatBits(1),
+            floatBits(0),
+            floatBits(0),
+            floatBits(0),
+            floatBits(1),
+            floatBits(1),
+            255,
+            1,
+            0,
+          ]);
+      await source.fill(0, 0, 1, 1, 0xff112141);
+      await bind();
+      const bitmapHandle = draw.state.renderer.bitmap,
+        bitmapBefore = bitmapRecords(),
+        stateBefore = structuredClone(draw.state),
+        query = await drawQueryCall(world, target);
+      assert.equal(query.value, bitmapHandle);
+      assert.notEqual(world.nativeTaskID(query.task.id), query.task.id);
+      assert.notEqual(query.value, draw.state.renderer.items.length, 'bitmap is not an item count');
+      assert.deepEqual(
+        bitmapRecords(),
+        bitmapBefore,
+        'the query does not allocate or retain a bitmap',
+      );
+      assert.deepEqual(draw.state, stateBefore, 'the getter does not render or dirty its owner');
+      assert.deepEqual(
+        messages.at(-1) && [
+          messages.at(-1).destination,
+          messages.at(-1).sender,
+          messages.at(-1).message,
+          messages.at(-1).w,
+          messages.at(-1).l,
+          messages.at(-1).flags,
+        ],
+        [target, query.task.id, 285, 0, 0, 0],
+      );
+      assert.equal(typeof messages.at(-1).promise?.then, 'function');
+      assert.equal(
+        (await drawQueryCall(world, emptyTarget)).value,
+        0,
+        'a real L store of zero is a result',
+      );
+      const rendered = await drawQueryCall(world, target, false),
+        firstPixels = [...Array(20).fill(0), 17, 33, 65, 255, ...Array(24).fill(0)];
+      assert.deepEqual([...(await drawPixels(world, surfaceID))], firstPixels);
+      assert.equal(outputs.length, 0, 'ordinary rendering honors disabled output');
+      assert.equal(draw.state.enabled, false);
+      assert.equal(draw.state.pending, false);
+      assert.deepEqual(
+        [
+          messages.at(-1).destination,
+          messages.at(-1).sender,
+          messages.at(-1).message,
+          messages.at(-1).w,
+          messages.at(-1).l,
+          messages.at(-1).flags,
+        ],
+        [target, rendered.task.id, 290, 0, 0, 0],
+      );
+      await call(262, [target, 1]);
+      await source.fill(0, 0, 1, 1, 0xff7585a5);
+      await bind();
+      await drawQueryCall(world, target, false);
+      const pixels = [...Array(20).fill(0), 117, 133, 165, 255, ...Array(24).fill(0)];
+      assert.deepEqual([...(await drawPixels(world, surfaceID))], pixels);
+      assert.equal(outputs.length, 1, 'the enabled ordinary compositor reaches the real output');
+      assert.equal(typeof outputs[0].promise?.then, 'function');
+      assert.equal(draw.state.pending, false);
+      assert.deepEqual(sibling.state, siblingBefore);
+      const saved = world.snapshot(),
+        decoded = await deserializeCheckpoint(await serializeCheckpoint(saved));
+      fresh = await dataWorld(profile, files, { initialize: false });
+      const native = fresh.runtime.native,
+        read = fresh.game.read,
+        restoredScripts = [],
+        random = [fresh.random.integer, fresh.random.real].map((stream) => [
+          stream,
+          stream.nextUint32,
+        ]);
+      fresh.runtime.native = () => {
+        throw new Error('Gallery Draw cold restore replayed a native');
+      };
+      fresh.game.read = function (name, ...args) {
+        assert.equal(
+          Object.hasOwn(files, name) || name === 'm2view.cnf',
+          true,
+          'cold restore reads owned script code or the explicitly absent M2 configuration',
+        );
+        const promise = read.call(this, name, ...args);
+        restoredScripts.push({ name, promise });
+        return promise;
+      };
+      for (const [stream] of random)
+        stream.nextUint32 = () => {
+          throw new Error('Gallery Draw cold restore replayed RNG');
+        };
+      await fresh.restore(decoded);
+      assert.deepEqual(fresh.snapshot(), saved, 'all DTO fields agree without a warm frame');
+      assert.notEqual(
+        restoredScripts.length,
+        0,
+        'cold restore loads owned code without executing it',
+      );
+      for (const restored of restoredScripts)
+        if (restored.name === 'm2view.cnf') assert.equal(await restored.promise, null);
+      fresh.runtime.native = native;
+      fresh.game.read = read;
+      for (const [stream, next] of random) stream.nextUint32 = next;
+      const freshMessages = [],
+        freshSend = fresh.sendNativeEngine;
+      fresh.sendNativeEngine = function (destination, sender, message, w, l, context) {
+        const promise = freshSend.call(this, destination, sender, message, w, l, context);
+        if (message === 285 || message === 290)
+          freshMessages.push([destination, sender, message, w, l, context?.flags ?? 0]);
+        return promise;
+      };
+      assert.deepEqual([...(await drawPixels(fresh, surfaceID))], pixels);
+      assert.equal((await drawQueryCall(fresh, target)).value, bitmapHandle);
+      await world.objects.release(surfaceID);
+      assert.equal(
+        world.runtime.handles.records.has(bitmapHandle),
+        false,
+        'borrowed result keeps no owner alive',
+      );
+      assert.deepEqual(
+        [...(await drawPixels(fresh, surfaceID))],
+        pixels,
+        'cold bitmap is isolated from old owner release',
+      );
+      await assert.rejects(
+        () => drawQueryCall(world, target),
+        /Draw bitmap query.*initialized/,
+        'a released owner cannot return a fabricated bitmap word',
+      );
+      await assert.rejects(
+        () => drawQueryCall(fresh, 0),
+        /Draw bitmap query.*initialized/,
+        'zero target is dispatched, not silently skipped or converted to a result',
+      );
+      await assert.rejects(
+        () => drawQueryCall(fresh, 0x7f010501),
+        /Draw bitmap query.*initialized/,
+      );
+      await drawQueryCall(fresh, 0, false);
+      await drawQueryCall(fresh, 0x7f010501, false);
+      assert.deepEqual(
+        freshMessages
+          .slice(-4)
+          .map(([destination, , message, w, l, flags]) => [destination, message, w, l, flags]),
+        [
+          [0, 285, 0, 0, 0],
+          [0x7f010501, 285, 0, 0, 0],
+          [0, 290, 0, 0, 0],
+          [0x7f010501, 290, 0, 0, 0],
+        ],
+        'zero and missing native targets are really dispatched with the original words',
+      );
+      for (const [, sender] of freshMessages) {
+        assert.equal(fresh.objects.objects.get(sender).kind, 12);
+        assert.notEqual(fresh.nativeTaskID(sender), sender);
+      }
+      assert.equal(world.nativeEngine, undefined);
+      assert.equal(fresh.nativeEngine, undefined);
+    } finally {
+      await fresh?.close();
+      await world.close();
+    }
+  });
+}
