@@ -1,7 +1,16 @@
 // SPDX-License-Identifier: MPL-2.0
 // Current NativeWorld UI acceptance using the mounted frozen game.
 import { test, expect } from './native-performance.mjs';
-import { clickGame, button, noError, launch, pad, nativeWait, gameplay } from './game-helpers.mjs';
+import {
+  clickGame,
+  button,
+  noError,
+  launch,
+  pad,
+  nativeWait,
+  waitForSlotCloseInput,
+  gameplay,
+} from './game-helpers.mjs';
 import { captureTerminalState } from './terminal-evidence.mjs';
 import {
   hoverNativeButton,
@@ -168,6 +177,7 @@ async function runGame(page) {
       /save0000\.dat$/i.test(name),
     ),
   );
+  await waitForSlotCloseInput(page);
   const ordinary = await gameplay(page);
   await page.keyboard.press('Escape');
   await until(page, 'meswnd#WAIT', 240, ({ stack }) =>

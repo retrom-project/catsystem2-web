@@ -112,6 +112,32 @@ export async function nativeWait(page, predicate, argument, maxFrames = 240) {
     JSON.stringify(await page.evaluate(() => window.catSystem2.status())),
   ).toBeTruthy();
 }
+export async function waitForSlotCloseInput(page) {
+  await nativeWait(page, () => {
+    const engine = window.catSystem2,
+      player = engine.activeFES(),
+      root = player?.root;
+    if (player?.stack[0] !== 'saveload#WAIT' || root.finished !== null) return false;
+    if (engine.status().stack.some((label) => /^confirm2?#/.test(label))) return false;
+    const owner = engine.world.objects.objects.get(root.runtimeID),
+      close = root.byKey.get('btn_sys'),
+      input = engine.world.inputFor(root.runtimeID),
+      region = close && input?.get(close.nativeInputTaskID);
+    return Boolean(
+      owner?.state === 'active' &&
+        owner.implementation.player === player &&
+        !owner.implementation.sleepValue &&
+        !owner.implementation.input.state.sleeping &&
+        close?.enable &&
+        close.disp &&
+        !close.deleted &&
+        root.placement(close).shown &&
+        region?.enabled &&
+        region.mask & 1 &&
+        input.enabled[1],
+    );
+  });
+}
 export const gameplay = (page) =>
   page.evaluate(() => {
     const e = window.catSystem2,
