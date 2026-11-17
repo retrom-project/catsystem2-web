@@ -708,7 +708,10 @@ SDK uses 32 hardware banks with 120-byte controls; the game uses 64 banks with
 shared while each task retains its own control data. [FES sound objects](../src/native/fes-sound.mjs)
 use those same tasks and banks, including SOUND/SNDTABLE selection, queued loads,
 volume mixing, source-address effects, zero-initialized KX2 state and real motion
-scripts. Tables preserve enabled rows, selection order and the original 2,000-draw
+scripts. FES retains the declared archive path until the Sound task attempts
+the load. A mapped file miss can leave an allocated preview with no bank and
+zero duration. Unknown categories and reported read or decode errors remain
+visible. Tables preserve enabled rows, selection order and the original 2,000-draw
 shuffle. Original type filters precede user SUBCOMMAND lookup. Browser device
 acceptance remains separate from these control/state comparisons. Original wrappers with uninitialized return
 words (including 0x24C) report an explicit error instead of inventing zero.

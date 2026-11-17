@@ -14,6 +14,7 @@ import { FES_BUILTIN_VERBS } from '../fes/object.mjs';
 import { NativeFESSoundTable } from './fes-sound-table.mjs';
 import { buildNativeFESMotion } from './fes-motion.mjs';
 import { nativeEngineWord } from './engine-message.mjs';
+import { nativeCategoryFilename } from './resource-file.mjs';
 
 // These original type switches exclude 9/10. They precede user SUBCOMMANDs.
 const soundNoopVerbs = new Set(
@@ -342,10 +343,13 @@ export class NativeFESSound {
     const send = (id, w = bank, l = 0, payload) => this.send(instance, id, w, l, payload);
     if (state.get('pendingLoad')) {
       if (state.filename) {
-        const resolved = this.world.game.resolveCategory
-          ? this.world.game.resolveCategory(state.filename, 'sound')
-          : state.filename;
-        if (!resolved) throw new Error(`FES sound category resource is missing: ${state.filename}`);
+        const { game } = this.world,
+          resolved = game.nativeResources
+            ? nativeCategoryFilename(game, state.filename, 'sound')
+            : game.resolveCategory
+              ? game.resolveCategory(state.filename, 'sound')
+              : state.filename;
+        if (!resolved) throw new Error(`FES sound category has no mounted path: ${state.filename}`);
         if (bank !== -1 && !state.get('crossfade')) await send(181);
         // The filename protocol carries the bank or group in W and the string in L.
         const profile = this.world.profile,

@@ -92,6 +92,47 @@ test('FES sound loads and plays through its owner native task and allocated grou
   }
 });
 
+test('a mapped FES sound reaches the native bank loader even when its file is absent', async () => {
+  const { facade, instance, messages, world } = fixture(),
+    sound = object({ file: 'preview-cue', group: 'effects', soundType: 2 });
+  world.game.nativeResources = {
+    resolve(name, category) {
+      assert.equal(category, 'sound');
+      return `effects.int/${name}.ogg`;
+    },
+  };
+  world.game.resolveCategory = () => null;
+  const send = world.sendNativeEngine;
+  world.sendNativeEngine = function (target, sender, id, bank, value, context) {
+    const reply = send.call(this, target, sender, id, bank, value, context);
+    if (id === 205) return 0xffffffff;
+    if (id === 200 || id === 185) return 0;
+    return reply;
+  };
+  facade.command(instance, sound, 'play', [], { index: 0 });
+  const state = await facade.update(instance, sound),
+    load = messages.find(({ id }) => id === 205);
+  assert.equal(
+    new TextDecoder().decode(load.payload.subarray(12, load.payload.indexOf(0, 12))),
+    'effects.int/preview-cue.ogg',
+  );
+  assert.equal(state.get('bank'), -1);
+  assert.equal(state.get('pendingLoad'), 0);
+  assert.equal(state.get('duration'), 0);
+  assert.equal(state.get('playing'), 0);
+
+  const decoderError = new Error('Audio decoder rejected the mounted bytes');
+  const receive = world.sendNativeEngine;
+  world.sendNativeEngine = function (target, sender, id, bank, value, context) {
+    if (id === 205) throw decoderError;
+    return receive.call(this, target, sender, id, bank, value, context);
+  };
+  state.load('malformed-cue');
+  await assert.rejects(facade.update(instance, sound), (error) => error === decoderError);
+  world.game.nativeResources.resolve = () => null;
+  await assert.rejects(facade.update(instance, sound), /category has no mounted path/);
+});
+
 test('SOUND and SNDTABLE respect indexed-only commands and real native type exclusions', () => {
   const { facade, instance, writes, strings, locals } = fixture(),
     sound = object({ enable: false }),
