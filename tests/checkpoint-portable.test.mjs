@@ -79,45 +79,44 @@ test('portable checkpoints reject lossy values and malformed compressed files', 
   await assert.rejects(deserializeCheckpoint(file));
 });
 
-test('complete checkpoint observations compare every byte and retain type and alias differences', async () => {
-  const fixture = () => {
+test('checkpoint observations compare original graph values independently of encoding order', async () => {
+  const fixture = (reverse = false) => {
     const bytes = new Uint8Array(2 * 1024 * 1024),
       words = new Uint32Array(bytes.buffer, 4, 3),
       sparse = new Array(3),
-      state = {
-        frame: 573,
-        bytes,
-        alias: bytes,
-        words,
-        view: new DataView(bytes.buffer, 1, 7),
-        sparse,
-        record: Object.assign(Object.create(null), { word: 17 }),
-        missing: undefined,
-        values: [NaN, Infinity, -Infinity, -0, -1n],
-        map: new Map(),
-        set: new Set(),
-      };
+      record = Object.assign(Object.create(null), { word: 17 }),
+      state = {};
     bytes[bytes.length - 1] = 91;
     sparse[1] = undefined;
+    const fields = [
+      ['frame', 573],
+      ['bytes', bytes],
+      ['alias', bytes],
+      ['words', words],
+      ['view', new DataView(bytes.buffer, 1, 7)],
+      ['sparse', sparse],
+      ['record', record],
+      ['missing', undefined],
+      ['values', [NaN, Infinity, -Infinity, -0, -1n]],
+    ];
+    for (const [key, value] of reverse ? fields.toReversed() : fields) state[key] = value;
     state.self = state;
-    state.map.set(state, words);
-    state.set.add(state.map);
+    const entries = [
+      [state, words],
+      ['bytes', bytes],
+      ['number', 17],
+    ];
+    state.map = new Map(reverse ? entries.toReversed() : entries);
+    const members = [state.map, record, undefined, NaN];
+    state.set = new Set(reverse ? members.toReversed() : members);
     return state;
   };
-  const saved = await serializeCheckpoint(fixture()),
-    equal = await serializeCheckpoint(fixture());
-  assert.equal(checkpointDifference(equal, saved), null);
-  const lastByte = equal.slice();
-  lastByte[lastByte.length - 1] ^= 1;
-  assert.deepEqual(checkpointDifference(lastByte, saved), {
-    offset: saved.length - 1,
-    currentByte: lastByte.at(-1),
-    savedByte: saved.at(-1),
-  });
-  assert.deepEqual(checkpointDifference(equal.subarray(1), saved), {
-    currentLength: equal.length - 1,
-    savedLength: saved.length,
-  });
+  const current = fixture(true),
+    saved = fixture();
+  assert.equal(await checkpointDifference(current, saved), null);
+  const currentFile = await serializeCheckpoint(current),
+    savedFile = await serializeCheckpoint(saved);
+  assert.notDeepEqual(currentFile, savedFile);
   for (const mutate of [
     (state) => state.bytes[state.bytes.length - 1]++,
     (state) => {
@@ -154,12 +153,99 @@ test('complete checkpoint observations compare every byte and retain type and al
       state.frame = '573';
     },
   ]) {
-    const state = fixture();
-    mutate(state);
-    const different = await serializeCheckpoint(state);
-    assert.notEqual(checkpointDifference(different, saved), null);
-    assert.notEqual(checkpointDifference(saved, different), null);
+    const changed = fixture();
+    mutate(changed);
+    assert.notEqual(await checkpointDifference(changed, saved), null);
+    assert.notEqual(await checkpointDifference(saved, changed), null);
   }
-  assert.throws(() => checkpointDifference([], saved), /encoded Uint8Array/);
-  assert.throws(() => checkpointDifference(saved, []), /encoded Uint8Array/);
+});
+
+test('checkpoint observations match unordered containers with complete later alias constraints', async () => {
+  const fixture = (reverse) => {
+    const first = { value: 1 },
+      second = { value: 1 },
+      state = { anchor: reverse ? second : first };
+    state.table = new Map([
+      [first, second],
+      [second, first],
+    ]);
+    state.members = new Set([first, second]);
+    return state;
+  };
+  assert.equal(await checkpointDifference(fixture(false), fixture(true)), null);
+  const bad = fixture(true);
+  bad.anchor = { value: 1 };
+  assert.equal((await checkpointDifference(fixture(false), bad)).kind, 'alias');
+  assert.notEqual(await checkpointDifference(bad, fixture(false)), null);
+});
+
+test('checkpoint observations retain full backing bytes, blobs, dates and pure data boundaries', async () => {
+  const fixture = () => {
+    const buffer = new ArrayBuffer(32);
+    return {
+      words: new Uint32Array(buffer, 8, 2),
+      view: new DataView(buffer, 9, 3),
+      date: new Date(1234),
+      blob: new Blob([new Uint8Array([1, 2, 3])], { type: 'application/octet-stream' }),
+      bad: null,
+    };
+  };
+  const saved = fixture();
+  assert.equal(await checkpointDifference(fixture(), saved), null);
+  const padding = fixture();
+  new Uint8Array(padding.words.buffer)[31] = 1;
+  assert.deepEqual(await checkpointDifference(padding, saved), {
+    kind: 'byte',
+    path: ['view', 'buffer'],
+    offset: 31,
+    current: 1,
+    saved: 0,
+  });
+  for (const mutate of [
+    (state) => {
+      state.date = new Date(4321);
+    },
+    (state) => {
+      state.blob = new Blob([new Uint8Array([1, 2, 4])], { type: 'application/octet-stream' });
+    },
+    (state) => {
+      state.blob = new Blob([new Uint8Array([1, 2, 3])], { type: 'text/plain' });
+    },
+    (state) => {
+      state.bad = () => {};
+    },
+    (state) => {
+      state.bad = Symbol('owned');
+    },
+    (state) => {
+      state.bad = new Map([[Symbol('owned'), 1]]);
+    },
+    (state) => {
+      state.bad = new Set([Symbol('owned')]);
+    },
+    (state) => {
+      state.bad = Promise.resolve(1);
+    },
+  ]) {
+    const changed = fixture();
+    mutate(changed);
+    assert.notEqual(await checkpointDifference(changed, saved), null);
+  }
+  let reads = 0;
+  const accessor = {
+    get value() {
+      reads++;
+      return 1;
+    },
+  };
+  assert.equal((await checkpointDifference(accessor, { value: 1 })).kind, 'unsupported-accessor');
+  assert.equal(reads, 0);
+  for (const bad of [
+    () => {},
+    Symbol('owned'),
+    new Map([[Symbol('owned'), 1]]),
+    new Set([Symbol('owned')]),
+    Promise.resolve(1),
+  ])
+    assert.notEqual(await checkpointDifference({ bad }, { bad }), null);
 });

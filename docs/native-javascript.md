@@ -332,10 +332,13 @@ and NativeImages reference counts; they do not destroy borrowed owners or revive
 late I/O. Owned tiny-HG3 tests check literal packets and actual bitmap pixels,
 separately from the original SDK tutorial's still-required integration gate.
 
-The SDK browser observer captures the complete restored World DTO before render
-or frame execution. It transfers both DTOs through the production portable
-checkpoint codec and compares the complete encoded files byte for byte. The
-codec retains undefined values, binary types and views, shared references,
-Map/Set contents and cycles. A mismatch reports only its first byte offset or
-file-length difference, avoiding a multi-gigabyte pretty-print of bitmap bytes.
-Fresh-owner, old-owner release and no-replay checks remain separate assertions.
+The SDK browser observer captures and compares both complete original World DTOs
+before render or frame execution. The comparison visits every data field and
+backing-buffer byte, retains types, view ranges and bidirectional shared-reference
+relationships, and accepts equivalent object-key and Map/Set traversal orders.
+Unordered matches retain later alias constraints. Encoding node IDs and compressed
+file bytes are not state equality requirements. No codec roundtrip normalizes
+either input before comparison. Only a bounded structural mismatch leaves the
+page; on failure, both original DTOs are separately encoded with the production
+codec and attached in full for offline diagnosis. Fresh-owner, old-owner release
+and no-replay checks remain separate assertions.

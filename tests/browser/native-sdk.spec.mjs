@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { test, expect } from './native-performance.mjs';
-import { checkpointDifference } from './checkpoint-observation.mjs';
+import { readFile } from 'node:fs/promises';
 import {
   frameClock,
   state,
@@ -49,6 +49,12 @@ async function writeSetup(page, logLimit) {
 // Event codes: 1 owner, 2 pre-tick, 3 first native, 4 synchronous native failure,
 // 5 published app failure, 6 lifecycle sample. No text, inputs or source are logged.
 async function observeNormalSDKWorlds(page) {
+  await page.route('**/tests/browser/checkpoint-observation.mjs', async (route) => {
+    await route.fulfill({
+      contentType: 'text/javascript',
+      body: await readFile(new URL('./checkpoint-observation.mjs', import.meta.url)),
+    });
+  });
   page.on('console', (message) => {
     const text = message.text(),
       prefix = 'SDK_OBSERVATION ';
@@ -223,7 +229,10 @@ async function startSDK(page) {
 
 async function restoreFresh(page) {
   const restored = await page.evaluate(async () => {
-    const { serializeCheckpoint } = await import('/src/checkpoint.mjs'),
+    const [{ serializeCheckpoint }, { checkpointDifference }] = await Promise.all([
+        import('/src/checkpoint.mjs'),
+        import('/tests/browser/checkpoint-observation.mjs'),
+      ]),
       engine = window.catSystem2,
       old = engine.world,
       saved = await engine.snapshot(),
@@ -238,7 +247,8 @@ async function restoreFresh(page) {
     const world = engine.world,
       owner = trace.worlds.indexOf(world),
       current = world.snapshot(),
-      calls = trace.calls.slice(callStart);
+      calls = trace.calls.slice(callStart),
+      difference = await checkpointDifference(current, saved.world);
     // Capture the first restored DTO before render or any frame execution.
     return {
       fresh:
@@ -259,16 +269,33 @@ async function restoreFresh(page) {
         engine.random === world.random,
       frame: world.frame,
       savedFrame: saved.world.frame,
-      current: await serializeCheckpoint(current, engine.checkpointLimit),
-      saved: await serializeCheckpoint(saved.world, engine.checkpointLimit),
+      difference,
+      current: difference ? await serializeCheckpoint(current, engine.checkpointLimit) : null,
+      saved: difference ? await serializeCheckpoint(saved.world, engine.checkpointLimit) : null,
       freshCalls: calls.filter((entry) => entry.owner === owner),
       oldCleanupCalls: calls.filter((entry) => entry.owner !== owner),
     };
   });
-  expect(restored).toMatchObject({ fresh: true, oldReleased: true, ordinary: true, aliases: true });
-  expect(restored.frame).toBe(restored.savedFrame);
-  expect(checkpointDifference(restored.current, restored.saved)).toBeNull();
-  expect(restored.freshCalls).toEqual([]);
+  const { current, saved, difference, ...observation } = restored;
+  if (difference) {
+    await test.info().attach('restored-world-current.cs2web', {
+      body: Buffer.from(current),
+      contentType: 'application/octet-stream',
+    });
+    await test.info().attach('restored-world-saved.cs2web', {
+      body: Buffer.from(saved),
+      contentType: 'application/octet-stream',
+    });
+  }
+  expect(observation).toMatchObject({
+    fresh: true,
+    oldReleased: true,
+    ordinary: true,
+    aliases: true,
+  });
+  expect(observation.frame).toBe(observation.savedFrame);
+  expect(difference).toBeNull();
+  expect(observation.freshCalls).toEqual([]);
   // Old-owner teardown is recorded separately, never relabelled as fresh replay.
   await page.evaluate(() => window.catSystem2.render());
 }
