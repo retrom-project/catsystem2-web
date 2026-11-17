@@ -230,6 +230,12 @@ bytes and evaluate their index once. Bare references retain index-1 only when
 the first declared count exceeds1. Resource setters then parse the first
 colon's integer selector, separately from that object-reference index.
 
+The reviewed 2.6.1.76 static and dynamic definition callers parse the row,
+report a missing target by name and index, and continue to the next target.
+The ordinary World records that lookup miss as a native diagnostic and applies
+the definition only after a successful lookup. Header and command diagnostics
+retain their existing unsupported handling.
+
 Normal `IDN` (header code1) sends its first comma component as owned narrow
 bytes to the existing numeric operand reader. It inherits the initialized
 context's current word and mode; it does not strip a trailing `%` or apply

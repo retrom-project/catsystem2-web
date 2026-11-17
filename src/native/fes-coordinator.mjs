@@ -140,6 +140,14 @@ export class FESCoordinator {
       expandToken: (value) => instance.argumentBytes(value),
       expandName: (value) => instance.player.host.nativeFESStringBytes?.(value) ?? value,
       report: (message) => instance.diagnostic(message),
+      reportMissingTarget: nativeABI(world.profile).fes.definitionMissIsDiagnostic
+        ? (message) =>
+            world.host.nativeDiagnostic?.({
+              type: 'fes-definition-target-missing',
+              task: instance.player.nativeOwner,
+              message,
+            })
+        : undefined,
       setImageFile: (object, name, bytes) => this.setImageFile(object, name, bytes),
       loadImageTable: (s, o, file) => this.images.loadTable(s, o, file),
       applySpecial: (object, record, index) => this.applySpecial(object, record, index),

@@ -230,6 +230,7 @@ export class FESDefinitionModel {
       expandToken,
       expandName,
       report,
+      reportMissingTarget = report,
       setImageFile,
       loadImageTable,
       applySpecial,
@@ -243,6 +244,7 @@ export class FESDefinitionModel {
       expandToken,
       expandName,
       report,
+      reportMissingTarget,
       setImageFile,
       loadImageTable,
       applySpecial,
@@ -285,7 +287,10 @@ export class FESDefinitionModel {
     for (let index = start; index < end; index++) {
       const object = this.collection.lookup(selection.nameBytes, index);
       if (!object) {
-        diagnostic(this.report, `FES definition target ${selection.name}[${index}] is missing`);
+        diagnostic(
+          this.reportMissingTarget,
+          `FES definition target ${selection.name}[${index}] is missing`,
+        );
         continue;
       }
       if (record.fields.size || record.ids.size) {

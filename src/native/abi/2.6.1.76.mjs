@@ -308,6 +308,7 @@ export default {
   },
   fes: {
     commonHeads: FES_COMMON_HEAD_REGISTRATIONS.game,
+    definitionMissIsDiagnostic: true,
     configurationMessage: {
       liveObjects: true,
       notification: 'MES_CHANGECONFIG',

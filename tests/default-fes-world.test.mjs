@@ -15,6 +15,61 @@ import { append } from './fixtures/fes-log-model.mjs';
 
 const bytes = (value) => new TextEncoder().encode(value),
   pixel = Uint8Array.from([22, 33, 44, 255, 55, 66, 77, 255, 88, 99, 111, 255, 122, 133, 144, 255]);
+
+test('Game FES definition misses retain diagnostics without an unsupported command', async () => {
+  const source = `#DEFINE
+CIMAGE owned
+UNKNOWN invalidType
+#OBJECT SIZE
+absent[0] 12,16
+absent[1] 24,32
+owned 8,10
+#OBJECT UNKNOWN
+owned 7
+#START
+next WAIT
+#WAIT
+#CHECK
+owned unknown_verb
+break
+`;
+  const world = await defaultFESWorld(profiles[1], { 'screen.fes': bytes(source) }),
+    diagnostics = [];
+  world.host.nativeDiagnostic = (entry) => diagnostics.push(entry);
+  try {
+    const { id, task, instance } = await loadDefaultFES(world);
+    await task.tick();
+    assert.equal(instance.label, 'WAIT');
+    assert.deepEqual(diagnostics, [
+      {
+        type: 'fes-definition-target-missing',
+        task: id,
+        message: 'FES definition target absent[0] is missing',
+      },
+      {
+        type: 'fes-definition-target-missing',
+        task: id,
+        message: 'FES definition target absent[1] is missing',
+      },
+    ]);
+    assert.equal(instance.collection.count('absent'), 0);
+    const owned = instance.byKey.get('owned');
+    assert.deepEqual([owned.width, owned.height], [8, 10]);
+    assert.deepEqual(
+      [...task.player.unsupportedCommands].map((message) => message.split(': ').at(-1)),
+      ['Unknown FES declaration type UNKNOWN', 'Unknown FES definition column UNKNOWN'],
+    );
+    await task.player.notify('CHECK');
+    assert.match(
+      [...task.player.unsupportedCommands].at(-1),
+      /Unimplemented FES object command unknown_verb/,
+    );
+    assert.deepEqual([owned.width, owned.height], [8, 10]);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+
 for (const profile of profiles) {
   test(`${profile} default Script reload and close release their JS image owners without constructing a PE list`, async () => {
     const world = await defaultFESWorld(profile);
