@@ -171,6 +171,34 @@ export async function waitForLoadedSlotStory(page, maxFrames = 900) {
   );
   expect(await page.evaluate(() => window.catSystem2.status().unsupported)).toEqual([]);
 }
+export async function ordinarySlotDialogue(page) {
+  return page.evaluate(async () => {
+    const { textVisible } = await import('/src/native/text-layout.mjs'),
+      engine = window.catSystem2,
+      { world } = engine,
+      message = [...engine.nativeFES.values()].find((p) => p.stack.includes('meswnd#WAIT')),
+      body = message?.root.byKey.get('str'),
+      text = world.objects.objects.get(body?.nativeTaskID)?.implementation.text,
+      writer = world.text.core?.writers.get(text?.writer);
+    if (!writer?.parser.rows.length) throw new Error('The ordinary slot story has no text layout');
+    const rows = writer.parser.rows,
+      glyphs = rows.filter(textVisible),
+      hash = async (data) =>
+        new Uint8Array(
+          await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(data))),
+        ).toHex();
+    return {
+      frame: world.frame,
+      glyphCount: glyphs.length,
+      glyphs: await hash(glyphs.map((row) => [row[1], row[9], row[21]])),
+      // Keep glyph placement and style independently of reveal time and raster progress.
+      layout: await hash(
+        glyphs.map((row) => [...row.slice(1, 11), ...row.slice(13, 15), ...row.slice(20)]),
+      ),
+      pageBreakRows: rows.flatMap((row, index) => (row[1] === 0xffff ? [index] : [])),
+    };
+  });
+}
 export const gameplay = (page) =>
   page.evaluate(() => {
     const e = window.catSystem2,

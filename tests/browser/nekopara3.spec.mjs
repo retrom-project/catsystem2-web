@@ -10,6 +10,7 @@ import {
   nativeWait,
   waitForSlotCloseInput,
   waitForLoadedSlotStory,
+  ordinarySlotDialogue,
   gameplay,
 } from './game-helpers.mjs';
 import { captureTerminalState } from './terminal-evidence.mjs';
@@ -179,11 +180,12 @@ async function runGame(page) {
     ),
   );
   await waitForSlotCloseInput(page);
+  const savedLayout = await ordinarySlotDialogue(page);
   await page.keyboard.press('Escape');
   await until(page, 'meswnd#WAIT', 240, ({ stack }) =>
     stack.every((label) => !label.startsWith('saveload#')),
   );
-  const ordinary = await gameplay(page);
+  const ordinary = await ordinarySlotDialogue(page);
   for (let i = 0; i < 8; i++) {
     await page.click('#next');
     await step(page, 6);
@@ -196,10 +198,13 @@ async function runGame(page) {
   );
   await button(page, 'btn[0]');
   await waitForLoadedSlotStory(page);
-  expect((await gameplay(page)).text).toBe(ordinary.text);
-  const frame = (await gameplay(page)).frame;
+  const loaded = await ordinarySlotDialogue(page);
+  expect(ordinary.glyphCount).toBeGreaterThan(0);
+  expect(loaded.glyphs).toBe(ordinary.glyphs);
+  expect(loaded.layout).toBe(ordinary.layout);
+  expect(loaded.pageBreakRows).toEqual(savedLayout.pageBreakRows);
   await step(page, 6);
-  expect((await gameplay(page)).frame).toBeGreaterThan(frame + 3);
+  expect((await gameplay(page)).frame).toBeGreaterThan(loaded.frame + 3);
   await noError(page);
   expect(errors).toEqual([]);
 }
