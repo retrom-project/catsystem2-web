@@ -11,9 +11,8 @@
 ```sh
 npm ci
 # /path/to/emsdk 使用固定 Emscripten 3.1.74。
-python3 scripts/prepare-ppi-backend.py --emsdk /path/to/emsdk --jobs 2
 python3 scripts/prepare-native-zlib.py --emsdk /path/to/emsdk
-python3 scripts/prepare-native-freetype.py --emsdk /path/to/emsdk-3.1.74
+python3 scripts/prepare-native-freetype.py --emsdk /path/to/emsdk
 npm run dev -- --game /path/to/prepared-game --port 4101
 ```
 
@@ -46,10 +45,16 @@ Ctrl 快进。游戏自己的标题、设置、存读档和历史窗口由其 FE
 
 ```sh
 npm run check
-npm test
+npm run test:js
+npm run build
+```
+
+公共浏览器组也包含使用自制数据的 PPI 后端测试。
+
+```sh
+python3 scripts/prepare-ppi-backend.py --emsdk /path/to/emsdk --jobs 2
 npx playwright install chromium
 npm run test:browser
-npm run build
 ```
 
 Node 测试可按当前依赖分组执行，`npm test` 运行全部组。
@@ -64,8 +69,8 @@ node scripts/test-native.mjs --list
 JS/golden 组清除私有 fixture 环境变量，平台服务使用自制 PE32 内存与调用宿主。
 oracle 组保留原 EXE 及私有插件回归。差分组比较两份 ABI 的独立 JS 计算路径与原 wrapper，
 每份 ABI 含 27 例既有 generic/main 数学和 230 例 main 标量用例。缺少对应 EXE 时逐 ABI 明确跳过。
-默认模式明确报告缺少私有资源的跳过原因。完整私有验收使用以下变量，并要求通过指纹校验。
-两份 EXE 的相邻目录都需有 `config/startup.xml`。
+默认模式明确报告缺少私有资源的跳过原因。完整私有验收需先准备上述 PPI 测试后端，
+再用以下变量指定经指纹校验的资源。两份 EXE 的相邻目录都需有 `config/startup.xml`。
 
 ```sh
 CATSYSTEM2_ENGINE_EXE=/path/to/prepared-game/NEKOPARAvol3.exe \
@@ -75,8 +80,7 @@ CATSYSTEM2_PPI_FIXTURES=/path/to/ptclpi \
 npm run test:full
 ```
 
-测试归属和当前可执行分组见盘点中的 `testMigration`。分组与 fixture 规则见
-[问题定位](docs/debugging.md)。
+分组与 fixture 规则见 [问题定位](docs/debugging.md#原生差分)。
 
 `dist/` 是可直接静态托管的浏览器文件及内容摘要，不包含游戏。
 公共测试使用自制数据，覆盖解析边界、VM、FES、CST、E-mote、WebGL 遮罩、Range 读取和 IndexedDB。
@@ -137,12 +141,12 @@ node scripts/capture-native-calculations.mjs --check
 
 正常入口运行 `NativeWorld`：KCS VM 持续执行游戏自己的 main、sscript 和辅助脚本，
 保留任务图、消息队列、变量域和原生控制返回。FES/CST 通过这些任务驱动。
-数据与容器、脚本图像/编解码及文本排版/显示均由 JS 持有；尚未迁移的渲染、FES、平台与插件仍共用可保存的 PE 进程。JS 数据通过已登记的独立消费副本接入这些领域；
-迁移目标与边界见[架构与嵌入接口](docs/architecture.md)。浏览器 GPU/音频/文件等服务
-有各自的明确契约和测试。
+JavaScript 实现数据、图像解码、文本、图形、平台服务和已登记的插件语义。
+浏览器提供 GPU、音视频、输入和只读内容访问。宿主接口及恢复状态见
+[架构与嵌入接口](docs/architecture.md)。
 
 - [完整实现标准](docs/completion.md)：通用模拟器的完成条件及必要验收。
-- [native 契约目录](docs/native-compatibility.md)：两版独立 ABI、已恢复族及未知项。
+- [native 契约目录](docs/native-compatibility.md)：ABI 登记、已恢复族及未知项。
 - [FES/CST](docs/fes-cst-compatibility.md)、[PPI/PTCL](docs/ppi-compatibility.md) 与
   [E-mote](docs/emote-compatibility.md)：各自的语义、执行路径和原生证据边界。
 - [架构与嵌入接口](docs/architecture.md)、[问题定位](docs/debugging.md)：宿主接口、恢复和差分流程。
@@ -152,8 +156,7 @@ node scripts/capture-native-calculations.mjs --check
 不能以返回零或继续脚本来计作兼容。标题或主线通过也不代表上述范围完成。
 当前原生模型执行速度仍不足以据此宣称达到正常游玩性能。
 
-公共测试使用自制资源；私有 fixture 用于 SDK/游戏原生差分与真实流程验证。
-旧的脚本遍历或浏览器近似路径结果不能替代对当前混合路径和未来 JavaScript 路径的验收。
+公共测试使用自制资源。私有 fixture 用于 SDK/游戏原生差分及当前普通入口的真实流程验收。
 
 ## 来源与许可
 
