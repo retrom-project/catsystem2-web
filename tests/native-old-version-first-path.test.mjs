@@ -1892,6 +1892,40 @@ test('67 first-title models use real FES services and restore without warm repla
   if (cleanupErrors.length) throw new AggregateError(cleanupErrors, 'Owned title fixture cleanup');
 });
 
+test('63 warning and title motions run the selected round, linear and clear contracts', async () => {
+  const interpolation = [0, 255, 0, 30].map(floatBits),
+    script = await readKCS(
+      kcsProgram([
+        [37, title67Sentinel],
+        ...title67Call(17, [floatBits(-1.5)], 512),
+        ...title67Call(41, [...interpolation, floatBits(-1)], 516),
+        ...title67Call(41, [...interpolation, floatBits(15)], 520),
+        ...title67Call(41, [...interpolation, floatBits(31)], 524),
+        ...title67Call(38, []),
+        [59],
+      ]),
+    ),
+    motion = new MotionInstance(script, { profile: 'rebellions-jp-engine-2.6.1.63' }),
+    initialSP = motion.machine.sp;
+  assert.throws(() => motion.native(42, [], motion.machine), /Unrecovered MOT native .*:2a/);
+  assert.equal(motion.update(3).active, false);
+  assert.equal(motion.machine.load(512) | 0, -1);
+  assert.deepEqual(
+    [516, 520, 524].map((at) => bitsFloat(motion.machine.load(at))),
+    [0, 127.5, 255],
+  );
+  assert.deepEqual(
+    [...motion.calls],
+    [
+      [17, 1],
+      [41, 3],
+      [38, 1],
+    ],
+  );
+  assert.equal(motion.machine.pop(), title67Sentinel);
+  assert.equal(motion.machine.sp, initialSP);
+});
+
 test('67 first-title motion runs own round linear triangle and clear contracts', async () => {
   const script = await readKCS(
       kcsProgram([

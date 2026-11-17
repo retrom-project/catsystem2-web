@@ -16,12 +16,12 @@ signature differences, observations and evidence. They also own their existing
 service behavior, capability, message, encoding and layout records. No engine is
 selected or enabled by proximity to another version number.
 
-| Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2     |
-| -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------ |
-| 2.6.1.63 | 938        | 58        | 0             | 0             | 880     | 15 of 51 particle v2 recovered |
-| 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered      |
-| 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                   |
-| 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                   |
+| Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2             |
+| -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------------------- |
+| 2.6.1.63 | 938        | 58        | 0             | 0             | 880     | 3 generic and 15 particle v2 recovered |
+| 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered              |
+| 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                           |
+| 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                           |
 
 All 4,500 registered slots remain represented, including the unchanged 2,344
 SDK74/Game76 slots. The older registrations retain unknown auxiliary slots and
@@ -1036,6 +1036,10 @@ The FES init, param and start commands use the owned kind 16 receiver.
 The normal particle host checks the active engine table on load and cold
 restore. The authored FES control reaches all fifteen selected calls, rejects
 an unknown v2 slot before mutation and restores the complete raw World state.
+
+The selected warning and title motion programs use Generic 17, 38 and 41.
+The round and clamped interpolation calls each write a result. Generic 38
+clears the motion's active word with control 4 and leaves the VM stack intact.
 
 ## 2.6.1.67 first-title entry and normal services
 
