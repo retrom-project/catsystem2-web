@@ -11,6 +11,7 @@ import { NativeRuntime } from '../src/native/runtime.mjs';
 import { NativeGraphics } from '../src/native/graphics.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
+import { nativeStartupCode } from '../src/native/startup-author.mjs';
 import { kif, kcsProgram } from './helpers.mjs';
 import {
   StartupCanvas,
@@ -26,7 +27,10 @@ const versions = [
 const bytes = (value) => encodeCP932(value);
 const title = '$unreviewed$Raw title 日本語';
 
-async function ownedGame(version, { scripts = [], texture = '', voiceExtra = '' } = {}) {
+async function ownedGame(
+  version,
+  { scripts = [], texture = '', voiceExtra = '', code = 'owned-code' } = {},
+) {
   const program = kcsProgram(
     [
       [37, 512],
@@ -51,7 +55,9 @@ async function ownedGame(version, { scripts = [], texture = '', voiceExtra = '' 
   const xml =
     '<APP><title>' +
     title +
-    '</title><v_code>owned-code</v_code></APP>' +
+    '</title>' +
+    (code === null ? '' : '<v_code>' + code + '</v_code>') +
+    '</APP>' +
     texture +
     '<SCREEN><width>64</width><height>48</height><v_width>128</v_width>' +
     '<v_height>96</v_height><fps>60</fps></SCREEN>' +
@@ -527,6 +533,103 @@ test('texture policy rejects a missing profile before initialization or owned-pa
     assert.equal(attempted.cpu, 0);
   } finally {
     await source?.dispose();
+    environment.restore();
+  }
+});
+
+test('old ABI 67 owns its absent APP default, explicit override and cold startup without inferring 63', async (t) => {
+  const environment = startupEnvironment();
+  const attempted = { cpu: 0, random: 0, tick: 0, step: 0 };
+  let source,
+    fresh,
+    other,
+    restoring = false,
+    draws = 0;
+  const next = NativeMT19937.prototype.nextUint32;
+  t.mock.method(NativeMT19937.prototype, 'nextUint32', function (...args) {
+    if (restoring) attempted.random++;
+    else draws++;
+    return next.apply(this, args);
+  });
+  for (const [prototype, name, counter] of [
+    [NativeWorld.prototype, 'tick', 'tick'],
+    [KCSMachine.prototype, 'step', 'step'],
+  ]) {
+    const original = prototype[name];
+    t.mock.method(prototype, name, function (...args) {
+      if (restoring) attempted[counter]++;
+      return original.apply(this, args);
+    });
+  }
+  t.mock.method(Date, 'now', () => Date.UTC(2026, 10, 17, 3, 4, 5));
+  try {
+    const profile = 'bokutomo-engine-2.6.1.67';
+    for (const code of [null, 'owned-explicit']) {
+      const before = draws;
+      source = core(await ownedGame('2.6.1.67', { code }), profile, attempted);
+      await source.initialize();
+      assert.deepEqual(
+        [
+          ...nativeStartupCode(
+            source.world.startupDocument,
+            nativeABI(profile).startup.verification,
+          ),
+        ],
+        [...bytes(code === null ? 'open_cs2' : code)],
+      );
+      assert.equal(source.world.configuration.authorMode, 0);
+      assert.equal(
+        draws - before,
+        32,
+        'the original author producer runs before resource comparison',
+      );
+      const checkpoint = await source.snapshot();
+      const oldWorld = source.world;
+      await source.dispose();
+      source = null;
+      assert.equal(oldWorld.closed, true);
+      assert.equal(oldWorld.objects.objects.size, 0);
+      fresh = core(await ownedGame('2.6.1.67', { code }), profile, attempted);
+      restoring = true;
+      await fresh.initialize({ checkpoint });
+      restoring = false;
+      assert.equal(await checkpointDifference(await fresh.snapshot(), checkpoint), null);
+      assert.deepEqual(attempted, { cpu: 0, random: 0, tick: 0, step: 0 });
+      await fresh.dispose();
+      fresh = null;
+    }
+    other = core(
+      await ownedGame('2.6.1.63', { code: null }),
+      'rebellions-jp-engine-2.6.1.63',
+      attempted,
+    );
+    const before = draws;
+    await other.initialize();
+    assert.deepEqual(
+      [
+        ...nativeStartupCode(
+          other.world.startupDocument,
+          nativeABI(other.nativeProfile).startup.verification,
+        ),
+      ],
+      [],
+      '63 retains its independently reviewed empty default',
+    );
+    assert.equal(draws - before, 32);
+    assert.deepEqual(
+      nativeABI('rebellions-jp-engine-2.6.1.63').startup.verification.defaultCodeBytes,
+      [],
+    );
+    assert.throws(
+      () =>
+        nativeStartupCode(null, nativeABI('nekopara-vol3-engine-2.6.1.76').startup.verification),
+      /Startup code default is not reviewed/,
+      'an unrelated unknown default is still refused at its actual consumer',
+    );
+    assert.deepEqual(attempted, { cpu: 0, random: 0, tick: 0, step: 0 });
+  } finally {
+    restoring = false;
+    for (const instance of [other, fresh, source]) await instance?.dispose();
     environment.restore();
   }
 });

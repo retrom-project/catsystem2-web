@@ -61,8 +61,13 @@ SDK74 data specifies its independently reviewed `defaultCodeBytes`: `open_cs2`.
 Its own Settings constructor copies that CString from `9B2008..9B2010` into
 `Settings+2`; the initial XML reader passes the same field as fallback and
 destination for `APP/v_code`. An absent node preserves it, while an explicit
-node supplies its original narrow bytes. Game76's default remains unknown and
-its ordinary entry requires an explicit APP value. A reviewed default is a
+node supplies its original narrow bytes. Engine67 independently copies nine bytes
+from its own `65D1F0..65D1F8` into the same Settings field. A bounded RAM comparison
+confirmed that those bytes equal the public `open_cs2` CString, so its data now
+provides that default. Its own author producer runs before the V_CODE presence
+branch; resource absence does not establish that the default is unused. Engine63
+retains its independently reviewed empty default; Game76's default remains unknown
+and requires an explicit APP value. A reviewed default is a
 JSON byte array, preserving narrow aliases and the first NUL without a Unicode
 roundtrip; an empty array is a known empty default, and an omitted field is unknown.
 The registered profiles and native slots are unchanged. Owned test startup

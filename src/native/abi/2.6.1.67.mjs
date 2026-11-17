@@ -688,7 +688,7 @@ export default {
       codeEncoding: 'cp932',
       cipher: 'blowfish-le32',
       comparison: 'decrypted-c-string',
-      defaultCodeBytes: null,
+      defaultCodeBytes: [111, 112, 101, 110, 95, 99, 115, 50],
     },
     titleMode: 'raw',
     applicationServices: ['startup-sound', 'textures', 'title', 'root-script'],
@@ -1012,8 +1012,6 @@ export default {
       'No native capability value is inferred from a modern ABI or an unvisited old API; reject when that behavior is requested.',
     'capabilities.systemEntropy':
       'No native capability value is inferred from a modern ABI or an unvisited old API; reject when that behavior is requested.',
-    'startup.verification.defaultCodeBytes':
-      'Unreviewed own APP default; this finite path uses actual explicit APP/v_code. The private default bytes were not read or inferred.',
     'fes.controlResources':
       'Control skin/resource policy is unreviewed; require own evidence when a control task is actually constructed.',
   },

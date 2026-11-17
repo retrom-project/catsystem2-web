@@ -903,8 +903,9 @@ absent slot and installs nothing, or true for a present slot. Bad table/ID/handl
 and duplicate present bindings still fail. Unknown and stub entries are not absent;
 their existing dispatch/status gates remain authoritative.
 
-The .63 startup code default is independently empty. The .67 default remains
-unknown; an actual missing APP/v_code fails rather than borrowing an SDK value.
-The tested owned inputs supply an explicit code. This finite ordinary coverage
+The .63 startup code default is independently empty. The .67 constructor's own
+default independently matches the public `open_cs2` CString and is recorded in
+its verification data. Missing APP/v_code uses that reviewed default; explicit
+APP bytes still override it. Owned startup/cold controls cover both paths. This finite ordinary coverage
 and cold ownership do not establish either commercial sample's full campaign or
 complete the remaining multi-version corpus.
