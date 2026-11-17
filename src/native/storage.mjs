@@ -93,15 +93,30 @@ export class NativeFileStorage {
     };
   }
   async readToolbarQuickSave(saves) {
-    const saved = await saves.readStored(toolbarQuickSaveSlot),
-      reference = saved?.nativeSave;
-    if (!reference || typeof reference.slot !== 'string') return null;
-    const file = await this.store.readStored(reference.slot);
-    return file?.namespace === this.store.namespace &&
-      typeof reference.revision === 'string' &&
-      file.data?.quickSaveRevision === reference.revision
-      ? saved.data
-      : null;
+    let checkpoint = null;
+    await saves.request('readonly', (store) => {
+      const owner = store.get(`${saves.namespace}:${toolbarQuickSaveSlot}`);
+      owner.onsuccess = () => {
+        const saved = owner.result,
+          reference = saved?.nativeSave;
+        if (
+          saved?.namespace !== saves.namespace ||
+          typeof reference?.slot !== 'string' ||
+          typeof reference.revision !== 'string'
+        )
+          return;
+        const file = store.get(`${this.store.namespace}:${reference.slot}`);
+        file.onsuccess = () => {
+          if (
+            file.result?.namespace === this.store.namespace &&
+            file.result.data?.quickSaveRevision === reference.revision
+          )
+            checkpoint = saved.data;
+        };
+      };
+      return owner;
+    });
+    return checkpoint;
   }
   async write(name, bytes, { updateModified = true } = {}, nativeSaveWriter = null) {
     const key = path(name),

@@ -7,6 +7,42 @@ import { BrowserNativeMovie } from './native/movie-browser.mjs';
 import { BrowserNativeWindow } from './native/window-browser.mjs';
 import { BrowserNativeClipboard } from './native/clipboard-browser.mjs';
 const NATIVE_LOG_LIMIT = 1024;
+
+function quickSaveStoryPoint(world, runtime, script, writer) {
+  const reader = runtime.sceneData(script)?.reader,
+    scene = reader?.filename
+      ? { filename: reader.filename, block: reader.block, line: reader.line }
+      : null,
+    texts = [];
+  // A Script can use explicit CST handles. Its visible native text tasks then
+  // supply the content boundary without guessing which handle it reads.
+  const children = [...world.objects.children(writer)];
+  while (children.length) {
+    const record = children.pop();
+    children.push(...world.objects.children(record));
+    if (record.state !== 'active') continue;
+    const { text, state } = record.implementation;
+    if (!state?.shown || !text?.sourceEvents?.length) continue;
+    const events = text.sourceEvents;
+    texts.push({ record, events, count: events.length, last: events.at(-1) });
+  }
+  if (!scene && texts.length === 0) return null;
+  return () =>
+    (!scene ||
+      (runtime.sceneData(script)?.reader === reader &&
+        reader.filename === scene.filename &&
+        reader.block === scene.block &&
+        reader.line === scene.line)) &&
+    texts.every(
+      ({ record, events, count, last }) =>
+        world.objects.objects.get(record.id) === record &&
+        record.state === 'active' &&
+        record.implementation.text?.sourceEvents === events &&
+        events.length === count &&
+        events.at(-1) === last,
+    );
+}
+
 export class EngineHost {
   #preparingQuickSave = false;
 
@@ -311,13 +347,11 @@ export class EngineHost {
     const sender = this.#nativeFESRecord(root),
       writer = world.objects.objects.get(sender.parent),
       script = e.nativeRuntime.scheduler.tasks.get(sender.parent),
-      reader = script && e.nativeRuntime.sceneData(script)?.reader,
       firstSlot = e.quickSaveStart,
       count = Number(e.adv.value('save', 'quicksave', 'count')) || 12;
     if (
       !writer ||
       script?.machine.waiting?.kind !== 'message' ||
-      !reader?.filename ||
       !Number.isSafeInteger(firstSlot) ||
       !Number.isSafeInteger(count) ||
       firstSlot < 0 ||
@@ -325,19 +359,17 @@ export class EngineHost {
     )
       return this.systemAction(21);
     if (this.#preparingQuickSave || e.nativeStorage.toolbarQuickSavePending) return 0;
+    const sameStory = quickSaveStoryPoint(world, e.nativeRuntime, script, writer);
+    if (!sameStory) return this.systemAction(21);
 
     // The saved World precedes the native save request. It can resume the story
     // even if the script still has save notifications to finish after writing.
-    const { filename, block, line } = reader;
     const stillAtStoryPoint = () =>
       e.world === world &&
       !world.closed &&
       !world.disposalRequested &&
       world.objects.objects.get(writer.id) === writer &&
-      e.nativeRuntime.sceneData(script)?.reader === reader &&
-      reader.filename === filename &&
-      reader.block === block &&
-      reader.line === line;
+      sameStory();
     this.#preparingQuickSave = true;
     try {
       let checkpoint;

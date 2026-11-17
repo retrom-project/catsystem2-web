@@ -1277,10 +1277,11 @@ arguments remain DWORDs, and the synchronous Script reply is returned unchanged.
 
 The browser toolbar retains a settled Core checkpoint from before the quick-save
 request. The receiving Script must write CSS through its native persistence
-service into a configured quick slot while its scene reader remains at the same
-position. The real CSS file and the toolbar checkpoint commit in one IndexedDB
+service into a configured quick slot while the Script remains at the captured
+scene position or visible native text content generation. The real CSS file and
+the toolbar checkpoint commit in one IndexedDB
 transaction. The latest toolbar entry names the exact native file revision in
-that source namespace. Quick-load verifies those committed records before using
+that source namespace. Quick-load reads both committed records in one transaction before using
 the ordinary Core restore path, which is available from a fresh title. A missing
 pair uses the existing native action 22, and in-game save/load controls continue
 to use their own Script and CSS paths.

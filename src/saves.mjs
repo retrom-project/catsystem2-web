@@ -57,9 +57,6 @@ export class SaveStore {
     if (linked) companion.store.records.set(linked.slot, linked);
     return record;
   }
-  readStored(slot) {
-    return this.request('readonly', (store) => store.get(`${this.namespace}:${slot}`));
-  }
   get(slot) {
     return this.records.get(slot);
   }

@@ -13,9 +13,11 @@ function transactionalSaves() {
   const db = {
     failNextWrite: null,
     throwNextWrite: null,
+    readTransactions: [],
     close() {},
-    transaction() {
+    transaction(_store, mode) {
       const operations = [],
+        readKeys = [],
         transaction = {
           aborted: false,
           abort() {
@@ -28,7 +30,10 @@ function transactionalSaves() {
           return request;
         },
         store = {
-          get: (key) => resultOf((records) => structuredClone(records.get(key))),
+          get: (key) => {
+            readKeys.push(key);
+            return resultOf((records) => structuredClone(records.get(key)));
+          },
           put: (record) => {
             if (db.throwNextWrite === record.key) {
               db.throwNextWrite = null;
@@ -48,13 +53,17 @@ function transactionalSaves() {
         if (transaction.aborted) return;
         const next = new Map(stored);
         try {
-          for (const [request, perform] of operations) request.result = perform(next);
+          for (const [request, perform] of operations) {
+            request.result = perform(next);
+            request.onsuccess?.();
+          }
         } catch (error) {
           transaction.error = error;
           transaction.onabort();
           return;
         }
-        stored = next;
+        if (mode === 'readonly') db.readTransactions.push(readKeys);
+        else stored = next;
         transaction.oncomplete();
       });
       return Object.assign(transaction, { objectStore: () => store });
@@ -63,7 +72,7 @@ function transactionalSaves() {
   return db;
 }
 
-function owner(database, identity, { story = true } = {}) {
+function owner(database, identity, { story = true, implicitReader = true, textOwner } = {}) {
   const nativeStorage = new NativeFileStorage({}, identity),
     saves = new SaveStore(identity),
     writer = { id: 3 },
@@ -73,9 +82,17 @@ function owner(database, identity, { story = true } = {}) {
       parent: story ? writer.id : 8,
       implementation: { player: { root } },
     },
+    text = { sourceEvents: [{ kind: 'append', bytes: Uint8Array.of(112) }] },
+    textRecord = {
+      id: 18,
+      parent: textOwner ?? sender.id,
+      state: 'active',
+      implementation: { text, state: { shown: true } },
+    },
     objects = new Map([
       [root.runtimeID, sender],
       [writer.id, writer],
+      [textRecord.id, textRecord],
     ]),
     reader = { filename: 'owned-story.cst', block: 7, line: 11 },
     storyState = { phase: 'story', reader, message: 'First saved dialogue' },
@@ -102,7 +119,10 @@ function owner(database, identity, { story = true } = {}) {
     world = {
       closed: false,
       frame: 12,
-      objects: { objects },
+      objects: {
+        objects,
+        children: (record) => [...objects.values()].filter((child) => child.parent === record.id),
+      },
       nativeTaskID: () => 91,
       async tick() {
         this.frame++;
@@ -116,7 +136,7 @@ function owner(database, identity, { story = true } = {}) {
     identity,
     quickSaveStart: 42,
     adv: { value: () => '2' },
-    nativeRuntime: { scheduler, sceneData: () => ({ reader }) },
+    nativeRuntime: { scheduler, sceneData: () => (implicitReader ? { reader } : null) },
     activeFES: () => sender.implementation.player,
     inputBindings: { sample() {} },
     audio: { setFrame() {} },
@@ -151,8 +171,23 @@ function owner(database, identity, { story = true } = {}) {
       },
     );
   };
-  return { host, engine, saves, nativeStorage, world, calls, reader, storyState, writeCSS };
+  return {
+    host,
+    engine,
+    saves,
+    nativeStorage,
+    world,
+    calls,
+    reader,
+    storyState,
+    writeCSS,
+    textRecord,
+    text,
+  };
 }
+
+const readStored = (store, slot) =>
+  store.request('readonly', (records) => records.get(`${store.namespace}:${slot}`));
 
 test('toolbar checkpoints follow actual native CSS commits and resume a fresh title before the save action', async () => {
   const disk = transactionalSaves(),
@@ -178,7 +213,7 @@ test('toolbar checkpoints follow actual native CSS commits and resume a fresh ti
   );
   assert.equal((await first.writeCSS('save0042.dat', 2)).value, 1);
 
-  const committed = await first.nativeStorage.store.readStored(name),
+  const committed = await readStored(first.nativeStorage.store, name),
     title = owner(disk, 'source-one', { story: false }),
     unrelated = owner(disk, 'source-two', { story: false });
   assert.equal(
@@ -188,7 +223,11 @@ test('toolbar checkpoints follow actual native CSS commits and resume a fresh ti
   );
   assert.equal((await NativeGlobalFile.fromFile(committed.data.bytes)).read(10)[0], 2);
   assert.equal(await title.host.systemAction(22), 0, 'nested title parent has no Script receiver');
+  const priorReads = disk.readTransactions.length;
   await title.host.quickLoad();
+  assert.deepEqual(disk.readTransactions.slice(priorReads), [
+    ['source-one:toolbar-quick-save', 'source-one:native-files:saves/save0042.dat'],
+  ]);
   assert.equal(title.calls.restored[0].world.phase, 'story');
   assert.equal(title.calls.restored[0].world.message, 'First saved dialogue');
   assert.equal(title.calls.snapshots, 0);
@@ -196,7 +235,7 @@ test('toolbar checkpoints follow actual native CSS commits and resume a fresh ti
   assert.deepEqual(unrelated.calls.restored, []);
   title.nativeStorage.close();
   title.saves.close();
-  assert.deepEqual(await first.nativeStorage.store.readStored(name), committed);
+  assert.deepEqual(await readStored(first.nativeStorage.store, name), committed);
 
   first.storyState.phase = 'story';
   first.storyState.message = 'Second saved dialogue';
@@ -207,7 +246,7 @@ test('toolbar checkpoints follow actual native CSS commits and resume a fresh ti
   const afterFailure = owner(disk, 'source-one', { story: false });
   await afterFailure.host.quickLoad();
   assert.equal(afterFailure.calls.restored[0].world.message, 'First saved dialogue');
-  assert.deepEqual(await first.nativeStorage.store.readStored(name), committed);
+  assert.deepEqual(await readStored(first.nativeStorage.store, name), committed);
 
   first.storyState.phase = 'story';
   assert.equal(await first.host.quickSave(), 1);
@@ -215,7 +254,7 @@ test('toolbar checkpoints follow actual native CSS commits and resume a fresh ti
   assert.equal((await first.writeCSS('save0042.dat', 3)).value, 0);
   await afterFailure.host.quickLoad();
   assert.equal(afterFailure.calls.restored[1].world.message, 'First saved dialogue');
-  assert.deepEqual(await first.nativeStorage.store.readStored(name), committed);
+  assert.deepEqual(await readStored(first.nativeStorage.store, name), committed);
 
   first.storyState.phase = 'story';
   assert.equal(await first.host.quickSave(), 1);
@@ -223,7 +262,7 @@ test('toolbar checkpoints follow actual native CSS commits and resume a fresh ti
   await afterFailure.host.quickLoad();
   assert.equal(afterFailure.calls.restored[2].world.message, 'Second saved dialogue');
   assert.notEqual(
-    (await first.nativeStorage.store.readStored(name)).data.quickSaveRevision,
+    (await readStored(first.nativeStorage.store, name)).data.quickSaveRevision,
     committed.data.quickSaveRevision,
   );
   assert.equal(await first.nativeStorage.write(name, committed.data.bytes), true);
@@ -244,4 +283,53 @@ test('a native save from an advanced story does not get the earlier toolbar chec
   assert.equal(await first.nativeStorage.readToolbarQuickSave(first.saves), null);
   assert.equal(first.nativeStorage.toolbarQuickSavePending, false);
   assert.equal(first.calls.snapshots, 1);
+});
+
+test('explicit scene resources can use a visible text generation from the receiving Script', async (t) => {
+  await t.test('retains the unchanged visible text through the CSS commit', async () => {
+    const first = owner(transactionalSaves(), 'source-one', { implicitReader: false });
+    assert.equal(await first.host.quickSave(), 1);
+    assert.equal(first.calls.snapshots, 1);
+    assert.equal((await first.writeCSS('save0042.dat', 1)).value, 1);
+    assert.ok(await first.nativeStorage.readToolbarQuickSave(first.saves));
+  });
+  await t.test('does not capture a text writer from another Script', async () => {
+    const first = owner(transactionalSaves(), 'source-one', {
+      implicitReader: false,
+      textOwner: 48,
+    });
+    assert.equal(await first.host.quickSave(), 1);
+    assert.equal(first.calls.snapshots, 0);
+    assert.equal((await first.writeCSS('save0042.dat', 1)).value, 1);
+    assert.equal(await first.nativeStorage.readToolbarQuickSave(first.saves), null);
+  });
+  for (const [name, change] of [
+    [
+      'replacement',
+      ({ text }) => {
+        text.sourceEvents = structuredClone(text.sourceEvents);
+      },
+    ],
+    ['append', ({ text }) => text.sourceEvents.push({ kind: 'mark' })],
+    [
+      'clear',
+      ({ text }) => {
+        text.sourceEvents = [];
+      },
+    ],
+    [
+      'release',
+      ({ textRecord }) => {
+        textRecord.state = 'releasing';
+      },
+    ],
+  ]) {
+    await t.test(`rejects the earlier checkpoint after text ${name}`, async () => {
+      const first = owner(transactionalSaves(), 'source-one', { implicitReader: false });
+      assert.equal(await first.host.quickSave(), 1);
+      change(first);
+      assert.equal((await first.writeCSS('save0042.dat', 1)).value, 1);
+      assert.equal(await first.nativeStorage.readToolbarQuickSave(first.saves), null);
+    });
+  }
 });
