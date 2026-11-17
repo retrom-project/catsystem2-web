@@ -465,8 +465,9 @@ export class NativeSoundTask {
     return bank >>> 0 < this.sound.bankCount;
   }
   loadLoopPointRecords(records) {
+    const strictOrder = this.sound.abi.sound.loopPointEndPolicy === 'strict-order';
     for (const record of records) {
-      if (record.end !== -1n && record.start >= record.end) continue;
+      if (record.start >= record.end && (strictOrder || record.end !== -1n)) continue;
       const key = lowerSoundName(record.file),
         previous = this.loopPoints.get(key);
       if (previous) previous.start = record.start;
@@ -807,7 +808,6 @@ export class NativeSoundTask {
         file = m.string(l),
         start = BigInt.asIntN(64, BigInt(m.load(l + 32)) | (BigInt(m.load(l + 36)) << 32n)),
         end = BigInt.asIntN(64, BigInt(m.load(l + 40)) | (BigInt(m.load(l + 44)) << 32n));
-      if (end !== -1n && start >= end) return 0;
       this.loadLoopPointRecords([{ file, start, end }]);
       return 0;
     }
