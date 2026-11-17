@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2             |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------------------- |
-| 2.6.1.23 | 869        | 50        | 0             | 0             | 819     | 45 / 44 / 51 unknown                   |
+| 2.6.1.23 | 869        | 53        | 0             | 0             | 816     | 45 / 44 / 51 unknown                   |
 | 2.6.1.63 | 938        | 62        | 0             | 0             | 876     | 3 generic and 15 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered              |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                           |
@@ -39,6 +39,11 @@ checks its executable resources after applying preferences. Startup then
 initializes Sound and textures, publishes the raw window title and starts
 the Root Script. The native Root protocol starts at message 29. Its Input and
 Sound queries are 31 and 32, with the Sound reset routed to message 181.
+
+The startup Script uses Main 14 for a formatted CP932 copy. It returns the
+destination pointer and writes two zero bytes after the string. Its startup
+XML branches also use Main 1 for formatted logging and Main 36 to fill a
+bounded byte table. The three calls use the shared standard handlers.
 
 Its title draws through the caller-owned Input, Plane, Draw and FES tasks.
 Sound load messages carry the selected bank or group in W and the filename in

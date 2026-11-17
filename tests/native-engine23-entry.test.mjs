@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { CatSystem2 } from '../src/engine.mjs';
 import { GameFiles, BlobFile } from '../src/files.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { nativeABIBehavior } from '../src/native/abi/index.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
@@ -163,6 +164,44 @@ test('2.6.1.23 selects the loose startup and drives KCS, Draw and FES through a 
     }
     environment.restore();
   }
+});
+
+test('2.6.1.23 startup copies a formatted field, logs it and clears a bounded table', async () => {
+  const index = 32,
+    result = 36,
+    field = 128,
+    format = 256,
+    table = 512,
+    size = 3200,
+    messages = [],
+    program = kcsProgram(
+      [
+        ...native(14, field, format),
+        receive(result),
+        ...native(1, field),
+        ...native(36, table, 0, size),
+        [59],
+      ],
+      [[format, '項-%02d[G32]']],
+    ),
+    runtime = new NativeRuntime({
+      profile,
+      read: async () => program,
+      services: { log: (message) => messages.push(message) },
+    }),
+    { machine } = await runtime.spawn('startup-fields.kcs');
+  machine.store(index, 7);
+  machine.bytes(field - 1, 9).fill(0xa5);
+  machine.bytes(table - 1, size + 2).fill(0xa5);
+  await runtime.tick();
+  assert.equal(machine.halted, true);
+  assert.equal(machine.sp, machine.floor);
+  assert.equal(machine.load(result), field);
+  assert.deepEqual([...machine.bytes(field - 1, 9)], [0xa5, ...encodeCP932('項-07'), 0, 0, 0xa5]);
+  assert.deepEqual(messages, ['項-07']);
+  assert.deepEqual(machine.bytes(table, size), new Uint8Array(size));
+  assert.equal(machine.load(table - 1, 1), 0xa5);
+  assert.equal(machine.load(table + size, 1), 0xa5);
 });
 
 test('2.6.1.23 configuration copies use the compact blocks and system voice bounds', async () => {
