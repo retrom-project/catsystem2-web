@@ -18,7 +18,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2             |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------------------- |
-| 2.6.1.63 | 938        | 58        | 0             | 0             | 880     | 3 generic and 15 particle v2 recovered |
+| 2.6.1.63 | 938        | 61        | 0             | 0             | 877     | 3 generic and 15 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered              |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                           |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                           |
@@ -1008,6 +1008,13 @@ its enabled word. A rising edge sets the pending word. The own FES common
 the `frame` and `tag` selectors. The tag uses record 32 and a 32-byte field.
 The owned control reaches timed, frame-relative and no-argument suspensions
 with the attached Script bank and Draw owner active.
+
+The first Flow idle turn passes the rectangle to Main 117. A zero bitmap
+handle clears the matching VRAM rectangle. A live bitmap receives the color
+and a vertically mapped rectangle. Main 100 then applies the requested color
+and override word to the startup Plane through its own raw message 56. These
+operations return control 2. Main 452 delivers Base message 23, returning the
+FES task's signed exit word or the initialized -1 when no receiver writes it.
 
 ## 2.6.1.63 close and persistence
 

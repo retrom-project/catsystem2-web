@@ -25,6 +25,7 @@ import {
 import { checkpointDifference } from './browser/checkpoint-observation.mjs';
 import { AudioMixer } from '../src/audio.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
+import { MOTION_ABI } from '../src/motion/abi.mjs';
 import { NativeDatabase } from '../src/native/database.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
@@ -1211,6 +1212,88 @@ test('63 startup Plane GCALLs bind and release the owned Input region', async ()
       await audio.dispose();
     }
   }
+});
+
+test('63 cold Script idle clears VRAM, updates its Plane and polls the live FES exit word', async (t) => {
+  t.mock.method(Date, 'now', () => Date.UTC(2026, 10, 18, 3, 4, 5));
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    color = 0xff112233,
+    files = {
+      'main.kcs': kcsProgram([
+        [37, title67Sentinel],
+        ...title67Call(71, [512]),
+        [45],
+        ...title67Call(117, [0, 1, 0, 2, 1, color]),
+        ...title67Call(92, [[0x13, 528], 0]),
+        ...title67Call(100, [[0x13, 528], color, 0x81230005]),
+        ...title67Call(448, [[0x13, 532]]),
+        ...title67Call(117, [[0x13, 536], 1, 0, 1, 1, color]),
+        ...title67Call(452, [[0x13, 532]], 540),
+        [59],
+      ]),
+      'flow.fes': bytes('#START\nwait 6\nexit 17\n'),
+    },
+    source = await oldTitleWorld(files, undefined, profile);
+  let fresh;
+  t.after(async () => {
+    for (const owner of [fresh, source]) {
+      if (!owner) continue;
+      try {
+        await owner.world.close();
+      } finally {
+        await owner.audio.dispose();
+      }
+    }
+  });
+
+  const { world } = source,
+    main = await world.initialize('main.kcs'),
+    call = (id, args) => world.runtime.native('main', id, args, main.machine, main),
+    planeID = await world.objects.create({ kind: 2, parent: main.id }),
+    nativePlane = world.nativeTaskID(planeID),
+    draw = await world.objects.create({ kind: 15, parent: main.id }),
+    owner = await world.objects.create({ kind: 34, parent: main.id }),
+    fes = world.objects.objects.get(owner).implementation,
+    vram = await world.graphics.ensureVRAM(4, 3),
+    bitmap = world.graphics.images.create(2, 3, main.id);
+  world.runtime.variableBank(main).initialize(16);
+  await call(79, [nativePlane, floatBits(4), floatBits(3), 0xffffffff]);
+  await call(92, [nativePlane, 1]);
+  await world.sendEngine(draw, main.id, 279, 4, 3);
+  await world.sendEngine(draw, main.id, 283, 0, 0);
+  await fes.initialize(main.context.variableBank);
+  await world.sendEngine(owner, main.id, 334, 0, world.nativeTaskID(draw));
+  await fes.loadSource('flow.fes');
+  await vram.fill(0, 0, 4, 3, 0xff432100);
+  [nativePlane, world.nativeTaskID(owner), bitmap].forEach((value, i) =>
+    main.machine.store(528 + i * 4, value),
+  );
+  assert.equal(main.machine.waiting.kind, 'message');
+  const state = world.snapshot(0);
+  fresh = await oldTitleWorld(files, undefined, profile);
+  await fresh.world.restore(structuredClone(state));
+  assert.equal(await checkpointDifference(fresh.world.snapshot(0), state), null);
+  const next = fresh.world,
+    resumed = next.main;
+  await next.tick();
+
+  const pixels = await next.graphics.images.get(next.graphics.vramHandle).pixels(),
+    bitmapPixels = await next.graphics.images.get(bitmap).pixels(),
+    plane = next.graphics.get(planeID);
+  assert.deepEqual(
+    [...pixels.subarray(0, 16)],
+    [67, 33, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 67, 33, 0, 255],
+  );
+  assert.deepEqual([...bitmapPixels.subarray(16, 24)], [0, 0, 0, 0, 17, 34, 51, 255]);
+  assert.deepEqual([...bitmapPixels.subarray(0, 8)], [0, 0, 0, 0, 0, 0, 0, 0]);
+  assert.equal(new DataView(plane.graph.kx2.buffer).getUint32(MOTION_ABI.color, true), color);
+  assert.equal(plane.state.colorOverride, 0x81230005);
+  assert.equal(resumed.machine.load(540), 0xffffffff);
+  assert.equal(resumed.machine.pop(), title67Sentinel);
+  for (let frame = 0; frame < 8; frame++) await next.tick();
+  const query = (id) => next.runtime.native('main', 452, [id], resumed.machine, resumed);
+  assert.deepEqual(await query(next.nativeTaskID(owner)), { control: 1, value: 17 });
+  assert.deepEqual(await query(0x7fffff00), { control: 1, value: 0xffffffff });
 });
 
 test('63 FES GCALLs use the real Draw owner and suspend on reviewed FES waits', async () => {
