@@ -506,9 +506,20 @@ export function observeRealRAF({ sampleLimit = 4096 } = {}) {
     const visibility = () => {
       if (document?.visibilityState !== 'visible') hidden.observed = true;
     };
-    const finish = (completion) => {
+    const sceneFailure = () => {
+      try {
+        const current = probe();
+        if (current?.arrived !== true) return 'scene-left';
+        latestProbe = facts(current.facts);
+        return null;
+      } catch {
+        return 'scene-probe-failed';
+      }
+    };
+    const finish = (reason) => {
       if (active?.finish !== finish) return;
-      const stoppedMS = now();
+      const stoppedMS = now(),
+        completion = reason === 'complete' ? (sceneFailure() ?? reason) : reason;
       unsubscribe();
       window.clearTimeout(timer);
       if (callback !== undefined) cancel.call(window, callback);
@@ -647,13 +658,8 @@ export function observeRealRAF({ sampleLimit = 4096 } = {}) {
       if (overridden()) return finish('RAF-replaced');
       if (window.catSystem2 !== engine || engine.world !== world) return finish('owner-changed');
       visibility();
-      try {
-        const current = probe();
-        if (current?.arrived !== true) return finish('scene-left');
-        latestProbe = facts(current.facts);
-      } catch {
-        return finish('scene-probe-failed');
-      }
+      const failure = sceneFailure();
+      if (failure) return finish(failure);
       if (
         !Number.isFinite(timestamp) ||
         (frame.lastTimestampMS !== null && timestamp <= frame.lastTimestampMS)

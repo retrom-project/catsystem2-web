@@ -456,6 +456,39 @@ test('real RAF scenes reject fabricated arrival and controlled clocks and stop a
   }
 });
 
+test('the RAF deadline checks for a scene change after the last callback', async () => {
+  const previous = globalThis.window,
+    control = realRAFControl();
+  globalThis.window = control.window;
+  try {
+    observeFrames();
+    observeRealRAF();
+    let arrived = true;
+    const sampling = window.nativeRAF.start({
+      scene: 'title',
+      criteria: 'actual title owner remains visible',
+      probe: () => ({ arrived, facts: { ownerID: 7 } }),
+      durationMS: 40,
+    });
+    for (const timestamp of [16, 32]) {
+      control.at(timestamp - 3);
+      control.engine.step();
+      control.engine.render();
+      control.frame(timestamp);
+    }
+    arrived = false;
+    control.at(40);
+    control.timers.values().next().value();
+    const report = await sampling;
+    assert.equal(report.runtimeAdvance.worldFrameDelta, 2);
+    assert.equal(report.methodTimings.render.count, 2);
+    assert.equal(report.completion, 'scene-left');
+    assert.equal(report.validCapture, false);
+  } finally {
+    globalThis.window = previous;
+  }
+});
+
 test('RAF observation preserves renderer Promise and failure identity and records hidden windows as invalid', async () => {
   const previous = globalThis.window,
     control = realRAFControl(),
