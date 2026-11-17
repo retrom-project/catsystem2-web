@@ -112,3 +112,17 @@ milliseconds to seconds and retained in the channel checkpoint. Playback and
 cold reconstruction do not read another tag file. Classification does not apply a second
 configuration gain, mute, master, or voice-group factor. System voices, effects,
 music, and unclassified native tracks do not become dialogue voices.
+
+Active or paused voices have selection priority. If none remains active, a
+completed native voice can still expose its retained channel metadata until
+the native bank is released. Its `playing` value stays false, its completion
+cursor stays at the real endpoint (or zero after native stop), and no source,
+clock, timer or history cache is created. Native pause/replay retains the real
+cursor; release removes the channel and therefore its information. High-level
+voice completion keeps its existing selection behavior. Lip motion, tag waits
+and auto advancement continue to consume the existing explicit `playing` gate;
+retained metadata never represents continuing playback.
+
+Ordinary audio regressions and the shared owned AudioContext fixture have no
+original-engine dependency. The explicit physical-checkpoint composition test
+lives separately in the oracle group, with its original body and assertions.

@@ -5,11 +5,7 @@ import { AudioMixer } from '../src/audio.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
 import { NativeSoundPacket } from '../src/native/sound.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
-import {
-  hasOriginalWorldCheckpoint,
-  restoreOriginalWorld,
-  snapshotOriginalWorld,
-} from '../oracle/native-world-runtime.mjs';
+import { EmoteRuntime } from '../src/emote/runtime.mjs';
 import {
   StartupCanvas,
   startupEnvironment,
@@ -17,100 +13,141 @@ import {
   startupXML,
 } from './fixtures/ordinary-startup.mjs';
 
-function fixture() {
-  const context = {
-    currentTime: 0,
-    state: 'running',
-    sources: [],
-    destination: {},
-    decodeAudioData: async () => ({
-      duration: 2,
-      sampleRate: 60,
-      numberOfChannels: 1,
-      length: 120,
-      getChannelData: () => new Float32Array(120).fill(0.25),
-    }),
-    createBufferSource() {
-      const node = {
-        loop: false,
-        onended: null,
-        stopped: false,
-        playbackRate: {
-          value: 1,
-          setValueAtTime(value) {
-            this.value = value;
-          },
-        },
-        connect() {},
-        disconnect() {},
-        start(when, offset) {
-          this.when = when;
-          this.offset = offset;
-        },
-        stop(when) {
-          if (when === undefined) this.stopped = true;
-          else this.stopWhen = when;
-        },
-      };
-      this.sources.push(node);
-      return node;
-    },
-    createGain: () => ({
-      connect() {},
-      disconnect() {},
-      gain: {
-        value: 1,
-        setValueAtTime(value) {
-          this.value = value;
-        },
-        setTargetAtTime(value) {
-          this.value = value;
-        },
-      },
-    }),
-    createStereoPanner: () => ({ connect() {}, disconnect() {}, pan: { value: 0 } }),
-    createChannelSplitter: () => ({ connect() {}, disconnect() {} }),
-    createChannelMerger: () => ({ connect() {}, disconnect() {} }),
-    createPanner: () => ({
-      connect() {},
-      disconnect() {},
-      ...Object.fromEntries(
-        ['positionX', 'positionY', 'positionZ'].map((key) => [
-          key,
-          {
-            value: 0,
-            setValueAtTime(value) {
-              this.value = value;
-            },
-          },
-        ]),
-      ),
-    }),
-    advance(seconds) {
-      this.currentTime += seconds;
-      for (const node of this.sources)
-        if (
-          !node.stopped &&
-          ((node.stopWhen !== undefined && this.currentTime >= node.stopWhen) ||
-            (!node.loop && this.currentTime >= node.when + node.buffer.duration - node.offset))
-        ) {
-          node.stopped = true;
-          node.onended?.();
-        }
-    },
-    close() {
-      this.state = 'closed';
-    },
-  };
-  const game = {
-    resolve: (name) => name,
-    require: async () => new Uint8Array([1]),
-    read: async () => null,
-  };
-  return { context, mixer: new AudioMixer(game, context) };
-}
+import { audioFixture as fixture } from './fixtures/audio-context.mjs';
 const command = (mixer, group, banks, verb, args = []) =>
   mixer.command({ group, banks, verb, args });
+
+test('retained native voice completion exposes real metadata without extending playback', async () => {
+  const environment = startupEnvironment(),
+    { context } = fixture(),
+    next = fixture();
+  let core, cold;
+  try {
+    const game = await ordinaryStartupGame('nekopara-vol3-engine-2.6.1.76', {
+      sound: false,
+      files: { 'afile.wav': new Uint8Array([1]), 'high.wav': new Uint8Array([2]) },
+    });
+    core = new CatSystem2({
+      game,
+      canvas: new StartupCanvas(),
+      audioContext: context,
+      nativeProfile: 'nekopara-vol3-engine-2.6.1.76',
+      transitionalExe: {
+        open() {
+          throw new Error('Unexpected original CPU');
+        },
+      },
+    });
+    await core.initialize();
+    const sound = core.world.sound,
+      control = sound.primary().controls[3];
+    assert.equal(await sound.load(3, 'afile.wav', 1, 0, 'voice'), true);
+    control.tags.set('cue', 1000);
+    await sound.play(3, 1, control);
+    context.advance(0.25);
+    assert.equal(core.audio.voiceInfo().playing, true);
+    const wait = await core.host.waitTag('cue', 0);
+    assert.deepEqual(wait, { file: 'afile.wav', time: 1 });
+    assert.equal(core.host.tagReady(wait), false);
+    context.advance(2);
+    const channel = sound.channel(3),
+      completed = core.audio.voiceInfo();
+    assert.equal(channel.ended, true);
+    assert.equal(sound.device[3].loaded, true);
+    assert.equal(completed.file, 'afile.wav');
+    assert.equal(completed.playing, false);
+    assert.equal(completed.time, 2);
+    assert.equal(await core.host.waitTag('cue', 0), null);
+    assert.equal(core.host.tagReady(wait), true);
+    assert.equal(!completed.playing, true, 'The existing auto gate is ready, not held active');
+    const emote = new EmoteRuntime(null, { actions: {} }, null),
+      pose = {
+        model: 'ca',
+        face: {
+          blinks: [],
+          lips: [
+            {
+              digit: 0,
+              code: 0,
+              variable: 'mouth',
+              levels: [0, 0, 1],
+              low: 0,
+              high: 100,
+              flow: [],
+            },
+          ],
+        },
+        codes: [0],
+        scaleX: 1,
+        scaleY: 1,
+        positionX: 0,
+        positionY: 0,
+        scaleOffsetX: 0,
+        scaleOffsetY: 0,
+      },
+      stage = {
+        actors: [{ model: 'authored', visible: true }],
+        width: 64,
+        height: 48,
+        frame: 0,
+        place: () => ({ alpha: 255, x: 0, y: 0, scaleX: 100, scaleY: 100 }),
+      };
+    emote.physics = false;
+    emote.pose = () => pose;
+    emote.states['0'] = { variables: {}, blinkStart: null, flow: null };
+    emote.models.set('ca', {
+      resting: () => ({ mouth: 0 }),
+      selectorsFor() {},
+      baseObject: 'root',
+      baseMotion: 'idle',
+      objects: { root: { idle: { layers: [], parameters: [], lastTime: 1 } } },
+    });
+    emote.levelsCache.set('afile.wav', new Float32Array(180).fill(0.5));
+    assert.equal(emote.drawing(stage, 0, completed).variables.mouth, 0);
+    const saved = core.audio.snapshot();
+    cold = new AudioMixer(core.audio.game, next.context, { deferPlayback: true });
+    await cold.restore(saved);
+    assert.deepEqual(cold.snapshot(), saved);
+    assert.equal(cold.voiceInfo().file, 'afile.wav');
+    assert.equal(cold.voiceInfo().playing, false);
+    cold.activate();
+    assert.equal(next.context.sources.length, 0);
+    await command(core.audio, 'pcm', [0], 'play', ['high.wav']);
+    assert.equal(
+      core.audio.voiceInfo().file,
+      'high.wav',
+      'Active high-level voice wins over completed native metadata',
+    );
+    context.advance(3);
+    assert.equal(core.audio.voiceInfo().file, 'afile.wav');
+    await sound.play(3, 1, control);
+    context.advance(0.25);
+    assert.equal(emote.drawing(stage, 0, core.audio.voiceInfo()).variables.mouth, 0.5);
+    sound.pause(3);
+    const paused = core.audio.voiceInfo();
+    assert.equal(paused.file, 'afile.wav');
+    assert.equal(paused.playing, false);
+    assert.equal(paused.time, 0.25);
+    assert.equal(emote.drawing(stage, 0, paused).variables.mouth, 0);
+    await sound.replay(3);
+    assert.equal(core.audio.voiceInfo().playing, true);
+    sound.stop(3);
+    assert.equal(core.audio.voiceInfo().file, 'afile.wav');
+    assert.equal(core.audio.voiceInfo().playing, false);
+    assert.equal(core.audio.voiceInfo().time, 0);
+    assert.equal(emote.drawing(stage, 0, core.audio.voiceInfo()).variables.mouth, 0);
+    sound.release(3);
+    assert.deepEqual(core.audio.voiceInfo(), {});
+    await core.dispose();
+    core = null;
+    assert.equal(cold.voiceInfo().file, 'afile.wav');
+    assert.equal(cold.voiceInfo().playing, false);
+  } finally {
+    await cold?.dispose();
+    await core?.dispose();
+    environment.restore();
+  }
+});
 
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
   test(`native allocated voice follows its configured PART group without changing gain (${profile})`, async () => {
@@ -1000,161 +1037,6 @@ test('Core cold audio keeps one checkpoint projection and resumes the actual sou
     assert.equal(resumed.offset, 1);
     assert.equal(resumed.remainingDuration, 1);
   } finally {
-    await core?.dispose();
-    environment.restore();
-  }
-});
-
-test('checkpoint composition rejects unowned physical state before mutation and keeps an explicit restore owner', async () => {
-  const environment = startupEnvironment(),
-    { context } = fixture();
-  let core, cold, direct, explicit;
-  try {
-    const profile = 'sdk-4.01-engine-2.6.1.74',
-      game = await ordinaryStartupGame(profile, {
-        sound: false,
-        files: { 'cue.wav': new Uint8Array([1]) },
-      }),
-      make = (options = {}) =>
-        new CatSystem2({
-          game,
-          canvas: new StartupCanvas(),
-          audioContext: fixture().context,
-          nativeProfile: profile,
-          randomSeed: 17,
-          ...options,
-        });
-    core = make({ audioContext: context });
-    await core.initialize();
-    assert.equal(await core.world.sound.load(0, 'cue.wav', 1), true);
-    assert.equal(await core.world.sound.play(0, 1, {}), true);
-    context.advance(0.125);
-    const saved = await core.snapshot(),
-      previous = core.world,
-      audio = core.audio,
-      channel = audio.channels.get('native:0'),
-      source = channel.source,
-      previousState = structuredClone(previous.snapshot()),
-      handles = previous.runtime.handles,
-      previousClosed = previous.closed,
-      physical = { features: [], heap: Uint8Array.of(3, 1, 4, 1), registers: { pc: 17, sp: 64 } };
-    let io = 0,
-      stages = 0;
-    for (const name of ['read', 'require', 'fingerprint']) {
-      const original = game[name];
-      game[name] = function (...args) {
-        io++;
-        return original.apply(this, args);
-      };
-    }
-    const create = core.createNativeWorld;
-    core.createNativeWorld = function (...args) {
-      stages++;
-      return create.apply(this, args);
-    };
-    for (const payload of [physical, 0, false]) {
-      const bad = structuredClone(saved);
-      bad.world.nativeEngine = payload;
-      await assert.rejects(core.restore(bad), /physical checkpoint.*restore owner/i);
-      assert.strictEqual(core.world, previous);
-      assert.strictEqual(core.audio, audio);
-      assert.strictEqual(core.audio.channels.get('native:0'), channel);
-      assert.strictEqual(channel.source, source);
-      assert.notEqual(source.stopped, true);
-      assert.strictEqual(previous.runtime.handles, handles);
-      assert.equal(previous.closed, previousClosed);
-      assert.deepEqual(previous.snapshot(), previousState);
-    }
-    assert.equal(stages, 0);
-    assert.equal(io, 0);
-    cold = make();
-    const bad = structuredClone(saved);
-    bad.world.nativeEngine = physical;
-    await assert.rejects(
-      cold.initialize({ checkpoint: bad }),
-      /physical checkpoint.*restore owner/i,
-    );
-    assert.equal(cold.world, undefined);
-    assert.equal(io, 0, 'Cold import must reject before fingerprint/resources/saves');
-    direct = create.call(core, {
-      audio: new AudioMixer(game, fixture().context, { deferPlayback: true }),
-    });
-    const beforeWindow = direct.window.snapshot();
-    await assert.rejects(direct.restore(bad.world), /physical checkpoint.*restore owner/i);
-    assert.deepEqual(direct.window.snapshot(), beforeWindow);
-    assert.equal(direct.objects.objects.size, 0);
-    assert.equal(direct.runtime.scheduler.tasks.size, 0);
-    assert.equal(direct.frame, 0);
-    assert.equal(io, 0);
-    // Function presence alone is not an owner: it must recognize this state.
-    for (const adapter of [
-      {
-        open() {
-          throw new Error('Original open must not be called');
-        },
-      },
-      {
-        hasWorldCheckpoint: () => false,
-        restoreWorld() {
-          throw new Error('Unclaimed state restored');
-        },
-      },
-      { hasWorldCheckpoint: () => true },
-    ]) {
-      cold.transitionalExe = adapter;
-      await assert.rejects(
-        cold.initialize({ checkpoint: bad }),
-        /physical checkpoint.*restore owner/i,
-      );
-    }
-    assert.equal(io, 0);
-    const nullable = structuredClone(saved);
-    nullable.world.nativeEngine = null;
-    await core.restore(nullable);
-    assert.equal(Object.hasOwn(core.world.snapshot(), 'nativeEngine'), false);
-    let restored = null,
-      restoreCalls = 0,
-      starts = 0,
-      recognized = 0;
-    const owner = {
-        restore(value) {
-          restored = structuredClone(value);
-        },
-        snapshot() {
-          return structuredClone(restored);
-        },
-      },
-      adapter = {
-        hasWorldCheckpoint(state) {
-          assert.strictEqual(this, adapter);
-          recognized++;
-          return hasOriginalWorldCheckpoint(state);
-        },
-        restoreWorld(world, state) {
-          assert.strictEqual(this, adapter);
-          restoreCalls++;
-          return restoreOriginalWorld(world, state);
-        },
-        snapshotWorld: snapshotOriginalWorld,
-        installWorldRuntime(world) {
-          world.ensureNativeEngine = async () => {
-            starts++;
-            world.nativeEngine = owner;
-            return owner;
-          };
-        },
-      };
-    explicit = make({ transitionalExe: adapter });
-    await explicit.initialize({ checkpoint: bad });
-    assert.equal(starts, 1);
-    assert.equal(restoreCalls, 1);
-    assert.ok(recognized >= 1);
-    assert.deepEqual(restored, physical);
-    assert.deepEqual(explicit.world.snapshot().nativeEngine, physical);
-  } finally {
-    if (direct) await direct.close({ flushFiles: false });
-    await explicit?.dispose();
-    await cold?.dispose();
     await core?.dispose();
     environment.restore();
   }

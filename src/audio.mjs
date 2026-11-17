@@ -697,7 +697,17 @@ export class AudioMixer {
   }
   voiceInfo() {
     const voices = [...this.channels.values()].filter((c) => isVoice(c) && (c.playing || c.paused));
-    const c = voices.sort((a, b) => b.sequence - a.sequence)[0];
+    const c =
+      voices.sort((a, b) => b.sequence - a.sequence)[0] ??
+      [...this.channels.values()]
+        .filter(
+          (channel) =>
+            channel.group === 'native' &&
+            channel.nativeCategory === 'voice' &&
+            channel.ended &&
+            !channel.loading,
+        )
+        .sort((a, b) => b.sequence - a.sequence)[0];
     return c
       ? {
           file: c.file,
