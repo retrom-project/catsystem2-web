@@ -8,6 +8,9 @@ import { nativeSoundPanGains, nativeSoundPositionPan } from './native/sound-valu
 import { spatialPlaybackRate } from './native/audio-spatial.mjs';
 import { sourcePCM, NativePCMWindows } from './native/audio-pcm.mjs';
 
+const isVoice = (channel) =>
+  channel.group === 'voice' || (channel.group === 'native' && channel.nativeCategory === 'voice');
+
 // decodeAudioData may resample to the AudioContext rate. Loop positions refer
 // to the source stream, so retain its header rate before browser decoding.
 export function sourceSampleRate(bytes) {
@@ -115,6 +118,7 @@ export class AudioMixer {
     if (!sound.file) return;
     const channel = {
       ...sound,
+      nativeCategory: sound.nativeCategory ?? null,
       source: null,
       gain: null,
       panner: null,
@@ -169,7 +173,7 @@ export class AudioMixer {
     this.configureLoop(channel);
     channel.offset = this.wrapPosition(channel, channel.offset);
     if (channel.playing && !this.deferPlayback) this.startSource(channel);
-    if (sound.group === 'voice') {
+    if (isVoice(channel)) {
       const samples = buffer.getChannelData(0),
         step = Math.max(1, Math.floor(buffer.sampleRate / 60)),
         envelope = [];
@@ -180,21 +184,24 @@ export class AudioMixer {
         envelope.push(Math.sqrt(sum / (end - i)));
       }
       channel.envelope = envelope;
-      const sourceName = sound.file
-        .replaceAll('\\', '/')
-        .split('/')
-        .at(-1)
-        .replace(/\.[^.]*$/, '');
-      const tag = this.game.readCategory
-          ? await this.game.readCategory(sourceName, 'tag')
-          : await this.game.read(`${sound.file}.tag`),
-        tags = {};
-      if (tag) {
-        const b = new Binary(tag, 'audio tags');
-        if (tag.length % 24) throw new Error('Malformed audio tag records');
-        for (let i = 0; i < tag.length; i += 24) tags[b.str(i, 20)] = b.u32(i + 20) / 1000;
+      if (channel.group === 'native') channel.tags = structuredClone(sound.tags);
+      else {
+        const sourceName = sound.file
+          .replaceAll('\\', '/')
+          .split('/')
+          .at(-1)
+          .replace(/\.[^.]*$/, '');
+        const tag = this.game.readCategory
+            ? await this.game.readCategory(sourceName, 'tag')
+            : await this.game.read(`${sound.file}.tag`),
+          tags = {};
+        if (tag) {
+          const b = new Binary(tag, 'audio tags');
+          if (tag.length % 24) throw new Error('Malformed audio tag records');
+          for (let i = 0; i < tag.length; i += 24) tags[b.str(i, 20)] = b.u32(i + 20) / 1000;
+        }
+        channel.tags = tags;
       }
-      channel.tags = tags;
     }
     return channel;
   }
@@ -673,9 +680,7 @@ export class AudioMixer {
       this.stop(key);
   }
   voiceInfo() {
-    const voices = [...this.channels.values()].filter(
-      (c) => c.group === 'voice' && (c.playing || c.paused),
-    );
+    const voices = [...this.channels.values()].filter((c) => isVoice(c) && (c.playing || c.paused));
     const c = voices.sort((a, b) => b.sequence - a.sequence)[0];
     return c
       ? {
@@ -778,6 +783,8 @@ export class AudioMixer {
       file: c.file,
       loop: c.loop,
       group: c.group,
+      nativeCategory: c.nativeCategory,
+      tags: structuredClone(c.tags ?? null),
       volumeFactor: c.volumeFactor,
       nativeSpatial: structuredClone(c.nativeSpatial),
       loopCount: c.loopCount,
@@ -805,6 +812,15 @@ export class AudioMixer {
     };
   }
   async restore(state) {
+    if (
+      state.channels.some(
+        (channel) =>
+          (channel.nativeCategory !== null && typeof channel.nativeCategory !== 'string') ||
+          (isVoice(channel) &&
+            (!channel.tags || typeof channel.tags !== 'object' || Array.isArray(channel.tags))),
+      )
+    )
+      throw new Error('Invalid audio playback category in checkpoint');
     this.stopAll();
     this.frame = state.frame;
     // Rebuilding retained channels is not a new playback command. Preserve

@@ -90,6 +90,7 @@ export const NATIVE_SOUND_CONTROL = Object.freeze({
   linkedBank: 136,
 });
 const C = NATIVE_SOUND_CONTROL;
+const soundCategories = new Set(['bgm', 'se', 'voice', 'sysvoice']);
 
 class SoundControl {
   constructor(volume = 100, pan = 0) {
@@ -162,6 +163,7 @@ const deviceBank = () => ({
   loaded: false,
   metadata: null,
   sourceMode: 'stream',
+  category: null,
   volume: 100,
   pan: 0,
   volumeGroup: 0,
@@ -263,6 +265,7 @@ export class NativeSound {
     device.loaded = false;
     device.file = '';
     device.metadata = null;
+    device.category = null;
   }
   stop(bank) {
     const channel = this.channel(bank);
@@ -286,8 +289,10 @@ export class NativeSound {
     }
     return game.read(`${name}.${extension}`);
   }
-  async load(bank, file, type, decoderOption = 0) {
+  async load(bank, file, type, decoderOption = 0, category = null) {
     if (bank < 0 || bank >= this.bankCount) return false;
+    if (category !== null && !soundCategories.has(category))
+      throw new Error('Invalid native sound playback category');
     if (!this.audio?.preload) throw new Error('Native sound preload service is unavailable');
     this.release(bank);
     const device = this.device[bank],
@@ -296,6 +301,7 @@ export class NativeSound {
     device.file = file;
     device.loaded = true;
     device.metadata = structuredClone(loaded.metadata);
+    device.category = category;
     device.sourceMode = type === 2 ? 'static' : 'stream';
     device.decoderOption = decoderOption >>> 0;
     // The native silently converts a short stream to a single static buffer.
@@ -332,6 +338,11 @@ export class NativeSound {
       file: device.file,
       offset,
       group: 'native',
+      nativeCategory: device.category,
+      tags:
+        device.category === 'voice'
+          ? Object.fromEntries([...(control.tags ?? [])].map(([name, time]) => [name, time / 1000]))
+          : null,
       volume: device.volume,
       volumeFactor: this.factor(bank),
       pan: device.pan,
@@ -385,6 +396,12 @@ export class NativeSound {
   async restore(state) {
     if (state.device?.length !== this.bankCount || state.channels?.length !== this.bankCount)
       throw new Error('Native sound device checkpoint size');
+    if (
+      state.device.some(
+        (device) => device.category !== null && !soundCategories.has(device.category),
+      )
+    )
+      throw new Error('Invalid native sound playback category in checkpoint');
     this.master = state.master;
     this.volumeGroups = new Map(state.volumeGroups);
     this.device = structuredClone(state.device);
@@ -398,6 +415,7 @@ export class NativeSound {
       if (state.channels[bank])
         await this.audio.play({
           ...state.channels[bank],
+          nativeCategory: device.category,
           volumeFactor: this.factor(bank),
           loopCount: device.loopCount,
           loopStartFrame: device.loopStart,
@@ -510,7 +528,27 @@ export class NativeSoundTask {
       }
     }
   }
-  async load(packet, type, allocated = false) {
+  category(group) {
+    if (!group) return null;
+    const tree = this.world.soundConfiguration;
+    if (!tree?.loaded) {
+      const type = nativeABIBehavior(this.world.profile, 'sound.legacyTypes')[group.typeCode];
+      return soundCategories.has(type) ? type : null;
+    }
+    // SOUNDGROUP IDs and type codes belong to the document, not the legacy enum.
+    // A PART's explicit semantic type supplies the relationship to that group.
+    const categories = new Set();
+    if (soundCategories.has(group.type)) categories.add(group.type);
+    const visit = (nodes) => {
+      for (const node of nodes) {
+        if (node.group === group.id && soundCategories.has(node.type)) categories.add(node.type);
+        visit(node.children);
+      }
+    };
+    visit(tree.parts);
+    return categories.size === 1 ? categories.values().next().value : null;
+  }
+  async load(packet, type, allocated = false, group = null) {
     const bank = packet.load(0);
     if (!this.valid(bank)) return 0;
     const hasCrossfade = nativeABIBehavior(this.sound.abi.profile, 'sound.crossfade'),
@@ -518,7 +556,7 @@ export class NativeSoundTask {
       target = bank + (crossfade ? 32 : 0);
     if (!this.valid(target)) return 0;
     const file = packet.string(12),
-      loaded = await this.sound.load(target, file, type, packet.load(276));
+      loaded = await this.sound.load(target, file, type, packet.load(276), this.category(group));
     if (allocated && !loaded) return 0;
     const control = this.controls[target];
     control.word(C.flags, 0);
@@ -726,7 +764,7 @@ export class NativeSoundTask {
       if (!group) return 0xffffffff;
       const allocated = this.allocate(group.min, group.max);
       packet.store(0, allocated);
-      return (await this.load(packet, id === 205 || id === 207 ? 1 : 2, true))
+      return (await this.load(packet, id === 205 || id === 207 ? 1 : 2, true, group))
         ? allocated +
             (nativeABIBehavior(this.sound.abi.profile, 'sound.crossfade') && packet.load(280)
               ? 32

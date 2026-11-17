@@ -78,3 +78,30 @@ a claim about the complete SDK tutorial campaign.
 The ordinary sound task requires reviewed `sound.crossfade` behavior before selecting an extended load packet or reading its optional level sidecar. An unreviewed value does not select the non-crossfade path. Invalid bank rejection still precedes that packet-layout decision.
 
 The later elapsed-frame bookkeeping runs only for a reviewed boolean `sound.completionFrame` policy. An unreviewed policy leaves those later bookkeeping words unchanged; it does not select the modern false branch. An elapsed-time request must still pass its own version message mapping and reviewed policy. The .67 first-title evidence covers its own bank frame and sparse messages, without enabling the later elapsed query or supplying physical control layouts.
+
+## Native playback classification
+
+Allocated sound loads retain the semantic category of the group that actually
+selected the bank. With a loaded sound configuration, explicit `PART` records
+relate their `type` to a group ID; an explicit `SOUNDGROUP` type can also supply
+that category. IDs and empty type strings are not legacy category enums. An
+absent or conflicting relationship remains unclassified. Without that tree,
+the existing reviewed legacy type table interprets the selected group's type
+code. Stream/static load mode, filenames, and physical bank numbers do not
+determine whether a track is dialogue.
+
+The native device bank owns its nullable `category`. Playback projects it into
+the existing mixer channel's `nativeCategory`; both are retained in the current
+checkpoint contract. Release clears the device category, and swaps carry the
+device and channel metadata together. Cold reconstruction preserves that data
+without issuing a new guest command or looking up a replacement classification.
+
+Native channels keep their `native` mixing group and original volume factor.
+The shared `voiceInfo()` selection also includes native channels explicitly
+classified as `voice`, ordered with high-level voices by the mixer's existing
+playback sequence. Their envelope uses the same decoded buffer as high-level
+voices. Tags come from the native task's already loaded tag map, converted from
+milliseconds to seconds and retained in the channel checkpoint. Playback and
+cold reconstruction do not read another tag file. Classification does not apply a second
+configuration gain, mute, master, or voice-group factor. System voices, effects,
+music, and unclassified native tracks do not become dialogue voices.

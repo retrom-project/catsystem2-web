@@ -3,6 +3,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { AudioMixer } from '../src/audio.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
+import { NativeSoundPacket } from '../src/native/sound.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import {
   hasOriginalWorldCheckpoint,
   restoreOriginalWorld,
@@ -12,6 +14,7 @@ import {
   StartupCanvas,
   startupEnvironment,
   ordinaryStartupGame,
+  startupXML,
 } from './fixtures/ordinary-startup.mjs';
 
 function fixture() {
@@ -108,6 +111,298 @@ function fixture() {
 }
 const command = (mixer, group, banks, verb, args = []) =>
   mixer.command({ group, banks, verb, args });
+
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+  test(`native allocated voice follows its configured PART group without changing gain (${profile})`, async () => {
+    const environment = startupEnvironment(),
+      context = fixture().context,
+      nextContext = fixture().context;
+    let core, cold;
+    try {
+      const tag = new Uint8Array(24);
+      tag.set(new TextEncoder().encode('cue'));
+      new DataView(tag.buffer).setUint32(20, 1500, true);
+      const game = await ordinaryStartupGame(profile, {
+          startup: '<INT><int02><name>tag</name><ext>tag</ext></int02></INT>',
+          files: {
+            'ordinary-line.wav': new Uint8Array([1]),
+            'ordinary-line.tag': tag,
+            'other-track.wav': new Uint8Array([2]),
+            'voice-spelled-effect.wav': new Uint8Array([3]),
+            'sound.xml': startupXML(
+              profile,
+              `<MASTER><volume>0</volume><mute>1</mute></MASTER>
+              <PART>
+                <words><type>voice</type><group>97</group></words>
+                <ambience><type>bgm</type><group>81</group></ambience>
+                <effects><type>se</type><group>65</group></effects>
+                <prompts><type>sysvoice</type><group>50</group></prompts>
+              </PART>
+              <SOUNDGROUP>
+                <one><id>97</id><min>9</min><max>10</max></one>
+                <two><id>81</id><min>4</min><max>4</max></two>
+                <three><id>65</id><min>5</min><max>5</max></three>
+                <four><id>50</id><min>6</min><max>6</max></four>
+              </SOUNDGROUP>`,
+            ),
+          },
+        }),
+        make = (audioContext) =>
+          new CatSystem2({
+            game,
+            canvas: new StartupCanvas(),
+            audioContext,
+            nativeProfile: profile,
+            randomSeed: 17,
+            transitionalExe: {
+              open() {
+                throw new Error('Unexpected original CPU');
+              },
+            },
+          });
+      core = make(context);
+      await core.initialize();
+      const send = (owner, id, w = 0, packet = null) =>
+          owner.world.sound
+            .primary()
+            .message(
+              [
+                owner.world.nativeTaskID(owner.world.main.id),
+                mapABIMessage(profile, 'sound', 'raw', id),
+                w,
+                0,
+              ],
+              packet ? { payload: packet } : {},
+            ),
+        load = async (owner, id, group, file) => {
+          const packet = new NativeSoundPacket([], 288);
+          packet.store(4, group);
+          packet.store(8, group);
+          packet.writeString(file, 12);
+          return send(owner, id, 0, packet);
+        };
+      // SOUNDGROUP names and IDs are not voice enums. The PART relationship is explicit.
+      assert.equal(core.world.sound.primary().groups.get(97).type, '');
+      core.audio.setGroup('voice', 0);
+      core.world.sound.master = 50;
+      const bank = await load(core, 205, 97, 'ordinary-line.wav');
+      assert.equal(bank, 9);
+      core.world.sound.setVolume(bank, 50);
+      await core.world.sound.play(bank, 1, core.world.sound.primary().controls[bank]);
+      assert.equal(core.audio.voiceInfo().file, 'ordinary-line.wav');
+      assert.deepEqual(core.audio.voiceInfo().tags, { cue: 1.5 });
+      assert.equal(core.audio.voiceInfo().envelope[0], 0.25);
+      assert.equal(core.audio.channels.get('native:9').group, 'native');
+      assert.equal(core.audio.channels.get('native:9').nativeCategory, 'voice');
+      // 50 * native factor 50 is 25 percent, or -2000 hundredths of a dB.
+      assert.equal(core.audio.channels.get('native:9').gain.gain.value, 0.1);
+      core.world.sound.master = 0;
+      core.world.sound.refresh(bank);
+      assert.equal(core.audio.channels.get('native:9').gain.gain.value, 0.00001);
+      core.world.sound.master = 50;
+      core.world.sound.refresh(bank);
+      for (const group of [81, 65, 50]) {
+        const other = await load(core, 205, group, 'voice-spelled-effect.wav');
+        await core.world.sound.play(other, 1, core.world.sound.primary().controls[other]);
+        assert.equal(core.audio.voiceInfo().file, 'ordinary-line.wav');
+      }
+      assert.equal(await core.world.sound.load(20, 'voice-spelled-effect.wav', 1), true);
+      await core.world.sound.play(20, 1, {});
+      assert.equal(core.audio.voiceInfo().file, 'ordinary-line.wav');
+      // Both explicit-group and type-selected allocation, for stream and static loads.
+      for (const id of [206, 207, 208]) {
+        const nextBank = await load(core, id, 97, 'ordinary-line.wav');
+        await core.world.sound.play(nextBank, 1, core.world.sound.primary().controls[nextBank]);
+        assert.equal(core.audio.channels.get(`native:${nextBank}`).nativeCategory, 'voice');
+      }
+      const high = await command(core.audio, 'pcm', [3], 'play', ['other-track.wav']);
+      assert.equal(high.banks[0].bank, 3);
+      assert.equal(core.audio.voiceInfo().file, 'other-track.wav');
+      assert.equal(core.audio.channels.get('pcm:3').gain.gain.value, 0.00001);
+      await core.world.sound.play(bank, 1, core.world.sound.primary().controls[bank]);
+      assert.equal(core.audio.voiceInfo().file, 'ordinary-line.wav');
+      context.advance(0.125);
+      const saved = await core.snapshot(),
+        replay = { step: 0, tick: 0, scheduler: 0, native: 0, random: 0 };
+      cold = make(nextContext);
+      const create = cold.createNativeWorld,
+        step = cold.step;
+      cold.step = function (...args) {
+        replay.step++;
+        return step.apply(this, args);
+      };
+      cold.createNativeWorld = function (...args) {
+        const world = create.apply(this, args);
+        for (const [object, name, field] of [
+          [world, 'tick', 'tick'],
+          [world.runtime.scheduler, 'execute', 'scheduler'],
+          [world.runtime, 'native', 'native'],
+          [world.random.integer, 'nextUint32', 'random'],
+          [world.random.real, 'nextUint32', 'random'],
+        ]) {
+          const original = object[name];
+          object[name] = function (...parameters) {
+            replay[field]++;
+            return original.apply(this, parameters);
+          };
+        }
+        return world;
+      };
+      await cold.initialize({ checkpoint: saved });
+      assert.deepEqual(await cold.snapshot(), saved);
+      assert.deepEqual(replay, { step: 0, tick: 0, scheduler: 0, native: 0, random: 0 });
+      assert.equal(cold.audio.voiceInfo().file, 'ordinary-line.wav');
+      assert.deepEqual(cold.audio.voiceInfo().tags, { cue: 1.5 });
+      assert.equal(cold.audio.voiceInfo().time, 0.125);
+      assert.equal(
+        nextContext.sources.length,
+        saved.audio.channels.filter((channel) => !channel.paused && !channel.ended).length,
+      );
+      await core.dispose();
+      core = null;
+      assert.equal(cold.audio.voiceInfo().file, 'ordinary-line.wav');
+      await cold.world.sound.play(bank, 1, cold.world.sound.primary().controls[bank]);
+      assert.equal(cold.audio.channels.get('native:9').sequence, saved.audio.sequence);
+      assert.equal(cold.audio.voiceInfo().time, 0);
+      assert.equal(cold.audio.channels.get('native:9').gain.gain.value, 0.1);
+    } finally {
+      await cold?.dispose();
+      await core?.dispose();
+      environment.restore();
+    }
+  });
+}
+
+test('native voice classification follows legacy group types and retained banks, not numeric IDs', async () => {
+  const environment = startupEnvironment(),
+    context = fixture().context,
+    profile = 'nekopara-vol3-engine-2.6.1.76';
+  let core;
+  try {
+    const game = await ordinaryStartupGame(profile, {
+      sound: false,
+      files: {
+        'spoken.wav': new Uint8Array([1]),
+        'voice-spelled-effect.wav': new Uint8Array([2]),
+      },
+      startup:
+        '<SOUNDGROUP><group00><id>99</id><type>voice</type><min>17</min><max>18</max></group00><group01><id>98</id><type>unclassified</type><min>4</min><max>4</max></group01></SOUNDGROUP>',
+    });
+    core = new CatSystem2({
+      game,
+      canvas: new StartupCanvas(),
+      audioContext: context,
+      nativeProfile: profile,
+      transitionalExe: {
+        open() {
+          throw new Error('Unexpected original CPU');
+        },
+      },
+    });
+    await core.initialize();
+    const task = core.world.sound.primary(),
+      send = (id, w, l = 0, payload = null) =>
+        task.message(
+          [core.world.nativeTaskID(core.world.main.id), id, w, l],
+          payload ? { payload } : {},
+        ),
+      load = async (group, file) => {
+        const packet = new NativeSoundPacket([], 288);
+        packet.store(4, group);
+        packet.writeString(file, 12);
+        return send(205, 0, 0, packet);
+      };
+    assert.equal(core.world.soundConfiguration.loaded, false);
+    assert.equal(task.groups.get(99).typeCode, 2);
+    const voice = await load(99, 'spoken.wav'),
+      other = await load(98, 'voice-spelled-effect.wav');
+    assert.equal(voice, 17);
+    assert.equal(other, 4);
+    await send(182, voice, 1);
+    await send(182, other, 1);
+    assert.equal(core.audio.voiceInfo().file, 'spoken.wav');
+    assert.equal(core.audio.channels.get('native:4').nativeCategory, null);
+    await send(223, voice, other);
+    assert.equal(core.audio.channels.get('native:4').nativeCategory, 'voice');
+    assert.equal(core.world.sound.device[4].category, 'voice');
+    assert.equal(core.audio.channels.get('native:17').nativeCategory, null);
+    assert.equal(core.audio.voiceInfo().file, 'spoken.wav');
+    await send(203, 41, 0, new NativeSoundPacket([2, 20, 21, 100]));
+    const dynamic = await load(41, 'spoken.wav');
+    assert.equal(dynamic, 20);
+    await send(182, dynamic, 1);
+    assert.equal(core.audio.channels.get('native:20').nativeCategory, 'voice');
+    await send(184, dynamic);
+    assert.equal(core.audio.voiceInfo().file, 'spoken.wav');
+    await send(181, dynamic);
+    // The fade reaches zero in ten frames; the following bookkeeping releases it.
+    for (let frame = 0; frame < 10; frame++) await task.tick(task.frame + 1);
+    assert.equal(core.world.sound.device[20].category, 'voice');
+    await task.tick(task.frame + 1);
+    assert.equal(core.world.sound.device[20].category, null);
+    assert.equal(core.audio.channels.has('native:20'), false);
+    assert.equal(await core.world.sound.load(20, 'voice-spelled-effect.wav', 1), true);
+    await core.world.sound.play(20, 1, {});
+    assert.equal(core.audio.channels.get('native:20').nativeCategory, null);
+    assert.equal(core.audio.voiceInfo().file, 'spoken.wav');
+    const saved = core.world.sound.snapshot(),
+      invalid = structuredClone(saved);
+    invalid.device[0].category = 'unreviewed-role';
+    await assert.rejects(core.world.sound.restore(invalid), /playback category/);
+    assert.deepEqual(core.world.sound.snapshot(), saved);
+  } finally {
+    await core?.dispose();
+    environment.restore();
+  }
+});
+
+test('native PART group classification leaves absent and conflicting roles unclassified', async () => {
+  const environment = startupEnvironment(),
+    context = fixture().context,
+    profile = 'nekopara-vol3-engine-2.6.1.76';
+  let core;
+  try {
+    const game = await ordinaryStartupGame(profile, {
+      files: {
+        'voice-spelled-effect.wav': new Uint8Array([1]),
+        'sound.xml': startupXML(
+          profile,
+          `<PART><words><type>voice</type><group>97</group></words>
+          <other><type>bgm</type><group>97</group></other></PART>
+          <SOUNDGROUP><one><id>97</id><min>9</min><max>9</max></one>
+          <two><id>2</id><min>3</min><max>3</max></two></SOUNDGROUP>`,
+        ),
+      },
+    });
+    core = new CatSystem2({
+      game,
+      canvas: new StartupCanvas(),
+      audioContext: context,
+      nativeProfile: profile,
+      transitionalExe: {
+        open() {
+          throw new Error('Unexpected original CPU');
+        },
+      },
+    });
+    await core.initialize();
+    const task = core.world.sound.primary();
+    for (const group of [97, 2]) {
+      const packet = new NativeSoundPacket([], 288);
+      packet.store(4, group);
+      packet.writeString('voice-spelled-effect.wav', 12);
+      const bank = await task.message([core.world.nativeTaskID(core.world.main.id), 205, 0, 0], {
+        payload: packet,
+      });
+      await core.world.sound.play(bank, 1, task.controls[bank]);
+      assert.equal(core.audio.channels.get(`native:${bank}`).nativeCategory, null);
+      assert.deepEqual(core.audio.voiceInfo(), {});
+    }
+  } finally {
+    await core?.dispose();
+    environment.restore();
+  }
+});
 
 test('CST audio allocates independent PCM banks and reports actual completion', async () => {
   const { context, mixer } = fixture();
