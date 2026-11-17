@@ -103,6 +103,22 @@ export class CatSystem2 {
     } else selected = await selectNativeProfile(this.game, this.requestedNativeProfile);
     this.nativeProfile = selected.profile;
     this.nativeModule = selected.module;
+    const abi = nativeABI(selected.profile),
+      loosePath = abi.startup.loosePath,
+      startupBytes = await (loosePath
+        ? this.game.readLoose(loosePath)
+        : this.game.read('startup.xml')),
+      startup = startupBytes ? parseNativeXML(startupBytes, abi.xmlEncoding) : undefined;
+    if (loosePath) {
+      this.game = this.game.withStartup(startupBytes);
+      this.images.game = this.game;
+      const { width, height } = this.game;
+      if (this.canvas.width !== width || this.canvas.height !== height)
+        for (const target of [this.canvas, this.renderer.base, this.renderer.buffer]) {
+          target.width = width;
+          target.height = height;
+        }
+    }
     this.motionLibrary = new MotionLibrary(this.game, {
       profile: this.nativeProfile,
       random: this.random,
@@ -111,8 +127,8 @@ export class CatSystem2 {
       const bytes = await this.game.read(name);
       return bytes ? parseXML(decodeText(bytes)) : new XMLNode('document');
     };
-    [this.startup, this.adv, this.vram, this.profiles] = await Promise.all([
-      xml('startup.xml'),
+    this.startup = startupBytes ? parseXML(decodeText(startupBytes)) : new XMLNode('document');
+    [this.adv, this.vram, this.profiles] = await Promise.all([
       xml('adv.xml'),
       xml('vram.xml'),
       EmoteProfiles.load(this.game),
@@ -133,16 +149,10 @@ export class CatSystem2 {
     );
     this.names = await this.host.speakerTable();
     await this.renderer.loadFonts(this.game);
-    const nativeXML = async (name, mounted = false) => {
-      const bytes = await (mounted && this.game.readNative
-        ? this.game.readNative(name, 3)
-        : this.game.read(name));
-      return bytes ? parseNativeXML(bytes, nativeABI(this.nativeProfile).xmlEncoding) : undefined;
-    };
-    const [startup, gamedef] = await Promise.all([
-      nativeXML('startup.xml'),
-      nativeXML('config.int/gamedef.xml', true),
-    ]);
+    const gamedefBytes = await (this.game.readNative
+        ? this.game.readNative('config.int/gamedef.xml', 3)
+        : this.game.read('config.int/gamedef.xml')),
+      gamedef = gamedefBytes ? parseNativeXML(gamedefBytes, abi.xmlEncoding) : undefined;
     this.nativeDocuments = { startup, gamedef };
     this.nativeStorage = new NativeFileStorage(this.game, this.identity);
     await this.nativeStorage.open();

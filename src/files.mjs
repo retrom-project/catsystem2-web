@@ -221,7 +221,34 @@ export class GameFiles {
     }
     if (!this.archives.length && !this.index.has('main.kcs'))
       throw new Error('No CatSystem2 archives or scripts found');
-    const startup = await this.read('startup.xml');
+    const overrides = [...nativeArchives.values()]
+      .filter((archive) => nativeUpdatePriority(archive.name) !== null)
+      .sort((a, b) => nativeUpdatePriority(b.name) - nativeUpdatePriority(a.name));
+    this.applyStartup(await this.read('startup.xml'), {
+      archives: nativeArchives,
+      loose: nativeLoose,
+      directories,
+      lists: nativeLists,
+      overrides,
+    });
+  }
+  withStartup(startup) {
+    // A Core can select its startup mounts without changing the shared game index.
+    const game = Object.create(this);
+    game.width = 800;
+    game.height = 600;
+    game.title = 'CatSystem2';
+    game.qualifiedIndex = new Map(this.qualifiedIndex);
+    game.applyStartup(startup, this.nativeSearch);
+    return game;
+  }
+  applyStartup(startup, sources) {
+    for (const [name, previous] of this.startupAliases ?? []) {
+      if (previous) this.qualifiedIndex.set(name, previous);
+      else this.qualifiedIndex.delete(name);
+    }
+    this.startupAliases = new Map();
+    this.nativeResources = undefined;
     if (startup) {
       const xml = decodeText(startup),
         tag = (name) => xml.match(new RegExp(`<${name}[^>]*>([^<]*)</${name}>`, 'i'))?.[1];
@@ -243,24 +270,20 @@ export class GameFiles {
           for (const [name, hit] of [...this.qualifiedIndex])
             if (name.startsWith(prefix) && !/\.int$/i.test(hit.path)) {
               const key = `${resourcePath(entry.archive)}/${name.slice(prefix.length)}`;
-              if (!this.qualifiedIndex.has(key) || /^patch\//i.test(hit.path))
+              if (!this.qualifiedIndex.has(key) || /^patch\//i.test(hit.path)) {
+                if (!this.startupAliases.has(key))
+                  this.startupAliases.set(key, this.qualifiedIndex.get(key));
                 this.qualifiedIndex.set(key, hit);
+              }
             }
         }
       }
     }
-    const overrides = [...nativeArchives.values()]
-      .filter((archive) => nativeUpdatePriority(archive.name) !== null)
-      .sort((a, b) => nativeUpdatePriority(b.name) - nativeUpdatePriority(a.name));
     this.nativeSearch = new NativeResourceSearch({
-      archives: nativeArchives,
-      loose: nativeLoose,
-      directories,
-      lists: nativeLists,
-      overrides,
+      ...sources,
       mounts: this.nativeResources
         ? this.nativeResources.entries.filter((entry) => entry.archive)
-        : [...nativeArchives.values()]
+        : [...sources.archives.values()]
             .filter((archive) => nativeUpdatePriority(archive.name) === null)
             .map((archive) => ({ archive: archive.name, directory: '' })),
     });
