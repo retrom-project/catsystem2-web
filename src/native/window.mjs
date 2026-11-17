@@ -76,7 +76,7 @@ export class NativeWindow {
       ...(nativeABIBehavior(world.profile, 'capabilities.windowBaseAccelerators')
         ? NATIVE_WINDOW_BASE_ACCELERATORS
         : []),
-      ...this.languageAccelerators,
+      ...(world.configuration.language ? this.languageAccelerators : []),
     ];
   }
   get languageAccelerators() {

@@ -12,6 +12,7 @@ import { nativeABI, abiForEngineVersion } from '../src/native/abi/index.mjs';
 import { NativeRuntime } from '../src/native/runtime.mjs';
 import { NativeGraphics } from '../src/native/graphics.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { NativeInputBindings } from '../src/native/input-bindings.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 import { nativeStartupCode } from '../src/native/startup-author.mjs';
@@ -1280,6 +1281,91 @@ test('63 FES GCALLs use the real Draw owner and suspend on reviewed FES waits', 
       await audio.dispose();
     }
   }
+});
+
+test('63 Flow and warning FES honor the configured Control key only during the skippable wait', async (t) => {
+  const { world, audio } = await oldTitleWorld(
+    {
+      'flow.fes': bytes(
+        '#START\nexecfes warning\nnext POLL\n#POLL\nwait 1\nif ($8==3)\nendfes\nexecfes ready\nnext WAIT\nendif\nnext POLL\n#WAIT\n',
+      ),
+      'warning.fes': bytes(
+        '#START\nkeyskip off\n$8=1\nwait 4\nnext IN\n#IN\nkeyskip on\n$8=2\nwait 200\nnext TAIL\n#TAIL\nkeyskip off\nwait 3\n$8=3\nexit\n',
+      ),
+      'ready.fes': bytes('#START\n$9=17\nnext WAIT\n#WAIT\n'),
+    },
+    undefined,
+    'rebellions-jp-engine-2.6.1.63',
+  );
+  t.after(async () => {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  });
+  const row = world.configuration.keys.rows[12];
+  row.name = 'Skip';
+  row.enabled = 1;
+  row.keyboard[0] = 17;
+  const bindings = new NativeInputBindings(world.input, world.configuration);
+  world.inputBindings = bindings;
+  const control = { code: 'ControlLeft', key: 'Control', ctrlKey: true };
+  assert.ok(bindings.acceptsKeyboard(control));
+  assert.equal(world.window.keyboardShortcut(control), null);
+  assert.deepEqual(world.window.keyboardShortcut({ code: 'F4', key: 'F4', altKey: true }), [
+    0x104,
+    115,
+    0x20000001,
+    { modifiers: 16, character: null },
+  ]);
+  const step = async () => {
+    bindings.sample();
+    await world.tick();
+  };
+
+  const main = await world.initialize('empty.kcs'),
+    bank = world.runtime.variableBank(main),
+    draw = await world.objects.create({ kind: 15, parent: main.id }),
+    owner = await world.objects.create({ kind: 34, parent: main.id }),
+    flow = world.objects.objects.get(owner).implementation;
+  bank.initialize(16);
+  await world.sendEngine(draw, main.id, 279, 4, 3);
+  await world.sendEngine(draw, main.id, 283, 0, 0);
+  await flow.initialize(main.context.variableBank);
+  await world.sendEngine(owner, main.id, 334, 0, world.nativeTaskID(draw));
+  assert.equal(await flow.loadSource('flow.fes'), true);
+  for (let frame = 0; frame < 4 && bank.get(8) === 0; frame++) await step();
+  const warningID = flow.player.root.childTaskID,
+    warning = world.objects.objects.get(warningID).implementation.player.root;
+  assert.equal(bank.get(8), 1);
+  assert.equal(warning.label, 'START');
+  assert.equal(warning.keySkipEnabled, false);
+  bindings.keyboard(control, true);
+  await step();
+  assert.equal(warning.skipControl, true);
+  assert.equal(bank.get(8), 1);
+  bindings.keyboard(control, false);
+  for (let frame = 0; frame < 5 && bank.get(8) === 1; frame++) await step();
+  assert.equal(bank.get(8), 2);
+  assert.equal(warning.label, 'IN');
+  assert.equal(warning.keySkipEnabled, true);
+  assert.equal(warning.skipControl, false);
+  assert.ok(warning.commandDelayUntil > warning.nativeFrameWord + 100);
+  await step();
+  assert.equal(bank.get(8), 2);
+
+  bindings.keyboard(control, true);
+  await step();
+  assert.equal(warning.label, 'TAIL');
+  assert.equal(bank.get(8), 2);
+  bindings.keyboard(control, false);
+  for (let frame = 0; frame < 8 && bank.get(9) === 0; frame++) await step();
+  assert.equal(bank.get(8), 3);
+  const ready = world.objects.objects.get(flow.player.root.childTaskID).implementation.player.root;
+  assert.equal(bank.get(9), 17);
+  assert.equal(ready.label, 'WAIT');
+  assert.equal(ready.skipControl, false);
 });
 
 test('63 startup file GCALLs import bounded flags through the selected Script owner', async (t) => {

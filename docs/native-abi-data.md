@@ -81,6 +81,9 @@ core language input and derived checked notifications. The standalone Game
 consumer binds these through EngineHost, Core and the browser app; see
 [Game language controls](native-window-commands.md#game-language-shortcuts-in-an-ordinary-world).
 Resource101 base shortcuts and SDK language routing retain separate gates.
+The ordinary browser keyboard checks base shortcuts on older configurations
+without a language owner. An explicit language shortcut or menu lookup still
+requires its reviewed ABI capability.
 This consumer does not establish Retrom integration or complete platform
 startup.
 
