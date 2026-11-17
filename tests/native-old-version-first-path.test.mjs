@@ -1225,6 +1225,80 @@ test('63 FES GCALLs bind a real draw owner and update the attached Script bank',
   }
 });
 
+test('63 startup file GCALLs import bounded flags through the selected Script owner', async (t) => {
+  const storage = new SaveSlotFiles(),
+    file = new NativeGlobalFile(7, 524288),
+    flags = new Uint8Array(512 * 4),
+    words = new DataView(flags.buffer);
+  for (const [index, value] of [
+    [0, 17],
+    [1, 29],
+    [810 - 512, 1],
+    [1023 - 512, 2],
+  ])
+    words.setUint32(index * 4, value, true);
+  file.write(1024, flags);
+  const reads = [],
+    diagnostics = [],
+    read = storage.read;
+  await storage.write('owned/owned-flags.css', await file.file());
+  t.mock.method(storage, 'read', function (name) {
+    reads.push(name);
+    return read.call(this, name);
+  });
+  const { world, audio } = await oldTitleWorld({}, storage, 'rebellions-jp-engine-2.6.1.63');
+  world.host.nativeDiagnostic = (event) => diagnostics.push(event);
+  try {
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      sender = world.nativeTaskID(main.id),
+      call = (id, args) =>
+        world.runtime.native('main', id, args, machine, main, world.runtime.scheduler);
+    main.context.contextName = 'owned';
+    assert.deepEqual(call(209, [2048]), { control: 2 });
+    const bank = world.runtime.variableBank(main, false);
+    machine.writeString('missing-flags.css', 128);
+    machine.writeString('owned-flags.css', 192);
+
+    assert.deepEqual(await call(247, [128]), { control: 1, value: 0 });
+    assert.deepEqual(call(250, [0, 1024, sender, 810]), { control: 1, value: 0 });
+    assert.equal(bank.get(810), 0);
+    assert.equal(bank.dirty, false);
+
+    const loaded = await call(247, [192]);
+    assert.equal(loaded.control, 1);
+    const handle = loaded.value;
+    assert.notEqual(handle, 0, JSON.stringify({ reads, diagnostics }));
+    assert.deepEqual(
+      reads.filter((name) => name.endsWith('.css')),
+      ['owned/missing-flags.css', 'owned/owned-flags.css'],
+    );
+    assert.deepEqual(diagnostics, []);
+    assert.equal(world.runtime.handles.get(handle, 'global-file').growthBytes, 524288);
+    assert.deepEqual(call(250, [handle, 1023, sender, 810]), { control: 1, value: 0 });
+    assert.equal(bank.dirty, false);
+    assert.deepEqual(call(250, [handle, 1024, sender, 2047]), { control: 1, value: 1 });
+    assert.equal(bank.get(2047), 17);
+    assert.equal(bank.get(2048), 0);
+    assert.equal(bank.dirty, true);
+    assert.deepEqual(call(250, [handle, 1024, sender, 512]), { control: 1, value: 1 });
+    assert.deepEqual([bank.get(810), bank.get(1023)], [1, 2]);
+
+    machine.bytes(0, 8).fill(0xa5);
+    assert.deepEqual(call(254, [handle, 1024, 0, 5]), { control: 1, value: 5 });
+    assert.deepEqual([...machine.bytes(0, 8)], [...flags.subarray(0, 5), 0xa5, 0xa5, 0xa5]);
+    assert.deepEqual(call(254, [handle, 1024, 0xffffffff, 5]), { control: 1, value: 0 });
+    assert.deepEqual(call(246, [handle]), { control: 2 });
+    assert.equal(world.runtime.handles.records.has(handle), false);
+  } finally {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  }
+});
+
 test('67 first-title models use real FES services and restore without warm replay', async (t) => {
   t.mock.method(Date, 'now', () => Date.UTC(2026, 10, 17, 3, 4, 5));
   const pixels = new Uint8Array(4 * 3 * 4);

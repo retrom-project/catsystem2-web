@@ -18,7 +18,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.63 | 938        | 16        | 0             | 0             | 922     | 45 / 44 / 51 unknown       |
+| 2.6.1.63 | 938        | 20        | 0             | 0             | 918     | 45 / 44 / 51 unknown       |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered  |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
@@ -942,6 +942,18 @@ operations and return control 2. Main67 requests destruction with message 3.
 The owned path loads a small FES script into a real draw owner, updates the
 borrowed Script bank and removes the FES task and drawing binding on
 destruction. The Script keeps ownership of its bank.
+
+## 2.6.1.63 startup files and flag bank
+
+Main247 loads the selected CSS file in the caller's save directory. Its
+global-file owner grows in 512 KiB increments and Main246 releases that
+owner. Main250 looks up a tagged entry, resolves the destination Script
+in the caller's native namespace and imports complete words from the
+specified first index up to the bank's capacity. An absent file, entry or
+bank returns zero. Main254 copies the available prefix to a translated
+VM destination and returns its byte count. The owned control covers the
+two startup selectors in the Script's flag bank, file and tag misses,
+bounded imports, raw copying and handle release.
 
 ## 2.6.1.67 first-title entry and normal services
 
