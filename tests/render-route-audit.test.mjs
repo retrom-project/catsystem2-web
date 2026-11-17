@@ -2,13 +2,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { RENDER_ROUTE_AUDIT, reviewRenderIndirect } from '../scripts/render-route-audit.mjs';
-import { NATIVE_ABIS } from '../src/native/abi/index.mjs';
 import { NATIVE_GRAPHICS_IDS, installNativeGraphics } from '../src/native/graphics.mjs';
 import { NATIVE_DRAW_IDS } from '../src/native/draw-task.mjs';
 import { NATIVE_MESH_IDS } from '../src/native/mesh.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 
-for (const profile of Object.keys(NATIVE_ABIS))
+// The shared-wrapper transport corpus has two reviewed receiver maps.
+// This bypasses dispatch intentionally; it is not native-slot admission.
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
   test(profile + ' render inventory agrees with the installed wrapper messages', async () => {
     const handlers = new Map(),
       factories = new Map(),

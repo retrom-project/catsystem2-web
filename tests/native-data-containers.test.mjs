@@ -6,7 +6,11 @@ import { NativeDataBuffers } from '../src/native/data-buffer.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NATIVE_ABIS } from '../src/native/abi/index.mjs';
 import { hg3 } from './helpers.mjs';
-for (const profile of Object.keys(NATIVE_ABIS))
+// This positive sequence requires its own admitted image-data operations.
+const imageDataIDs = [0x16d, 0x170, 0x1af, 0x177, 0x16c, 0x16e];
+for (const profile of Object.keys(NATIVE_ABIS).filter((name) =>
+  imageDataIDs.every((id) => NATIVE_ABIS[name].tables.main.entries[id]?.status === 'recovered'),
+))
   test(`${profile} image-data native sequence and shared restore without an EXE`, async () => {
     const rgba = Uint8Array.of(
         11,

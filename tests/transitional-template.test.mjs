@@ -2,7 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativeScalarMath, NATIVE_SCALAR_MATH_CONTRACTS } from '../oracle/scalar-math.mjs';
-import { NATIVE_ABIS } from '../src/native/abi/index.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
+import { NATIVE_EXE_PROFILES } from '../oracle/executable-catalog.mjs';
 import { scalarHandler } from '../oracle/scalar-handlers.mjs';
 import { invokeNative } from '../oracle/scalar-invoke.mjs';
 import { invokeRegion } from '../oracle/transitional-exe.mjs';
@@ -14,7 +15,8 @@ test('only the explicit mixed host selects the temporary M2 heap capacity', asyn
   const open = NativeEngineProcess.open;
   NativeEngineProcess.open = async (options) => ({ options });
   try {
-    for (const abi of Object.values(NATIVE_ABIS)) {
+    for (const profile of Object.keys(NATIVE_EXE_PROFILES)) {
+      const abi = nativeABI(profile);
       const engine = await transitionalExe.open({ profile: abi.profile });
       assert.equal(
         engine.options.heapSize,
@@ -31,7 +33,8 @@ test('only the explicit mixed host selects the temporary M2 heap capacity', asyn
 });
 
 test('scalar template dispatches semantic operations through the explicitly injected capability', async () => {
-  for (const abi of Object.values(NATIVE_ABIS)) {
+  for (const profile of Object.keys(NATIVE_EXE_PROFILES)) {
+    const abi = nativeABI(profile);
     const calls = [],
       engine = {
         profile: abi.profile,

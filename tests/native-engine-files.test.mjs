@@ -317,6 +317,8 @@ for (const [profile, variable] of [
 
 test('original file and system owners reject absent layouts before touching process', async () => {
   for (const profile of [
+    'rebellions-jp-engine-2.6.1.63',
+    'bokutomo-engine-2.6.1.67',
     'unregistered-engine-2.6.1.63',
     'unregistered-engine-2.6.1.67',
     'toString',
@@ -339,5 +341,46 @@ test('original file and system owners reject absent layouts before touching proc
       /Original system information layout is unavailable/,
     );
     assert.deepEqual(calls, [], 'no original system memory access or allocation');
+  }
+});
+
+test('normal ABI registration does not admit missing original query or startup-menu owners', async () => {
+  const { NativeConfigurationQueries, NATIVE_CONFIGURATION_QUERY_LAYOUTS } = await import(
+    '../oracle/configuration-query.mjs'
+  );
+  const { initializeNativeStartupMenu, releaseNativeStartupMenu, refreshNativeLanguageMenu } =
+    await import('../oracle/engine-startup-menu.mjs');
+  assert.deepEqual(Object.keys(NATIVE_CONFIGURATION_QUERY_LAYOUTS), [
+    'sdk-4.01-engine-2.6.1.74',
+    'nekopara-vol3-engine-2.6.1.76',
+  ]);
+  for (const profile of ['rebellions-jp-engine-2.6.1.63', 'bokutomo-engine-2.6.1.67']) {
+    let processReads = 0,
+      published = 0;
+    const engine = {
+      profile,
+      get process() {
+        processReads++;
+        throw new Error('Original process must not be consumed without descriptors');
+      },
+      get refs() {
+        published++;
+        throw new Error('No original refs publication is permitted');
+      },
+      registerFeature() {
+        published++;
+        throw new Error('No original feature publication is permitted');
+      },
+    };
+    assert.throws(() => new NativeConfigurationQueries(engine, {}), /require a reviewed engine/);
+    for (const operation of [
+      initializeNativeStartupMenu,
+      releaseNativeStartupMenu,
+      refreshNativeLanguageMenu,
+    ])
+      await assert.rejects(operation(engine), /requires reviewed own descriptors/);
+    assert.equal(processReads, 0);
+    assert.equal(published, 0);
+    assert.equal(Object.hasOwn(NATIVE_CONFIGURATION_QUERY_LAYOUTS, profile), false);
   }
 });

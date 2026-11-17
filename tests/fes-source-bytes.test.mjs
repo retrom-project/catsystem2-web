@@ -284,3 +284,32 @@ for (const profile of profiles) {
     }
   });
 }
+
+test('ordinary FES empty macro dictionaries do not request unreviewed literal policy', async (t) => {
+  for (const profile of profiles) {
+    const world = await defaultFESWorld(profile, {
+      'screen.fes': utf8('#START\nnext HOLD\n#HOLD\n'),
+    });
+    try {
+      const { task, instance } = await loadDefaultFES(world),
+        expected = join(utf8('"raw // '), encodeCP932('猫'), utf8('" ')),
+        raw = join(expected, Uint8Array.of(0), utf8('tail'));
+      let policyReads = 0;
+      t.mock.method(instance.player.host, 'fesMacroLiterals', () => {
+        policyReads++;
+        throw new Error('Unreviewed FES macro literal policy');
+      });
+      assert.equal(instance.macros.size, 0);
+      assert.deepEqual(instance.expandMacros(raw), expected);
+      await task.tick();
+      assert.equal(instance.label, 'HOLD');
+      assert.equal(policyReads, 0);
+      instance.macros.set('OWNED', utf8('7'));
+      assert.throws(() => instance.expandMacros(utf8('OWNED')), /Unreviewed.*macro/);
+      assert.equal(policyReads, 1);
+      assert.deepEqual(instance.macros.get('OWNED'), utf8('7'));
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  }
+});

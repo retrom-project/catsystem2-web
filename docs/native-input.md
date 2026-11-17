@@ -1,9 +1,10 @@
 # Native input contracts
 
 Ordinary Core input runs through its shared browser bindings and typed InputTask.
-The two registered profiles in [references.json](../references.json) retain
+The two physical-oracle profiles in [references.json](../references.json) retain
 explicit original-engine adapters for the independent physical object/Win32
-oracle. Supplying a browser touch event does not open either original engine.
+oracle. Normal ABI registration does not add an original descriptor. Supplying a
+browser touch event does not open either original engine.
 
 | Engine              | InputTask constructor | Frame    | Message handler | Physical-device constructor | Window handler |
 | ------------------- | --------------------- | -------- | --------------- | --------------------------- | -------------- |

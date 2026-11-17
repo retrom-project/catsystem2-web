@@ -2,7 +2,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { NATIVE_ABIS, nativeABI, validateABI } from '../src/native/abi/index.mjs';
+import {
+  NATIVE_ABIS,
+  nativeABI,
+  nativeABIBehavior,
+  validateABI,
+} from '../src/native/abi/index.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { readEngineVersion, selectNativeProfile } from '../src/native/profile.mjs';
 
@@ -140,7 +145,8 @@ test('ABI selection is exact and reports unknown, missing and conflicting engine
 });
 
 test('reviewed ABI services expose independent capabilities and serializable layouts', () => {
-  const [sdk, game] = Object.values(NATIVE_ABIS);
+  const sdk = nativeABI('sdk-4.01-engine-2.6.1.74'),
+    game = nativeABI('nekopara-vol3-engine-2.6.1.76');
   assert.deepEqual([sdk.sound.banks, game.sound.banks], [32, 64]);
   assert.deepEqual(
     [sdk.graphics.textureCapsPolicy, game.graphics.textureCapsPolicy],
@@ -209,8 +215,11 @@ const sdkGoldens = {
 const identityGolden = '3d117551a52e0dbfcd62466d43977057af5a48f35cb71f98998f67780a3e9cc8';
 
 test('ABI message data retains every original control, screen and area boundary for both versions', () => {
-  for (const abi of Object.values(NATIVE_ABIS))
+  // These complete transport hashes are the two captured version corpora,
+  // not a default for every independently registered engine.
+  for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
     for (const [key, golden] of Object.entries(sdkGoldens)) {
+      const abi = nativeABI(profile);
       const [channel, direction] = key.split('/'),
         bytes = Buffer.alloc(71 * 605 * 4);
       let index = 0;
@@ -259,11 +268,63 @@ test('normal Root ABI protocol fields are strict while original field offsets re
 for (const profile of Object.keys(NATIVE_ABIS)) {
   test(`normal ABI keeps original-only structure layouts optional: ${profile}`, () => {
     const abi = structuredClone(nativeABI(profile));
-    for (const name of ['motionCheckpoint', 'memoryFile', 'systemInformation'])
-      delete abi.layouts[name];
+    if (abi.layouts === null) {
+      assert.throws(() => nativeABIBehavior(profile, 'layouts'), /Unreviewed ABI behavior/);
+      assert.equal(typeof abi.unreviewed.layouts, 'string');
+    } else {
+      for (const name of ['motionCheckpoint', 'memoryFile', 'systemInformation'])
+        delete abi.layouts[name];
+      assert.ok(abi.layouts.textCores, 'reviewed normal text layout remains present');
+    }
     assert.strictEqual(validateABI(abi), abi);
-    assert.ok(abi.layouts.textCores, 'normal text layout remains present');
     assert.equal(abi.tables.main.entries.length, nativeABI(profile).tables.main.entries.length);
     assert.throws(() => nativeABI('cs2-unregistered-own-layout'), /Unregistered CatSystem2 ABI/);
   });
 }
+
+test('finite old ABI normal requirements reject missing data and do not invent unknown capabilities', () => {
+  for (const profile of ['rebellions-jp-engine-2.6.1.63', 'bokutomo-engine-2.6.1.67']) {
+    const abi = nativeABI(profile);
+    assert.deepEqual(validateABI(structuredClone(abi)), abi);
+    for (const path of [
+      'language.storage',
+      'fes.controlResources',
+      'plugins.requiredRenderer',
+      'graphics.texturedBoundsQuery',
+    ])
+      assert.throws(() => nativeABIBehavior(profile, path), /Unreviewed ABI behavior/);
+    for (const mutate of [
+      (data) => {
+        delete data.startup.applicationServices;
+      },
+      (data) => {
+        data.startup.applicationServices = ['root-script'];
+      },
+      (data) => {
+        data.startup.applicationServices.push('textures');
+      },
+      (data) => {
+        delete data.configuration.defaults.font;
+      },
+      (data) => {
+        data.configuration.defaults.window.pop();
+      },
+      (data) => {
+        data.sound.legacyVolumeAliases.bgm = 3;
+      },
+      (data) => {
+        delete data.unreviewed['capabilities.steam'];
+      },
+      (data) => {
+        data.capabilities.steam = false;
+      },
+    ]) {
+      const invalid = structuredClone(abi);
+      mutate(invalid);
+      assert.throws(() => validateABI(invalid), /Invalid ABI/);
+    }
+    assert.equal(abi.capabilities.steam, null);
+    assert.equal(typeof abi.unreviewed['capabilities.steam'], 'string');
+    assert.equal(abi.tables.main.entries[0x350].status, 'unknown');
+  }
+});

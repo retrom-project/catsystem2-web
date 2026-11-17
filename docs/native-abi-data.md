@@ -8,7 +8,9 @@ These are the union of the registered engines' recovered declarations, not a
 list of functions enabled in every engine. Project descriptive names do not
 claim to recover the compiler's original symbols.
 
-The engine modules [2.6.1.74.mjs](../src/native/abi/2.6.1.74.mjs) and
+The engine modules [2.6.1.63.mjs](../src/native/abi/2.6.1.63.mjs),
+[2.6.1.67.mjs](../src/native/abi/2.6.1.67.mjs),
+[2.6.1.74.mjs](../src/native/abi/2.6.1.74.mjs) and
 [2.6.1.76.mjs](../src/native/abi/2.6.1.76.mjs) explicitly register their own slots,
 signature differences, observations and evidence. They also own their existing
 service behavior, capability, message, encoding and layout records. No engine is
@@ -16,12 +18,17 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.74 | 1009       | 817       | 82            | 19            | 91      | 45 / 44 / 51               |
+| 2.6.1.63 | 938        | 3         | 0             | 0             | 935     | 45 / 44 / 51 (unknown)     |
+| 2.6.1.67 | 938        | 3         | 0             | 0             | 935     | 45 / 44 / 51 (unknown)     |
+| 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
 
-All 2,344 registered slots remain represented. Auxiliary generic entries have
-their existing `recovered` status and particle entries their existing `declared`
-status. Neither status establishes that a native body is implemented.
+All 4,500 registered slots remain represented, including the unchanged 2,344
+SDK74/Game76 slots. The older registrations retain unknown auxiliary slots and
+unadmitted stub observations; their zero reserved/constant columns describe
+admission, not absence of native stubs. SDK74/Game76 auxiliary generic entries
+retain `recovered` and particle entries retain `declared`. Neither status
+establishes that a native body is implemented.
 
 ## Registration data
 
@@ -63,10 +70,11 @@ explicit registration differences, not rules inferred from engine age.
 
 ## Language keyboard capability
 
-`capabilities.windowLanguageAccelerators` is a mandatory boolean owned by each
-version registration: Game 2.6.1.76 explicitly enables its proved language
-keyboard producer, while SDK 2.6.1.74 explicitly disables it. Missing or
-nonboolean values fail ABI validation. NativeWindow reads this capability;
+A reviewed `capabilities.windowLanguageAccelerators` value is an explicit
+boolean: Game 2.6.1.76 enables its proved language keyboard producer, while SDK
+2.6.1.74 disables it. An unreviewed version records null plus a nonempty
+`unreviewed` reason, never a false default. Missing or malformed values fail ABI
+validation, and NativeWindow rejects an actual request for an unknown value;
 configuration language support, dynamic menus and legacy startup layout do
 not implicitly grant it. Unregistered profiles remain rejected. This covers
 core language input and derived checked notifications. The standalone Game
@@ -833,3 +841,70 @@ The explicit `NativeConfigurationMemory` adapter validates its own offsets,
 block mappings, scalar widths and read extent before touching process memory;
 an absent or partial physical descriptor fails there. These missing fields are
 not defaulted, and this separation registers no additional engine version.
+
+## Finite ordinary construction in 2.6.1.63 and 2.6.1.67
+
+Each older registration has its own narrow configuration dimensions, defaults,
+Root protocol, sound categories, complete FES common-head membership, startup
+verification policy and texture-cap policy. Their first ordinary service sequence
+is startup sound, textures, raw title and Root/Script. It does not infer global
+translation, M2 or unrelated native capabilities from a modern engine. Source
+version metadata selects a reviewed registration; it does not execute an EXE.
+
+Main359 copies all four actual configuration blocks, including a valid VM address
+zero, and has control2 with no VM result. Main465 returns the existing author word
+with control1. Main605 formats one CString and returns the existing flat sound
+gain, including the already-derived master/group percentage and mute words. These
+three entries are explicit; all other older slots remain unadmitted. In particular,
+0x181 retains four words rather than the modern five, and 0x358 retains seven
+words while remaining unknown. Table length, nearby IDs and stub observations
+never grant a semantic binding.
+
+The filename policy keeps the actual .63 wide pair predicate and .67 standard
+pair predicate. Directory extraction preserves pairs, while basename and extension
+scans inspect raw separator bytes. C-locale directory comparison folds individual
+ASCII bytes; filename lowering preserves the selected pairs, and stored prefix
+heads are compared without another lowercase pass. The existing native XML byte
+owner supplies narrow VOICE fields without CP932 alias re-encoding. Archive
+lowering uses the same per-version pair data. The admitted filename domain is a
+live NUL CString of at most 255 bytes, the proved C-locale branch and the captured
+extension-removal call; larger scratch, other locales and optional suffix behavior
+remain unsupported. Master mute precedes getter classification but cannot bypass
+the wrapper's scratch boundary.
+
+Both old FES common tables omit getsndconfex/setsndconfex. Their configuration
+pair may be constructed, but requesting either absent command fails. Raw rows
+without quotes do not consume an unknown quote policy. An empty macro dictionary
+does not consume unknown macro-literal policy. The proved calling Script bank
+supplies `$str`; global translation requests, nonempty unknown macro policy and
+unproved control-task policy still fail at their actual consumers. FES membership
+is separate from handler admission; this first path does not claim old OBJECT,
+text, motion or full game execution.
+
+Texture initialization requires its own known cap policy before querying a GPU
+or changing layout/configuration. Internal upload/clear dirtiness is independent
+of whether the native bounds-query API is admitted. Cold restore applies that
+same policy before replacing image assets or live pages. Ordinary sampler defaults
+consult M2 requirements only when that service is selected. SDK74/Game76 keep their
+existing M2 sampler behavior.
+
+The normal validator requires real construction fields. Explicit unknown fields
+have null values and documented reasons; `nativeABIBehavior` rejects their actual
+use. Physical layouts, table addresses and original engine support remain separate.
+Original query/menu enumeration includes only its own descriptors and rejects a
+missing descriptor before process access or allocation. The SDK74/Game76 physical
+oracle corpus is unchanged. Positive test corpora select their own admitted slots
+or captured receiver maps; registering an ABI does not make every test operation
+available.
+
+Shared implementation installers may encounter a known catalog operation beyond
+a reviewed engine's table length. `NativeRuntime.register` returns false for that
+absent slot and installs nothing, or true for a present slot. Bad table/ID/handler
+and duplicate present bindings still fail. Unknown and stub entries are not absent;
+their existing dispatch/status gates remain authoritative.
+
+The .63 startup code default is independently empty. The .67 default remains
+unknown; an actual missing APP/v_code fails rather than borrowing an SDK value.
+The tested owned inputs supply an explicit code. This finite ordinary coverage
+and cold ownership do not establish either commercial sample's full campaign or
+complete the remaining multi-version corpus.

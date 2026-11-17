@@ -12,7 +12,7 @@ import { nativeCatalog } from '../src/native/catalog.mjs';
 test('per-version ABI data covers every slot and preserves unresolved facts', () => {
   assert.deepEqual(
     Object.values(NATIVE_ABIS).map((abi) => abi.engineVersion),
-    ['2.6.1.74', '2.6.1.76'],
+    ['2.6.1.74', '2.6.1.76', '2.6.1.63', '2.6.1.67'],
   );
   let slots = 0;
   for (const abi of Object.values(NATIVE_ABIS)) {
@@ -24,7 +24,21 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
       assert.ok(definition.entries.every((entry, id) => entry.id === id));
     }
   }
-  assert.equal(slots, 2344);
+  assert.equal(slots, 4500);
+  assert.equal(
+    ['2.6.1.74', '2.6.1.76']
+      .flatMap((version) => Object.values(abiForEngineVersion(version).tables))
+      .reduce((total, table) => total + table.count, 0),
+    2344,
+  );
+  for (const version of ['2.6.1.63', '2.6.1.67']) {
+    const abi = abiForEngineVersion(version);
+    assert.equal(abi.tables.main.count, 938);
+    assert.equal(abi.tables.main.entries[0x181].signature.argumentWords, 4);
+    assert.equal(abi.tables.main.entries[0x181].status, 'unknown');
+    assert.equal(abi.tables.main.entries[0x358].signature.argumentWords, 7);
+    assert.equal(abi.tables.main.entries[0x358].status, 'unknown');
+  }
   const unknown = nativeABI('sdk-4.01-engine-2.6.1.74').tables.main.entries[0x52];
   assert.equal(unknown.name, null);
   assert.equal(unknown.signature.parameters, null);

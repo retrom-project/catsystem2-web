@@ -16,6 +16,7 @@ async function fixture(source) {
   const objects = new NativeObjects(),
     game = memoryGame({ 'screen.fes': new TextEncoder().encode(source) }),
     world = {
+      profile: 'nekopara-vol3-engine-2.6.1.76',
       objects,
       game,
       configuration: {

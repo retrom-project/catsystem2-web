@@ -7,7 +7,12 @@ import { nativeMathCases } from './fixtures/differential-cases.mjs';
 import { observeNativeCase } from './fixtures/native-differential.mjs';
 import { compareNativeObservations, compareFloatWord } from './fixtures/native-observations.mjs';
 
-for (const abi of Object.values(NATIVE_ABIS))
+// A normal ABI registration does not admit this independent arithmetic corpus.
+for (const abi of Object.values(NATIVE_ABIS).filter((item) =>
+  item.tables.generic.entries.some(
+    (entry) => entry.name === 'math.sin' && entry.status === 'recovered',
+  ),
+))
   test(`${abi.id} existing JS arithmetic executes authored GCALL scripts without an EXE host`, async () => {
     for (const fixture of nativeMathCases(abi.profile)) {
       const observation = await observeNativeCase(fixture);
@@ -114,5 +119,5 @@ test('floating tolerance is per word and cannot mask exact zero, infinity, integ
       }),
     /float range/,
   );
-  assert.equal(nativeABI(Object.keys(NATIVE_ABIS)[0]).floatingPoint.x87ControlWord, 0x7f);
+  assert.equal(nativeABI('sdk-4.01-engine-2.6.1.74').floatingPoint.x87ControlWord, 0x7f);
 });

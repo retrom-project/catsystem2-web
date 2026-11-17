@@ -25,6 +25,7 @@ async function drawPixels(world, id) {
 
 function fixture() {
   const world = {
+    profile: 'nekopara-vol3-engine-2.6.1.76',
     game: { width: 8, height: 6 },
     configuration: new NativeConfiguration({ profile: 'nekopara-vol3-engine-2.6.1.76' }),
     runtime: { handles: new NativeHandles(), register() {} },
