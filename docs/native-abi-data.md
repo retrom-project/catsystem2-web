@@ -16,12 +16,12 @@ signature differences, observations and evidence. They also own their existing
 service behavior, capability, message, encoding and layout records. No engine is
 selected or enabled by proximity to another version number.
 
-| Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
-| -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.63 | 938        | 58        | 0             | 0             | 880     | 45 / 44 / 51 unknown       |
-| 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered  |
-| 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51               |
-| 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51               |
+| Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2     |
+| -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------ |
+| 2.6.1.63 | 938        | 58        | 0             | 0             | 880     | 15 of 51 particle v2 recovered |
+| 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered      |
+| 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                   |
+| 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                   |
 
 All 4,500 registered slots remain represented, including the unchanged 2,344
 SDK74/Game76 slots. The older registrations retain unknown auxiliary slots and
@@ -1022,6 +1022,17 @@ input buffer returns zero. A NULL database leaves the import result unwritten.
 An owned Script waits for the close message, persists its banks and releases
 its typed handles. A fresh World restores the complete saved fixture before
 running its own close and produces the same bytes.
+
+## 2.6.1.63 title Particle
+
+The title emitter uses the v2 particle table. Own slots 1, 2, 6, 19, 34 and
+36 write scalar results. Slots 5, 25–28, 30, 31, 35 and 50 use control 2
+for dimensions, vertex and position operations, registers and blend state.
+The FES init, param and start commands use the owned kind 16 receiver.
+
+The normal particle host checks the active engine table on load and cold
+restore. The authored FES control reaches all fifteen selected calls, rejects
+an unknown v2 slot before mutation and restores the complete raw World state.
 
 ## 2.6.1.67 first-title entry and normal services
 

@@ -1005,7 +1005,7 @@ async function oldTitleWorld(
   const entries = {
       'startup.xml': bytes(
         '<?xml version="1.0" encoding="shift_jis"?><document><INT>' +
-          ['kcs:kcs', 'fes:fes', 'image:hg3', 'bgm:wav', 'mot:kcs']
+          ['kcs:kcs', 'fes:fes', 'image:hg3', 'bgm:wav', 'mot:kcs', 'ptcl:kcs']
             .map((entry, index) => {
               const [name, ext] = entry.split(':');
               return (
@@ -1589,6 +1589,103 @@ test('63 FES sound loads, plays and closes through its own Sound receiver', asyn
   );
   await world.tick(5);
   assert.equal(world.objects.objects.has(id), false);
+});
+
+test('63 title Particle FES runs selected native calls and restores its own bank', async (t) => {
+  t.mock.method(Date, 'now', () => Date.UTC(2026, 10, 17, 3, 4, 5));
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    code = kcsProgram([
+      ...title67Call(1, [], 512),
+      ...title67Call(2, [], 516),
+      ...title67Call(5, [520, 524]),
+      ...title67Call(19, [floatBits(90)], 528),
+      ...title67Call(6, [[0x13, 528]], 532),
+      ...title67Call(35, [640]),
+      ...title67Call(27, [floatBits(4), floatBits(-2), floatBits(3)]),
+      ...title67Call(28, [536, 540, 544]),
+      ...title67Call(30, [800]),
+      ...title67Call(25, [800, floatBits(5), floatBits(6), floatBits(7)]),
+      ...title67Call(26, [800, floatBits(2), floatBits(2), floatBits(2)]),
+      ...title67Call(31, [800]),
+      ...title67Call(34, [], 548),
+      ...title67Call(36, [], 552),
+      ...title67Call(50, [2]),
+      [59],
+    ]),
+    files = {
+      'specks.kcs': code,
+      'particle.fes': bytes(
+        '#DEFINE\nPARTICLE specks\n#START\nspecks init 0 specks no_texture 2 7\nspecks param 12 -3\nspecks start\nnext WAIT\n#WAIT\n',
+      ),
+    };
+  new DataView(code.buffer).setUint16(8, 2, true);
+  const source = await oldTitleWorld(files, undefined, profile);
+  let restored;
+  t.after(async () => {
+    for (const owner of [restored, source]) {
+      if (!owner) continue;
+      try {
+        await owner.world.close();
+        assert.equal(owner.world.particles.host.banks.size, 0);
+      } finally {
+        await owner.audio.dispose();
+      }
+    }
+  });
+
+  const { world } = source,
+    main = await world.initialize('empty.kcs');
+  world.runtime.variableBank(main).initialize(16);
+  const draw = await world.objects.create({ kind: 15, parent: main.id });
+  await world.sendEngine(draw, main.id, 279, 4, 3);
+  await world.sendEngine(draw, main.id, 283, 0, 0);
+  const owner = await world.objects.create({ kind: 34, parent: main.id }),
+    fes = world.objects.objects.get(owner).implementation;
+  await fes.initialize(main.context.variableBank);
+  await world.sendEngine(owner, main.id, 334, 0, world.nativeTaskID(draw));
+  assert.equal(await fes.loadSource('particle.fes'), true);
+  for (let step = 0; step < 4; step++) await world.tick();
+
+  const object = fes.player.root.objects.find((value) => value.nativeType === 23),
+    taskID = object.particleResource.taskID,
+    task = world.particles.get(taskID),
+    instance = task.bank.instance;
+  assert.equal(task.record.parent, owner);
+  assert.equal(task.bank.started, true);
+  assert.equal(instance.blendMode, 2);
+  assert.deepEqual([...instance.registers.subarray(0, 4)], [12, -3, 0, 0]);
+  assert.deepEqual(
+    [520, 524].map((address) => instance.machine.load(address)),
+    [instance.screenWidth, instance.screenHeight],
+  );
+  assert.equal(bitsFloat(instance.machine.load(532)), 1);
+  assert.equal(instance.machine.load(552), 1);
+  assert.deepEqual(
+    [536, 540, 544].map((address) => bitsFloat(instance.machine.load(address))),
+    [4, -2, 3],
+  );
+  assert.deepEqual(
+    [...instance.calls.keys()].sort((a, b) => a - b),
+    [1, 2, 5, 6, 19, 25, 26, 27, 28, 30, 31, 34, 35, 36, 50],
+  );
+  assert.throws(
+    () => instance.native(33, [], instance.machine),
+    /Unreviewed PTCL native .*particle-v2\/33/,
+  );
+  assert.throws(
+    () => instance.native(5, [520], instance.machine),
+    /GetScreenSize requires 2 arguments/,
+  );
+  assert.equal(instance.calls.has(33), false);
+
+  const snapshot = world.snapshot(0);
+  restored = await oldTitleWorld(files, undefined, profile);
+  await restored.world.restore(structuredClone(snapshot));
+  assert.equal(await checkpointDifference(restored.world.snapshot(0), snapshot), null);
+  const copy = restored.world.particles.get(taskID).bank.instance;
+  assert.throws(() => copy.native(33, [], copy.machine), /Unreviewed PTCL native/);
+  await world.close();
+  assert.equal(restored.world.particles.get(taskID).active, true);
 });
 
 test('67 first-title models use real FES services and restore without warm replay', async (t) => {

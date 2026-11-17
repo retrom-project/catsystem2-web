@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { KCSMachine, nativeReply, floatBits, bitsFloat, formatNative } from '../kcs.mjs';
+import { nativeABI } from '../native/abi/index.mjs';
 import { PTCL_ABI, initialParticle, readPTCLQuad, writePTCLQuad } from './abi.mjs';
 import { particleNativeContract } from './contracts.mjs';
 import { ParticleRandom } from './random.mjs';
@@ -33,6 +34,7 @@ const scalarMath = new Map([
 export class ParticleScriptInstance {
   constructor(script, options = {}) {
     const {
+      profile,
       count,
       width,
       height,
@@ -55,6 +57,10 @@ export class ParticleScriptInstance {
     for (const [key, value] of Object.entries({ width, height, screenWidth, screenHeight }))
       if (!Number.isFinite(value) || value < 0) throw new RangeError(`Invalid PTCL ${key}`);
     this.script = script;
+    this.profile = profile;
+    this.table = script.scriptVersion === 0x20000 ? 'particle-v2' : 'particle-v1';
+    this.nativeEntries =
+      profile === undefined ? null : nativeABI(profile).tables[this.table].entries;
     this.count = count;
     this.width = f(width);
     this.height = f(height);
@@ -133,10 +139,14 @@ export class ParticleScriptInstance {
     return this.attachPlane === -1 ? null : this.attachment(this.attachPlane);
   }
   native(id, args, machine) {
-    const contract = particleNativeContract(this.script.scriptVersion, id);
-    if (args.length !== contract.parameters.length)
+    const entry = this.nativeEntries?.[id];
+    if (this.nativeEntries && entry?.status !== 'declared' && entry?.status !== 'recovered')
+      throw new Error(`Unreviewed PTCL native ${this.profile}/${this.table}/${id}`);
+    const contract = entry ?? particleNativeContract(this.script.scriptVersion, id),
+      argumentWords = entry?.signature.argumentWords ?? contract.parameters.length;
+    if (args.length !== argumentWords)
       throw new Error(
-        `PTCL ${contract.name} requires ${contract.parameters.length} arguments, received ${args.length}`,
+        `PTCL ${contract.name} requires ${argumentWords} arguments, received ${args.length}`,
       );
     this.calls.set(id, (this.calls.get(id) || 0) + 1);
     const scalar = (value) => nativeReply(1, value >>> 0);

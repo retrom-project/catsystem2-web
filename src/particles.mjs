@@ -17,6 +17,7 @@ export class Particles {
       game,
       images,
       registry,
+      profile,
       random = new ParticleRandom(),
       fps = 60,
       attachment,
@@ -33,6 +34,7 @@ export class Particles {
     this.game = game;
     this.images = images;
     this.registry = registry;
+    this.profile = profile;
     this.random = random;
     this.fps = fps;
     this.attachment = attachment;
@@ -284,6 +286,7 @@ export class Particles {
       script.name = bank.program;
       bank.instance = new ParticleScriptInstance(script, {
         ...common,
+        profile: this.profile,
         screenBounds: this.scriptBounds,
       });
       bank.instance.stop();
@@ -622,6 +625,7 @@ export class Particles {
         const script = await readKCS(await this.game.require(bank.program));
         script.name = bank.program;
         bank.instance = new ParticleScriptInstance(script, {
+          profile: this.profile,
           count: bank.count,
           width: bank.width,
           height: bank.height,

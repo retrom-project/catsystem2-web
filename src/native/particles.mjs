@@ -33,6 +33,7 @@ export class NativeParticles {
         return graph && { id: handle, ...graph, disp: Number(graph.display) };
       },
       ...options,
+      profile: world.profile,
     });
   }
   get(id) {
