@@ -124,6 +124,7 @@ function system(configuration, extended) {
 }
 
 function objects(configuration, extended) {
+  const { count: voiceRows, volumeWord, muteWord } = configuration.voiceLayout;
   const keyRows = [];
   for (let row = 79; row >= 0; row--)
     if (configuration.keys.rows[row].enabled)
@@ -145,7 +146,7 @@ function objects(configuration, extended) {
   keyRows.push(leaf('enable_joypad', configuration.keys.enableJoypad));
   const message = [
     ...(extended ? [['enable_read_sel', 17]] : []),
-    ['wipe', 14],
+    ...(configuration.blocks[1].length > 56 ? [['wipe', 14]] : []),
     ['contskip', 13],
     ['skipspeed', 12],
     ['read_color', 11],
@@ -203,23 +204,29 @@ function objects(configuration, extended) {
     ),
     node('MESSAGE', words(configuration, 1, message)),
     node('VOICE', [
+      ...(muteWord === null
+        ? []
+        : words(configuration, 0, [
+            ['mute_play', muteWord + 4],
+            ['mute_voice', muteWord + 3],
+            ['mute_se', muteWord + 2],
+            ['mute_bgm', muteWord + 1],
+            ['mute_master', muteWord],
+          ])),
+      leaf('cont_voice', blockWord(configuration, 0, 4)),
+      ...Array.from({ length: voiceRows }, (_, i) => {
+        const row = voiceRows - 1 - i;
+        return leaf(
+          `play${two(row)}`,
+          blockWord(configuration, 0, configuration.voiceRecordByte(row) / 4),
+        );
+      }),
       ...words(configuration, 0, [
-        ['mute_play', 1406],
-        ['mute_voice', 1405],
-        ['mute_se', 1404],
-        ['mute_bgm', 1403],
-        ['mute_master', 1402],
-        ['cont_voice', 4],
-      ]),
-      ...Array.from({ length: 48 }, (_, i) =>
-        leaf(`play${two(47 - i)}`, blockWord(configuration, 0, 5 + (47 - i) * 29)),
-      ),
-      ...words(configuration, 0, [
-        ['vol_master', 1397],
-        ['vol_play', 1401],
-        ['vol_voice', 1400],
-        ['vol_se', 1399],
-        ['vol_bgm', 1398],
+        ['vol_master', volumeWord],
+        ['vol_play', volumeWord + 4],
+        ['vol_voice', volumeWord + 3],
+        ['vol_se', volumeWord + 2],
+        ['vol_bgm', volumeWord + 1],
       ]),
     ]),
     node('KEY', keyRows),

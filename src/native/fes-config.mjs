@@ -3,17 +3,19 @@ import { nativeABI } from './abi/index.mjs';
 // FES getconf/setconf: SDK 616610/617310, game 77CDB0/77DD20.
 // Global configuration and the Emote manager have distinct field namespaces.
 const legacyVolumeFields = ['vol_bgm', 'vol_se', 'vol_pcm'];
+const volumeFields = [
+  'vol_master',
+  'vol_bgm',
+  'vol_se',
+  'vol_voice',
+  'vol_play',
+  'mute_master',
+  'mute_bgm',
+  'mute_se',
+  'mute_voice',
+  'mute_play',
+];
 const blockFields = Object.freeze({
-  vol_master: [0, 1397],
-  vol_bgm: [0, 1398],
-  vol_se: [0, 1399],
-  vol_voice: [0, 1400],
-  vol_play: [0, 1401],
-  mute_master: [0, 1402],
-  mute_bgm: [0, 1403],
-  mute_se: [0, 1404],
-  mute_voice: [0, 1405],
-  mute_play: [0, 1406],
   messpd: [1, 0],
   autospd: [1, 1],
   autoind: [1, 2],
@@ -67,6 +69,7 @@ const gameFields = new Set([
   'enable_sceneanm',
 ]);
 export const FES_CONFIGURATION_FIELDS = Object.freeze([
+  ...volumeFields,
   ...Object.keys(blockFields),
   ...Object.keys(scalarFields),
   'play',
@@ -89,10 +92,20 @@ export class NativeFESConfiguration {
     Object.assign(this, { configuration, languages, isWindow, emit, changed, m2 });
   }
   recognized(name) {
+    const field = blockFields[name],
+      volume = volumeFields.indexOf(name);
     return (
       FES_CONFIGURATION_FIELDS.includes(name) &&
-      (this.abi.configuration.extendedPreferences || !gameFields.has(name))
+      (this.abi.configuration.extendedPreferences || !gameFields.has(name)) &&
+      (volume < 5 || this.configuration.voiceLayout.muteWord !== null) &&
+      (!field || field[1] * 4 < this.configuration.blocks[field[0]].length)
     );
+  }
+  blockField(name) {
+    const volume = volumeFields.indexOf(name),
+      { volumeWord, muteWord } = this.configuration.voiceLayout;
+    if (volume >= 0) return [0, volume < 5 ? volumeWord + volume : muteWord + volume - 5];
+    return blockFields[name];
   }
   get(name, ex1 = 0, ex2 = 0, { legacyVolume = false } = {}) {
     if (legacyVolume) {
@@ -104,7 +117,9 @@ export class NativeFESConfiguration {
     if (name === 'iswindow') return this.isWindow?.();
     if (name === 'play') {
       const index = ((ex1 | 0) + (ex2 | 0)) | 0;
-      return index < 0 || index >= 48 ? 0 : read(config.blocks[0], 5 + 29 * index);
+      return index < 0 || index >= config.voiceLayout.count
+        ? 0
+        : read(config.blocks[0], config.voiceRecordByte(index) / 4);
     }
     if (name === 'sysplay') {
       const index = ((ex1 | 0) + (ex2 | 0)) | 0;
@@ -120,15 +135,17 @@ export class NativeFESConfiguration {
       const shadow = config.getField('font.shadow');
       return new DataView(shadow.buffer).getUint32(shadow.byteOffset + index * 4, true);
     }
-    if (blockFields[name]) {
-      const [block, index] = blockFields[name];
+    const field = this.blockField(name);
+    if (field) {
+      const [block, index] = field;
       return read(config.blocks[block], index);
     }
     return config.getField(scalarFields[name]);
   }
   set(name, value, ex1 = 0, ex2 = 0, context = {}) {
     const config = this.configuration,
-      recognized = this.recognized(name) && name !== 'iswindow';
+      recognized = this.recognized(name) && name !== 'iswindow',
+      fieldBacking = recognized ? this.blockField(name) : undefined;
     let pending;
     if (recognized) {
       const word = value >>> 0;
@@ -148,7 +165,8 @@ export class NativeFESConfiguration {
         config.setField(scalarFields[name], text);
       } else if (name === 'play') {
         const index = ((ex1 | 0) + (ex2 | 0)) | 0;
-        if (index >= 0 && index < 48) write(config.blocks[0], 5 + 29 * index, word);
+        if (index >= 0 && index < config.voiceLayout.count)
+          write(config.blocks[0], config.voiceRecordByte(index) / 4, word);
       } else if (name === 'sysplay') {
         const index = ((ex1 | 0) + (ex2 | 0)) | 0;
         if (index >= 0 && index < 48) {
@@ -160,8 +178,8 @@ export class NativeFESConfiguration {
         const index = Math.min(2, ex1 | 0);
         const shadow = config.getField('font.shadow');
         new DataView(shadow.buffer).setUint32(shadow.byteOffset + index * 4, word, true);
-      } else if (blockFields[name]) {
-        const [block, index] = blockFields[name];
+      } else if (fieldBacking) {
+        const [block, index] = fieldBacking;
         write(config.blocks[block], index, word);
         if (name === 'autospd') {
           if (word >= 32)

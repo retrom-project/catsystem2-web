@@ -27,19 +27,10 @@ const integer = (root, path, fallback) => {
 };
 const numberName = (index) => String(index).padStart(2, '0');
 const presetDefaults = [5, 7, 7, 8, 8, 8, 12, 7, 15, 5, 16, 9, 17, 12, 21, 11, 25, 10, 29, 10];
+const volumeNames = ['master', 'bgm', 'se', 'voice', 'play'];
 
 const preferenceFields = [
-  [0, 5588 / 4, 'VOICE/vol_master'],
-  [0, 5592 / 4, 'VOICE/vol_bgm'],
-  [0, 5596 / 4, 'VOICE/vol_se'],
-  [0, 5600 / 4, 'VOICE/vol_voice'],
-  [0, 5604 / 4, 'VOICE/vol_play'],
   [0, 4, 'VOICE/cont_voice'],
-  [0, 5608 / 4, 'VOICE/mute_master'],
-  [0, 5612 / 4, 'VOICE/mute_bgm'],
-  [0, 5616 / 4, 'VOICE/mute_se'],
-  [0, 5620 / 4, 'VOICE/mute_voice'],
-  [0, 5624 / 4, 'VOICE/mute_play'],
   [1, 0, 'MESSAGE/speed'],
   [1, 1, 'MESSAGE/auto_p'],
   [1, 2, 'MESSAGE/ind'],
@@ -70,6 +61,22 @@ const preferenceFields = [
   [3, 1, 'GAME/enabledrag'],
   [3, 2, 'GAME/drawwnd'],
 ];
+
+function voiceLayout({ count, firstByte, stride, playWhenNamed }, blockSize) {
+  const volumeWord = (firstByte + count * stride) / 4;
+  // The name and archive fields keep their widths. Older records have a shorter head.
+  return Object.freeze({
+    count,
+    firstByte,
+    stride,
+    playWhenNamed,
+    headBytes: stride - 76,
+    groupByte: stride - 36,
+    archiveByte: stride - 32,
+    volumeWord,
+    muteWord: (volumeWord + 5) * 4 < blockSize ? volumeWord + 5 : null,
+  });
+}
 
 function mapped(machine, address) {
   try {
@@ -124,14 +131,16 @@ export class NativeConfiguration {
     const [voice, message, effect, window] = this.blocks,
       defaults = nativeABIBehavior(profile, 'configuration.defaults'),
       records = defaults.voiceRecords;
+    this.voiceLayout = voiceLayout(records, voice.length);
     set(voice, 4, defaults.contVoice);
     for (let i = 0; i < records.count; i++) {
-      const record = records.firstByte + records.stride * i;
+      const record = this.voiceRecordByte(i);
       set(voice, record / 4, records.enabled);
       set(voice, (record + 36) / 4, records.masterPercent);
-      set(voice, (record + 80) / 4, records.group);
+      set(voice, (record + this.voiceLayout.groupByte) / 4, records.group);
     }
-    for (let i = 0; i < 5; i++) set(voice, 1397 + i, defaults.rawVolumePercent);
+    for (let i = 0; i < volumeNames.length; i++)
+      set(voice, this.voiceLayout.volumeWord + i, defaults.rawVolumePercent);
     defaults.message.forEach((v, i) => set(message, i, v));
     defaults.effect.forEach((v, i) => set(effect, i, v));
     defaults.window.forEach((v, i) => set(window, i, v));
@@ -143,7 +152,8 @@ export class NativeConfiguration {
 
   applyStartup(root) {
     const [voice, message, , window] = this.blocks,
-      pairPolicy = nativeABIBehavior(this.profile, 'sound.filenamePolicy').pairs;
+      pairPolicy = nativeABIBehavior(this.profile, 'sound.filenamePolicy').pairs,
+      layout = this.voiceLayout;
     this.fields.applyStartup(root);
     this.soundOptions = {
       ...this.soundOptions,
@@ -191,20 +201,20 @@ export class NativeConfiguration {
       throw new Error(`Native auto-message preset outside recovered table: ${preset}`);
     set(message, 3, this.autoPresets[preset * 2]);
     set(message, 4, this.autoPresets[preset * 2 + 1]);
-    for (let i = 0; i < 48; i++) {
-      const record = 20 + 116 * i;
+    for (let i = 0; i < layout.count; i++) {
+      const record = this.voiceRecordByte(i),
+        groupWord = (record + layout.groupByte) / 4;
       const path = `VOICE/v${numberName(i)}`;
-      set(voice, record / 4, 1);
       set(
         voice,
         (record + 36) / 4,
         integer(root, `${path}/mastervol`, get(voice, (record + 36) / 4)),
       );
-      set(voice, (record + 80) / 4, integer(root, `${path}/group`, get(voice, (record + 80) / 4)));
+      set(voice, groupWord, integer(root, `${path}/group`, get(voice, groupWord)));
       for (const [name, offset, size] of [
         ['voice', 4, 32],
-        ['head', 40, 40],
-        ['int', 84, 32],
+        ['head', 40, layout.headBytes],
+        ['int', layout.archiveByte, 32],
       ]) {
         const node = root && findNativeXML(root, `${path}/${name}`);
         if (!node) continue;
@@ -215,21 +225,19 @@ export class NativeConfiguration {
         voice.set(bytes, record + offset);
         voice[record + offset + bytes.length] = 0;
       }
+      const enabled = layout.playWhenNamed && root ? Number(voice[record + 4] !== 0) : 1;
+      set(voice, record / 4, enabled);
       // The native lowercases the archive specification while skipping CP932 pairs.
-      for (let at = record + 84; at < record + 116 && voice[at]; at++) {
+      for (let at = record + layout.archiveByte; at < record + layout.stride && voice[at]; at++) {
         const b = voice[at];
         if (nativeDataPair(voice, at, pairPolicy)) at++;
         else if (b >= 65 && b <= 90) voice[at] += 32;
       }
     }
-    for (const [index, name] of [
-      [1397, 'master'],
-      [1398, 'bgm'],
-      [1399, 'se'],
-      [1400, 'voice'],
-      [1401, 'play'],
-    ])
-      set(voice, index, integer(root, `VOICE/vol/${name}`, get(voice, index)));
+    for (const [i, name] of volumeNames.entries()) {
+      const word = layout.volumeWord + i;
+      set(voice, word, integer(root, `VOICE/vol/${name}`, get(voice, word)));
+    }
     for (const [index, path] of [
       [9, 'GAME/log/limit'],
       [10, 'GAME/read/enable'],
@@ -257,20 +265,44 @@ export class NativeConfiguration {
       const bytes = this.blocks[block];
       if (word * 4 < bytes.length) set(bytes, word, integer(root, path, get(bytes, word)));
     }
-    for (let i = 0; i < 48; i++) {
-      const word = (20 + i * 116) / 4;
-      set(
-        this.blocks[0],
-        word,
-        integer(root, `VOICE/play${numberName(i)}`, get(this.blocks[0], word)),
-      );
+    const [voice] = this.blocks,
+      { count, volumeWord, muteWord } = this.voiceLayout;
+    for (const [i, name] of volumeNames.entries()) {
+      const volume = volumeWord + i;
+      set(voice, volume, integer(root, `VOICE/vol_${name}`, get(voice, volume)));
+      if (muteWord !== null) {
+        const mute = muteWord + i;
+        set(voice, mute, integer(root, `VOICE/mute_${name}`, get(voice, mute)));
+      }
+    }
+    for (let i = 0; i < count; i++) {
+      const word = this.voiceRecordByte(i) / 4;
+      set(voice, word, integer(root, `VOICE/play${numberName(i)}`, get(voice, word)));
     }
   }
 
   deriveVolumes() {
-    const voice = this.blocks[0];
+    const voice = this.blocks[0],
+      master = this.voiceLayout.volumeWord;
     for (let i = 0; i < 4; i++)
-      set(voice, i, Math.floor((Math.imul(get(voice, 1397), get(voice, 1398 + i)) >>> 0) / 100));
+      set(
+        voice,
+        i,
+        Math.floor((Math.imul(get(voice, master), get(voice, master + 1 + i)) >>> 0) / 100),
+      );
+  }
+
+  voiceRecordByte(index) {
+    return this.voiceLayout.firstByte + this.voiceLayout.stride * index;
+  }
+
+  voiceMuted(index) {
+    const { muteWord } = this.voiceLayout,
+      voice = this.blocks[0];
+    return (
+      muteWord !== null &&
+      Boolean(get(voice, muteWord) || (index !== undefined && get(voice, muteWord + 1 + index)))
+    );
   }
 
   copyTo(machine, addresses) {

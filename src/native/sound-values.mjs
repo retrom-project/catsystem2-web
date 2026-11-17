@@ -72,8 +72,9 @@ export function nativeSoundDecoderQuery({
   return Math.floor((Math.imul(1000, frames) >>> 0) / (sampleRate >>> 0)) >>> 0;
 }
 
-const fieldBytes = (voice, record, offset, capacity) => {
-  const bytes = voice.subarray(20 + record * 116 + offset, 20 + record * 116 + offset + capacity);
+const fieldBytes = (configuration, record, offset, capacity) => {
+  const start = configuration.voiceRecordByte(record) + offset,
+    bytes = configuration.blocks[0].subarray(start, start + capacity);
   const nul = bytes.indexOf(0);
   if (nul < 0) throw new Error('Unterminated native VOICE configuration field');
   return bytes.subarray(0, nul);
@@ -85,7 +86,7 @@ const sameFoldedBytes = (left, right) =>
 // 7130B0: archive/parent-directory classification precedes filename prefixes.
 // Unlike head, the configuration's int field is compared without case.
 export function nativeLegacySoundIndex(configuration, filename) {
-  const voice = configuration.blocks[0],
+  const { count, archiveByte, headBytes } = configuration.voiceLayout,
     source = encodeCP932(filename);
   let lastSeparator = 0;
   for (let at = 0; at < source.length; at++) {
@@ -107,12 +108,12 @@ export function nativeLegacySoundIndex(configuration, filename) {
         break;
       }
     }
-    for (let row = 0; row < 48; row++)
-      if (sameFoldedBytes(directory, fieldBytes(voice, row, 84, 32))) return row;
+    for (let row = 0; row < count; row++)
+      if (sameFoldedBytes(directory, fieldBytes(configuration, row, archiveByte, 32))) return row;
   }
   const name = encodeCP932(lowerSoundName(filename));
-  for (let row = 0; row < 48; row++) {
-    const prefix = fieldBytes(voice, row, 40, 40);
+  for (let row = 0; row < count; row++) {
+    const prefix = fieldBytes(configuration, row, 40, headBytes);
     if (
       prefix.length &&
       prefix.length <= name.length &&
@@ -127,13 +128,18 @@ export function nativeLegacySoundCategory(configuration, filename) {
   const row = nativeLegacySoundIndex(configuration, filename);
   return row < 0
     ? ''
-    : new TextDecoder('shift_jis').decode(fieldBytes(configuration.blocks[0], row, 84, 32));
+    : new TextDecoder('shift_jis').decode(
+        fieldBytes(configuration, row, configuration.voiceLayout.archiveByte, 32),
+      );
 }
 
 // 713220 classifies the directory first and the bare filename second. The
 // basename helper scans raw bytes, unlike the directory helper's CP932 walk.
 export function nativeLegacySoundGroup(configuration, filename) {
   const voice = configuration.blocks[0],
+    { count, archiveByte, headBytes, groupByte } = configuration.voiceLayout,
+    words = new DataView(voice.buffer, voice.byteOffset, voice.byteLength),
+    group = (row) => words.getInt32(configuration.voiceRecordByte(row) + groupByte, true),
     source = encodeCP932(filename);
   let separator = 0;
   for (let i = 0; i < source.length; i++) {
@@ -155,27 +161,21 @@ export function nativeLegacySoundGroup(configuration, filename) {
         break;
       }
     }
-    for (let row = 0; row < 48; row++)
-      if (sameFoldedBytes(directory, fieldBytes(voice, row, 84, 32)))
-        return new DataView(voice.buffer, voice.byteOffset, voice.byteLength).getInt32(
-          100 + row * 116,
-          true,
-        );
+    for (let row = 0; row < count; row++)
+      if (sameFoldedBytes(directory, fieldBytes(configuration, row, archiveByte, 32)))
+        return group(row);
   }
   separator = 0;
   for (let i = 0; i < source.length; i++) if (source[i] === 47 || source[i] === 92) separator = i;
   const name = source.subarray(separator ? separator + 1 : 0);
-  for (let row = 0; row < 48; row++) {
-    const prefix = fieldBytes(voice, row, 40, 40);
+  for (let row = 0; row < count; row++) {
+    const prefix = fieldBytes(configuration, row, 40, headBytes);
     if (
       prefix.length &&
       prefix.length <= name.length &&
       prefix.every((value, i) => value === foldByte(name[i]))
     )
-      return new DataView(voice.buffer, voice.byteOffset, voice.byteLength).getInt32(
-        100 + row * 116,
-        true,
-      );
+      return group(row);
   }
   return -1;
 }

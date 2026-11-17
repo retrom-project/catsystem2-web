@@ -320,11 +320,12 @@ export function installNativeMovies(world) {
     active: () =>
       world.host.nativeWindowActive ? world.host.nativeWindowActive(world) : world.input.foreground,
     audio: () => {
-      const b = world.configuration.blocks[0],
+      const config = world.configuration,
+        b = config.blocks[0],
         view = new DataView(b.buffer, b.byteOffset, b.byteLength);
       return {
         factor: view.getUint32(0, true),
-        mute: Boolean(view.getUint32(5608, true) || view.getUint32(5612, true)),
+        mute: config.voiceMuted(0),
       };
     },
     inputGate: async (owner, enabled) => {

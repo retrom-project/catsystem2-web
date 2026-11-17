@@ -25,15 +25,17 @@ export function textConfig(profile, mode, configuration, { fes = false } = {}) {
   set(at + 12, font.prop ? (font.fix ?? 0) : 1);
   set(at + 16, 60);
   set(at + 20, 0);
-  set(
-    0,
-    Number(
-      Boolean(
-        configuration?.blocks?.[1] &&
-          new DataView(configuration.blocks[1].buffer).getUint32(56, true),
+  const message = configuration?.blocks?.[1];
+  if (message?.byteLength >= 60)
+    set(
+      0,
+      Number(
+        Boolean(
+          new DataView(message.buffer, message.byteOffset, message.byteLength).getUint32(56, true),
+        ),
       ),
-    ),
-  );
+    );
+  else set(0, 0);
   return out;
 }
 export function textPacket(profile, mode, configuration) {

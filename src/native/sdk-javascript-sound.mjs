@@ -9,10 +9,10 @@ import { nativeCategoryFilename } from './resource-file.mjs';
 import { NativeSoundPacket } from './sound.mjs';
 
 const categories = new Map([
-  ['bgm', [0, 1403]],
-  ['se', [1, 1404]],
-  ['voice', [2, 1405]],
-  ['sysvoice', [2, 1405]],
+  ['bgm', 0],
+  ['se', 1],
+  ['voice', 2],
+  ['sysvoice', 2],
 ]);
 const cstring = (value) =>
   typeof value === 'string' && !value.includes('\0') && encodeCP932(value).length < 260;
@@ -102,10 +102,11 @@ export class SDKJavaScriptSounds {
     );
   }
   volume(category) {
-    const [index, mute] = categories.get(category),
-      bytes = this.world.configuration.blocks[0];
+    const index = categories.get(category),
+      config = this.world.configuration,
+      bytes = config.blocks[0];
     const voice = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-    if (voice.getUint32(1402 * 4, true) || voice.getUint32(mute * 4, true)) return 0;
+    if (config.voiceMuted(index)) return 0;
     // Producer 5C50E0 already multiplied master into words0..3. Consumer 545B00
     // still performs signed low32 IMUL and truncating division for object volume100.
     return Math.trunc(Math.imul(voice.getUint32(index * 4, true), 100) / 100) >>> 0;

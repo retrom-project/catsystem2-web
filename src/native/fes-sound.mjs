@@ -270,23 +270,19 @@ export class NativeFESSound {
     const tree = this.world.soundConfiguration;
     if (tree.loaded)
       return tree.get(system ? 'sysplay' : 'play', { by: 'filename', query: state.filename });
-    const row = nativeLegacySoundIndex(this.world.configuration, state.filename);
-    return row < 0 ? 0 : readWord(this.world.configuration.blocks[0], 20 + row * 116);
+    const config = this.world.configuration,
+      row = nativeLegacySoundIndex(config, state.filename);
+    return row < 0 ? 0 : readWord(config.blocks[0], config.voiceRecordByte(row));
   }
   oldVolume(category) {
-    const voice = this.world.configuration.blocks[0];
-    if (readWord(voice, 5608)) return 0;
-    const index = { bgm: 0, se: 1, voice: 2, sysvoice: 2 }[lowerSoundName(category)];
-    return index === undefined
-      ? 100
-      : readWord(voice, 5612 + index * 4)
-        ? 0
-        : readWord(voice, index * 4) | 0;
+    const config = this.world.configuration,
+      index = { bgm: 0, se: 1, voice: 2, sysvoice: 2 }[lowerSoundName(category)];
+    if (config.voiceMuted(index)) return 0;
+    return index === undefined ? 100 : readWord(config.blocks[0], index * 4) | 0;
   }
   oldMute(category) {
-    const voice = this.world.configuration.blocks[0],
-      index = { bgm: 0, se: 1, voice: 2, sysvoice: 2 }[lowerSoundName(category)];
-    return !!readWord(voice, 5608) || (index !== undefined && !!readWord(voice, 5612 + index * 4));
+    const index = { bgm: 0, se: 1, voice: 2, sysvoice: 2 }[lowerSoundName(category)];
+    return this.world.configuration.voiceMuted(index);
   }
   mixedVolume(state, onTemporary) {
     const tree = this.world.soundConfiguration;

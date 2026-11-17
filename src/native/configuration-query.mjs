@@ -29,21 +29,27 @@ function withoutExtension(bytes) {
   const dot = bytes.lastIndexOf(46);
   return dot > separator(bytes) ? bytes.subarray(0, dot) : bytes;
 }
-function directoryIndex(voice, path) {
+function voiceText(configuration, row, offset, length) {
+  const start = configuration.voiceRecordByte(row) + offset;
+  return nativeDataString(configuration.blocks[0].subarray(start, start + length));
+}
+function directoryIndex(configuration, path) {
   const directory = withoutExtension(path);
-  for (let i = 0; i < 48; i++)
-    if (equal(directory, nativeDataString(voice.subarray(104 + i * 116, 136 + i * 116)))) return i;
+  const { count, archiveByte } = configuration.voiceLayout;
+  for (let i = 0; i < count; i++)
+    if (equal(directory, voiceText(configuration, i, archiveByte, 32))) return i;
   return -1;
 }
-function legacyIndex(voice, filename) {
+function legacyIndex(configuration, filename) {
   const slash = separator(filename);
   if (slash > 0) {
-    const index = directoryIndex(voice, filename.subarray(0, slash));
+    const index = directoryIndex(configuration, filename.subarray(0, slash));
     if (index >= 0) return index;
   }
-  const name = lower(filename);
-  for (let i = 0; i < 48; i++) {
-    const head = nativeDataString(voice.subarray(60 + i * 116, 100 + i * 116));
+  const name = lower(filename),
+    { count, headBytes } = configuration.voiceLayout;
+  for (let i = 0; i < count; i++) {
+    const head = voiceText(configuration, i, 40, headBytes);
     if (head.length && head.length <= name.length && head.every((byte, at) => name[at] === byte))
       return i;
   }
@@ -64,7 +70,7 @@ function flatSoundGain(configuration, filename, policy) {
     throw new Error('Unreviewed flat sound filename exceeds its 255-byte CString domain');
   const voice = configuration.blocks[0],
     data = new DataView(voice.buffer, voice.byteOffset, voice.byteLength),
-    word = (index) => data.getUint32(index * 4, true),
+    { count, headBytes, groupByte } = configuration.voiceLayout,
     pair = (bytes, at) => nativeDataPair(bytes, at, policy.pairs),
     folded = (bytes) => {
       const result = bytes.slice();
@@ -81,7 +87,7 @@ function flatSoundGain(configuration, filename, policy) {
     },
     same = (a, b) => a.length === b.length && a.every((byte, i) => byte === b[i]);
   // The wrapper always formats into its fixed scratch before the getter's mute gate.
-  if (word(1402)) return 0;
+  if (configuration.voiceMuted()) return 0;
   folded(filename);
   let slash = 0,
     row = -1;
@@ -89,35 +95,31 @@ function flatSoundGain(configuration, filename, policy) {
     if (pair(filename, at)) at++;
     else if (filename[at] === 47 || filename[at] === 92) slash = at;
   }
-  if (slash) {
-    const directory = withoutExtension(filename.subarray(0, slash));
-    for (let i = 0; i < 48; i++) {
-      const name = nativeDataString(voice.subarray(104 + i * 116, 136 + i * 116));
-      if (equal(directory, name)) {
-        row = i;
-        break;
-      }
-    }
-  }
+  if (slash) row = directoryIndex(configuration, filename.subarray(0, slash));
   if (row < 0) {
     const last = separator(filename),
       name = folded(filename.subarray(last > 0 ? last + 1 : 0));
-    for (let i = 0; i < 48; i++) {
-      const head = nativeDataString(voice.subarray(60 + i * 116, 100 + i * 116));
+    for (let i = 0; i < count; i++) {
+      const head = voiceText(configuration, i, 40, headBytes);
       if (head.length && head.length <= name.length && same(head, name.subarray(0, head.length))) {
         row = i;
         break;
       }
     }
   }
-  const groupID = row < 0 ? -1 : word(25 + row * 29) | 0,
+  const groupID =
+      row < 0 ? -1 : data.getInt32(configuration.voiceRecordByte(row) + groupByte, true),
     group =
       groupID === -1 ? null : configuration.soundGroups.find((value) => (value.id | 0) === groupID);
   if (!group) return 100;
   const aliases = nativeABIBehavior(configuration.profile, 'sound.legacyVolumeAliases'),
     key = Object.keys(aliases).find((name) => equal(encodeCP932(group.type), encodeCP932(name))),
     bank = key === undefined ? undefined : aliases[key];
-  return bank === undefined ? 100 : word(1403 + bank) ? 0 : word(bank);
+  return bank === undefined
+    ? 100
+    : configuration.voiceMuted(bank)
+      ? 0
+      : data.getUint32(bank * 4, true);
 }
 
 function soundArchive(nodes, filename, encode) {
@@ -157,17 +159,21 @@ export function nativeConfigurationQuery(id, args, machine, services) {
   }
   const voice = configuration.blocks[0],
     words = new DataView(voice.buffer, voice.byteOffset, voice.byteLength),
-    word = (index) => words.getUint32(index * 4, true),
-    index = legacyIndex(voice, filename);
+    index = legacyIndex(configuration, filename),
+    { archiveByte, groupByte } = configuration.voiceLayout;
   if (id === 0x34c) return value(index);
   if (id === 0x25e || id === 0x25f)
-    return value(index < 0 ? 0 : word((id === 0x25e ? 5 : 14) + 29 * index));
+    return value(
+      index < 0
+        ? 0
+        : words.getUint32(configuration.voiceRecordByte(index) + (id === 0x25e ? 0 : 36), true),
+    );
   if (id === 0x25d) {
-    if (word(1402)) return value(0);
+    if (configuration.voiceMuted()) return value(0);
     const slash = separator(filename),
-      directory = slash > 0 ? directoryIndex(voice, filename.subarray(0, slash)) : -1,
-      row = directory >= 0 ? directory : legacyIndex(voice, filename.subarray(slash + 1)),
-      groupID = row < 0 ? -1 : word(25 + row * 29) | 0,
+      directory = slash > 0 ? directoryIndex(configuration, filename.subarray(0, slash)) : -1,
+      row = directory >= 0 ? directory : legacyIndex(configuration, filename.subarray(slash + 1)),
+      groupID = row < 0 ? -1 : words.getInt32(configuration.voiceRecordByte(row) + groupByte, true),
       group =
         groupID === -1
           ? null
@@ -177,7 +183,13 @@ export function nativeConfigurationQuery(id, args, machine, services) {
       aliases = nativeABIBehavior(configuration.profile, 'sound.legacyVolumeAliases'),
       key = Object.keys(aliases).find((name) => equal(type, encodeCP932(name))),
       bank = key === undefined ? undefined : aliases[key];
-    return value(bank === undefined ? 100 : word(1403 + bank) ? 0 : word(bank));
+    return value(
+      bank === undefined
+        ? 100
+        : configuration.voiceMuted(bank)
+          ? 0
+          : words.getUint32(bank * 4, true),
+    );
   }
   const category = nativeDataFormat(args, machine, services, 1);
   if (category === null) throw new Error('Native archive query reads an unmapped category format');
@@ -196,7 +208,7 @@ export function nativeConfigurationQuery(id, args, machine, services) {
       ? soundArchive(sound.parts, lower(filename), encode)
       : index < 0
         ? null
-        : nativeDataString(voice.subarray(104 + index * 116, 136 + index * 116));
+        : voiceText(configuration, index, archiveByte, 32);
     if (archive === null) return value(-1);
   }
   for (let i = 0; i < 128; i++)
