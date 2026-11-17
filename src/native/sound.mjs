@@ -465,9 +465,14 @@ export class NativeSoundTask {
     return bank >>> 0 < this.sound.bankCount;
   }
   loadLoopPointRecords(records) {
-    const strictOrder = this.sound.abi.sound.loopPointEndPolicy === 'strict-order';
+    const policy = this.sound.abi.sound.loopPointEndPolicy;
     for (const record of records) {
-      if (record.start >= record.end && (strictOrder || record.end !== -1n)) continue;
+      if (
+        policy !== 'allow-unordered' &&
+        record.start >= record.end &&
+        (policy === 'strict-order' || record.end !== -1n)
+      )
+        continue;
       const key = lowerSoundName(record.file),
         previous = this.loopPoints.get(key);
       if (previous) previous.start = record.start;
