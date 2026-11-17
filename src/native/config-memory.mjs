@@ -6,9 +6,61 @@ import { encodeNativeCP932 } from './cp932.mjs';
 
 export const NATIVE_CONFIGURATION_MEMORY_LAYOUTS = Object.freeze(
   Object.fromEntries(
-    Object.entries(NATIVE_ABIS).map(([profile, abi]) => [profile, abi.configuration.memory.layout]),
+    Object.entries(NATIVE_ABIS).flatMap(([profile, abi]) =>
+      abi.configuration.memory?.layout ? [[profile, abi.configuration.memory.layout]] : [],
+    ),
   ),
 );
+
+export function validateNativeConfigurationMemory(abi) {
+  const memory = abi?.configuration?.memory,
+    layout = memory?.layout,
+    offset = (value) => Number.isSafeInteger(value) && value >= 0 && value <= 0xffffffff,
+    fields = [
+      'settingsOffset',
+      'font',
+      'systemVoice',
+      'first',
+      'sizes',
+      'frameImage',
+      'authorMode',
+      'autoPresets',
+      'variableCount',
+      'variableRanges',
+      'alphaPercent',
+      'soundGroups',
+      'autoSelect',
+      'texture',
+      'log',
+      ...(abi?.configuration?.language ? ['languageVector'] : []),
+      ...(abi?.text?.settingsCharacterBytes === 2 ? ['optionTable'] : []),
+    ];
+  if (
+    !layout ||
+    fields.some((name) => !offset(layout[name])) ||
+    !offset(layout.pathBytes) ||
+    layout.pathBytes === 0 ||
+    !Array.isArray(layout.blocks) ||
+    layout.blocks.length !== 4 ||
+    layout.blocks.some((value) => !offset(value)) ||
+    !offset(memory.autoSelectBytes) ||
+    memory.autoSelectBytes === 0 ||
+    !Array.isArray(memory.scalarFields) ||
+    !memory.scalarFields.length ||
+    memory.scalarFields.some(
+      (field) =>
+        !Array.isArray(field) ||
+        field.length !== 3 ||
+        typeof field[0] !== 'string' ||
+        !field[0] ||
+        !offset(field[1]) ||
+        ![1, 2, 4].includes(field[2]) ||
+        field[1] + field[2] > 0x100000000,
+    )
+  )
+    throw new Error('Invalid native configuration memory descriptor');
+  return memory;
+}
 
 function scalarRuns(fields) {
   const runs = [];
@@ -36,22 +88,21 @@ function wideBytes(text) {
 
 export class NativeConfigurationMemory {
   constructor(process, configuration, { owner, settings } = {}) {
+    const abi = nativeABI(configuration?.profile),
+      memory = validateNativeConfigurationMemory(abi);
     this.process = process;
     this.configuration = configuration;
-    const abi = nativeABI(configuration?.profile);
     this.abi = abi;
-    this.layout = abi.configuration.memory.layout;
-    if (!this.layout)
-      throw new Error('Native settings memory requires a recovered configuration profile');
-    if (!Number.isInteger(owner) || owner <= 0)
+    this.layout = memory.layout;
+    if (!Number.isInteger(owner) || owner <= 0 || owner > 0xffffffff)
       throw new Error('Native settings memory requires the shared Engine owner address');
     this.owner = owner >>> 0;
     this.settings = (settings ?? this.owner + this.layout.settingsOffset) >>> 0;
     if (this.settings !== this.owner + this.layout.settingsOffset)
       throw new Error('Native Settings must alias the recovered interior Engine address');
-    this.scalarRuns = scalarRuns(abi.configuration.memory.scalarFields);
+    this.scalarRuns = scalarRuns(memory.scalarFields);
     // Confirm that the supplied owner covers the fields this codec owns.
-    process.read(this.owner + this.layout.autoSelect, abi.configuration.memory.autoSelectBytes);
+    process.read(this.owner + this.layout.autoSelect, memory.autoSelectBytes);
   }
   arrays() {
     const c = this.configuration,

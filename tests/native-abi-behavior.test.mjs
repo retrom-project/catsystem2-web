@@ -6,6 +6,44 @@ import { NATIVE_ABIS, nativeABI, validateABI } from '../src/native/abi/index.mjs
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { readEngineVersion, selectNativeProfile } from '../src/native/profile.mjs';
 
+for (const profile of Object.keys(NATIVE_ABIS)) {
+  test(`normal ABI configuration layout does not require original Engine addresses: ${profile}`, () => {
+    const abi = structuredClone(nativeABI(profile));
+    delete abi.configuration.memory;
+    delete abi.text.configurationLayout.ownerOffset;
+    assert.strictEqual(validateABI(abi), abi);
+    for (const change of [
+      (value) => {
+        delete value.text.configurationLayout.bytes;
+      },
+      (value) => {
+        value.text.configurationLayout.bytes += 4;
+      },
+      (value) => {
+        value.text.configurationLayout.keyStride = 1;
+      },
+      (value) => {
+        value.text.configurationLayout.fontBytes = 0;
+      },
+      (value) => {
+        value.text.configurationLayout.encoding = 'UTF-8';
+      },
+      (value) => {
+        value.configuration.blockSizes[0] = 4;
+      },
+      (value) => {
+        value.configuration.blockSizes[1]++;
+      },
+    ]) {
+      const invalid = structuredClone(abi);
+      change(invalid);
+      assert.throws(() => validateABI(invalid), /Invalid ABI behavior data/);
+    }
+    assert.equal(Object.hasOwn(abi.configuration, 'memory'), false);
+    assert.equal(Object.hasOwn(abi.text.configurationLayout, 'ownerOffset'), false);
+  });
+}
+
 function versionImage(version) {
   const bytes = new Uint8Array(1024),
     view = new DataView(bytes.buffer),

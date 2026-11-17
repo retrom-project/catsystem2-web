@@ -2410,7 +2410,7 @@
       {
         "kind": "identity",
         "file": "src/native/config-memory.mjs",
-        "line": 378,
+        "line": 429,
         "expression": "state.profile !== this.configuration.profile",
         "domain": 8
       },
@@ -49955,7 +49955,7 @@
     },
     {
       "file": "src/native/abi/index.mjs",
-      "sourceSha256": "48f516850ea996489c7b185a1488c897c27c25a8394c7baa40d3ff26f729e3de",
+      "sourceSha256": "db775cd6f03b40d8f048ecd7599b2b716cb335ec022dbe61f0d99578d11602a2",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },
@@ -50379,7 +50379,7 @@
     },
     {
       "file": "src/native/config-memory.mjs",
-      "sourceSha256": "681d4779a36e10860d1fc2687a8ff52ef1209e922c6021a88224b55ac34a761c",
+      "sourceSha256": "6948aec4a1321bd5b09cdeeeda63e670b03f7d28e93a5c2a05c35c3418253f09",
       "domain": 8,
       "role": "domain implementation/support",
       "exeDependencies": { "addresses": 0, "calls": 0, "references": 0 },

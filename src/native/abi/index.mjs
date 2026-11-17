@@ -90,7 +90,35 @@ export function abiForEngineVersion(version) {
   return abi;
 }
 
+function validateConfiguration(abi) {
+  const { text, configuration } = abi,
+    unit = text?.settingsCharacterBytes,
+    layout = text?.configurationLayout,
+    word = (value) => Number.isSafeInteger(value) && value >= 0 && value <= 0xffffffff,
+    minimumBlocks = [5628, 60, 28, 12];
+  if (
+    ![1, 2].includes(unit) ||
+    !layout ||
+    !['fontBytes', 'keyNameBytes', 'keyStride', 'bytes'].every(
+      (name) => word(layout[name]) && layout[name] > 0,
+    ) ||
+    layout.encoding !== (unit === 1 ? 'CP932' : 'UTF-16LE') ||
+    layout.fontBytes % unit !== 0 ||
+    layout.keyNameBytes % unit !== 0 ||
+    layout.keyStride % 4 !== 0 ||
+    layout.keyStride < (configuration?.keyHide ? 40 : 36) ||
+    layout.bytes !== layout.fontBytes * 2 + 24 + 80 * layout.keyNameBytes + 80 * layout.keyStride ||
+    !Array.isArray(configuration?.blockSizes) ||
+    configuration.blockSizes.length !== 4 ||
+    configuration.blockSizes.some(
+      (size, index) => !word(size) || size % 4 !== 0 || size < minimumBlocks[index],
+    )
+  )
+    throw new Error(`Invalid ABI behavior data ${abi.id}: canonical configuration layout`);
+}
+
 function validateBehavior(abi) {
+  validateConfiguration(abi);
   const {
     text,
     configuration,
@@ -107,14 +135,8 @@ function validateBehavior(abi) {
   if (
     ![1, 2].includes(text?.settingsCharacterBytes) ||
     !Number.isSafeInteger(text?.pathBytes) ||
-    !text?.configurationLayout ||
     !text?.fesLayouts ||
     !Array.isArray(text?.layoutModes) ||
-    !Array.isArray(configuration?.blockSizes) ||
-    configuration.blockSizes.length !== 4 ||
-    configuration.blockSizes.some((size) => !Number.isSafeInteger(size) || size <= 0) ||
-    !configuration?.memory?.layout ||
-    !Array.isArray(configuration?.memory?.scalarFields) ||
     !Array.isArray(sound?.missingIdPathFields) ||
     !Number.isSafeInteger(sound?.controlBytes) ||
     !['bytes', 'text'].includes(language?.storage) ||

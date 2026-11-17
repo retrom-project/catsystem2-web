@@ -814,3 +814,13 @@ two original message-layout descriptors remain owned by the explicit original
 task bridge and its physical verifiers. An original task dump rejects a missing
 physical descriptor before accessing the process, installing traps or allocating
 memory. This separation adds no engine version or native-slot admission.
+
+Normal configuration requires its four word-aligned block sizes and the actual
+font/key byte layout: character width, encoding, field widths, record stride and
+complete backing size. ABI validation checks the canonical owner's geometry.
+`text.configurationLayout.ownerOffset` and `configuration.memory` describe the
+original Engine allocation and are not prerequisites for that normal owner.
+The explicit `NativeConfigurationMemory` adapter validates its own offsets,
+block mappings, scalar widths and read extent before touching process memory;
+an absent or partial physical descriptor fails there. These missing fields are
+not defaulted, and this separation registers no additional engine version.

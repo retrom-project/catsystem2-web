@@ -5,7 +5,9 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import {
   NativeConfigurationMemory,
   NATIVE_CONFIGURATION_MEMORY_LAYOUTS,
+  validateNativeConfigurationMemory,
 } from '../src/native/config-memory.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
 import { parseXML } from '../src/xml.mjs';
 
 class Memory {
@@ -44,6 +46,52 @@ class Memory {
   }
 }
 const profiles = Object.keys(NATIVE_CONFIGURATION_MEMORY_LAYOUTS);
+test('original configuration memory rejects missing or malformed physical descriptors', () => {
+  for (const profile of profiles) {
+    const abi = nativeABI(profile);
+    assert.strictEqual(validateNativeConfigurationMemory(abi), abi.configuration.memory);
+    for (const change of [
+      (value) => {
+        delete value.configuration.memory;
+      },
+      (value) => {
+        delete value.configuration.memory.layout.font;
+      },
+      (value) => {
+        value.configuration.memory.layout.blocks.pop();
+      },
+      (value) => {
+        value.configuration.memory.layout.frameImage = -1;
+      },
+      (value) => {
+        delete value.configuration.memory.autoSelectBytes;
+      },
+      (value) => {
+        value.configuration.memory.scalarFields = [];
+      },
+      (value) => {
+        value.configuration.memory.scalarFields[0][2] = 3;
+      },
+    ]) {
+      const invalid = structuredClone(abi);
+      change(invalid);
+      assert.throws(
+        () => validateNativeConfigurationMemory(invalid),
+        /native configuration memory descriptor/,
+      );
+    }
+    const configuration = new NativeConfiguration({ profile }),
+      unread = {
+        read() {
+          assert.fail('Invalid original owner reached process memory');
+        },
+      };
+    assert.throws(
+      () => new NativeConfigurationMemory(unread, configuration, { owner: 0x100000001 }),
+      /shared Engine owner address/,
+    );
+  }
+});
 test('both native settings retain their original two-target allocation limit', () => {
   for (const profile of profiles) {
     const configuration = new NativeConfiguration({ profile }),
