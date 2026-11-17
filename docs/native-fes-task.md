@@ -1281,3 +1281,9 @@ missing child retains its existing no-recipient result.
 Other ordinary Script-message producers already receive the engine packet's
 native sender, use an explicit lifecycle sentinel, or forward an authored raw
 four-word message. Those words are not remapped at the scheduler or VM boundary.
+
+The Game toolbar's Settings action also uses this Script-message route with
+code 23. In the reviewed Game program this selects the game's real `config`
+FES and language controls. It is separate from native window command 40027,
+which opens the engine's configuration property sheet. The window command and
+its browser service retain their existing behavior.

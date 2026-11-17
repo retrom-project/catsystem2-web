@@ -178,9 +178,9 @@ for (const field of ['ui', 'main', 'sub'])
   };
 $('next').onclick = () => enqueue(() => engine.advance()).catch(() => {});
 $('settings').onclick = () =>
-  enqueue(() =>
-    engine.world ? engine.world.window.post(0x46c, 0, 20) : engine.openModal('config'),
-  ).catch(() => {});
+  enqueue(() => (engine.world ? engine.host.systemAction(23) : engine.openModal('config'))).catch(
+    () => {},
+  );
 $('backlog').onclick = () =>
   enqueue(() =>
     engine.world

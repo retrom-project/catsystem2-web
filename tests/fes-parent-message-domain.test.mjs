@@ -257,7 +257,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
         words = (script) => Array.from({ length: 4 }, (_, i) => script.machine.load(240 + i * 4));
       assert.notEqual(id, nativeID);
       assert.notEqual(child.id, world.nativeTaskID(child.id));
-      for (const action of [15, 21, 22]) {
+      for (const action of [15, 21, 22, 23]) {
         const reply = await host.systemAction(action);
         assert.deepEqual(words(parent), [nativeID, 0xffff0003, 0, action]);
         assert.equal(reply, 1);
