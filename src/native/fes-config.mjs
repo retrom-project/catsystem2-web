@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from './abi/index.mjs';
-// FES getconf/setconf: SDK 616610/617310, game 77CDB0/77DD20.
-// Global configuration and the Emote manager have distinct field namespaces.
+// FES getconf and setconf resolve fields in the global configuration or the Emote manager.
 const legacyVolumeFields = ['vol_bgm', 'vol_se', 'vol_pcm'];
 const volumeFields = [
   'vol_master',

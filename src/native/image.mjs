@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalView } from './original-adapter.mjs';
-// Native bitmap fields and CPU operations: 68BE00, 68C760, 68D450, 68D9E0.
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
 import { NativeBitmapFactories } from './bitmap-factory.mjs';
 import { nativeABI } from './abi/index.mjs';
@@ -192,7 +191,7 @@ export class NativeBitmap {
     return new NativeBitmap(this.registry, state, { owner: this.owner });
   }
   async crop(left, top, width, height) {
-    // 68EB30 / 68BA90 copy raw bitmap pixels and reset canvas/anchor/clip
+    // Copy raw bitmap pixels and reset canvas, anchor and clip
     // metadata. The source clip rectangle does not limit the copy.
     if (left < 0 || top < 0)
       throw new RangeError('Native bitmap crop starts before the source bitmap');
@@ -269,7 +268,7 @@ export class NativeBitmap {
       flipY = false,
     } = {},
   ) {
-    // 6879D0 clips source and destination independently, then limits both to
+    // Clip source and destination independently, then limit both to
     // the smaller extent. A negative destination does not advance the source.
     const sr = intersect([sx, sy, sx + width, sy + height], [0, 0, source.width, source.height]);
     const dr = intersect([dx, dy, dx + width, dy + height], [0, 0, this.width, this.height]);

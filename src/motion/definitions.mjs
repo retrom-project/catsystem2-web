@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// FES SUBCOMMAND types and coercion recovered from native 75B020/769940,
-// numeric helpers 76AA10/76AB10 and the fixed SDK motion.h interface.
+// FES SUBCOMMAND types and numeric coercion use the SDK motion.h interface.
 import { MOTION_ABI, motionVector } from './abi.mjs';
 import { degreeToRadian } from '../ppi/numeric.mjs';
 

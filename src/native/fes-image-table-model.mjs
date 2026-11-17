@@ -18,7 +18,7 @@ const selectorsRequired = (selectors, minimum, exact = false) => {
     throw new TypeError('FES image table requires its complete integer selector array');
 };
 
-// 727AB0/7282E0, CSV mode0 and constructor keepNewlines=false. This is not RFC CSV.
+// FES CSV mode 0 reads records without retaining their newlines.
 export function parseFESImageCSV(bytes) {
   const rows = [];
   let at = 0;
@@ -67,7 +67,7 @@ export function parseFESImageCSV(bytes) {
   return rows;
 }
 
-// 6A5F70 drops empty tokens, protects valid CP932 pairs, and treats quotes literally.
+// The field splitter drops empty tokens, preserves CP932 pairs and treats quotes literally.
 function splitBytes(bytes, delimiter) {
   bytes = nativeDataString(bytes);
   const result = [];
@@ -180,7 +180,7 @@ function readTree(bytes) {
       at = next;
     }
     for (const offset of held) active.delete(offset);
-    // 726A80 prepends each wire node to its parent's first-child link.
+    // The loader prepends each wire node to its parent's child list.
     return nodes.reverse();
   };
   return readSiblings(0);
@@ -267,7 +267,7 @@ export class FESImageTable {
         ...this.baseOption,
         ...reference.subarray(comma),
       ]);
-    // 6A59B0 is byte-blind, including a CP932 trail byte equal to ASCII '@'.
+    // The marker scan compares bytes, including a CP932 trail byte equal to ASCII '@'.
     return reference.map((byte) => (byte === 64 ? 48 : byte));
   }
   max(selectors) {

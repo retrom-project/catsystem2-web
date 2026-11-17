@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original CPU affine pipeline: 8742A0 / 7482E0 / 874680 / 874BD0.
 // Matrices use signed 15-bit fixed point; each native multiply has its own shift.
 import { blendBitmapPixel } from './image.mjs';
 

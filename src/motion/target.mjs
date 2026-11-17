@@ -38,7 +38,7 @@ export class MotionTarget {
     this.writeState(this.manager.update(frame, false, afterHandle));
     this.lastFrame = frame;
     this.lastHandle = this.manager.nextHandle - 1;
-    // 748930 retires the entire driver only when its last active script exits.
+    // Retire the driver when its last active script exits.
     if (!this.manager.busy()) this.manager.clear();
     return true;
   }
@@ -50,7 +50,7 @@ export class MotionTarget {
     this.writeState(this.manager.finish(group));
   }
   stop(frame) {
-    // 76BD50: mark all scripts skipped, update once, then remove all records.
+    // Mark all scripts skipped, update once, then remove all records.
     this.manager.skip();
     if (this.manager.records.size) this.writeState(this.manager.update(frame));
     this.manager.clear();

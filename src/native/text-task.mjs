@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// String tasks 48 / 63: game 634D00 / 6359F0; SDK 50BE90.
+// String task kinds 48 and 63.
 // Task messages here use the World's canonical game numbering. SDK wrappers
 // translate their independently recovered message numbers at the boundary.
 import { nativeABI } from './abi/index.mjs';

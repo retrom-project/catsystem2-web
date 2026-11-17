@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MPL-2.0
-// FES getsndconfex/setsndconfex: game 783630/783FD0, SDK 61C6B0/61D050.
 // Tokens have already passed the FES string and language substitutions.
 import { nativeABI, nativeABIBehavior, nativeFESCommonHead } from './abi/index.mjs';
 import { tokenizeFESLine, tokenizeFESByteLine } from '../fes/tokens.mjs';

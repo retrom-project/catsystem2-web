@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Main-table MOT manager wrappers 658A40..659710, 658B60 and 6592F0.
+// The main native table exposes the motion manager wrappers.
 // These IDs are separate from the generic native table inside each MOT script.
 import { nativeReply, bitsFloat } from '../kcs.mjs';
 import { initialMotionObject } from '../motion/abi.mjs';
@@ -98,7 +98,7 @@ function getState(manager, working, args, machine) {
   const state = working ? manager.working : manager.base;
   for (const [index, offset, length] of transfer) {
     if (working && index === 9) {
-      // 658D80 tests the translated host pointer, not the VM address. Zero is
+      // This mode needs a mapped host pointer. Zero is
       // a valid guest data address; an unmapped VM pointer translates to NULL.
       try {
         machine.region(args[index], length);

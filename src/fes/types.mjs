@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Frozen FES definition table: game76 B071CC, entries are {u32 type, char name[32]}.
+// FES definition entries contain a u32 type and a 32-byte name.
 export const FES_OBJECT_TYPES = Object.freeze({
   CIMAGE: 1,
   IMAGE: 2,

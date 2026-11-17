@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MPL-2.0
-// Original layout handlers 60D280 (2.6.1.74) / 771730 (2.6.1.76).
 // These records describe layout; glyph rasterization is a separate service.
 import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';

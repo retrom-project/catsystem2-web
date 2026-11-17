@@ -291,7 +291,7 @@ export class CGGallery {
 }
 
 // cgreg_init destroys the previous per-instance registry and reads the current
-// global-file entry again (77B0F1..77B11C), even for the same file/list.
+// global-file entry again, even for the same file and list.
 export class GalleryLibrary {
   constructor({ read, readEntry, writeEntry, diagnostic }) {
     Object.assign(this, { read, readEntry, writeEntry, diagnostic });

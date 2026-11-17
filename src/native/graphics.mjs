@@ -4,7 +4,7 @@ import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicsDevice } from './graphics-device.mjs';
 import { nativeEngineWord } from './engine-message.mjs';
 // Native task graphics own graph state; construction alone does not load a
-// graph. Message contracts come from 5DF010/5E0920 and renderer graph setters.
+// graph. Message handlers update loaded graphs through the renderer setters.
 import { Stage } from '../stage.mjs';
 import { MOTION_ABI, initialMotionObject, motionVector, setMotionVector } from '../motion/abi.mjs';
 import { applyObjectMotionState } from '../motion/target.mjs';
@@ -510,7 +510,7 @@ export class NativeGraphicTask {
     this.world = graphics.world;
     this.record = record;
     this.base = this.world.base(record);
-    // Base plane 5DECC0 and simple plane 5DF7A0 constructor values.
+    // Initial BasePlane and SimplePlane state.
     this.state = {
       receiver: -1,
       changed: 0,
@@ -1089,7 +1089,7 @@ export class NativeGraphicTask {
         this.sync();
         return 0;
       case 66:
-        // Base66 passes selector0 to 6774E0 regardless of the incoming wParam.
+        // BasePlane message 66 loads the scale vector with selector zero.
         if (this.graph) {
           setMotionVector(this.graph.kx2, MOTION_ABI.scale, floats(l, 3));
           this.markBoundsDirty();

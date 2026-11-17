@@ -200,7 +200,7 @@ export class NativeSoundConfiguration {
     const apply = (node, path) => {
       const at = [...path, node.key];
       for (const field of mutable) {
-        // 719C60 uses the sysplay default for a missing mute field.
+        // A missing mute field uses the sysplay default.
         node.current[field] = integer(
           root,
           [...at, field],
@@ -352,7 +352,7 @@ export class NativeSoundConfiguration {
   }
 }
 
-// 71EF80/5CFB50 read this root leaf with an empty-string default. The
+// The startup setting defaults to an empty filename. The
 // original game tree and the user's mutable tree use the same filename,
 // respectively in the resource directory and the user's save directory.
 export function nativeSoundConfigurationFilename(startup) {
@@ -375,7 +375,7 @@ export function serializeNativeSoundPreferences(configuration) {
     }
     at.text = String(value | 0);
   };
-  // 71A3F0/5CB230 call the XML setters in this order. Nodes are inserted
+  // The writer calls the XML setters in this order. Nodes are inserted
   // at the front; repeated paths replace their value without moving them.
   const write = (record, path) => {
     const at = [...path, record.key];

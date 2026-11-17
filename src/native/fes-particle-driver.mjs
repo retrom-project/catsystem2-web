@@ -195,8 +195,7 @@ export class FESParticleDriver {
       throw new Error('FES particle checkpoint has no live owned kind16 task');
   }
   close(object) {
-    // Original 62DEF6 checks the unused entry+80, while the child lives at +72.
-    // Ordinary FES deletion therefore leaves this child owned by the FES task.
+    // FES deletion checks unused entry offset +80. The child at +72 stays with the FES task.
     if (object.particleResource) object.particleResource.detached = true;
   }
 }

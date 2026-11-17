@@ -107,7 +107,7 @@ export class SDKJavaScriptSounds {
       bytes = config.blocks[0];
     const voice = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
     if (config.voiceMuted(index)) return 0;
-    // Producer 5C50E0 already multiplied master into words0..3. Consumer 545B00
+    // The effective volume words 0 through 3 already include master volume. The reader
     // still performs signed low32 IMUL and truncating division for object volume100.
     return Math.trunc(Math.imul(voice.getUint32(index * 4, true), 100) / 100) >>> 0;
   }

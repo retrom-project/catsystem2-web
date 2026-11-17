@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
 // HG-2 versions 0x10/0x20/0x25 and the native global-file bitmap codec.
-// Fixed engine decoder 6A0750 and writer 6A0600/6A0DE0.
 import { Binary, inflate } from '../binary.mjs';
 import { packHGPixels, unpackHGPixels } from './hg-codec.mjs';
 const dimensions = (width, height) => {

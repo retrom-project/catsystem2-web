@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { NATIVE_ABIS } from '../native/abi/index.mjs';
-// Native 78A2F0/78A420 record format. This guest-visible checkpoint rebuilds
+// This guest-visible checkpoint rebuilds
 // scripts from registers/extra data; emulator checkpoints also retain VM heaps.
 import { MOTION_ABI } from './abi.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';

@@ -137,8 +137,8 @@ export function createNativeFESTask(world, record) {
     async loadSource(name) {
       if (!this.player)
         throw new Error('Native FES source loading requires message 331 initialization');
-      // The original reader reports a failed file callback to 62C480/332;
-      // the task then records -2. Empty and missing files are valid failures.
+      // A failed file callback reaches the FES task as message 332.
+      // The task records -2 for empty and missing files.
       const resolved = world.game.resolveCategory
         ? world.game.resolveCategory(name, 'fes')
         : /\.fes$/i.test(name)
@@ -240,7 +240,7 @@ export function createNativeFESTask(world, record) {
       world.host.nativeFESLoaded?.(record, this.player, world);
     },
     async closeInterpreter() {
-      // 755F10 unregisters its private variable context before object storage
+      // Unregister the private variable context before object storage
       // and the FES image cache are released.
       this.variableBank()?.unregisterContext(this.variableContextKey());
       for (const instance of this.player?.instances || []) {
@@ -430,8 +430,8 @@ export function createNativeFESTask(world, record) {
           world.objects.machine(context.nativeSenderWorldID ?? words[0]);
         if (!memory || typeof memory.bytes !== 'function')
           throw new Error('FES local-bank transfer requires sender byte memory');
-        // 758840/7587E0 do not select their interpreter. They copy the bank's
-        // currently selected context, unlike the scalar 757BB0/757BE0 calls.
+        // Bulk transfers use the bank's currently selected context. Scalar accesses
+        // select the interpreter context explicitly.
         const words = this.variableBank()?.privateWords;
         if (!words && (message === 343 || wParam >>> 0))
           throw new Error('Native FES bulk local transfer dereferences an absent private context');

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Exact SetRenderState/SetTextureStageState/SetSamplerState call lists recovered
-// by executing original 671DF0 in the fixed 2.6.1.76 image. The first dimension
+// from the fixed engine 2.6.1.76. The first dimension
 // is the renderer depth/stencil switch, the second is its native draw type.
 // Blend cache updates precede these profiles and are independent of draw type.
 import { PARTICLE_BLEND_FACTORS } from './abi.mjs';

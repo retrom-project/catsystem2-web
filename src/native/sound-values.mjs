@@ -26,7 +26,7 @@ export function nativeSoundPanGains(value) {
   return db >= 0 ? [10 ** (-db / 2000), 1] : [1, 10 ** (db / 2000)];
 }
 
-// 5D1CD0 maps a pan value to a position when a DirectSound3DBuffer exists.
+// Pan controls the position of an available DirectSound3DBuffer.
 export function nativeSoundPanPosition(value) {
   const normalized = f(nativeSoundPan(value) * f(0.01));
   const angle = f(Math.acos(Math.max(-1, Math.min(1, normalized))));
@@ -35,7 +35,7 @@ export function nativeSoundPanPosition(value) {
   return [f(f(sine * 0) + cosine), 0, f(f(cosine * 0) - sine)];
 }
 
-// 5D1E50 stores XYZ even without a 3D buffer, then derives ordinary pan from XZ.
+// Store XYZ even without a 3D buffer. Derive ordinary pan from X and Z.
 export function nativeSoundPositionPan(x, z) {
   const angle = f(Math.atan2(f(x), f(z)));
   return nativeSoundPan(cvtt(f(f(Math.sin(angle)) * 100)));
@@ -83,7 +83,7 @@ const foldByte = (value) => (value >= 65 && value <= 90 ? value + 32 : value);
 const sameFoldedBytes = (left, right) =>
   left.length === right.length && left.every((value, i) => foldByte(value) === foldByte(right[i]));
 
-// 7130B0: archive/parent-directory classification precedes filename prefixes.
+// Legacy sound classification tries the archive or parent directory before filename prefixes.
 // Unlike head, the configuration's int field is compared without case.
 export function nativeLegacySoundIndex(configuration, filename) {
   const { count, archiveByte, headBytes } = configuration.voiceLayout,
@@ -133,8 +133,8 @@ export function nativeLegacySoundCategory(configuration, filename) {
       );
 }
 
-// 713220 classifies the directory first and the bare filename second. The
-// basename helper scans raw bytes, unlike the directory helper's CP932 walk.
+// Classify the directory before the bare filename. The
+// basename scan uses raw bytes. The directory scan respects CP932 pairs.
 export function nativeLegacySoundGroup(configuration, filename) {
   const voice = configuration.blocks[0],
     { count, archiveByte, headBytes, groupByte } = configuration.voiceLayout,
@@ -180,7 +180,7 @@ export function nativeLegacySoundGroup(configuration, filename) {
   return -1;
 }
 
-// 5D00F0 measures mean absolute differences between successive PCM frames.
+// Measure average absolute differences between successive PCM frames.
 // It is a high-frequency activity measure, not absolute amplitude or RMS.
 export function nativePCMLevel(bytes, channels, bitsPerSample) {
   if (![8, 16].includes(bitsPerSample) || ![1, 2].includes(channels)) return 0;

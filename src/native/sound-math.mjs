@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// DirectSound's hundredths-of-decibel value, recovered from game 5D1F70.
+// DirectSound volume uses hundredths of a decibel.
 export function nativeSoundDecibels(volume, factor = 100, minimum = -10000, maximum = 0) {
   const percent = Math.floor((Math.imul(volume, factor) >>> 0) / 100);
   let value;

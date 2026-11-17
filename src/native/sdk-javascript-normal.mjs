@@ -264,7 +264,7 @@ export class NormalSDKJavaScriptTask {
       machine,
       machine.call('GameLoop', [frame >>> 0], (...args) => this.host(...args)),
     );
-    // Native 50FA7F still runs this object phase after this callback's cfExit.
+    // The object phase still runs after the callback's cfExit.
     if (!this.closed) {
       await this.planes.tick(frame >>> 0);
       await this.images.tick(this.link, frame >>> 0);

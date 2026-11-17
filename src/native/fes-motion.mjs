@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Built-in FES handlers at their 7488D0/5E8EF0 motion-manager boundary.
+// Built-in FES motion commands send requests to the motion manager.
 import { degreeToRadian } from '../ppi/numeric.mjs';
 import { MOTION_ABI } from '../motion/abi.mjs';
 

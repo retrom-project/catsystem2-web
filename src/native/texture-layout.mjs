@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Graphics constructor 678B60 and kc2DTextureManager 680280/680980.
+// Texture page layout and retained pixel storage.
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
 // The shared virtual D3D9 platform exposes this guard band for its captured limit.
 export function virtualD3DGuardBand(maximum) {
@@ -78,7 +78,7 @@ export function nativeTexturePage(layout, index) {
 export function convertNativeTexturePixels(rgba, bpp) {
   if (bpp === 32) return rgba;
   if (bpp !== 16) throw new Error(`Unsupported native texture depth ${bpp}`);
-  // 688C60 / 5615B0 packs the high nibble of B,G,R,A into A4R4G4B4.
+  // Pack the high nibbles from B, G, R and A into A4R4G4B4.
   // Sampling that normalized texture expands each 4-bit channel to n/15.
   for (let i = 0; i < rgba.length; i++) rgba[i] = (rgba[i] >>> 4) * 17;
   return rgba;
@@ -115,7 +115,7 @@ export class NativeTexturePages {
       [columns, rows] = layout.grid;
     if (!Number.isSafeInteger(columns * rows) || columns * rows > 0x1fffffff)
       throw new RangeError('Native texture page table overflows');
-    // 680980 allocates 16-bit rows first, then configured-depth rows. Existing
+    // Allocate 16-bit rows before configured-depth rows. Existing
     // textures retain both their pixels and format when areas/depths change.
     for (const lower of [true, false])
       for (const area of layout.areas) {

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalFeature, originalView } from './original-adapter.mjs';
-// Drawing task constructor/message entry: game 5F3C00/5F3F50.
 import { truncateFloat32 } from '../ppi/numeric.mjs';
 import { mapABIMessage } from './abi/messages.mjs';
 import { nativeABIBehavior } from './abi/index.mjs';

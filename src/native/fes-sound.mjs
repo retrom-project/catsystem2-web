@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MPL-2.0
-// Sound object 74C550/74C700..74CDB0 and FES driver 662B50; SDK 532540.
 // The adapter sends the native task protocol and shares its hardware banks.
 import { mapABIMessage } from './abi/messages.mjs';
 import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
@@ -305,7 +304,7 @@ export class NativeFESSound {
     if (state.group)
       volume = percent(volume, tree.get('volume', { by: 'key', query: state.group }));
     volume = percent(volume, tree.get('volume', { by: 'filename', query: state.filename }));
-    // 662FD1 aliases the later playback-eligibility local with this temporary.
+    // The playback eligibility check reuses this temporary volume.
     onTemporary?.(volume);
     if (tree.get('mute', { by: 'filename', query: state.filename })) volume = 0;
     return percent(state.get('volume'), volume);
@@ -313,7 +312,7 @@ export class NativeFESSound {
   async configurationChanged(instance, object, live) {
     if (!live()) return;
     const state = this.state(instance, object);
-    // FES MSG19: 7487A0 marks the object dirty; it does not reset its MOT.
+    // FES message 19 marks the object dirty and preserves its motion state.
     state.set('dirty', 1);
     if (state.get('systemVoice')) return;
     const eligible = state.get('forcePlay') | this.playFlag(state);
@@ -325,7 +324,7 @@ export class NativeFESSound {
       return;
     }
     if (!live()) return;
-    if (!busy || !eligible) state.set('pendingPlay', 1); // 74C740
+    if (!busy || !eligible) state.set('pendingPlay', 1);
   }
   async destructionRequested(instance, object) {
     const bank = this.state(instance, object).get('bank');
@@ -551,7 +550,7 @@ export class NativeFESSound {
         return frames;
       }
       case 'enable':
-        // 76AEA0 only accepts types 6/13/14/15; sound types 9/10 are ignored.
+        // Enable applies to types 6, 13, 14 and 15. Sound types 9 and 10 ignore it.
         return;
       case 'delay':
         state.set('motionDelay', value(0));
@@ -575,8 +574,8 @@ export class NativeFESSound {
         }
         return;
       case 'getdiv':
-        // 777950/6119C0 write the FES numeric local bank through
-        // 757BB0/5F5D40. Only NVSTRING objects supply a nonzero division.
+        // Getdiv writes the FES numeric local bank.
+        // Only NVSTRING objects supply a nonzero division.
         instance.setLocal(0, 0);
         return;
       case 'delete':

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MPL-2.0
-// Graph transforms/projection: native 682610, 682830, 67DBD0, 67DDD0.
 import { identity, multiply, scaling, transform, rotation } from '../motion/matrix.mjs';
 import { multiplyNativeMatrix, transformNativeVector } from '../ppi/native-projection-math.mjs';
 import { roundX87Single } from '../ppi/x87.mjs';

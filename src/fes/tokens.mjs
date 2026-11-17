@@ -36,7 +36,7 @@ export function fesNarrowText(token = '') {
   return token instanceof Uint8Array ? decoder.decode(fesSourceBytes(token)) : String(token);
 }
 
-// 6A5DD0/767550 preserve parenthesized expressions as a single token. The
+// Parenthesized expressions stay in a single token. The
 // colon forms remove their delimiters; ordinary quotes retain two NUL bytes
 // in the temporary token list, which can terminate subsequent token lookup.
 export function tokenizeFESByteLine(line, { quoted = false } = {}) {

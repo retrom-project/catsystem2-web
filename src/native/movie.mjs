@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalOwner, originalFeature } from './original-adapter.mjs';
-// Movie wrappers 655170..655600 / 521590..5219E0. DirectShow is a host boundary.
+// Movie wrappers delegate playback to the host.
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';

@@ -190,7 +190,7 @@ export class SDKJavaScriptPlanes extends SDKJavaScriptMotions {
     const value = request.motion,
       plane = this.world.runtime.handles.get(value.plane, 'javascript-plane');
     this.child(plane, true);
-    // 5397B4..C1: update first, then sample current/delta, all before source I/O.
+    // Update the plane, then sample current and delta before starting source I/O.
     await this.update(
       plane,
       ((this.owner.effectiveFrame ?? 0) - (this.owner.pausedFrames ?? 0)) >>> 0,

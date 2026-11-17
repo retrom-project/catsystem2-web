@@ -4,7 +4,7 @@ import { readEffekseerEffect } from './effect-reader.mjs';
 import { EFFEKSEER_LEVEL0_PROFILE, effekseerLevel0Profile } from './texture-level0.mjs';
 import { decodeEffekseerTexture, isEffekseerTextureProfile } from './texture-decoder.mjs';
 
-// 6A7600 remembers separator index zero as its initial sentinel as well.
+// Filename splitting uses separator index zero as its initial sentinel.
 export function effekseerTextureBasename(path) {
   let last = 0;
   for (let i = 0; i < path.length; i++) if (path[i] === '/' || path[i] === '\\') last = i;

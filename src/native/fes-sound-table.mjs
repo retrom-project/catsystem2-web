@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Game 761CE0..7624C0; SDK 5FDC40..5FE420. Entries are 36-byte native records.
+// Sound table entries use 36-byte native records.
 import { encodeCP932 } from '../kcs/strings.mjs';
 
 export class NativeFESSoundTable {
@@ -129,7 +129,7 @@ export class NativeFESSoundTable {
   }
   selectID(id) {
     const position = this.state.order?.indexOf(id | 0) ?? -1;
-    // 7622F7 falls back to position zero if the requested ID was not found.
+    // Use position zero when the requested ID is absent.
     this.selectPosition(position === -1 ? 0 : position);
   }
   getID() {

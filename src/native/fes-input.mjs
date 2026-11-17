@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: MPL-2.0
-// Native FES input/task mapping: 628D60, 629E00, 62C480, 65C750.
 // Each FES BUTTON owns a real base-plane task; the low button is independent.
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
@@ -101,7 +100,7 @@ export class FESInput {
         this.world.objects.objects.get(this.record.id) === this.record;
     if (!live()) return;
     const input = this.input;
-    // 62D9A0 queries 152 (outside-window), then 125 (virtual coordinates).
+    // Input message 152 checks whether the pointer is outside. Message 125 reads coordinates.
     const outside = await input.message(152);
     if (!live()) return;
     if (!Number.isInteger(outside))

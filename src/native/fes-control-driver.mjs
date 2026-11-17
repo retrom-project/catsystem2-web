@@ -257,10 +257,10 @@ export class FESControlDriver {
     if (object.valuePending) {
       const value = object.value | 0,
         notify = object.valueNotify | 0;
-      if (type === 13) object.valuePending = false; // 74D3C0, before reentrant FES27.
+      if (type === 13) object.valuePending = false; // Clear before reentrant FES message 27.
       object.valueNotify = 0; // All notify getters consume before the send.
       await this.send(instance, object, type === 13 ? 357 : type === 14 ? 371 : 363, notify, value);
-      if (type !== 13) object.valuePending = false; // 74DA50/74E130, after FES27.
+      if (type !== 13) object.valuePending = false; // Clear after FES message 27 returns.
     }
     if (type !== 13 && object.alphaPending) {
       const alpha = object.alpha;

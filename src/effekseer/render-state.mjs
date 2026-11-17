@@ -161,8 +161,7 @@ export function initializeInstance(node, rng, initialContext) {
       fail('ribbon.color', `unimplemented type ${parameter.type}`);
     state.sampled = sampledColor(parameter, rng);
     if (kind === 'ribbon' && parameter.type === 'easing') {
-      // Original 7DE8C0 stores endpoints at+184/+188 but leaves current+180
-      // untouched. Never synthesize a zero/stale pooled/current color here.
+      // The easing loader sets endpoints at +184/+188 and leaves the color at +180 untouched.
       state.ready = false;
       state.pendingReason = 'ribbon-easing-awaits-CalculateMatrix';
       return state;

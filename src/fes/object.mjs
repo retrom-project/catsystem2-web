@@ -185,7 +185,7 @@ export function objectCommand(s, o, sub, args, context = {}) {
     return nativeResult(player.nativeSound.command(s, o, sub, args, context));
   }
   args = args.map(fesNarrowText);
-  // Built-in object commands precede SUBCOMMAND lookup in native 769940.
+  // Built-in object commands precede SUBCOMMAND lookup.
   // These names have no built-in handler; they are defined by motion.h (or
   // another application header), so their exact KCS program must be executed.
   const declaration = !FES_BUILTIN_VERBS.has(sub) && s.program?.subcommands?.[sub],
@@ -208,7 +208,7 @@ export function objectCommand(s, o, sub, args, context = {}) {
     const registers = motionRegisters(definition, args, target.state(), (expression, current) =>
       s.value(expression, current),
     );
-    // Both declarations follow the same header path in frozen 75B020; the
+    // Both declarations follow the same header path. The
     // declaration's group field remains zero. The KCS script controls exit.
     return target.add(definition.file, { registers, group: 0, delay: o.motionDelay >>> 0 });
   }
