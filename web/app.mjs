@@ -202,10 +202,20 @@ $('backlog').onclick = () =>
   ).catch(() => {});
 $('quick-save').onclick = () => enqueue(() => engine.host.quickSave()).catch(() => {});
 $('quick-load').onclick = () => enqueue(() => engine.host.quickLoad()).catch(() => {});
-$('fullscreen').onclick = () => {
-  if (document.fullscreenElement) document.exitFullscreen().catch(fail);
-  else $('stage').requestFullscreen().catch(fail);
-};
+for (const id of ['fullscreen', 'exit-fullscreen']) {
+  const control = $(id);
+  control.addEventListener('keydown', (event) => event.stopPropagation());
+  control.onclick = async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await $('stage').requestFullscreen();
+      const focus = document.fullscreenElement || running ? canvas : $('fullscreen');
+      focus.focus({ preventScroll: true });
+    } catch (error) {
+      fail(error);
+    }
+  };
+}
 document.addEventListener('fullscreenchange', () => engine?.nativeWindowStateChanged());
 $('export').onclick = () =>
   enqueue(async () => {

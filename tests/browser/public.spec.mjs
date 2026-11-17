@@ -577,6 +577,24 @@ test('native persistent files retain metadata and namespaces, keep mounted sourc
   expect(result.length).toBe(29);
 });
 
+test('the game stage exposes a keyboard-accessible fullscreen exit', async ({ page }) => {
+  await page.goto('/');
+  const enter = page.getByRole('button', { name: 'Fullscreen', exact: true }),
+    exit = page.locator('#exit-fullscreen');
+  await expect(exit).toBeHidden();
+  await enter.focus();
+  await page.keyboard.press('Enter');
+  await expect(exit).toBeVisible();
+  expect(await page.evaluate(() => document.fullscreenElement?.id)).toBe('stage');
+  await expect(page.locator('#screen')).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(exit).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(exit).toBeHidden();
+  expect(await page.evaluate(() => document.fullscreenElement)).toBeNull();
+  await expect(enter).toBeFocused();
+});
+
 test('browser window services apply native preferences, manage real save files, confirm exit and release the complete engine', async ({
   page,
 }) => {

@@ -60,6 +60,16 @@ main {
   background: #000;
   overflow: hidden;
 }
+#exit-fullscreen {
+  display: none;
+  position: absolute;
+  inset-block-start: 1rem;
+  inset-inline-end: 1rem;
+  z-index: 1;
+}
+#stage:fullscreen #exit-fullscreen {
+  display: block;
+}
 canvas,
 video {
   display: block;
