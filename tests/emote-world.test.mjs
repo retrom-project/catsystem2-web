@@ -10,7 +10,11 @@ import { loadDefaultFES } from './fixtures/default-fes-world.mjs';
 import { NativeSoundPacket } from '../src/native/sound.mjs';
 import { floatBits } from '../src/kcs/vm.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';
-import { emoteM2Cases, emoteM2SequenceFiles } from './fixtures/emote-m2-sequences.mjs';
+import {
+  emoteM2Cases,
+  emoteM2SequenceFiles,
+  emoteM2ActionFiles,
+} from './fixtures/emote-m2-sequences.mjs';
 
 const golden = JSON.parse(
   await readFile(new URL('./fixtures/emote-m2-golden.json', import.meta.url)),
@@ -124,6 +128,75 @@ test('native bitmap capture composes before readback without presenting or stepp
       world.stageRenderer = null;
       await world.close({ flushFiles: false });
     }
+  }
+});
+
+test('M2 action native returns its initialized word without borrowing action text', async () => {
+  const files = emoteM2ActionFiles();
+  files['action.kcs'] = kcsProgram([
+    [37, 0x12345678],
+    [37, [0x13, 64]],
+    [37, [0x13, 68]],
+    [43, 1027, 8],
+    [38, [0x13, 72]],
+    [59],
+  ]);
+  const world = await make({ files });
+  let fresh;
+  try {
+    await world.initialize('main.kcs');
+    const id = await world.objects.create({ kind: 54, parent: world.root, nativeID: 0x4f700001 }),
+      target = world.graphics.get(id),
+      main = world.main,
+      run = async (nativeID, text) => {
+        const task = await world.spawnScript('action.kcs', { parent: main.id }),
+          machine = task.machine,
+          sp = machine.sp;
+        machine.store(64, nativeID);
+        machine.store(68, 128);
+        machine.writeString(text, 128);
+        machine.store(72, 0x87654321);
+        await world.runtime.scheduler.execute(task);
+        assert.equal(machine.halted, true);
+        assert.equal(
+          machine.load(72),
+          0,
+          'Own output slot is zero; dispatch return is not a VM result',
+        );
+        assert.equal(machine.pop(), 0x12345678);
+        assert.equal(machine.sp, sp);
+        machine.writeString('$changed', 128);
+        return task;
+      };
+    main.machine.writeString('aa01,1,1,1,1,1,1:0', 128);
+    await world.runtime.native('main', 906, [0x4f700001, 128, 0], main.machine, main);
+    assert.notEqual(id, world.nativeTaskID(id));
+    const frame = world.frame;
+    await run(0x4f700001, 'sample');
+    assert.equal(target.model.external.actions.name, 'sample');
+    assert.equal(target.model.external.actions.index, 0);
+    assert.equal(target.model.external.actions.base.has('v0'), true);
+    assert.equal(world.frame, frame);
+    const empty = await world.objects.create({ kind: 54, parent: world.root });
+    await run(world.nativeTaskID(empty), 'sample');
+    await run(0, 'sample');
+    assert.equal(target.model.external.actions.name, 'sample');
+    const saved = world.snapshot();
+    fresh = await make({ files });
+    let replay = 0;
+    const native = fresh.runtime.native;
+    fresh.runtime.native = function (...args) {
+      replay++;
+      return native.apply(this, args);
+    };
+    await fresh.restore(saved);
+    assert.deepEqual(fresh.snapshot(), saved);
+    assert.equal(replay, 0);
+    await world.close({ flushFiles: false });
+    assert.equal(fresh.graphics.get(id).model.external.actions.name, 'sample');
+  } finally {
+    await fresh?.close({ flushFiles: false });
+    await world.close({ flushFiles: false });
   }
 });
 

@@ -72,9 +72,11 @@ export async function emoteNative(owner, id, args, machine, task) {
     return id === 909 ? value(nativeEngineWord(result, 'M2 busy query')) : done();
   }
   if (strings.has(id)) {
-    const packet = textPacket(format()),
-      result = await send(strings.get(id), [906, 917].includes(id) ? a(2) : 0, 64, packet);
-    return id === 1027 ? value(result ?? 0) : done();
+    const packet = textPacket(format());
+    await send(strings.get(id), [906, 917].includes(id) ? a(2) : 0, 64, packet);
+    // Main1027 initializes its output word to zero. Message551 starts the
+    // action without writing that output slot.
+    return id === 1027 ? value(0) : done();
   }
   if ([911, 912, 914, 915].includes(id)) {
     const named = id === 912 || id === 915,

@@ -38,6 +38,12 @@ render target, depth attachment, viewport, clip and shared GPU bindings, includi
 when composition rejects; readback preserves separate draw/read framebuffer bindings.
 Normal rendering retains its default presentation and recording behavior.
 
+Main1027 copies the formatted action name into the existing M2 action service
+and returns its explicitly initialized zero VM word. Message551 starts the action
+without writing the wrapper's result slot. The action retains its own string value
+when the Script buffer changes, and cold restore preserves that state without
+replaying the command. Missing models leave the initialized result unchanged.
+
 The original FES command functions for m2eff/m2att/m2fspeed/m2prmscale/m2iner,
 m2enable_blink/lip, m2splay and m2draw are no-ops in this ABI. The JS driver
 preserves them. Active load/body/color and m2enable_eff paths use task messages.
