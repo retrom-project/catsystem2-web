@@ -180,6 +180,29 @@ test('2.6.1.23 MOT exit clears only the active word and yields without a stack r
   assert.deepEqual([...motion.calls], [[38, 1]]);
 });
 
+test('2.6.1.23 MOT rounding writes the floor of the float32 value plus one half', () => {
+  const profile = 'grisaia-jp-engine-2.6.1.23';
+  for (const [input, expected] of [
+    [-1.5, -1],
+    [-0.5, 0],
+    [0, 0],
+    [0.5, 1],
+    [127.5, 128],
+    [255, 255],
+  ]) {
+    const script = program([[37, floatBits(input)], [43, 17, 4], [38, [3, shared(0)]], [59]]);
+    const motion = new MotionInstance(script, { profile });
+    assert.equal(motion.update(0).status, 'halted');
+    assert.equal(motion.view.getInt32(0, true), expected);
+    assert.equal(motion.machine.sp, motion.machine.floor);
+    assert.deepEqual([...motion.calls], [[17, 1]]);
+  }
+  assert.throws(
+    () => new MotionInstance(program([[43, 17, 0], [59]]), { profile }).update(0),
+    /expects 1 arguments, got 0/,
+  );
+});
+
 function changePosition(operation, value, name) {
   return program(
     [

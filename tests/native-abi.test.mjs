@@ -48,8 +48,9 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
   assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 816);
   assert.deepEqual(
     base.generic.entries.filter(({ status }) => status === 'recovered').map(({ id }) => id),
-    [38, 41],
+    [17, 38, 41],
   );
+  assert.equal(base.generic.entries[17].signature.resultWritten, true);
   assert.equal(base.generic.entries[38].signature.resultWritten, false);
   assert.equal(base.generic.entries[41].signature.resultWritten, true);
   for (const table of [base['particle-v1'], base['particle-v2']])

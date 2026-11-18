@@ -227,8 +227,8 @@ export default {
       'Own 2.6.1.23 startup KCS calls, task receivers and compact Settings blocks',
     ),
     generic: {
-      ...tables(45, [38, 41], 'Own 2.6.1.23 MOT handlers and fixed-base logo motion calls'),
-      signatures: [{ ids: [41], fields: { resultWritten: true } }],
+      ...tables(45, [17, 38, 41], 'Own 2.6.1.23 MOT handlers and fixed-base logo motion calls'),
+      signatures: [{ ids: [17, 41], fields: { resultWritten: true } }],
     },
     'particle-v1': tables(44),
     'particle-v2': tables(51),

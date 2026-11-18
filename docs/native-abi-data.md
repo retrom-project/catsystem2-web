@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2             |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------------------- |
-| 2.6.1.23 | 869        | 53        | 0             | 0             | 816     | 2 of 45 generic recovered              |
+| 2.6.1.23 | 869        | 53        | 0             | 0             | 816     | 3 of 45 generic recovered              |
 | 2.6.1.63 | 938        | 62        | 0             | 0             | 876     | 3 generic and 15 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered              |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                           |
@@ -53,13 +53,16 @@ upper limit. A full range can reuse the first bank pending release. The
 configuration layout and bounded voice operations are documented with the
 [configuration queries](native-configuration-queries.md#26123-compact-configuration).
 
-The fixed-base logo motions use the engine's own Generic 38 and 41. Generic 38
-clears the motion owner's active word, at byte 148 of the guest shared block,
-and yields with control 4 and no stack result. Generic 41 reads five float32
-words in order (output minimum, output maximum, input minimum, input maximum,
-and value), writes a clamped interpolation result, and continues with control 1.
-The JS motion VM uses the existing exit and interpolation implementations. Its
-tests cover the authored finite fade range, both endpoints, and signed zero.
+The fixed-base logo motions use the engine's own Generic 17, 38, and 41.
+Generic 17 takes one float32 word, adds `0.5` at float32 precision, floors the
+sum, writes the integer result, and continues with control 1. The engine's
+rounding handler and its data constant establish the half-step behavior.
+Generic 38 clears the motion owner's active word at byte 148 of the guest shared
+block and yields with control 4 and no stack result. Generic 41 reads five
+float32 words in order (output minimum, output maximum, input minimum, input
+maximum, and value), writes a clamped interpolation result, and continues with
+control 1. The JS motion VM uses the shared implementations. Its tests cover
+the finite fade range, both endpoints, signed zero, and the rounding ties.
 
 ## Registration data
 
