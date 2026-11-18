@@ -4,6 +4,7 @@ import { realpath, stat, readFile } from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { resolve, sep, extname } from 'node:path';
+import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
 import { nativeEntryGraph } from './check-native-entry.mjs';
 import { walk, NodeFile } from './node-files.mjs';
@@ -150,6 +151,7 @@ const server = createServer(async (request, response) => {
       'Cache-Control': 'no-store',
       'Accept-Ranges': 'bytes',
     };
+    let streamRange;
     if (range) {
       const match = /^bytes=(\d+)-(\d*)$/.exec(range);
       if (match && !match[2]) match[2] = String(info.size - 1);
@@ -160,21 +162,22 @@ const server = createServer(async (request, response) => {
       }
       const start = +match[1],
         end = +match[2];
+      streamRange = { start, end };
       response.writeHead(206, {
         ...headers,
         'Content-Length': end - start + 1,
         'Content-Range': `bytes ${start}-${end}/${info.size}`,
       });
-      if (request.method === 'HEAD') response.end();
-      else createReadStream(path, { start, end }).pipe(response);
-    } else {
-      response.writeHead(200, { ...headers, 'Content-Length': info.size });
-      if (request.method === 'HEAD') response.end();
-      else createReadStream(path).pipe(response);
-    }
+    } else response.writeHead(200, { ...headers, 'Content-Length': info.size });
+    if (request.method === 'HEAD') response.end();
+    else await pipeline(createReadStream(path, streamRange), response);
   } catch (error) {
-    response.writeHead(error.code === 'ENOENT' ? 404 : 500);
-    response.end(error.code === 'ENOENT' ? 'Not found' : 'Read failed');
+    if (error.code === 'ERR_STREAM_PREMATURE_CLOSE') return;
+    if (response.headersSent || response.destroyed) response.destroy();
+    else {
+      response.writeHead(error.code === 'ENOENT' ? 404 : 500);
+      response.end(error.code === 'ENOENT' ? 'Not found' : 'Read failed');
+    }
     console.error(error);
   }
 });
@@ -183,4 +186,12 @@ server.listen(port, '127.0.0.1', () =>
     `CatSystem2 Web: http://localhost:${port}${gameRoot ? ' (read-only game directory mounted)' : ''}`,
   ),
 );
-for (const signal of ['SIGTERM', 'SIGINT']) process.on(signal, () => server.close());
+let closing = false;
+function shutdown() {
+  if (closing) return;
+  closing = true;
+  const deadline = setTimeout(() => server.closeAllConnections(), 1000);
+  deadline.unref();
+  server.close(() => clearTimeout(deadline));
+}
+for (const signal of ['SIGTERM', 'SIGINT']) process.on(signal, shutdown);
