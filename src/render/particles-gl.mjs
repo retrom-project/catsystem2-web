@@ -2111,12 +2111,15 @@ export class ParticlesGL {
   presentPrimaryTo(context) {
     const gl = this.gl,
       target = this.primaryTarget,
+      canvas = context.canvas,
       { width, height } = target;
     if (
+      !canvas ||
+      width !== canvas.width ||
+      height !== canvas.height ||
+      !('blitFramebuffer' in gl) ||
       width !== gl.drawingBufferWidth ||
-      height !== gl.drawingBufferHeight ||
-      width !== context.canvas.width ||
-      height !== context.canvas.height
+      height !== gl.drawingBufferHeight
     )
       return false;
     this.requireTargetContent(target);

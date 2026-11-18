@@ -423,7 +423,7 @@ export class StageRenderer {
     const { stageTarget } = options;
     if (stageTarget) {
       const ctx = this.renderer.ctx;
-      if (stageTarget === this.gpu.primaryTarget && this.gpu.presentPrimaryTo(ctx)) return 0;
+      if (stageTarget === this.gpu.primaryTarget && this.gpu.presentPrimaryTo?.(ctx)) return 0;
       ctx.reset();
       ctx.drawImage(this.gpu.presentTarget(stageTarget), 0, 0);
       return 0;
