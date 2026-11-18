@@ -80,6 +80,30 @@ test('KCS flat local pointers and shared pointers preserve signed subword reads'
   assert.throws(() => vm.load(0x40000000), /memory/);
 });
 
+test('KCS execution gives in-flight operands and subsequent reads their own code bytes', () => {
+  const vm = machine([[1, [0x13, 0], 17], [59]]),
+    memory = vm.memory,
+    operandValueOffset = 7;
+  vm.store(0, 1);
+  let patchDuringLoad = false;
+  vm.bindMemory({
+    bytes() {
+      if (patchDuringLoad) {
+        patchDuringLoad = false;
+        vm.script.body.view.setUint32(operandValueOffset, 99, true);
+        assert.equal(vm.instruction().args[1].value, 99);
+      }
+      return memory;
+    },
+  });
+  patchDuringLoad = true;
+  vm.step();
+  assert.equal(vm.pop(), 18);
+  vm.start();
+  vm.step();
+  assert.equal(vm.pop(), 100);
+});
+
 test('native x86 golden distinguishes unsigned arithmetic, signed flags and raw assignment', () => {
   const vm = machine([
     [4, [3, 0xffffffef], [3, 3]],
