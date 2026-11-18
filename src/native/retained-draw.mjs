@@ -361,7 +361,8 @@ export class NativeRetainedDraw {
     bitmap.commitCanvas();
     const bitmapPixels = await bitmap.pixels();
     if (!areas.length && !forceOutput && (!draw.state.enabled || !draw.state.pending)) return;
-    const pixels = flipBitmapRows(bitmapPixels, renderer.width, renderer.height),
+    // Draw in physical coordinates into a copy in the bitmap's logical row order.
+    const pixels = new Uint8ClampedArray(bitmapPixels),
       area = areas.length
         ? [
             Math.min(...areas.map((a) => a[0])),
@@ -377,12 +378,14 @@ export class NativeRetainedDraw {
     if (area[0] < area[2] && area[1] < area[3]) {
       if (!renderer.externalPaint) {
         const color = renderer.clearColor;
-        for (let y = area[1]; y < area[3]; y++)
+        for (let y = area[1]; y < area[3]; y++) {
+          const row = (renderer.height - 1 - y) * renderer.width;
           for (let x = area[0]; x < area[2]; x++)
             pixels.set(
               [(color >>> 16) & 255, (color >>> 8) & 255, color & 255, color >>> 24],
-              (y * renderer.width + x) * 4,
+              (row + x) * 4,
             );
+        }
       }
       for (const item of renderer.items.toSorted((a, b) => a.layer - b.layer || a.key - b.key)) {
         const source = images.get(item.image);
@@ -395,9 +398,10 @@ export class NativeRetainedDraw {
           source.state,
           item,
           area,
+          { flipDestinationY: true },
         );
       }
-      bitmap.state.rgba = flipBitmapRows(pixels, renderer.width, renderer.height);
+      bitmap.state.rgba = pixels;
       bitmap.state.source = null;
       await bitmap.changed();
     }
@@ -413,6 +417,7 @@ export class NativeRetainedDraw {
         },
         draw.state.offset,
         forceOutput || (!areas.length && draw.state.pending) ? null : area,
+        { flipY: true },
       );
     }
   }

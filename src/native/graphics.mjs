@@ -236,7 +236,7 @@ export class NativeGraphics {
     this.initializeTextures();
     await this.texturePages.upload(vram, [x, y, x + width, y + height]);
   }
-  async output(bitmap, offset, region = null, { upload = true } = {}) {
+  async output(bitmap, offset, region = null, { upload = true, flipY = false } = {}) {
     const [x, y] = offset,
       area = region || [0, 0, bitmap.width, bitmap.height];
     const vram = await this.ensureVRAM(
@@ -251,6 +251,7 @@ export class NativeGraphics {
       width: area[2] - area[0],
       height: area[3] - area[1],
       copy: true,
+      flipY,
     });
     this.initializeTextures();
     if (upload && this.view.active)

@@ -131,6 +131,7 @@ export function affineBitmap(
   if (!alpha) return prepared;
   const sample = new Uint8ClampedArray(4);
   for (let y = area[1]; y < area[3]; y++) {
+    const destinationY = options.flipDestinationY ? height - 1 - y : y;
     for (let x = area[0]; x < area[2]; x++) {
       const px = ((x << 15) - position[0] + transformedBase[0]) | 0;
       const py = ((y << 15) - position[1] + transformedBase[1]) | 0;
@@ -158,7 +159,7 @@ export function affineBitmap(
             source[c + channel] * weights[2] +
             source[d + channel] * weights[3]) >>>
           15;
-      const at = (y * width + x) * 4;
+      const at = (destinationY * width + x) * 4;
       // This path tests destination alpha, whereas the untransformed blit
       // tests the entire destination DWORD before copying zero-alpha RGB.
       const effective = (((sample[3] + 1) * (alpha & 65535)) >>> 8) & 255;
