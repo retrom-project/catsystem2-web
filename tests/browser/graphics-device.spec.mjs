@@ -138,6 +138,53 @@ test('direct texture modulation matches the general texture stages and alpha bou
   for (const result of cases) expect(result).toEqual({ equal: true, differentAlphaCoverage: true });
 });
 
+test('wireframe coverage still modulates alpha for a diffuse texture product', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const { ParticlesGL, createD3DContext } = await import('/src/render/particles-gl.mjs');
+    const gpu = new ParticlesGL(8, 8);
+    const frame = { width: 1, height: 1, rgba: Uint8Array.of(211, 72, 38, 255) };
+    const vertices = [
+      [0.25, 1.5],
+      [6.75, 3.6],
+      [1.1, 6.45],
+    ].map(([x, y]) => ({ x, y, z: 0, w: 1, color: 0xffffffff, u: 0, v: 0 }));
+    const draw = (diffuse) => {
+      const state = createD3DContext();
+      state.states.set(8, 2);
+      state.states.set(15, 0);
+      state.states.set(27, 0);
+      state.states.set(176, 1);
+      state.stages.set(
+        0,
+        new Map([
+          [1, 4],
+          [2, 2],
+          [3, diffuse],
+          [4, 4],
+          [5, 2],
+          [6, 0],
+        ]),
+      );
+      gpu.beginFrame();
+      gpu.drawGeometry([{ vertices }], frame, { state });
+      gpu.endNativeFrame();
+      return gpu.pixels();
+    };
+    try {
+      const diffuse = draw(0);
+      const current = draw(1);
+      return {
+        antialiased: diffuse.some((byte, index) => index % 4 === 3 && byte > 0 && byte < 255),
+        equal: diffuse.every((byte, index) => byte === current[index]),
+      };
+    } finally {
+      gpu.close();
+    }
+  });
+  expect(result).toEqual({ antialiased: true, equal: true });
+});
+
 test('ordered texture pages keep overlapping blends and the per-primitive sRGB path', async ({
   page,
 }) => {

@@ -1789,8 +1789,10 @@ export class ParticlesGL {
         else throw new Error(`D3D texture stage ${stage} requires its additional texture source`);
       }
       const alphaFunction = s.get(25);
+      // Wireframes can apply antialias coverage even without an explicit line viewport.
       const directModulation =
         !lineViewport &&
+        s.get(8) === 3 &&
         !s.get(194) &&
         !s.get(28) &&
         (!s.get(15) || alphaFunction === 5 || alphaFunction === 7) &&
