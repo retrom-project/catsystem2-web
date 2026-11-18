@@ -54,6 +54,7 @@ uniform ivec2 filters;
 uniform vec4 borderColor;
 uniform bool srgbTexture;
 uniform ivec2 textureOperations;
+uniform int directModulation;
 uniform int followingColorOperation;
 uniform ivec3 textureColorArgs;
 uniform ivec3 textureAlphaArgs;
@@ -166,6 +167,16 @@ void main(){
     color=vertexColor;if(effekseerTextured)color*=sampleImage();
   }else{
     vec4 tex=sampleImage();
+    if(directModulation!=0){
+      color=tex*vertexColor;
+      if(directModulation==5)color.rgb*=2.0;
+      color=clamp(color,0.0,1.0);
+      if(alphaTest){
+        float a=floor(color.a*255.0+0.5);
+        if(!(alphaFunction==5?a>alphaReference:a>=alphaReference))discard;
+      }
+      return;
+    }
     color=textureOperation(textureOperations.x,textureArgument(textureColorArgs.x,tex),textureArgument(textureColorArgs.y,tex),textureArgument(textureColorArgs.z,tex),tex);
     if(textureOperations.x!=1)color.a=textureOperation(textureOperations.y,textureArgument(textureAlphaArgs.x,tex),textureArgument(textureAlphaArgs.y,tex),textureArgument(textureAlphaArgs.z,tex),tex).a;
     if(followingColorOperation==1)color.rgb*=color.a;
@@ -404,6 +415,10 @@ export function restoreD3DContext(state, context = null) {
   return context ? assignD3DContext(context, restored) : restored;
 }
 
+function usesTextureAndDiffuse([a, b]) {
+  return (a === 0 && b === 2) || (a === 2 && b === 0);
+}
+
 export function particleRenderState(blendMode = 0, renderStates = [], samplerStates = []) {
   const blend = PARTICLE_BLEND_FACTORS[blendMode] || PARTICLE_BLEND_FACTORS[0],
     states = new Map(stateDefaults),
@@ -531,6 +546,7 @@ export class ParticlesGL {
         'borderColor',
         'srgbTexture',
         'textureOperations',
+        'directModulation',
         'followingColorOperation',
         'textureColorArgs',
         'textureAlphaArgs',
@@ -1772,6 +1788,20 @@ export class ParticlesGL {
           following = 2; // Complement CURRENT; no additional texture source.
         else throw new Error(`D3D texture stage ${stage} requires its additional texture source`);
       }
+      const alphaFunction = s.get(25);
+      const directModulation =
+        !lineViewport &&
+        !s.get(194) &&
+        !s.get(28) &&
+        (!s.get(15) || alphaFunction === 5 || alphaFunction === 7) &&
+        following === 0 &&
+        (colorOperation === 4 || colorOperation === 5) &&
+        alphaOperation === 4 &&
+        usesTextureAndDiffuse(colorArgs) &&
+        usesTextureAndDiffuse(alphaArgs)
+          ? colorOperation
+          : 0;
+      gl.uniform1i(this.uniform.directModulation, directModulation);
       gl.uniform1i(this.uniform.followingColorOperation, following);
       gl.uniform2i(this.uniform.textureOperations, colorOperation, alphaOperation);
       gl.uniform3i(this.uniform.textureColorArgs, ...colorArgs);

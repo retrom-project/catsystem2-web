@@ -72,6 +72,72 @@ test('constant linear filtering matches mixed filters at clamped and mirrored ed
   for (const result of cases) expect(result).toMatchObject({ varying: true, equal: true });
 });
 
+test('direct texture modulation matches the general texture stages and alpha boundaries', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const cases = await page.evaluate(async () => {
+    const { ParticlesGL, createD3DContext } = await import('/src/render/particles-gl.mjs');
+    const gpu = new ParticlesGL(8, 8);
+    const frame = {
+      width: 2,
+      height: 2,
+      rgba: Uint8Array.of(221, 138, 97, 128, 217, 61, 25, 255, 93, 171, 6, 19, 141, 73, 212, 128),
+    };
+    const vertices = [
+      [-0.5, -0.5, 0, 0],
+      [7.5, -0.5, 1, 0],
+      [-0.5, 7.5, 0, 1],
+      [7.5, 7.5, 1, 1],
+    ].map(([x, y, u, v]) => ({ x, y, z: 0, w: 1, color: 0xff8f7341, u, v }));
+    const draw = (operation, comparison, useCurrent) => {
+      const state = createD3DContext();
+      state.states.set(15, Number(comparison !== 0));
+      state.states.set(24, 128);
+      state.states.set(25, comparison || 7);
+      state.states.set(27, 0);
+      state.samplers.set(5, 1);
+      state.samplers.set(6, 1);
+      // CURRENT and DIFFUSE both resolve to the vertex color at stage zero.
+      state.stages.set(
+        0,
+        new Map([
+          [1, operation],
+          [2, 2],
+          [3, Number(useCurrent)],
+          [4, 4],
+          [5, 2],
+          [6, 0],
+        ]),
+      );
+      gpu.beginFrame(0xff132137);
+      gpu.drawGeometry([{ vertices }], frame, { state });
+      gpu.endNativeFrame();
+      return gpu.pixels();
+    };
+    try {
+      return [4, 5].map((operation) => {
+        const outcomes = [0, 5, 7].map((comparison) => {
+          const direct = draw(operation, comparison, false);
+          const generic = draw(operation, comparison, true);
+          return {
+            equal: direct.every((byte, index) => byte === generic[index]),
+            pixels: direct.toHex(),
+          };
+        });
+        return {
+          equal: outcomes.every(({ equal }) => equal),
+          differentAlphaCoverage: new Set(outcomes.map(({ pixels }) => pixels)).size === 3,
+        };
+      });
+    } finally {
+      gpu.close();
+    }
+  });
+  expect(cases).toHaveLength(2);
+  for (const result of cases) expect(result).toEqual({ equal: true, differentAlphaCoverage: true });
+});
+
 test('ordered texture pages keep overlapping blends and the per-primitive sRGB path', async ({
   page,
 }) => {
