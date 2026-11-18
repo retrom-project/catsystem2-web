@@ -6,6 +6,8 @@ import { launch, button, noError } from './game-helpers.mjs';
 import { step, until, progressAcceptance, fullAcceptanceMode } from './native-game-input.mjs';
 import { captureTerminalState } from './terminal-evidence.mjs';
 
+const movieReadySeconds = 0.25;
+
 test.afterEach(async ({ page }, info) => {
   if (fullAcceptanceMode()) await captureTerminalState(page, info);
 });
@@ -15,6 +17,52 @@ test('main route reaches every chapter, decodes both movies and returns to the n
 }, info) => {
   await progressAcceptance(page, info, 'route', () => runRoute(page, info));
 });
+
+async function requestMovieSkip(page, info, movie) {
+  const start = await page.evaluate(
+    ({ handle, src, readySeconds }) => {
+      const { world } = window.catSystem2,
+        session = world.movies.sessions.get(handle),
+        video = session?.video,
+        record = session?.record;
+      if (
+        !record?.running ||
+        video?.currentSrc !== src ||
+        video.paused ||
+        video.ended ||
+        video.readyState < 2 ||
+        video.currentTime <= readySeconds
+      )
+        return null;
+      const proof = {
+        handle,
+        owner: record.owner,
+        name: src.split('/').pop(),
+        frame: world.frame,
+        time: video.currentTime,
+        nativePosition: Number(session.position()) / 10000000,
+        duration: video.duration,
+        ready: video.readyState,
+        decoded: video.videoWidth > 0 && video.videoHeight > 0,
+      };
+      const observation = { world, session, record, proof, ended: false };
+      video.addEventListener('ended', () => (observation.ended = true), { once: true });
+      window.routeTrace.movieSkips.set(handle, observation);
+      return proof;
+    },
+    { ...movie, readySeconds: movieReadySeconds },
+  );
+  await info.attach('movie-skip-input.json', {
+    body: JSON.stringify({ observed: movie, start, key: 'Enter' }),
+    contentType: 'application/json',
+  });
+  expect(start, 'The selected movie must still have a decoded running owner').toMatchObject({
+    decoded: true,
+  });
+  // Both authored Route movie commands accept logical key 0. Enter is its
+  // primary keyboard binding in the mounted Game's original key table.
+  await page.keyboard.press('Enter');
+}
 
 async function runRoute(page, info) {
   const reportedScenes = new Set();
@@ -33,7 +81,13 @@ async function runRoute(page, info) {
   // line count as one message, including when Ctrl advances several per frame.
   await page.evaluate(async () => {
     const { NativeSceneData, NativeSceneReader } = await import('/src/native/scene-data.mjs'),
-      trace = { scenes: new Set(), messages: new Set(), readers: new WeakMap(), lastMessage: null },
+      trace = {
+        scenes: new Set(),
+        messages: new Set(),
+        readers: new WeakMap(),
+        lastMessage: null,
+        movieSkips: new Map(),
+      },
       load = NativeSceneData.prototype.load,
       text = NativeSceneReader.prototype.text;
     window.routeTrace = trace;
@@ -64,27 +118,43 @@ async function runRoute(page, info) {
   await until(page, 'meswnd#WAIT', 900);
   await page.keyboard.down('Control');
   const movies = new Set(),
+    pendingSkips = new Set(),
+    movieSkips = [],
     unsupported = new Set(),
     warnings = new Set();
   const observe = () =>
     page.evaluate(() => {
-      const e = window.catSystem2;
+      const e = window.catSystem2,
+        sessions = e.world.movies.sessions;
       return {
         stack: e.status().stack,
         scenes: [...window.routeTrace.scenes],
         messages: window.routeTrace.messages.size,
-        movies: [
-          ...new Set([
-            ...document.querySelectorAll('video'),
-            ...Array.from(e.world.movies.sessions.values(), (session) => session.video).filter(
-              Boolean,
-            ),
-          ]),
-        ].flatMap((video) =>
-          !video.paused && !video.ended
-            ? [{ src: video.currentSrc, time: video.currentTime, ready: video.readyState }]
-            : [],
-        ),
+        movies: [...sessions].flatMap(([handle, session]) => {
+          const video = session.video;
+          return session.record?.running && video && !video.paused && !video.ended
+            ? [{ handle, src: video.currentSrc, time: video.currentTime, ready: video.readyState }]
+            : [];
+        }),
+        movieStops: [...window.routeTrace.movieSkips.values()].flatMap((observation) => {
+          const { world, session, record, proof, ended } = observation,
+            current = sessions.get(proof.handle),
+            retainedOwner =
+              world === e.world && session.record === record && (!current || current === session),
+            naturalEnd = ended || session.video.ended;
+          if (retainedOwner && record.running && !naturalEnd) return [];
+          return [
+            {
+              ...proof,
+              observedFrame: e.world.frame,
+              retainedOwner,
+              running: record.running,
+              paused: session.video.paused,
+              naturalEnd,
+              stoppedAt: Number(record.position) / 10000000,
+            },
+          ];
+        }),
         unsupported: e.status().unsupported,
         warnings: [...e.audio.warnings],
         frame: e.world.frame,
@@ -114,10 +184,25 @@ async function runRoute(page, info) {
       }
     for (const item of state.unsupported) unsupported.add(item);
     for (const item of state.warnings) warnings.add(item);
+    for (const stop of state.movieStops) {
+      if (!pendingSkips.delete(stop.handle)) continue;
+      await info.attach('movie-skip-output.json', {
+        body: JSON.stringify(stop),
+        contentType: 'application/json',
+      });
+      expect(
+        stop,
+        'The same movie owner must stop while its decoder still has time remaining',
+      ).toMatchObject({ retainedOwner: true, running: false, paused: true, naturalEnd: false });
+      expect(stop.stoppedAt).toBeGreaterThanOrEqual(stop.nativePosition);
+      expect(stop.stoppedAt).toBeLessThan(stop.duration - movieReadySeconds);
+      movieSkips.push(stop);
+      movies.add(stop.name);
+    }
     for (const movie of state.movies)
-      if (movie.time > 0.25 && movie.ready >= 2) {
-        movies.add(movie.src.split('/').pop());
-        await page.keyboard.press('Escape');
+      if (movie.time > movieReadySeconds && movie.ready >= 2 && !pendingSkips.has(movie.handle)) {
+        await requestMovieSkip(page, info, movie);
+        pendingSkips.add(movie.handle);
       }
     if (state.stack.includes('title#WAIT')) break;
     await step(page, 6);
@@ -130,10 +215,11 @@ async function runRoute(page, info) {
     sourceIdentity: await page.evaluate(() => window.catSystem2.identity),
     ...state,
     movies: [...movies],
+    movieSkips,
     unsupported: [...unsupported],
     warnings: [...warnings],
     scope:
-      'NativeWorld CST reader observations and actual Ctrl/Escape input, frames, rendering and browser movie decoding. No ScenePlayer state or pixel/timing equivalence claim.',
+      'NativeWorld CST reader observations, actual Ctrl/Enter input, frames and rendering, and decoded movies stopped by their native owners.',
   };
   await writeFile(info.outputPath('route.json'), JSON.stringify(evidence, null, 2));
   expect(state.stack, JSON.stringify(evidence)).toContain('title#WAIT');
