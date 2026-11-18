@@ -43,7 +43,43 @@ export class EmotePatch {
     }
     return this.result;
   }
+  mappedBasis(out, value) {
+    const complement = f(1 - value),
+      weightedComplement = f(complement * 3);
+    out[0] = f(complement * f(complement * complement));
+    out[1] = f(value * f(weightedComplement * complement));
+    out[2] = f(value * f(weightedComplement * value));
+    out[3] = f(value * f(value * value));
+  }
   mappedEvaluate(points, u, v) {
+    const inputU = f(0 + u),
+      inputV = f(0 + v);
+    if (!(points instanceof Float32Array) || !Number.isFinite(inputU) || !Number.isFinite(inputV))
+      return this.mappedEvaluatePacked(points, u, v);
+
+    // First apply the packed loop's signed-zero controls and basis order.
+    const bu = this.u,
+      bv = this.v;
+    this.mappedBasis(bu, f(f(inputV * 0) + inputU));
+    this.mappedBasis(bv, f(inputV + f(inputU * 0)));
+    const acc = this.accumulator;
+    for (let axis = 0; axis < 2; axis++) {
+      for (let column = 0; column < 4; column++) {
+        const i = column * 2 + axis,
+          row0 = f(f(points[i] * bu[column]) * bv[0]),
+          row1 = f(f(points[i + 8] * bu[column]) * bv[1]),
+          row2 = f(f(points[i + 16] * bu[column]) * bv[2]),
+          row3 = f(f(points[i + 24] * bu[column]) * bv[3]);
+        acc[column] = f(row3 + f(row2 + f(row1 + row0)));
+      }
+      this.result[axis] = f(f(acc[3] + acc[2]) + f(acc[1] + acc[0]));
+    }
+    // Keep the packed loop's exceptional-value behavior.
+    if (!Number.isFinite(this.result[0]) || !Number.isFinite(this.result[1]))
+      return this.mappedEvaluatePacked(points, u, v);
+    return this.result;
+  }
+  mappedEvaluatePacked(points, u, v) {
     // Reviewed target's packed Bernstein reduction. A row-major scalar sum
     // is mathematically equivalent but changes visible float32 vertices.
     const r = this.registers,

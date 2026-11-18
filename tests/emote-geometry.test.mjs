@@ -7,6 +7,7 @@ import { EmoteDocument } from '../src/emote/document.mjs';
 import { EmoteAnimation } from '../src/emote/animation.mjs';
 import { EmoteGeometry } from '../src/emote/geometry.mjs';
 import { EmoteMaterials } from '../src/emote/materials.mjs';
+import { EmotePatch } from '../src/emote/mesh.mjs';
 import { emoteControllerCases, emoteControllerModel } from './fixtures/emote-controller-cases.mjs';
 import { emoteGeometryCases, emoteGeometryModel } from './fixtures/emote-geometry-cases.mjs';
 import { apply } from './fixtures/emote-js-steps.mjs';
@@ -33,6 +34,23 @@ function comparePackets(commands, draws, name) {
       );
   });
 }
+
+test('mapped patch weights retain the reviewed float32 reduction order', () => {
+  const patch = new EmotePatch(),
+    points = Float32Array.from({ length: 32 }, (_, i) => (((i % 7) - 2) * 0.943) / (i + 1));
+  for (const [u, v, x, y] of [
+    [0.19, 0.243, 3201538084, 3154204844],
+    [0.821, 0.1428571, 1049393911, 1030776804],
+    [-0.158, 1.47373, 1046176852, 1041217283],
+    [-0, 0, 3220269171, 3203491955],
+  ]) {
+    for (const source of [points, [...points]]) {
+      const output = patch.mappedEvaluate(source, u, v);
+      assert.deepEqual([...new Uint32Array(output.buffer)], [x, y]);
+    }
+  }
+  assert(patch.mappedEvaluate(points, Infinity, 0.2).every(Number.isNaN));
+});
 
 test('animated mesh strips match every original controller fixture vertex byte', async () => {
   for (const [n, input] of emoteControllerCases().entries()) {
