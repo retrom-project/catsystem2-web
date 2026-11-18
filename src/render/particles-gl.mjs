@@ -2108,6 +2108,40 @@ export class ParticlesGL {
     this.drawing = false;
     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
   }
+  presentPrimaryTo(context) {
+    const gl = this.gl,
+      target = this.primaryTarget,
+      { width, height } = target;
+    if (
+      width !== gl.drawingBufferWidth ||
+      height !== gl.drawingBufferHeight ||
+      width !== context.canvas.width ||
+      height !== context.canvas.height
+    )
+      return false;
+    this.requireTargetContent(target);
+    const draw = gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING),
+      read = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING),
+      scissor = gl.isEnabled(gl.SCISSOR_TEST);
+    try {
+      gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, null);
+      gl.bindFramebuffer(gl.READ_FRAMEBUFFER, target.framebuffer);
+      if (scissor) gl.disable(gl.SCISSOR_TEST);
+      // Convert native top-down rows to the opaque canvas drawing buffer.
+      gl.blitFramebuffer(0, 0, width, height, 0, height, width, 0, gl.COLOR_BUFFER_BIT, gl.NEAREST);
+      const error = gl.getError();
+      if (error === gl.INVALID_OPERATION) return false;
+      if (error !== gl.NO_ERROR)
+        throw new Error(`Native presentation blit failed: 0x${error.toString(16)}`);
+      context.reset();
+      context.drawImage(this.canvas, 0, 0);
+      return true;
+    } finally {
+      gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, draw);
+      gl.bindFramebuffer(gl.READ_FRAMEBUFFER, read);
+      if (scissor) gl.enable(gl.SCISSOR_TEST);
+    }
+  }
   presentTarget(target = this.primaryTarget) {
     if (target.owner !== this || target.destroyed)
       throw new Error('Native presentation target belongs to a different or closed device');

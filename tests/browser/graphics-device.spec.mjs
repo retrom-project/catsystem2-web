@@ -316,3 +316,78 @@ test('shared Stage device restores real resources without reviving undefined tar
   expect(result.nativeProcess).toBe(false);
   expect(result.assertions).toBeGreaterThanOrEqual(40);
 });
+
+test('full-size native presentation keeps the primary RGBA and existing 2D canvas', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const { CanvasRenderer } = await import('/src/render/canvas.mjs'),
+      { StageRenderer } = await import('/src/render/stage.mjs'),
+      { NativeScreenCapture } = await import('/src/native/screen-capture.mjs'),
+      canvas = document.createElement('canvas');
+    canvas.width = 4;
+    canvas.height = 3;
+    const renderer = new CanvasRenderer(canvas),
+      stage = new StageRenderer(renderer),
+      capture = new NativeScreenCapture({ stageRenderer: stage }),
+      gpu = stage.gpu,
+      gl = gpu.gl,
+      primary = gpu.primaryTarget,
+      rgba = Uint8Array.from({ length: 4 * 3 * 4 }, (_, index) => (index * 37 + 19) & 255),
+      readTarget = gpu.createRenderTarget(2, 3, rgba.subarray(0, 2 * 3 * 4)),
+      shadow = new OffscreenCanvas(4, 3).getContext('2d'),
+      paint = (context) => {
+        context.fillStyle = 'rgba(218, 3, 29, 0.5)';
+        context.fillRect(1, 0, 2, 3);
+        context.fillStyle = 'rgba(2, 165, 201, 0.3)';
+        context.fillRect(0, 1, 3, 2);
+      };
+    try {
+      gpu.beginFrame();
+      const result = await gpu.withRenderTargetAsync(primary, async () => {
+        gpu.uploadRenderTarget(primary, { width: 4, height: 3, rgba });
+        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, readTarget.framebuffer);
+        gl.enable(gl.SCISSOR_TEST);
+        gl.scissor(1, 1, 1, 1);
+        stage.presentNative({ stageTarget: primary });
+        const direct = gpu.presentationCanvas === undefined,
+          bindings =
+            gpu.drawing &&
+            gpu.activeTarget === primary &&
+            gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING) === primary.framebuffer &&
+            gl.getParameter(gl.READ_FRAMEBUFFER_BINDING) === readTarget.framebuffer &&
+            gl.isEnabled(gl.SCISSOR_TEST);
+        paint(renderer.ctx);
+        renderer.present();
+        shadow.drawImage(gpu.presentTarget(primary), 0, 0);
+        paint(shadow);
+        const reference = shadow.getImageData(0, 0, 4, 3).data;
+        return {
+          direct,
+          bindings,
+          originalCanvas:
+            renderer.canvas === canvas && renderer.context === canvas.getContext('2d'),
+          sourceExact: capture.frame().rgba.every((value, index) => value === rgba[index]),
+          compositedExact: renderer.context
+            .getImageData(0, 0, 4, 3)
+            .data.every((value, index) => value === reference[index]),
+          error: gl.getError(),
+        };
+      });
+      gpu.endNativeFrame();
+      return result;
+    } finally {
+      gpu.destroyRenderTarget(readTarget);
+      stage.dispose();
+    }
+  });
+  expect(result).toEqual({
+    direct: true,
+    bindings: true,
+    originalCanvas: true,
+    sourceExact: true,
+    compositedExact: true,
+    error: 0,
+  });
+});
