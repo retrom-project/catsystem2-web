@@ -56,19 +56,23 @@ game fonts, images, audio or movies are included. The player reads content suppl
 the user. FFmpeg is an optional, separately installed development tool; converted
 media is private local output and is excluded from the build.
 
-Native x86 execution uses Unicorn.js commit
+The explicit development oracles use Unicorn.js commit
 `560284c59c11c8d6c94d537f4354339f069ddcdf` and Unicorn commit
 `8028ec436f2d9376525352dd38ed9ed6b9f6be10`, built with the maintained patches
 under `third_party/unicorn`. This dependency is GPL-2.0 and includes components
-under their upstream licenses. The combined distribution must retain the
-applicable GPL, LGPL and MPL notices and provide corresponding source. The
-standalone build serves `vendor/COPYING`, `vendor/manifest.json` and the complete
-patched `vendor/corresponding-source.tar.gz` alongside `vendor/unicorn_x86.js`.
-The manifest identifies the exact upstream commits, patches, toolchain and
-artifact hashes. The maintained patches include exact instruction-budget handling
-with architectural state captured at budget exits, atomic host instruction
-accounting and checked shared-RAM views. These remain modifications under the
-backend's GPL license. Existing source-file licenses remain intact.
+under their upstream licenses. `scripts/prepare-ppi-backend.py` creates
+`unicorn_x86.js`, `COPYING`, `manifest.json` and the complete patched
+`corresponding-source.tar.gz` in `.local/vendor/ppi/` for local oracle use. Any
+separate distribution of the backend must retain the applicable GPL, LGPL and
+MPL notices and supply the corresponding source with the same access as the
+backend. The manifest identifies the exact upstream commits, patches, toolchain
+and artifact hashes. The maintained patches include exact instruction-budget
+handling with architectural state captured at budget exits, atomic host
+instruction accounting and checked shared-RAM views. These modifications follow
+the backend's GPL license.
+
+The ordinary standalone player's compiled JavaScript dependencies are zlib and
+FreeType.
 
 The reviewed native regions use a separately compiled zlib 1.2.3 under the zlib
 license. The standalone build includes its license and corresponding source in
