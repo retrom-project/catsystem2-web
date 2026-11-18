@@ -359,7 +359,9 @@ export class NativeRetainedDraw {
       images = this.world.graphics.images,
       bitmap = images.get(renderer.bitmap);
     bitmap.commitCanvas();
-    const pixels = flipBitmapRows(await bitmap.pixels(), renderer.width, renderer.height),
+    const bitmapPixels = await bitmap.pixels();
+    if (!areas.length && !forceOutput && (!draw.state.enabled || !draw.state.pending)) return;
+    const pixels = flipBitmapRows(bitmapPixels, renderer.width, renderer.height),
       area = areas.length
         ? [
             Math.min(...areas.map((a) => a[0])),
