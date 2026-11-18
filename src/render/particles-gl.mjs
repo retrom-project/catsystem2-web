@@ -1608,7 +1608,45 @@ export class ParticlesGL {
         depth.validMask |= flags & 6;
     }
   }
-  drawGeometry(
+  drawTexturePages(draws, { blendMode, context }) {
+    if (draws.length) this.#drawGeometry(null, null, { blendMode, context, texturePages: draws });
+  }
+  #bindGeometryTexture(frame, samplers, nativeAnisotropy) {
+    const gl = this.gl;
+    gl.bindTexture(gl.TEXTURE_2D, this.texture(frame));
+    if (this.anisotropy)
+      gl.texParameterf(
+        gl.TEXTURE_2D,
+        this.anisotropy.TEXTURE_MAX_ANISOTROPY_EXT,
+        nativeAnisotropy ? Math.min(this.maxAnisotropy, Math.max(1, samplers.get(10))) : 1,
+      );
+    if (nativeAnisotropy) {
+      const addressing = [
+        gl.CLAMP_TO_EDGE,
+        gl.REPEAT,
+        gl.MIRRORED_REPEAT,
+        gl.CLAMP_TO_EDGE,
+        gl.CLAMP_TO_EDGE,
+        gl.CLAMP_TO_EDGE,
+      ];
+      gl.texParameteri(
+        gl.TEXTURE_2D,
+        gl.TEXTURE_MIN_FILTER,
+        samplers.get(6) === 1 ? gl.NEAREST : gl.LINEAR,
+      );
+      gl.texParameteri(
+        gl.TEXTURE_2D,
+        gl.TEXTURE_MAG_FILTER,
+        samplers.get(5) === 1 ? gl.NEAREST : gl.LINEAR,
+      );
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, addressing[samplers.get(1)]);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, addressing[samplers.get(2)]);
+    }
+  }
+  drawGeometry(geometry, frame, options) {
+    return this.#drawGeometry(geometry, frame, options);
+  }
+  #drawGeometry(
     geometry,
     frame,
     {
@@ -1623,6 +1661,7 @@ export class ParticlesGL {
       opaqueTarget = this.frameOpaqueTarget ?? false,
       lineViewport = null,
       effekseer = null,
+      texturePages = null,
     } = {},
   ) {
     this.requireDevice();
@@ -1645,6 +1684,17 @@ export class ParticlesGL {
             state?.states || renderStates,
             state?.samplers || samplerStates,
           );
+    const solidTriangles = s.get(8) === 3 && s.get(9) !== 1 && !s.get(194);
+    if (texturePages && !solidTriangles) {
+      for (const page of texturePages)
+        this.#drawGeometry(page.triangles, page.frame, {
+          state,
+          context,
+          blendMode,
+          opaqueTarget,
+        });
+      return;
+    }
     this.requireDepthContent(
       this.target.depthStencil,
       (s.get(7) && ![1, 8].includes(s.get(23)) ? 2 : 0) | (s.get(52) ? 4 : 0),
@@ -1671,37 +1721,9 @@ export class ParticlesGL {
           rgba: new Uint8Array([255, 255, 255, 255]),
         };
     }
-    gl.bindTexture(gl.TEXTURE_2D, this.texture(frame));
     const anisotropic = t.get(5) === 3 || t.get(6) === 3;
     const nativeAnisotropy = anisotropic && this.anisotropy && t.get(1) !== 4 && t.get(2) !== 4;
-    if (this.anisotropy)
-      gl.texParameterf(
-        gl.TEXTURE_2D,
-        this.anisotropy.TEXTURE_MAX_ANISOTROPY_EXT,
-        nativeAnisotropy ? Math.min(this.maxAnisotropy, Math.max(1, t.get(10))) : 1,
-      );
-    if (nativeAnisotropy) {
-      const addressing = [
-        gl.CLAMP_TO_EDGE,
-        gl.REPEAT,
-        gl.MIRRORED_REPEAT,
-        gl.CLAMP_TO_EDGE,
-        gl.CLAMP_TO_EDGE,
-        gl.CLAMP_TO_EDGE,
-      ];
-      gl.texParameteri(
-        gl.TEXTURE_2D,
-        gl.TEXTURE_MIN_FILTER,
-        t.get(6) === 1 ? gl.NEAREST : gl.LINEAR,
-      );
-      gl.texParameteri(
-        gl.TEXTURE_2D,
-        gl.TEXTURE_MAG_FILTER,
-        t.get(5) === 1 ? gl.NEAREST : gl.LINEAR,
-      );
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, addressing[t.get(1)]);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, addressing[t.get(2)]);
-    }
+    if (!texturePages) this.#bindGeometryTexture(frame, t, nativeAnisotropy);
     gl.uniform1i(this.uniform.nativeAnisotropy, Number(Boolean(nativeAnisotropy)));
     gl.uniform1f(this.uniform.maxAnisotropy, Math.min(16, Math.max(1, t.get(10))));
     gl.uniform2i(this.uniform.addressMode, t.get(1), t.get(2));
@@ -1980,14 +2002,24 @@ export class ParticlesGL {
     // triangle list retains their primitive order, winding, blending and
     // depth/stencil effects while avoiding a separate upload per triangle.
     // sRGB's explicit destination-copy path must remain per primitive.
-    if (s.get(8) === 3 && s.get(9) !== 1 && !s.get(194)) {
-      const vertices = [];
-      for (const particle of geometry) {
-        if (!valid(particle.vertices)) continue;
-        if (particle.vertices.length === 3) vertices.push(...particle.vertices);
-        else for (const index of [0, 1, 2, 1, 3, 2]) vertices.push(particle.vertices[index]);
-      }
-      if (vertices.length) submit(gl.TRIANGLES, vertices);
+    if (solidTriangles) {
+      const drawTriangles = (triangles) => {
+        const vertices = [];
+        for (const particle of triangles) {
+          if (!valid(particle.vertices)) continue;
+          if (particle.vertices.length === 3) vertices.push(...particle.vertices);
+          else for (const index of [0, 1, 2, 1, 3, 2]) vertices.push(particle.vertices[index]);
+        }
+        if (vertices.length) submit(gl.TRIANGLES, vertices);
+      };
+      // An ordered set of pages for one graph shares every draw state.
+      // Texture storage and per-texture sampler parameters still bind per page.
+      if (texturePages)
+        for (const page of texturePages) {
+          this.#bindGeometryTexture(page.frame, t, nativeAnisotropy);
+          drawTriangles(page.triangles);
+        }
+      else drawTriangles(geometry);
       return;
     }
     // WRAPn and point-size/lighting inputs belong to vertex processing; the

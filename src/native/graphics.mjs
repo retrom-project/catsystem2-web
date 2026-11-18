@@ -1423,16 +1423,24 @@ export class NativeGraphicTask {
         context: this.graphics.d3dContext,
         drawType: 0,
       };
+      const draws = typeof gpu.drawTexturePages === 'function' ? [] : null;
       for (let first = 0; first < triangles.length; ) {
         const { textureID } = triangles[first];
         let end = first + 1;
         // Each page is sampled with the same state within this graph draw.
         // Keep adjacent triangles in order when they share that page.
         while (end < triangles.length && triangles[end].textureID === textureID) end++;
-        const frame = textureID === -1 ? WHITE : await this.graphics.meshTexture(textureID);
-        gpu.drawGeometry(triangles.slice(first, end), frame, options);
+        const batch = triangles.slice(first, end);
+        if (draws) {
+          const frame = textureID === -1 ? WHITE : this.graphics.texturePages.frame(textureID);
+          draws.push({ triangles: batch, frame });
+        } else {
+          const frame = textureID === -1 ? WHITE : await this.graphics.meshTexture(textureID);
+          gpu.drawGeometry(batch, frame, options);
+        }
         first = end;
       }
+      if (draws) gpu.drawTexturePages(draws, options);
       return;
     }
     gpu.drawGeometry(

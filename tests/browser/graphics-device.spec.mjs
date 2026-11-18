@@ -72,6 +72,58 @@ test('constant linear filtering matches mixed filters at clamped and mirrored ed
   for (const result of cases) expect(result).toMatchObject({ varying: true, equal: true });
 });
 
+test('ordered texture pages keep overlapping blends and the per-primitive sRGB path', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const cases = await page.evaluate(async () => {
+    const { ParticlesGL, createD3DContext } = await import('/src/render/particles-gl.mjs');
+    const gpu = new ParticlesGL(5, 4);
+    const draw = (left, right, rgba) => ({
+      triangles: [
+        {
+          vertices: [
+            [left - 0.5, -0.5, 0, 0],
+            [right - 0.5, -0.5, 1, 0],
+            [left - 0.5, 3.5, 0, 1],
+            [right - 0.5, 3.5, 1, 1],
+          ].map(([x, y, u, v]) => ({ x, y, z: 0, w: 1, color: 0xffffffff, u, v })),
+        },
+      ],
+      frame: { width: 1, height: 1, rgba: Uint8Array.from(rgba) },
+    });
+    const pages = [draw(0, 4, [193, 7, 27, 173]), draw(1, 5, [11, 137, 233, 149])];
+    const render = (draws, srgb, grouped) => {
+      const context = createD3DContext();
+      context.states.set(194, srgb);
+      gpu.beginFrame(0xff191523);
+      if (grouped) gpu.drawTexturePages(draws, { context });
+      else
+        for (const { triangles, frame } of draws) gpu.drawGeometry(triangles, frame, { context });
+      gpu.endNativeFrame();
+      return [...gpu.pixels()];
+    };
+    try {
+      return [0, 1].map((srgb) => {
+        const normal = render(pages, srgb, false);
+        return {
+          srgb,
+          equal: render(pages, srgb, true).every((byte, index) => byte === normal[index]),
+          ordered: render(pages.toReversed(), srgb, true).some(
+            (byte, index) => byte !== normal[index],
+          ),
+        };
+      });
+    } finally {
+      gpu.close();
+    }
+  });
+  expect(cases).toEqual([
+    { srgb: 0, equal: true, ordered: true },
+    { srgb: 1, equal: true, ordered: true },
+  ]);
+});
+
 test('shared Stage device restores real resources without reviving undefined target contents', async ({
   page,
 }) => {

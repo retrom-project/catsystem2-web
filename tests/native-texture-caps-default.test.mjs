@@ -252,17 +252,18 @@ next IDLE
 async function draw(world, plane) {
   const gpu = world.getNativeGPU(),
     calls = [],
-    original = gpu.drawGeometry;
-  gpu.drawGeometry = function (geometry, frame, options) {
-    calls.push({ geometry: structuredClone(geometry), frame });
-    return original.call(this, geometry, frame, options);
+    original = gpu.drawTexturePages;
+  gpu.drawTexturePages = function (pages, options) {
+    for (const { triangles, frame } of pages)
+      calls.push({ geometry: structuredClone(triangles), frame });
+    return original.call(this, pages, options);
   };
   gpu.beginFrame();
   try {
     await plane.drawGPU(gpu);
   } finally {
     gpu.endFrame();
-    gpu.drawGeometry = original;
+    gpu.drawTexturePages = original;
   }
   return calls;
 }

@@ -295,6 +295,7 @@ function presentation(h) {
     present = stage.presentNative.bind(stage),
     draw = stage.drawItem.bind(stage),
     geometry = gpu.drawGeometry,
+    texturePages = gpu.drawTexturePages,
     requests = [],
     draws = [];
   let status = 0,
@@ -309,10 +310,17 @@ function presentation(h) {
       active = before;
     }
   };
-  gpu.drawGeometry = function (items, frame, options) {
+  const record = (items) => {
     if (active !== undefined)
       draws.push({ recordID: active, frame: currentFrame, geometry: structuredClone(items) });
+  };
+  gpu.drawGeometry = function (items, frame, options) {
+    record(items);
     return geometry.call(this, items, frame, options);
+  };
+  gpu.drawTexturePages = function (pages, options) {
+    for (const { triangles } of pages) record(triangles);
+    return texturePages.call(this, pages, options);
   };
   stage.presentNative = (request) => {
     requests.push({
