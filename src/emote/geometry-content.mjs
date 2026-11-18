@@ -81,28 +81,25 @@ export function layerContent(content = {}) {
 }
 
 export function copyContent(out, source) {
-  for (const name of [
-    'ox',
-    'oy',
-    'x',
-    'y',
-    'z',
-    'flipX',
-    'flipY',
-    'angle',
-    'scaleX',
-    'scaleY',
-    'slantX',
-    'slantY',
-    'opacity',
-    'blend',
-    'src',
-    'icon',
-    'timeOffset',
-    'motionFlags',
-    'motion',
-  ])
-    out[name] = source[name];
+  out.ox = source.ox;
+  out.oy = source.oy;
+  out.x = source.x;
+  out.y = source.y;
+  out.z = source.z;
+  out.flipX = source.flipX;
+  out.flipY = source.flipY;
+  out.angle = source.angle;
+  out.scaleX = source.scaleX;
+  out.scaleY = source.scaleY;
+  out.slantX = source.slantX;
+  out.slantY = source.slantY;
+  out.opacity = source.opacity;
+  out.blend = source.blend;
+  out.src = source.src;
+  out.icon = source.icon;
+  out.timeOffset = source.timeOffset;
+  out.motionFlags = source.motionFlags;
+  out.motion = source.motion;
   out.colors.set(source.colors);
   out.hasPatch = Boolean(source.patch);
   if (source.patch) out.patch.set(source.patch);
