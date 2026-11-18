@@ -614,6 +614,7 @@ export class ParticlesGL {
     };
     this.primaryTarget.depthStencil = this.primaryDepthStencil;
     this.primaryTarget.attachmentsChecked = true;
+    this.primaryAttachmentChecks = new WeakMap();
     this.nativeTargets = new Set();
     this.nativeDepth = new Set();
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -891,8 +892,41 @@ export class ParticlesGL {
     }
     target.depthStencil = depthStencil;
     target.attachmentsChecked = false;
-    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
-      throw new Error('Native render target/depth combination is incomplete');
+    // A frame can switch between two owned depth surfaces on the primary target.
+    // Their storage is fixed, and reconstruction starts with a fresh cache.
+    const checks =
+      target === this.primaryTarget &&
+      depthStencil &&
+      (depthStencil === this.primaryDepthStencil || this.nativeDepth?.has(depthStencil))
+        ? this.primaryAttachmentChecks
+        : null;
+    const verified = checks?.get(depthStencil);
+    const depthHandle = depthStencil?.renderbuffer ?? depthStencil?.texture;
+    const canReuse =
+      verified &&
+      verified.framebuffer === target.framebuffer &&
+      verified.color === target.texture &&
+      verified.width === target.width &&
+      verified.height === target.height &&
+      verified.depthHandle === depthHandle &&
+      verified.depthWidth === depthStencil.width &&
+      verified.depthHeight === depthStencil.height &&
+      verified.format === depthStencil.format &&
+      !gl.isContextLost();
+    if (!canReuse) {
+      if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
+        throw new Error('Native render target/depth combination is incomplete');
+      checks?.set(depthStencil, {
+        framebuffer: target.framebuffer,
+        color: target.texture,
+        width: target.width,
+        height: target.height,
+        depthHandle,
+        depthWidth: depthStencil.width,
+        depthHeight: depthStencil.height,
+        format: depthStencil.format,
+      });
+    }
     target.attachmentsChecked = true;
   }
   withRenderTarget(target, callback, { depthStencil = null, preserveState = false } = {}) {

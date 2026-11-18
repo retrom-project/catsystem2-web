@@ -100,8 +100,55 @@ test('shared Stage device restores real resources without reviving undefined tar
         target = stage.surfaceTarget(id),
         aux = stage.surfaceTarget(auxID),
         depth = stage.surfaceDepth(id),
+        primaryDepth = gpu.createDepthStencil(4, 4, 80),
         managed = { width: 1, height: 1, rgba: Uint8Array.of(19, 37, 83, 129) },
         managedHandle = gpu.texture(managed);
+      const checkPrimaryAttachments = () => {
+        const status = gl.checkFramebufferStatus;
+        let calls = 0;
+        gl.checkFramebufferStatus = function (binding) {
+          calls++;
+          return status.call(this, binding);
+        };
+        try {
+          for (let i = 0; i < 2; i++) {
+            gpu.withRenderTarget(
+              gpu.primaryTarget,
+              () =>
+                check(
+                  gl.getFramebufferAttachmentParameter(
+                    gl.FRAMEBUFFER,
+                    gl.DEPTH_ATTACHMENT,
+                    gl.FRAMEBUFFER_ATTACHMENT_OBJECT_NAME,
+                  ) === primaryDepth.texture,
+                  'primary depth texture actually attached',
+                ),
+              { depthStencil: primaryDepth },
+            );
+            equal(calls, 2, 'validate both attachment pairs once in this device generation');
+          }
+        } finally {
+          delete gl.checkFramebufferStatus;
+        }
+      };
+      checkPrimaryAttachments();
+      const incompleteDepth = gpu.createDepthStencil(0, 0, 80);
+      try {
+        for (let i = 0; i < 2; i++) {
+          let error;
+          try {
+            gpu.withRenderTarget(gpu.primaryTarget, () => {}, { depthStencil: incompleteDepth });
+          } catch (e) {
+            error = e;
+          }
+          check(
+            error?.message === 'Native render target/depth combination is incomplete',
+            'incomplete attachments must fail on every attempt',
+          );
+        }
+      } finally {
+        gpu.destroyDepthStencil(incompleteDepth);
+      }
       gpu.beginFrame(0xff000000);
       gpu.withRenderTarget(target, () => gpu.clear({ flags: 7, color: 0xff112233 }), {
         depthStencil: depth,
@@ -209,6 +256,7 @@ test('shared Stage device restores real resources without reviving undefined tar
         'managed texture really reuploaded',
       );
       check(gpu.resourcesReady(), 'real GL program/buffer/texture/framebuffer handles valid');
+      checkPrimaryAttachments();
       check(
         !target.contentValid && !aux.contentValid && depth.validMask === 0,
         'volatile content must stay invalid even though device ready',
