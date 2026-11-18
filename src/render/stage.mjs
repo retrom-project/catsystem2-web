@@ -92,6 +92,12 @@ export class StageRenderer {
   drawEmote(geometry, { matrix, viewport, opaqueTarget = false } = {}) {
     if (!this.gpu?.drawing) throw new Error('E-mote drawing requires an open StageRenderer frame');
     let stencil = 0;
+    let texture, material, triangles;
+    const flush = () => {
+      if (!triangles) return;
+      this.gpu.drawGeometry(triangles, texture, { state: material, opaqueTarget });
+      triangles = undefined;
+    };
     for (const command of geometry.project(
       this.gpu.target.width,
       this.gpu.target.height,
@@ -99,16 +105,23 @@ export class StageRenderer {
       viewport,
     )) {
       if (command.stencil && command.stencil !== stencil) {
+        flush();
         stencil = command.stencil;
         // Mask draws increment from this group's base reference. A new group
         // starts with its own coverage even when it overlaps an earlier one.
         this.gpu.clear({ flags: 4, stencil: stencil - 1 });
       }
-      this.gpu.drawGeometry(command.geometry, command.texture, {
-        state: this.emoteMaterials.get(command.blend, command.stencil, command.maskWrite),
-        opaqueTarget,
-      });
+      const next = this.emoteMaterials.get(command.blend, command.stencil, command.maskWrite);
+      // Adjacent triangles share a submission only while their texture and material agree.
+      if (command.texture !== texture || next !== material) {
+        flush();
+        texture = command.texture;
+        material = next;
+      }
+      triangles ??= [];
+      for (const triangle of command.geometry) triangles.push(triangle);
     }
+    flush();
   }
   drawEmoteSurface(id, geometry, { matrix } = {}) {
     const surface = this.surfaces.get(id),

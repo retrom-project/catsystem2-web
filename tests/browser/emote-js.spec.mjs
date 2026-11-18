@@ -190,7 +190,7 @@ test('JS E-mote materials and masks match frozen original draw pixels', async ({
 
 test('interleaved E-mote mask groups keep separate coverage', async ({ page }) => {
   await page.goto('/');
-  const pixels = await page.evaluate(async () => {
+  const { pixels, submissions } = await page.evaluate(async () => {
     const { StageRenderer } = await import('/src/render/stage.mjs');
     const width = 8,
       height = 5,
@@ -220,13 +220,20 @@ test('interleaved E-mote mask groups keep separate coverage', async ({ page }) =
         secondMask,
         packet(screen, 0xff00ff00, 5),
         firstMask,
+        packet(screen, 0xffffff00, 3),
         packet(screen, 0xff0000ff, 3),
         packet(screen, 0xffff00ff, 7),
       ];
+    const submissions = [],
+      drawGeometry = stage.gpu.drawGeometry;
+    stage.gpu.drawGeometry = function (triangles, ...args) {
+      submissions.push(triangles.length);
+      return drawGeometry.call(this, triangles, ...args);
+    };
     try {
       stage.gpu.beginFrame(0xff203040);
       stage.drawEmote({ commands, project: () => commands });
-      return Array.from(stage.gpu.pixels());
+      return { pixels: Array.from(stage.gpu.pixels()), submissions };
     } finally {
       stage.dispose();
     }
@@ -239,6 +246,7 @@ test('interleaved E-mote mask groups keep separate coverage', async ({ page }) =
       else expected.push(32, 48, 64, 255);
     }
   expect(pixels).toEqual(expected);
+  expect(submissions).toEqual([2, 2, 2, 2, 2, 4, 2]);
 });
 
 // A real WebGL2 device is required for transparent model-target composition,
