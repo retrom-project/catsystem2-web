@@ -73,6 +73,32 @@ test('per-icon run-length textures retain origin and decode both literal and rep
   assert.equal(icon.left, 0);
 });
 
+test('cropped RGBA8 textures keep stored row stride and alpha at an unaligned resource offset', () => {
+  const r = root();
+  Object.assign(r.source.tex.texture, {
+    width: 3,
+    height: 3,
+    truncated_width: 2,
+    truncated_height: 2,
+  });
+  const atlas = Uint8Array.from({ length: 3 * 3 * 4 }, (_, index) => index * 7);
+  const encoded = encodeAuthoredPSB(r, [atlas]),
+    resourceOffset = new PSB(encoded).resource(0).byteOffset,
+    offset = (1 - resourceOffset) & 3,
+    backing = new Uint8Array(encoded.length + offset);
+  backing.set(encoded, offset);
+  const psb = new PSB(backing.subarray(offset)),
+    document = new EmoteDocument(psb),
+    decoded = document.texture('tex');
+  assert.equal(psb.resource(0).byteOffset % 4, 1);
+  assert.deepEqual([decoded.width, decoded.height], [2, 2]);
+  assert.deepEqual(
+    decoded.rgba,
+    Uint8Array.of(14, 7, 0, 21, 42, 35, 28, 49, 98, 91, 84, 105, 126, 119, 112, 133),
+  );
+  assert.deepEqual(psb.resource(0), atlas);
+});
+
 test('incompatible documents, texture formats and truncated resources fail at their data boundary', () => {
   for (const change of [
     (r) => (r.id = 'unrelated'),
@@ -93,6 +119,10 @@ test('incompatible documents, texture formats and truncated resources fail at th
   r.source.tex.texture.type = 'RGBA8';
   const truncated = new EmoteDocument(new PSB(encodeAuthoredPSB(r, [pixels.subarray(0, 12)])));
   assert.throws(() => truncated.texture('tex'), /size mismatch/);
+  r.source.tex.texture.truncated_width = 3;
+  const crop = new EmoteDocument(new PSB(encodeAuthoredPSB(r, [pixels])));
+  assert.throws(() => crop.texture('tex'), /truncated texture exceeds resource dimensions/);
+  delete r.source.tex.texture.truncated_width;
   const bounds = new EmoteDocument(new PSB(encodeAuthoredPSB(r, [pixels])));
   bounds.sources.get('tex').icon.dot.left = 2;
   assert.throws(() => bounds.icon('tex', 'dot'), /outside its texture/);

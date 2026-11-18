@@ -45,15 +45,22 @@ function decodeTexture(psb, data) {
   dimensions(width, height);
   if (width > data.width || height > data.height)
     throw new Error('E-mote truncated texture exceeds resource dimensions');
-  const rgba = new Uint8Array(width * height * 4);
+  const rgba = new Uint8Array(width * height * 4),
+    sourceView = new DataView(pixels.buffer, pixels.byteOffset, pixels.byteLength),
+    targetView = new DataView(rgba.buffer),
+    sourceStride = data.width * 4,
+    targetStride = width * 4;
   for (let y = 0; y < height; y++)
-    for (let x = 0; x < width; x++) {
-      const source = (y * data.width + x) * 4,
-        target = (y * width + x) * 4;
-      rgba[target] = pixels[source + 2];
-      rgba[target + 1] = pixels[source + 1];
-      rgba[target + 2] = pixels[source];
-      rgba[target + 3] = pixels[source + 3];
+    for (let x = 0, source = y * sourceStride, target = y * targetStride; x < width; x++) {
+      const bgra = sourceView.getUint32(source, true);
+      // Swap the blue and red bytes while retaining green and alpha.
+      targetView.setUint32(
+        target,
+        (bgra & 0xff00ff00) | ((bgra & 0xff) << 16) | ((bgra >>> 16) & 0xff),
+        true,
+      );
+      source += 4;
+      target += 4;
     }
   return { width, height, rgba };
 }
