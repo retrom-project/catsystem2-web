@@ -78,11 +78,20 @@ export class NativeEngineMessages {
   async eachChild(record, callback, { teardown = false } = {}) {
     let previous = -Infinity;
     for (;;) {
-      const key = [...this.registry(record).keys()]
-        .filter((id) => (id | 0) > previous)
-        .sort(nativeTaskKeyOrder)[0];
-      if (key === undefined) break;
-      previous = key | 0;
+      // The awaited child can change the route map, so select from the live keys each time.
+      const routes = record.nativeTaskRoutes;
+      if (!routes) return;
+      let key,
+        next = Infinity;
+      for (const candidate of routes.keys()) {
+        const order = candidate | 0;
+        if (order > previous && order < next) {
+          key = candidate;
+          next = order;
+        }
+      }
+      if (key === undefined) return;
+      previous = next;
       const child = this.lookupPath(record, key, teardown).pointer;
       if (child?.parent === record.id) await callback(child);
     }
