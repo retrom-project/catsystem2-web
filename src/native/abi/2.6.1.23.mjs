@@ -41,7 +41,7 @@ const soundMessages = [
   166, 167, 168, 169, 170, 171, 172, 173, 176, 181, 185, 187, 190, 191, 192, 193, 196, 197,
 ];
 const toSound = (id) => toMessage(id + 13, -13);
-const tables = (count, slots = []) => ({
+const tables = (count, slots = [], evidence) => ({
   count,
   slots: {
     unknown: Array.from({ length: count }, (_, id) => id).filter((id) => !slots.includes(id)),
@@ -52,7 +52,7 @@ const tables = (count, slots = []) => ({
         evidence: [
           {
             ids: slots,
-            value: 'Own 2.6.1.23 startup KCS calls, task receivers and compact Settings blocks',
+            value: evidence,
           },
         ],
       }
@@ -221,8 +221,15 @@ export default {
     accelerators: 'ansi-resource',
   },
   tables: {
-    main: tables(869, mainEntry),
-    generic: tables(45),
+    main: tables(
+      869,
+      mainEntry,
+      'Own 2.6.1.23 startup KCS calls, task receivers and compact Settings blocks',
+    ),
+    generic: {
+      ...tables(45, [38, 41], 'Own 2.6.1.23 MOT handlers and fixed-base logo motion calls'),
+      signatures: [{ ids: [41], fields: { resultWritten: true } }],
+    },
     'particle-v1': tables(44),
     'particle-v2': tables(51),
   },

@@ -136,6 +136,50 @@ test('MOT math natives execute float32 results and reject unknown or mismatched 
   );
 });
 
+test('2.6.1.23 MOT interpolation pushes one float32 result and continues', () => {
+  const baseProfile = 'grisaia-jp-engine-2.6.1.23';
+  for (const [args, expected] of [
+    [[0, 255, 0, 60, 0], 0],
+    [[0, 255, 0, 60, 30], 127.5],
+    [[0, 255, 0, 60, 60], 255],
+    [[10, 30, 2, 4, 1], 10],
+    [[10, 30, 2, 4, 5], 30],
+    [[-0, 30, 2, 4, 2], -0],
+  ]) {
+    const pushes = args.map((value) => [37, floatBits(value)]);
+    const script = program([...pushes, [43, 41, 20], [38, [3, shared(MOTION_ABI.color)]], [59]]);
+    const motion = new MotionInstance(script, { profile: baseProfile });
+    assert.equal(motion.update(0).status, 'halted');
+    assert.equal(motion.view.getUint32(MOTION_ABI.color, true), floatBits(expected));
+    assert.equal(motion.machine.sp, motion.machine.floor);
+    assert.deepEqual([...motion.calls], [[41, 1]]);
+  }
+  assert.throws(
+    () => new MotionInstance(program([[43, 41, 0], [59]]), { profile: baseProfile }).update(0),
+    /expects 5 arguments, got 0/,
+  );
+  assert.throws(
+    () => new MotionInstance(program([[43, 42, 0], [59]]), { profile: baseProfile }).update(0),
+    /Unrecovered MOT native/,
+  );
+});
+
+test('2.6.1.23 MOT exit clears only the active word and yields without a stack result', () => {
+  const profile = 'grisaia-jp-engine-2.6.1.23';
+  const sentinel = 0xdeadbeef;
+  const script = program([[37, sentinel], [43, 38, 0], [38, [3, shared(MOTION_ABI.color)]], [59]]);
+  const motion = new MotionInstance(script, { profile, registers: [1.25] });
+  const expected = motion.shared.slice();
+  new DataView(expected.buffer).setUint32(MOTION_ABI.active, 0, true);
+
+  assert.equal(motion.update(0).status, 'yielded');
+  assert.equal(motion.active, false);
+  assert.deepEqual(motion.shared, expected);
+  assert.equal(motion.machine.sp, motion.machine.floor + 4);
+  assert.equal(motion.machine.load(motion.machine.floor), sentinel);
+  assert.deepEqual([...motion.calls], [[38, 1]]);
+});
+
 function changePosition(operation, value, name) {
   return program(
     [
