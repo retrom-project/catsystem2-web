@@ -188,6 +188,59 @@ test('JS E-mote materials and masks match frozen original draw pixels', async ({
   expect(result.error).toEqual([0, 0]);
 });
 
+test('interleaved E-mote mask groups keep separate coverage', async ({ page }) => {
+  await page.goto('/');
+  const pixels = await page.evaluate(async () => {
+    const { StageRenderer } = await import('/src/render/stage.mjs');
+    const width = 8,
+      height = 5,
+      stage = new StageRenderer({ canvas: new OffscreenCanvas(width, height) }),
+      texture = { width: 1, height: 1, rgba: Uint8Array.of(255, 255, 255, 255) };
+    const packet = (rect, color, stencil, maskWrite = false) => {
+      const [left, top, right, bottom] = rect,
+        vertex = (x, y) => ({ x: x - 0.5, y: y - 0.5, z: 0.5, w: 1, u: 0, v: 0, color }),
+        corners = [
+          vertex(left, top),
+          vertex(right, top),
+          vertex(left, bottom),
+          vertex(right, bottom),
+        ],
+        geometry = [
+          { vertices: [corners[0], corners[1], corners[2]] },
+          { vertices: [corners[2], corners[1], corners[3]] },
+        ];
+      return { geometry, texture, blend: 6, stencil, maskWrite };
+    };
+    const screen = [0, 0, width, height],
+      firstMask = packet([1, 1, 4, 4], 0xffffffff, 3, true),
+      secondMask = packet([3, 2, 7, 4], 0xffffffff, 5, true),
+      commands = [
+        firstMask,
+        packet(screen, 0xffff0000, 3),
+        secondMask,
+        packet(screen, 0xff00ff00, 5),
+        firstMask,
+        packet(screen, 0xff0000ff, 3),
+        packet(screen, 0xffff00ff, 7),
+      ];
+    try {
+      stage.gpu.beginFrame(0xff203040);
+      stage.drawEmote({ commands, project: () => commands });
+      return Array.from(stage.gpu.pixels());
+    } finally {
+      stage.dispose();
+    }
+  });
+  const expected = [];
+  for (let y = 0; y < 5; y++)
+    for (let x = 0; x < 8; x++) {
+      if (x >= 1 && x < 4 && y >= 1 && y < 4) expected.push(0, 0, 255, 255);
+      else if (x >= 3 && x < 7 && y >= 2 && y < 4) expected.push(0, 255, 0, 255);
+      else expected.push(32, 48, 64, 255);
+    }
+  expect(pixels).toEqual(expected);
+});
+
 // A real WebGL2 device is required for transparent model-target composition,
 // retained output after Skip, shared depth state and fresh-world GPU restore.
 for (const name of [

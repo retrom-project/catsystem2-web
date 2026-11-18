@@ -91,18 +91,24 @@ export class StageRenderer {
   }
   drawEmote(geometry, { matrix, viewport, opaqueTarget = false } = {}) {
     if (!this.gpu?.drawing) throw new Error('E-mote drawing requires an open StageRenderer frame');
-    if (geometry.commands.some((command) => command.maskWrite))
-      this.gpu.clear({ flags: 4, stencil: 0 });
+    let stencil = 0;
     for (const command of geometry.project(
       this.gpu.target.width,
       this.gpu.target.height,
       matrix,
       viewport,
-    ))
+    )) {
+      if (command.stencil && command.stencil !== stencil) {
+        stencil = command.stencil;
+        // Mask draws increment from this group's base reference. A new group
+        // starts with its own coverage even when it overlaps an earlier one.
+        this.gpu.clear({ flags: 4, stencil: stencil - 1 });
+      }
       this.gpu.drawGeometry(command.geometry, command.texture, {
         state: this.emoteMaterials.get(command.blend, command.stencil, command.maskWrite),
         opaqueTarget,
       });
+    }
   }
   drawEmoteSurface(id, geometry, { matrix } = {}) {
     const surface = this.surfaces.get(id),
