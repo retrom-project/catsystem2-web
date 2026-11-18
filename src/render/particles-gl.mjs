@@ -106,8 +106,27 @@ vec4 texel(ivec2 coordinate,ivec2 size){
   vec4 value=texelFetch(image,ivec2(address(coordinate.x,size.x,addressMode.x),address(coordinate.y,size.y,addressMode.y)),0);
   if(srgbTexture)value.rgb=linearColor(value.rgb);return value;
 }
+vec4 mixImageTexels(ivec2 lo,ivec2 hi,vec2 weight){
+  vec4 top=mix(texelFetch(image,lo,0),texelFetch(image,ivec2(hi.x,lo.y),0),weight.x);
+  vec4 bottom=mix(texelFetch(image,ivec2(lo.x,hi.y),0),texelFetch(image,hi,0),weight.x);
+  return mix(top,bottom,weight.y);
+}
 vec4 sampleImage(){
   ivec2 size=textureSize(image,0);vec2 at=uv*vec2(size);
+  if(all(equal(filters,ivec2(2)))&&!srgbTexture){
+    // Equal linear filters use the same four texels at every scale.
+    vec2 p=at-0.5,weight=fract(p);
+    ivec2 lo=ivec2(floor(p)),hi=lo+1;
+    if(all(equal(addressMode,ivec2(3)))){
+      return mixImageTexels(clamp(lo,ivec2(0),size-1),clamp(hi,ivec2(0),size-1),weight);
+    }
+    if(all(equal(addressMode,ivec2(2)))&&all(equal(size&(size-1),ivec2(0)))){
+      // The doubled power-of-two size is the mirrored repeat period.
+      ivec2 mask=size*2-1;
+      ivec2 a=lo&mask,b=hi&mask;
+      return mixImageTexels(min(a,mask-a),min(b,mask-b),weight);
+    }
+  }
   vec2 dx=dFdx(at),dy=dFdy(at);int filterType=max(dot(dx,dx),dot(dy,dy))>1.0?filters.x:filters.y;
   if(filterType==1)return texel(ivec2(floor(at)),size);
   if(filterType==3&&nativeAnisotropy){vec2 p=uv;if(addressMode.x==5)p.x=abs(p.x);if(addressMode.y==5)p.y=abs(p.y);vec4 value=textureGrad(image,p,dFdx(p),dFdy(p));if(srgbTexture)value.rgb=linearColor(value.rgb);return value;}

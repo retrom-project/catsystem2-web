@@ -1,6 +1,77 @@
 // SPDX-License-Identifier: MPL-2.0
 import { test, expect } from '@playwright/test';
 
+test('constant linear filtering matches mixed filters at clamped and mirrored edges', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const cases = await page.evaluate(async () => {
+    const { ParticlesGL } = await import('/src/render/particles-gl.mjs');
+    const size = 16,
+      gpu = new ParticlesGL(size, size);
+    const draw = (frame, address, scale, mag, min) => {
+      const vertices = [
+        [-0.5, -0.5, -1.3, -1.7],
+        [size - 0.5, -0.5, -1.3 + (scale * size) / frame.width, -1.7],
+        [-0.5, size - 0.5, -1.3, -1.7 + (scale * size) / frame.height],
+        [
+          size - 0.5,
+          size - 0.5,
+          -1.3 + (scale * size) / frame.width,
+          -1.7 + (scale * size) / frame.height,
+        ],
+      ].map(([x, y, u, v]) => ({ x, y, z: 0, w: 1, color: 0xffffffff, u, v }));
+      gpu.beginFrame();
+      gpu.drawGeometry([{ vertices }], frame, {
+        renderStates: [
+          [15, 0],
+          [27, 0],
+        ],
+        samplerStates: [
+          [1, address],
+          [2, address],
+          [5, mag],
+          [6, min],
+        ],
+      });
+      gpu.endNativeFrame();
+      return gpu.pixels();
+    };
+    const result = [];
+    try {
+      for (const [width, height] of [
+        [4, 8],
+        [3, 5],
+      ]) {
+        const rgba = Uint8Array.from({ length: width * height * 4 }, (_, i) => (i * 47 + 29) & 255);
+        const frame = { width, height, rgba };
+        for (const address of [2, 3]) {
+          for (const [scale, mag, min] of [
+            [0.75, 2, 1],
+            [1.75, 1, 2],
+          ]) {
+            const actual = draw(frame, address, scale, 2, 2);
+            const generic = draw(frame, address, scale, mag, min);
+            result.push({
+              width,
+              height,
+              address,
+              scale,
+              varying: new Set(actual).size > 16,
+              equal: actual.every((value, i) => value === generic[i]),
+            });
+          }
+        }
+      }
+      return result;
+    } finally {
+      gpu.close();
+    }
+  });
+  expect(cases).toHaveLength(8);
+  for (const result of cases) expect(result).toMatchObject({ varying: true, equal: true });
+});
+
 test('shared Stage device restores real resources without reviving undefined target contents', async ({
   page,
 }) => {
