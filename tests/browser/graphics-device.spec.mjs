@@ -31,14 +31,14 @@ test('shared Stage device restores real resources without reviving undefined tar
       { NativeConfiguration },
       { ParticleRandom },
       { MotionLibrary },
-      { EmoteD3D9 },
+      { CanvasRenderer },
       { snapshotD3DContext },
     ] = await Promise.all([
       import('/src/native/world.mjs'),
       import('/src/native/config.mjs'),
       import('/src/ppi/random.mjs'),
       import('/src/motion/library.mjs'),
-      import('/oracle/m2-native-d3d.mjs'),
+      import('/src/render/canvas.mjs'),
       import('/src/render/particles-gl.mjs'),
     ]);
     let assertions = 0;
@@ -87,7 +87,9 @@ test('shared Stage device restores real resources without reviving undefined tar
       device === stage.graphicsDevice && device.status === 'detached',
       'World must own one detached device',
     );
-    stage.attach({ canvas: { width: 4, height: 4 } });
+    const output = document.createElement('canvas');
+    output.width = output.height = 4;
+    stage.attach(new CanvasRenderer(output));
     const gpu = stage.gpu,
       gl = gpu.gl;
     try {
@@ -107,6 +109,7 @@ test('shared Stage device restores real resources without reviving undefined tar
       gpu.endNativeFrame();
       equal([...gpu.pixels(target).slice(0, 4)], [17, 34, 51, 255], 'pre-loss GPU producer');
       equal([...stage.surfaces.get(id).bytes], [...cpu], 'CPU shadow intentionally remains old');
+      const surfaceFrame = stage.surfaceFrame(id);
       gpu.depthStateProgram();
       gpu.surfaceBlendProgram();
       const old = {
@@ -121,10 +124,6 @@ test('shared Stage device restores real resources without reviving undefined tar
         depthProgram: gpu.depthProgram.program,
         blendProgram: gpu.blendProgram.program,
       };
-      // Borrow the real adapter's read boundary without starting a native process.
-      const sharedNativeD3D = Object.create(EmoteD3D9.prototype),
-        shadow = { pointer: 2, dirty: false };
-      Object.assign(sharedNativeD3D, { gpu, backbuffer: 1, gpuTargets: new Map([[2, target]]) });
       const context = world.graphics.d3dContext,
         contextBefore = snapshotD3DContext(context),
         randomBefore = random.snapshot(),
@@ -162,8 +161,8 @@ test('shared Stage device restores real resources without reviving undefined tar
       check(!target.contentValid && depth.validMask === 0, 'lost contents must be invalid');
       rejects(() => stage.surfacePixels(id), 'cannot read old shadow while device lost');
       rejects(
-        () => sharedNativeD3D.syncSurface(2, shadow),
-        'dirty=false cannot authorize stale shadow',
+        () => gpu.texture(surfaceFrame),
+        'retaining a surface frame cannot authorize sampling during device loss',
       );
       await event('webglcontextrestored', () => setTimeout(() => extension.restoreContext(), 0));
       await device.settled();
@@ -184,10 +183,11 @@ test('shared Stage device restores real resources without reviving undefined tar
       await scope;
       finishedBatch();
       check(!gpu.drawing && gpu.activeTarget == null, 'old async scope must not revive its frame');
-      check(stage.gpu === gpu && sharedNativeD3D.gpu === gpu, 'GPU object retained by both owners');
+      check(stage.gpu === gpu && stage.renderer.canvas === output, 'Stage output owner retained');
       check(
         stage.surfaceTarget(id) === target &&
-          sharedNativeD3D.gpuTargets.get(2) === target &&
+          stage.surfaceFrame(id) === surfaceFrame &&
+          surfaceFrame.nativeTarget === target &&
           stage.surfaceDepth(id) === depth,
         'all old target/depth references are updated in place',
       );
@@ -214,12 +214,9 @@ test('shared Stage device restores real resources without reviving undefined tar
         'volatile content must stay invalid even though device ready',
       );
       equal([...stage.surfaces.get(id).bytes], [...cpu], 'restoration did not invent CPU readback');
-      rejects(() => gpu.texture({ nativeTarget: target }), 'undefined target cannot be sampled');
+      rejects(() => gpu.texture(surfaceFrame), 'undefined target cannot be sampled');
       rejects(() => gpu.snapshotDepthStencil(depth), 'undefined depth cannot be checkpointed');
-      rejects(
-        () => sharedNativeD3D.syncSurface(2, shadow),
-        'ready device does not authorize an invalid target',
-      );
+      rejects(() => stage.surfacePixels(id), 'ready device does not authorize an invalid target');
       gpu.withRenderTarget(target, () => gpu.clear({ flags: 7, rectangles: [[0, 0, 2, 4]] }), {
         depthStencil: depth,
       });
@@ -282,11 +279,15 @@ test('shared Stage device restores real resources without reviving undefined tar
         [19, 37, 83, 129],
         'normal full frame samples actual managed data',
       );
-      const output = new OffscreenCanvas(4, 4),
-        ctx = output.getContext('2d');
-      ctx.drawImage(gpu.endFrame(), 0, 0);
+      stage.presentNative({ stageTarget: gpu.primaryTarget });
+      check(
+        gpu.presentationCanvas === undefined,
+        'restored full-size target uses direct presentation',
+      );
+      gpu.endNativeFrame();
+      stage.renderer.present();
       equal(
-        [...ctx.getImageData(0, 0, 1, 1).data],
+        [...stage.renderer.context.getImageData(0, 0, 1, 1).data],
         [19, 37, 83, 255],
         'post-loss full frame reaches presentation',
       );
@@ -352,6 +353,7 @@ test('full-size native presentation keeps the primary RGBA and existing 2D canva
         gl.scissor(1, 1, 1, 1);
         stage.presentNative({ stageTarget: primary });
         const direct = gpu.presentationCanvas === undefined,
+          opaque = renderer.ctx.getImageData(0, 0, 4, 3).data,
           bindings =
             gpu.drawing &&
             gpu.activeTarget === primary &&
@@ -362,10 +364,40 @@ test('full-size native presentation keeps the primary RGBA and existing 2D canva
         renderer.present();
         shadow.drawImage(gpu.presentTarget(primary), 0, 0);
         paint(shadow);
-        const reference = shadow.getImageData(0, 0, 4, 3).data;
+        const reference = shadow.getImageData(0, 0, 4, 3).data,
+          blit = gl.blitFramebuffer,
+          presentTarget = gpu.presentTarget;
+        let usedFallback = false;
+        gl.blitFramebuffer = (...args) => {
+          // Linear filtering with a depth blit produces INVALID_OPERATION.
+          blit.call(gl, ...args.slice(0, 8), gl.DEPTH_BUFFER_BIT, gl.LINEAR);
+        };
+        gpu.presentTarget = function (target) {
+          usedFallback = target === primary;
+          return presentTarget.call(this, target);
+        };
+        try {
+          stage.presentNative({ stageTarget: primary });
+        } finally {
+          delete gl.blitFramebuffer;
+          delete gpu.presentTarget;
+        }
+        const fallbackExact = renderer.ctx
+          .getImageData(0, 0, 4, 3)
+          .data.every((value, index) => value === opaque[index]);
+        stage.presentNative({ stageTarget: readTarget });
+        const asymmetric =
+          [...renderer.ctx.getImageData(0, 0, 1, 1).data].join() === '19,56,93,255' &&
+          renderer.ctx.getImageData(2, 0, 1, 1).data[3] === 0 &&
+          gpu.canvas.width === 4 &&
+          gpu.canvas.height === 3 &&
+          gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING) === primary.framebuffer &&
+          gl.getParameter(gl.READ_FRAMEBUFFER_BINDING) === readTarget.framebuffer;
         return {
           direct,
           bindings,
+          invalidOperationFallback: usedFallback && fallbackExact,
+          asymmetric,
           originalCanvas:
             renderer.canvas === canvas && renderer.context === canvas.getContext('2d'),
           sourceExact: capture.frame().rgba.every((value, index) => value === rgba[index]),
@@ -385,6 +417,8 @@ test('full-size native presentation keeps the primary RGBA and existing 2D canva
   expect(result).toEqual({
     direct: true,
     bindings: true,
+    invalidOperationFallback: true,
+    asymmetric: true,
     originalCanvas: true,
     sourceExact: true,
     compositedExact: true,
