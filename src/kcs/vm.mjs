@@ -3,10 +3,13 @@
 // See docs/kcs-vm.md for addresses, the native oracle, and validation scope.
 import { encodeCP932 } from './strings.mjs';
 import { nativeDebugSymbol, nativeDebugValue } from './debug.mjs';
-const single = new Set([
+const operandCounts = new Uint8Array(69).fill(2);
+for (const op of [
   8, 12, 22, 23, 24, 25, 26, 37, 38, 39, 40, 41, 46, 47, 49, 50, 54, 55, 56, 57, 61, 66, 68,
-]);
-const empty = new Set([0, 45, 51, 58, 59, 60]);
+])
+  operandCounts[op] = 1;
+for (const op of [0, 45, 51, 58, 59, 60]) operandCounts[op] = 0;
+operandCounts[53] = 3;
 const view = new DataView(new ArrayBuffer(4));
 let nextMemoryID = 1;
 export const NATIVE_RESULT_SENTINEL = 0xcccccccc;
@@ -207,22 +210,23 @@ export class KCSMachine {
     if (!Number.isInteger(at) || at < 0 || at >= this.script.codeSize)
       throw new Error(`KCS instruction address ${at}`);
     const op = b.u8(at);
-    if (op >= 69 || op === 63 || op === 64) throw new Error(`KCS unknown opcode ${op} at ${at}`);
-    const count = empty.has(op) ? 0 : single.has(op) ? 1 : op === 53 ? 3 : 2;
-    if (at + 1 + count * 5 > this.script.codeSize)
-      throw new Error(`KCS instruction exceeds code at ${at}`);
-    const args = Array.from({ length: count }, (_, i) => {
-      const p = at + 1 + i * 5,
-        mode = b.u8(p);
-      return {
+    if (op >= operandCounts.length || op === 63 || op === 64)
+      throw new Error(`KCS unknown opcode ${op} at ${at}`);
+    const size = 1 + operandCounts[op] * 5,
+      end = at + size;
+    if (end > this.script.codeSize) throw new Error(`KCS instruction exceeds code at ${at}`);
+    const args = [];
+    for (let p = at + 1; p < end; p += 5) {
+      const mode = b.u8(p);
+      args.push({
         mode,
         value: b.u32(p + 1),
         width: mode & 0x80 ? 4 : (mode & 15) === 1 ? 1 : (mode & 15) === 2 ? 2 : 4,
         float: Boolean(mode & 4),
         signed: Boolean(mode & 0x20),
-      };
-    });
-    return { op, args, size: 1 + count * 5 };
+      });
+    }
+    return { op, args, size };
   }
   region(address, count = 1) {
     if (
