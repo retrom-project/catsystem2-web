@@ -204,6 +204,48 @@ test('2.6.1.23 startup copies a formatted field, logs it and clears a bounded ta
   assert.equal(machine.load(table + size, 1), 0xa5);
 });
 
+test('2.6.1.23 CSS removal consumes two words and leaves the caller stack intact', async () => {
+  const handle = 32,
+    savedStackWord = 36,
+    bytes = 128,
+    tag = 0x81234567,
+    other = 0x42424242,
+    sentinel = 0xa1b2c3d4,
+    program = kcsProgram([
+      ...native(238, 7),
+      receive(handle),
+      ...native(244, loadedWord(handle), tag, 4, bytes),
+      [45],
+      ...native(244, loadedWord(handle), tag, 4, bytes + 4),
+      [45],
+      ...native(244, loadedWord(handle), other, 4, bytes + 8),
+      [45],
+      ...push(sentinel),
+      ...native(469, 0, tag),
+      ...native(469, loadedWord(handle), 0x11223344),
+      ...native(469, loadedWord(handle), tag),
+      receive(savedStackWord),
+      [59],
+    ]),
+    runtime = new NativeRuntime({ profile, read: async () => program }),
+    { machine } = await runtime.spawn('close-remove-entry.kcs');
+  machine.bytes(bytes, 12).set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+  await runtime.tick();
+
+  assert.equal(machine.halted, true);
+  assert.equal(machine.sp, machine.floor);
+  assert.equal(machine.load(savedStackWord), sentinel);
+  const file = runtime.handles.get(machine.load(handle), 'global-file');
+  assert.equal(file.tag, 7);
+  assert.equal(file.capacity, 0x80000 - 12);
+  assert.deepEqual(
+    file.records.map(({ id }) => id),
+    [tag, other],
+  );
+  assert.deepEqual(file.read(tag), Uint8Array.of(5, 6, 7, 8));
+  assert.deepEqual(file.read(other), Uint8Array.of(9, 10, 11, 12));
+});
+
 test('2.6.1.23 configuration copies use the compact blocks and system voice bounds', async () => {
   const startup = parseNativeXML(
       startupXML(

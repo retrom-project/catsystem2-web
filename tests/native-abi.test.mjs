@@ -44,8 +44,8 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 53);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 816);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 54);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 815);
   assert.deepEqual(
     base.generic.entries.filter(({ status }) => status === 'recovered').map(({ id }) => id),
     [17, 38, 41],

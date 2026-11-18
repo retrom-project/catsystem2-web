@@ -33,7 +33,7 @@ export const engine23TitleCommonHeads = {
 const mainEntry = [
   1, 5, 8, 9, 13, 14, 36, 66, 67, 68, 71, 79, 88, 92, 100, 104, 105, 117, 209, 210, 211, 238, 240,
   244, 245, 246, 247, 250, 254, 256, 260, 262, 276, 277, 359, 360, 393, 400, 447, 448, 449, 452,
-  465, 582, 583, 584, 590, 591, 592, 593, 789, 848, 849,
+  465, 469, 582, 583, 584, 590, 591, 592, 593, 789, 848, 849,
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const baseMessages = [1, 2, 3].map((id) => toMessage(id));
@@ -233,7 +233,7 @@ export default {
     main: tables(
       869,
       mainEntry,
-      'Own 2.6.1.23 startup KCS calls, task receivers and compact Settings blocks',
+      'Own 2.6.1.23 startup KCS calls, task receivers, compact Settings and close CSS removal',
     ),
     generic: {
       ...tables(45, [17, 38, 41], 'Own 2.6.1.23 MOT handlers and fixed-base logo motion calls'),
