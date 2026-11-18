@@ -2,6 +2,7 @@
 // Browser event/Win32 device boundary. Each InputTask keeps its own timers and
 // captures; all Top tasks attached to one browser window read the same device.
 import { nativeInputBitmapMask } from './input.mjs';
+import { nativeABI } from './abi/index.mjs';
 export function createNativeInputBrowserServices(world, record, input, options = {}) {
   const bindings = () => world.inputBindings,
     primary = () => world.input ?? input,
@@ -90,13 +91,15 @@ export function createNativeInputBrowserServices(world, record, input, options =
     cancelWheel: async () => {
       bindings()?.cancelWheel();
     },
-    notifyCursor: (visible) =>
-      world.sendNativeEngine(0, record.id, 11, 0, 4, {
+    notifyCursor: (visible) => {
+      const message = nativeABI(world.profile).messages.cursorVisibility ?? 22;
+      return world.sendNativeEngine(0, record.id, 11, 0, 4, {
         payload: {
           load: (address) =>
-            [0, 0, world.nativeTaskID(record.id), 22, 0, visible, 0][address / 4] >>> 0,
+            [0, 0, world.nativeTaskID(record.id), message, 0, visible, 0][address / 4] >>> 0,
         },
-      }),
+      });
+    },
     alphaMask: async (bitmap, context = {}) => {
       if (context.nativePointer)
         throw new Error('Physical input bitmap pointers require the explicit oracle Input service');

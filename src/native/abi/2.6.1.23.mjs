@@ -37,6 +37,7 @@ const mainEntry = [
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const baseMessages = [1, 2, 3].map((id) => toMessage(id));
+const cursorVisibility = 21;
 const soundMessages = [
   166, 167, 168, 169, 170, 171, 172, 173, 176, 181, 185, 187, 190, 191, 192, 193, 196, 197,
 ];
@@ -174,8 +175,12 @@ export default {
       control: { unmapped: 'reject', raw: [], canonical: [] },
       sound: {
         unmapped: 'reject',
-        canonical: [...baseMessages, ...soundMessages.map((id) => toMessage(id, 13))],
-        raw: [...baseMessages, ...soundMessages.map(toSound)],
+        canonical: [
+          ...baseMessages,
+          toMessage(cursorVisibility, 22 - cursorVisibility),
+          ...soundMessages.map((id) => toMessage(id, 13)),
+        ],
+        raw: [...baseMessages, toMessage(22, cursorVisibility - 22), ...soundMessages.map(toSound)],
       },
       fesSound: {
         unmapped: 'reject',
@@ -183,6 +188,9 @@ export default {
       },
     },
     root: { start: 29, captionWide: false, soundReset: 181 },
+    cursorVisibility,
+    soundBaseOnly: [22],
+    scriptForward: [cursorVisibility],
     screenEvent: null,
     tilePlaneCommand: null,
   },

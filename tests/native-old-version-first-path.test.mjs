@@ -1058,7 +1058,7 @@ async function oldTitleWorld(
   return { world, audio };
 }
 
-async function verifyCursorVisibility(t, profile) {
+async function verifyCursorVisibility(t, profile, cursorMessage = 22) {
   const { world, audio } = await oldTitleWorld(
     {
       'main.kcs': kcsProgram([
@@ -1087,7 +1087,7 @@ async function verifyCursorVisibility(t, profile) {
       const message = receiver.message;
       t.mock.method(receiver, 'message', async function (words, context, output) {
         const result = await message.call(this, words, context, output);
-        if (words[1] === 22)
+        if (words[1] === cursorMessage)
           notices.push([owner, words, result, context.nativeUnhandled, context.flags]);
         return result;
       });
@@ -1124,29 +1124,39 @@ async function verifyCursorVisibility(t, profile) {
       [0, input.id, 0, 1],
     ]);
     assert.deepEqual(notices, [
-      ['Sound', [sender, 22, 0, 0], NATIVE_UNWRITTEN_WORD, true, 0],
-      ['Script', [sender, 22, 0, 0], 1, false, 0],
-      ['FES', [sender, 22, 0, 0], NATIVE_UNWRITTEN_WORD, true, 0],
-      ['Sound', [sender, 22, 0, 1], 0, false, 0],
-      ['Script', [sender, 22, 0, 1], 1, false, 0],
-      ['FES', [sender, 22, 0, 1], NATIVE_UNWRITTEN_WORD, true, 0],
+      ['Sound', [sender, cursorMessage, 0, 0], NATIVE_UNWRITTEN_WORD, true, 0],
+      ['Script', [sender, cursorMessage, 0, 0], 1, false, 0],
+      ['FES', [sender, cursorMessage, 0, 0], NATIVE_UNWRITTEN_WORD, true, 0],
+      ['Sound', [sender, cursorMessage, 0, 1], 0, false, 0],
+      ['Script', [sender, cursorMessage, 0, 1], 1, false, 0],
+      ['FES', [sender, cursorMessage, 0, 1], NATIVE_UNWRITTEN_WORD, true, 0],
     ]);
+    const unreviewed = cursorMessage === 22 ? 21 : 22;
     await assert.rejects(
-      world.engineMessages.dispatch(sound.record.id, input.id, 21),
-      /Unreviewed ABI message .*\/sound\/canonical\/21/,
+      world.engineMessages.dispatch(sound.record.id, input.id, unreviewed),
+      new RegExp(`Unreviewed ABI message .*/sound/canonical/${unreviewed}`),
     );
 
     world.sound.audio = audio;
     assert.deepEqual(
-      await world.engineMessages.dispatch(sound.record.id, input.id, 22, 0xffffffff, 0xffffffff),
+      await world.engineMessages.dispatch(
+        sound.record.id,
+        input.id,
+        cursorMessage,
+        0xffffffff,
+        0xffffffff,
+      ),
       { routed: true, handled: false, result: NATIVE_UNWRITTEN_WORD },
     );
     const emptyScript = await world.objects.create({ kind: 12, parent: main.id });
-    assert.deepEqual(await world.engineMessages.dispatch(emptyScript, input.id, 22, 0, 1), {
-      routed: true,
-      handled: true,
-      result: NATIVE_UNWRITTEN_WORD,
-    });
+    assert.deepEqual(
+      await world.engineMessages.dispatch(emptyScript, input.id, cursorMessage, 0, 1),
+      {
+        routed: true,
+        handled: true,
+        result: NATIVE_UNWRITTEN_WORD,
+      },
+    );
     await assert.rejects(
       world.engineMessages.dispatch(main.id, input.id, profile === title67Profile ? 9 : 65),
       /Unreviewed ABI behavior .*\/messages\.scriptBaseOnly/,
@@ -1166,6 +1176,9 @@ for (const [version, profile] of versions) {
     verifyCursorVisibility(t, profile),
   );
 }
+
+test('2.6.1.23 Input cursor changes reach Sound, Script and FES through its own message', (t) =>
+  verifyCursorVisibility(t, 'grisaia-jp-engine-2.6.1.23', 21));
 
 test('63 startup Plane GCALLs bind and release the owned Input region', async () => {
   const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');

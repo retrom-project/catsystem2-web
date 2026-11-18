@@ -41,6 +41,14 @@ interpreter's result. A Script without an interpreter consumes message 22
 and leaves the output word untouched. FES leaves the word untouched and
 allows Base handling. Each older profile registers its independently reviewed receivers.
 
+In 2.6.1.23, the Input visibility producer sends raw envelope 10 with embedded
+message 21. The browser uses the shared enclosed-message traversal and selects
+that profile's embedded message. The .23 Script forwards it as `0xffff0014`
+with the native sender and visibility in the same positions. The Sound receiver
+delegates to Base with audio enabled and writes zero without an audio owner.
+FES delegates to Base. The ordinary World regression follows both visibility
+changes and checks the received words and the preserved output.
+
 In 2.6.1.63, Input sends message 4 to the registered BasePlane on each configured
 keyboard edge. The plane sends raw 9 or 10 to its bound Script or FES with its
 native ID in both the sender and wParam fields and the key index as lParam.

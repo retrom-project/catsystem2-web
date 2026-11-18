@@ -462,12 +462,13 @@ export function createNativeScriptTask(world, record) {
         if (wParam) record.scriptStringDirty = 0;
         return NATIVE_UNWRITTEN_WORD;
       }
+      const cursorMessage = messagePolicy.cursorVisibility ?? 22;
       const immediate = new Map([
         [4, 0xffff0001],
         [9, 0xffff0003],
         [10, 0xffff0004],
         [18, 0xffff0016],
-        [22, 0xffff0014],
+        [cursorMessage, 0xffff0014],
         [30, 0xffff0018],
         [31, 0xffff0019],
         [64, 0xffff0005],
@@ -490,7 +491,7 @@ export function createNativeScriptTask(world, record) {
         const reply = await world.runtime.scheduler.send(record.id, [
           id === 18 ? 0xffffffff : sender,
           immediate.get(id),
-          id === 18 || id === 22 || id === 446 ? 0 : wParam,
+          id === 18 || id === cursorMessage || id === 446 ? 0 : wParam,
           id === 18 ? 0 : lParam,
         ]);
         if ([9, 10].includes(id)) return 0;

@@ -383,6 +383,8 @@ function validateBehavior(abi) {
   }
   if (!abi.messages?.channels?.base || !abi.messages?.channels?.control || !abi.messages?.root)
     throw new Error(`Incomplete ABI message data ${abi.id}`);
+  if (Object.hasOwn(abi.messages, 'cursorVisibility') && !word(abi.messages.cursorVisibility))
+    throw new Error(`Invalid ABI cursor visibility message ${abi.id}`);
   for (const field of ['soundBaseOnly', 'scriptForward']) {
     const ids = abi.messages[field];
     if (
