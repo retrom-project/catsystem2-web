@@ -6,7 +6,7 @@ export class Binary {
     this.view = new DataView(this.bytes.buffer, this.bytes.byteOffset, this.bytes.byteLength);
     this.label = label;
   }
-  range(at, count) {
+  #requireRange(at, count) {
     if (
       !Number.isSafeInteger(at) ||
       !Number.isSafeInteger(count) ||
@@ -15,28 +15,32 @@ export class Binary {
       at + count > this.bytes.length
     )
       throw new Error(`${this.label}: range ${at}+${count} exceeds ${this.bytes.length}`);
+  }
+  range(at, count) {
+    this.#requireRange(at, count);
     return this.bytes.subarray(at, at + count);
   }
   u8(at) {
-    return this.range(at, 1)[0];
+    this.#requireRange(at, 1);
+    return this.bytes[at];
   }
   u16(at) {
-    this.range(at, 2);
+    this.#requireRange(at, 2);
     return this.view.getUint16(at, true);
   }
   u32(at) {
-    this.range(at, 4);
+    this.#requireRange(at, 4);
     return this.view.getUint32(at, true);
   }
   i32(at) {
     return this.u32(at) | 0;
   }
   f32(at) {
-    this.range(at, 4);
+    this.#requireRange(at, 4);
     return this.view.getFloat32(at, true);
   }
   f64(at) {
-    this.range(at, 8);
+    this.#requireRange(at, 8);
     return this.view.getFloat64(at, true);
   }
   str(at, max = this.bytes.length - at, encoding = 'shift_jis') {

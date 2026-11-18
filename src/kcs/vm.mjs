@@ -272,19 +272,24 @@ export class KCSMachine {
   }
   load(address, width = 4, signed = false) {
     const [buffer, at] = this.region(address >>> 0, width);
-    const b = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
-    if (width === 1) return (signed ? b.getInt8(at) : b.getUint8(at)) >>> 0;
-    if (width === 2) return (signed ? b.getInt16(at, true) : b.getUint16(at, true)) >>> 0;
+    const byte = buffer[at];
+    if (width === 1) return signed ? ((byte << 24) >> 24) >>> 0 : byte;
+    const low = byte | (buffer[at + 1] << 8);
+    if (width === 2) return signed ? ((low << 16) >> 16) >>> 0 : low;
     if (width !== 4) throw new Error(`KCS invalid load width ${width}`);
-    return b.getUint32(at, true);
+    return (low | (buffer[at + 2] << 16) | (buffer[at + 3] << 24)) >>> 0;
   }
   store(address, value, width = 4) {
     const [buffer, at] = this.region(address >>> 0, width);
-    const b = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
-    if (width === 1) b.setUint8(at, value);
-    else if (width === 2) b.setUint16(at, value, true);
-    else if (width === 4) b.setUint32(at, value, true);
-    else throw new Error(`KCS invalid store width ${width}`);
+    if (width !== 1 && width !== 2 && width !== 4)
+      throw new Error(`KCS invalid store width ${width}`);
+    const word = value >>> 0;
+    buffer[at] = word;
+    if (width > 1) buffer[at + 1] = word >>> 8;
+    if (width === 4) {
+      buffer[at + 2] = word >>> 16;
+      buffer[at + 3] = word >>> 24;
+    }
   }
   allocate(size) {
     if (!Number.isSafeInteger(size) || size < 0 || size > 64 * 1024 * 1024)
