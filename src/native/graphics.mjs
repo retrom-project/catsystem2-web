@@ -1411,20 +1411,27 @@ export class NativeGraphicTask {
     }
     if (inputGraph.mesh || inputGraph.vram) {
       this.graphics.initializeTextures();
-      for (const item of nativeTexturedGeometry(
+      const triangles = nativeTexturedGeometry(
         inputGraph,
         state,
         this.graphics.projection(),
         this.graphics.texturePages.layout,
         (graph, vertices, triangle) => this.graphics.effectVertices(graph, vertices, triangle),
-      )) {
-        const frame =
-          item.textureID === -1 ? WHITE : await this.graphics.meshTexture(item.textureID);
-        gpu.drawGeometry([item], frame, {
-          blendMode: state.blendMode,
-          context: this.graphics.d3dContext,
-          drawType: 0,
-        });
+      );
+      const options = {
+        blendMode: state.blendMode,
+        context: this.graphics.d3dContext,
+        drawType: 0,
+      };
+      for (let first = 0; first < triangles.length; ) {
+        const { textureID } = triangles[first];
+        let end = first + 1;
+        // Each page is sampled with the same state within this graph draw.
+        // Keep adjacent triangles in order when they share that page.
+        while (end < triangles.length && triangles[end].textureID === textureID) end++;
+        const frame = textureID === -1 ? WHITE : await this.graphics.meshTexture(textureID);
+        gpu.drawGeometry(triangles.slice(first, end), frame, options);
+        first = end;
       }
       return;
     }

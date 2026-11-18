@@ -300,8 +300,8 @@ test('Game normal PLANE division uses the platform guard band across a source ce
       actual,
       expected(2, 8).map((vertices) => ({ textureID: 0, vertices })),
     );
-    assert.equal(calls.length, 2);
-    assert.ok(calls.every((call) => call.frame === h.world.graphics.texturePages.frame(0)));
+    assert.equal(calls.length, 1, 'adjacent triangles on one page share a submission');
+    assert.equal(calls[0].frame, h.world.graphics.texturePages.frame(0));
     assert.deepEqual(h.world.graphics.texturePages.layout.textureCaps, {
       maximumTextureSize: 4096,
       guardBand: [-4096, -4096, 4096, 4096],
@@ -456,8 +456,8 @@ test('SDK normal PLANE division uses the platform guard band across a source cel
       actual,
       expected(2, 8).map((vertices) => ({ textureID: 0, vertices })),
     );
-    assert.equal(calls.length, 2);
-    assert.ok(calls.every((call) => call.frame === h.world.graphics.texturePages.frame(0)));
+    assert.equal(calls.length, 1, 'adjacent triangles on one page share a submission');
+    assert.equal(calls[0].frame, h.world.graphics.texturePages.frame(0));
     assert.deepEqual(h.world.graphics.texturePages.layout.textureCaps, {
       maximumTextureSize: 4096,
       guardBand: [-4096, -4096, 4096, 4096],
