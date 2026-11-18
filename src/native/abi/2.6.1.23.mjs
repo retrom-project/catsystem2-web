@@ -133,6 +133,7 @@ export default {
     allowQuotedFesNames: null,
     fesExtensions: false,
     fesLoadParameters: false,
+    fesPlaybackUpdates: false,
     completionFrame: null,
     loopPointEndPolicy: 'allow-unordered',
     loadMessageFormat: 'filename',

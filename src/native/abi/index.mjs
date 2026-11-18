@@ -230,6 +230,11 @@ function validateBehavior(abi) {
   if (Object.hasOwn(abi.sound, 'loadMessageFormat') && abi.sound.loadMessageFormat !== 'filename')
     throw new Error(`Invalid ABI Sound load message format ${abi.id}`);
   if (
+    Object.hasOwn(abi.sound, 'fesPlaybackUpdates') &&
+    typeof abi.sound.fesPlaybackUpdates !== 'boolean'
+  )
+    throw new Error(`Invalid ABI FES Sound playback update policy ${abi.id}`);
+  if (
     Object.hasOwn(abi.fes ?? {}, 'definitionMissIsDiagnostic') &&
     typeof abi.fes.definitionMissIsDiagnostic !== 'boolean'
   )

@@ -53,6 +53,13 @@ upper limit. A full range can reuse the first bank pending release. The
 configuration layout and bounded voice operations are documented with the
 [configuration queries](native-configuration-queries.md#26123-compact-configuration).
 
+The .23 FES Sound playback handler sends message 169 with the bank and loop
+count for active eligible playback. An ineligible pending play sends stop
+message 171. An eligible inactive object still invokes the start notification.
+The Sound producer's version policy leaves the playback clock and standalone
+loop updates disabled. On the base logo route an unallocated system voice
+follows the stop path and returns the FES update to its caller.
+
 The fixed-base logo motions use the engine's own Generic 17, 38, and 41.
 Generic 17 takes one float32 word, adds `0.5` at float32 precision, floors the
 sum, writes the integer result, and continues with control 1. The engine's

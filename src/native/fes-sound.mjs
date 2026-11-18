@@ -333,7 +333,9 @@ export class NativeFESSound {
   }
   async update(instance, object, { configurationDirty = false, advanceMotion = true } = {}) {
     const state = this.state(instance, object),
-      target = this.targets.get(object);
+      target = this.targets.get(object),
+      soundABI = nativeABI(this.world.profile).sound,
+      playbackUpdates = soundABI.fesPlaybackUpdates !== false;
     if (target) {
       if (advanceMotion) target.update(this.world.frame);
       state.state.motion = target.snapshot();
@@ -353,7 +355,7 @@ export class NativeFESSound {
         if (bank !== -1 && !state.get('crossfade')) await send(181);
         // The filename protocol carries the bank or group in W and the string in L.
         const profile = this.world.profile,
-          filenameOnly = nativeABI(profile).sound.loadMessageFormat === 'filename',
+          filenameOnly = soundABI.loadMessageFormat === 'filename',
           crossfade = !filenameOnly && nativeABIBehavior(profile, 'sound.crossfade'),
           packet = new NativeSoundPacket([], filenameOnly ? 260 : crossfade ? 288 : 280);
         packet.writeString(resolved, filenameOnly ? 0 : 12);
@@ -419,21 +421,21 @@ export class NativeFESSound {
       }
     }
     if (state.get('pendingPlay')) {
-      if (state.get('playing') && eligible) {
-        if (state.get('active')) await send(182, bank, state.loopCount());
-        else await send(217);
-        if (state.get('startClock') === -1) state.set('startClock', this.world.sound.now());
-        this.onStart?.(instance, object, this.world.frame);
-      } else if (state.get('playing')) {
-        await send(184);
-        await send(217);
-        if (state.get('startClock') === -1) state.set('startClock', this.world.sound.now());
+      if (state.get('playing')) {
+        if (eligible && state.get('active')) await send(182, bank, state.loopCount());
+        else {
+          if (!eligible) await send(184);
+          if (playbackUpdates) await send(217);
+        }
+        if (playbackUpdates && state.get('startClock') === -1)
+          state.set('startClock', this.world.sound.now());
+        if (eligible) this.onStart?.(instance, object, this.world.frame);
       } else if (state.get('stopping')) await send(184);
       state.set('pendingPlay', 0);
     }
     if (state.get('playing')) {
       if (bank === -1) state.play(0);
-      else if (state.get('loopDirty')) await send(218, bank, state.loopCount());
+      else if (playbackUpdates && state.get('loopDirty')) await send(218, bank, state.loopCount());
     }
     return state;
   }

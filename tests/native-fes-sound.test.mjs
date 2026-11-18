@@ -6,6 +6,7 @@ import { NativeFESSoundTable } from '../src/native/fes-sound-table.mjs';
 import { buildNativeFESMotion } from '../src/native/fes-motion.mjs';
 import { MOTION_ABI } from '../src/motion/abi.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
+import { NativeConfiguration } from '../src/native/config.mjs';
 
 function fixture(legacy = false) {
   const messages = [],
@@ -131,6 +132,47 @@ test('a mapped FES sound reaches the native bank loader even when its file is ab
   await assert.rejects(facade.update(instance, sound), (error) => error === decoderError);
   world.game.nativeResources.resolve = () => null;
   await assert.rejects(facade.update(instance, sound), /category has no mounted path/);
+});
+
+test('2.6.1.23 FES playback sends the original play and stop messages', async () => {
+  const { world, instance, facade, messages, starts } = fixture();
+  world.profile = 'grisaia-jp-engine-2.6.1.23';
+  world.configuration = new NativeConfiguration({ profile: world.profile });
+  world.soundConfiguration.loaded = false;
+  world.sound.now = () => assert.fail('Unexpected FES sound start clock');
+
+  const unassigned = object({ file: '', channel: null, soundType: 2 });
+  const state = facade.state(instance, unassigned);
+  facade.command(instance, unassigned, 'play', ['1'], { index: 0 });
+  await facade.update(instance, unassigned);
+  assert.deepEqual(messages.splice(0), [
+    { sender: 100, id: 171, bank: 0xffffffff, value: 0, payload: undefined },
+  ]);
+  assert.equal(state.get('playing'), 0);
+  assert.equal(state.get('stopping'), 1);
+  assert.equal(state.get('pendingPlay'), 1);
+  assert.equal(state.get('startClock'), -1);
+  assert.deepEqual(starts, []);
+
+  for (const active of [1, 0]) {
+    const sound = object({ file: '', channel: 3 });
+    const playback = facade.state(instance, sound);
+    playback.set('active', active);
+    facade.command(instance, sound, 'play', ['2', '1', '1'], { index: 0 });
+    await facade.update(instance, sound);
+    assert.deepEqual(
+      messages.splice(0),
+      active ? [{ sender: 100, id: 169, bank: 3, value: 2, payload: undefined }] : [],
+    );
+    assert.equal(playback.get('playing'), 1);
+    assert.equal(playback.get('pendingPlay'), 0);
+    assert.equal(playback.get('startClock'), -1);
+    assert.deepEqual(starts.pop(), [instance, sound, world.frame]);
+    facade.command(instance, sound, 'loop', ['4'], { index: 0 });
+    await facade.update(instance, sound);
+    assert.equal(playback.get('loopCount'), 4);
+    assert.deepEqual(messages, []);
+  }
 });
 
 test('SOUND and SNDTABLE respect indexed-only commands and real native type exclusions', () => {
