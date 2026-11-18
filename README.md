@@ -101,8 +101,15 @@ NEKOPARA Vol. 3 输入，从浏览器启动原生 World，验证语言选择、�
 检查新 World 恢复后整帧一致且粒子继续运行。可用 `-- --grep 'original scene particle'`
 单独运行；在软件 GPU 上执行完整路径耗时较长。
 `test:game` 使用 NativeWorld 的 FES、CST 字符串银行、配置和原生存档观察交互及恢复；
-`test:route` 通过实际 Ctrl/Escape 输入和只读 CST reader 观察验证 14 章、5,000 条以上
-对白、两部影片实际解码及返回标题。它们不再读取旧 ScenePlayer 的 story/settings/modal。
+`test:route` 通过实际 Ctrl 输入和只读 CST reader 观察验证 14 章、5,000 条以上对白及
+返回原生标题。全新进度的 OP 由 Enter 停止，ED 由原脚本允许播放到片尾并写入资格。
+已获资格的剧情 ED 用例通过 Escape 主动停止同一解码器，并确认剧情继续到第 14 章。
+该用例需要通过正常流程获得的同源 checkpoint，其中已持有资格且尚未播放剧情 ED。
+未提供这个输入时，Playwright 会单独标记该用例为跳过。
+
+```sh
+CAT2_GAME_URL=http://localhost:4101 CATSYSTEM2_ROUTE_ED_CHECKPOINT=/path/to/earned-pre-ed.cs2web npm run test:route -- --grep 'earned ending'
+```
 
 官方 SDK 4.01 有独立的冷启动与教程回归。将固定 SDK 的 `system` 目录挂载到另一端口：
 
