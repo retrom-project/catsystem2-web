@@ -16,6 +16,9 @@ export class Binary {
     )
       throw new Error(`${this.label}: range ${at}+${count} exceeds ${this.bytes.length}`);
   }
+  requireRange(at, count) {
+    this.#requireRange(at, count);
+  }
   range(at, count) {
     this.#requireRange(at, count);
     return this.bytes.subarray(at, at + count);

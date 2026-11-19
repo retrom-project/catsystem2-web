@@ -41,15 +41,18 @@ export class PSB {
     if (this.chunkOffsets.length !== this.chunkLengths.length)
       throw new Error('PSB chunk table mismatch');
     for (let i = 0; i < this.chunkOffsets.length; i++)
-      b.range(this.chunkData + this.chunkOffsets[i], this.chunkLengths[i]);
+      b.requireRange(this.chunkData + this.chunkOffsets[i], this.chunkLengths[i]);
     this.nodes = 0;
     this.root = this.value(b.u32(36));
   }
   uint(at, count) {
     if (count < 1 || count > 8) throw new Error('PSB invalid integer width');
-    this.b.range(at, count);
+    this.b.requireRange(at, count);
+    const bytes = this.b.bytes;
+    if (count === 1) return bytes[at];
+    if (count === 2) return bytes[at + 1] * 256 + bytes[at];
     let value = 0;
-    for (let i = count - 1; i >= 0; i--) value = value * 256 + this.b.u8(at + i);
+    for (let i = count - 1; i >= 0; i--) value = value * 256 + bytes[at + i];
     if (!Number.isSafeInteger(value)) throw new Error('PSB integer exceeds JavaScript exact range');
     return value;
   }
@@ -58,7 +61,7 @@ export class PSB {
       count = boundedCount(this.uint(pointer.at, countWidth), 16000000, 'PSB array');
     pointer.at += countWidth;
     const width = this.b.u8(pointer.at++) - 12;
-    this.b.range(pointer.at, count * width);
+    this.b.requireRange(pointer.at, count * width);
     const values = new Array(count);
     for (let i = 0; i < count; i++) values[i] = this.uint(pointer.at + i * width, width);
     pointer.at += count * width;
@@ -74,7 +77,7 @@ export class PSB {
     if (type >= 5 && type <= 12) {
       const width = type - 4;
       if (width === 8) {
-        b.range(at + 1, 8);
+        b.requireRange(at + 1, 8);
         const v = b.view.getBigInt64(at + 1, true);
         if (v > BigInt(Number.MAX_SAFE_INTEGER) || v < BigInt(Number.MIN_SAFE_INTEGER))
           throw new Error('PSB int64 exceeds exact range');
