@@ -236,6 +236,9 @@ export class NativeGraphics {
     this.initializeTextures();
     await this.texturePages.upload(vram, [x, y, x + width, y + height]);
   }
+  get hasOrdinaryBitmapOutput() {
+    return this.output === nativeBitmapOutput && this.ensureVRAM === nativeEnsureVRAM;
+  }
   async output(bitmap, offset, region = null, { upload = true, flipY = false } = {}) {
     const [x, y] = offset,
       area = region || [0, 0, bitmap.width, bitmap.height];
@@ -504,6 +507,9 @@ export class NativeGraphics {
     return plane;
   }
 }
+
+const nativeBitmapOutput = NativeGraphics.prototype.output,
+  nativeEnsureVRAM = NativeGraphics.prototype.ensureVRAM;
 
 export class NativeGraphicTask {
   constructor(graphics, record) {

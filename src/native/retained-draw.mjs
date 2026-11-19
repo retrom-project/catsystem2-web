@@ -2,8 +2,56 @@
 // Retained sources, ANM clocks and Draw composition share the JS resource graph.
 import { truncateFloat32 } from '../ppi/numeric.mjs';
 import { bitsFloat, floatBits } from '../kcs.mjs';
+import { NativeBitmap } from './image.mjs';
 import { RetainedAnimation } from './retained-animation.mjs';
 import { rasterizeRetainedBitmap, flipBitmapRows } from './raster-kernel.mjs';
+
+function readyRasterSources(graphics, bitmap, pixels, items) {
+  const { images, vramHandle } = graphics;
+  if (vramHandle) {
+    const record = images.handles.records.get(vramHandle),
+      vram = record?.type === 'bitmap' ? record.value : null,
+      state = vram && images.handles.records.get(vram.dataHandle);
+    if (state?.type !== 'bitmap-data') return null;
+    const rgba = Object.getOwnPropertyDescriptor(state.value, 'rgba');
+    if (
+      vram.dataHandle === bitmap.dataHandle ||
+      vram.blit !== NativeBitmap.prototype.blit ||
+      rgba?.get ||
+      rgba?.value?.buffer === pixels.buffer
+    )
+      return null;
+  }
+  const layers = [];
+  for (const item of items) {
+    const source = images.get(item.image);
+    if (
+      source.dataHandle === bitmap.dataHandle ||
+      source.canvasDirty ||
+      source.pixels !== NativeBitmap.prototype.pixels ||
+      source.commitCanvas !== NativeBitmap.prototype.commitCanvas
+    )
+      return null;
+    const state = source.state,
+      rgba = Object.getOwnPropertyDescriptor(state, 'rgba')?.value;
+    if (
+      !(rgba instanceof Uint8ClampedArray) ||
+      rgba.buffer === pixels.buffer ||
+      !item.clip.every(Number.isInteger) ||
+      (state.clip && !state.clip.every(Number.isInteger))
+    )
+      return null;
+    layers.push({ item, state, rgba });
+  }
+  return layers;
+}
+
+function outputState(state, pixels) {
+  const frame = {};
+  for (const field of Object.keys(state)) if (field !== 'rgba') frame[field] = state[field];
+  frame.rgba = pixels;
+  return frame;
+}
 
 export class NativeRetainedDraw {
   constructor(world) {
@@ -356,73 +404,133 @@ export class NativeRetainedDraw {
       }
     }
     const renderer = draw.state.renderer,
-      images = this.world.graphics.images,
+      graphics = this.world.graphics,
+      images = graphics.images,
       bitmap = images.get(renderer.bitmap);
     bitmap.commitCanvas();
-    const bitmapPixels = await bitmap.pixels();
+    const ordinary =
+        !this.world.transitionalExe &&
+        bitmap.pixels === NativeBitmap.prototype.pixels &&
+        bitmap.commitCanvas === NativeBitmap.prototype.commitCanvas &&
+        !bitmap.registry?.nativeMemory &&
+        graphics.hasOrdinaryBitmapOutput,
+      previous = ordinary ? bitmap.retainedBacking() : null,
+      bitmapPixels = await (previous?.pixels ?? bitmap.pixels());
     if (!areas.length && !forceOutput && (!draw.state.enabled || !draw.state.pending)) return;
-    // Draw in physical coordinates into a copy in the bitmap's logical row order.
-    const pixels = new Uint8ClampedArray(bitmapPixels),
-      area = areas.length
-        ? [
-            Math.min(...areas.map((a) => a[0])),
-            Math.min(...areas.map((a) => a[1])),
-            Math.max(...areas.map((a) => a[2])),
-            Math.max(...areas.map((a) => a[3])),
-          ]
-        : [0, 0, 0, 0];
+    const area = areas.length
+      ? [
+          Math.min(...areas.map((a) => a[0])),
+          Math.min(...areas.map((a) => a[1])),
+          Math.max(...areas.map((a) => a[2])),
+          Math.max(...areas.map((a) => a[3])),
+        ]
+      : [0, 0, 0, 0];
     area[0] = Math.max(0, area[0]);
     area[1] = Math.max(0, area[1]);
     area[2] = Math.min(renderer.width, area[2]);
     area[3] = Math.min(renderer.height, area[3]);
-    if (area[0] < area[2] && area[1] < area[3]) {
-      if (!renderer.externalPaint) {
-        const color = renderer.clearColor,
-          rgba = Uint8Array.of(
-            (color >>> 16) & 255,
-            (color >>> 8) & 255,
-            color & 255,
-            color >>> 24,
-          ),
-          clearWord = new Uint32Array(rgba.buffer)[0],
-          words = new Uint32Array(pixels.buffer);
-        for (let y = area[1]; y < area[3]; y++) {
-          const row = (renderer.height - 1 - y) * renderer.width;
-          words.fill(clearWord, row + area[0], row + area[2]);
+    const hasArea = area[0] < area[2] && area[1] < area[3],
+      items = hasArea ? renderer.items.toSorted((a, b) => a.layer - b.layer || a.key - b.key) : [],
+      ready =
+        hasArea &&
+        ordinary &&
+        !forceOutput &&
+        !draw.state.pending &&
+        !renderer.externalPaint &&
+        (area[3] - area[1]) * 2 < renderer.height &&
+        area.every(Number.isInteger) &&
+        bitmap.width === renderer.width &&
+        bitmap.height === renderer.height &&
+        bitmapPixels.length === renderer.width * renderer.height * 4 &&
+        readyRasterSources(graphics, bitmap, bitmapPixels, items),
+      reuse = ready && previous && bitmap.retainedBacking() === previous,
+      firstRow = reuse ? renderer.height - area[3] : 0,
+      rowBytes = renderer.width * 4,
+      start = firstRow * rowBytes,
+      rows = reuse
+        ? bitmapPixels.slice(start, start + (area[3] - area[1]) * rowBytes)
+        : new Uint8ClampedArray(bitmapPixels),
+      options = { flipDestinationY: true, firstDestinationRow: firstRow };
+    let publication = null;
+    try {
+      if (hasArea) {
+        if (!renderer.externalPaint) {
+          const color = renderer.clearColor,
+            rgba = Uint8Array.of(
+              (color >>> 16) & 255,
+              (color >>> 8) & 255,
+              color & 255,
+              color >>> 24,
+            ),
+            clearWord = new Uint32Array(rgba.buffer)[0],
+            words = new Uint32Array(rows.buffer);
+          for (let y = area[1]; y < area[3]; y++) {
+            const row = (renderer.height - 1 - y - firstRow) * renderer.width;
+            words.fill(clearWord, row + area[0], row + area[2]);
+          }
         }
+        // The small row copy includes the adjacent pixels where the native
+        // blend path can write zero-alpha RGB. Its sources are ready without
+        // awaiting, so the backing is untouched until all raster work succeeds.
+        if (reuse) {
+          for (const { item, state, rgba } of ready)
+            rasterizeRetainedBitmap(
+              rows,
+              renderer.width,
+              renderer.height,
+              rgba,
+              state,
+              item,
+              area,
+              options,
+            );
+          bitmapPixels.set(rows, start);
+          publication = previous;
+        } else {
+          for (const item of items) {
+            const source = images.get(item.image);
+            source.commitCanvas();
+            rasterizeRetainedBitmap(
+              rows,
+              renderer.width,
+              renderer.height,
+              await source.pixels(),
+              source.state,
+              item,
+              area,
+              options,
+            );
+          }
+          if (ready) publication = bitmap.publishRetainedBacking(rows);
+          else bitmap.state.rgba = rows;
+        }
+        // Native output reads this exact allocation asynchronously. Until it
+        // returns, a nested Draw must take the full-copy path.
+        if (publication) publication.publishing = true;
+        bitmap.state.source = null;
+        await bitmap.changed();
       }
-      for (const item of renderer.items.toSorted((a, b) => a.layer - b.layer || a.key - b.key)) {
-        const source = images.get(item.image);
-        source.commitCanvas();
-        rasterizeRetainedBitmap(
-          pixels,
-          renderer.width,
-          renderer.height,
-          await source.pixels(),
-          source.state,
-          item,
-          area,
-          { flipDestinationY: true },
+      if ((draw.state.enabled && (areas.length || draw.state.pending)) || forceOutput) {
+        const pixels = reuse ? bitmapPixels : rows;
+        if (publication && !graphics.hasOrdinaryBitmapOutput) publication.borrowed = true;
+        const frame = publication
+          ? outputState(bitmap.state, pixels)
+          : { ...bitmap.state, rgba: pixels };
+        await graphics.output(
+          {
+            state: frame,
+            width: frame.width,
+            height: frame.height,
+            pixels: async () => pixels,
+            frame: async () => frame,
+          },
+          draw.state.offset,
+          forceOutput || (!areas.length && draw.state.pending) ? null : area,
+          { flipY: true },
         );
       }
-      bitmap.state.rgba = pixels;
-      bitmap.state.source = null;
-      await bitmap.changed();
-    }
-    if ((draw.state.enabled && (areas.length || draw.state.pending)) || forceOutput) {
-      const frame = { ...bitmap.state, rgba: pixels };
-      await this.world.graphics.output(
-        {
-          state: frame,
-          width: frame.width,
-          height: frame.height,
-          pixels: async () => pixels,
-          frame: async () => frame,
-        },
-        draw.state.offset,
-        forceOutput || (!areas.length && draw.state.pending) ? null : area,
-        { flipY: true },
-      );
+    } finally {
+      if (publication) publication.publishing = false;
     }
   }
   async remove(draw, key) {

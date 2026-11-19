@@ -129,6 +129,113 @@ test('native draw entries share source pixels after release and rasterize offset
   assert.notEqual(world.graphics.vramHandle, 0);
 });
 
+test('small retained updates preserve exported pixels and cold Draw handles', async () => {
+  const world = fixture(),
+    id = await surface(world, 8, 12),
+    images = world.graphics.images,
+    image = images.create(2, 1),
+    source = images.get(image),
+    task = world.graphics.drawTasks.get(id),
+    region = [0, 4, 5, 5];
+  await source.fill(0, 0, 2, 1, 0xff112233);
+  await draw(world, id, 7, image, { position: [1, 4] });
+  await task.render(region);
+  const handle = (await nativeDraw(0x105, [id], null, { id: 99 }, world)).value,
+    bitmap = images.get(handle),
+    backing = bitmap.retainedBacking(),
+    alias = images.get(images.alias(handle));
+  assert.ok(backing);
+  assert.equal(alias.dataHandle, bitmap.dataHandle);
+  await source.fill(0, 0, 2, 1, 0x88aabbcc);
+  task.state.dirty = true;
+  await task.render(region);
+  assert.equal(bitmap.retainedBacking(), backing);
+
+  const revision = bitmap.state.revision;
+  await source.fill(0, 0, 2, 1, 0xffabcdef);
+  task.state.dirty = true;
+  const redraw = task.render(region),
+    previous = bitmap.state.rgba,
+    frame = await alias.frame(),
+    saved = previous.slice(),
+    at = ((12 - 1 - 4) * 8 + 1) * 4;
+  assert.equal(frame.rgba, previous);
+  assert.deepEqual([...previous.slice(at, at + 4)], [170, 187, 204, 136]);
+  await redraw;
+  assert.equal(bitmap.state.revision, revision + 1);
+  assert.deepEqual(previous, saved);
+  const pixels = await alias.pixels();
+  assert.notEqual(pixels, previous);
+  previous[at] = 16;
+  assert.deepEqual([...pixels.slice(at, at + 4)], [171, 205, 239, 255]);
+  assert.deepEqual(
+    [
+      ...(await images.get(world.graphics.vramHandle).pixels()).slice(
+        (4 * 8 + 1) * 4,
+        (4 * 8 + 2) * 4,
+      ),
+    ],
+    [171, 205, 239, 255],
+  );
+  assert.equal((await nativeDraw(0x105, [id], null, { id: 99 }, world)).value, handle);
+
+  const checkpoint = world.runtime.handles.snapshot();
+  world.runtime.handles.restore(checkpoint);
+  const restored = images.get(handle);
+  assert.equal(restored.retainedBacking(), null);
+  assert.deepEqual(await restored.pixels(), pixels);
+});
+
+test('small retained updates sample the old shared destination in self-draw', async () => {
+  const world = fixture(),
+    id = await surface(world, 8, 12),
+    images = world.graphics.images,
+    image = images.create(1, 1),
+    task = world.graphics.drawTasks.get(id),
+    region = [0, 4, 4, 5];
+  await images.get(image).fill(0, 0, 1, 1, 0xffaa5500);
+  await draw(world, id, 7, image, { position: [1, 4] });
+  await task.render(region);
+  const handle = (await nativeDraw(0x105, [id], null, { id: 99 }, world)).value,
+    bitmap = images.get(handle),
+    before = bitmap.retainedBacking(),
+    old = before.pixels.slice();
+  await draw(world, id, 9, handle, { position: [1, 0] });
+  await nativeDraw(0x107, [id, 7, 0], null, { id: 99 }, world);
+  await task.render(region);
+  const pixels = await drawPixels(world, id),
+    at = (4 * 8 + 2) * 4;
+  assert.deepEqual([...pixels.slice(at, at + 4)], [170, 85, 0, 255]);
+  assert.deepEqual(before.pixels, old);
+  assert.notEqual(await bitmap.pixels(), before.pixels);
+});
+
+test('a failed small retained raster preserves CPU pixels, revision and VRAM', async () => {
+  const world = fixture(),
+    id = await surface(world, 8, 12),
+    images = world.graphics.images,
+    image = images.create(2, 1),
+    source = images.get(image),
+    task = world.graphics.drawTasks.get(id),
+    region = [0, 4, 4, 5];
+  await source.fill(0, 0, 2, 1, 0xc0123456);
+  await draw(world, id, 7, image, { position: [1, 4] });
+  await task.render(region);
+  const bitmap = world.graphics.surface(id).bitmap,
+    backing = bitmap.retainedBacking(),
+    previous = backing.pixels.slice(),
+    revision = bitmap.state.revision,
+    vram = images.get(world.graphics.vramHandle),
+    uploaded = (await vram.pixels()).slice();
+  source.state.blendType = 6;
+  task.state.dirty = true;
+  await assert.rejects(task.render(region), /Unsupported retained bitmap blend type/);
+  assert.equal(bitmap.retainedBacking(), backing);
+  assert.equal(bitmap.state.revision, revision);
+  assert.deepEqual(await bitmap.pixels(), previous);
+  assert.deepEqual(await vram.pixels(), uploaded);
+});
+
 test('draw priority, visibility, clipping and removal modify the actual retained surface', async () => {
   const world = fixture(),
     id = await surface(world),

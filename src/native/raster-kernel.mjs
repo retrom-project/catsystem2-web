@@ -69,7 +69,7 @@ export function rasterizeRetainedBitmap(
   state,
   item,
   region,
-  { flipDestinationY = false } = {},
+  { flipDestinationY = false, firstDestinationRow = 0 } = {},
 ) {
   if (!item.visible || !item.alpha || !state.width || !state.height) return;
   const input = flipBitmapRows(pixels, state.width, state.height),
@@ -98,6 +98,7 @@ export function rasterizeRetainedBitmap(
       alpha: item.alpha,
       clip,
       flipDestinationY,
+      firstDestinationRow,
       ...(blend
         ? {
             blendPixel: (out, at, source, offset, alpha) =>
@@ -128,7 +129,7 @@ export function rasterizeRetainedBitmap(
   for (let row = area[1]; row < area[3]; row++) {
     const start = ((row - y) * state.width + area[0] - x) * 4,
       destinationY = flipDestinationY ? height - 1 - row : row,
-      at = (destinationY * width + area[0]) * 4,
+      at = ((destinationY - firstDestinationRow) * width + area[0]) * 4,
       normal = !mask && !useBlend;
     if (normal && copy) {
       output.set(input.subarray(start, start + count * 4), at);

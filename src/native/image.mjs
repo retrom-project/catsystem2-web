@@ -7,6 +7,7 @@ import { nativeImagePathParts } from './image-file.mjs';
 import { readNativeResource, nativeCategoryFilename } from './resource-file.mjs';
 import { ImageStore, HG3 } from '../formats/hg3.mjs';
 const f = Math.fround;
+const retainedBackings = new WeakMap();
 const size = (width, height, empty = false) => {
   if (
     !Number.isSafeInteger(width) ||
@@ -59,6 +60,51 @@ export class NativeBitmap {
   }
   get height() {
     return this.state.height;
+  }
+  retainedBacking() {
+    const state = this.state,
+      slot = retainedBackings.get(state),
+      backing = slot?.current;
+    if (
+      this.canvasDirty ||
+      !backing ||
+      backing.borrowed ||
+      backing.publishing ||
+      Object.getOwnPropertyDescriptor(state, 'rgba')?.get !== slot.read
+    )
+      return null;
+    return backing;
+  }
+  publishRetainedBacking(pixels) {
+    const state = this.state,
+      property = Object.getOwnPropertyDescriptor(state, 'rgba'),
+      previous = retainedBackings.get(state),
+      backing = { pixels, borrowed: false, publishing: false };
+    if (previous && property?.get === previous.read) {
+      previous.current = backing;
+      return backing;
+    }
+    state.rgba = pixels;
+    if (!property?.configurable || !property.writable) return null;
+    // A fresh Draw allocation may be reused up to its first raw read, including
+    // reads via another wrapper of the same data record or via a snapshot.
+    const slot = {
+      current: backing,
+      read() {
+        slot.current.borrowed = true;
+        return slot.current.pixels;
+      },
+    };
+    Object.defineProperty(state, 'rgba', {
+      configurable: true,
+      enumerable: property.enumerable,
+      get: slot.read,
+      set(value) {
+        slot.current = { pixels: value, borrowed: true };
+      },
+    });
+    retainedBackings.set(state, slot);
+    return backing;
   }
   async pixels() {
     if (

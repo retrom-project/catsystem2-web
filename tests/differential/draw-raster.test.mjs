@@ -31,7 +31,11 @@ test('JS retained normal/MASK/BTYPE/affine matches both-ABI pixel goldens', () =
           [(color >>> 16) & 255, (color >>> 8) & 255, color & 255, color >>> 24],
           (y * 8 + x) * 4,
         );
-    const logical = flipBitmapRows(pixels, 8, 7);
+    const logical = flipBitmapRows(pixels, 8, 7),
+      firstRow = 7 - probe.area[3],
+      start = firstRow * 8 * 4,
+      end = (7 - probe.area[1]) * 8 * 4,
+      rows = logical.slice(start, end);
     rasterizeRetainedBitmap(pixels, 8, 7, probe.source.rgba, probe.source, probe.item, probe.area);
     rasterizeRetainedBitmap(
       logical,
@@ -45,6 +49,11 @@ test('JS retained normal/MASK/BTYPE/affine matches both-ABI pixel goldens', () =
         flipDestinationY: true,
       },
     );
+    rasterizeRetainedBitmap(rows, 8, 7, probe.source.rgba, probe.source, probe.item, probe.area, {
+      flipDestinationY: true,
+      firstDestinationRow: firstRow,
+    });
+    assert.deepEqual(rows, logical.subarray(start, end), probe.name + ' cropped rows');
     assert.equal(
       Buffer.from(pixels).toString('base64'),
       golden.cases[index].vram,

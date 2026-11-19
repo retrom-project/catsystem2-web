@@ -130,8 +130,9 @@ export function affineBitmap(
   const alpha = options.alpha ?? 255;
   if (!alpha) return prepared;
   const sample = new Uint8ClampedArray(4);
+  const firstDestinationRow = options.firstDestinationRow ?? 0;
   for (let y = area[1]; y < area[3]; y++) {
-    const destinationY = options.flipDestinationY ? height - 1 - y : y;
+    const destinationY = (options.flipDestinationY ? height - 1 - y : y) - firstDestinationRow;
     for (let x = area[0]; x < area[2]; x++) {
       const px = ((x << 15) - position[0] + transformedBase[0]) | 0;
       const py = ((y << 15) - position[1] + transformedBase[1]) | 0;
