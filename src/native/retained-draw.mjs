@@ -377,14 +377,18 @@ export class NativeRetainedDraw {
     area[3] = Math.min(renderer.height, area[3]);
     if (area[0] < area[2] && area[1] < area[3]) {
       if (!renderer.externalPaint) {
-        const color = renderer.clearColor;
+        const color = renderer.clearColor,
+          rgba = Uint8Array.of(
+            (color >>> 16) & 255,
+            (color >>> 8) & 255,
+            color & 255,
+            color >>> 24,
+          ),
+          clearWord = new Uint32Array(rgba.buffer)[0],
+          words = new Uint32Array(pixels.buffer);
         for (let y = area[1]; y < area[3]; y++) {
           const row = (renderer.height - 1 - y) * renderer.width;
-          for (let x = area[0]; x < area[2]; x++)
-            pixels.set(
-              [(color >>> 16) & 255, (color >>> 8) & 255, color & 255, color >>> 24],
-              (row + x) * 4,
-            );
+          words.fill(clearWord, row + area[0], row + area[2]);
         }
       }
       for (const item of renderer.items.toSorted((a, b) => a.layer - b.layer || a.key - b.key)) {
