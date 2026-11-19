@@ -16,6 +16,8 @@ function inputFrameWord(value) {
 }
 
 export class FESPlayer {
+  commandScope = null;
+
   constructor(game, images, host = {}, globals = {}, strings = {}) {
     Object.assign(this, {
       game,
@@ -130,14 +132,28 @@ export class FESPlayer {
     this.root = await this.load(name);
     if (!this.nativeInput) this.focused = null;
   }
+  withCommandScope(scope, run) {
+    const previous = this.commandScope;
+    this.commandScope = scope;
+    try {
+      return run();
+    } finally {
+      this.commandScope = previous;
+    }
+  }
   enqueue(promise) {
     if (!promise || typeof promise.then !== 'function') return;
+    const commands = this.commandScope?.pending;
     const wrapped = promise
       .catch((e) => {
         this.error = e;
       })
-      .finally(() => this.pending.delete(wrapped));
+      .finally(() => {
+        this.pending.delete(wrapped);
+        commands?.delete(wrapped);
+      });
     this.pending.add(wrapped);
+    commands?.add(wrapped);
   }
   enqueuePublicPush(operation) {
     this.trackPublicCompletion(
@@ -214,9 +230,9 @@ export class FESPlayer {
     // This step never registers or waits on the public tail itself.
     return { handled: true, completion: promise };
   }
-  async flush({ commandsOnly = false } = {}) {
-    while (this.pending.size || (!commandsOnly && this.publicPushPending.size))
-      await Promise.all([...this.pending, ...(commandsOnly ? [] : this.publicPushPending)]);
+  async flush({ commandsOnly = false, pending = this.pending } = {}) {
+    while (pending.size || (!commandsOnly && this.publicPushPending.size))
+      await Promise.all([...pending, ...(commandsOnly ? [] : this.publicPushPending)]);
     if (this.error) throw this.error;
   }
   async step(frameWord) {

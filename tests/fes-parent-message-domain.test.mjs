@@ -119,6 +119,45 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
     }
   });
 
+  test(
+    `${profile} FES waits for its Script reply after a nested notification finishes`,
+    { timeout: 5000 },
+    async () => {
+      const nestedSource = source.replace(
+          'send 0x780 0 0\n#MES_ENTER\nnext WAIT_TOUCH',
+          'send 0xffff0003 0 14\n$42=$41\nnext WAIT_TOUCH\n#MES_ENTER\nbtn enable 0\n$41=++$41\nbreak',
+        ),
+        world = await defaultFESWorld(profile, {
+          'case.kcs': program(),
+          'screen.fes': new TextEncoder().encode(nestedSource),
+        });
+      try {
+        const { id, task, instance } = await loadDefaultFES(world);
+        await task.tick();
+        const record = world.objects.objects.get(id),
+          parent = world.runtime.scheduler.tasks.get(record.parent),
+          button = instance.byKey.get('btn'),
+          region = world.inputFor(id).get(button.nativeInputTaskID),
+          [left, top, right, bottom] = region.bounds;
+        world.input.pointer((left + right) / 2, (top + bottom) / 2);
+        await world.input.hover();
+        await world.input.route(0, true, 2);
+        assert.deepEqual(
+          [240, 244, 248, 252].map((address) => parent.machine.load(address)),
+          [record.nativeID, 0xffff0003, 0, 14],
+        );
+        assert.equal(parent.machine.waiting?.kind, 'message');
+        assert.equal(button.enable, false);
+        assert.equal(instance.global(41), 1);
+        assert.equal(instance.global(42), 1);
+        assert.equal(instance.label, 'WAIT_TOUCH');
+        assert.equal(task.player.pending.size, 0);
+      } finally {
+        await world.close({ flushFiles: false });
+      }
+    },
+  );
+
   test(`${profile} FES sendscript keeps its real child recipient and native sender word`, async () => {
     const childSource = source
         .replace('next WAIT\n', 'execkcs child.kcs\nnext WAIT\n')

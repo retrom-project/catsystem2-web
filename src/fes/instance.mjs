@@ -647,7 +647,12 @@ export class FESInstance {
       settled?.({ handled: false, failed: false });
       return false;
     }
-    const entry = this.runtime ? { nameBytes: nameBytes.slice(), index, current } : null,
+    // Script can synchronously notify the FES that sent it a message. The
+    // notification must finish its own commands before the send can settle.
+    const scope = { pending: new Set(), reply: null },
+      run = (stack, label) =>
+        this.player.withCommandScope(scope, () => this.run(stack, 'event', label)),
+      entry = this.runtime ? { nameBytes: nameBytes.slice(), index, current } : null,
       bindContext = () => {
         if (entry) this.nativeContext = entry;
         else this.eventIndex = index;
@@ -660,7 +665,6 @@ export class FESInstance {
       nativeContext: this.nativeContext,
       executingLabel: this.executingLabel,
       executingLine: this.executingLine,
-      deferredCommandReturn: this.deferredCommandReturn,
       waits: this.runtime
         ? null
         : Object.fromEntries(
@@ -671,7 +675,6 @@ export class FESInstance {
               'waitObjects',
               'transitionUntil',
               'commandDelayUntil',
-              'deferredCommandReturn',
             ].map((key) => [key, this[key]]),
           ),
     };
@@ -688,23 +691,23 @@ export class FESInstance {
         if (!this.program.blocks[label]) continue;
         handled = true;
         bindContext();
-        jumped = this.run([[label, 0]], 'event', label) || jumped;
+        jumped = run([[label, 0]], label) || jumped;
         let flushes = 0;
         while (this.decodePending) {
           if (++flushes > 10000) throw new Error(`${this.name}: FES notification decode budget`);
           const continuation = this.suspended;
           this.decodePending = false;
           this.suspended = null;
-          await this.player.flush({ commandsOnly: true });
+          await this.player.flush({ commandsOnly: true, pending: scope.pending });
           bindContext();
-          if (this.deferredCommandReturn !== null) {
-            const value = this.deferredCommandReturn;
-            this.deferredCommandReturn = null;
+          if (scope.reply !== null) {
+            const value = scope.reply;
+            scope.reply = null;
             if (this.nativeCommandReturn(value).action === 'suspend') break;
           }
           await this.flushNativeRecords();
           bindContext();
-          jumped = this.run(continuation, 'event', label) || jumped;
+          jumped = run(continuation, label) || jumped;
         }
         if (jumped || this.finished !== null) break;
       }
@@ -721,9 +724,7 @@ export class FESInstance {
       if (!jumped && this.finished === null) {
         this.suspended = saved.suspended;
         this.decodePending = saved.decodePending;
-        // This reply belongs to the saved JS continuation, not native wait control/parameters.
-        if (this.runtime) this.deferredCommandReturn = saved.deferredCommandReturn;
-        else Object.assign(this, saved.waits);
+        if (saved.waits) Object.assign(this, saved.waits);
       }
       // Public adapters observe completion only after this sole owner restores
       // the caller. The returned Promise does not expose synchronous settlement.
@@ -782,6 +783,15 @@ export class FESInstance {
     const frame = this.runtime ? this.nativeFrameWord : this.player.frameCount;
     this.commandDelayUntil = (frame + word) >>> 0;
     return { action: 'suspend' };
+  }
+  enqueueCommandReply(promise) {
+    const scope = this.player.commandScope;
+    this.player.enqueue(
+      promise.then((value) => {
+        if (scope) scope.reply = value;
+        else this.deferredCommandReturn = value;
+      }),
+    );
   }
   async flushNativeRecords() {
     if (!this.nativeQueuePending) return;
@@ -937,11 +947,7 @@ export class FESInstance {
     if (this.runtime && ['sysvoice', 'sysvoiceex'].includes(head))
       return this.nativeCommandReturn(this.runtime.systemVoiceCommand(head, args));
     if (this.runtime && ['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos'].includes(head)) {
-      this.player.enqueue(
-        this.runtime.screenCommand(head, args).then((value) => {
-          this.deferredCommandReturn = value;
-        }),
-      );
+      this.enqueueCommandReply(this.runtime.screenCommand(head, args));
       return { action: 'flush' };
     }
     if (NATIVE_FES_SAVE_COMMANDS.includes(head) && typeof host.nativeSaveCommand === 'function') {
@@ -949,11 +955,7 @@ export class FESInstance {
       return { action: 'flush' };
     }
     if (this.player.nativeEffects?.commands.has(head)) {
-      this.player.enqueue(
-        this.player.nativeEffects.commandLine(head, bytes, this).then((value) => {
-          this.deferredCommandReturn = value;
-        }),
-      );
+      this.enqueueCommandReply(this.player.nativeEffects.commandLine(head, bytes, this));
       return { action: 'flush' };
     }
     switch (head) {
@@ -1013,7 +1015,9 @@ export class FESInstance {
         }
         return {};
       case 'decode':
-        return this.player.pending.size ? { action: 'flush' } : {};
+        return (this.player.commandScope?.pending ?? this.player.pending).size
+          ? { action: 'flush' }
+          : {};
       case 'reset_frame':
         this.frameOrigin = this.runtime ? this.nativeFrameWord : this.player.frameCount;
         break;
@@ -1530,10 +1534,10 @@ export class FESInstance {
           }),
         );
         if (results.some((result) => result && typeof result.then === 'function')) {
-          this.player.enqueue(
+          this.enqueueCommandReply(
             Promise.all(results).then((values) => {
               const reply = values.find((value) => value && Object.hasOwn(value, 'nativeReturn'));
-              this.deferredCommandReturn = reply?.nativeReturn ?? null;
+              return reply?.nativeReturn ?? null;
             }),
           );
           return { action: 'flush' };
@@ -1558,16 +1562,12 @@ export class FESInstance {
           { ...execution, nameBytes: selection.nameBytes },
         )
       : {};
-    this.player.enqueue(
-      this.runtime
-        .command(fesNarrowText(verb), selection, args.slice(1), {
-          ...source,
-          commandBytes: bytes,
-          rawTail: fesRawTail(bytes, 2),
-        })
-        .then((value) => {
-          this.deferredCommandReturn = value;
-        }),
+    this.enqueueCommandReply(
+      this.runtime.command(fesNarrowText(verb), selection, args.slice(1), {
+        ...source,
+        commandBytes: bytes,
+        rawTail: fesRawTail(bytes, 2),
+      }),
     );
     return { action: 'flush' };
   }
