@@ -91,7 +91,7 @@ export function rasterizeRetainedBitmap(
   state,
   item,
   region,
-  { flipDestinationY = false, firstDestinationRow = 0, copyZeroPrefix = false } = {},
+  { flipDestinationY = false, firstDestinationRow = 0 } = {},
 ) {
   if (!item.visible || !item.alpha || !state.width || !state.height) return;
   const mask = state.mask ?? 0,
@@ -181,7 +181,6 @@ export function rasterizeRetainedBitmap(
       ? new Uint32Array(input.buffer, input.byteOffset, input.length / 4)
       : null,
     count = area[2] - area[0],
-    bulkPrefix = packedBlend && copyZeroPrefix && item.alpha === 255 && count >= 64,
     channel =
       state.bpp === 3
         ? [2, 1, 0][Math.min(2, Math.max(0, mask - 1))]
@@ -210,26 +209,7 @@ export function rasterizeRetainedBitmap(
     }
     if (normal && area[0] > 0 && emptyPixel(output, at - 4))
       output.set([input[start], input[start + 1], input[start + 2], 0], at - 4);
-    if (bulkPrefix) {
-      const destination = at / 4,
-        source = start / 4;
-      let zeros = 0;
-      // Each fully zero pixel takes the source RGBA, including hidden RGB.
-      while (zeros < count && outputWords[destination + zeros] === 0) zeros++;
-      if (zeros >= 64) outputWords.set(inputWords.subarray(source, source + zeros), destination);
-      else zeros = 0;
-      if (zeros < count)
-        blendPackedRow(
-          output,
-          at + zeros * 4,
-          input,
-          start + zeros * 4,
-          count - zeros,
-          outputWords,
-          inputWords,
-          item.alpha,
-        );
-    } else if (packedBlend)
+    if (packedBlend)
       blendPackedRow(output, at, input, start, count, outputWords, inputWords, item.alpha);
     else
       for (let column = 0; column < count; column++) {

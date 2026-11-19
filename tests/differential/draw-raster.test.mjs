@@ -82,29 +82,6 @@ test('retained rows sample overlapping bitmap storage before writing', () => {
   assert.deepEqual(pixels, expected);
 });
 
-test('bulk copying a zero row prefix keeps hidden RGB and blends the remaining pixels', () => {
-  const width = 160,
-    height = 2,
-    state = { width: 148, height, offsetX: 0, offsetY: 0, bpp: 4, alphaHint: 2 },
-    area = [0, 0, width, height],
-    item = { visible: true, alpha: 255, clip: area, position: [3, 0], base: [0, 0], mode: 0 },
-    input = Uint8ClampedArray.from({ length: state.width * height * 4 }, (_, i) =>
-      i % 4 === 3 && (i >>> 2) % 5 === 0 ? 0 : (i * 31 + 37) & 255,
-    ),
-    unaligned = new Uint8ClampedArray(new ArrayBuffer(input.length + 1), 1, input.length),
-    result = new Uint8ClampedArray(width * height * 4);
-  unaligned.set(input);
-  result.set([39, 87, 145, 0, 37, 120, 80, 100], 105 * 4);
-  result.set([1, 7, 2, 255], (width + 3) * 4);
-  const expected = result.slice();
-  rasterizeRetainedBitmap(expected, width, height, unaligned, state, item, area);
-  rasterizeRetainedBitmap(result, width, height, input, state, item, area, {
-    copyZeroPrefix: true,
-  });
-  assert.deepEqual(result, expected);
-  assert.deepEqual([...result.subarray(105 * 4, 106 * 4)], [39, 87, 145, 0]);
-});
-
 for (const fixture of await engineFixtureSet())
   test(
     fixture.profile + ' format dispatch and nonfinite integer positions match retained oracle',
