@@ -861,6 +861,10 @@ test('Game ordinary PLANE page-only bounds select dirty pages without changing m
     assert.deepEqual(g.cachedBounds, initial);
     assert.equal(g.sourceBoundsDirty, false);
     assert.equal(g.boundsDirty, false);
+    const queryPage = testContext.mock.method(pages, 'isDirty');
+    assert.deepEqual(queryWithoutReplay(h, r), empty);
+    assert.equal(queryPage.mock.callCount(), 0, 'clean pages need no per-triangle query');
+    queryPage.mock.restore();
     await clearPage(h, 1);
     // First red observes the actual page query, before any new-state assertion.
     assert.deepEqual(queryWithoutReplay(h, r), pageOneBounds);

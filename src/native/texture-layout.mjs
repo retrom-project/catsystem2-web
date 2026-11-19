@@ -104,6 +104,9 @@ export class NativeTexturePages {
       this.dirtyFlags && index >= 0 && index < this.dirtyFlags.length && this.dirtyFlags[index],
     );
   }
+  hasDirtyPages() {
+    return this.dirtyFlags?.some((flag) => flag !== 0) ?? false;
+  }
   clearDirty() {
     this.dirtyFlags?.fill(0);
   }

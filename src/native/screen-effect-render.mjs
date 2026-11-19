@@ -175,7 +175,9 @@ export class NativeScreenEffectRenderer {
     const screen = this.world.configuration.screen,
       viewport = [0, 0, screen.currentWidth, screen.currentHeight],
       projection = this.world.graphics.projection();
-    let callback = false;
+    let callback = false,
+      checkedPages,
+      pagesDirty;
     this.dirtyQueryGates = [];
     // Dirty contribution scans registrations, independently of draw ranges.
     for (const task of this.world.graphics.tasks.values()) {
@@ -185,6 +187,7 @@ export class NativeScreenEffectRenderer {
         if (!task.queryDraw) throw new Error('Native callback registration lost its query');
         callback = true;
         if (task.queryDraw()) this.dirtyCurrent.set(viewport);
+        checkedPages = undefined;
       } else if (
         isNativeColoredModel(graph) &&
         graph.boundsDirty &&
@@ -217,10 +220,18 @@ export class NativeScreenEffectRenderer {
           graph.cachedBounds.splice(0, 4, ...next);
           this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, next));
         } else {
-          const pages = this.world.graphics.texturePages,
-            triangles = nativeTexturedGeometry(graph, task.state, projection, layout).filter(
-              (triangle) => pages.isDirty(triangle.textureID),
-            );
+          const pages = this.world.graphics.texturePages;
+          if (checkedPages !== pages) {
+            checkedPages = pages;
+            pagesDirty = pages.hasDirtyPages?.() ?? true;
+          }
+          // Keep division's validation of zero-sized half cells.
+          const triangles =
+            pagesDirty || layout.configurationSize.some((size) => size >>> 1 === 0)
+              ? nativeTexturedGeometry(graph, task.state, projection, layout).filter((triangle) =>
+                  pages.isDirty(triangle.textureID),
+                )
+              : [];
           this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, nativeVertexBounds(triangles)));
         }
       }
