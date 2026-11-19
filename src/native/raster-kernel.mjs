@@ -65,7 +65,17 @@ function blendTypePixel(output, at, input, offset, opacity, mode, affine) {
 const emptyPixel = (pixels, at) =>
   !pixels[at] && !pixels[at + 1] && !pixels[at + 2] && !pixels[at + 3];
 
-function blendPackedRow(output, at, input, start, count, outputWords, inputWords, opacity) {
+export function packedBitmapWords(bytes) {
+  return littleEndian &&
+    bytes instanceof Uint8ClampedArray &&
+    bytes.buffer instanceof ArrayBuffer &&
+    bytes.byteOffset % 4 === 0 &&
+    bytes.length % 4 === 0
+    ? new Uint32Array(bytes.buffer, bytes.byteOffset, bytes.length / 4)
+    : null;
+}
+
+export function blendPackedRow(output, at, input, start, count, outputWords, inputWords, opacity) {
   const dst = at / 4,
     src = start / 4,
     fullyOpaque = opacity === 255,

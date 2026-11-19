@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { blendBitmapPixel, resampleBitmap } from './image.mjs';
+import { blendPackedRow, packedBitmapWords } from './raster-kernel.mjs';
 // GDI gray64, FreeType gray256 and image-font cells share the integer compositor.
 export function rasterTextGlyph(parser, r, { image = null, sourceRect = null, padding = 1 } = {}) {
   const font = parser.rasterFont?.(r) ?? parser.font(r),
@@ -94,7 +95,11 @@ export function rasterTextGlyph(parser, r, { image = null, sourceRect = null, pa
             to = (yy + offset) * width + xx + offset;
           shadow(to * 4, rgba[to * 4 + 3] + rgba[from * 4 + 3] + base[from]);
         }
-    for (let i = 0; i < base.length; i++) blendBitmapPixel(rgba, i * 4, main, i * 4);
+    const outputWords = packedBitmapWords(rgba),
+      inputWords = packedBitmapWords(main);
+    if (outputWords && inputWords)
+      blendPackedRow(rgba, 0, main, 0, base.length, outputWords, inputWords, 255);
+    else for (let i = 0; i < base.length; i++) blendBitmapPixel(rgba, i * 4, main, i * 4);
   }
   return { width, height, rgba, rect: [0, 0, width, height] };
 }
@@ -107,14 +112,26 @@ export function compositeTextGlyph(destination, shape, x, y) {
   const left = Math.max(0, x),
     top = Math.max(0, y),
     count = Math.min(shape.width, width - left),
-    rows = Math.min(shape.height, height - top);
+    rows = Math.min(shape.height, height - top),
+    packed =
+      count > 0 &&
+      rows > 0 &&
+      rgba.buffer !== shape.rgba.buffer &&
+      [width, height, shape.width, shape.height, left, top].every(Number.isInteger) &&
+      rgba.length === width * height * 4 &&
+      shape.rgba.length === shape.width * shape.height * 4,
+    outputWords = packed ? packedBitmapWords(rgba) : null,
+    inputWords = packed ? packedBitmapWords(shape.rgba) : null;
   for (let yy = 0; yy < rows; yy++) {
     const output = ((top + yy) * width + left) * 4,
       start = yy * shape.width * 4;
     if (left > 0 && rgba.subarray(output - 4, output).every((v) => !v))
       rgba.set([shape.rgba[start], shape.rgba[start + 1], shape.rgba[start + 2], 0], output - 4);
-    for (let xx = 0; xx < count; xx++)
-      blendBitmapPixel(rgba, output + xx * 4, shape.rgba, start + xx * 4);
+    if (outputWords && inputWords)
+      blendPackedRow(rgba, output, shape.rgba, start, count, outputWords, inputWords, 255);
+    else
+      for (let xx = 0; xx < count; xx++)
+        blendBitmapPixel(rgba, output + xx * 4, shape.rgba, start + xx * 4);
     if (
       left + count < width &&
       rgba.subarray(output + count * 4, output + count * 4 + 4).every((v) => !v)

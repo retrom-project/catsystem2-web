@@ -9,7 +9,51 @@ import { nativeABI } from '../src/native/abi/index.mjs';
 import { NativeFESTextLayout, fesConfigurationFontBytes } from '../src/native/fes-text-layout.mjs';
 import { FES_OBJECT_DEFINITION_ORDER } from '../src/fes/types.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { compositeTextGlyph } from '../src/native/text-raster.mjs';
 import { hg3, u32 } from './helpers.mjs';
+
+test('packed glyph compositing matches the scalar path for clipped rows and transparent RGB', () => {
+  const source = Uint8ClampedArray.of(
+    9,
+    8,
+    7,
+    0,
+    90,
+    80,
+    70,
+    128,
+    80,
+    60,
+    40,
+    255,
+    1,
+    2,
+    3,
+    0,
+    50,
+    60,
+    70,
+    1,
+    15,
+    25,
+    35,
+    254,
+  );
+  for (const [x, y] of [
+    [1, 0],
+    [4, 1],
+    [-1, -1],
+  ]) {
+    const packed = new Uint8ClampedArray(5 * 3 * 4),
+      scalar = new Uint8ClampedArray(new ArrayBuffer(packed.length + 1), 1);
+    packed.set([27, 17, 7, 0, 10, 20, 30, 255, 50, 40, 30, 128], 8);
+    scalar.set(packed);
+    const shape = { width: 3, height: 2, rgba: source };
+    compositeTextGlyph({ width: 5, height: 3, rgba: packed }, shape, x, y);
+    compositeTextGlyph({ width: 5, height: 3, rgba: scalar }, shape, x, y);
+    assert.deepEqual(packed, scalar);
+  }
+});
 
 async function expectMissingHead(instance, invoke, head) {
   const getters = [],
