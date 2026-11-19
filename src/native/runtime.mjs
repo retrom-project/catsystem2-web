@@ -277,7 +277,8 @@ export class NativeRuntime {
     services.sceneData = this.sceneData(task);
     services.initializeSceneData = () => {
       if (task.context.sceneData) {
-        this.handles.release(task.context.sceneData, 'scene-data');
+        const previous = this.handles.release(task.context.sceneData, 'scene-data');
+        services.world?.m2?.scenePreparation?.discard(previous);
         task.context.sceneData = 0;
       }
       return this.sceneData(task, true);

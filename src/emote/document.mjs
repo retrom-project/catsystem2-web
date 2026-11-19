@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { readPSB } from '../formats/psb.mjs';
+import { PSB, readPSB } from '../formats/psb.mjs';
 import { boundedCount } from '../binary.mjs';
 
 function dimensions(width, height) {
@@ -67,11 +67,13 @@ function decodeTexture(psb, data) {
 
 const warnedVersions = new Set();
 export class EmoteDocument {
-  static async open(bytes, { warn = (message) => console.warn(message), ...options } = {}) {
-    const document = new EmoteDocument(
-      await readPSB(bytes, { allowUnverifiedVersion: true }),
-      options,
-    );
+  static async open(
+    bytes,
+    { warn = (message) => console.warn(message), expandedPSB, ...options } = {},
+  ) {
+    const psbOptions = { allowUnverifiedVersion: true };
+    const psb = expandedPSB ? new PSB(expandedPSB, psbOptions) : await readPSB(bytes, psbOptions);
+    const document = new EmoteDocument(psb, options);
     if (
       ![3, 4].includes(document.containerVersion) ||
       Math.fround(document.motionVersion) !== Math.fround(3.03) ||

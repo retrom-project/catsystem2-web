@@ -774,6 +774,7 @@ export class CatSystem2 {
       this.emote.restore(saved.emote);
       this.frame = next.frame;
       this.mode = 'running';
+      next.m2?.scenePreparation?.resume();
       return;
     }
     if (

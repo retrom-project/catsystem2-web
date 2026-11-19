@@ -10,6 +10,7 @@ import { decodeText } from '../binary.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { compareNativeBytes } from './dictionary.mjs';
+import { M2ScenePreparation } from './emote-scene-preparation.mjs';
 
 const settingsFields = {
   motion: ['motion'],
@@ -27,6 +28,7 @@ export class M2Owner {
     this.world = world;
     this.tasks = new Map();
     this.documents = new Map();
+    this.scenePreparation = new M2ScenePreparation(this);
     this.hits = [];
     this.configuration = new NativeM2Configuration({
       changed: () => {
@@ -74,6 +76,12 @@ export class M2Owner {
     if (!this.documents.has(model)) {
       const record = { document: null };
       record.promise = (async () => {
+        const prepared = this.scenePreparation.take(model);
+        if (prepared)
+          return (record.document = await EmoteDocument.open(prepared.packed, {
+            name: model,
+            expandedPSB: prepared.expanded,
+          }));
         const game = this.world.game,
           bytes = game.requireCategory
             ? await game.requireCategory(model, 'm2psb')
@@ -208,6 +216,7 @@ export class M2Owner {
     this.hits = structuredClone(state.hits);
   }
   async close({ flushFiles = true } = {}) {
+    this.scenePreparation.discard();
     if (flushFiles && this.initialized) await this.saveSettings();
     this.documents.clear();
     this.tasks.clear();

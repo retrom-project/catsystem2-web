@@ -3,11 +3,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { deflateSync } from 'node:zlib';
 import { Binary } from '../src/binary.mjs';
+import { HTTPFile } from '../src/files.mjs';
 import { formatNativeAt } from '../src/kcs.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { KCSMachine } from '../src/kcs/vm.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeStringBank } from '../src/native/string-bank.mjs';
+import { M2ScenePreparation } from '../src/native/emote-scene-preparation.mjs';
 import {
   NativeSceneData,
   NativeSceneReader,
@@ -51,6 +53,105 @@ function cst(blocks, packed = true) {
   file.set(payload, 16);
   return file;
 }
+
+test('restored scene hints prepare one explicit M2 resource from the same mounted scene', async (t) => {
+  const workerBefore = globalThis.Worker;
+  let pending = Promise.withResolvers();
+  let terminated = 0;
+  globalThis.Worker = class {
+    postMessage({ bytes, length }) {
+      assert.equal(bytes.length, 65536);
+      pending.resolve(() => this.onmessage({ data: new Uint8Array(length) }));
+    }
+    terminate() {
+      terminated++;
+    }
+  };
+  t.after(() => {
+    if (workerBefore === undefined) delete globalThis.Worker;
+    else globalThis.Worker = workerBefore;
+  });
+  const sceneBytes = cst([[[0x30, 'mpl 1 sample,2,pose']]], false),
+    scene = new NativeSceneData(),
+    packed = new Uint8Array(16 + 65536);
+  await scene.reader.load(sceneBytes);
+  scene.history.appendPath('active', 0);
+  packed.set([80, 83, 90, 0]);
+  const header = new DataView(packed.buffer);
+  header.setUint32(4, 65536, true);
+  header.setUint32(8, 8 * 1024 * 1024, true);
+  const sceneFile = new HTTPFile('http://localhost/scene', sceneBytes.length, 0),
+    modelFile = new HTTPFile('http://localhost/model', packed.length, 0),
+    reads = [];
+  let mountedScene = sceneBytes;
+  const owner = {
+    profiles: { profileFiles: { sample: 'test' }, profile: () => ({ bodies: { 2: 'model' } }) },
+    documents: new Map(),
+    world: {
+      profile: 'nekopara-vol3-engine-2.6.1.76',
+      runtime: { handles: { records: new Map([[1, { type: 'scene-data', value: scene }]]) } },
+      game: {
+        resolveCategory: (name) => name,
+        nativeCandidates(name) {
+          const file = name === 'active' ? sceneFile : modelFile;
+          return [{ hit: { file, size: file.size } }];
+        },
+        async requireCategory(name, category) {
+          reads.push([name, category]);
+          return name === 'active' ? mountedScene : packed;
+        },
+      },
+    },
+  };
+  const preparation = new M2ScenePreparation(owner);
+  owner.world.profile = 'sdk-4.01-engine-2.6.1.74';
+  preparation.resume();
+  assert.deepEqual(reads, []);
+  owner.world.profile = 'nekopara-vol3-engine-2.6.1.76';
+
+  mountedScene = cst([[[0x30, 'mpl 1 different,2,pose']]], false);
+  preparation.resume();
+  await new Promise(setImmediate);
+  assert.deepEqual(reads.splice(0), [['active', 'scene']]);
+  assert.equal(preparation.take('model'), null);
+  preparation.discard();
+  mountedScene = sceneBytes;
+
+  preparation.resume();
+  preparation.resume();
+  const finish = await pending.promise;
+  finish();
+  await new Promise(setImmediate);
+  assert.equal(terminated, 1);
+  assert.deepEqual(reads, [
+    ['active', 'scene'],
+    ['model', 'm2psb'],
+  ]);
+  assert.equal(preparation.take('another-model'), null);
+  const prepared = preparation.take('model');
+  assert.equal(prepared.packed, packed);
+  assert.equal(prepared.expanded.length, 8 * 1024 * 1024);
+  assert.equal(preparation.take('model'), null);
+
+  pending = Promise.withResolvers();
+  preparation.hint(scene, 'active', 0);
+  const stale = await pending.promise;
+  scene.history.path = structuredClone(scene.history.path);
+  stale();
+  await new Promise(setImmediate);
+  assert.equal(preparation.take('model'), null);
+  assert.equal(terminated, 2);
+
+  pending = Promise.withResolvers();
+  preparation.resume();
+  const afterClose = await pending.promise;
+  owner.world.disposalRequested = true;
+  preparation.discard();
+  afterClose();
+  await new Promise(setImmediate);
+  assert.equal(preparation.take('model'), null);
+  assert.equal(terminated, 3);
+});
 const machine = () =>
   new KCSMachine({
     body: new Binary(Uint8Array.of(59)),

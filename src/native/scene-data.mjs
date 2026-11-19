@@ -502,10 +502,12 @@ export function nativeSceneData(id, args, machine, services = {}) {
   const { reader, history } = data;
   if (id === 0x144) {
     services.handles.release(args[0], 'scene-data');
+    services.world?.m2?.scenePreparation?.discard(data);
     return done();
   }
   if (id === 0x145) {
     if (!services.read || !services.format) return undefined;
+    services.world?.m2?.scenePreparation?.discard();
     return data
       .load(services.format(args[1], machine), services.read, services.diagnostic)
       .then((value) => word(Number(value)));
@@ -545,6 +547,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
       return word(1);
     }
     const index = name.length ? history.appendPath(name, args[2]) : -1;
+    if (id === 0x149 && index >= 0) services.world?.m2?.scenePreparation?.hint(data, name, args[2]);
     return word(direct ? index : 1);
   }
   if (id === 0x14a) {
@@ -553,6 +556,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
   }
   if (id === 0x14b) {
     history.path = [];
+    services.world?.m2?.scenePreparation?.discard(data);
     return done();
   }
   if (id === 0x14d) {
@@ -607,6 +611,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
     if (!args[1]) return done();
     const source = services.handles.get(args[1], 'scene-data').history;
     if (id === 0x3e1) {
+      services.world?.m2?.scenePreparation?.discard(data);
       // Clear the destination before traversing the source list.
       // Passing the same scene therefore clears its path as well.
       history.path =
