@@ -98,7 +98,9 @@ test('bulk copying a zero row prefix keeps hidden RGB and blends the remaining p
   result.set([1, 7, 2, 255], (width + 3) * 4);
   const expected = result.slice();
   rasterizeRetainedBitmap(expected, width, height, unaligned, state, item, area);
-  rasterizeRetainedBitmap(result, width, height, input, state, item, area);
+  rasterizeRetainedBitmap(result, width, height, input, state, item, area, {
+    copyZeroPrefix: true,
+  });
   assert.deepEqual(result, expected);
   assert.deepEqual([...result.subarray(105 * 4, 106 * 4)], [39, 87, 145, 0]);
 });

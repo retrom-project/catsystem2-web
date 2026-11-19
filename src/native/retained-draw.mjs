@@ -463,7 +463,11 @@ export class NativeRetainedDraw {
       rows = reuse
         ? bitmapPixels.slice(start, start + (area[3] - area[1]) * rowBytes)
         : new Uint8ClampedArray(replaceRows ? bitmapPixels.length : bitmapPixels),
-      options = { flipDestinationY: true, firstDestinationRow: firstRow };
+      options = {
+        flipDestinationY: true,
+        firstDestinationRow: firstRow,
+        copyZeroPrefix: replaceRows && Boolean(draw.state.pending) && renderer.clearColor === 0,
+      };
     if (replaceRows) {
       // Cleared rows need no copy. Preserve both outside ranges in the new
       // backing so any already borrowed bitmap still sees its old pixels.
