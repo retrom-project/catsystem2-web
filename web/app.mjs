@@ -148,7 +148,7 @@ function updateStatus(state) {
   $('diagnostics').textContent = JSON.stringify({ ...state, vm: engine.vmEvidence }, null, 2);
 }
 async function launch(getGame) {
-  monitorPresentation(undefined);
+  stopObservingWorld();
   if (running) {
     running = false;
     await engine?.dispose();
@@ -170,7 +170,7 @@ async function launch(getGame) {
       onState: updateStatus,
       onClosed: () => {
         running = false;
-        monitorPresentation(undefined);
+        stopObservingWorld();
         $('welcome').hidden = false;
         $('start').disabled = false;
         $('system-settings').disabled = true;
@@ -212,6 +212,10 @@ function resetClockForWorld(world) {
   lastTime = undefined;
   accumulator = 0;
 }
+function stopObservingWorld() {
+  resetClockForWorld(undefined);
+  monitorPresentation(undefined);
+}
 async function loop(now) {
   if (!running) return;
   try {
@@ -238,7 +242,7 @@ async function loop(now) {
     }
   } catch (e) {
     running = false;
-    monitorPresentation(undefined);
+    stopObservingWorld();
     $('system-settings').disabled = true;
     fail(e);
   }
@@ -419,6 +423,6 @@ window.addEventListener('blur', () => {
 document.addEventListener('visibilitychange', resetFrameRate);
 window.addEventListener('pagehide', () => {
   running = false;
-  monitorPresentation(undefined);
+  stopObservingWorld();
   engine?.dispose().catch(() => {});
 });
