@@ -70,7 +70,14 @@ function blendPackedRow(output, at, input, start, count, outputWords, inputWords
     src = start / 4,
     fullyOpaque = opacity === 255,
     scale = opacity & 65535;
-  for (let x = 0; x < count; x++) {
+  let x = 0;
+  if (fullyOpaque && count >= 64) {
+    // A fully zero prefix takes the source RGBA verbatim, including hidden RGB.
+    while (x < count && outputWords[dst + x] === 0) x++;
+    if (x >= 64) outputWords.set(inputWords.subarray(src, src + x), dst);
+    else x = 0;
+  }
+  for (; x < count; x++) {
     const source = inputWords[src + x],
       target = outputWords[dst + x],
       color = fullyOpaque
