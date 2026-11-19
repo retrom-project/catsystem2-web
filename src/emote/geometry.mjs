@@ -44,6 +44,8 @@ function nodeRecord(layer, group, parent) {
     bindings: new Map(),
     patch: null,
     ancestor: null,
+    subtreeEnd: 0,
+    composite: null,
   };
 }
 
@@ -163,6 +165,7 @@ export class EmoteGeometry {
             node.motions.set(`${c.src}/${c.icon}`, this.compile(c.src, c.icon, node, path));
         }
       for (const child of layer.children ?? []) visit(child, node);
+      node.subtreeEnd = this.nodes.length;
       return node;
     };
     for (const layer of motion.layer ?? []) visit(layer, null);
@@ -530,8 +533,6 @@ export class EmoteGeometry {
     for (const packet of node.packets) this.commands.push(packet);
   }
   applyMasks() {
-    const plain = this.commands.slice();
-    this.commands.length = 0;
     for (const node of this.nodes) node.maskReference = 0;
     let reference = 0;
     for (const composite of this.nodes) {
@@ -544,45 +545,62 @@ export class EmoteGeometry {
       if (reference >= 255) throw new Error('E-mote stencil reference count exceeds 255');
       composite.maskReference = ++reference;
     }
-    const contains = (node, parent) => {
-      while (node) {
-        if (node === parent) return true;
-        node = node.parent ?? node.group.owner;
-      }
-      return false;
-    };
-    const emitted = new Set();
-    for (const command of plain) {
-      let node = command.node,
-        composite = null;
-      while (node) {
-        if (node.maskReference) {
-          composite = node;
-          break;
+    if (!reference) return;
+
+    // Compilation orders each parent ahead of every child, including motion
+    // groups owned by a layer. Retain the nearest current composite per node.
+    const rootsByGroup = new Map();
+    for (const node of this.nodes) {
+      const parent = node.parent ?? node.group.owner;
+      node.composite = node.maskReference ? node : (parent?.composite ?? null);
+      if (node.maskReference && !rootsByGroup.has(node.group)) {
+        const roots = new Map();
+        for (const layer of node.group.flat) {
+          const label = layer.layer.label;
+          if (!roots.has(label)) roots.set(label, []);
+          roots.get(label).push(layer);
         }
-        node = node.parent ?? node.group.owner;
+        rootsByGroup.set(node.group, roots);
       }
+    }
+
+    const plain = this.commands.slice();
+    this.commands.length = 0;
+    const emitted = new Set(),
+      masksByComposite = new Map();
+    for (const command of plain) {
+      const composite = command.node.composite;
       if (composite) {
         command.stencil = composite.maskReference;
         if (!emitted.has(command.node)) {
           emitted.add(command.node);
-          for (const label of composite.layer.stencilCompositeMaskLayerList) {
-            const roots = this.nodes.filter(
-              (node) => node.group === composite.group && node.layer.label === label,
-            );
-            for (const mask of plain)
-              if (roots.some((root) => contains(mask.node, root))) {
-                const copy = (mask.maskPacket ??= new EmotePacket(mask.vertices.length));
-                copy.bytes.set(mask.bytes);
-                for (let at = 12; at < copy.bytes.length; at += 24)
-                  copy.view.setUint32(at, 0xffffffff, true);
-                copy.texture = mask.texture;
-                copy.blend = 6;
-                copy.stencil = composite.maskReference;
-                copy.maskWrite = true;
-                copy.node = mask.node;
-                this.commands.push(copy);
-              }
+          let masks = masksByComposite.get(composite);
+          if (!masks) {
+            masks = [];
+            for (const label of composite.layer.stencilCompositeMaskLayerList) {
+              const roots = rootsByGroup.get(composite.group).get(label);
+              if (!roots) continue;
+              for (const mask of plain)
+                if (
+                  roots.some(
+                    (root) => mask.node.order >= root.order && mask.node.order < root.subtreeEnd,
+                  )
+                )
+                  masks.push(mask);
+            }
+            masksByComposite.set(composite, masks);
+          }
+          for (const mask of masks) {
+            const copy = (mask.maskPacket ??= new EmotePacket(mask.vertices.length));
+            copy.bytes.set(mask.bytes);
+            for (let at = 12; at < copy.bytes.length; at += 24)
+              copy.view.setUint32(at, 0xffffffff, true);
+            copy.texture = mask.texture;
+            copy.blend = 6;
+            copy.stencil = composite.maskReference;
+            copy.maskWrite = true;
+            copy.node = mask.node;
+            this.commands.push(copy);
           }
         }
       }
