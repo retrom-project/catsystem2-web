@@ -13,6 +13,22 @@ import { nativeMeshGeometry } from '../native/mesh.mjs';
 export const isNativeTexturedModel = (graph) =>
   graph?.type === 1 && graph.vram === true && !graph.custom && !graph.callback;
 
+function divideNativeModel(graph, layout, includesPage) {
+  const source = graph.textureTransform.slice(),
+    offset = motionVector(graph.kx2, MOTION_ABI.vram),
+    position = motionVector(source, MOTION_ABI.pos).map((v, i) => Math.fround(v + offset[i]));
+  setMotionVector(source, MOTION_ABI.pos, position);
+  const division = nativeDivisionLayout(
+      layout.configurationSize,
+      layout.grid,
+      layout.textureCaps?.guardBand,
+    ),
+    triangles = transformNativeTriangles(graph.triangles || rectangleTriangles(graph), source, {
+      useEuler: !graph.textureMatrixExplicit,
+    });
+  return { ...graph, mesh: divideNativeTriangles(triangles, division, position, includesPage) };
+}
+
 export function nativeTexturedGeometry(
   inputGraph,
   state,
@@ -20,25 +36,17 @@ export function nativeTexturedGeometry(
   layout,
   deform = (graph, vertices) => vertices,
 ) {
-  let graph = inputGraph;
-  if (!graph.mesh) {
-    const source = graph.textureTransform.slice(),
-      offset = motionVector(graph.kx2, MOTION_ABI.vram),
-      position = motionVector(source, MOTION_ABI.pos).map((v, i) => Math.fround(v + offset[i]));
-    setMotionVector(source, MOTION_ABI.pos, position);
-    const division = nativeDivisionLayout(
-        layout.configurationSize,
-        layout.grid,
-        layout.textureCaps?.guardBand,
-      ),
-      triangles = transformNativeTriangles(graph.triangles || rectangleTriangles(graph), source, {
-        useEuler: !graph.textureMatrixExplicit,
-      });
-    graph = { ...graph, mesh: divideNativeTriangles(triangles, division, position) };
-  }
+  const graph = inputGraph.mesh ? inputGraph : divideNativeModel(inputGraph, layout);
   return nativeMeshGeometry(graph, state, projection, (vertices, triangle) =>
     deform(graph, vertices, triangle),
   );
+}
+
+// Only approved plain model queries enter here. Unchanged texture pages
+// cannot contribute damage, so clip and project only the dirty pages.
+export function nativeTexturedPageBounds(graph, state, projection, pages) {
+  const divided = divideNativeModel(graph, pages.layout, (id) => pages.isDirty(id));
+  return nativeVertexBounds(nativeMeshGeometry(divided, state, projection));
 }
 
 function flatTransform(bytes, matrixExplicit) {

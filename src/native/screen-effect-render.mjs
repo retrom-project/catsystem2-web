@@ -6,7 +6,7 @@ import {
   isNativeTexturedModel,
   supportsNativeTexturedBounds,
   nativeTexturedBounds,
-  nativeTexturedGeometry,
+  nativeTexturedPageBounds,
 } from '../render/native-textured-geometry.mjs';
 import { compareNativeDrawItems as compare } from './graphics-render.mjs';
 import { advanceD3DContext } from '../ppi/render-state.mjs';
@@ -14,7 +14,6 @@ import {
   isNativeColoredModel,
   supportsNativeColoredBounds,
   nativeColoredBounds,
-  nativeVertexBounds,
 } from '../render/native-geometry.mjs';
 const nativeItem = (item) => Boolean(item.p?.nativeGraph || item.type === 'particle');
 const emptyRectangle = (r) => r[0] >= r[2] || r[1] >= r[3];
@@ -226,13 +225,11 @@ export class NativeScreenEffectRenderer {
             pagesDirty = pages.hasDirtyPages?.() ?? true;
           }
           // Keep division's validation of zero-sized half cells.
-          const triangles =
+          const bounds =
             pagesDirty || layout.configurationSize.some((size) => size >>> 1 === 0)
-              ? nativeTexturedGeometry(graph, task.state, projection, layout).filter((triangle) =>
-                  pages.isDirty(triangle.textureID),
-                )
-              : [];
-          this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, nativeVertexBounds(triangles)));
+              ? nativeTexturedPageBounds(graph, task.state, projection, pages)
+              : [0, 0, 0, 0];
+          this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, bounds));
         }
       }
     }

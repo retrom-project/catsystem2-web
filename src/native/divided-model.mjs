@@ -108,7 +108,12 @@ export function nativeDivisionLayout(pageSize, grid, guardBand = [-1, -1, 1, 1])
     cells: grid.map((n, i) => n * Math.trunc(pageSize[i] / cellSize[i])),
   };
 }
-export function divideNativeTriangles(triangles, layout, position = [0, 0, 0]) {
+export function divideNativeTriangles(
+  triangles,
+  layout,
+  position = [0, 0, 0],
+  includesPage = null,
+) {
   const {
       pageSize: [pw, ph],
       cellSize: [cw, ch],
@@ -134,8 +139,9 @@ export function divideNativeTriangles(triangles, layout, position = [0, 0, 0]) {
           Math.max(0, minY) >= Math.min(rows * ch, maxY)
         )
           continue;
-        const textureID = Math.trunc(column / ratio) + pageColumns * Math.trunc(row / ratio),
-          points = clipNativeTriangle(triangle, [
+        const textureID = Math.trunc(column / ratio) + pageColumns * Math.trunc(row / ratio);
+        if (includesPage && !includesPage(textureID)) continue;
+        const points = clipNativeTriangle(triangle, [
             f(column * cw),
             f(row * ch),
             f((column + 1) * cw),
