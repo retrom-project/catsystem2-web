@@ -128,8 +128,9 @@ export class FESLogDriver {
         model.bind(p(0));
         break;
       case 'remake': {
+        const languages = this.world.configuration.language?.entries;
         const language = (i) =>
-          args[i] === undefined ? null : (instance.player.strings[p(i)] ?? null);
+          args[i] === undefined ? null : (languages?.[p(i)]?.prefix ?? null);
         await model.remake(language(0), language(1));
         break;
       }

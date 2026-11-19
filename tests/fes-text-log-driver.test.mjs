@@ -2,6 +2,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { profiles, textWorld, setup, append } from './fixtures/fes-text-log-world.mjs';
+import { files as historyScenes } from './fixtures/fes-log-model.mjs';
+import { authoredHG3 } from './fixtures/hg3.mjs';
 import { initializeFESString } from '../src/native/fes-string-driver.mjs';
 import { initializeFESLogObject } from '../src/native/fes-log-driver.mjs';
 import { fesMotionState, applyFESMotionState } from '../src/native/fes-motion-model.mjs';
@@ -9,6 +11,101 @@ import { setFESGraphicalPosition } from '../src/native/fes-common-model.mjs';
 import { MOTION_ABI } from '../src/motion/abi.mjs';
 import { defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
 import { FES_OBJECT_DEFINITION_ORDER } from '../src/fes/types.mjs';
+
+test('LOGSTRING8 remakes visible history using the configured language indices', async () => {
+  const profile = profiles[1],
+    source = `#DEFINE
+LOGSTRING8 history
+#OBJECT COUNT POS2 SIZE2 PRI
+history 2 area:0 area:0 60000
+#START
+next IDLE
+#IDLE
+#OPEN
+history setlog $0
+getconf 1 lang_text_main
+getconf 2 lang_text_sub
+history remake $1 $2
+history disp 1
+break
+#CLOSE
+history disp 0
+break
+`,
+    world = await defaultFESWorld(profile, {
+      ...historyScenes,
+      'area.hg3': authoredHG3(
+        [0, 1].map((id) => ({
+          id,
+          width: 24,
+          height: 16,
+          rgba: new Uint8Array(24 * 16 * 4),
+        })),
+      ),
+      'screen.fes': new TextEncoder().encode(source),
+    });
+  let fresh;
+  try {
+    const language = world.configuration.language;
+    language.entries = [{ prefix: 'ja' }, { prefix: 'en' }];
+    language.main = 1;
+    const { id, task, instance } = await loadDefaultFES(world);
+    await task.syncObjects();
+    await task.syncObjects();
+    const handle = world.displayLogs.create(id),
+      model = world.displayLogs.get(handle),
+      decoder = new TextDecoder(),
+      columns = (log) =>
+        log.rows.map(({ first, second }) => [decoder.decode(first), decoder.decode(second)]);
+    append(world.displayLogs, model, 'A');
+    append(world.displayLogs, model, 'B');
+    instance.setGlobal(0, handle);
+    await task.player.notify('OPEN');
+    assert.deepEqual(columns(model), [
+      ['E0', ''],
+      ['E1', ''],
+    ]);
+    const visible = (root, side) => {
+      const history = root.collection.lookup('history', 0);
+      return history.slots.map((slot) => {
+        const child = root.collection.graph.get(slot[side]);
+        return [child.disp, decoder.decode(child.nativeTextState.source)];
+      });
+    };
+    assert.deepEqual(visible(instance, 'main'), [
+      [true, 'E0'],
+      [true, 'E1'],
+    ]);
+    assert.deepEqual(visible(instance, 'secondary'), [
+      [false, ''],
+      [false, ''],
+    ]);
+    await task.player.notify('CLOSE');
+    assert.ok(visible(instance, 'main').every(([shown]) => !shown));
+
+    fresh = await defaultFESWorld(profile, historyScenes, { initialize: false });
+    await fresh.restore(world.snapshot());
+    const restored = fresh.objects.objects.get(id).implementation.player;
+    fresh.configuration.language.main = 0;
+    fresh.configuration.language.sub = 1;
+    await restored.notify('OPEN');
+    assert.deepEqual(columns(fresh.displayLogs.get(handle)), [
+      ['J0', 'E0'],
+      ['J1', 'E1'],
+    ]);
+    assert.deepEqual(visible(restored.root, 'main'), [
+      [true, 'J0'],
+      [true, 'J1'],
+    ]);
+    assert.deepEqual(visible(restored.root, 'secondary'), [
+      [true, 'E0'],
+      [true, 'E1'],
+    ]);
+  } finally {
+    await fresh?.close();
+    await world.close();
+  }
+});
 
 for (const profile of profiles)
   test(`${profile}: ordinary FES getdiv writes the last live NV division once across a mixed group and fresh restore`, async () => {
