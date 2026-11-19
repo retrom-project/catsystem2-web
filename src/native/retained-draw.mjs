@@ -463,7 +463,26 @@ export class NativeRetainedDraw {
       rows = reuse
         ? bitmapPixels.slice(start, start + (area[3] - area[1]) * rowBytes)
         : new Uint8ClampedArray(replaceRows ? bitmapPixels.length : bitmapPixels),
-      options = { flipDestinationY: true, firstDestinationRow: firstRow };
+      clearSources =
+        replaceRows && renderer.clearColor === 0 && draw.state.pending && items.length <= 32
+          ? readyRasterSources(graphics, bitmap, bitmapPixels, items)
+          : null,
+      cleared =
+        clearSources &&
+        clearSources.every(
+          ({ item, state }) =>
+            !item.visible ||
+            (item.mode === 0 &&
+              item.alpha === 255 &&
+              state.bpp === 4 &&
+              !state.mask &&
+              !state.blendType),
+        ),
+      options = {
+        flipDestinationY: true,
+        firstDestinationRow: firstRow,
+        written: cleared ? [] : null,
+      };
     if (replaceRows) {
       // Cleared rows need no copy. Preserve both outside ranges in the new
       // backing so any already borrowed bitmap still sees its old pixels.
@@ -490,11 +509,10 @@ export class NativeRetainedDraw {
             words.fill(clearWord, row + area[0], row + area[2]);
           }
         }
-        // The small row copy includes the adjacent pixels where the native
-        // blend path can write zero-alpha RGB. Its sources are ready without
-        // awaiting, so the backing is untouched until all raster work succeeds.
-        if (reuse) {
-          for (const { item, state, rgba } of ready)
+        // A cleared region can use its ready normal sources in one
+        // synchronous pass. The rasterizer records each clipped write area.
+        if (reuse || cleared) {
+          for (const { item, state, rgba } of reuse ? ready : clearSources)
             rasterizeRetainedBitmap(
               rows,
               renderer.width,
@@ -505,8 +523,6 @@ export class NativeRetainedDraw {
               area,
               options,
             );
-          bitmapPixels.set(rows, start);
-          publication = previous;
         } else {
           for (const item of items) {
             const source = images.get(item.image);
@@ -522,9 +538,13 @@ export class NativeRetainedDraw {
               options,
             );
           }
-          if (ready) publication = bitmap.publishRetainedBacking(rows);
-          else bitmap.state.rgba = rows;
         }
+        if (reuse) {
+          // The copied rows include the adjacent pixels that receive zero-alpha RGB.
+          bitmapPixels.set(rows, start);
+          publication = previous;
+        } else if (ready) publication = bitmap.publishRetainedBacking(rows);
+        else bitmap.state.rgba = rows;
         // Native output reads this exact allocation asynchronously. Until it
         // returns, a nested Draw must take the full-copy path.
         if (publication) publication.publishing = true;

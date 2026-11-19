@@ -8,6 +8,7 @@ import { installNativeGraphics } from '../src/native/graphics.mjs';
 import { installNativeScreenEffects } from '../src/native/screen-effect.mjs';
 import { nativeDraw } from '../src/native/draw-task.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
+import { NativeBitmap } from '../src/native/image.mjs';
 import { flipBitmapRows } from '../src/native/raster-kernel.mjs';
 import { floatBits } from '../src/kcs.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
@@ -209,6 +210,51 @@ test('full-width retained redraw preserves the rows outside the clear and the bo
     world.runtime.handles.restore(checkpoint);
     assert.deepEqual(await images.get(task.state.renderer.bitmap).pixels(), expected);
   }
+});
+
+test('a cleared pending Draw preserves borrowed rows, touching transparent borders and clipped pixels', async (t) => {
+  const world = fixture(),
+    id = await surface(world, 10, 6),
+    images = world.graphics.images,
+    task = world.graphics.drawTasks.get(id),
+    bitmap = world.graphics.surface(id).bitmap,
+    region = [0, 1, 10, 4],
+    sourceHandles = new Set();
+  for (const [x, color] of [
+    [1, 0x00432417],
+    [3, 0x00a03141],
+    [7, 0x0017a009],
+  ]) {
+    const image = images.create(2, 1),
+      source = images.get(image);
+    await source.fill(0, 0, 2, 1, color);
+    source.state.alphaHint = 2;
+    sourceHandles.add(source.dataHandle);
+    await draw(world, id, x, image, { position: [x, 2] });
+  }
+  let reads = 0;
+  const pixels = NativeBitmap.prototype.pixels;
+  t.mock.method(NativeBitmap.prototype, 'pixels', function () {
+    if (sourceHandles.has(this.dataHandle)) reads++;
+    return pixels.call(this);
+  });
+  let expected;
+  for (const pending of [0, 1]) {
+    await bitmap.fill(0, 0, 10, 6, 0xff112233);
+    const borrowed = await bitmap.pixels(),
+      before = borrowed.slice();
+    task.state.pending = pending;
+    task.state.dirty = true;
+    reads = 0;
+    await task.render(region);
+    assert.equal(reads, pending ? 0 : 3);
+    assert.deepEqual(borrowed, before);
+    const result = await drawPixels(world, id);
+    if (!expected) expected = result;
+    else assert.deepEqual(result, expected);
+  }
+  const touchingBorder = (2 * 10 + 3) * 4;
+  assert.deepEqual([...expected.slice(touchingBorder, touchingBorder + 4)], [67, 36, 23, 0]);
 });
 
 test('small retained updates sample the old shared destination in self-draw', async () => {

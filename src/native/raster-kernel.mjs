@@ -91,7 +91,7 @@ export function rasterizeRetainedBitmap(
   state,
   item,
   region,
-  { flipDestinationY = false, firstDestinationRow = 0 } = {},
+  { flipDestinationY = false, firstDestinationRow = 0, written = null } = {},
 ) {
   if (!item.visible || !item.alpha || !state.width || !state.height) return;
   const mask = state.mask ?? 0,
@@ -184,7 +184,17 @@ export function rasterizeRetainedBitmap(
     channel =
       state.bpp === 3
         ? [2, 1, 0][Math.min(2, Math.max(0, mask - 1))]
-        : [2, 1, 0, 3][Math.min(3, Math.max(0, mask - 1))];
+        : [2, 1, 0, 3][Math.min(3, Math.max(0, mask - 1))],
+    copyToClear =
+      written &&
+      packedBlend &&
+      item.alpha === 255 &&
+      !written.some(
+        ([left, top, right, bottom]) =>
+          // The transparent RGB border may write one pixel past either side.
+          area[0] <= right && left <= area[2] && area[1] < bottom && top < area[3],
+      );
+  written?.push(area);
   for (let row = area[1]; row < area[3]; row++) {
     const sourceY = logicalRows ? state.height - 1 - (row - y) : row - y,
       start = (sourceY * state.width + area[0] - x) * 4,
@@ -209,7 +219,8 @@ export function rasterizeRetainedBitmap(
     }
     if (normal && area[0] > 0 && emptyPixel(output, at - 4))
       output.set([input[start], input[start + 1], input[start + 2], 0], at - 4);
-    if (packedBlend)
+    if (copyToClear) output.set(input.subarray(start, start + count * 4), at);
+    else if (packedBlend)
       blendPackedRow(output, at, input, start, count, outputWords, inputWords, item.alpha);
     else
       for (let column = 0; column < count; column++) {
