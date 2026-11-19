@@ -1313,7 +1313,14 @@ export async function nativeSound(id, args, machine, task, world) {
   if (id === 0x11c) {
     const name = world.runtime.services.format(argument(1), machine),
       file = world.game.resolveCategory ? world.game.resolveCategory(name, 'sound') : name;
-    return reply(Number(!!file && !!(await world.game.read(file))));
+    if (!file) return reply(0);
+    return reply(
+      Number(
+        world.canOpenSoundFile
+          ? await world.canOpenSoundFile(file, task)
+          : Boolean(await world.game.read(file)),
+      ),
+    );
   }
   throw new Error(`Missing native sound wrapper ${id.toString(16)}`);
 }

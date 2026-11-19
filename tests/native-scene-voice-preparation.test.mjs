@@ -146,3 +146,20 @@ test('packed voice data above the decoded sample budget never starts a backgroun
   assert.equal(prep.take('first.ogg', owner.id), null);
   assert.equal((await audio.game.require('first.ogg')).at(-1), 7);
 });
+
+test('prepared bytes witness only the active owner, archive range and mount generation', async (t) => {
+  const { prep, owner, scene, audio, runIdle } = setup(t),
+    { game } = audio,
+    hit = game.lookup('first.ogg');
+  game.nativeSearch = {};
+  assert.equal(prep.hint(scene, owner.id, 0), true);
+  assert.equal(prep.openedBytes('first.ogg', owner, hit), null);
+  await runIdle();
+  assert.equal(prep.openedBytes('first.ogg', owner, hit).at(-1), 3);
+  assert.equal(prep.openedBytes('first.ogg', { id: owner.id }, hit), null);
+  assert.equal(prep.openedBytes('first.ogg', owner, { ...hit, offset: 1 }), null);
+  game.nativeSearch = {};
+  assert.equal(prep.openedBytes('first.ogg', owner, hit), null);
+  assert(prep.take('first.ogg', owner.id), 'the read witness did not consume playback state');
+  assert.equal(prep.openedBytes('first.ogg', owner, hit), null);
+});

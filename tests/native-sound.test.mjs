@@ -11,6 +11,11 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { canonicalMessage } from '../src/native/control-task.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
+import { NativeWorld } from '../src/native/world.mjs';
+import { BlobFile, GameFiles } from '../src/files.mjs';
+import { MotionLibrary } from '../src/motion/library.mjs';
+import { ParticleRandom } from '../src/ppi/random.mjs';
+import { kif } from './helpers.mjs';
 import { floatBits } from '../src/kcs/vm.mjs';
 import { parseXML } from '../src/xml.mjs';
 
@@ -424,3 +429,74 @@ test('main sound wrappers preserve ignored arguments, packed fades and void cont
   );
   assert.equal(await nativeSound(0x999, [], machine, task, world), undefined);
 });
+
+for (const profile of [gameProfile, sdkProfile])
+  test(`${profile} sound opens share only the same owner's successful mounted read in one tick`, async (t) => {
+    const file = new BlobFile(
+        new Blob([
+          kif([
+            ['a.ogg', [1, 2]],
+            ['b.ogg', [3, 4]],
+          ]),
+        ]),
+      ),
+      game = new GameFiles(new Map([['sounds.int', file]]));
+    await game.open();
+    const random = new ParticleRandom(),
+      world = new NativeWorld({
+        game,
+        profile,
+        configuration: new NativeConfiguration({ profile }),
+        random,
+        motionLibrary: new MotionLibrary(game, { profile, random }),
+        host: {},
+        storage: {},
+      }),
+      task = { id: 1 },
+      other = { id: 2 },
+      source = 'sounds.int/a.ogg',
+      sourceRead = BlobFile.prototype.read;
+    world.runtime.scheduler.tasks.set(task.id, task);
+    world.runtime.scheduler.tasks.set(other.id, other);
+    let reads = 0,
+      unavailable = true;
+    t.mock.method(BlobFile.prototype, 'read', function (at, count) {
+      reads++;
+      if (unavailable) throw new Error('mounted range unavailable');
+      return sourceRead.call(this, at, count);
+    });
+    try {
+      world.processWindowMessages = async () => {
+        await assert.rejects(world.canOpenSoundFile(source, task), /unavailable/);
+        unavailable = false;
+        assert.equal(await world.canOpenSoundFile(source, task), true);
+        assert.equal(await world.canOpenSoundFile(source, task), true);
+        assert.equal(reads, 2);
+        assert.deepEqual(await world.game.read(source), Uint8Array.of(1, 2));
+        assert.equal(reads, 3, 'ordinary callers still receive an independent read');
+        assert.equal(await world.canOpenSoundFile(source, other), true);
+        assert.equal(reads, 4, 'a different owner opens independently');
+        game.applyStartup(null, game.nativeSearch);
+        assert.equal(await world.canOpenSoundFile(source, other), true);
+        assert.equal(reads, 5, 'remounting invalidates the prior open');
+      };
+      await world.tick();
+      world.processWindowMessages = async () => {
+        assert.equal(await world.canOpenSoundFile(source, other), true);
+        assert.equal(reads, 6, 'a later tick opens independently');
+      };
+      await world.tick();
+      await world.resourceCache.queue(source, 1);
+      await world.resourceCache.start();
+      await world.resourceCache.settle();
+      assert.equal(reads, 7);
+      unavailable = true;
+      world.processWindowMessages = async () => {
+        assert.equal(await world.canOpenSoundFile(source, other), true);
+        assert.equal(reads, 7, 'the authored cache remains the first source');
+      };
+      await world.tick();
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });

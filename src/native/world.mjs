@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalOwner, requireCheckpointRestoreOwner } from './original-adapter.mjs';
+import { GameFiles, matchesArchiveRange, captureArchiveRange } from '../files.mjs';
 import { findNativeFileEntries } from './file-search.mjs';
 import { nativeVirtualFilePath } from './file-path.mjs';
 import { StageRenderer } from '../render/stage.mjs';
@@ -99,9 +100,13 @@ import { nativeModuleMetadata } from './profile.mjs';
 import { nativeCategoryFilename, readNativeResource } from './resource-file.mjs';
 import { EffekseerWorld, EFFEKSEER_FRAME_EXECUTOR } from '../effekseer/world.mjs';
 
+const MAX_SOUND_PROBE_BYTES = 256 * 1024;
+
 // The world owns the task graph. A KCS program is attached to a native script
 // task rather than being run until a convenient UI request and discarded.
 export class NativeWorld {
+  #soundOpen = null;
+
   constructor({
     game,
     images,
@@ -156,13 +161,47 @@ export class NativeWorld {
     this.clock = new NativeSystemClock({
       now: host.nativeTimeGetTime ? () => host.nativeTimeGetTime() : null,
     });
+    const readSource = (name) => (game.readNative ? game.readNative(name, 3) : game.read(name)),
+      readResource = (name) => this.resourceCache.read(name);
     this.resourceCache = new NativeResourceCache({
       enabled: configuration.fields.general.cache,
-      read: (name) => (game.readNative ? game.readNative(name, 3) : game.read(name)),
+      read: readSource,
       diagnostic: (detail) => host.nativeDiagnostic?.(detail),
     });
     this.game = Object.create(game);
-    this.game.read = (name) => this.resourceCache.read(name);
+    this.game.read = readResource;
+    this.canOpenSoundFile = async (name, owner) => {
+      const cache = this.resourceCache,
+        frame = this.frameSettled;
+      if (
+        !this.running ||
+        !frame ||
+        this.transitionalExe ||
+        this.game.read !== readResource ||
+        this.runtime.scheduler.tasks.get(owner.id) !== owner
+      )
+        return Boolean(await this.game.read(name));
+      // The content cache and native search still choose the effective source.
+      const bytes = await cache.read(name, (path) => {
+        if (
+          this.frameSettled !== frame ||
+          this.runtime.scheduler.tasks.get(owner.id) !== owner ||
+          cache.sourceRead !== readSource ||
+          game.readNative !== GameFiles.prototype.readNative ||
+          game.nativeCandidates !== GameFiles.prototype.nativeCandidates
+        )
+          return cache.sourceRead(path);
+        return game.readNative(path, 3, ({ hit, kind }) => {
+          if (kind !== 'archive') return hit.file.read(hit.offset, hit.size);
+          const prepared =
+            this.audio?.game === game
+              ? this.sound.sceneVoicePreparation?.openedBytes(path, owner, hit)
+              : null;
+          return prepared ?? this.#readSoundRange(game, hit, frame, owner);
+        });
+      });
+      return Boolean(bytes);
+    };
     if (game.readCategory)
       this.game.readCategory = (name, category) => {
         const resolved = game.resolveCategory ? game.resolveCategory(name, category) : name;
@@ -856,6 +895,28 @@ export class NativeWorld {
       throw error;
     }
   }
+  async #readSoundRange(game, hit, frame, owner) {
+    const { file, offset, size } = hit,
+      previous = this.#soundOpen,
+      epoch = game.nativeSearch;
+    if (
+      previous?.frame === frame &&
+      previous.owner === owner &&
+      matchesArchiveRange(previous.range, hit, epoch)
+    )
+      return previous.bytes;
+    const range = size <= MAX_SOUND_PROBE_BYTES ? captureArchiveRange(hit, epoch) : null,
+      bytes = await file.read(offset, size);
+    if (
+      range &&
+      bytes instanceof Uint8Array &&
+      bytes.length === size &&
+      frame === this.frameSettled &&
+      matchesArchiveRange(range, hit, game.nativeSearch)
+    )
+      this.#soundOpen = { frame, owner, range, bytes };
+    return bytes;
+  }
   async tick() {
     if (this.running || this.frameSettled) throw new Error('Native world frame must be serialized');
     let settle;
@@ -869,6 +930,7 @@ export class NativeWorld {
     } finally {
       // frameSettled is the existing checkpoint/close safe point. Publish it
       // only after the frame executor entry has left, including on rejection.
+      this.#soundOpen = null;
       this.frameSettled = null;
       settle();
     }

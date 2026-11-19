@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 import { Binary } from '../binary.mjs';
-import { BlobFile, GameFiles, HTTPFile } from '../files.mjs';
+import {
+  BlobFile,
+  GameFiles,
+  HTTPFile,
+  matchesArchiveRange,
+  captureArchiveRange,
+} from '../files.mjs';
 
 const MAX_PACKED = 256 * 1024;
 const MAX_SAMPLES = 2 * 1024 * 1024;
@@ -210,6 +216,7 @@ export class SceneVoicePreparation {
         abort: new AbortController(),
         idle: null,
         buffer: null,
+        opened: null,
       };
       if (!this.#active(job)) return false;
       job.idle = requestIdleCallback(() => void this.#prepare(job));
@@ -226,7 +233,8 @@ export class SceneVoicePreparation {
     this.#decoding = true;
     try {
       if (!this.#active(job)) return;
-      const { file, offset, size } = job.mount;
+      const { file, offset, size } = job.mount,
+        range = captureArchiveRange(job.mount, this.audio.game.nativeSearch);
       const bytes = await file.read(offset, size, job.abort.signal);
       if (
         this.#job === job &&
@@ -235,7 +243,11 @@ export class SceneVoicePreparation {
         boundedVorbis(bytes)
       ) {
         const buffer = await this.audio.decodeBuffer(bytes, MAX_SAMPLES);
-        if (this.#job === job && this.#active(job)) job.buffer = buffer;
+        if (this.#job === job && this.#active(job)) {
+          job.buffer = buffer;
+          if (buffer && range && bytes instanceof Uint8Array && bytes.length === size)
+            job.opened = { range, bytes };
+        }
       }
     } catch {
       // A failed preparation leaves resource errors to the normal sound load.
@@ -243,6 +255,21 @@ export class SceneVoicePreparation {
       this.#decoding = false;
       if (this.#job === job && !job.buffer) this.discard();
     }
+  }
+
+  openedBytes(name, owner, hit) {
+    const job = this.#job,
+      opened = job?.opened;
+    if (
+      !opened ||
+      job.owner !== owner ||
+      job.mount.key !== name.toLowerCase() ||
+      !this.#active(job) ||
+      !matchesArchiveRange(opened.range, hit, this.audio.game.nativeSearch)
+    )
+      return null;
+    // The one active job keeps the exact bytes from a successful mounted read.
+    return opened.bytes;
   }
 
   take(file, ownerID) {
@@ -276,6 +303,7 @@ export class SceneVoicePreparation {
     if (job.idle !== null) cancelIdleCallback(job.idle);
     job.abort.abort();
     job.buffer = null;
+    job.opened = null;
   }
 
   releaseOwner(ownerID) {

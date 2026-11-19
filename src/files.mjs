@@ -40,6 +40,44 @@ export class BlobFile {
   }
 }
 
+const mountedBacking = (file) => (file instanceof BlobFile ? file.blob : file.url);
+
+export function captureArchiveRange(hit, epoch) {
+  const { file, offset, size } = hit;
+  if (
+    !epoch ||
+    !(
+      (file instanceof HTTPFile && file.read === HTTPFile.prototype.read) ||
+      (file instanceof BlobFile && file.read === BlobFile.prototype.read)
+    )
+  )
+    return null;
+  return {
+    epoch,
+    file,
+    offset,
+    size,
+    backing: mountedBacking(file),
+    sourceSize: file.size,
+    modifiedMs: file.modifiedMs,
+    read: file.read,
+  };
+}
+
+export function matchesArchiveRange(range, hit, epoch) {
+  const { file, offset, size } = hit;
+  return (
+    range.epoch === epoch &&
+    range.file === file &&
+    range.offset === offset &&
+    range.size === size &&
+    range.backing === mountedBacking(file) &&
+    range.sourceSize === file.size &&
+    range.modifiedMs === file.modifiedMs &&
+    range.read === file.read
+  );
+}
+
 export class KIFArchive {
   static async open(file, name) {
     const header = new Binary(await file.read(0, 8), name);
@@ -318,9 +356,11 @@ export class GameFiles {
     if (!this.nativeSearch) throw new Error('Native resource mounts have not been initialized');
     return this.nativeSearch.candidates(name, mode);
   }
-  async readNative(name, mode = 3) {
+  async readNative(name, mode = 3, readHit) {
     const candidate = this.nativeCandidates(name, mode).find((item) => item.hit);
-    return candidate ? candidate.hit.file.read(candidate.hit.offset, candidate.hit.size) : null;
+    if (!candidate) return null;
+    const { file, offset, size } = candidate.hit;
+    return readHit ? readHit(candidate) : file.read(offset, size);
   }
   async require(name) {
     const bytes = await this.read(name);

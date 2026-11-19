@@ -121,13 +121,16 @@ export class NativeResourceCache {
     if (this.failure) throw this.failure;
     return Number(!this.enabled || (threshold | 0) <= this.progress);
   }
-  async read(filename) {
-    if (!this.enabled) return this.sourceRead(filename);
-    const cached = await this.exclusive(
-      () =>
-        this.entries.find((entry) => entry.loaded && key(entry.filename) === key(filename))?.bytes,
-    );
-    return cached ? cached.slice() : this.sourceRead(filename);
+  async read(filename, readMiss) {
+    if (this.enabled) {
+      const cached = await this.exclusive(
+        () =>
+          this.entries.find((entry) => entry.loaded && key(entry.filename) === key(filename))
+            ?.bytes,
+      );
+      if (cached) return cached.slice();
+    }
+    return readMiss ? readMiss(filename) : this.sourceRead(filename);
   }
   peek(filename) {
     return this.exclusive(() => {
