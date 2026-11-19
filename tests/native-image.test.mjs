@@ -84,7 +84,7 @@ function environment() {
     graphics: {},
   };
   world.graphics.images = new NativeImages(world);
-  return { world, images: world.graphics.images, events, handles };
+  return { world, images: world.graphics.images, events, handles, frame: frames[0] };
 }
 
 test('bitmap allocation is transparent, load retains cropped and logical geometry, and missing selectors return zero', async () => {
@@ -109,6 +109,32 @@ test('bitmap allocation is transparent, load retains cropped and logical geometr
   assert.equal(await images.load('authored', 999), 0);
   assert.equal(await images.load('absent', 0), 0);
   assert.deepEqual(events, [{ file: 'authored', frameID: 0, owner: 42, native: 'image' }]);
+});
+
+test('the first loaded bitmap, its decoded frame and the reusable asset retain independent pixels', async () => {
+  const { images, frame, handles } = environment();
+  frame.attributes = [{ id: 1, rect: [0, 0, 2, 1] }];
+  const first = await images.load('authored', 0, 42),
+    bitmap = images.get(first),
+    original = frame.rgba.slice();
+  bitmap.state.rgba[0] = 7;
+  bitmap.state.attributes[0].rect[0] = 1;
+  assert.deepEqual(frame.rgba, original);
+  frame.rgba[0] = 9;
+  frame.attributes[0].rect[0] = -1;
+  assert.equal(bitmap.state.rgba[0], 7);
+  assert.equal(bitmap.state.attributes[0].rect[0], 1);
+
+  const restored = environment();
+  restored.handles.restore(handles.snapshot());
+  restored.images.restoreAssets(images.snapshotAssets());
+  await images.releaseOwner(42);
+  assert.equal(restored.images.get(first).state.rgba[0], 7);
+  const second = await restored.images.load('authored', 0, 43),
+    cached = restored.images.get(second);
+  assert.deepEqual(cached.state.rgba, original);
+  assert.equal(cached.state.attributes[0].rect[0], 0);
+  assert.equal(restored.images.get(first).state.attributes[0].rect[0], 1);
 });
 
 test('blank images retain zero dimensions and clones follow native metadata initialization after fresh restore', async () => {

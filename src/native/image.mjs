@@ -615,8 +615,10 @@ export class NativeImages {
   }
   async load(file, id = 0, owner = null) {
     const key = file.toLowerCase() + ':' + id;
-    let state = this.assets.get(key);
-    if (!state) {
+    const cached = this.assets.get(key);
+    let bitmap;
+    if (cached) bitmap = new NativeBitmap(this, cached, { owner });
+    else {
       const game = this.world.game,
         resolved = game.resolveCategory
           ? game.resolveCategory(file, 'image')
@@ -635,11 +637,17 @@ export class NativeImages {
         this.world.host?.nativeDiagnostic?.({ type: 'image-invalid', file, error: error.message });
         return 0;
       }
-      state = this.decodedState(image, frame);
-      this.assets.set(key, structuredClone(state));
+      const state = this.decodedState(image, frame),
+        metadata = { ...state, rgba: null },
+        asset = structuredClone(metadata);
+      // decodedState owns these pixels. Preserve an independent copy for
+      // later loads and give the original allocation to the first bitmap.
+      asset.rgba = state.rgba.slice();
+      this.assets.set(key, asset);
       while (this.assets.size > 32) this.assets.delete(this.assets.keys().next().value);
+      bitmap = new NativeBitmap(this, metadata, { owner });
+      bitmap.state.rgba = state.rgba;
     }
-    const bitmap = new NativeBitmap(this, state, { owner });
     this.world.imageLoaded?.({ file, frameID: id, owner, native: 'image' });
     return this.add(bitmap);
   }
