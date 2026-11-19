@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
+import { unpackHG32RGBA, unpackHGPixels } from '../src/formats/hg-codec.mjs';
 import { HG3 } from '../src/formats/hg3.mjs';
 import { authoredHG3, authoredHG3Frames } from './fixtures/hg3.mjs';
 import { hg3 } from './helpers.mjs';
@@ -21,6 +22,19 @@ test('HG3 parts preserve top-down rows, independent alpha, crop metadata and dis
     assert.deepEqual([...decoded.rgba], [...original.rgba]);
   }
   assert.equal(image.frame(999), undefined);
+});
+
+test('HG bit-plane readers reject incomplete short codes and out-of-bounds runs', () => {
+  const data = Uint8Array.of(1, 2, 3, 4);
+  for (const unpack of [
+    (control) => unpackHGPixels(data, control, 1, 1, 4),
+    (control) => unpackHG32RGBA(data, control, 1, 1, new Uint32Array(1)),
+  ]) {
+    // The run length begins in the last two bits and needs a third bit.
+    assert.throws(() => unpack(Uint8Array.of(0x89)), /HG control stream exhausted/);
+    assert.throws(() => unpack(new Uint8Array(5)), /HG gamma exceeds limit/);
+    assert.throws(() => unpack(Uint8Array.of(0x09, 0x05)), /HG invalid pixel run/);
+  }
 });
 
 for (const [profile, variable, pixelAt] of [

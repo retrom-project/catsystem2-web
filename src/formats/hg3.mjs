@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 // Adapted from CatSystemKit HGImage (OWCramer); HG decoding derives from GARbro (MIT, see NOTICE).
 import { Binary, inflate } from '../binary.mjs';
-import { unpackHGPixels } from './hg-codec.mjs';
+import { unpackHG32RGBA, unpackHGPixels } from './hg-codec.mjs';
 import { HG2 } from './hg2.mjs';
 import { RasterImage } from './raster.mjs';
 import { decodeNativeJPEG } from './jpeg.mjs';
+
+const littleEndian = new Uint8Array(Uint32Array.of(1).buffer)[0] === 1;
 
 export class HG3 {
   constructor(bytes) {
@@ -138,8 +140,23 @@ export class HG3 {
     if (!rows || top + rows > frame.height || 24 + packed + controlPacked > part.size)
       throw new Error('HG3 part bounds');
     const pixelSize = frame.bpp / 8,
-      stride = frame.width * pixelSize,
-      pixels = unpackHGPixels(data, control, frame.width, rows, pixelSize);
+      stride = frame.width * pixelSize;
+    if (
+      pixelSize === 4 &&
+      littleEndian &&
+      frame.rgba instanceof Uint8ClampedArray &&
+      frame.rgba.byteOffset % 4 === 0 &&
+      frame.rgba.byteLength >= (top + rows) * stride
+    ) {
+      const output = new Uint32Array(
+        frame.rgba.buffer,
+        frame.rgba.byteOffset + top * stride,
+        rows * frame.width,
+      );
+      unpackHG32RGBA(data, control, frame.width, rows, output);
+      return;
+    }
+    const pixels = unpackHGPixels(data, control, frame.width, rows, pixelSize);
     for (let y = 0; y < rows; y++)
       for (let x = 0; x < frame.width; x++) {
         // The native HG3 decoder writes the first expanded row through its
