@@ -77,11 +77,15 @@ export class M2Owner {
       const record = { document: null };
       record.promise = (async () => {
         const prepared = this.scenePreparation.take(model);
-        if (prepared)
-          return (record.document = await EmoteDocument.open(prepared.packed, {
+        if (prepared) {
+          const document = await EmoteDocument.open(prepared.packed, {
             name: model,
             expandedPSB: prepared.expanded,
-          }));
+            preparedAtlas: prepared.atlas,
+          });
+          if (prepared.atlas) this.scenePreparation.keepAtlas(document, prepared.scene);
+          return (record.document = document);
+        }
         const game = this.world.game,
           bytes = game.requireCategory
             ? await game.requireCategory(model, 'm2psb')
@@ -119,6 +123,7 @@ export class M2Owner {
       return;
     if (this.documents.get(model.pose.model)?.document === model.document)
       this.documents.delete(model.pose.model);
+    this.scenePreparation.releaseAtlas(model.document);
     for (const texture of model.document.textures.values())
       this.world.stageRenderer.gpu?.releaseTextureFrame(texture);
   }

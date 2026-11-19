@@ -37,7 +37,9 @@ function expandInWorker(packed, length, signal) {
     cancel = () => resolve(null);
     signal.addEventListener('abort', cancel, { once: true });
     worker.onmessage = ({ data }) =>
-      resolve(data instanceof Uint8Array && data.length === length ? data : null);
+      resolve(
+        data?.expanded instanceof Uint8Array && data.expanded.length === length ? data : null,
+      );
     worker.onerror = (event) => {
       event.preventDefault();
       resolve(null);
@@ -56,6 +58,7 @@ function expandInWorker(packed, length, signal) {
 export class M2ScenePreparation {
   #job = null;
   #pending = false;
+  #atlasOwner = null;
 
   constructor(owner) {
     this.owner = owner;
@@ -184,13 +187,13 @@ export class M2ScenePreparation {
     if (!container.magic('PSZ\0')) return;
     const length = container.u32(8);
     if (length < MAX_PACKED_MODEL || length > MAX_MODEL) return;
-    const expanded = await expandInWorker(
+    const result = await expandInWorker(
       container.range(16, container.u32(4)),
       length,
       job.abort.signal,
     );
-    if (expanded && this.#current(job) && !documents.has(model))
-      job.prepared = { packed, expanded };
+    if (result && this.#current(job) && !documents.has(model))
+      job.prepared = { packed, ...result, scene: job.scene };
   }
 
   take(model) {
@@ -211,7 +214,21 @@ export class M2ScenePreparation {
     }
   }
 
+  keepAtlas(document, scene) {
+    this.releaseAtlas();
+    this.#atlasOwner = { document, scene };
+  }
+
+  releaseAtlas(document) {
+    if (this.#atlasOwner && (document === undefined || this.#atlasOwner.document === document)) {
+      this.#atlasOwner.document.discardPreparedAtlas();
+      this.#atlasOwner = null;
+    }
+  }
+
   discard(scene) {
+    if (scene === undefined || this.#atlasOwner?.scene === scene) this.releaseAtlas();
+
     if (this.#job && (scene === undefined || this.#job.scene === scene)) {
       this.#job.abort.abort();
       this.#job = null;

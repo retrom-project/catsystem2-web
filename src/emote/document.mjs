@@ -65,11 +65,72 @@ function decodeTexture(psb, data) {
   return { width, height, rgba };
 }
 
+const readyAtlases = new WeakMap();
+
+function holdPreparedAtlas(document, atlas) {
+  if (!atlas) return;
+  let psb = document.psb;
+  const release = () => {
+    readyAtlases.delete(document);
+    if (Object.getOwnPropertyDescriptor(document, 'psb')?.configurable)
+      Object.defineProperty(document, 'psb', {
+        value: psb,
+        writable: true,
+        enumerable: true,
+        configurable: true,
+      });
+  };
+  // A borrower can mutate the backing PSB before texture() first reads it.
+  const read = () => {
+    release();
+    return psb;
+  };
+  Object.defineProperty(document, 'psb', {
+    get: read,
+    set(value) {
+      if (Object.isFrozen(document)) throw new TypeError('E-mote document is frozen');
+      psb = value;
+      release();
+    },
+    enumerable: true,
+    configurable: true,
+  });
+  readyAtlases.set(document, { atlas, read, consume: release });
+}
+
+function dropPreparedAtlas(document) {
+  const held = readyAtlases.get(document);
+  if (!held) return null;
+  if (Object.getOwnPropertyDescriptor(document, 'psb')?.get !== held.read) {
+    readyAtlases.delete(document);
+    return null;
+  }
+  held.consume();
+  return held.atlas;
+}
+
+function preparedTexture(document, source, data) {
+  const atlas = dropPreparedAtlas(document);
+  if (
+    !atlas ||
+    atlas.name !== source ||
+    atlas.resource !== data.pixel?.resource ||
+    data.type !== 'RGBA8' ||
+    data.compress ||
+    data.width !== atlas.storedWidth ||
+    data.height !== atlas.storedHeight ||
+    (data.truncated_width ?? data.width) !== atlas.texture.width ||
+    (data.truncated_height ?? data.height) !== atlas.texture.height
+  )
+    return null;
+  return atlas.texture;
+}
+
 const warnedVersions = new Set();
 export class EmoteDocument {
   static async open(
     bytes,
-    { warn = (message) => console.warn(message), expandedPSB, ...options } = {},
+    { warn = (message) => console.warn(message), expandedPSB, preparedAtlas, ...options } = {},
   ) {
     const psbOptions = { allowUnverifiedVersion: true };
     const psb = expandedPSB ? new PSB(expandedPSB, psbOptions) : await readPSB(bytes, psbOptions);
@@ -90,6 +151,7 @@ export class EmoteDocument {
         );
       }
     }
+    holdPreparedAtlas(document, preparedAtlas);
     return document;
   }
   constructor(psb, { name = '' } = {}) {
@@ -120,6 +182,9 @@ export class EmoteDocument {
     );
     this.textures = new Map();
   }
+  discardPreparedAtlas() {
+    dropPreparedAtlas(this);
+  }
   motion(object, name) {
     const motion = this.objects.get(object)?.motion?.[name];
     if (!motion) throw new Error(`Unknown E-mote motion ${object}/${name} (${this.name})`);
@@ -131,7 +196,7 @@ export class EmoteDocument {
       key = source?.texture ? sourceName : `${sourceName}/${iconName}`;
     if (!data?.pixel) throw new Error(`Unknown E-mote texture ${key} (${this.name})`);
     if (!this.textures.has(key)) {
-      const texture = decodeTexture(this.psb, data);
+      const texture = preparedTexture(this, sourceName, data) ?? decodeTexture(this.psb, data);
       this.textures.set(key, texture);
     }
     return this.textures.get(key);

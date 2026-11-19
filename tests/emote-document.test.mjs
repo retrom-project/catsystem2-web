@@ -73,6 +73,44 @@ test('per-icon run-length textures retain origin and decode both literal and rep
   assert.equal(icon.left, 0);
 });
 
+test('prepared atlases preserve the first texture read when the source or bounds can change', async () => {
+  const bytes = encodeAuthoredPSB(root(), [pixels]),
+    texture = { width: 2, height: 2, rgba: rgba.slice() },
+    preparedAtlas = { name: 'tex', resource: 0, storedWidth: 2, storedHeight: 2, texture },
+    open = () => EmoteDocument.open(bytes.slice(), { preparedAtlas });
+  const unchanged = await open();
+  assert.equal(unchanged.texture('tex'), texture);
+  assert.equal(unchanged.texture('tex'), texture);
+
+  const borrowed = await open();
+  borrowed.psb.resource(0)[0] = 11;
+  assert.equal(borrowed.texture('tex').rgba[2], 11);
+  assert.notEqual(borrowed.texture('tex'), texture);
+
+  const cropped = await open();
+  cropped.sources.get('tex').texture.truncated_width = 1;
+  assert.equal(cropped.texture('tex').width, 1);
+  assert.notEqual(cropped.texture('tex'), texture);
+
+  const released = await open();
+  released.discardPreparedAtlas();
+  assert.notEqual(released.texture('tex'), texture);
+  assert.deepEqual(released.texture('tex').rgba, rgba);
+
+  const sealed = Object.seal(await open()),
+    replacement = new PSB(bytes.slice());
+  replacement.resource(0)[0] = 29;
+  sealed.psb = replacement;
+  assert.equal(sealed.psb, replacement);
+  assert.equal(sealed.texture('tex').rgba[2], 29);
+
+  const frozen = Object.freeze(await open());
+  assert.deepEqual(frozen.psb.resource(0), pixels);
+  assert.throws(() => (frozen.psb = replacement), TypeError);
+  assert.notEqual(frozen.texture('tex'), texture);
+  assert.deepEqual(frozen.texture('tex').rgba, rgba);
+});
+
 test('cropped RGBA8 textures keep stored row stride and alpha at an unaligned resource offset', () => {
   const r = root();
   Object.assign(r.source.tex.texture, {
