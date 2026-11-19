@@ -18,7 +18,6 @@ function mountedImage(images, name) {
   if (
     path === null ||
     (storage?.read && storage.read !== NativeFileStorage.prototype.read) ||
-    resourceCache?.pending ||
     resourceCache?.entries.some(({ filename }) => filename.toLowerCase() === path.toLowerCase())
   )
     return null;
@@ -59,7 +58,7 @@ function blockImages(images, reader, block) {
     )
       return null;
     packed += hit.size;
-    items.push({ hit, read: null, rgba: null, claimed: false });
+    items.push({ name, hit, read: null, rgba: null, claimed: false });
     if (items.length > 5 || packed > MAX_PACKED) return null;
   }
   return backgrounds === 1 && items.length >= 2 ? items : null;
@@ -186,19 +185,25 @@ export class SceneImagePreparation {
   }
 
   async #run(job) {
-    const worker = new Worker(new URL('./hg3-prepare-worker.mjs', import.meta.url), {
-        type: 'module',
-      }),
-      { signal } = job.abort;
-    let remaining = MAX_RGBA;
+    const { signal } = job.abort,
+      { resourceCache } = this.images.world;
+    let worker,
+      remaining = MAX_RGBA;
     try {
+      // Existing queue operations can change which mounted files are resident.
+      if (resourceCache?.pending) await resourceCache.lock;
       for (const item of job.items) {
         if (!this.#current(job)) break;
         if (item.claimed) continue;
+        const hit = mountedImage(this.images, item.name);
+        if (!hit || !sameMount(item.hit, hit)) continue;
         const { file, offset, size } = item.hit;
         item.read = file.read(offset, size, signal).catch(() => null);
         const bytes = await item.read;
         if (!bytes || item.claimed || !this.#current(job)) continue;
+        worker ??= new Worker(new URL('./hg3-prepare-worker.mjs', import.meta.url), {
+          type: 'module',
+        });
         job.decoding = item;
         const result = await prepareFrame(worker, bytes, remaining, signal);
         job.decoding = null;
@@ -210,7 +215,7 @@ export class SceneImagePreparation {
         remaining -= rgba.length;
       }
     } finally {
-      worker.terminate();
+      worker?.terminate();
     }
   }
 

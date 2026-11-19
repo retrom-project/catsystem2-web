@@ -39,10 +39,17 @@ test('HG bit-plane readers reject incomplete short codes and out-of-bounds runs'
   }
 });
 
-test('scene image preparation claims only the chosen mount and shares an early pending read', async (t) => {
-  let stopped, decoding, allowDecode;
+test('scene image preparation keeps mount identity and falls back on early demand or worker failure', async (t) => {
+  let stopped, decoding, allowDecode, failWorker, workerCount;
   class ImageWorker {
+    constructor() {
+      workerCount++;
+    }
     async postMessage({ bytes }) {
+      if (failWorker) {
+        this.onerror({ preventDefault() {} });
+        return;
+      }
       if (allowDecode) {
         decoding.resolve();
         await allowDecode.promise;
@@ -68,8 +75,10 @@ test('scene image preparation claims only the chosen mount and shares an early p
     nativeBlob = new Blob([bytes, new Uint8Array(64 * 1024)]),
     encoder = new TextEncoder(),
     rows = ['bg 0 background', 'eg 1 overlay'];
-  for (const demand of ['ready', 'reading', 'decoding']) {
+  for (const demand of ['ready', 'reading', 'decoding', 'failure', 'named']) {
     const calls = [],
+      waitForCache = Promise.withResolvers(),
+      readStarted = Promise.withResolvers(),
       waitForRead = Promise.withResolvers();
     const mounts = new Map(
       ['background', 'overlay'].map((name) => {
@@ -77,7 +86,10 @@ test('scene image preparation claims only the chosen mount and shares an early p
         const read = file.read.bind(file);
         file.read = async (offset, size) => {
           calls.push(name);
-          if (name === 'background') await waitForRead.promise;
+          if (name === 'background') {
+            readStarted.resolve();
+            await waitForRead.promise;
+          }
           return read(offset, size);
         };
         return [name, { file, size: nativeBlob.size, offset: 0 }];
@@ -86,6 +98,7 @@ test('scene image preparation claims only the chosen mount and shares an early p
     const mounted = {
       game: { nativeCandidates: (name) => [{ hit: mounts.get(name) }] },
       profile: 'nekopara-vol3-engine-2.6.1.76',
+      resourceCache: { pending: 1, lock: waitForCache.promise, entries: [] },
       runtime: { scheduler: { tasks: new Map([[1, { id: 1 }]]) } },
     };
     const preparation = new SceneImagePreparation({
@@ -109,8 +122,17 @@ test('scene image preparation claims only the chosen mount and shares an early p
     stopped = Promise.withResolvers();
     decoding = Promise.withResolvers();
     allowDecode = demand === 'decoding' ? Promise.withResolvers() : null;
+    failWorker = demand === 'failure';
+    workerCount = 0;
     preparation.loaded(scene);
     assert.equal(preparation.hint(scene, 1, 0), true);
+    assert.equal(workerCount, 0);
+    assert.deepEqual(calls, []);
+    if (demand === 'named') mounted.resourceCache.entries.push({ filename: 'background' });
+    mounted.resourceCache.pending = 0;
+    waitForCache.resolve();
+    if (demand !== 'named') await readStarted.promise;
+    assert.equal(workerCount, 0);
     let pending = demand === 'reading' ? preparation.read(background) : null;
     waitForRead.resolve();
     if (demand === 'decoding') {
@@ -119,12 +141,17 @@ test('scene image preparation claims only the chosen mount and shares an early p
       allowDecode.resolve();
     }
     await stopped.promise;
+    if (failWorker) await new Promise(setImmediate);
     const alternate = new HG3(await preparation.read(foreign));
     assert.equal(preparation.apply(alternate, alternate.frames[0]), false);
     const image = new HG3(await (pending ?? preparation.read(background)));
     assert.equal(preparation.apply(image, image.frames[0]), demand === 'ready');
     assert.deepEqual([...(await image.decode(image.frames[0])).rgba], [...pixels]);
-    const expected = demand === 'decoding' ? ['background'] : ['background', 'overlay'];
+    const expected = {
+      decoding: ['background'],
+      failure: ['background', 'background'],
+      named: ['overlay', 'background'],
+    }[demand] ?? ['background', 'overlay'];
     assert.deepEqual(calls, expected);
     history.value++;
     const fallback = new HG3(await preparation.read(mounts.get('overlay')));
