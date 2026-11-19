@@ -17,14 +17,32 @@ export function multiply(left, right) {
   });
 }
 export function transform(vector, matrix) {
-  return Array.from({ length: 4 }, (_, i) =>
+  return [
     f(
-      vector[0] * matrix[i] +
-        vector[1] * matrix[i + 4] +
-        vector[2] * matrix[i + 8] +
-        vector[3] * matrix[i + 12],
+      vector[0] * matrix[0] +
+        vector[1] * matrix[4] +
+        vector[2] * matrix[8] +
+        vector[3] * matrix[12],
     ),
-  );
+    f(
+      vector[0] * matrix[1] +
+        vector[1] * matrix[5] +
+        vector[2] * matrix[9] +
+        vector[3] * matrix[13],
+    ),
+    f(
+      vector[0] * matrix[2] +
+        vector[1] * matrix[6] +
+        vector[2] * matrix[10] +
+        vector[3] * matrix[14],
+    ),
+    f(
+      vector[0] * matrix[3] +
+        vector[1] * matrix[7] +
+        vector[2] * matrix[11] +
+        vector[3] * matrix[15],
+    ),
+  ];
 }
 export function normalize(vector) {
   const squared = f(vector.reduce((sum, n) => sum + n * n, 0));
