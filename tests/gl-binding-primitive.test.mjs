@@ -151,6 +151,86 @@ test('the one backend owns one VAO and its fixed layout, validates it and frees 
   });
 });
 
+test('managed pages skip only checked zero RGBA content of the same shape', async () => {
+  await withGPU(({ gpu, gl, calls }) => {
+    let nextError = gl.NO_ERROR;
+    gpu.gl = new Proxy(gl, {
+      get(target, name) {
+        if (name === 'getError')
+          return () => {
+            const error = nextError;
+            nextError = gl.NO_ERROR;
+            return error;
+          };
+        return target[name];
+      },
+    });
+    function checkUploads() {
+      gpu.beginFrame();
+      try {
+        gpu.drawPresentation(gpu.primaryTarget);
+      } finally {
+        gpu.endNativeFrame();
+      }
+    }
+    function update(frame, expectedUploads) {
+      const start = calls.length;
+      frame.revision++;
+      const texture = gpu.managedTexture(frame, true);
+      assert.equal(
+        calls.slice(start).filter(([name]) => name === 'texImage2D').length,
+        expectedUploads,
+      );
+      return texture;
+    }
+    const bytes = new Uint8Array(8 + 36),
+      rgba = new Uint8ClampedArray(bytes.buffer, 4, 36),
+      frame = { width: 3, height: 3, revision: 0, rgba };
+    bytes.fill(255, 0, 4);
+    bytes.fill(255, 40);
+
+    const texture = update(frame, 1);
+    update(frame, 1); // No successful GL check yet.
+    checkUploads();
+    texture.parameters.set(gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    assert.equal(update(frame, 0), texture);
+    assert.equal(texture.parameters.get(gl.TEXTURE_MIN_FILTER), gl.NEAREST);
+    checkUploads();
+
+    rgba[32] = 43; // Nonzero red with zero alpha in the last pixel.
+    update(frame, 1);
+    checkUploads();
+    assert.equal(gpu.textureTransparency.get(texture).transparent, true);
+    rgba[32] = 0; // The mutable CPU view cannot stand in for the last uploaded pixels.
+    update(frame, 1);
+    checkUploads();
+    update(frame, 0);
+    checkUploads();
+
+    frame.width = 9;
+    frame.height = 1;
+    update(frame, 1); // The byte count stayed the same, but the shape changed.
+    nextError = gl.INVALID_OPERATION;
+    assert.throws(checkUploads, /Particle WebGL draw failed/);
+    update(frame, 1);
+    checkUploads();
+
+    frame.rgba = null;
+    frame.canvas = { width: frame.width, height: frame.height };
+    update(frame, 1);
+    checkUploads();
+    frame.rgba = rgba;
+    update(frame, 1);
+    checkUploads();
+
+    frame.rgba = new Uint8Array(new ArrayBuffer(37), 1);
+    update(frame, 1);
+    checkUploads();
+    update(frame, 1); // An unaligned typed view still takes the original upload route.
+    checkUploads();
+  });
+});
+
 test('default VAO null attributes and real global/program bindings survive typed submission and depth clear', async () => {
   await withGPU(async (r) => {
     const { gpu, gl } = r;
@@ -252,6 +332,9 @@ test('lost, rebuilt and closed generations never rebind captured handles', async
   await withGPU(async (r) => {
     const { gpu, gl } = r;
     gpu.beginFrame();
+    const page = { width: 3, height: 2, rgba: new Uint8Array(24), revision: 0 },
+      oldTexture = gpu.managedTexture(page, true);
+    gpu.drawPresentation(gpu.primaryTarget);
     const oldVAO = gpu.vertexArray,
       device = gpu.graphicsDevice,
       generation = device.generation,
@@ -273,6 +356,18 @@ test('lost, rebuilt and closed generations never rebind captured handles', async
     assert.equal(gpu.graphicsDevice, device);
     assert.equal(device.generation, generation + 1);
     assert.notEqual(gpu.vertexArray, oldVAO);
+    assert.notEqual(gpu.textures.get(page), oldTexture);
+    assert.equal(
+      r.calls.filter(
+        ([name, , , , width, height, , , , pixels]) =>
+          name === 'texImage2D' &&
+          width === page.width &&
+          height === page.height &&
+          pixels?.buffer === page.rgba.buffer,
+      ).length,
+      1,
+      'context restoration uploads the page to new storage',
+    );
     assert.equal(gl.isVertexArray(gpu.vertexArray), true);
     assert.equal(r.canvasCount(), 1, 'rebuild uses the same context and canvas');
     r.calls.length = 0;

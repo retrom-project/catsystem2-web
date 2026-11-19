@@ -470,6 +470,27 @@ export function particleRenderState(blendMode = 0, renderStates = [], samplerSta
   return { states, samplers };
 }
 
+const rgbaAlphaMask = new Uint32Array(Uint8Array.of(0, 0, 0, 255).buffer)[0];
+function inspectAlignedTexturePixels(pixels) {
+  const rgba = new Uint32Array(pixels.buffer, pixels.byteOffset, pixels.length / 4),
+    end = rgba.length - (rgba.length % 8);
+  let i = 0,
+    bits = 0;
+  // Combine RGB and alpha in one pass, stopping as soon as any alpha byte is nonzero.
+  for (; i < end && !(bits & rgbaAlphaMask); i += 8)
+    bits |=
+      rgba[i] |
+      rgba[i + 1] |
+      rgba[i + 2] |
+      rgba[i + 3] |
+      rgba[i + 4] |
+      rgba[i + 5] |
+      rgba[i + 6] |
+      rgba[i + 7];
+  for (; i < rgba.length && !(bits & rgbaAlphaMask); i++) bits |= rgba[i];
+  return bits;
+}
+
 export class ParticlesGL {
   constructor(width, height, device) {
     this.canvas = new OffscreenCanvas(width, height);
@@ -1466,39 +1487,56 @@ export class ParticlesGL {
     gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    const previousUpload = this.textureTransparency.get(texture);
     const inspectTransparency =
       trackTransparency ||
-      this.textureTransparency.has(texture) ||
+      previousUpload !== undefined ||
       this.pendingTextureTransparency.has(texture);
     if (inspectTransparency) {
       this.textureTransparency.delete(texture);
       this.pendingTextureTransparency.delete(texture);
     }
     if (frame.rgba) {
-      const pixels = new Uint8Array(
-        frame.rgba.buffer,
-        frame.rgba.byteOffset,
-        frame.rgba.byteLength,
-      );
-      gl.texImage2D(
-        gl.TEXTURE_2D,
-        0,
-        gl.RGBA,
-        frame.width,
-        frame.height,
-        0,
-        gl.RGBA,
-        gl.UNSIGNED_BYTE,
-        pixels,
-      );
+      const { width, height } = frame,
+        pixels = new Uint8Array(frame.rgba.buffer, frame.rgba.byteOffset, frame.rgba.byteLength);
+      let reuse = false,
+        upload;
       if (inspectTransparency) {
         let transparent =
-          pixels.buffer instanceof ArrayBuffer &&
-          pixels.length > 0 &&
-          pixels.length === frame.width * frame.height * 4;
-        for (let i = 3; transparent && i < pixels.length; i += 4) transparent = pixels[i] === 0;
-        this.pendingTextureTransparency.set(texture, transparent);
+            pixels.buffer instanceof ArrayBuffer &&
+            pixels.length > 0 &&
+            pixels.length === width * height * 4,
+          zero = false;
+        if (
+          transparent &&
+          pixels.byteOffset % 4 === 0 &&
+          Number.isInteger(width) &&
+          Number.isInteger(height) &&
+          width > 0 &&
+          height > 0
+        ) {
+          const bits = inspectAlignedTexturePixels(pixels);
+          transparent = (bits & rgbaAlphaMask) === 0;
+          zero = bits === 0;
+        } else
+          for (let i = 3; transparent && i < pixels.length; i += 4) transparent = pixels[i] === 0;
+        // A dimension record witnesses an earlier checked upload of entirely zero RGBA bytes.
+        reuse = zero && previousUpload?.width === width && previousUpload.height === height;
+        upload = zero ? { transparent, width, height } : { transparent };
       }
+      if (!reuse)
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          width,
+          height,
+          0,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          pixels,
+        );
+      if (upload) this.pendingTextureTransparency.set(texture, upload);
     } else
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, frame.canvas || frame);
     this.textureParameters();
@@ -1523,8 +1561,8 @@ export class ParticlesGL {
     // Publish upload results at the existing error check. An unchecked or failed upload
     // always uses the shader, including during the frame that changed the texture.
     if (error === this.gl.NO_ERROR)
-      for (const [texture, transparent] of this.pendingTextureTransparency)
-        this.textureTransparency.set(texture, transparent);
+      for (const [texture, upload] of this.pendingTextureTransparency)
+        this.textureTransparency.set(texture, upload);
     this.pendingTextureTransparency.clear();
     return error;
   }
@@ -2101,7 +2139,10 @@ export class ParticlesGL {
       if (texturePages)
         for (const page of texturePages) {
           const texture = this.#bindGeometryTexture(page.frame, t, nativeAnisotropy, true);
-          if (!discardTransparentPages || this.textureTransparency.get(texture) !== true)
+          if (
+            !discardTransparentPages ||
+            this.textureTransparency.get(texture)?.transparent !== true
+          )
             drawTriangles(page.triangles);
         }
       else drawTriangles(geometry);
