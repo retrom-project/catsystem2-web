@@ -65,16 +65,21 @@ function blendTypePixel(output, at, input, offset, opacity, mode, affine) {
 const emptyPixel = (pixels, at) =>
   !pixels[at] && !pixels[at + 1] && !pixels[at + 2] && !pixels[at + 3];
 
-function blendFullOpacityRow(output, at, input, start, count, outputWords, inputWords) {
+function blendPackedRow(output, at, input, start, count, outputWords, inputWords, opacity) {
   const dst = at / 4,
-    src = start / 4;
+    src = start / 4,
+    fullyOpaque = opacity === 255,
+    scale = opacity & 65535;
   for (let x = 0; x < count; x++) {
     const source = inputWords[src + x],
       target = outputWords[dst + x],
-      alpha = source >>> 24;
+      color = fullyOpaque
+        ? source
+        : (source & 0x00ffffff) | (((((source >>> 24) + 1) * scale) >>> 8) << 24),
+      alpha = color >>> 24;
     // A zero destination takes the source's RGB even when its alpha is zero.
-    if (!target || alpha === 255 || (alpha && !(target >>> 24))) outputWords[dst + x] = source;
-    else if (alpha) blendBitmapPixel(output, at + x * 4, input, start + x * 4);
+    if (!target || alpha === 255 || (alpha && !(target >>> 24))) outputWords[dst + x] = color;
+    else if (alpha) blendBitmapPixel(output, at + x * 4, input, start + x * 4, opacity);
   }
 }
 
@@ -160,7 +165,6 @@ export function rasterizeRetainedBitmap(
       normal &&
       !copy &&
       littleEndian &&
-      item.alpha === 255 &&
       state.bpp === 4 &&
       output instanceof Uint8ClampedArray &&
       output.byteOffset % 4 === 0 &&
@@ -205,7 +209,8 @@ export function rasterizeRetainedBitmap(
     }
     if (normal && area[0] > 0 && emptyPixel(output, at - 4))
       output.set([input[start], input[start + 1], input[start + 2], 0], at - 4);
-    if (packedBlend) blendFullOpacityRow(output, at, input, start, count, outputWords, inputWords);
+    if (packedBlend)
+      blendPackedRow(output, at, input, start, count, outputWords, inputWords, item.alpha);
     else
       for (let column = 0; column < count; column++) {
         const source = start + column * 4,
