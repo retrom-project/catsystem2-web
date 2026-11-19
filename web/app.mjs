@@ -9,6 +9,7 @@ const $ = (id) => document.getElementById(id),
   actions = [];
 let engine,
   running = false,
+  clockWorld,
   lastTime = 0,
   accumulator = 0,
   statusTime = 0;
@@ -190,6 +191,7 @@ async function launch(getGame) {
     $('stage').style.aspectRatio = `${game.width} / ${game.height}`;
     $('welcome').hidden = true;
     running = true;
+    clockWorld = engine.world;
     lastTime = performance.now();
     accumulator = 0;
     canvas.focus({ preventScroll: true });
@@ -204,22 +206,36 @@ async function launch(getGame) {
 function gamepad() {
   engine.inputBindings.gamepad(navigator.getGamepads());
 }
+function resetClockForWorld(world) {
+  if (clockWorld === world) return;
+  clockWorld = world;
+  lastTime = undefined;
+  accumulator = 0;
+}
 async function loop(now) {
   if (!running) return;
   try {
     while (actions.length) await actions.shift()();
     gamepad();
-    accumulator += Math.min(100, now - lastTime) * 0.06;
-    lastTime = now;
+    const current = engine;
+    // The RAF that awaited a restore predates the restored World's playback.
+    resetClockForWorld(current.world);
+    if (lastTime !== undefined && now > lastTime) {
+      accumulator += Math.min(100, now - lastTime) * 0.06;
+      lastTime = now;
+    }
     const count = Math.min(6, Math.floor(accumulator));
     accumulator -= count;
     if (count) await engine.step(count);
-    const current = engine,
-      world = current.world;
+    const world = current.world;
+    resetClockForWorld(world);
     if (running) monitorPresentation(world);
     presentedFrame = undefined;
     await engine.render();
-    if (running && engine === current && current.world === world) countPresentedFrame();
+    if (running && engine === current && current.world === world) {
+      lastTime ??= performance.now();
+      countPresentedFrame();
+    }
   } catch (e) {
     running = false;
     monitorPresentation(undefined);
