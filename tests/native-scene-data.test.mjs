@@ -83,18 +83,21 @@ test('restored scene hints prepare one explicit M2 resource from the same mounte
   const sceneFile = new HTTPFile('http://localhost/scene', sceneBytes.length, 0),
     modelFile = new HTTPFile('http://localhost/model', packed.length, 0),
     reads = [];
+  const resourceCache = { pending: 0, entries: [] };
   let mountedScene = sceneBytes;
+  let modelOffset = 0;
   const owner = {
     profiles: { profileFiles: { sample: 'test' }, profile: () => ({ bodies: { 2: 'model' } }) },
     documents: new Map(),
     world: {
       profile: 'nekopara-vol3-engine-2.6.1.76',
       runtime: { handles: { records: new Map([[1, { type: 'scene-data', value: scene }]]) } },
+      resourceCache,
       game: {
         resolveCategory: (name) => name,
         nativeCandidates(name) {
           const file = name === 'active' ? sceneFile : modelFile;
-          return [{ hit: { file, size: file.size } }];
+          return [{ hit: { file, offset: name === 'active' ? 0 : modelOffset, size: file.size } }];
         },
         async requireCategory(name, category) {
           reads.push([name, category]);
@@ -144,13 +147,30 @@ test('restored scene hints prepare one explicit M2 resource from the same mounte
 
   pending = Promise.withResolvers();
   preparation.resume();
+  (await pending.promise)();
+  await new Promise(setImmediate);
+  modelOffset++;
+  assert.equal(preparation.take('model'), null);
+  assert.equal(terminated, 3);
+
+  pending = Promise.withResolvers();
+  preparation.resume();
+  (await pending.promise)();
+  await new Promise(setImmediate);
+  resourceCache.entries.push({ filename: 'MODEL' });
+  assert.equal(preparation.take('model'), null);
+  assert.equal(terminated, 4);
+  resourceCache.entries.length = 0;
+
+  pending = Promise.withResolvers();
+  preparation.resume();
   const afterClose = await pending.promise;
   owner.world.disposalRequested = true;
   preparation.discard();
   afterClose();
   await new Promise(setImmediate);
   assert.equal(preparation.take('model'), null);
-  assert.equal(terminated, 3);
+  assert.equal(terminated, 5);
 });
 const machine = () =>
   new KCSMachine({

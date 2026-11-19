@@ -86,9 +86,16 @@ export class M2ScenePreparation {
   }
 
   #mount(name, category) {
-    const { game } = this.owner.world;
+    const { game, resourceCache } = this.owner.world;
     const path = game.resolveCategory(name, category);
     if (path === null) return null;
+    const key = path.toLowerCase();
+    if (
+      resourceCache?.pending ||
+      resourceCache?.entries.some(({ filename }) => filename.toLowerCase() === key)
+    )
+      return null;
+    // NativeWorld's cache misses use this archive search, including update overrides.
     const hit = game.nativeCandidates(path, 3).find((entry) => entry.hit)?.hit;
     return hit?.file instanceof HTTPFile || hit?.file instanceof BlobFile ? hit : null;
   }
