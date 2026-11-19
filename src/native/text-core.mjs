@@ -297,8 +297,25 @@ export class JSTextWriter {
         this.pixels = visible;
         // The backing image supplies RGB; incremental appends preserve the
         // alpha already exposed by the wipe in the visible image.
-        for (let i = 0; i < visible.rgba.length; i += 4)
-          visible.rgba.set(this.completePixels.subarray(i, i + 3), i);
+        const rgba = visible.rgba,
+          complete = this.completePixels;
+        if (
+          rgba instanceof Uint8ClampedArray &&
+          complete instanceof Uint8ClampedArray &&
+          rgba.length === complete.length &&
+          rgba.length % 4 === 0
+        ) {
+          for (let i = 0; i < rgba.length; i += 4) {
+            const red = complete[i],
+              green = complete[i + 1],
+              blue = complete[i + 2];
+            rgba[i] = red;
+            rgba[i + 1] = green;
+            rgba[i + 2] = blue;
+          }
+        } else {
+          for (let i = 0; i < rgba.length; i += 4) rgba.set(complete.subarray(i, i + 3), i);
+        }
       }
       const wipe = new DataView(this.parser.config.buffer).getUint32(
           this.parser.config.length - (this.mode === 'utf8' ? 12 : 8),
