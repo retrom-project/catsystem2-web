@@ -13,6 +13,7 @@ import {
 } from './sound-values.mjs';
 import { lowerSoundName } from './sound-config.mjs';
 import { readLoopPoints } from './loop-points.mjs';
+import { SceneVoicePreparation } from './scene-voice-preparation.mjs';
 
 const f = Math.fround;
 const cvtt = (n) =>
@@ -189,6 +190,15 @@ export class NativeSound {
     this.audio = world.audio;
     this.tasks = new Map();
     this.abi = nativeABI(world.profile || world.configuration.profile);
+    this.sceneVoicePreparation =
+      !world.transitionalExe &&
+      this.abi.engineVersion === '2.6.1.76' &&
+      typeof requestIdleCallback === 'function' &&
+      typeof cancelIdleCallback === 'function' &&
+      typeof OfflineAudioContext === 'function' &&
+      typeof this.audio?.decodeBuffer === 'function'
+        ? new SceneVoicePreparation(world, this.audio)
+        : null;
     this.bankCount = this.abi.sound.banks;
     this.device = Array.from({ length: this.bankCount }, deviceBank);
     this.master = 100;
@@ -289,15 +299,17 @@ export class NativeSound {
     }
     return game.read(`${name}.${extension}`);
   }
-  async load(bank, file, type, decoderOption = 0, category = null) {
+  async load(bank, file, type, decoderOption = 0, category = null, ownerID) {
     if (bank < 0 || bank >= this.bankCount) return false;
     if (category !== null && !soundCategories.has(category))
       throw new Error('Invalid native sound playback category');
     if (!this.audio?.preload) throw new Error('Native sound preload service is unavailable');
     this.release(bank);
     const device = this.device[bank],
+      voice = this.sceneVoicePreparation?.take(file, ownerID),
       loaded = await this.audio.preload(file);
     if (!loaded) return false;
+    if (voice) this.sceneVoicePreparation.continued(voice);
     device.file = file;
     device.loaded = true;
     device.metadata = structuredClone(loaded.metadata);
@@ -575,7 +587,7 @@ export class NativeSoundTask {
     const category = categories.values().next().value;
     return categories.size === 1 && soundCategories.has(category) ? category : null;
   }
-  async load(packet, type, allocated = false, group = null) {
+  async load(packet, type, allocated = false, group = null, ownerID) {
     const bank = packet.load(0);
     if (!this.valid(bank)) return 0;
     const hasCrossfade = nativeABIBehavior(this.sound.abi.profile, 'sound.crossfade'),
@@ -583,7 +595,14 @@ export class NativeSoundTask {
       target = bank + (crossfade ? 32 : 0);
     if (!this.valid(target)) return 0;
     const file = packet.string(12),
-      loaded = await this.sound.load(target, file, type, packet.load(276), this.category(group));
+      loaded = await this.sound.load(
+        target,
+        file,
+        type,
+        packet.load(276),
+        this.category(group),
+        ownerID,
+      );
     if (allocated && !loaded) return 0;
     const control = this.controls[target];
     control.word(C.flags, 0);
@@ -835,7 +854,13 @@ export class NativeSoundTask {
       if (!group) return 0xffffffff;
       const allocated = this.allocate(group.min, group.max);
       packet.store(0, allocated);
-      return (await this.load(packet, id === 205 || id === 207 ? 1 : 2, true, group))
+      return (await this.load(
+        packet,
+        id === 205 || id === 207 ? 1 : 2,
+        true,
+        group,
+        context.nativeSenderWorldID,
+      ))
         ? allocated +
             (nativeABIBehavior(this.sound.abi.profile, 'sound.crossfade') && packet.load(280)
               ? 32

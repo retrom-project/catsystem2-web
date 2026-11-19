@@ -86,6 +86,24 @@ export class AudioMixer {
     for (const channel of this.channels.values())
       if (channel.playing && !channel.loading) this.startSource(channel);
   }
+  async decodeBuffer(bytes, maxSamples = Infinity) {
+    const rate = sourceSampleRate(bytes),
+      decoder =
+        rate >= 8000 && rate <= 96000 && typeof OfflineAudioContext !== 'undefined'
+          ? new OfflineAudioContext(2, 1, rate)
+          : this.context,
+      buffer = await decoder.decodeAudioData(bytes.slice().buffer);
+    if (buffer.length * buffer.numberOfChannels > maxSamples) return null;
+    this.sourceRates.set(buffer, sourceSampleRate(bytes) || buffer.sampleRate);
+    this.sourceMetadata.set(buffer, readAudioSource(bytes, buffer));
+    this.pcmSources.set(buffer, sourcePCM(bytes, this.sourceMetadata.get(buffer), buffer));
+    return buffer;
+  }
+  rememberBuffer(name, buffer) {
+    this.buffers.set(name, buffer);
+    while (this.buffers.size > 8) this.buffers.delete(this.buffers.keys().next().value);
+    return buffer;
+  }
   async buffer(name) {
     name = name.toLowerCase();
     if (this.buffers.has(name)) {
@@ -105,19 +123,8 @@ export class AudioMixer {
             this.warnings.add(`Missing audio ${name}`);
             return null;
           }
-          const bytes = await this.game.require(file),
-            rate = sourceSampleRate(bytes),
-            decoder =
-              rate >= 8000 && rate <= 96000 && typeof OfflineAudioContext !== 'undefined'
-                ? new OfflineAudioContext(2, 1, rate)
-                : this.context,
-            buffer = await decoder.decodeAudioData(bytes.slice().buffer);
-          this.sourceRates.set(buffer, sourceSampleRate(bytes) || buffer.sampleRate);
-          this.sourceMetadata.set(buffer, readAudioSource(bytes, buffer));
-          this.pcmSources.set(buffer, sourcePCM(bytes, this.sourceMetadata.get(buffer), buffer));
-          this.buffers.set(name, buffer);
-          while (this.buffers.size > 8) this.buffers.delete(this.buffers.keys().next().value);
-          return buffer;
+          const buffer = await this.decodeBuffer(await this.game.require(file));
+          return this.rememberBuffer(name, buffer);
         })().finally(() => this.pending.delete(name)),
       );
     return this.pending.get(name);

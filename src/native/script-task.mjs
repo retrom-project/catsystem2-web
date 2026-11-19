@@ -541,6 +541,7 @@ export function createNativeScriptTask(world, record) {
       return implementation.baseMessage(words, context);
     },
     async close({ fromHost = false } = {}) {
+      world.sound?.sceneVoicePreparation?.releaseOwner(record.id);
       let destructionError;
       try {
         await world.objects.baseDestruction(record.id, { fromHost });

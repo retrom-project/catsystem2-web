@@ -1024,6 +1024,7 @@ export class NativeWorld {
     this.effekseer.assertSettled();
     this.disposalRequested = true;
     this.graphics.images.scenePreparation.discard();
+    this.sound?.sceneVoicePreparation?.discard();
     this.windowMessages.length = 0;
     const errors = [],
       attempt = async (operation) => {
