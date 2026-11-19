@@ -60,6 +60,27 @@ main {
   background: #000;
   overflow: hidden;
 }
+#frame-rate {
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-end: 0.5rem;
+  z-index: 1;
+  min-width: 4.5rem;
+  padding: 0.25rem 0.45rem;
+  border: 1px solid #ffffff30;
+  border-radius: 0.3rem;
+  background: #101216d9;
+  color: #fff;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  pointer-events: none;
+  user-select: none;
+}
+#stage:fullscreen #frame-rate {
+  inset-block-start: 3.5rem;
+  inset-inline-end: 1rem;
+}
 #exit-fullscreen {
   display: none;
   position: absolute;

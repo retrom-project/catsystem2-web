@@ -5,12 +5,68 @@ import { CatSystem2 } from '../src/engine.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 const $ = (id) => document.getElementById(id),
   canvas = $('screen'),
+  frameRate = $('frame-rate'),
   actions = [];
 let engine,
   running = false,
   lastTime = 0,
   accumulator = 0,
   statusTime = 0;
+let meterWorld, restorePresent, presentedFrame, frameSample;
+
+function resetFrameRate() {
+  if (!frameSample) return;
+  clearInterval(frameSample.timer);
+  frameSample = undefined;
+  frameRate.hidden = true;
+}
+
+function monitorPresentation(world) {
+  if (meterWorld === world) return;
+  restorePresent?.();
+  restorePresent = undefined;
+  resetFrameRate();
+  meterWorld = world;
+  if (!world) return;
+  const stage = world.stageRenderer,
+    present = stage.presentNative,
+    own = Object.hasOwn(stage, 'presentNative');
+  const observed = function (request) {
+    const status = present.call(this, request);
+    if (request.stageTarget && status === 0) presentedFrame = world.frame;
+    return status;
+  };
+  stage.presentNative = observed;
+  restorePresent = () => {
+    if (stage.presentNative !== observed) return;
+    if (own) stage.presentNative = present;
+    else delete stage.presentNative;
+  };
+}
+
+function countPresentedFrame() {
+  if (presentedFrame === undefined || document.hidden) {
+    resetFrameRate();
+    return;
+  }
+  if (!frameSample) {
+    const sample = { startedAt: performance.now(), frame: presentedFrame, completed: 0 };
+    sample.timer = setInterval(() => {
+      const now = performance.now(),
+        label = `${Math.round((sample.completed * 1000) / (now - sample.startedAt))} FPS`;
+      if (frameRate.textContent !== label) frameRate.textContent = label;
+      sample.completed = 0;
+      sample.startedAt = now;
+    }, 500);
+    frameSample = sample;
+    frameRate.textContent = '— FPS';
+    frameRate.hidden = false;
+  } else if (presentedFrame !== frameSample.frame) {
+    frameSample.completed++;
+    frameSample.frame = presentedFrame;
+  }
+}
+
 const fail = (error) => {
   $('error').hidden = false;
   $('error').textContent = error.message;
@@ -91,6 +147,7 @@ function updateStatus(state) {
   $('diagnostics').textContent = JSON.stringify({ ...state, vm: engine.vmEvidence }, null, 2);
 }
 async function launch(getGame) {
+  monitorPresentation(undefined);
   if (running) {
     running = false;
     await engine?.dispose();
@@ -112,6 +169,7 @@ async function launch(getGame) {
       onState: updateStatus,
       onClosed: () => {
         running = false;
+        monitorPresentation(undefined);
         $('welcome').hidden = false;
         $('start').disabled = false;
         $('system-settings').disabled = true;
@@ -156,9 +214,15 @@ async function loop(now) {
     const count = Math.min(6, Math.floor(accumulator));
     accumulator -= count;
     if (count) await engine.step(count);
+    const current = engine,
+      world = current.world;
+    if (running) monitorPresentation(world);
+    presentedFrame = undefined;
     await engine.render();
+    if (running && engine === current && current.world === world) countPresentedFrame();
   } catch (e) {
     running = false;
+    monitorPresentation(undefined);
     $('system-settings').disabled = true;
     fail(e);
   }
@@ -201,7 +265,11 @@ $('backlog').onclick = () =>
       : engine.openModal(engine.theme?.value('log', 'script') || 'hist_b'),
   ).catch(() => {});
 $('quick-save').onclick = () => enqueue(() => engine.host.quickSave()).catch(() => {});
-$('quick-load').onclick = () => enqueue(() => engine.host.quickLoad()).catch(() => {});
+$('quick-load').onclick = () =>
+  enqueue(() => {
+    resetFrameRate();
+    return engine.host.quickLoad();
+  }).catch(() => {});
 for (const id of ['fullscreen', 'exit-fullscreen']) {
   const control = $(id);
   control.addEventListener('keydown', (event) => event.stopPropagation());
@@ -234,6 +302,7 @@ $('export').onclick = () =>
 $('import').onclick = () => $('save-file').click();
 $('save-file').onchange = () =>
   enqueue(async () => {
+    resetFrameRate();
     const file = $('save-file').files[0];
     if (!file || file.size > engine.checkpointLimit)
       throw new Error('Save file exceeds checkpoint limit');
@@ -331,7 +400,9 @@ document.addEventListener('keyup', (event) => {
 window.addEventListener('blur', () => {
   engine?.inputBindings?.releaseAll();
 });
+document.addEventListener('visibilitychange', resetFrameRate);
 window.addEventListener('pagehide', () => {
   running = false;
+  monitorPresentation(undefined);
   engine?.dispose().catch(() => {});
 });
