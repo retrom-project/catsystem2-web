@@ -6,6 +6,8 @@ import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { unpackHG32RGBA, unpackHGPixels } from '../src/formats/hg-codec.mjs';
 import { HG3 } from '../src/formats/hg3.mjs';
+import { BlobFile } from '../src/files.mjs';
+import { SceneImagePreparation } from '../src/native/scene-image-preparation.mjs';
 import { authoredHG3, authoredHG3Frames } from './fixtures/hg3.mjs';
 import { hg3 } from './helpers.mjs';
 
@@ -34,6 +36,101 @@ test('HG bit-plane readers reject incomplete short codes and out-of-bounds runs'
     assert.throws(() => unpack(Uint8Array.of(0x89)), /HG control stream exhausted/);
     assert.throws(() => unpack(new Uint8Array(5)), /HG gamma exceeds limit/);
     assert.throws(() => unpack(Uint8Array.of(0x09, 0x05)), /HG invalid pixel run/);
+  }
+});
+
+test('scene image preparation claims only the chosen mount and shares an early pending read', async (t) => {
+  let stopped, decoding, allowDecode;
+  class ImageWorker {
+    async postMessage({ bytes }) {
+      if (allowDecode) {
+        decoding.resolve();
+        await allowDecode.promise;
+      }
+      const image = new HG3(bytes);
+      image.decode(image.frames[0]).then(
+        ({ width, height, rgba }) => this.onmessage?.({ data: { width, height, rgba } }),
+        () => this.onmessage?.({ data: null }),
+      );
+    }
+    terminate() {
+      stopped.resolve();
+    }
+  }
+  const worker = Object.getOwnPropertyDescriptor(globalThis, 'Worker');
+  Object.defineProperty(globalThis, 'Worker', { configurable: true, value: ImageWorker });
+  t.after(() => {
+    if (worker) Object.defineProperty(globalThis, 'Worker', worker);
+    else delete globalThis.Worker;
+  });
+  const pixels = Uint8Array.from({ length: 16 }, (_, index) => index * 17),
+    bytes = hg3(2, 2, pixels),
+    nativeBlob = new Blob([bytes, new Uint8Array(64 * 1024)]),
+    encoder = new TextEncoder(),
+    rows = ['bg 0 background', 'eg 1 overlay'];
+  for (const demand of ['ready', 'reading', 'decoding']) {
+    const calls = [],
+      waitForRead = Promise.withResolvers();
+    const mounts = new Map(
+      ['background', 'overlay'].map((name) => {
+        const file = new BlobFile(nativeBlob);
+        const read = file.read.bind(file);
+        file.read = async (offset, size) => {
+          calls.push(name);
+          if (name === 'background') await waitForRead.promise;
+          return read(offset, size);
+        };
+        return [name, { file, size: nativeBlob.size, offset: 0 }];
+      }),
+    );
+    const mounted = {
+      game: { nativeCandidates: (name) => [{ hit: mounts.get(name) }] },
+      profile: 'nekopara-vol3-engine-2.6.1.76',
+      runtime: { scheduler: { tasks: new Map([[1, { id: 1 }]]) } },
+    };
+    const preparation = new SceneImagePreparation({
+        world: mounted,
+        images: { resolve: (name) => name },
+        assets: new Map(),
+      }),
+      history = { value: 0 },
+      scene = {
+        reader: {
+          body: { bytes: new Uint8Array() },
+          blockCount: 1,
+          blockInfo: () => ({ count: rows.length }),
+          type: () => 0x30,
+          text: (_block, line) => encoder.encode(rows[line]),
+        },
+        history: { path: [history] },
+      };
+    const background = mounts.get('background');
+    const foreign = { ...background, file: new BlobFile(nativeBlob) };
+    stopped = Promise.withResolvers();
+    decoding = Promise.withResolvers();
+    allowDecode = demand === 'decoding' ? Promise.withResolvers() : null;
+    preparation.loaded(scene);
+    assert.equal(preparation.hint(scene, 1, 0), true);
+    let pending = demand === 'reading' ? preparation.read(background) : null;
+    waitForRead.resolve();
+    if (demand === 'decoding') {
+      await decoding.promise;
+      pending = preparation.read(background);
+      allowDecode.resolve();
+    }
+    await stopped.promise;
+    const alternate = new HG3(await preparation.read(foreign));
+    assert.equal(preparation.apply(alternate, alternate.frames[0]), false);
+    const image = new HG3(await (pending ?? preparation.read(background)));
+    assert.equal(preparation.apply(image, image.frames[0]), demand === 'ready');
+    assert.deepEqual([...(await image.decode(image.frames[0])).rgba], [...pixels]);
+    const expected = demand === 'decoding' ? ['background'] : ['background', 'overlay'];
+    assert.deepEqual(calls, expected);
+    history.value++;
+    const fallback = new HG3(await preparation.read(mounts.get('overlay')));
+    assert.equal(preparation.apply(fallback, fallback.frames[0]), false);
+    assert.deepEqual(calls, [...expected, 'overlay']);
+    preparation.discard(scene);
   }
 });
 

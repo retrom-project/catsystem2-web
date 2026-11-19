@@ -6,6 +6,7 @@ import { nativeABI } from './abi/index.mjs';
 import { nativeImagePathParts } from './image-file.mjs';
 import { readNativeResource, nativeCategoryFilename } from './resource-file.mjs';
 import { ImageStore, HG3 } from '../formats/hg3.mjs';
+import { SceneImagePreparation } from './scene-image-preparation.mjs';
 const f = Math.fround;
 const retainedBackings = new WeakMap();
 const size = (width, height, empty = false) => {
@@ -514,6 +515,8 @@ export class NativeImages {
     this.world = world;
     this.assets = new Map();
     this.handles = world.runtime.handles;
+    this.scenePreparation = new SceneImagePreparation(this);
+    const readMounted = (hit) => this.scenePreparation.read(hit);
     this.images =
       typeof world.images?.load === 'function' && !(world.images instanceof ImageStore)
         ? world.images
@@ -521,7 +524,7 @@ export class NativeImages {
             ...world.game,
             resolveCategory: (file) => nativeCategoryFilename(world.game, file, 'image'),
             require: async (file) => {
-              const bytes = await readNativeResource(world, file);
+              const bytes = await readNativeResource(world, file, 3, undefined, readMounted);
               if (bytes === null) throw new Error('Missing image resource: ' + file);
               return bytes;
             },
@@ -626,6 +629,7 @@ export class NativeImages {
         image = await this.images.load(file);
         frame = image.frame(id);
         if (!frame) return 0;
+        this.scenePreparation.apply(image, frame);
         await image.decode(frame);
       } catch (error) {
         this.world.host?.nativeDiagnostic?.({ type: 'image-invalid', file, error: error.message });

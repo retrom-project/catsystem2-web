@@ -279,6 +279,7 @@ export class NativeRuntime {
       if (task.context.sceneData) {
         const previous = this.handles.release(task.context.sceneData, 'scene-data');
         services.world?.m2?.scenePreparation?.discard(previous);
+        services.world?.graphics?.images?.scenePreparation?.discard(previous);
         task.context.sceneData = 0;
       }
       return this.sceneData(task, true);

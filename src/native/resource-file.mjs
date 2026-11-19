@@ -10,6 +10,7 @@ export async function readNativeResource(
   path,
   mode = 3,
   kernel = originalView(world, 'resourceKernel'),
+  readHit,
 ) {
   const validate = (bytes) => {
     if (bytes !== null && !(bytes instanceof Uint8Array))
@@ -34,7 +35,10 @@ export async function readNativeResource(
     world.resourceCache && resolved !== null ? await world.resourceCache.peek(resolved) : null;
   if (cached !== null) return validate(cached);
   const readFile =
-    kernel?.readFile ?? (world.storage?.read ? (name) => world.storage.read(name) : null);
+    kernel?.readFile ??
+    (world.storage?.read
+      ? (name) => (readHit ? world.storage.read(name, readHit) : world.storage.read(name))
+      : null);
   if (game.nativeCandidates) {
     for (const candidate of game.nativeCandidates(resolved, mode)) {
       if (candidate.kind === 'loose' && readFile) {
@@ -43,7 +47,7 @@ export async function readNativeResource(
       }
       if (candidate.hit) {
         const { file, offset, size } = candidate.hit;
-        return validate(await file.read(offset, size));
+        return validate(await (readHit ? readHit(candidate.hit) : file.read(offset, size)));
       }
     }
     return null;

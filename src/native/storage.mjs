@@ -71,10 +71,16 @@ export class NativeFileStorage {
       throw new Error('Native file metadata has an invalid length');
     return size;
   }
-  async read(name) {
+  async read(name, readHit) {
     const key = path(name),
       saved = this.store.get(key);
-    return saved ? saved.data.bytes.slice() : this.game.read(key);
+    if (saved) return saved.data.bytes.slice();
+    return readHit ? this.game.read(key, readHit) : this.game.read(key);
+  }
+  mountedHit(name) {
+    const key = path(name);
+    // A saved file wins the same path and is never a preparation source.
+    return this.store.get(key) ? undefined : (this.game.lookup(key) ?? null);
   }
   async readSaved(name) {
     const saved = this.store.get(path(name));

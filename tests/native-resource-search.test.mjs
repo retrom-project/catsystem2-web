@@ -3,9 +3,41 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeResourceSearch, nativeUpdatePriority } from '../src/native/resource-search.mjs';
+import { readNativeResource } from '../src/native/resource-file.mjs';
+import { NativeFileStorage } from '../src/native/storage.mjs';
 import { GameFiles, BlobFile } from '../src/files.mjs';
 import { kif } from './helpers.mjs';
 const text = (value) => new TextEncoder().encode(value);
+
+test('a native mounted-read callback sees the chosen file after cached and saved data', async () => {
+  const game = new GameFiles(new Map()),
+    storage = new NativeFileStorage(game, 'mounted-read-test'),
+    saved = Uint8Array.of(1),
+    cached = Uint8Array.of(2),
+    original = Uint8Array.of(3),
+    hit = { file: { read: () => original }, offset: 0, size: original.length },
+    readHits = [],
+    observe = (entry) => {
+      readHits.push(entry);
+      return entry.file.read(entry.offset, entry.size);
+    };
+  game.index.set('picture.hg3', hit);
+  game.nativeCandidates = () => [
+    { kind: 'loose', path: 'picture.hg3' },
+    { kind: 'archive', hit },
+  ];
+  storage.store.records.set('picture.hg3', { data: { bytes: saved } });
+  assert.equal(storage.mountedHit('picture.hg3'), undefined);
+  const world = { game, storage, resourceCache: { peek: () => cached } };
+  assert.deepEqual(await readNativeResource(world, 'picture.hg3', 3, undefined, observe), cached);
+  world.resourceCache.peek = () => null;
+  assert.deepEqual(await readNativeResource(world, 'picture.hg3', 3, undefined, observe), saved);
+  assert.deepEqual(readHits, []);
+  storage.store.records.clear();
+  assert.equal(storage.mountedHit('picture.hg3'), hit);
+  assert.deepEqual(await readNativeResource(world, 'picture.hg3', 3, undefined, observe), original);
+  assert.deepEqual(readHits, [hit]);
+});
 
 test('all 108 original search dispatches and 105 update priorities preserve their candidates and results', async () => {
   const golden = JSON.parse(

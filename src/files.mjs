@@ -12,10 +12,11 @@ export class HTTPFile {
     this.size = size;
     this.modifiedMs = modifiedMs;
   }
-  async read(at, count) {
+  async read(at, count, signal) {
     if (at < 0 || count < 0 || at + count > this.size) throw new Error('File read out of bounds');
     if (!count) return new Uint8Array();
-    const response = await fetch(this.url, { headers: { Range: `bytes=${at}-${at + count - 1}` } });
+    const headers = { Range: `bytes=${at}-${at + count - 1}` };
+    const response = await fetch(this.url, signal ? { headers, signal } : { headers });
     if (
       response.status !== 206 ||
       response.headers.get('content-range') !== `bytes ${at}-${at + count - 1}/${this.size}`
@@ -298,9 +299,10 @@ export class GameFiles {
   names(extension) {
     return [...this.index.keys()].filter((n) => n.endsWith(`.${extension}`));
   }
-  async read(name) {
+  async read(name, readHit) {
     const hit = this.lookup(name);
-    return hit ? hit.file.read(hit.offset, hit.size) : null;
+    if (!hit) return null;
+    return readHit ? readHit(hit) : hit.file.read(hit.offset, hit.size);
   }
   async readLoose(name) {
     const file = this.looseIndex.get(resourcePath(name));

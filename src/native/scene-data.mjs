@@ -499,18 +499,24 @@ export function nativeSceneData(id, args, machine, services = {}) {
     id = implicit.get(id);
     args = [0, ...args];
   }
-  const { reader, history } = data;
+  const { reader, history } = data,
+    imagePreparation = services.world?.graphics?.images?.scenePreparation;
   if (id === 0x144) {
     services.handles.release(args[0], 'scene-data');
     services.world?.m2?.scenePreparation?.discard(data);
+    imagePreparation?.discard(data);
     return done();
   }
   if (id === 0x145) {
     if (!services.read || !services.format) return undefined;
     services.world?.m2?.scenePreparation?.discard();
+    imagePreparation?.discard();
     return data
       .load(services.format(args[1], machine), services.read, services.diagnostic)
-      .then((value) => word(Number(value)));
+      .then((value) => {
+        if (value) imagePreparation?.loaded(data);
+        return word(Number(value));
+      });
   }
   if (id === 0x146) return word(reader.type(args[1], args[2]));
   if ([0x147, 0x409, 0x40d, 0x40e].includes(id)) {
@@ -547,7 +553,10 @@ export function nativeSceneData(id, args, machine, services = {}) {
       return word(1);
     }
     const index = name.length ? history.appendPath(name, args[2]) : -1;
-    if (id === 0x149 && index >= 0) services.world?.m2?.scenePreparation?.hint(data, name, args[2]);
+    if (id === 0x149 && index >= 0) {
+      services.world?.m2?.scenePreparation?.hint(data, name, args[2]);
+      imagePreparation?.hint(data, services.owner, args[2]);
+    }
     return word(direct ? index : 1);
   }
   if (id === 0x14a) {
@@ -557,6 +566,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
   if (id === 0x14b) {
     history.path = [];
     services.world?.m2?.scenePreparation?.discard(data);
+    imagePreparation?.discard(data);
     return done();
   }
   if (id === 0x14d) {
@@ -612,6 +622,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
     const source = services.handles.get(args[1], 'scene-data').history;
     if (id === 0x3e1) {
       services.world?.m2?.scenePreparation?.discard(data);
+      imagePreparation?.discard(data);
       // Clear the destination before traversing the source list.
       // Passing the same scene therefore clears its path as well.
       history.path =
