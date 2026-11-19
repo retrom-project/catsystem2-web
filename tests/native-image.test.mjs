@@ -137,6 +137,18 @@ test('the first loaded bitmap, its decoded frame and the reusable asset retain i
   assert.equal(restored.images.get(first).state.attributes[0].rect[0], 1);
 });
 
+test('a decoder supplying a raw buffer keeps the native bitmap and asset cache isolated', async () => {
+  const { images, frame } = environment(),
+    original = frame.rgba.slice();
+  frame.rgba = frame.rgba.buffer;
+  const first = images.get(await images.load('authored'));
+  new Uint8ClampedArray(frame.rgba)[0] = 7;
+  assert.deepEqual(await first.pixels(), original);
+  (await first.pixels())[0] = 9;
+  const cached = images.get(await images.load('authored'));
+  assert.deepEqual(await cached.pixels(), original);
+});
+
 test('blank images retain zero dimensions and clones follow native metadata initialization after fresh restore', async () => {
   const { images, handles } = environment();
   for (const [width, height] of [

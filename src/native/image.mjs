@@ -637,21 +637,26 @@ export class NativeImages {
         this.world.host?.nativeDiagnostic?.({ type: 'image-invalid', file, error: error.message });
         return 0;
       }
-      const state = this.decodedState(image, frame),
-        metadata = { ...state, rgba: null },
+      const source = frame.rgba,
+        state = this.decodedState(image, frame, source),
+        ownsPixels =
+          ArrayBuffer.isView(source) &&
+          state.rgba.buffer instanceof ArrayBuffer &&
+          state.rgba.buffer !== source.buffer,
+        metadata = ownsPixels ? { ...state, rgba: null } : state,
         asset = structuredClone(metadata);
-      // decodedState owns these pixels. Preserve an independent copy for
-      // later loads and give the original allocation to the first bitmap.
-      asset.rgba = state.rgba.slice();
+      // A decoded view produced its own allocation. A raw buffer can instead
+      // form an aliased view and follows the original cloning path.
+      if (ownsPixels) asset.rgba = state.rgba.slice();
       this.assets.set(key, asset);
       while (this.assets.size > 32) this.assets.delete(this.assets.keys().next().value);
       bitmap = new NativeBitmap(this, metadata, { owner });
-      bitmap.state.rgba = state.rgba;
+      if (ownsPixels) bitmap.state.rgba = state.rgba;
     }
     this.world.imageLoaded?.({ file, frameID: id, owner, native: 'image' });
     return this.add(bitmap);
   }
-  decodedState(image, frame) {
+  decodedState(image, frame, pixels = frame.rgba) {
     return {
       width: frame.width,
       height: frame.height,
@@ -672,7 +677,7 @@ export class NativeImages {
       blendType: frame.blendType ?? 0,
       imageMode: frame.imageMode ?? 0,
       source: null,
-      rgba: new Uint8ClampedArray(frame.rgba),
+      rgba: new Uint8ClampedArray(pixels),
     };
   }
   addDecoded(image, frame) {
