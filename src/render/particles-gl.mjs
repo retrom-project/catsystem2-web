@@ -599,6 +599,8 @@ export class ParticlesGL {
     this.destination = gl.createTexture();
     this.textures = new Map();
     this.textureRevisions = new WeakMap();
+    this.textureTransparency = new WeakMap();
+    this.pendingTextureTransparency = new Map();
     this.textureBytes = 0;
     this.textureSizes = new Map();
     this.textureBudget = 128 * 1024 * 1024;
@@ -748,7 +750,11 @@ export class ParticlesGL {
           return [t, fresh];
         }),
       );
-      for (const frame of this.textures.keys()) next.managedTexture(frame);
+      for (const [frame, texture] of this.textures)
+        next.managedTexture(
+          frame,
+          this.textureTransparency.has(texture) || this.pendingTextureTransparency.has(texture),
+        );
       next.depthProgram = this.depthProgram ? next.depthStateProgram() : null;
       next.blendProgram = this.blendProgram ? next.surfaceBlendProgram() : null;
       if (!next.resourcesReady()) throw new Error('Graphics resources are not reconstructed');
@@ -1203,7 +1209,7 @@ export class ParticlesGL {
       gl.depthMask(false);
       gl.stencilMask(0);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
-      const error = gl.getError();
+      const error = this.#checkedError();
       if (error) throw new Error(`Surface blend failed: 0x${error.toString(16)}`);
       target.contentValid = true;
       // The fixed-function shader also has a sampler at unit 1. Leaving a
@@ -1433,9 +1439,10 @@ export class ParticlesGL {
     this.textureBytes -= this.textureSizes.get(texture) || 0;
     this.textureSizes.delete(texture);
     this.ownedTextures.delete(texture);
+    this.pendingTextureTransparency.delete(texture);
     this.gl.deleteTexture(texture);
   }
-  texture(frame) {
+  texture(frame, trackTransparency = false) {
     this.requireDevice();
     if (frame.nativeTarget) {
       this.requireTargetContent(frame.nativeTarget);
@@ -1443,9 +1450,9 @@ export class ParticlesGL {
         throw new Error('Native texture belongs to a different graphics device');
       return frame.nativeTarget.texture;
     }
-    return this.managedTexture(frame);
+    return this.managedTexture(frame, trackTransparency);
   }
-  managedTexture(frame) {
+  managedTexture(frame, trackTransparency = false) {
     let texture = this.textures.get(frame);
     if (texture) {
       this.textures.delete(frame);
@@ -1459,7 +1466,20 @@ export class ParticlesGL {
     gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
     gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    const inspectTransparency =
+      trackTransparency ||
+      this.textureTransparency.has(texture) ||
+      this.pendingTextureTransparency.has(texture);
+    if (inspectTransparency) {
+      this.textureTransparency.delete(texture);
+      this.pendingTextureTransparency.delete(texture);
+    }
     if (frame.rgba) {
+      const pixels = new Uint8Array(
+        frame.rgba.buffer,
+        frame.rgba.byteOffset,
+        frame.rgba.byteLength,
+      );
       gl.texImage2D(
         gl.TEXTURE_2D,
         0,
@@ -1469,8 +1489,16 @@ export class ParticlesGL {
         0,
         gl.RGBA,
         gl.UNSIGNED_BYTE,
-        new Uint8Array(frame.rgba.buffer, frame.rgba.byteOffset, frame.rgba.byteLength),
+        pixels,
       );
+      if (inspectTransparency) {
+        let transparent =
+          pixels.buffer instanceof ArrayBuffer &&
+          pixels.length > 0 &&
+          pixels.length === frame.width * frame.height * 4;
+        for (let i = 3; transparent && i < pixels.length; i += 4) transparent = pixels[i] === 0;
+        this.pendingTextureTransparency.set(texture, transparent);
+      }
     } else
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, frame.canvas || frame);
     this.textureParameters();
@@ -1485,9 +1513,20 @@ export class ParticlesGL {
       this.textureBytes -= this.textureSizes.get(old);
       this.textureSizes.delete(old);
       this.ownedTextures.delete(old);
+      this.pendingTextureTransparency.delete(old);
       gl.deleteTexture(old);
     }
     return texture;
+  }
+  #checkedError() {
+    const error = this.gl.getError();
+    // Publish upload results at the existing error check. An unchecked or failed upload
+    // always uses the shader, including during the frame that changed the texture.
+    if (error === this.gl.NO_ERROR)
+      for (const [texture, transparent] of this.pendingTextureTransparency)
+        this.textureTransparency.set(texture, transparent);
+    this.pendingTextureTransparency.clear();
+    return error;
   }
   textureParameters() {
     const gl = this.gl;
@@ -1627,9 +1666,10 @@ export class ParticlesGL {
   drawTexturePages(draws, { blendMode, context }) {
     if (draws.length) this.#drawGeometry(null, null, { blendMode, context, texturePages: draws });
   }
-  #bindGeometryTexture(frame, samplers, nativeAnisotropy) {
-    const gl = this.gl;
-    gl.bindTexture(gl.TEXTURE_2D, this.texture(frame));
+  #bindGeometryTexture(frame, samplers, nativeAnisotropy, trackTransparency = false) {
+    const gl = this.gl,
+      texture = this.texture(frame, trackTransparency);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
     if (this.anisotropy)
       gl.texParameterf(
         gl.TEXTURE_2D,
@@ -1658,6 +1698,7 @@ export class ParticlesGL {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, addressing[samplers.get(1)]);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, addressing[samplers.get(2)]);
     }
+    return texture;
   }
   drawGeometry(geometry, frame, options) {
     return this.#drawGeometry(geometry, frame, options);
@@ -1740,6 +1781,7 @@ export class ParticlesGL {
     const anisotropic = t.get(5) === 3 || t.get(6) === 3;
     const nativeAnisotropy = anisotropic && this.anisotropy && t.get(1) !== 4 && t.get(2) !== 4;
     if (!texturePages) this.#bindGeometryTexture(frame, t, nativeAnisotropy);
+    let discardTransparentPages = false;
     gl.uniform1i(this.uniform.nativeAnisotropy, Number(Boolean(nativeAnisotropy)));
     gl.uniform1f(this.uniform.maxAnisotropy, Math.min(16, Math.max(1, t.get(10))));
     gl.uniform2i(this.uniform.addressMode, t.get(1), t.get(2));
@@ -1803,6 +1845,16 @@ export class ParticlesGL {
         usesTextureAndDiffuse(alphaArgs)
           ? colorOperation
           : 0;
+      // A GLSL ES discard precedes framebuffer writes, including depth and stencil.
+      discardTransparentPages =
+        texturePages &&
+        directModulation !== 0 &&
+        s.get(15) &&
+        (alphaFunction === 5 || (alphaFunction === 7 && (s.get(24) & 255) > 0)) &&
+        t.get(1) !== 4 &&
+        t.get(2) !== 4 &&
+        t.get(5) !== 3 &&
+        t.get(6) !== 3;
       gl.uniform1i(this.uniform.directModulation, directModulation);
       gl.uniform1i(this.uniform.followingColorOperation, following);
       gl.uniform2i(this.uniform.textureOperations, colorOperation, alphaOperation);
@@ -2048,8 +2100,9 @@ export class ParticlesGL {
       // Texture storage and per-texture sampler parameters still bind per page.
       if (texturePages)
         for (const page of texturePages) {
-          this.#bindGeometryTexture(page.frame, t, nativeAnisotropy);
-          drawTriangles(page.triangles);
+          const texture = this.#bindGeometryTexture(page.frame, t, nativeAnisotropy, true);
+          if (!discardTransparentPages || this.textureTransparency.get(texture) !== true)
+            drawTriangles(page.triangles);
         }
       else drawTriangles(geometry);
       return;
@@ -2249,7 +2302,7 @@ export class ParticlesGL {
       if (scissor) gl.disable(gl.SCISSOR_TEST);
       // Convert native top-down rows to the opaque canvas drawing buffer.
       gl.blitFramebuffer(0, 0, width, height, 0, height, width, 0, gl.COLOR_BUFFER_BIT, gl.NEAREST);
-      const error = gl.getError();
+      const error = this.#checkedError();
       if (error === gl.INVALID_OPERATION) return false;
       if (error !== gl.NO_ERROR)
         throw new Error(`Native presentation blit failed: 0x${error.toString(16)}`);
@@ -2335,7 +2388,7 @@ export class ParticlesGL {
       ].map(([x, y, u, v]) => ({ x, y, z: 0, w: 1, color: 0xffffffff, u, v })),
     );
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    const error = gl.getError();
+    const error = this.#checkedError();
     if (error !== gl.NO_ERROR)
       throw new Error(`Particle WebGL draw failed: 0x${error.toString(16)}`);
   }
@@ -2365,6 +2418,7 @@ export class ParticlesGL {
   }
   releaseResources() {
     const gl = this.gl;
+    this.pendingTextureTransparency?.clear();
     for (const target of [...(this.nativeTargets ?? [])]) this.destroyRenderTarget(target);
     for (const depth of [...(this.nativeDepth ?? [])]) this.destroyDepthStencil(depth);
     if (this.depthProgram) gl.deleteProgram(this.depthProgram.program);

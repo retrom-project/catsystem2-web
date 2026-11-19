@@ -237,6 +237,196 @@ test('ordered texture pages keep overlapping blends and the per-primitive sRGB p
   ]);
 });
 
+test('transparent texture pages use only verified uploads through pixel changes and reset', async ({
+  page,
+}) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const { ParticlesGL, createD3DContext } = await import('/src/render/particles-gl.mjs');
+    const gpu = new ParticlesGL(5, 5),
+      gl = gpu.gl;
+    const frame = { width: 1, height: 1, rgba: Uint8Array.of(231, 71, 103, 0), revision: 0 };
+    const opaque = { width: 1, height: 1, rgba: Uint8Array.of(15, 195, 79, 255), revision: 0 };
+    const triangles = (z = 0.1, uv = 0.5) => [
+      {
+        vertices: [
+          [-0.5, -0.5],
+          [4.5, -0.5],
+          [-0.5, 4.5],
+          [4.5, 4.5],
+        ].map(([x, y]) => ({ x, y, z, w: 1, color: 0xffffffff, u: uv, v: uv })),
+      },
+    ];
+    const draw = (source, { sampler = [], states = [], generic = false, z, uv } = {}) => {
+      const context = createD3DContext();
+      context.lastDrawType = 0;
+      context.lastBlend = 0;
+      context.states.set(27, 0);
+      for (const [id, value] of states) context.states.set(id, value);
+      for (const [id, value] of sampler) context.samplers.set(id, value);
+      context.stages.set(
+        0,
+        new Map([
+          [1, 4],
+          [2, 2],
+          [3, Number(generic)],
+          [4, 4],
+          [5, 2],
+          [6, 0],
+        ]),
+      );
+      gpu.drawTexturePages([{ triangles: triangles(z, uv), frame: source }], { context });
+    };
+    const sample = (render = () => draw(frame)) => {
+      gpu.beginFrame(0xff152332);
+      const glDraw = gl.drawArrays;
+      let draws = 0;
+      gl.drawArrays = function (...args) {
+        draws++;
+        return glDraw.apply(this, args);
+      };
+      try {
+        render();
+      } finally {
+        delete gl.drawArrays;
+      }
+      try {
+        gpu.endFrame();
+      } finally {
+        if (gpu.drawing) gpu.endNativeFrame();
+      }
+      return { draws, center: [...gpu.pixels().slice(48, 52)] };
+    };
+    const waitForContext = (name, start) =>
+      new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error(name + ' timed out')), 3000);
+        gpu.canvas.addEventListener(
+          name,
+          () => {
+            clearTimeout(timer);
+            resolve();
+          },
+          { once: true },
+        );
+        start();
+      });
+    try {
+      const initial = sample();
+      const confirmed = sample();
+      const oldTexture = gpu.textures.get(frame);
+      frame.rgba[3] = 255;
+      const priorUpload = sample();
+      frame.revision++;
+      const changed = sample();
+      frame.rgba[3] = 0;
+      frame.revision++;
+      const upload = gl.texImage2D;
+      let uploadError;
+      gl.texImage2D = function (...args) {
+        args[3] = -1;
+        return upload.apply(this, args);
+      };
+      try {
+        sample();
+      } catch (error) {
+        uploadError = error.message;
+      } finally {
+        delete gl.texImage2D;
+      }
+      const failedBacking = sample();
+      frame.revision++;
+      const pendingBlank = sample();
+      const reblanked = sample();
+      const border = sample(() =>
+        draw(frame, {
+          sampler: [
+            [1, 4],
+            [2, 4],
+            [4, 0xff2c8466],
+          ],
+          uv: -1,
+        }),
+      );
+      const zeroThreshold = sample(() => draw(frame, { states: [[24, 0]] }));
+      const anisotropic = sample(() => draw(frame, { sampler: [[5, 3]] }));
+      const testAttachments = (comparison, generic) =>
+        sample(() => {
+          draw(frame, {
+            states: [
+              [7, 1],
+              [14, 1],
+              [52, 1],
+              [53, 3],
+              [54, 3],
+              [55, 3],
+              [56, comparison],
+              [57, 8],
+            ],
+            generic,
+          });
+          draw(opaque, {
+            states: [
+              [7, 1],
+              [52, 1],
+              [56, 3],
+              [57, 0],
+            ],
+            z: 0.75,
+          });
+        });
+      const comparisons = [1, 8].map((comparison) => [
+        testAttachments(comparison, true),
+        testAttachments(comparison, false),
+      ]);
+      frame.rgba[3] = 255;
+      const extension = gl.getExtension('WEBGL_lose_context');
+      await waitForContext('webglcontextlost', () => extension.loseContext());
+      await waitForContext('webglcontextrestored', () =>
+        setTimeout(() => extension.restoreContext(), 0),
+      );
+      await gpu.graphicsDevice.settled();
+      const restored = sample();
+      return {
+        initial,
+        confirmed,
+        priorUpload,
+        changed,
+        uploadError,
+        failedBacking,
+        pendingBlank,
+        reblanked,
+        border,
+        zeroThreshold,
+        anisotropic,
+        comparisons,
+        restored,
+        newTexture: gpu.textures.get(frame) !== oldTexture,
+      };
+    } finally {
+      gpu.close();
+    }
+  });
+  const background = [21, 35, 50, 255],
+    uploaded = [231, 71, 103, 255];
+  expect(result.initial).toEqual({ draws: 1, center: background });
+  expect(result.confirmed).toEqual({ draws: 0, center: background });
+  expect(result.priorUpload).toEqual(result.confirmed);
+  expect(result.changed).toEqual({ draws: 1, center: uploaded });
+  expect(result.uploadError).toMatch(/^Particle WebGL draw failed: 0x501$/);
+  expect(result.failedBacking).toEqual(result.changed);
+  expect(result.pendingBlank).toEqual(result.initial);
+  expect(result.reblanked).toEqual(result.confirmed);
+  expect(result.border).toEqual({ draws: 1, center: [44, 132, 102, 255] });
+  expect(result.zeroThreshold).toEqual({ draws: 1, center: [231, 71, 103, 0] });
+  expect(result.anisotropic).toEqual(result.initial);
+  for (const [generic, elided] of result.comparisons) {
+    expect(generic).toEqual({ draws: 2, center: [15, 195, 79, 255] });
+    expect(elided).toEqual({ draws: 1, center: generic.center });
+  }
+  expect(result.restored).toEqual(result.changed);
+  expect(result.newTexture).toBe(true);
+});
+
 test('shared Stage device restores real resources without reviving undefined target contents', async ({
   page,
 }) => {
