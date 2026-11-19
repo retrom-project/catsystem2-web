@@ -3,6 +3,9 @@
 import { truncateFloat32 } from '../ppi/numeric.mjs';
 import { blendBitmapPixel } from './image.mjs';
 import { affineBitmap } from './image-affine.mjs';
+
+const littleEndian = new Uint8Array(Uint32Array.of(1).buffer)[0] === 1;
+
 export function flipBitmapRows(bytes, width, height) {
   const output = new Uint8ClampedArray(bytes.length),
     row = width * 4;
@@ -61,6 +64,20 @@ function blendTypePixel(output, at, input, offset, opacity, mode, affine) {
 }
 const emptyPixel = (pixels, at) =>
   !pixels[at] && !pixels[at + 1] && !pixels[at + 2] && !pixels[at + 3];
+
+function blendFullOpacityRow(output, at, input, start, count, outputWords, inputWords) {
+  const dst = at / 4,
+    src = start / 4;
+  for (let x = 0; x < count; x++) {
+    const source = inputWords[src + x],
+      target = outputWords[dst + x],
+      alpha = source >>> 24;
+    // A zero destination takes the source's RGB even when its alpha is zero.
+    if (!target || alpha === 255 || (alpha && !(target >>> 24))) outputWords[dst + x] = source;
+    else if (alpha) blendBitmapPixel(output, at + x * 4, input, start + x * 4);
+  }
+}
+
 export function rasterizeRetainedBitmap(
   output,
   width,
@@ -72,8 +89,7 @@ export function rasterizeRetainedBitmap(
   { flipDestinationY = false, firstDestinationRow = 0 } = {},
 ) {
   if (!item.visible || !item.alpha || !state.width || !state.height) return;
-  const input = flipBitmapRows(pixels, state.width, state.height),
-    mask = state.mask ?? 0,
+  const mask = state.mask ?? 0,
     blend = state.blendType ?? 0,
     hasAlpha =
       state.bpp === 4 &&
@@ -90,6 +106,7 @@ export function rasterizeRetainedBitmap(
   if (item.mode) {
     // Both reviewed dispatch tables contain explicit empty handlers here.
     if (state.bpp !== 4 || (!blend && mask)) return;
+    const input = flipBitmapRows(pixels, state.width, state.height);
     affineBitmap(output, width, height, input, state.width, state.height, {
       position: item.position,
       base: [Math.fround(item.base[0] - state.offsetX), Math.fround(item.base[1] - state.offsetY)],
@@ -121,16 +138,54 @@ export function rasterizeRetainedBitmap(
     ];
   if (area[0] >= area[2] || area[1] >= area[3]) return;
   if (state.bpp === 3 && useBlend) return;
-  const count = area[2] - area[0],
+  const logicalRows =
+      pixels instanceof Uint8ClampedArray &&
+      pixels.buffer instanceof ArrayBuffer &&
+      output?.buffer instanceof ArrayBuffer &&
+      pixels.buffer !== output.buffer &&
+      Number.isInteger(state.width) &&
+      Number.isInteger(state.height) &&
+      pixels.length === state.width * state.height * 4 &&
+      area.every(Number.isInteger) &&
+      area[0] >= x &&
+      area[1] >= y &&
+      area[2] <= x + state.width &&
+      area[3] <= y + state.height,
+    input = logicalRows ? pixels : flipBitmapRows(pixels, state.width, state.height),
+    normal = !mask && !useBlend,
+    firstOutputRow = (flipDestinationY ? height - area[3] : area[1]) - firstDestinationRow,
+    endOutputRow = firstOutputRow + area[3] - area[1],
+    packedBlend =
+      logicalRows &&
+      normal &&
+      !copy &&
+      littleEndian &&
+      item.alpha === 255 &&
+      state.bpp === 4 &&
+      output instanceof Uint8ClampedArray &&
+      output.byteOffset % 4 === 0 &&
+      input.byteOffset % 4 === 0 &&
+      output.byteLength % 4 === 0 &&
+      Number.isInteger(width) &&
+      Number.isInteger(firstOutputRow) &&
+      firstOutputRow >= 0 &&
+      endOutputRow * width * 4 <= output.byteLength,
+    outputWords = packedBlend
+      ? new Uint32Array(output.buffer, output.byteOffset, output.length / 4)
+      : null,
+    inputWords = packedBlend
+      ? new Uint32Array(input.buffer, input.byteOffset, input.length / 4)
+      : null,
+    count = area[2] - area[0],
     channel =
       state.bpp === 3
         ? [2, 1, 0][Math.min(2, Math.max(0, mask - 1))]
         : [2, 1, 0, 3][Math.min(3, Math.max(0, mask - 1))];
   for (let row = area[1]; row < area[3]; row++) {
-    const start = ((row - y) * state.width + area[0] - x) * 4,
+    const sourceY = logicalRows ? state.height - 1 - (row - y) : row - y,
+      start = (sourceY * state.width + area[0] - x) * 4,
       destinationY = flipDestinationY ? height - 1 - row : row,
-      at = ((destinationY - firstDestinationRow) * width + area[0]) * 4,
-      normal = !mask && !useBlend;
+      at = ((destinationY - firstDestinationRow) * width + area[0]) * 4;
     if (normal && copy) {
       output.set(input.subarray(start, start + count * 4), at);
       continue;
@@ -150,15 +205,17 @@ export function rasterizeRetainedBitmap(
     }
     if (normal && area[0] > 0 && emptyPixel(output, at - 4))
       output.set([input[start], input[start + 1], input[start + 2], 0], at - 4);
-    for (let column = 0; column < count; column++) {
-      const source = start + column * 4,
-        destination = at + column * 4;
-      if (useBlend) blendTypePixel(output, destination, input, source, item.alpha, blend, false);
-      else if (mask)
-        output[destination + 3] =
-          (((output[destination + 3] + 1) * (input[source + channel] + 1) - 1) & 65535) >>> 8;
-      else blendBitmapPixel(output, destination, input, source, item.alpha);
-    }
+    if (packedBlend) blendFullOpacityRow(output, at, input, start, count, outputWords, inputWords);
+    else
+      for (let column = 0; column < count; column++) {
+        const source = start + column * 4,
+          destination = at + column * 4;
+        if (useBlend) blendTypePixel(output, destination, input, source, item.alpha, blend, false);
+        else if (mask)
+          output[destination + 3] =
+            (((output[destination + 3] + 1) * (input[source + channel] + 1) - 1) & 65535) >>> 8;
+        else blendBitmapPixel(output, destination, input, source, item.alpha);
+      }
     const end = at + count * 4,
       last = start + (count - 1) * 4;
     if (normal && area[2] < width && emptyPixel(output, end))

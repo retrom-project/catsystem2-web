@@ -68,6 +68,20 @@ test('JS retained normal/MASK/BTYPE/affine matches both-ABI pixel goldens', () =
   }
 });
 
+test('retained rows sample overlapping bitmap storage before writing', () => {
+  const state = { width: 2, height: 2, offsetX: 0, offsetY: 0, bpp: 4, alphaHint: 2 },
+    area = [0, 0, 4, 4],
+    item = { visible: true, alpha: 255, clip: area, position: [1, 1], base: [0, 0], mode: 0 },
+    pixels = Uint8ClampedArray.from({ length: 4 * 4 * 4 }, (_, index) => (index * 23) & 255),
+    input = pixels.subarray(20, 36),
+    expected = pixels.slice();
+  rasterizeRetainedBitmap(expected, 4, 4, input.slice(), state, item, area, {
+    flipDestinationY: true,
+  });
+  rasterizeRetainedBitmap(pixels, 4, 4, input, state, item, area, { flipDestinationY: true });
+  assert.deepEqual(pixels, expected);
+});
+
 for (const fixture of await engineFixtureSet())
   test(
     fixture.profile + ' format dispatch and nonfinite integer positions match retained oracle',
