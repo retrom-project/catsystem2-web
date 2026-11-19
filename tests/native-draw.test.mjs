@@ -186,6 +186,31 @@ test('small retained updates preserve exported pixels and cold Draw handles', as
   assert.deepEqual(await restored.pixels(), pixels);
 });
 
+test('full-width retained redraw preserves the rows outside the clear and the borrowed bitmap', async () => {
+  const world = fixture(),
+    id = await surface(world),
+    images = world.graphics.images,
+    task = world.graphics.drawTasks.get(id),
+    bitmap = images.get(task.state.renderer.bitmap),
+    region = [0, 1, 8, 5];
+  for (const color of [0, 0xff102030]) {
+    await bitmap.fill(0, 0, 8, 6, 0xff112233);
+    const old = await bitmap.pixels(),
+      before = old.slice(),
+      expected = before.slice(),
+      pixel = color ? [16, 32, 48, 255] : [0, 0, 0, 0];
+    for (let at = 8 * 4; at < 5 * 8 * 4; at += 4) expected.set(pixel, at);
+    task.state.renderer.clearColor = color;
+    task.state.dirty = true;
+    await task.render(region);
+    assert.deepEqual(await bitmap.pixels(), expected);
+    assert.deepEqual(old, before);
+    const checkpoint = world.runtime.handles.snapshot();
+    world.runtime.handles.restore(checkpoint);
+    assert.deepEqual(await images.get(task.state.renderer.bitmap).pixels(), expected);
+  }
+});
+
 test('small retained updates sample the old shared destination in self-draw', async () => {
   const world = fixture(),
     id = await surface(world, 8, 12),

@@ -447,14 +447,35 @@ export class NativeRetainedDraw {
       firstRow = reuse ? renderer.height - area[3] : 0,
       rowBytes = renderer.width * 4,
       start = firstRow * rowBytes,
+      replaceRows =
+        !reuse &&
+        ordinary &&
+        hasArea &&
+        !renderer.externalPaint &&
+        area[0] === 0 &&
+        area[2] === renderer.width &&
+        area.every(Number.isInteger) &&
+        bitmapPixels instanceof Uint8ClampedArray &&
+        bitmapPixels.buffer instanceof ArrayBuffer &&
+        bitmap.width === renderer.width &&
+        bitmap.height === renderer.height &&
+        bitmapPixels.length === rowBytes * renderer.height,
       rows = reuse
         ? bitmapPixels.slice(start, start + (area[3] - area[1]) * rowBytes)
-        : new Uint8ClampedArray(bitmapPixels),
+        : new Uint8ClampedArray(replaceRows ? bitmapPixels.length : bitmapPixels),
       options = { flipDestinationY: true, firstDestinationRow: firstRow };
+    if (replaceRows) {
+      // Cleared rows need no copy. Preserve both outside ranges in the new
+      // backing so any already borrowed bitmap still sees its old pixels.
+      const first = (renderer.height - area[3]) * rowBytes,
+        end = (renderer.height - area[1]) * rowBytes;
+      rows.set(bitmapPixels.subarray(0, first));
+      rows.set(bitmapPixels.subarray(end), end);
+    }
     let publication = null;
     try {
       if (hasArea) {
-        if (!renderer.externalPaint) {
+        if (!renderer.externalPaint && (!replaceRows || renderer.clearColor !== 0)) {
           const color = renderer.clearColor,
             rgba = Uint8Array.of(
               (color >>> 16) & 255,
