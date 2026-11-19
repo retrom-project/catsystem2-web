@@ -34,9 +34,11 @@ export class FESMotionDriver {
       this.targetFor(current, false)?.manager.skip();
   }
   prepare(object) {
-    const idle = !this.busy(object),
-      target = this.targetFor(object, true);
-    if (idle) {
+    const existing = this.targetFor(object, false),
+      target = existing ?? this.targetFor(object, true);
+    // A busy child can retain an existing base, but a newly created target
+    // needs the object's first snapshot before its motion publishes anything.
+    if (!existing || !this.busy(object)) {
       const snapshot = target.state();
       if (snapshot) target.manager.base.set(snapshot);
     }

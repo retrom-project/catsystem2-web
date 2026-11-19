@@ -65,10 +65,11 @@ starts with the native default KX2 base. Base-family virtual snapshots leave
 that base intact; known Base output methods do not project motion output onto
 object geometry, while their managers still execute actual programs.
 
-Before adding a motion, FES checks the object's whole lifetime subtree. Only
-when no manager is active there does its typed virtual method refresh the base.
-An idle parent with a busy child must retain its earlier base. SUBCOMMAND
-parameter conversion reads that cached base; its actual KCS program controls
+The first motion on a lazily created target seeds its base from the object's
+typed snapshot. For an existing target, FES checks the object's whole lifetime
+subtree and refreshes the base only when every manager there is idle. An idle
+parent with a busy child retains its earlier base. SUBCOMMAND parameter
+conversion reads that cached base, and its actual KCS program controls
 completion. Normal updates use the owning task's effective frame minus paused
 frames, with children before the object's own manager.
 

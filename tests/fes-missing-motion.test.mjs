@@ -62,6 +62,77 @@ function recordReads(world) {
 }
 
 for (const profile of profiles) {
+  test(`${profile}: the first parent motion retains its authored display while a child moves`, async () => {
+    const position = kcsProgram([
+        [21, shared(MOTION_ABI.pos), shared(MOTION_ABI.registers)],
+        [21, shared(MOTION_ABI.pos + 4), shared(MOTION_ABI.registers + 4)],
+        [43, 0x26, 0],
+        [59],
+      ]),
+      show = kcsProgram([[21, shared(MOTION_ABI.display), 1], [43, 0x26, 0], [59]]),
+      screen = new TextEncoder().encode(`#DEFINE
+CPLANE panel
+CPLANE child
+#OBJECT SIZE COLOR DISP PRI
+panel 24,16 0x80123456 0 60000
+child 8,8 0xffabcdef 1 60100
+#OBJECT PARENT
+child panel
+#SUBCOMMAND
+oneshot reveal show : 0
+#START
+next IDLE
+#IDLE
+#MOVE
+child pos 2 -3
+panel pos 7 9
+break
+#SHOW
+panel reveal
+break
+#HIDE
+panel disp 0
+break
+`),
+      files = { 'screen.fes': screen, 'ppos.kcs': position, 'show.kcs': show },
+      world = await defaultFESWorld(profile, files);
+    let fresh;
+    try {
+      const { id, task, instance } = await loadDefaultFES(world);
+      await task.tick();
+      const panel = instance.collection.lookup('panel', 0),
+        child = instance.collection.lookup('child', 0);
+      assert.equal(panel.disp, false);
+      assert.equal(instance.runtime.targetFor(panel, false), undefined);
+      await task.player.notify('MOVE');
+      assert.ok(instance.runtime.targetFor(child, false).busy());
+      assert.ok(instance.runtime.targetFor(panel, false).busy());
+      fresh = await defaultFESWorld(profile, files, { initialize: false });
+      await fresh.restore(world.snapshot());
+      for (const current of [world, fresh]) {
+        const player = current.objects.objects.get(id).implementation.player,
+          restoredPanel = player.root.collection.lookup('panel', 0),
+          plane = current.graphics.get(restoredPanel.nativeTaskID);
+        await current.tick();
+        assert.deepEqual([restoredPanel.x, restoredPanel.y], [7, 9]);
+        assert.equal(restoredPanel.disp, false);
+        assert.equal(plane.state.shown, false);
+        assert.equal(restoredPanel.color, 0x80123456);
+        await player.notify('SHOW');
+        await current.tick();
+        assert.equal(restoredPanel.disp, true);
+        assert.equal(plane.state.shown, true);
+        await player.notify('HIDE');
+        await current.tick();
+        assert.equal(restoredPanel.disp, false);
+        assert.equal(plane.state.shown, false);
+      }
+    } finally {
+      await fresh?.close();
+      await world.close();
+    }
+  });
+
   test(`${profile}: default missing and empty MOT return normally without consuming motion state; present/cache/fresh paths still execute`, async () => {
     const world = await defaultFESWorld(profile, { 'screen.fes': source }),
       game = world.motionLibrary.game,
