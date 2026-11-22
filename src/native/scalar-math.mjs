@@ -2,7 +2,7 @@
 // Script-visible f32 words in the normal engine precision/rounding environment.
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply, bitsFloat, floatBits } from '../kcs/vm.mjs';
-import { degreeToRadian, radianToDegree } from '../ppi/numeric.mjs';
+import { degreeToRadian, radianToDegree, x87AngleConversion } from '../ppi/numeric.mjs';
 const f = Math.fround;
 const unary = {
   sin: Math.sin,
@@ -69,7 +69,7 @@ function triangle(value, period) {
   if (f(quarter * 3) > phase) return -wave;
   return f(wave - 1);
 }
-export function nativeScalarMath(operation, args, machine, argumentWords) {
+export function nativeScalarMath(operation, args, machine, argumentWords, anglesUseX87 = false) {
   const name = operation?.replace(/^math\./, '');
   if (!names.has(name)) return undefined;
   const words = Array.from(args);
@@ -96,8 +96,10 @@ export function nativeScalarMath(operation, args, machine, argumentWords) {
   if (name === 'fmod') result = nativeRemainder(x, y);
   else if (name === 'pow') result = Math.pow(x, y);
   else if (name === 'atan2') result = Math.atan2(x, y);
-  else if (name === 'degreeToRadian') result = degreeToRadian(x);
-  else if (name === 'radianToDegree') result = radianToDegree(x);
+  else if (name === 'degreeToRadian')
+    result = anglesUseX87 ? x87AngleConversion(x, true) : degreeToRadian(x);
+  else if (name === 'radianToDegree')
+    result = anglesUseX87 ? x87AngleConversion(x, false) : radianToDegree(x);
   else if (name === 'triangleWave') result = triangle(x, y);
   else result = unary[name](['sin', 'cos', 'tan'].includes(name) ? trigInput(x) : x);
   return nativeReply(
@@ -110,10 +112,17 @@ export function nativeScalarMath(operation, args, machine, argumentWords) {
   );
 }
 export function installNativeScalarMath(world) {
-  for (const entry of nativeABI(world.profile).tables.main.entries) {
+  const abi = nativeABI(world.profile);
+  for (const entry of abi.tables.main.entries) {
     if (!names.has(entry.name?.replace(/^math\./, ''))) continue;
     world.runtime.register('main', entry.id, (args, machine) =>
-      nativeScalarMath(entry.name, args, machine, entry.signature.argumentWords),
+      nativeScalarMath(
+        entry.name,
+        args,
+        machine,
+        entry.signature.argumentWords,
+        abi.math?.anglesUseX87,
+      ),
     );
   }
 }

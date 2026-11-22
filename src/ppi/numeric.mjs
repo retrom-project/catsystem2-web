@@ -6,6 +6,10 @@ const pi = f(Math.PI);
 
 export const degreeToRadian = (degrees) => f(f(f(degrees) * pi) / 180);
 export const radianToDegree = (radians) => f(f(f(radians) * 180) / pi);
+export function x87AngleConversion(angle, toRadians) {
+  const product = roundX87Single(f(angle) * (toRadians ? pi : 180));
+  return f(roundX87Single(product / (toRadians ? 180 : pi)));
+}
 
 export function calcFrame(frame, fps) {
   frame >>>= 0;

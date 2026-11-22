@@ -11,22 +11,15 @@ const real = (value) => {
   bits.setUint32(0, value, true);
   return bits.getFloat32(0, true);
 };
-const nan = (value) => (value & 0x7fffffff) > 0x7f800000;
-function binary(a, b, operation) {
-  const x = word(a),
-    y = word(b);
-  if (nan(x)) return real(x | 0x400000 /* IEEE quiet NaN bit  */);
-  if (nan(y)) return real(y | 0x400000 /* IEEE quiet NaN bit  */);
-  const result = Math.fround(operation(a, b));
+function binary(a, b, operation, round) {
+  if (Number.isNaN(a)) return real(word(a) | 0x400000 /* IEEE quiet NaN bit  */);
+  if (Number.isNaN(b)) return real(word(b) | 0x400000 /* IEEE quiet NaN bit  */);
+  const result = round(operation(a, b));
   return Number.isNaN(result) ? real(0xffc00000) : result;
 }
-const add = (a, b) => binary(a, b, (x, y) => x + y),
-  sub = (a, b) => binary(a, b, (x, y) => x - y);
-const mul = (a, b) => binary(a, b, (x, y) => x * y),
-  div = (a, b) => binary(a, b, (x, y) => x / y);
 const neg = (a) => real(word(a) ^ 0x80000000);
 
-export function prepareMotionSpline(bytes, count) {
+export function prepareMotionSpline(bytes, count, round = Math.fround) {
   if (
     !(bytes instanceof Uint8Array) ||
     !Number.isInteger(count) ||
@@ -35,6 +28,10 @@ export function prepareMotionSpline(bytes, count) {
   )
     throw new Error('Invalid MOT spline point buffer/count');
   if (count < 3) return;
+  const add = (a, b) => binary(a, b, (x, y) => x + y, round),
+    sub = (a, b) => binary(a, b, (x, y) => x - y, round),
+    mul = (a, b) => binary(a, b, (x, y) => x * y, round),
+    div = (a, b) => binary(a, b, (x, y) => x / y, round);
   const f = Math.fround,
     view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const get = (i, k) => view.getFloat32(i * 20 + k * 4, true),

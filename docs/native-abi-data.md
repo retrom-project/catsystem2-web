@@ -1275,6 +1275,13 @@ through a single VM address, using the current global matrix on native NULL.
 Main 586 stores a full DWORD of default flags on the live manager. Motion
 creation reads that DWORD. A zero manager leaves state untouched.
 
+Main 535 adds a motion through the same formatted CP932 resource lookup as
+Main 304 and passes its eighth word as the authored delay. Main 320 prepares
+five-float spline points in place. Counts below three leave the buffer
+unread. Main 62/63 convert degrees and radians using the original
+single-precision x87 arithmetic with its extended exponent before storing
+the final float word.
+
 The optional-animation branch at the start of the Script calls Main 925.
 The original table binds it to a zero result with control 1. Adjacent
 Main 908 and 926 discard their input and return control 2 at the original

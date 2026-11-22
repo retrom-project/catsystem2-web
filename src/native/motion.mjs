@@ -6,6 +6,7 @@ import { initialMotionObject } from '../motion/abi.mjs';
 import { encodeMotionRecords, restoreMotionRecords } from '../motion/checkpoint.mjs';
 import { prepareMotionSpline } from '../motion/spline.mjs';
 import { linearInterpolate, roundInteger } from '../ppi/numeric.mjs';
+import { roundX87Single } from '../ppi/x87.mjs';
 import { floatBits } from '../kcs.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { nativeDataFormat, nativeDataMapped } from './data-text.mjs';
@@ -128,7 +129,14 @@ export function nativeMotion(id, args, machine, services = {}) {
     return value(rounded >= -(2 ** 63) && rounded < 2 ** 63 ? rounded : 0);
   }
   if (id === 0x140) {
-    prepareMotionSpline(machine.bytes(args[0], args[1] * 20), args[1]);
+    const x87 = services.profile && nativeABI(services.profile).motion?.splineUsesX87;
+    const count = x87 ? args[1] | 0 : args[1];
+    if (x87 && count < 3) return done();
+    prepareMotionSpline(
+      machine.bytes(args[0], count * 20),
+      count,
+      x87 ? roundX87Single : undefined,
+    );
     return done();
   }
   if (!ids.has(id) || !services.motion) return undefined;
@@ -185,8 +193,7 @@ export function nativeMotion(id, args, machine, services = {}) {
         return done();
       case 0x130:
       case 0x217: {
-        const formatted =
-          id === 0x130 && services.profile && nativeABI(services.profile).motion?.addUsesFormat;
+        const formatted = services.profile && nativeABI(services.profile).motion?.addUsesFormat;
         const name = formatted
           ? cp932.decode(nativeDataFormat(args, machine, services, 1) ?? undefined)
           : machine.string(args[1]);

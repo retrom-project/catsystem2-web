@@ -2,7 +2,7 @@
 // Main-table standard primitives. IDs are not valid in the MOT/PTCL tables.
 import { nativeReply, floatBits, bitsFloat, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
-import { degreeToRadian, radianToDegree } from '../ppi/numeric.mjs';
+import { degreeToRadian, radianToDegree, x87AngleConversion } from '../ppi/numeric.mjs';
 import { nativeCalendar } from './calendar.mjs';
 import { nativeCommaFields, parseNativeResourceSelection } from './resource-selection.mjs';
 import { nativeABI } from './abi/index.mjs';
@@ -610,8 +610,6 @@ export function nativeStandard(id, args, m, services = {}) {
     case 0x39:
     case 0x3a:
     case 0x3c:
-    case 0x3e:
-    case 0x3f:
       requireArguments(1);
       a = bitsFloat(args[0]);
       out = {
@@ -625,10 +623,17 @@ export function nativeStandard(id, args, m, services = {}) {
         0x39: Math.abs,
         0x3a: Math.floor,
         0x3c: Math.sqrt,
-        0x3e: degreeToRadian,
-        0x3f: radianToDegree,
       }[id](a);
       return value(floatBits(out));
+    case 0x3e:
+    case 0x3f: {
+      requireArguments(1);
+      const angle = bitsFloat(args[0]),
+        toRadians = id === 0x3e;
+      if (!services.profile || !nativeABI(services.profile).math?.anglesUseX87)
+        return value(floatBits(toRadians ? degreeToRadian(angle) : radianToDegree(angle)));
+      return value(floatBits(x87AngleConversion(angle, toRadians)));
+    }
     case 0x3b:
     case 0x3d:
       requireArguments(2);

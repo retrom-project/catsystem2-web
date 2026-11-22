@@ -1775,6 +1775,36 @@ test('63 motion state transfers and formatted script add preserve the manager an
     assert.equal(manager.records.size, 0);
     assert.deepEqual(await call(311, [handle]), { control: 1, value: 0 });
     assert.deepEqual(await call(440, [handle]), { control: 1, value: 0 });
+    assert.deepEqual(await call(535, [handle, 320, 0xffffffff, 0, 0, 0, 29, 11]), {
+      control: 1,
+      value: 2,
+    });
+    const delayed = manager.records.get(2);
+    assert.equal(delayed.group, 29);
+    assert.equal(delayed.instance.script.name, 'owned-7');
+    assert.equal(delayed.instance.delay, 11);
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
+test('63 motion authoring prepares in-place spline points and converts angles with x87 precision', async () => {
+  const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
+  try {
+    const main = await world.initialize('empty.kcs'),
+      m = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, m, main);
+    assert.deepEqual(await call(62, [0x7f7fffff]), { control: 1, value: 0x7c8efa35 });
+    assert.deepEqual(await call(63, [floatBits(Math.PI)]), { control: 1, value: floatBits(180) });
+    assert.deepEqual(await call(320, [0xffffffff, 2]), { control: 2 });
+    const points = [0, 4, 7, 8, 9, 4, 12, 7, 8, 9, 8, 20, 7, 8, 9];
+    for (const [index, point] of points.entries()) m.store(512 + index * 4, floatBits(point));
+    assert.deepEqual(await call(320, [512, 3]), { control: 2 });
+    assert.deepEqual(
+      points.map((_, index) => bitsFloat(m.load(512 + index * 4))),
+      [0, 4, 2, -0, 0, 4, 12, 2, 0, -0, 8, 20, 2, -0, -0],
+    );
   } finally {
     await world.close();
     await audio.dispose();
