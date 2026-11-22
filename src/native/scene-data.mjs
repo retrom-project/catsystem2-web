@@ -8,6 +8,7 @@ import { nativeReply } from '../kcs/vm.mjs';
 import { parseNativeIntegerPrefix } from './standard.mjs';
 import { encodeNativeSceneHistory, decodeNativeSceneHistory } from './scene-history.mjs';
 import { NativeGlobalFile } from './persistence.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 const decoder = new TextDecoder('shift_jis');
 const utf8 = new TextEncoder();
@@ -347,7 +348,7 @@ export class NativeSceneData {
     this.reader = new NativeSceneReader(languages);
     this.history = new NativeSceneHistory();
   }
-  async load(name, read, diagnostic) {
+  async load(name, read, diagnostic, loadTranslations = true) {
     const bytes = await read(name, 'scene');
     if (!bytes) return false;
     let success = false;
@@ -357,6 +358,7 @@ export class NativeSceneData {
       diagnostic?.({ resource: name, error: error.message });
     }
     this.reader.translations = null;
+    if (!loadTranslations) return success;
     const translationName = `${stripExtension(name)}.cstl`,
       translation = await read(translationName, 'scene');
     if (translation) {
@@ -477,6 +479,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
   if (!explicit.has(id) && !implicit.has(id)) return undefined;
   const original = id;
   const direct = explicit.has(id);
+  const behavior = direct && services.profile ? nativeABI(services.profile).scene : undefined;
   if (!direct && services.sceneData === undefined) return undefined;
   const data = direct
     ? args[0]
@@ -493,7 +496,9 @@ export function nativeSceneData(id, args, machine, services = {}) {
       )
     )
       return done();
-    return word((direct && id === 0x149) || id === 0x3d6 ? -1 : 0);
+    return word(
+      (direct && id === 0x149 && behavior?.directPathResult !== 'success') || id === 0x3d6 ? -1 : 0,
+    );
   }
   if (!direct) {
     id = implicit.get(id);
@@ -514,13 +519,31 @@ export function nativeSceneData(id, args, machine, services = {}) {
     services.world?.m2?.scenePreparation?.discard();
     imagePreparation?.discard();
     const filename = services.format(args[1], machine);
-    return data.load(filename, services.read, services.diagnostic).then((value) => {
-      if (value) imagePreparation?.loaded(data);
-      voicePreparation?.loaded(data, filename, value);
-      return word(Number(value));
-    });
+    return data
+      .load(filename, services.read, services.diagnostic, behavior?.translations !== false)
+      .then((value) => {
+        if (value) imagePreparation?.loaded(data);
+        voicePreparation?.loaded(data, filename, value);
+        return word(Number(value));
+      });
   }
-  if (id === 0x146) return word(reader.type(args[1], args[2]));
+  if (id === 0x146) {
+    const type = reader.type(args[1], args[2]);
+    if (behavior?.cstFileMarkers && (type === 0xf0 || type === 0xf1)) {
+      const bytes = reader.text(args[1], args[2]);
+      if (bytes === null) throw new Error('Native CST file marker has no readable record');
+      if (type === 0xf0) {
+        if (bytes.length >= 260) throw new Error('Native CST filename exceeds its 260-byte field');
+        reader.fileNameBytes = bytes;
+        reader.filename = decoder.decode(bytes);
+      } else {
+        const parsed = parseNativeIntegerPrefix(decoder.decode(bytes));
+        if (!parsed) throw new Error('Native CST file value is not an integer');
+        reader.fileValue = parsed.value;
+      }
+    }
+    return word(type);
+  }
   if ([0x147, 0x409, 0x40d, 0x40e].includes(id)) {
     if (!mapped(machine, args[1])) return word(0);
     if ([0x409, 0x40e].includes(id) && !services.format) return undefined;
@@ -528,6 +551,8 @@ export function nativeSceneData(id, args, machine, services = {}) {
       language: [0x409, 0x40e].includes(id) ? services.format(args[4], machine) : '',
       toUTF8: id === 0x40d || id === 0x40e,
     });
+    if (bytes === null && behavior?.directTextNull === 'reject' && id === 0x147)
+      throw new Error('Native CST text has no readable record');
     if (bytes) machine.writeStringBytes(bytes, args[1]);
     return word(
       bytes
@@ -546,6 +571,8 @@ export function nativeSceneData(id, args, machine, services = {}) {
   }
   if (id === 0x148 || id === 0x149 || id === 0x14c) {
     if (!services.formatBytes && !services.format) return undefined;
+    if (behavior?.directHistoryFormatFailure === 'zero' && !mapped(machine, args[1]))
+      return word(0);
     const operation = id === 0x14c ? 'query' : id === 0x148 ? 'mark' : 'path append',
       formatted = formatHistoryName(args[1], machine, services, operation),
       name = direct ? stripHistoryExtension(formatted) : formatted;
@@ -560,7 +587,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
       imagePreparation?.hint(data, services.owner, args[2]);
       voicePreparation?.hint(data, services.owner, args[2]);
     }
-    return word(direct ? index : 1);
+    return word(direct && behavior?.directPathResult !== 'success' ? index : 1);
   }
   if (id === 0x14a) {
     history.seen = [];
@@ -604,7 +631,9 @@ export function nativeSceneData(id, args, machine, services = {}) {
     return done();
   }
   if (id === 0x152) {
-    machine.writeString(reader.filename, args[1]);
+    if (behavior?.cstFileMarkers)
+      machine.writeStringBytes(reader.fileNameBytes ?? empty(), args[1]);
+    else machine.writeString(reader.filename, args[1]);
     return word(reader.fileValue);
   }
   if (id === 0x260) return word(reader.info(4));

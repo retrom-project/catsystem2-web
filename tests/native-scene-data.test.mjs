@@ -54,6 +54,76 @@ function cst(blocks, packed = true) {
   return file;
 }
 
+test('63 direct CST reads file markers and restores independent CP932 path history', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    world = await dataWorld(profile, {
+      'owned.cst': cst([
+        [
+          [0xf0, '本文'],
+          [0xf1, '0x1c'],
+          [0x20, '日本語の本文'],
+        ],
+      ]),
+    });
+  let fresh;
+  try {
+    const { main } = world,
+      m = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, m, main),
+      handle = (await call(323, [])).value;
+    assert.deepEqual(await call(326, [0, 0, 0]), { control: 1, value: 0 });
+    assert.deepEqual(await call(329, [0, 256, 0]), { control: 1, value: 0 });
+    assert.deepEqual(await call(326, [handle, 0, 0]), { control: 1, value: 0xffffffff });
+    await assert.rejects(async () => call(327, [handle, 1024, 0, 0]), /has no readable record/);
+    m.writeString('owned.cst', 256);
+    const reads = [],
+      read = world.game.read;
+    world.game.read = function (name, ...args) {
+      reads.push(name);
+      return Reflect.apply(read, this, [name, ...args]);
+    };
+    assert.deepEqual(await call(325, [handle, 256]), { control: 1, value: 1 });
+    assert.deepEqual(reads, ['owned.cst']);
+    assert.deepEqual(await call(329, [handle, 256, 4]), { control: 1, value: 1 });
+    m.writeString('later.cst', 512);
+    assert.deepEqual(await call(329, [handle, 512, 2]), { control: 1, value: 1 });
+    assert.deepEqual(await call(329, [handle, 0xffffffff, 7]), { control: 1, value: 0 });
+    assert.deepEqual(await call(326, [handle, -1, 0]), { control: 1, value: 1 });
+    assert.deepEqual(await call(326, [handle, 0, -1]), { control: 1, value: 3 });
+    assert.deepEqual(await call(326, [handle, 0, 0]), { control: 1, value: 0xf0 });
+    assert.deepEqual(await call(326, [handle, 0, 1]), { control: 1, value: 0xf1 });
+    assert.deepEqual(await call(327, [handle, 1024, 0, 2]), {
+      control: 1,
+      value: encodeCP932('日本語の本文').length,
+    });
+    assert.equal(m.string(1024), '日本語の本文');
+    m.writeString('keep', 1024);
+    assert.deepEqual(await call(338, [handle, 1024]), { control: 1, value: 28 });
+    assert.equal(m.string(1024), '本文');
+    assert.deepEqual(await call(333, [handle, 999, 1024, 1056]), { control: 1, value: 1 });
+    assert.equal(m.string(1024), 'later');
+    assert.equal(m.load(1056), 2);
+    fresh = await dataWorld(profile, {}, { initialize: false });
+    await fresh.restore(structuredClone(world.snapshot()));
+    const restored = fresh.runtime.handles.get(handle, 'scene-data');
+    assert.equal(restored.reader.type(0, 2), 0x20);
+    assert.deepEqual(restored.reader.fileNameBytes, encodeCP932('本文'));
+    assert.deepEqual(
+      restored.history.path.map(({ scene, value }) => [scene, value]),
+      [
+        ['owned', 4],
+        ['later', 2],
+      ],
+    );
+    assert.deepEqual(await call(324, [handle]), { control: 2 });
+    assert.throws(() => world.runtime.handles.get(handle, 'scene-data'), /released/);
+    assert.equal(restored.history.path.length, 2);
+  } finally {
+    await fresh?.close({ flushFiles: false });
+    await world.close({ flushFiles: false });
+  }
+});
+
 test('restored scene hints prepare one explicit M2 resource from the same mounted scene', async (t) => {
   const workerBefore = globalThis.Worker;
   let pending = Promise.withResolvers();

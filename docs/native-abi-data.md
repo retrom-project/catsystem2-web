@@ -1049,6 +1049,16 @@ the NUL-terminated value on a hit and leaves the destination intact on
 a miss. Main684 releases that owner. Main25 parses the resulting signed
 integer prefix with decimal and hexadecimal rules.
 
+## 2.6.1.63 CST reader and history
+
+Main323 creates an independent CatScene reader and history. Main325 loads
+the CP932 CST and Main326/327 read the block count, line type and raw text.
+Reading types `0xf0` and `0xf1` sets the filename and value returned by
+Main338. Main329 appends to the path and returns one on a valid request.
+Main328/332 mark and query the greatest seen value, independently of the
+ordered path. Main330/331 clear the respective lists. Main324 releases the
+reader and its history together.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420
