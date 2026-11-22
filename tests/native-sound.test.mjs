@@ -12,7 +12,7 @@ import { canonicalMessage } from '../src/native/control-task.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
 import { NativeWorld } from '../src/native/world.mjs';
-import { BlobFile, GameFiles } from '../src/files.mjs';
+import { BlobFile, GameFiles, RangeFile } from '../src/files.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kif } from './helpers.mjs';
@@ -21,6 +21,54 @@ import { parseXML } from '../src/xml.mjs';
 
 const gameProfile = 'nekopara-vol3-engine-2.6.1.76',
   sdkProfile = 'sdk-4.01-engine-2.6.1.74';
+test('native sound sidecars revalidate the mounted range and selected cache before reuse', async () => {
+  const reads = [],
+    bytes = kif([['line.lv', [3, 4]]]),
+    file = new RangeFile(bytes.length, (offset, count) => {
+      reads.push([offset, count]);
+      if (unavailable) throw new Error('sidecar could not be read');
+      return bytes.slice(offset, offset + count);
+    }),
+    game = new GameFiles(new Map([['sounds.int', file]])),
+    random = new ParticleRandom();
+  let unavailable = false;
+  await game.open();
+  const world = new NativeWorld({
+    game,
+    profile: gameProfile,
+    configuration: new NativeConfiguration({ profile: gameProfile }),
+    random,
+    motionLibrary: new MotionLibrary(game, { profile: gameProfile, random }),
+    host: {},
+    storage: {},
+  });
+  const name = 'sounds.int/line.lv',
+    range = world.captureSoundRange(name),
+    witness = { range, bytes: Uint8Array.of(3, 4) };
+  try {
+    assert.equal(world.captureSoundRange('sounds.int/missing.lv'), null);
+    reads.length = 0;
+    assert.strictEqual(await world.readPreparedSoundRange(name, witness), witness.bytes);
+    assert.deepEqual(reads, []);
+    game.applyStartup(null, game.nativeSearch);
+    assert.deepEqual(await world.readPreparedSoundRange(name, witness), Uint8Array.of(3, 4));
+    assert.deepEqual(reads, [[range.offset, 2]]);
+    unavailable = true;
+    await assert.rejects(world.readPreparedSoundRange(name, witness), /sidecar could not be read/);
+    unavailable = false;
+    await world.resourceCache.queue(name, 10);
+    await world.resourceCache.start();
+    await world.resourceCache.settle();
+    assert.equal(world.captureSoundRange(name), undefined);
+    unavailable = true;
+    const cached = await world.readPreparedSoundRange(name, witness);
+    assert.notStrictEqual(cached, witness.bytes);
+    assert.deepEqual(cached, Uint8Array.of(3, 4));
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+
 function fixture(profile = gameProfile, files = new Map()) {
   let clockValue = 1000;
   const audio = {

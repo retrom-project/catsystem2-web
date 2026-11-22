@@ -32,7 +32,7 @@ function ogg(encodedID, extraPackets = 0) {
     new Blob([page(2, 0, id), ...packets, page(4, extraPackets + 1, Uint8Array.of(encodedID))]),
   );
 }
-function setup(t) {
+function setup(t, prepareAuxiliaryRanges) {
   const pendingIdle = new Map();
   let sequence = 0;
   globalThis.requestIdleCallback = (work) => {
@@ -93,7 +93,7 @@ function setup(t) {
       },
     },
     world = { runtime: { scheduler: { tasks: new Map([[owner.id, owner]]) } } },
-    prep = new SceneVoicePreparation(world, audio);
+    prep = new SceneVoicePreparation(world, audio, prepareAuxiliaryRanges);
   prep.loaded(scene, 'mounted.cst', true);
   return { prep, owner, scene, history, audio, pendingIdle, runIdle, mount };
 }
@@ -149,6 +149,34 @@ test('voiced dialogue preparation uses the host-file range and the current mount
   assert.equal(prep.openedBytes('first.ogg', owner, hit), null);
   assert(prep.take('first.ogg', owner.id));
   assert.equal(audio.buffers.has('first.ogg'), false);
+});
+
+test('prepared voice auxiliaries are claimed once after the sound and mount are ready', async (t) => {
+  let finish;
+  const aux = new Promise((resolve) => {
+    finish = resolve;
+  });
+  const ranges = new Map([['lv', Uint8Array.of(1)]]);
+  const { prep, scene, owner, audio, runIdle } = setup(t, (file, signal) => {
+    assert.equal(file, 'first.ogg');
+    assert.equal(signal.aborted, false);
+    return aux;
+  });
+  const epoch = (audio.game.nativeSearch = {});
+  assert.equal(prep.hint(scene, owner.id, 0), true);
+  await runIdle();
+  assert.equal(audio.decoded.length, 1);
+  assert.equal(prep.takeAuxiliaryRanges('first.ogg', owner.id), null);
+  finish(ranges);
+  await aux;
+  assert.equal(prep.takeAuxiliaryRanges('second.ogg', owner.id), null);
+  assert.equal(prep.takeAuxiliaryRanges('first.ogg', 50), null);
+  audio.game.nativeSearch = {};
+  assert.equal(prep.takeAuxiliaryRanges('first.ogg', owner.id), null);
+  audio.game.nativeSearch = epoch;
+  assert.equal(prep.takeAuxiliaryRanges('first.ogg', owner.id), ranges);
+  assert.equal(prep.takeAuxiliaryRanges('first.ogg', owner.id), null);
+  assert(prep.take('first.ogg', owner.id));
 });
 
 test('early demand, replaced backing and released scene ownership leave audio to the regular load', async (t) => {

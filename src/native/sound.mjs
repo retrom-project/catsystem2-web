@@ -27,6 +27,14 @@ const basename = (name) => name.replaceAll('\\', '/').split('/').at(-1);
 const stem = (name) => basename(name).replace(/\.[^.]*$/, '');
 const replaceExtension = (name, extension) => name.replace(/(?:\.[^./\\]*)?$/, `.${extension}`);
 const decoded = (bytes) => new TextDecoder('shift_jis').decode(bytes);
+const MAX_PREPARED_AUXILIARY_BYTES = 64 * 1024;
+
+function auxiliaryPath(game, file, extension, category) {
+  const name = stem(file);
+  if (!game.resolveCategory) return `${name}.${extension}`;
+  const path = game.resolveCategory(name, category);
+  return path ? replaceExtension(path, extension) : null;
+}
 
 export class NativeSoundPacket {
   constructor(words = [], size = Math.max(64, words.length * 4)) {
@@ -198,7 +206,9 @@ export class NativeSound {
       typeof cancelIdleCallback === 'function' &&
       typeof OfflineAudioContext === 'function' &&
       typeof this.audio?.decodeBuffer === 'function'
-        ? new SceneVoicePreparation(world, this.audio)
+        ? new SceneVoicePreparation(world, this.audio, (file, signal) =>
+            this.#prepareAuxiliaryRanges(file, signal),
+          )
         : null;
     this.bankCount = this.abi.sound.banks;
     this.device = Array.from({ length: this.bankCount }, deviceBank);
@@ -291,14 +301,47 @@ export class NativeSound {
   pause(bank) {
     this.audio?.pause(this.key(bank));
   }
-  async readAux(file, extension, category = 'sound') {
+  async #prepareAuxiliaryRanges(file, signal) {
+    const { game, captureSoundRange } = this.world;
+    if (
+      this.abi.sound.loadMessageFormat === 'filename' ||
+      this.readAux !== nativeSoundReadAux ||
+      !captureSoundRange
+    )
+      return null;
+    // Only immutable, bounded ranges for the one authored voice. A failed
+    // preparation is retried by the ordinary, sequential engine operation.
+    const witnesses = new Map();
+    const plan = (extension, category = 'sound') => {
+      const path = auxiliaryPath(game, file, extension, category);
+      return { extension, range: path === null ? null : captureSoundRange(path) };
+    };
+    const lip = plan('lpb'),
+      reads = [plan('tag', 'tag'), plan('plv'), lip];
+    if (lip.range === null && nativeABIBehavior(this.abi.profile, 'sound.crossfade'))
+      reads.push(plan('lv'));
+    await Promise.all(
+      reads.map(async ({ extension, range }) => {
+        if (!range || range.size > MAX_PREPARED_AUXILIARY_BYTES) return;
+        try {
+          const bytes = await range.file.read(range.offset, range.size, signal);
+          if (bytes instanceof Uint8Array && bytes.length === range.size)
+            witnesses.set(extension, { range, bytes });
+        } catch {
+          // The authoritative load retains its normal read and error path.
+        }
+      }),
+    );
+    return witnesses.size ? witnesses : null;
+  }
+  async readAux(file, extension, category = 'sound', prepared = null) {
     const game = this.world.game,
-      name = stem(file);
-    if (game.resolveCategory) {
-      const path = game.resolveCategory(name, category);
-      return path ? game.read(replaceExtension(path, extension)) : null;
-    }
-    return game.read(`${name}.${extension}`);
+      path = auxiliaryPath(game, file, extension, category);
+    if (path === null) return null;
+    const witness = prepared?.get(extension);
+    if (witness && this.world.readPreparedSoundRange)
+      return this.world.readPreparedSoundRange(path, witness);
+    return game.read(path);
   }
   async load(bank, file, type, decoderOption = 0, category = null, ownerID) {
     if (bank < 0 || bank >= this.bankCount) return false;
@@ -446,6 +489,8 @@ export class NativeSound {
   }
 }
 
+const nativeSoundReadAux = NativeSound.prototype.readAux;
+
 export class NativeSoundTask {
   constructor(sound, record) {
     this.sound = sound;
@@ -516,11 +561,11 @@ export class NativeSoundTask {
       throw new Error(`Sound task ${this.record.id} requires sender ${sender}'s memory`);
     return machine;
   }
-  async auxiliaries(bank, filename) {
+  async auxiliaries(bank, filename, prepared = null) {
     const control = this.controls[bank];
     this.clearAux(bank);
     control.tags.clear();
-    const tag = await this.sound.readAux(filename, 'tag', 'tag');
+    const tag = await this.sound.readAux(filename, 'tag', 'tag', prepared);
     if (tag && tag.length % 24 === 0)
       for (let at = 0; at < tag.length; at += 24) {
         const record = tag.subarray(at, at + 24),
@@ -529,7 +574,7 @@ export class NativeSoundTask {
         const name = decoded(record.subarray(0, end));
         if (!control.tags.has(name)) control.tags.set(name, get32(record, 20));
       }
-    const plv = await this.sound.readAux(filename, 'plv');
+    const plv = await this.sound.readAux(filename, 'plv', 'sound', prepared);
     if (plv && plv.length >= 16 && get32(plv, 0) === 0x4c5650) {
       const count = get32(plv, 8);
       if (16 + count * 2 > plv.length) throw new Error('Truncated native PLV values');
@@ -539,9 +584,9 @@ export class NativeSoundTask {
       control.word(C.plvStep, get32(plv, 12));
       control.plv = plv.slice(16, 16 + count * 2);
     }
-    control.lpb = (await this.sound.readAux(filename, 'lpb'))?.slice() ?? null;
+    control.lpb = (await this.sound.readAux(filename, 'lpb', 'sound', prepared))?.slice() ?? null;
     if (!control.lpb && nativeABIBehavior(this.sound.abi.profile, 'sound.crossfade'))
-      control.lv = (await this.sound.readAux(filename, 'lv'))?.slice() ?? null;
+      control.lv = (await this.sound.readAux(filename, 'lv', 'sound', prepared))?.slice() ?? null;
     for (const [field, offset, lengthOffset] of [
       ['lpb', C.lpb, C.lpbSize],
       ['lv', C.lv, C.lvSize],
@@ -596,6 +641,7 @@ export class NativeSoundTask {
       target = bank + (crossfade ? 32 : 0);
     if (!this.valid(target)) return 0;
     const file = packet.string(12),
+      prepared = this.sound.sceneVoicePreparation?.takeAuxiliaryRanges(file, ownerID),
       loaded = await this.sound.load(
         target,
         file,
@@ -626,7 +672,7 @@ export class NativeSoundTask {
     if (this.sound.abi.sound.loadMessageFormat === 'filename') {
       this.clearAux(target);
       control.tags.clear();
-    } else await this.auxiliaries(target, file);
+    } else await this.auxiliaries(target, file, prepared);
     control.word(C.wallStart, -1);
     control.word(C.elapsedFrames, 0);
     return Number(loaded);

@@ -170,14 +170,44 @@ export class NativeWorld {
     });
     this.game = Object.create(game);
     this.game.read = readResource;
+    const ordinarySoundSource = () =>
+      !this.transitionalExe &&
+      this.game.read === readResource &&
+      this.resourceCache.sourceRead === readSource &&
+      game.readNative === GameFiles.prototype.readNative &&
+      game.nativeCandidates === GameFiles.prototype.nativeCandidates;
+    this.captureSoundRange = (name) => {
+      const cache = this.resourceCache;
+      if (
+        !ordinarySoundSource() ||
+        cache.pending ||
+        cache.entries.some(({ filename }) => filename.toLowerCase() === name.toLowerCase())
+      )
+        return undefined;
+      const candidate = game.nativeCandidates(name, 3).find((entry) => entry.hit);
+      if (!candidate) return null;
+      if (candidate.kind !== 'archive') return undefined;
+      return captureArchiveRange(candidate.hit, game.nativeSearch) ?? undefined;
+    };
+    this.readPreparedSoundRange = (name, witness) => {
+      if (!ordinarySoundSource()) return this.game.read(name);
+      const cache = this.resourceCache;
+      return cache.read(name, (path) => {
+        if (!ordinarySoundSource() || this.resourceCache !== cache) return cache.sourceRead(path);
+        return game.readNative(path, 3, ({ hit, kind }) =>
+          kind === 'archive' && matchesArchiveRange(witness.range, hit, game.nativeSearch)
+            ? witness.bytes
+            : hit.file.read(hit.offset, hit.size),
+        );
+      });
+    };
     this.canOpenSoundFile = async (name, owner) => {
       const cache = this.resourceCache,
         frame = this.frameSettled;
       if (
         !this.running ||
         !frame ||
-        this.transitionalExe ||
-        this.game.read !== readResource ||
+        !ordinarySoundSource() ||
         this.runtime.scheduler.tasks.get(owner.id) !== owner
       )
         return Boolean(await this.game.read(name));
@@ -185,10 +215,9 @@ export class NativeWorld {
       const bytes = await cache.read(name, (path) => {
         if (
           this.frameSettled !== frame ||
+          this.resourceCache !== cache ||
           this.runtime.scheduler.tasks.get(owner.id) !== owner ||
-          cache.sourceRead !== readSource ||
-          game.readNative !== GameFiles.prototype.readNative ||
-          game.nativeCandidates !== GameFiles.prototype.nativeCandidates
+          !ordinarySoundSource()
         )
           return cache.sourceRead(path);
         return game.readNative(path, 3, ({ hit, kind }) => {

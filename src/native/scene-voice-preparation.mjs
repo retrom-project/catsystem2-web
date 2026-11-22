@@ -106,9 +106,10 @@ export class SceneVoicePreparation {
   #job = null;
   #decoding = false;
 
-  constructor(world, audio) {
+  constructor(world, audio, prepareAuxiliaryRanges) {
     this.world = world;
     this.audio = audio;
+    this.prepareAuxiliaryRanges = prepareAuxiliaryRanges;
   }
 
   loaded(scene, filename, success) {
@@ -232,6 +233,12 @@ export class SceneVoicePreparation {
         sameMount(job.mount, this.#mount(job.voice.name)) &&
         boundedVorbis(bytes)
       ) {
+        this.prepareAuxiliaryRanges?.(job.mount.key, job.abort.signal).then(
+          (ranges) => {
+            if (this.#job === job && this.#active(job)) job.auxiliaryRanges = ranges;
+          },
+          () => {},
+        );
         const buffer = await this.audio.decodeBuffer(bytes, MAX_SAMPLES);
         if (this.#job === job && this.#active(job)) {
           job.buffer = buffer;
@@ -260,6 +267,30 @@ export class SceneVoicePreparation {
       return null;
     // The one active job keeps the exact bytes from a successful mounted read.
     return opened.bytes;
+  }
+
+  takeAuxiliaryRanges(file, ownerID) {
+    const job = this.#job,
+      key = file.toLowerCase();
+    if (
+      !job?.auxiliaryRanges ||
+      !job.opened ||
+      job.owner.id !== ownerID ||
+      job.mount.key !== key ||
+      job.history.value !== job.voice.block ||
+      !this.#active(job)
+    )
+      return null;
+    try {
+      const mount = this.#mount(key);
+      if (!mount || !matchesArchiveRange(job.opened.range, mount, this.audio.game.nativeSearch))
+        return null;
+      const ranges = job.auxiliaryRanges;
+      job.auxiliaryRanges = null;
+      return ranges;
+    } catch {
+      return null;
+    }
   }
 
   take(file, ownerID) {
@@ -307,6 +338,7 @@ export class SceneVoicePreparation {
     job.abort.abort();
     job.buffer = null;
     job.opened = null;
+    job.auxiliaryRanges = null;
   }
 
   releaseOwner(ownerID) {
