@@ -789,7 +789,12 @@ export class FESCoordinator {
     this.pendingRecords.push({ operation: 'button-simulate', index: values[0], value: values[1] });
     return -3;
   }
-  async flushRecords() {
+  queueDecode() {
+    if (!nativeABI(this.world.profile).fes.frameDecodeResources) return 0;
+    this.pendingRecords.push({ operation: 'decode' });
+    return -3;
+  }
+  async flushRecords(executorEntry) {
     while (!this.closed && this.pendingRecords.length) {
       const record = this.pendingRecords.shift();
       if (this.platform.supports(record)) await this.platform.consume(record);
@@ -812,7 +817,8 @@ export class FESCoordinator {
         } finally {
           record.tagBytes = null;
         }
-      } else if (record.operation === 'active-lock')
+      } else if (record.operation === 'decode') await this.syncResources(executorEntry);
+      else if (record.operation === 'active-lock')
         this.instance.player.nativeInput.state.activeLock = record.value;
       else if (record.operation === 'draw-upload')
         await this.world.sendEngine(
@@ -855,7 +861,10 @@ export class FESCoordinator {
       return;
     }
     if (resourcesOnly) return this.resources.traverse({ executorEntry });
-    await this.flushRecords();
+    await this.flushRecords(executorEntry);
+    await this.syncResources(executorEntry);
+  }
+  async syncResources(executorEntry) {
     for (const entry of this.resources.entries) {
       const object = this.collection.lookup(entry.nameBytes, entry.index);
       if (!object || !this.images.supports(object) || !(object.displayDelta | 0)) continue;

@@ -256,6 +256,13 @@ before object synchronization, so commands such as IMGWND `size` can initialize
 the dimensions used by its first resource decode. Rendering consumes retained
 task output and does not execute FES logic or object drivers again.
 
+An explicit frame `decode` command queues a resource pass and yields the current
+script with return `-3`. SDK `.74` consumes record 26 and game `.76` consumes
+record 23. Both reconcile display counters, append pending declarations and visit
+their resource drivers before resuming the same logical frame. A following
+`getpos` can then read the offsets of a hidden object
+with a pending `POS2` image, even inside `START`.
+
 A resource entry resolves its current byte key on every pass. An earlier STRING
 entry can therefore visit a newly declared CIMAGE with a NULL entry wrapper.
 Both frozen CIMAGE drivers leave that argument untouched when initialization,

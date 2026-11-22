@@ -240,6 +240,11 @@ function validateBehavior(abi) {
   )
     throw new Error(`Invalid ABI FES definition diagnostic policy ${abi.id}`);
   if (
+    Object.hasOwn(abi.fes ?? {}, 'frameDecodeResources') &&
+    typeof abi.fes.frameDecodeResources !== 'boolean'
+  )
+    throw new Error(`Invalid ABI FES frame decode policy ${abi.id}`);
+  if (
     Object.hasOwn(abi.database ?? {}, 'nullImportPolicy') &&
     abi.database.nullImportPolicy !== 'reject-unwritten'
   )

@@ -570,11 +570,31 @@ function pos2GeometryFrames() {
 }
 
 for (const profile of startupProfiles) {
-  test(`default POS2 missing geometry resets position without aborting image owners: ${profile}`, async (t) => {
+  test(`default FES decode settles POS2 and preserves hidden and missing image owners: ${profile}`, async (t) => {
     const missingSource =
         '#DEFINE\nDIFIMAGE face[3]\n#OBJECT POS POS2 DISP PRI\nface 17,23 absent.hg3:1 0 15\n#START\n\\60 = 73\nbreak\n',
-      selectorSource =
-        '#DEFINE\nIMAGE sample\nIMAGE anchor\n#OBJECT FILE IDN POS POS2 DISP PRI\nsample tile.hg3 0 17,23 geometry.hg3:1 0 20\nanchor tile.hg3 0 0,0 geometry.hg3:7 0 21\n#START\n\\61 = 89\nbreak\n',
+      selectorSource = [
+        '#DEFINE',
+        'IMAGE sample',
+        'IMAGE anchor',
+        'DIFIMAGE avatar[1]',
+        '#OBJECT FILE IDN POS POS2 DISP PRI',
+        'sample tile.hg3 0 17,23 geometry.hg3:1 0 20',
+        'anchor tile.hg3 0 0,0 geometry.hg3:7 0 21',
+        '#OBJECT POS2 DISP PRI',
+        'avatar geometry.hg3:7 0 22',
+        '#START',
+        'avatar[0] getpos 50 51',
+        '\\64 = $50',
+        '\\65 = $51',
+        'decode',
+        'avatar[0] getpos 50 51',
+        '\\62 = $50',
+        '\\63 = $51',
+        '\\61 = 89',
+        'break',
+        '',
+      ].join('\n'),
       h = await environment(profile, {
         'assets.int/missing-pos2.fes': ascii(missingSource),
         'assets.int/selector-pos2.fes': ascii(selectorSource),
@@ -647,9 +667,16 @@ for (const profile of startupProfiles) {
         images = second.task.player.root,
         sample = images.byKey.get('sample'),
         anchor = images.byKey.get('anchor'),
+        avatar = images.byKey.get('avatar[0]'),
         bitmapHandle = sample.nativeImageHandle,
         bitmap = world.graphics.images.get(bitmapHandle);
       assert.equal(images.local(61), 89);
+      assert.deepEqual([images.local(64), images.local(65)], [0, 0]);
+      assert.deepEqual([images.local(62), images.local(63)], [31, 37]);
+      assert.deepEqual(
+        [avatar.x, avatar.y, avatar.disp, avatar.imageResource.source],
+        [31, 37, false, 0],
+      );
       assert.equal(sample.nativeType, 2);
       assert.deepEqual([sample.x, sample.y], [0, 0], 'ID1 miss does not select ordinal1/ID7');
       assert.deepEqual([anchor.x, anchor.y], [31, 37], 'The actual ID7 metadata is available');
@@ -717,6 +744,7 @@ for (const profile of startupProfiles) {
         [restoredSecond.byKey.get('anchor').x, restoredSecond.byKey.get('anchor').y],
         [31, 37],
       );
+      assert.deepEqual([restoredSecond.local(62), restoredSecond.local(63)], [31, 37]);
       await world.objects.release(first.id);
       await world.objects.release(second.id);
       assert.equal(world.objects.objects.has(first.id), false);

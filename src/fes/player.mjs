@@ -235,12 +235,12 @@ export class FESPlayer {
       await Promise.all([...pending, ...(commandsOnly ? [] : this.publicPushPending)]);
     if (this.error) throw this.error;
   }
-  async step(frameWord) {
+  async step(frameWord, { executorEntry } = {}) {
     if (this.runtimeFactory) frameWord = inputFrameWord(frameWord);
     await this.flush();
     this.frameCount++;
     for (const s of this.instances) {
-      await s.flushNativeRecords();
+      await s.flushNativeRecords(executorEntry);
       s.runtime?.beforeStep();
       const tick = async () => {
         if (!s.runtime && s.waitSound !== null) {
@@ -269,7 +269,7 @@ export class FESPlayer {
         if (++flushes > 10000) throw new Error(`${s.name}: FES decode instruction budget`);
         s.decodePending = false;
         await this.flush();
-        await s.flushNativeRecords();
+        await s.flushNativeRecords(executorEntry);
         await tick();
       }
       if (!s.keySkipControlOnly || !s.skipControl) s.clickL = 0;

@@ -178,7 +178,7 @@ export function createNativeFESTask(world, record) {
       this.variableBank()?.selectContext(this.variableContextKey());
       await input.tick();
       if (!live()) return;
-      await player.step(frameWord);
+      await player.step(frameWord, context);
       if (!live()) return;
       await this.syncObjects(context);
       if (live() && player.root.finished !== null) record.exitCode = player.root.finished;

@@ -280,6 +280,7 @@ export default {
     configurationMessage: { liveObjects: false, notification: null, filenameComparison: null },
     controlResources: { scroll2Skin: 'state-direct' },
     fileList: { patternEncoding: 'cp932', keyEncoding: 'cp932' },
+    frameDecodeResources: true,
     macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
     variableBankOffset: 1800,
     imageBlockOffset: 1500,

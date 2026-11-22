@@ -793,12 +793,12 @@ export class FESInstance {
       }),
     );
   }
-  async flushNativeRecords() {
+  async flushNativeRecords(executorEntry) {
     if (!this.nativeQueuePending) return;
     // Consume this caller's native -3 request before yielding. A return0
     // notification must not borrow it while this drain awaits its owner.
     this.nativeQueuePending = false;
-    await this.runtime?.flushRecords();
+    await this.runtime?.flushRecords(executorEntry);
   }
   invoke(label, parameters = []) {
     label = labelKey(label);
@@ -1014,10 +1014,13 @@ export class FESInstance {
           return { action: 'suspend' };
         }
         return {};
-      case 'decode':
+      case 'decode': {
+        const result = mode === 'frame' ? this.runtime?.queueDecode?.() : 0;
+        if (result) return this.nativeCommandReturn(result);
         return (this.player.commandScope?.pending ?? this.player.pending).size
           ? { action: 'flush' }
           : {};
+      }
       case 'reset_frame':
         this.frameOrigin = this.runtime ? this.nativeFrameWord : this.player.frameCount;
         break;

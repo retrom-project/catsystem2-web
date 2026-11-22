@@ -316,6 +316,7 @@ export default {
     },
     controlResources: { scroll2Skin: 'state-direct' },
     fileList: { patternEncoding: 'cp932-as-utf16le', keyEncoding: 'utf16le' },
+    frameDecodeResources: true,
     macroLiterals: { string: 'raw', character: 'raw' },
     variableBankOffset: 2064,
     imageBlockOffset: 1756,
