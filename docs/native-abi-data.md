@@ -1067,6 +1067,13 @@ Main515–518 own the command dictionary. Keys are raw CP932 bytes. Inserting
 the same key preserves its first value, and lookup returns `0xffffffff`
 for a missing key or dictionary.
 
+Main519 keeps parenthesized arguments byte-for-byte, and Main540 locates
+space-delimited argument offsets. Main42 copies a list item forward and
+tests its source after the copy. Main212/213 set expression context and
+evaluate it, and Main278 expands the Script string bank. Main46 rounds the
+scaled percentage to float32 after division, and Main319 writes the low
+word after the float32 rounded result is converted to a signed 64-bit integer.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420

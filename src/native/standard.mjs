@@ -140,7 +140,7 @@ function groupEnd(bytes, start) {
   }
   return bytes.length;
 }
-function split(m, destination, bytes, separator, groups) {
+function split(m, destination, bytes, separator, groups, stripLiteralGroup = true) {
   const alpha = (n) => (n >= 65 && n <= 90) || (n >= 97 && n <= 122);
   let at = 0,
     out = 0,
@@ -151,7 +151,7 @@ function split(m, destination, bytes, separator, groups) {
     if (groups && byte === 40) {
       if (alpha(previous) && !separated) m.store(destination + out++, 0, 1);
       const end = groupEnd(bytes, at),
-        literal = bytes[at + 1] === 58,
+        literal = stripLiteralGroup && bytes[at + 1] === 58,
         length = end - at;
       write(m, destination + out, bytes.subarray(at, end));
       if (literal) {
@@ -418,6 +418,11 @@ export function nativeStandard(id, args, m, services = {}) {
     case 0x2a: {
       requireArguments(3);
       const selected = listEntry(m, args[1], args[2]);
+      if (services.profile && nativeABI(services.profile).text.listEntryLiveCopy) {
+        m.copyString(args[0], selected.address);
+        m.store(args[0] + cstring(m, args[0]).length, 0, 2);
+        return value(Number(m.load(selected.address, 1) !== 0));
+      }
       write(m, args[0], selected.bytes);
       return value(Number(selected.bytes.length > 0));
     }
@@ -437,7 +442,8 @@ export function nativeStandard(id, args, m, services = {}) {
           },
           bytes: (at, size) => scratch.subarray(at, at + size),
         };
-      split(memory, 0, source, new Set([32]), true);
+      const text = services.profile ? nativeABI(services.profile).text : undefined;
+      split(memory, 0, source, new Set([32]), true, !text?.plainParenthesisTokens);
       let at = 0,
         index = 0;
       while (index < args[2] >>> 0 && scratch[at]) {
@@ -529,9 +535,13 @@ export function nativeStandard(id, args, m, services = {}) {
           new TextDecoder('shift_jis').decode(buffer.subarray(start, end)),
         );
         if (number === null) return done();
-        const scaled = Math.fround(
-          Math.fround(Math.fround(number) * Math.fround(args[1] >>> 0)) / 100,
-        );
+        const base = Math.fround(args[1] >>> 0),
+          text = services.profile ? nativeABI(services.profile).text : undefined,
+          product =
+            text?.percentProduct === 'final-f32'
+              ? number * base
+              : Math.fround(Math.fround(number) * base),
+          scaled = Math.fround(product / 100);
         const n =
           Number.isFinite(scaled) && scaled >= -2147483648 && scaled < 2147483648
             ? Math.trunc(scaled)

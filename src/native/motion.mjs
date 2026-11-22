@@ -118,7 +118,12 @@ const returning = new Set([0x130, 0x133, 0x135, 0x136, 0x137, 0x13b, 0x13c, 0x1b
 
 export function nativeMotion(id, args, machine, services = {}) {
   if (id === 0x13e) return value(floatBits(linearInterpolate(...args.map(bitsFloat))));
-  if (id === 0x13f) return value(roundInteger(bitsFloat(args[0])));
+  if (id === 0x13f) {
+    const input = bitsFloat(args[0]);
+    if (services.math?.roundIntegerResult !== 'int64-low-word') return value(roundInteger(input));
+    const rounded = Math.floor(Math.fround(input + 0.5));
+    return value(rounded >= -(2 ** 63) && rounded < 2 ** 63 ? rounded : 0);
+  }
   if (id === 0x140) {
     prepareMotionSpline(machine.bytes(args[0], args[1] * 20), args[1]);
     return done();

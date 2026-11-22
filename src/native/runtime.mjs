@@ -71,6 +71,7 @@ export class NativeRuntime {
       read,
       xmlEncoding: abi.xmlEncoding,
       profile,
+      ...(abi.math ? { math: abi.math } : {}),
       format:
         services.format || ((address, machine) => formatNative(machine.string(address), machine)),
       formatBytes:

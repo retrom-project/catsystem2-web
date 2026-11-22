@@ -5,6 +5,7 @@ import { Binary } from '../src/binary.mjs';
 import { KCSMachine, floatBits, bitsFloat } from '../src/kcs/vm.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { nativeStandard, parseNativeInteger } from '../src/native/standard.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 function machine() {
   return new KCSMachine({
@@ -178,6 +179,43 @@ test('original numeric text accepts D exponents and writes one NUL for percentag
   assert.deepEqual(invoke(m, 0x2e, [100, 80]), { control: 2 });
   assert.deepEqual([...m.bytes(100, 5)], [45, 57, 0, 37, 0]);
   assert.deepEqual(invoke(m, 0x2e, [0x7fffffff, 80]), { control: 2 });
+});
+
+test('63 command arguments retain original list, arithmetic and string-bank semantics', async () => {
+  const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
+  try {
+    const { main } = world,
+      m = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, m, main);
+    m.writeString('motion (2 + 3) 149913%', 256);
+    assert.deepEqual(await call(519, [512, 256, 1]), { control: 1, value: 1 });
+    assert.equal(m.string(512), '(2 + 3)');
+    assert.deepEqual(await call(540, [256, 1]), { control: 1, value: 7 });
+    assert.deepEqual(await call(540, [256, 12]), { control: 1, value: 0xffffffff });
+    assert.deepEqual(await call(519, [512, 256, 2]), { control: 1, value: 1 });
+    assert.deepEqual(await call(46, [512, 123]), { control: 2 });
+    assert.equal(m.string(512), '184392');
+    assert.deepEqual(await call(319, [floatBits(3000000000)]), { control: 1, value: 3000000000 });
+    assert.deepEqual(await call(319, [floatBits(NaN)]), { control: 1, value: 0 });
+    m.writeString('motion (:text value)', 256);
+    assert.deepEqual(await call(519, [512, 256, 1]), { control: 1, value: 1 });
+    assert.equal(m.string(512), '(:text value)');
+    m.bytes(256, 8).set([65, 0, 66, 0, 0, 0xa5, 0xa5, 0xa5]);
+    assert.deepEqual(await call(42, [257, 256, 1]), { control: 1, value: 0 });
+    assert.deepEqual([...m.bytes(256, 6)], [65, 66, 0, 0, 0, 0xa5]);
+    await call(209, [16]);
+    assert.deepEqual(await call(212, [7]), { control: 2 });
+    assert.equal(world.runtime.variableBank(main, false).contextValue, 7);
+    m.writeString('(2+3)%', 512);
+    assert.deepEqual(await call(213, [512]), { control: 1, value: 5 });
+    m.writeString('猫', 256);
+    assert.deepEqual(await call(276, [3, 256]), { control: 2 });
+    m.writeString('A$str3 B$str4', 512);
+    assert.deepEqual(await call(278, [512]), { control: 2 });
+    assert.deepEqual([...m.bytes(512, 7)], [65, ...m.bytes(256, 2), 32, 66, 0, 0]);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
 });
 
 test('native list splitting, selection and joining preserve list terminators and trailing space', () => {
