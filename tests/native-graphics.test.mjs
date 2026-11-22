@@ -19,6 +19,7 @@ function world() {
     handlers = new Map(),
     inputRegions = new Map();
   const world = {
+    profile: 'sdk-4.01-engine-2.6.1.74',
     game: { width: 800, height: 600 },
     objects,
     runtime: {
