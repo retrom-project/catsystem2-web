@@ -1112,6 +1112,10 @@ log's unsigned block limit and immediately prunes its oldest blocks.
 Main403 and Main404 use the Root Input owner to set one key gate through
 raw 146 or to reset all gates through raw 147.
 
+Main155–164 use the same .63 Sound owner as FES. Main155 sends the
+280-byte load packet to raw 173 or 174, followed by raw 175–183 for
+playback and bank controls.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420

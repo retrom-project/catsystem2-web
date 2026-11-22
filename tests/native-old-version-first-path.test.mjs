@@ -2357,6 +2357,33 @@ test('63 startup database imports owned CSS flag bytes into its loaded records',
   }
 });
 
+test('63 Script sound GCALLs load, play, stop and release a mounted wave', async () => {
+  const { world, audio } = await oldTitleWorld(
+    { 'bgm_owned.wav': title67Wave() },
+    undefined,
+    'rebellions-jp-engine-2.6.1.63',
+  );
+  try {
+    const main = await world.initialize('empty.kcs'),
+      m = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, m, main);
+    m.writeString('bgm_owned.wav', 256);
+    assert.deepEqual(await call(155, [4, 0, 256, 1]), { control: 1, value: 1 });
+    assert.equal(world.sound.device[4].loaded, true);
+    assert.deepEqual(await call(161, [4, 50]), { control: 2 });
+    assert.deepEqual(await call(162, [4]), { control: 1, value: 50 });
+    assert.deepEqual(await call(157, [4, 1]), { control: 2 });
+    assert.deepEqual(await call(160, [4]), { control: 1, value: 1 });
+    assert.deepEqual(await call(159, [4]), { control: 2 });
+    assert.deepEqual(await call(160, [4]), { control: 1, value: 0 });
+    assert.deepEqual(await call(156, [4]), { control: 2 });
+    assert.equal(world.sound.device[4].loaded, false);
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
 test('63 FES sound loads, plays and closes through its own Sound receiver', async (t) => {
   const profile = 'rebellions-jp-engine-2.6.1.63',
     { world, audio } = await oldTitleWorld(
@@ -2436,8 +2463,8 @@ test('63 FES sound loads, plays and closes through its own Sound receiver', asyn
   assert.ok(world.sound.playing(0));
   assert.ok(world.sound.playing(2));
   await assert.rejects(
-    nativeSound.message([main.nativeID, 182, 0, 0]),
-    /Unreviewed ABI message .*\/sound\/canonical\/182/,
+    nativeSound.message([main.nativeID, 184, 0, 0]),
+    /Unreviewed ABI message .*\/sound\/canonical\/184/,
   );
   await world.sendEngine(id, main.id, 3, 0, 0);
   assert.deepEqual(
