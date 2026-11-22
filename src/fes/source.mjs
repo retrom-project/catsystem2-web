@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Plain-source preparation and one-pass macro emission are separate from
 // runtime parameter tokenization and raw command-tail extraction.
-import { tokenizeFESByteLine, fesByteView, fesViewBytes } from './tokens.mjs';
+import { tokenizeFESByteLine, fesByteView, fesViewBytes, fesSourceBytes } from './tokens.mjs';
 
 export function splitFESLines(source) {
   return fesByteView(source)
@@ -74,10 +74,14 @@ export function prepareFESSource(source, { tokens = tokenizeFESByteLine } = {}) 
 }
 
 const rawLiterals = Object.freeze({ string: 'raw', character: 'raw' });
+const macroNumber = /(?:0[xX][\da-fA-F]+|(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)[fFlLuU]*/y;
+const macroIdentifier = /[A-Za-z_][A-Za-z_\d]*/y;
+const digit = (code) => code >= 48 && code <= 57;
+
 export function replaceFESMacros(source, macros, literals = rawLiterals) {
+  if (macros instanceof Map && !macros.size) return fesSourceBytes(source).slice();
   const line = fesByteView(source);
   if (!(macros instanceof Map)) throw new TypeError('FES macro dictionary must be a Map');
-  if (!macros.size) return fesViewBytes(line);
   if (
     !['raw', 'unescape-quote'].includes(literals.string) ||
     !['raw', 'wrap-raw'].includes(literals.character)
@@ -142,18 +146,19 @@ export function replaceFESMacros(source, macros, literals = rawLiterals) {
         continue;
       }
     }
-    if (/[0-9]/.test(character) || (character === '.' && /[0-9]/.test(line[at + 1] ?? ''))) {
-      const number = /^(?:0[xX][\da-fA-F]+|(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?)[fFlLuU]*/.exec(
-        line.slice(at),
-      );
+    const code = line.charCodeAt(at);
+    if (digit(code) || (character === '.' && digit(line.charCodeAt(at + 1)))) {
+      macroNumber.lastIndex = at;
+      const number = macroNumber.exec(line);
       if (number) {
         output += number[0];
         at += number[0].length;
         continue;
       }
     }
-    if (/[A-Za-z_]/.test(character)) {
-      const word = /^[A-Za-z_][A-Za-z_\d]*/.exec(line.slice(at))[0];
+    if ((code >= 65 && code <= 90) || (code >= 97 && code <= 122) || code === 95) {
+      macroIdentifier.lastIndex = at;
+      const word = macroIdentifier.exec(line)[0];
       output += macros.has(word) ? fesByteView(macros.get(word)) : word;
       at += word.length;
     } else {
