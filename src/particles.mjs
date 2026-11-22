@@ -21,6 +21,7 @@ export class Particles {
       random = new ParticleRandom(),
       fps = 60,
       attachment,
+      deferGraphAttachment = false,
       now,
       clock,
       epoch = 0,
@@ -38,6 +39,7 @@ export class Particles {
     this.random = random;
     this.fps = fps;
     this.attachment = attachment;
+    this.deferGraphAttachment = deferGraphAttachment;
     this.onDebug = onDebug;
     this.atlas = atlas;
     this.projectGeometry = projectGeometry;
@@ -184,7 +186,10 @@ export class Particles {
       namespace: bank.attachmentNamespace,
       bank: bank.key,
     });
-    if (!attachment && (bank.family !== 'plugin' || bank.attachmentNamespace !== 'graph'))
+    const permitsUnresolvedGraph =
+      bank.attachmentNamespace === 'graph' &&
+      (bank.family === 'plugin' || this.deferGraphAttachment);
+    if (!attachment && !permitsUnresolvedGraph)
       throw new Error(`Particle attachment graph is unavailable: ${bank.attachPlane}`);
     if (bank.attachmentNamespace === 'cst' && !Number.isInteger(attachment.id))
       throw new Error('CST particle attachment requires its resolved native graph id');

@@ -1449,6 +1449,9 @@ Main426 and Main427 carry signed alpha and the graph attachment word to
 the owned Particle receiver with raw messages 308 and 309. Alpha words
 below 255 keep their signed value and larger words select 256. A zero
 attachment clears the reference. Both wrappers return control 2.
+The raw attachment word survives an absent graph. Particle coordinate
+queries use zeroed outputs when a graph lookup fails and use the live
+coordinates when the graph becomes available.
 
 Main271 and Main693 deliver raw 302 with the program family, two CP932 name
 fields, the count and priority, 32 registers and a cleared draw word.

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // PTCL and PPI banks share the JS engine-side task and render contract.
 import { Particles } from '../particles.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { NativeParticleProjection } from './particle-projection.mjs';
 import { NativeParticleTextures } from './particle-textures.mjs';
 import { nativeParticleBounds } from './particle-bounds.mjs';
@@ -34,6 +35,7 @@ export class NativeParticles {
       },
       ...options,
       profile: world.profile,
+      deferGraphAttachment: nativeABI(world.profile).particle?.deferGraphAttachment,
     });
   }
   get(id) {

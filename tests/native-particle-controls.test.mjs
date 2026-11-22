@@ -64,9 +64,16 @@ test('2.6.1.63 loads, updates and stops a live script Particle bank', async () =
     assert.equal(bank.count, 2);
     assert.equal(bank.priority, 12.25);
     assert.deepEqual(bank.registers, registers);
+    const unresolvedGraph = 0x12345;
+    assert.deepEqual(await call(427, target, unresolvedGraph), { control: 2 });
+    assert.equal(bank.attachment, null);
+    assert.equal(bank.instance.attachPlane, unresolvedGraph);
     assert.deepEqual(await call(274, 0), { control: 1, value: 0 });
     assert.deepEqual(await call(272, target), { control: 2 });
     assert.deepEqual(await call(274, target), { control: 1, value: 1 });
+    assert.equal(bank.instance.attachPlane, unresolvedGraph);
+    assert.deepEqual(await call(427, target, 0), { control: 2 });
+    assert.equal(bank.instance.attachPlane, -1);
     registers[4] = -111;
     machine.bytes(256, 128).set(new Uint8Array(registers.buffer));
     assert.deepEqual(await call(275, target, 256), { control: 2 });

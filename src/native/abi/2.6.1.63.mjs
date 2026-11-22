@@ -144,6 +144,7 @@ export default {
     skipBypassesDelay: false,
   },
   movie: { alwaysUseBgmVolume: true },
+  particle: { deferGraphAttachment: true },
   nameTable: { legacyFieldBytes: 32 },
   stringBank: { emptyGetResult: 1 },
   database: { nullExportPolicy: 'reject-unwritten', nullImportPolicy: 'reject-unwritten' },
