@@ -260,6 +260,7 @@ export class NativeRuntime {
     this.calls.set(key, (this.calls.get(key) || 0) + 1);
     const services = {
       ...this.services,
+      profile: this.profile,
       owner: task.id,
       contextName: task.context.contextName ?? '',
     };

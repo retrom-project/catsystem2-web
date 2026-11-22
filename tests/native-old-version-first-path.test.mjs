@@ -844,6 +844,20 @@ test('63 startup GCALLs read the clock, configuration and viewport before a Scri
     }
     assert.equal(machine.load(564), 600);
     assert.deepEqual([...machine.bytes(600, 7)], [...bytes('古尾'), 0, 0, 0xa5]);
+    assert.deepEqual(world.runtime.native('main', 16, [600, 800], machine, task), {
+      control: 1,
+      value: 600,
+    });
+    assert.deepEqual([...machine.bytes(600, 8)], [...bytes('古尾尾'), 0, 0]);
+    assert.deepEqual(world.runtime.native('main', 47, [600], machine, task), {
+      control: 1,
+      value: 3,
+    });
+    machine.bytes(608, 5).set([0xa1, 0x41, 0x81, 0x39, 0]);
+    assert.deepEqual(world.runtime.native('main', 47, [608], machine, task), {
+      control: 1,
+      value: 3,
+    });
     const { name, signature } = nativeABI(profile).tables.main.entries[5];
     assert.equal(name, 'task.clock');
     assert.equal(signature.argumentWords, 0);

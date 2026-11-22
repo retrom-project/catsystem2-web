@@ -5,6 +5,8 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 import { degreeToRadian, radianToDegree } from '../ppi/numeric.mjs';
 import { nativeCalendar } from './calendar.mjs';
 import { nativeCommaFields, parseNativeResourceSelection } from './resource-selection.mjs';
+import { nativeABI } from './abi/index.mjs';
+import { nativeDataPair } from './data-text.mjs';
 
 const value = (n) => {
   if (!Number.isInteger(n)) throw new TypeError('A native result must be a 32-bit integer');
@@ -543,8 +545,12 @@ export function nativeStandard(id, args, m, services = {}) {
       requireArguments(1);
       a = id === 0x30 ? formatBytes(services, m, args[0]) : cstring(m, args[0]);
       if (a === undefined) return undefined;
+      const policy =
+        id === 0x2f && services.profile
+          ? nativeABI(services.profile).text.characterLengthPairs
+          : undefined;
       let count = 0;
-      for (let at = 0; at < a.length; count++) at += doubleByte(a, at) ? 2 : 1;
+      for (let at = 0; at < a.length; count++) at += nativeDataPair(a, at, policy) ? 2 : 1;
       return value(count);
     }
     case 0x31:
