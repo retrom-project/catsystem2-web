@@ -1756,6 +1756,12 @@ test('63 motion state transfers and formatted script add preserve the manager an
     const { group, instance } = manager.records.get(added.value);
     assert.equal(group, 17);
     assert.equal(instance.script.name, 'owned-7');
+    assert.deepEqual(await call(311, [handle]), { control: 1, value: 1 });
+    const frame = instance.frame,
+      skip = instance.skip;
+    assert.deepEqual(await call(440, [handle]), { control: 1, value: 1 });
+    assert.equal(instance.frame, frame);
+    assert.equal(instance.skip, skip);
     m.store(352, 0);
     m.bytes(368, 3).fill(0);
     assert.equal(instance.view.getUint32(MOTION_ABI.registers, true), floatBits(9));
@@ -1765,6 +1771,8 @@ test('63 motion state transfers and formatted script add preserve the manager an
     );
     assert.deepEqual(await call(298, [handle, 17]), { control: 2 });
     assert.equal(manager.records.size, 0);
+    assert.deepEqual(await call(311, [handle]), { control: 1, value: 0 });
+    assert.deepEqual(await call(440, [handle]), { control: 1, value: 0 });
   } finally {
     await world.close();
     await audio.dispose();

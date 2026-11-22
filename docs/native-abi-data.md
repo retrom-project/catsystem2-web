@@ -1071,6 +1071,8 @@ Main315–317 create, refresh and release the MOT snapshot. Each record has
 a 1,076-byte fixed part with a 32-byte CP932 name and appended auxiliary
 data. A one-word Main315 call still reads the frame from the adjacent VM
 stack word, as the original wrapper does.
+Main311 queries the live MOT list. Main440 rebuilds the working state from
+the base and runs each motion with the final-frame flag.
 
 Main863–868 own fixed-record stacks used by the script. Their push grows
 capacity before reading the VM record. Pop copies the last record out,
@@ -1092,6 +1094,7 @@ final suffix follows the forward DWORD and byte copies used by the three
 engine versions.
 Main21 compares the second raw string to the first using unsigned bytes and
 ASCII case folding.
+Main35 copies the requested number of bytes between mapped VM ranges.
 
 Main633–638 load, query and release the name table from the configured FES
 category. Rows follow source order and use three 32-byte CP932 fields.
