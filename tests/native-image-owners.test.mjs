@@ -8,8 +8,49 @@ import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
-import { memoryGame, kcsProgram } from './helpers.mjs';
+import { memoryGame, kcsProgram, hg3 } from './helpers.mjs';
+import { defaultFESWorld } from './fixtures/default-fes-world.mjs';
 import { installImageOwnerOracle } from './fixtures/image-owner-oracle-world.mjs';
+
+test('63 Script image owners load, query, resize, fill and release their own bitmaps', async (t) => {
+  const rgba = Uint8Array.from({ length: 24 }, (_, index) => [17, 34, 51, 255][index % 4]),
+    world = await defaultFESWorld('rebellions-jp-engine-2.6.1.63', {
+      'probe.hg3': hg3(3, 2, rgba),
+    });
+  t.after(() => world.close());
+  const { main, runtime, imageOwners, graphics } = world,
+    m = main.machine,
+    native = (id, args) => runtime.native('main', id, args, m, main);
+  m.writeString('probe,1,2', 128);
+  assert.deepEqual(await native(598, [128, 160]), { control: 1, value: 1 });
+  assert.equal(m.string(160), 'probe');
+  const { value: source } = await native(710, [160]),
+    owner = imageOwners.get(source),
+    size = () => [m.load(192), m.load(196)];
+  assert.equal(owner.owner, main.id);
+  assert.deepEqual(await graphics.images.get(owner.bitmap).pixels(), Uint8ClampedArray.from(rgba));
+  await native(714, [source, 192, 196]);
+  assert.deepEqual(size(), [3, 2]);
+  await native(730, [source, 6, 4]);
+  await native(714, [source, 192, 196]);
+  assert.deepEqual(size(), [6, 4]);
+  const resized = graphics.images.get(owner.bitmap),
+    revision = resized.state.revision;
+  assert.deepEqual(await native(726, [source, 1, 1]), { control: 2 });
+  assert.equal(resized.width, 6);
+  assert.ok(resized.state.revision > revision);
+  const { value: target } = await native(733, [2, 1]),
+    targetBitmap = imageOwners.get(target).bitmap;
+  assert.deepEqual(await native(736, [target, 0, 0, 2, 1, 0xff224466]), { control: 2 });
+  assert.deepEqual(
+    await graphics.images.get(targetBitmap).pixels(),
+    Uint8ClampedArray.of(0x22, 0x44, 0x66, 255, 0x22, 0x44, 0x66, 255),
+  );
+  await native(711, [source]);
+  await native(711, [target]);
+  assert(!runtime.handles.records.has(source));
+  assert(!runtime.handles.records.has(targetBitmap));
+});
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],

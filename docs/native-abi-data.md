@@ -1164,6 +1164,13 @@ visible row. Main876 clears the lists and Main697 releases the owner.
 Main455 sends raw Draw message 284 with the optional bitmap and no crop.
 The receiver copies a live bitmap into its owned base image. Zero hides
 the base plane and removes its drawing entry while keeping that bitmap.
+Main258 removes the sender's selected entry through Draw message 269.
+
+Main598 extracts the image base name from the first nonempty comma field.
+Main710 loads the selected image collection for the Script, and Main711
+releases it and its sources. Main714 queries its composed canvas size.
+Main726 blurs and Main730 resizes the loaded layers. Main733 creates an
+independent four-byte canvas and Main736 fills the specified region.
 
 ## 2.6.1.63 CG registration
 
