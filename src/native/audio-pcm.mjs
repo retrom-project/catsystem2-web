@@ -2,6 +2,8 @@
 import { Binary } from '../binary.mjs';
 import { nativePCMLevel } from './sound-values.mjs';
 
+const pcm16 = (sample) => Math.min(32767, Math.max(-32768, Math.round(sample * 32768)));
+
 export function sourcePCM(bytes, metadata, buffer) {
   if (
     metadata.codec === 'wav' &&
@@ -38,15 +40,23 @@ export function sourcePCM(bytes, metadata, buffer) {
   const channels = buffer.numberOfChannels,
     frames = buffer.length,
     pcm = new Uint8Array(frames * channels * 2),
-    view = new DataView(pcm.buffer),
-    planes = Array.from({ length: channels }, (_, channel) => buffer.getChannelData(channel));
-  for (let i = 0; i < frames; i++)
-    for (let channel = 0; channel < channels; channel++)
-      view.setInt16(
-        (i * channels + channel) * 2,
-        Math.min(32767, Math.max(-32768, Math.round(planes[channel][i] * 32768))),
-        true,
-      );
+    view = new DataView(pcm.buffer);
+  if (channels === 1) {
+    const plane = buffer.getChannelData(0);
+    for (let i = 0; i < frames; i++) view.setInt16(i * 2, pcm16(plane[i]), true);
+  } else if (channels === 2) {
+    const left = buffer.getChannelData(0),
+      right = buffer.getChannelData(1);
+    for (let i = 0; i < frames; i++) {
+      view.setInt16(i * 4, pcm16(left[i]), true);
+      view.setInt16(i * 4 + 2, pcm16(right[i]), true);
+    }
+  } else {
+    const planes = Array.from({ length: channels }, (_, channel) => buffer.getChannelData(channel));
+    for (let i = 0; i < frames; i++)
+      for (let channel = 0; channel < channels; channel++)
+        view.setInt16((i * channels + channel) * 2, pcm16(planes[channel][i]), true);
+  }
   return {
     pcm,
     channels,
