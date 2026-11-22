@@ -2328,6 +2328,29 @@ test('63 startup file GCALLs import bounded flags through the selected Script ow
   }
 });
 
+test('63 command split and list joining read and write the live CP932 buffers', async () => {
+  const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
+  try {
+    const script = await world.initialize('empty.kcs'),
+      m = script.machine,
+      call = (id, args) => world.runtime.native('main', id, args, m, script);
+    m.writeString('tag(:a(b)c),tail', 128);
+    m.writeString(' ,', 160);
+    const list = encodeCP932('tag\0(:a(b)c)\0tail\0\0');
+    assert.deepEqual(await call(43, [192, 128, 160]), { control: 2 });
+    assert.deepEqual(m.bytes(192, list.length), list);
+    assert.deepEqual(await call(44, [224, 192, 1, 0xffffffff]), { control: 2 });
+    assert.equal(m.string(224), '(:a(b)c) tail ');
+    assert.deepEqual(await call(43, [128, 128, 160]), { control: 2 });
+    assert.deepEqual(m.bytes(128, 5), encodeCP932('tag\0\0'));
+    assert.deepEqual(await call(44, [192, 192, 0, 2]), { control: 2 });
+    assert.deepEqual(m.bytes(192, 2), Uint8Array.of(0, 97));
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
 test('63 startup GCALLs use owned XML, files and Script string storage', async () => {
   const storage = new SaveSlotFiles(),
     { world, audio } = await oldTitleWorld(

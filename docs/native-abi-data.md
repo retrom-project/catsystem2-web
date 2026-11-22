@@ -1031,6 +1031,11 @@ the Script's narrow string bank. Main 590–593 open and release an XML owner
 and query integer and narrow text nodes. Missing integer paths keep the
 supplied default. Missing text paths leave the VM buffer intact.
 
+Main 43 splits the live narrow string into a NUL-delimited list, preserving
+literal balanced parentheses and separating a preceding ASCII word. Main 44
+clears its destination before joining the inclusive range of list entries.
+Each selected entry contributes a trailing space. Both return control 2.
+
 Main594 opens an owned CP932 name and RGB table from a formatted filename.
 The .63 Script uses this interface for background tone groups. Main596
 looks up a group and Main597 resolves an alias through its group. A match

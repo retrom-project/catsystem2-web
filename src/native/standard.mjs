@@ -6,7 +6,7 @@ import { degreeToRadian, radianToDegree, x87AngleConversion } from '../ppi/numer
 import { nativeCalendar } from './calendar.mjs';
 import { nativeCommaFields, parseNativeResourceSelection } from './resource-selection.mjs';
 import { nativeABI } from './abi/index.mjs';
-import { nativeDataPair } from './data-text.mjs';
+import { nativeDataMapped, nativeDataPair } from './data-text.mjs';
 
 const value = (n) => {
   if (!Number.isInteger(n)) throw new TypeError('A native result must be a 32-bit integer');
@@ -14,6 +14,7 @@ const value = (n) => {
 };
 const done = () => nativeReply(2);
 const signedByte = (n) => (n << 24) >> 24;
+const alphabetic = (n) => (n >= 65 && n <= 90) || (n >= 97 && n <= 122);
 
 function cstring(m, address) {
   const bytes = [];
@@ -141,7 +142,6 @@ function groupEnd(bytes, start) {
   return bytes.length;
 }
 function split(m, destination, bytes, separator, groups, stripLiteralGroup = true) {
-  const alpha = (n) => (n >= 65 && n <= 90) || (n >= 97 && n <= 122);
   let at = 0,
     out = 0,
     separated = true,
@@ -149,7 +149,7 @@ function split(m, destination, bytes, separator, groups, stripLiteralGroup = tru
   while (at < bytes.length) {
     const byte = bytes[at];
     if (groups && byte === 40) {
-      if (alpha(previous) && !separated) m.store(destination + out++, 0, 1);
+      if (alphabetic(previous) && !separated) m.store(destination + out++, 0, 1);
       const end = groupEnd(bytes, at),
         literal = stripLiteralGroup && bytes[at + 1] === 58,
         length = end - at;
@@ -177,6 +177,48 @@ function split(m, destination, bytes, separator, groups, stripLiteralGroup = tru
     }
   }
   m.store(destination + out, 0, 2);
+}
+function copyParenthesis(m, destination, source) {
+  if (m.load(source, 1) !== 40) return 0;
+  let size = 1,
+    level = 1;
+  m.store(destination, 40, 1);
+  for (let byte; (byte = m.load(source + size, 1)); ) {
+    m.store(destination + size++, byte, 1);
+    if (byte === 40) level++;
+    if (byte !== 41) continue;
+    m.store(destination + size, 0, 2);
+    if (!--level) return size;
+  }
+  m.store(destination + size, 0, 2);
+  return size;
+}
+function splitLiveParentheses(m, destination, source, separators) {
+  if (![destination, source, separators].every((address) => nativeDataMapped(m, address))) return;
+  let read = 0,
+    written = 0,
+    separated = true,
+    previous = 0;
+  for (let byte; (byte = m.load(source + read, 1)); ) {
+    if (byte === 40) {
+      if (alphabetic(previous) && !separated) m.store(destination + written++, 0, 1);
+      const size = copyParenthesis(m, destination + written, source + read);
+      read += size;
+      written += size;
+      separated = false;
+    } else {
+      let delimiter = m.load(separators, 1);
+      for (let at = separators + 1; delimiter && delimiter !== byte; at++)
+        delimiter = m.load(at, 1);
+      if (delimiter) {
+        if (!separated) m.store(destination + written++, 0, 1);
+      } else m.store(destination + written++, byte, 1);
+      previous = delimiter ? 0 : byte;
+      separated = delimiter;
+      read++;
+    }
+  }
+  m.store(destination + written, 0, 2);
 }
 function listEntry(m, address, index) {
   let at = address;
@@ -441,7 +483,13 @@ export function nativeStandard(id, args, m, services = {}) {
     case 0x29:
     case 0x2b:
       requireArguments(3);
-      split(m, args[0], cstring(m, args[1]), new Set(cstring(m, args[2])), id === 0x2b);
+      if (
+        id === 0x2b &&
+        services.profile &&
+        nativeABI(services.profile).text.plainParenthesisTokens
+      )
+        splitLiveParentheses(m, ...args);
+      else split(m, args[0], cstring(m, args[1]), new Set(cstring(m, args[2])), id === 0x2b);
       return done();
     case 0x2a: {
       requireArguments(3);
@@ -514,16 +562,22 @@ export function nativeStandard(id, args, m, services = {}) {
     }
     case 0x2c: {
       requireArguments(4);
+      const live = services.profile && nativeABI(services.profile).text.listJoinLiveCopy;
+      if (live) m.store(args[0], 0, 1);
       out = [];
       let selected = listEntry(m, args[1], args[2]),
         index = Math.max(0, args[2] | 0);
       const last = (args[3] | 0) === -1 ? 0x7fffffff : args[3] | 0;
       while (selected.bytes.length && index <= last) {
-        out.push(...selected.bytes, 32);
-        selected = listEntry(m, selected.address + selected.bytes.length + 1, 0);
+        if (live) {
+          appendCString(m, args[0], selected.bytes, selected.address, 1);
+          m.store(args[0] + cstring(m, args[0]).length, 32, 2);
+        } else out.push(...selected.bytes, 32);
+        const length = live ? cstring(m, selected.address).length : selected.bytes.length;
         index++;
+        if (index <= last) selected = listEntry(m, selected.address + length + 1, 0);
       }
-      write(m, args[0], out, 1);
+      if (!live) write(m, args[0], out, 1);
       return done();
     }
     case 0x2d: {
