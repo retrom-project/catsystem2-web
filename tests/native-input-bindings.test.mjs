@@ -96,6 +96,54 @@ test('browser virtual keys retain native numeric keypad and modifier values', ()
   assert.equal(browserVirtualKey({ code: 'KeyZ', keyCode: 229 }), 0);
 });
 
+test('a fresh host drops restored device samples and keeps author input', async () => {
+  const prior = fixture();
+  prior.config.keys.enableJoypad = 1;
+  const direction = prior.config.keys.rows[4];
+  direction.enabled = 1;
+  direction.joypad[0] = 1;
+  prior.bindings.keyboard({ code: 'Enter' }, true);
+  prior.bindings.gamepad([{ connected: true, axes: [0, -1], buttons: [] }]);
+  prior.bindings.sample();
+  assert.equal(prior.bindings.query(0, 0), 1);
+  assert.equal(prior.bindings.query(4, 0), 4);
+  prior.bindings.keyboard({ code: 'KeyZ' }, true);
+  prior.bindings.contact(3, 5, 6, 'down');
+  prior.bindings.wheel(false);
+  prior.bindings.pointerActivation = true;
+  prior.bindings.tap(2);
+  prior.bindings.logicalDown.add(6);
+  prior.bindings.setPulse(7, 2);
+
+  const { input, bindings, messages } = fixture();
+  bindings.configuration.restore(prior.config.snapshot());
+  bindings.restore(prior.bindings.snapshot());
+  bindings.resetPhysicalDevices();
+  assert.equal(bindings.browserKeys.size, 0);
+  assert.equal(bindings.events.length, 0);
+  assert.equal(bindings.contacts.size, 0);
+  assert.equal(bindings.touchEvents.length, 0);
+  assert.equal(bindings.pointerActivation, false);
+  assert.equal(bindings.pulses.length, 0);
+  assert.equal(bindings.query(0, 0), 0);
+  assert.equal(bindings.query(4, 0), 0);
+  assert.equal(bindings.query(6, 0), 1);
+  assert.equal(bindings.injected[7], 2);
+
+  bindings.sample();
+  await input.tick(1);
+  assert.equal(bindings.query(2, 0), 1);
+  assert.equal(bindings.query(0, 1), 0);
+  assert(
+    !messages.some(([, message, index, down]) => message === 4 && down && [0, 4].includes(index)),
+  );
+  bindings.keyboard({ code: 'Enter' }, true);
+  bindings.gamepad([{ connected: true, axes: [0, -1], buttons: [] }]);
+  bindings.sample();
+  assert.equal(bindings.query(0, 0), 1);
+  assert.equal(bindings.query(4, 0), 4);
+});
+
 test('startup preferences can enable a pad after bindings exist while the script gate stays independent', () => {
   const { config, bindings } = fixture(),
     pad = { connected: true, axes: [0, 0], buttons: [{ pressed: true }] };

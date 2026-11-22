@@ -217,30 +217,39 @@ export class NativeInputBindings {
       }
     }
   }
-  releaseAll() {
+  #clearPhysicalKeys() {
+    this.browserKeys.clear();
+    for (const keys of Object.values(this.down)) keys.clear();
+    this.live.fill(0);
+    this.sampled.fill(0);
+    this.mouseState.fill(0);
+  }
+  #clearPhysicalDevices() {
     this.events = [];
-    this.nativeEvents = this.nativeMode ? [{ category: 'reset' }] : [];
+    this.nativeEvents = [];
     this.touchEvents = [];
     this.contacts.clear();
     this.touchState = createNativeTouchState(this.touchState.manager !== null);
     this.touchActive = false;
     this.pulses = [];
-    this.browserKeys.clear();
+    this.#clearPhysicalKeys();
+  }
+  resetPhysicalDevices() {
+    this.#clearPhysicalDevices();
+    this.pointerActivation = false;
+    for (const index of this.logicalDown) this.sampled[index * 4] = 1;
+    this.sync();
+  }
+  releaseAll() {
+    this.#clearPhysicalDevices();
+    if (this.nativeMode) this.nativeEvents.push({ category: 'reset' });
     this.logical = [];
     this.logicalDown.clear();
-    this.live.fill(0);
-    this.sampled.fill(0);
     this.injected.fill(0);
-    this.mouseState.fill(0);
-    for (const keys of Object.values(this.down)) keys.clear();
     this.sync();
   }
   clearKeys() {
-    this.browserKeys.clear();
-    for (const keys of Object.values(this.down)) keys.clear();
-    this.live.fill(0);
-    this.sampled.fill(0);
-    this.mouseState.fill(0);
+    this.#clearPhysicalKeys();
     this.sync();
   }
   cancelWheel() {
