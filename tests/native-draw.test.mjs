@@ -212,6 +212,37 @@ test('full-width retained redraw preserves the rows outside the clear and the bo
   }
 });
 
+test('a forced Draw retains its new backing for the next small raster', async () => {
+  const world = fixture(),
+    id = await surface(world, 8, 12),
+    images = world.graphics.images,
+    image = images.create(2, 1),
+    source = images.get(image),
+    task = world.graphics.drawTasks.get(id),
+    bitmap = world.graphics.surface(id).bitmap;
+  (await bitmap.pixels()).fill(31);
+  const borrowed = await bitmap.pixels();
+  await source.fill(0, 0, 2, 1, 0xff112233);
+  await draw(world, id, 7, image, { position: [1, 4] });
+  await task.message([99, 292, 0, 0]);
+  const backing = bitmap.retainedBacking();
+  assert.ok(backing);
+  assert.notEqual(backing.pixels, borrowed);
+  assert.ok(borrowed.every((byte) => byte === 31));
+  assert.deepEqual(
+    [...(await images.get(world.graphics.vramHandle).pixels()).slice(4 * 8 * 4, 4 * 8 * 4 + 16)],
+    [0, 0, 0, 0, 17, 34, 51, 255, 17, 34, 51, 255, 0, 0, 0, 0],
+  );
+
+  await source.fill(0, 0, 2, 1, 0xffaabbcc);
+  await task.render([0, 4, 5, 5]);
+  assert.strictEqual(bitmap.retainedBacking(), backing);
+  assert.deepEqual(
+    [...backing.pixels.subarray((7 * 8 + 1) * 4, (7 * 8 + 3) * 4)],
+    [170, 187, 204, 255, 170, 187, 204, 255],
+  );
+});
+
 test('a cleared pending Draw preserves borrowed rows, touching transparent borders and clipped pixels', async (t) => {
   const world = fixture(),
     id = await surface(world, 10, 6),

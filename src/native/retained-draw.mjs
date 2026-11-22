@@ -543,8 +543,10 @@ export class NativeRetainedDraw {
           // The copied rows include the adjacent pixels that receive zero-alpha RGB.
           bitmapPixels.set(rows, start);
           publication = previous;
-        } else if (ready) publication = bitmap.publishRetainedBacking(rows);
-        else bitmap.state.rgba = rows;
+        } else if (ready || replaceRows) {
+          // A full-width replacement also gives Draw its own new allocation.
+          publication = bitmap.publishRetainedBacking(rows);
+        } else bitmap.state.rgba = rows;
         // Native output reads this exact allocation asynchronously. Until it
         // returns, a nested Draw must take the full-copy path.
         if (publication) publication.publishing = true;
