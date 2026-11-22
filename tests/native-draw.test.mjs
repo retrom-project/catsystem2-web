@@ -767,7 +767,11 @@ const clearDrawCode = kcsProgram([
   [38, [0x13, 516]],
   [59],
 ]);
-for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+for (const profile of [
+  'rebellions-jp-engine-2.6.1.63',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+])
   test(`${profile} entry Draw clear GCALL preserves real bitmap and cold ownership`, async () => {
     const files = { 'case.kcs': kcsProgram([[59]]), 'clear.kcs': clearDrawCode },
       scene = await dataWorld(profile, files);
@@ -789,15 +793,22 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       await scene.graphics.images.get(overlay).fill(0, 0, 2, 2, 0xffaabbcc);
       await scene.sendEngine(surfaceID, scene.main.id, 296, 0, base);
       const captured = draw.state.baseImage;
-      await scene.runtime.native(
-        'main',
+      await nativeDraw(
         0x101,
         [target, 7, overlay, 0, 0, 0, 0, 0, floatBits(1), floatBits(1), 255, 1, 0],
         scene.main.machine,
         scene.main,
+        scene,
       );
       await draw.render();
       assert.equal(draw.state.renderer.items.length, 2);
+      const unpainted = scene.renderSources.create(),
+        unpaintedFields = Array(15).fill(0);
+      unpaintedFields[2] = unpainted;
+      await scene.retainedDraw.bind(draw, 9, unpaintedFields);
+      await scene.renderSources.release(unpainted);
+      assert.equal(draw.entry(9), undefined);
+      assert.equal(scene.renderSources.get(unpainted).refs, 1);
       assert.deepEqual(
         [...(await drawPixels(scene, surfaceID)).subarray(0, 4)],
         [170, 187, 204, 255],
@@ -865,6 +876,8 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
         'The current base image is reinserted after all entries are cleared',
       );
       assert.equal(draw.state.baseImage, captured);
+      assert.equal(scene.retainedDraw.record(draw, 9), undefined);
+      assert.equal(scene.runtime.handles.records.has(unpainted), false);
       await draw.render();
       const pixels = [...(await drawPixels(scene, surfaceID))];
       assert.deepEqual(pixels.slice(0, 4), [18, 52, 86, 255]);

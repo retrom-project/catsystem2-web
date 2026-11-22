@@ -205,6 +205,7 @@ export class NativeDrawTask {
         const renderer = this.state.renderer;
         if (renderer) {
           for (const item of [...renderer.items]) await this.remove(item.key);
+          await this.retained()?.removeSurface(this);
           await this.graphics.images
             .get(renderer.bitmap)
             .fill(0, 0, renderer.width, renderer.height, renderer.clearColor);
