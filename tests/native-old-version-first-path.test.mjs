@@ -1909,6 +1909,46 @@ test('63 preload GCALLs own the loaded archive bytes and age the live queue', as
   }
 });
 
+test('63 packed image buffers zero only the mapped metadata record and own the source bytes', async () => {
+  const image = hg3(2, 3, new Uint8Array(24).fill(0x7d)),
+    { world, audio } = await oldTitleWorld(
+      { 'packed.hg3': image, 'unknown.hg3': Uint8Array.of(68, 65, 84, 65) },
+      undefined,
+      'rebellions-jp-engine-2.6.1.63',
+    );
+  try {
+    const main = await world.initialize('empty.kcs'),
+      m = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, m, main),
+      buffers = world.runtime.imageDataBuffers;
+    m.writeString('packed', 128);
+    const { value: handle } = await call(365, [128]),
+      pointer = buffers.pointer(handle);
+    assert.deepEqual(buffers.data(pointer), image);
+    m.bytes(256, 40).fill(0xa5);
+    assert.deepEqual(await call(368, [0, 0, 256]), { control: 1, value: 0 });
+    assert.deepEqual(m.bytes(256, 40), new Uint8Array(40).fill(0xa5));
+    assert.deepEqual(await call(368, [handle, 0, 256]), { control: 1, value: 1 });
+    assert.deepEqual(
+      [0, 4, 8, 12, 16, 20, 24, 28, 32].map((at) => m.load(256 + at)),
+      [0, 0, 2, 3, 2, 3, 4, 0, 0],
+    );
+    assert.equal(m.load(292), 0xa5a5a5a5);
+    m.writeString('unknown', 128);
+    const { value: unknown } = await call(365, [128]);
+    m.bytes(256, 36).fill(0xa5);
+    assert.deepEqual(await call(368, [unknown, 0, 256]), { control: 1, value: 0 });
+    assert.deepEqual(m.bytes(256, 36), new Uint8Array(36));
+    assert.equal(m.load(292), 0xa5a5a5a5);
+    assert.deepEqual(await call(366, [unknown]), { control: 2 });
+    assert.deepEqual(await call(366, [handle]), { control: 2 });
+    assert.throws(() => buffers.require(pointer), /released/);
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
 test('63 Flow and warning FES honor the configured Control key only during the skippable wait', async (t) => {
   const packetAddress = 384,
     keyScript = kcsProgram([
