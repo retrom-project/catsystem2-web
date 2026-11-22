@@ -1102,6 +1102,9 @@ Main365 owns the full packed resource from the image category. Main368
 initializes the 36-byte metadata output for a live image owner and mapped
 destination before inspecting the frame. Main366 releases the buffer owner.
 
+Main308 sets the motion manager's float32 speed. Main785 sets the display
+log's unsigned block limit and immediately prunes its oldest blocks.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420
