@@ -1090,6 +1090,9 @@ An overlong name skips the row, and optional fields are limited to 31 bytes
 before their terminator. Main49 reports byte offsets at the engine's wide
 CP932 character boundaries.
 
+Main390 clones a global-file owner, retaining its tag and capacity and
+copying its records independently of the source.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420

@@ -2765,6 +2765,14 @@ async function verifyClosePersistence(t, profile) {
     assert.equal(memory.allocations.has(pointer - 4), true);
     if (profile === 'rebellions-jp-engine-2.6.1.63') {
       const call = (id, args) => source.world.runtime.native('main', id, args, machine, task);
+      const { value: copyHandle } = await call(390, [fileHandle]);
+      const owner = source.world.runtime.handles.get(fileHandle, 'global-file'),
+        copy = source.world.runtime.handles.get(copyHandle, 'global-file');
+      assert.deepEqual(copy.snapshot(), owner.snapshot());
+      copy.write(42, Uint8Array.of(7));
+      assert.equal(owner.read(42), null);
+      assert.deepEqual(await call(246, [copyHandle]), { control: 2 });
+      assert.deepEqual(await call(390, [0]), { control: 1, value: 0 });
       machine.store(64, 0xa5a5a5a5);
       assert.deepEqual(await call(836, [fileHandle, 15, 64]), { control: 1, value: 0 });
       assert.equal(machine.load(64), 0xa5a5a5a5);
