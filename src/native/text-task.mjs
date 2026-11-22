@@ -5,12 +5,13 @@
 import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicTask } from './graphics.mjs';
 import { NativeBitmap } from './image.mjs';
-import { NativeTextRuntime } from './text.mjs';
+import { NativeTextRuntime, NativeTextWriter } from './text.mjs';
 import { CanvasTextGlyphs } from '../render/native-text.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
 import { nativeReply } from '../kcs.mjs';
 import { installNativeLegacyText } from './text-legacy.mjs';
 import { installNativeDisplayLogs } from './text-log.mjs';
+const copyTextFrame = NativeTextWriter.prototype.frame;
 
 export class NativeTextService {
   constructor(world, { glyphs = new CanvasTextGlyphs() } = {}) {
@@ -114,9 +115,15 @@ export class NativeTextTask {
   async output(region = null) {
     const writer = await this.writer();
     if (!writer || !this.text.output) return;
-    const frame = writer.frame(),
+    const readFrame = writer.frame,
+      frame = readFrame.call(writer),
+      ownsPixels =
+        readFrame === copyTextFrame &&
+        frame.rgba instanceof Uint8ClampedArray &&
+        frame.rgba.buffer !== writer.pixels.rgba.buffer,
       bitmap = new NativeBitmap(this.graphics.images, {
         ...frame,
+        rgba: ownsPixels ? null : frame.rgba,
         bpp: 4,
         canvasWidth: frame.width,
         canvasHeight: frame.height,
@@ -128,6 +135,7 @@ export class NativeTextTask {
         source: null,
         attributes: [],
       });
+    if (ownsPixels) bitmap.state.rgba = frame.rgba;
     await this.graphics.output(bitmap, this.text.vram, region);
   }
   async dirtyOutput() {

@@ -103,6 +103,45 @@ for (const profile of profiles) {
       await world.close();
     }
   });
+  test(`${profile} text output owns the writer's frame copy through asynchronous publication`, async () => {
+    const world = await dataWorld(profile, {}, { glyphs });
+    try {
+      const taskID = await world.objects.create({ kind: 48, parent: world.main.id }),
+        task = world.objects.objects.get(taskID).implementation,
+        packet = textPacket(profile, 'cp932', world.configuration),
+        view = new DataView(packet.buffer),
+        size = nativeABI(profile).layouts.textCores.cp932.configSize;
+      view.setUint32(8, 8, true);
+      view.setUint32(12, 8, true);
+      view.setUint32(size + 12, 1, true);
+      await world.sendEngine(taskID, world.main.id, 450, 0, 0, { payload: memory(packet) });
+      const writer = await task.writer(),
+        pixels = writer.pixels.rgba;
+      let framePixels;
+      pixels[0] = 73;
+      pixels.slice = function () {
+        return (framePixels = Uint8ClampedArray.prototype.slice.call(this));
+      };
+      world.graphics.output = async (bitmap) => {
+        pixels[0] = 91;
+        const published = await bitmap.pixels();
+        assert.strictEqual(published, framePixels);
+        assert.equal(published[0], 73);
+      };
+      await task.output();
+
+      writer.frame = () => writer.pixels;
+      world.graphics.output = async (bitmap) => {
+        pixels[0] = 112;
+        const published = await bitmap.pixels();
+        assert.notStrictEqual(published, pixels);
+        assert.equal(published[0], 91);
+      };
+      await task.output();
+    } finally {
+      await world.close();
+    }
+  });
   test(`${profile} explicit Windows consumer borrows the World writer map and snapshots only its own handles`, async () => {
     const world = await dataWorld(profile, {}, { glyphs });
     try {
