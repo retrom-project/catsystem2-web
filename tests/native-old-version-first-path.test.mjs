@@ -1538,7 +1538,12 @@ test('63 cold Script idle clears VRAM, updates its Plane and polls the live FES 
 
 test('63 FES GCALLs use and publish the real Draw owner before waiting', async (t) => {
   const { world, audio } = await oldTitleWorld(
-    { 'entry.fes': bytes('#START\n$8=73\nwait 2\n$8=74\nwait frame 4\n$8=75\nwait\n$8=76\n') },
+    {
+      'entry.fes': bytes(
+        '#DEFINE\nVIEW marker[2]\n#START\n$8=73\nwait 2\n$8=74\nwait frame 4\n$8=75\nwait\n$8=76\n' +
+          '#PING\n$10=91\nbreak\n#marker.PING\n$10=92\nbreak\n',
+      ),
+    },
     undefined,
     'rebellions-jp-engine-2.6.1.63',
   );
@@ -1583,6 +1588,20 @@ test('63 FES GCALLs use and publish the real Draw owner before waiting', async (
     assert.deepEqual(await call(447, [created.value, 160]), { control: 2 });
     assert.equal(fes.variableBank(), bank);
     assert.equal(world.graphics.fesSurfaces.get(drawID).get(fesID), fes.player);
+    assert.deepEqual(await call(645, [created.value, 511, 0x89abcdef]), { control: 2 });
+    assert.deepEqual(await call(645, [created.value, 512, 17]), { control: 2 });
+    assert.deepEqual(await call(645, [created.value, 0xffffffff, 18]), { control: 2 });
+    assert.deepEqual(await call(646, [created.value, 511]), { control: 1, value: 0x89abcdef });
+    assert.deepEqual(await call(646, [created.value, 512]), { control: 1, value: 0 });
+    assert.deepEqual(await call(646, [created.value, 0xffffffff]), { control: 1, value: 0 });
+    assert.equal(fes.player.root.local(511) >>> 0, 0x89abcdef);
+    machine.writeString('PING', 192);
+    machine.writeString('', 224);
+    machine.writeString('marker', 256);
+    assert.deepEqual(await call(630, [created.value, 192, 224, 0]), { control: 2 });
+    assert.equal(bank.get(10), 91);
+    assert.deepEqual(await call(630, [created.value, 192, 256, 1]), { control: 2 });
+    assert.equal(bank.get(10), 92);
     assert.equal(bank.get(8), 0);
     assert.deepEqual(await call(448, [created.value]), { control: 2 });
     assert.equal(bank.get(8), 73);

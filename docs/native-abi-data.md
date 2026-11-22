@@ -1101,6 +1101,14 @@ and override word to the startup Plane through its own raw message 56. These
 operations return control 2. Main 452 delivers Base message 23, returning the
 FES task's signed exit word or the initialized -1 when no receiver writes it.
 
+Main 630 delivers raw FES message 325 with the formatted event and an
+optional 32-byte object name followed by its index. The receiver runs the
+event, synchronizes changed resources and forces the bound Draw surface when
+requested. Main 645 and 646 select the interpreter's private 512-word bank
+through raw messages 328 and 329. Out-of-range writes are ignored and
+out-of-range reads return zero. The notification and write return control 2.
+The read returns control 1 with the bank word.
+
 ## 2.6.1.63 FES STRING
 
 The narrow STRING object is original FES type 20 and canonical type 21. Its
