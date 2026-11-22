@@ -4,7 +4,11 @@ import assert from 'node:assert/strict';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { floatBits } from '../src/kcs.mjs';
 
-const profiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
+const profiles = [
+  'rebellions-jp-engine-2.6.1.63',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+];
 const red = Uint8Array.of(200, 10, 20, 255),
   green = Uint8Array.of(6, 170, 19, 255);
 function anm() {
@@ -94,8 +98,9 @@ for (const profile of profiles)
       await world.sendEngine(surface, world.main.id, 283, 0, 0);
       const draw = world.graphics.drawTasks.get(surface),
         input = await owner(world),
-        source = world.retainedDraw.fromOwner(input);
-      await world.retainedDraw.bind(draw, 7, fields(source));
+        source = world.retainedDraw.fromOwner(input),
+        key = (world.nativeTaskID(world.main.id) | (7 << 16)) >>> 0;
+      await world.retainedDraw.bind(draw, key, fields(source));
       const root = world.renderSources.get(source),
         child = world.renderSources.get(root.children[0]),
         before = root.revision;
@@ -104,7 +109,16 @@ for (const profile of profiles)
       assert.equal(root.groupDirty, false);
       assert.equal(child.selected, 0);
       await world.imageOwners.release(input);
-      await world.retainedDraw.enable(draw, 7, 1);
+      assert.deepEqual(
+        await world.runtime.native(
+          'main',
+          625,
+          [world.nativeTaskID(surface), 7, 1],
+          world.main.machine,
+          world.main,
+        ),
+        { control: 2 },
+      );
       assert.equal(child.selected, 2, 'the existing ANM controller selected key2 at enable');
       t.diagnostic(
         JSON.stringify({
@@ -158,7 +172,7 @@ for (const profile of profiles)
         [fresh, restoredDraw],
       ]) {
         const ids = [source, ...w.renderSources.get(source).children];
-        await d.remove(7);
+        await d.remove(key);
         assert.equal(w.renderSources.get(source).refs, 1);
         await w.renderSources.release(source);
         for (const id of ids)

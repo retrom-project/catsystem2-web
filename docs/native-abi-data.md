@@ -1259,6 +1259,12 @@ and start a retained fade. Main 530/531 configure and start a bitmap wipe.
 The initialization packets carry the priority range and duration in the
 original order. The wipe retains its mask through the transition.
 
+Main 625 changes the animation enable word of the selected Draw entry.
+Main 713 scales RGB by three authored percentages. Main 723 and 727
+rotate or reflect the collection and rebuild its bitmap. Main 728 sets the
+bitmap's mask word. Main 737 applies the authored color filter to each
+collection layer and frame. Direct canvases keep their pixels.
+
 Main 78 sends an eight-word textured rectangle packet to the live Plane.
 Main 466 writes the coordinate mode into the current D3D render model.
 Creating a replacement model starts with coordinate mode zero. Both

@@ -45,6 +45,20 @@ test('63 Script image owners load, query, resize, fill and release their own bit
   assert.equal(m.load(outputs[0]), 10);
   await native(714, [source, 192, 196]);
   assert.deepEqual(size(), [3, 2]);
+  assert.deepEqual(await native(728, [source, 16]), { control: 2 });
+  assert.equal(bitmap.state.mask, 16);
+  await native(728, [source, 0]);
+  assert.deepEqual(await native(713, [source, 200, 100, 50]), { control: 2 });
+  assert.deepEqual((await bitmap.pixels()).subarray(0, 4), Uint8ClampedArray.of(34, 34, 25, 255));
+  assert.deepEqual(await native(737, [source, 3]), { control: 2 });
+  assert.deepEqual(
+    (await bitmap.pixels()).subarray(0, 4),
+    Uint8ClampedArray.of(221, 221, 230, 255),
+  );
+  assert.deepEqual(await native(723, [source, 90]), { control: 2 });
+  assert.deepEqual(await native(727, [source, 1]), { control: 2 });
+  await native(714, [source, 192, 196]);
+  assert.deepEqual(size(), [2, 3]);
   await native(730, [source, 6, 4]);
   await native(714, [source, 192, 196]);
   assert.deepEqual(size(), [6, 4]);
@@ -56,6 +70,7 @@ test('63 Script image owners load, query, resize, fill and release their own bit
   const { value: target } = await native(733, [2, 1]),
     targetBitmap = imageOwners.get(target).bitmap;
   assert.deepEqual(await native(736, [target, 0, 0, 2, 1, 0xff224466]), { control: 2 });
+  assert.deepEqual(await native(737, [target, 3]), { control: 2 });
   assert.deepEqual(
     await graphics.images.get(targetBitmap).pixels(),
     Uint8ClampedArray.of(0x22, 0x44, 0x66, 255, 0x22, 0x44, 0x66, 255),

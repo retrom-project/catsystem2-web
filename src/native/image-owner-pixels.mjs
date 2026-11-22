@@ -2,6 +2,7 @@
 import { nativeReply } from '../kcs/vm.mjs';
 import { bitmapColor, bitmapTransform, bitmapBlur, bitmapTransfer } from './bitmap-pixels.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
+import { nativeABI } from './abi/index.mjs';
 const value = (v) => nativeReply(1, v),
   done = () => nativeReply(2);
 export async function imageOwnerPixels(owners, id, a, machine, task) {
@@ -87,9 +88,11 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
   }
   if (id === 0x2e1 && ![1, 2, 3].includes(a(1))) return done();
   if (id === 0x2e1 && record.layers === null) {
-    if (bitmap) await bitmapColor(bitmap, 'filter', a(1));
+    if (bitmap && !nativeABI(world.profile).graphics.imageFilterRequiresLayers)
+      await bitmapColor(bitmap, 'filter', a(1));
     return done();
   }
+  if (id === 0x2c9 && a(1) === 100 && a(2) === 100 && a(3) === 100) return done();
   if (!record.layers)
     throw new RangeError('Original image collection operation requires loaded layers');
   const visit = async (fn) => {
@@ -99,10 +102,8 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
         if (frame.bitmap) await fn(images.get(frame.bitmap));
     }
   };
-  if (id === 0x2c9) {
-    if (a(1) === 100 && a(2) === 100 && a(3) === 100) return done();
-    await visit((b) => b.tone(a(1), a(2), a(3)));
-  } else if (id === 0x2cc) await visit((b) => bitmapColor(b, 'multiply', a(1)));
+  if (id === 0x2c9) await visit((b) => b.tone(a(1), a(2), a(3)));
+  else if (id === 0x2cc) await visit((b) => bitmapColor(b, 'multiply', a(1)));
   else if (id === 0x2d9) await visit((b) => bitmapColor(b, 'alpha', a(1)));
   else if (id === 0x2e1) await visit((b) => bitmapColor(b, 'filter', a(1)));
   else if (id === 0x2d3) await visit((b) => bitmapTransform(b, 'rotate', a(1) | 0));
