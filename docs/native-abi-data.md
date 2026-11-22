@@ -1064,6 +1064,10 @@ through separate vectors, matrix and scalar fields. Main303 copies the
 working object to the base. Main304 formats the script name and resolves it
 through the mounted MOT category, then copies up to 256 register words and
 any mapped auxiliary data into the instance.
+Main315–317 create, refresh and release the MOT snapshot. Each record has
+a 1,076-byte fixed part with a 32-byte CP932 name and appended auxiliary
+data. A one-word Main315 call still reads the frame from the adjacent VM
+stack word, as the original wrapper does.
 
 Main863–868 own fixed-record stacks used by the script. Their push grows
 capacity before reading the VM record. Pop copies the last record out,

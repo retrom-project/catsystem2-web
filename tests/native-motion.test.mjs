@@ -8,7 +8,8 @@ import { NativeMotionRegistry, nativeMotion } from '../src/native/motion.mjs';
 import { MotionManager } from '../src/motion/manager.mjs';
 import { MOTION_ABI, motionVector } from '../src/motion/abi.mjs';
 import { decodeMotionRecords, encodeMotionRecords } from '../src/motion/checkpoint.mjs';
-import { u32 } from './helpers.mjs';
+import { kcsProgram, u32 } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 const profile = 'nekopara-vol3-engine-2.6.1.76';
 function setup(handles = new NativeHandles(), selectedProfile = profile) {
@@ -159,6 +160,60 @@ test('main MOT checkpoints and VM resource checkpoints restore without sharing m
   assert.equal(data[0].elapsed, 10);
   await second.call(0x13d, [checkpoint]);
   assert.throws(() => second.call(0x13c, [checkpoint, 20]), /released/);
+});
+
+test('63 MOT checkpoints use CP932 records and the live second word of a one-word call', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    world = await dataWorld(profile, { 'motion.kcs': kcsProgram([[59]]) });
+  let fresh;
+  const call = (w, id, args) => w.runtime.native('main', id, args, w.main.machine, w.main);
+  try {
+    const m = world.main.machine,
+      handle = (await call(world, 294, [])).value;
+    m.writeString('motion', 256);
+    m.store(512, 0x7fc01234);
+    m.bytes(520, 3).set([1, 2, 3]);
+    const added = (await call(world, 304, [handle, 256, 512, 1, 520, 3, 9])).value,
+      { manager } = world.runtime.handles.get(handle, 'motion-manager');
+    manager.records.get(added).startTick = 100;
+    m.store(m.sp, handle);
+    m.store(m.sp + 4, 125);
+    const checkpoint = (await call(world, 315, [handle])).value;
+    const { bytes } = world.runtime.handles.get(checkpoint, 'motion-checkpoint'),
+      view = new DataView(bytes.buffer, bytes.byteOffset, bytes.length);
+    assert.equal(bytes.length, 1087);
+    assert.deepEqual(
+      [...bytes.subarray(12, 23)],
+      [109, 111, 116, 105, 111, 110, 46, 107, 99, 115, 0],
+    );
+    assert.deepEqual(
+      [0, 4, 8, 44, 48, 1072, 1076, 1080].map((offset) => view.getUint32(offset, true)),
+      [1087, 1, 1079, 9, 0x7fc01234, 3, 25, 0],
+    );
+    assert.deepEqual([...bytes.subarray(1084)], [1, 2, 3]);
+    fresh = await dataWorld(profile, { 'motion.kcs': kcsProgram([[59]]) }, { initialize: false });
+    await fresh.restore(structuredClone(world.snapshot()));
+    const restoredMachine = fresh.main.machine;
+    restoredMachine.store(restoredMachine.sp, checkpoint);
+    restoredMachine.store(restoredMachine.sp + 4, 132);
+    const refresh = call(fresh, 316, [checkpoint]);
+    restoredMachine.push(checkpoint);
+    assert.deepEqual(await refresh, { control: 1, value: 1 });
+    assert.equal(restoredMachine.pop(), checkpoint);
+    assert.equal(
+      decodeMotionRecords(
+        fresh.runtime.handles.get(checkpoint, 'motion-checkpoint').bytes,
+        profile,
+      )[0].elapsed,
+      32,
+    );
+    assert.equal(view.getUint32(1076, true), 25);
+    assert.deepEqual(await call(fresh, 317, [checkpoint]), { control: 2 });
+    assert.equal(world.runtime.handles.get(checkpoint, 'motion-checkpoint').bytes, bytes);
+  } finally {
+    await fresh?.close({ flushFiles: false });
+    await world.close({ flushFiles: false });
+  }
 });
 
 test('Script-owned MOT managers release by owner after restoring resource checkpoints', async () => {

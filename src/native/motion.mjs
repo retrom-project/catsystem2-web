@@ -135,10 +135,11 @@ export function nativeMotion(id, args, machine, services = {}) {
   // Some older shipped KCS scripts pass fewer words than a frozen wrapper
   // reads (SDK 13B). The C wrapper observes adjacent guest stack words. Do not
   // invent a zero default: GCALL leaves its argument block at machine.sp.
+  const argumentBase = machine.sp;
   args = new Proxy(args, {
     get: (words, key) => {
       if (typeof key === 'string' && /^\d+$/.test(key) && Number(key) >= words.length)
-        return machine.load(machine.sp + Number(key) * 4);
+        return machine.load(argumentBase + Number(key) * 4);
       return Reflect.get(words, key);
     },
   });
