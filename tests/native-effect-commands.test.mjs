@@ -28,6 +28,20 @@ test('63 authored screen capture owns its targets and skips a failed preparation
     world.configuration.fields.general.renderTargetCount = 0;
     assert.deepEqual(await call(568, range), { control: 2 });
     assert.equal(revision(first), 1);
+    world.configuration.fields.general.renderTargetCount = 2;
+    const fade = await world.objects.create({
+      kind: 38,
+      parent: world.root,
+      name: 'authored fade',
+    });
+    const target = world.nativeTaskID(fade);
+    const state = world.screenEffects.tasks.get(fade).state;
+    assert.deepEqual(await call(520, [target]), { control: 1, value: 0 });
+    assert.deepEqual(await call(527, [target, 12, ...range]), { control: 2 });
+    assert.deepEqual([state.minimum, state.maximum, state.duration], [1, 2, 12]);
+    assert.deepEqual(await call(528, [target, 7]), { control: 2 });
+    assert.deepEqual(await call(520, [target]), { control: 1, value: 7 });
+    await world.objects.release(fade);
   } finally {
     await world.close();
   }

@@ -1251,6 +1251,10 @@ to 0–255 and sends raw Plane 60 with dispatch flag 1 to the selected target.
 Main 568 prepares one screen capture and draws the supplied priority range
 into slot zero after successful preparation. Main 858 and 859 expose the
 separate count and slot operations.
+Main 520 queries the selected transition's activity. Main 527/528 configure
+and start a retained fade. Main 530/531 configure and start a bitmap wipe.
+The initialization packets carry the priority range and duration in the
+original order. The wipe retains its mask through the transition.
 
 Main 78 sends an eight-word textured rectangle packet to the live Plane.
 Main 466 writes the coordinate mode into the current D3D render model.
