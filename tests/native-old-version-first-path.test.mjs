@@ -725,7 +725,7 @@ const title67Call = (id, args, result) => [
   ...(result === undefined ? [] : [[38, [0x13, result]]]),
 ];
 
-test('63 startup GCALLs configure the variable bank and enter an ordinary Script wait', async () => {
+test('63 startup GCALLs read the task clock, configure the bank and enter a Script wait', async () => {
   const environment = startupEnvironment(),
     attempted = { cpu: 0 },
     version = '2.6.1.63',
@@ -740,6 +740,8 @@ test('63 startup GCALLs configure the variable bank and enter an ordinary Script
         [37, 512],
         [37, 516],
         [43, 8, 8],
+        [43, 5, 0],
+        [38, [0x13, 536]],
         [37, 0],
         [37, 768],
         [43, 13, 8],
@@ -776,6 +778,12 @@ test('63 startup GCALLs configure the variable bank and enter an ordinary Script
 
     assert.equal(world.menu.get(0x77), false);
     assert.deepEqual([machine.load(512), machine.load(516)], world.graphics.virtualSize());
+    assert.equal(machine.load(536), world.frame);
+    const { name, signature } = nativeABI(profile).tables.main.entries[5];
+    assert.equal(name, 'task.clock');
+    assert.equal(signature.argumentWords, 0);
+    assert.deepEqual(signature.controlCodes, [1]);
+    assert.equal(signature.resultWritten, true);
     const copied = [...bytes('owned'), 0, 0, 0xa5];
     assert.deepEqual([...machine.bytes(0, 8)], copied);
     assert.throws(

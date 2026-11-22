@@ -20,7 +20,7 @@ selected or enabled by proximity to another version number.
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2             |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------------------- |
 | 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered              |
-| 2.6.1.63 | 938        | 62        | 0             | 0             | 876     | 3 generic and 15 particle v2 recovered |
+| 2.6.1.63 | 938        | 63        | 0             | 0             | 875     | 3 generic and 15 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered              |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                           |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                           |
@@ -966,13 +966,18 @@ complete the remaining multi-version corpus.
 
 ## 2.6.1.63 startup and Script wait
 
-The .63 entry registers Main 8/13/68/71/209/211/393/789 from its own wrappers
+The .63 entry registers Main 5/8/13/68/71/209/211/393/789 from its own wrappers
 and receivers. Main393 reads the guest word in full, forwards message
 `0x464` to the application window and returns control 2. The owner uses its
 zero/nonzero value to update command `0x77`. Main8 writes the virtual
 dimensions through two translated VM pointers. Main13 copies narrow bytes,
 writes two terminating zero bytes and returns the destination address.
 Guest byte zero is a valid destination.
+
+The first episode's `sscript` calls Main5 with no arguments after Main8.
+The .63 wrapper writes one unsigned word and returns control 1. Its task clock
+receiver subtracts the paused-frame count from the effective frame, matching the
+existing shared `task.clock` implementation.
 
 Main789 returns the variable capacity set by `GAME/flag/max`. Main209
 creates the owner's zeroed bank. Main211 writes an in-range word and marks
