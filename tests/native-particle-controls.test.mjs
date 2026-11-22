@@ -40,6 +40,44 @@ test('2.6.1.63 story Particle controls route signed alpha and neutral attachment
   }
 });
 
+test('2.6.1.63 loads, updates and stops a live script Particle bank', async () => {
+  const world = await dataWorld('rebellions-jp-engine-2.6.1.63', {
+    'ptcl/probe.kcs': kcsProgram([[59]]),
+  });
+  try {
+    world.graphics.createLogicalDevice();
+    const particle = await world.objects.create({ kind: 16, parent: world.root }),
+      target = world.nativeTaskID(particle),
+      task = world.main,
+      machine = task.machine,
+      call = (id, ...args) => world.runtime.native('main', id, args, machine, task);
+    machine.writeString('probe', 160);
+    machine.writeString('', 192);
+    const registers = Float32Array.from({ length: 32 }, (_, i) => i * 0.5 - 9);
+    machine.bytes(256, 128).set(new Uint8Array(registers.buffer));
+    assert.deepEqual(await call(271, target, 160, 192, 2, floatBits(12.25), 256), {
+      control: 1,
+      value: 1,
+    });
+    const bank = world.particles.get(particle).bank;
+    assert.equal(bank.program, 'ptcl/probe.kcs');
+    assert.equal(bank.count, 2);
+    assert.equal(bank.priority, 12.25);
+    assert.deepEqual(bank.registers, registers);
+    assert.deepEqual(await call(274, 0), { control: 1, value: 0 });
+    assert.deepEqual(await call(272, target), { control: 2 });
+    assert.deepEqual(await call(274, target), { control: 1, value: 1 });
+    registers[4] = -111;
+    machine.bytes(256, 128).set(new Uint8Array(registers.buffer));
+    assert.deepEqual(await call(275, target, 256), { control: 2 });
+    assert.deepEqual(bank.registers, registers);
+    assert.deepEqual(await call(273, target), { control: 2 });
+    assert.deepEqual(await call(274, target), { control: 1, value: 0 });
+  } finally {
+    await world.close();
+  }
+});
+
 for (const [profile, variable, receiver, offset] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 0x4d06f0, 5],
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE', 0x5f5eb0, 0],
