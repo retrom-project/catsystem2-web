@@ -120,7 +120,7 @@ async function transform(bytes, stream, limit) {
 // IndexedDB uses structured clone. Export files must retain the same resource
 // graph, including shared buffers, bigint loop points, Maps and cyclic links.
 // An explicit graph encoding avoids lossy JSON.stringify(typedArray) output.
-export async function serializeCheckpoint(value, limit = CHECKPOINT_LIMIT) {
+export async function encodeCheckpointGraph(value, limit = CHECKPOINT_LIMIT) {
   checkpointBytes(value, limit);
   const ids = new WeakMap(),
     nodes = [];
@@ -179,29 +179,15 @@ export async function serializeCheckpoint(value, limit = CHECKPOINT_LIMIT) {
   const root = await encode(value),
     plain = new TextEncoder().encode(JSON.stringify({ root, nodes }));
   if (plain.length > limit * 2) throw new Error('Checkpoint graph encoding exceeds file limit');
-  const packed = await transform(plain, new CompressionStream('gzip'), limit - MAGIC.length),
-    file = new Uint8Array(MAGIC.length + packed.length);
-  file.set(MAGIC);
-  file.set(packed, MAGIC.length);
-  return file;
+  return plain;
 }
 
-export async function deserializeCheckpoint(file, limit = CHECKPOINT_LIMIT) {
-  if (
-    !(file instanceof Uint8Array) ||
-    file.length > limit ||
-    file.length <= MAGIC.length ||
-    MAGIC.some((byte, i) => file[i] !== byte)
-  )
-    throw new Error('Invalid CatSystem2 checkpoint file');
-  const plain = await transform(
-      file.subarray(MAGIC.length),
-      new DecompressionStream('gzip'),
-      limit * 2,
-    ),
-    data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(plain)),
+export function decodeCheckpointGraph(plain, limit = CHECKPOINT_LIMIT) {
+  if (!(plain instanceof Uint8Array) || !plain.length || plain.length > limit * 2)
+    throw new Error('Invalid CatSystem2 checkpoint graph bytes');
+  const data = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(plain)),
     memo = new Map();
-  if (!Array.isArray(data.nodes)) throw new Error('Invalid checkpoint graph');
+  if (!Array.isArray(data?.nodes)) throw new Error('Invalid checkpoint graph');
   const decode = (value) => {
     if (!Array.isArray(value)) {
       if (value !== null && typeof value === 'object') throw new Error('Invalid checkpoint value');
@@ -296,4 +282,29 @@ export async function deserializeCheckpoint(file, limit = CHECKPOINT_LIMIT) {
   const value = decode(data.root);
   checkpointBytes(value, limit);
   return value;
+}
+
+export async function serializeCheckpoint(value, limit = CHECKPOINT_LIMIT) {
+  const plain = await encodeCheckpointGraph(value, limit),
+    packed = await transform(plain, new CompressionStream('gzip'), limit - MAGIC.length),
+    file = new Uint8Array(MAGIC.length + packed.length);
+  file.set(MAGIC);
+  file.set(packed, MAGIC.length);
+  return file;
+}
+
+export async function deserializeCheckpoint(file, limit = CHECKPOINT_LIMIT) {
+  if (
+    !(file instanceof Uint8Array) ||
+    file.length > limit ||
+    file.length <= MAGIC.length ||
+    MAGIC.some((byte, i) => file[i] !== byte)
+  )
+    throw new Error('Invalid CatSystem2 checkpoint file');
+  const plain = await transform(
+    file.subarray(MAGIC.length),
+    new DecompressionStream('gzip'),
+    limit * 2,
+  );
+  return decodeCheckpointGraph(plain, limit);
 }

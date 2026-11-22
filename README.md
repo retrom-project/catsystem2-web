@@ -45,6 +45,8 @@ Ctrl 快进。游戏自己的标题、设置、存读档和历史窗口由其 FE
 `readAt(offset, count, signal?)` 返回正好 `count` 字节的独占 `Uint8Array`，并转交其所有权。
 `GameFiles(files, { identity })` 可接收宿主已校验的内容身份，来自 `src/identity.mjs`
 的 SHA-256 目录树算法。宿主在挂载期间保持源内容不变，再调用 `await game.open()` 解析归档。
+带有自己传输封装的宿主可使用 `src/checkpoint.mjs` 的 `encodeCheckpointGraph` 和
+`decodeCheckpointGraph` 交换未压缩的状态图。普通入口的导出仍使用带文件签名的 gzip。
 
 ## 验证和构建
 

@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
+import { gunzipSync } from 'node:zlib';
+import {
+  encodeCheckpointGraph,
+  decodeCheckpointGraph,
+  serializeCheckpoint,
+  deserializeCheckpoint,
+} from '../src/checkpoint.mjs';
 import { checkpointDifference } from './browser/checkpoint-observation.mjs';
 
 test('portable checkpoint budgets apply to encode, compressed files and decoded state', async () => {
@@ -11,6 +17,25 @@ test('portable checkpoint budgets apply to encode, compressed files and decoded 
   assert.ok(file.length <= 1024);
   assert.equal((await deserializeCheckpoint(file, 1024)).bytes.length, 400);
   await assert.rejects(deserializeCheckpoint(file, 128), /checkpoint|Checkpoint/);
+});
+
+test('a host can exchange the same checkpoint graph inside its own transport envelope', async () => {
+  const buffer = new ArrayBuffer(64),
+    state = { buffer, words: new Uint32Array(buffer, 4, 3) };
+  state.self = state;
+  state.words[0] = 17;
+  const bytes = await encodeCheckpointGraph(state),
+    restored = decodeCheckpointGraph(bytes),
+    standalone = await serializeCheckpoint(state);
+  const magic = new TextEncoder().encode('CS2WEB\0');
+  assert.deepEqual(standalone.subarray(0, magic.length), magic);
+  assert.deepEqual(new Uint8Array(gunzipSync(standalone.subarray(magic.length))), bytes);
+  assert.equal(restored.self, restored);
+  assert.equal(restored.words.buffer, restored.buffer);
+  assert.equal(restored.words[0], 17);
+  assert.throws(() => decodeCheckpointGraph(bytes, 64), /checkpoint|Checkpoint/);
+  assert.throws(() => decodeCheckpointGraph(new Uint8Array()), /checkpoint graph/);
+  await assert.rejects(deserializeCheckpoint(bytes), /checkpoint file/);
 });
 
 test('portable checkpoints retain binary aliases, cyclic containers and 64-bit audio positions', async () => {
