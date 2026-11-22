@@ -116,7 +116,7 @@ export class NativeTextTask {
     const writer = await this.writer();
     if (!writer || !this.text.output) return;
     const readFrame = writer.frame,
-      frame = readFrame.call(writer),
+      frame = Reflect.apply(readFrame, writer, []),
       ownsPixels =
         readFrame === copyTextFrame &&
         frame.rgba instanceof Uint8ClampedArray &&
