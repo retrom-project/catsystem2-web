@@ -1246,6 +1246,10 @@ from the loaded graph. Its retained binding word uses the logical packet
 address 0. Enable, hover and drag requests each carry their literal DWORD.
 Destruction releases the Input registration with the plane.
 
+Main 653 sets the Plane's VRAM type through raw message 81. Main 654 sends
+two formatted narrow strings through raw 82. SimplePlane defines raw 82 as
+an empty notification.
+
 Main 256, 260 and 262 initialize the Draw renderer, set its offsets and write
 its enabled word. A rising edge sets the pending word. Main 339 sends
 the caller's clip rectangle to its layer and Main 534 sets the Draw dirty

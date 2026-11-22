@@ -2647,6 +2647,29 @@ test('63 Sound bank allocation keeps the group end exclusive and its decoder opt
   }
 });
 
+test('63 Plane script commands preserve VRAM type and the formatted notification', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    { world, audio } = await oldTitleWorld({}, undefined, profile);
+  try {
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      id = await world.objects.create({ kind: 2, parent: world.root }),
+      target = world.nativeTaskID(id),
+      plane = world.graphics.get(id),
+      call = (native, args) => world.runtime.native('main', native, args, machine, main);
+    assert.deepEqual(await call(653, [target, 17]), { control: 2 });
+    assert.equal(plane.state.vramType, 17);
+    machine.writeString('first', 256);
+    machine.writeString('second', 320);
+    const state = structuredClone(plane.state);
+    assert.deepEqual(await call(654, [target, 256, 320]), { control: 2 });
+    assert.deepEqual(plane.state, state);
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
 test('63 name-table filename rules match and transform the authored row', async () => {
   const profile = 'rebellions-jp-engine-2.6.1.63',
     { world, audio } = await oldTitleWorld(
