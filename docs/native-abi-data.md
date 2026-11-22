@@ -1267,6 +1267,11 @@ rotate or reflect the collection and rebuild its bitmap. Main 728 sets the
 bitmap's mask word. Main 737 applies the authored color filter to each
 collection layer and frame. Direct canvases keep their pixels.
 
+Main 111 loads a formatted list of bitmaps and composes its overlays using
+physical bitmap offsets. A colon supplies the original numeric frame prefix.
+Main 115 copies from the source rectangle, and Main 118 creates a bitmap
+copy owned by the caller.
+
 Main 78 sends an eight-word textured rectangle packet to the live Plane.
 Main 466 writes the coordinate mode into the current D3D render model.
 Creating a replacement model starts with coordinate mode zero. Both

@@ -2060,11 +2060,20 @@ test('63 packed image buffers zero only the mapped metadata record and own the s
 
 test('63 Script bitmaps own their decoded pixels and use the clipped source extent', async (t) => {
   const rgba = Uint8Array.of(17, 34, 51, 255, 68, 85, 102, 255),
-    { world, audio } = await oldTitleWorld(
-      { 'packed.hg3': hg3(2, 1, rgba) },
-      undefined,
-      'rebellions-jp-engine-2.6.1.63',
-    );
+    backdrop = hg3(
+      2,
+      4,
+      Uint8Array.from({ length: 32 }, (_, index) => (index % 4 === 3 ? 255 : 0)),
+    ),
+    layer = hg3(1, 1, Uint8Array.of(33, 66, 99, 255));
+  const header = new DataView(layer.buffer);
+  header.setInt32(48, 1, true);
+  header.setInt32(52, 1, true);
+  const { world, audio } = await oldTitleWorld(
+    { 'packed.hg3': hg3(2, 1, rgba), 'backdrop.hg3': backdrop, 'layer.hg3': layer },
+    undefined,
+    'rebellions-jp-engine-2.6.1.63',
+  );
   t.after(async () => {
     try {
       await world.close();
@@ -2102,6 +2111,22 @@ test('63 Script bitmaps own their decoded pixels and use the clipped source exte
   await call(114, [source]);
   assert.equal(world.runtime.handles.records.has(source), false);
   assert.equal(world.runtime.handles.records.has(empty), false);
+  m.writeString('missing.hg3 backdrop:0x0.hg3 layer:0.hg3', 320);
+  const { value: loaded } = await call(111, [320]);
+  const fromFile = images.get(loaded);
+  const composed = (await fromFile.pixels()).slice();
+  assert.deepEqual(composed.subarray(20, 24), Uint8ClampedArray.of(33, 66, 99, 255));
+  assert.deepEqual(composed.subarray(12, 16), Uint8ClampedArray.of(0, 0, 0, 255));
+  const { value: clone } = await call(118, [loaded]);
+  assert.notEqual(images.get(loaded).dataHandle, images.get(clone).dataHandle);
+  await call(114, [loaded]);
+  assert.deepEqual(await images.get(clone).pixels(), composed);
+  assert.deepEqual(await call(115, [destination, 0, 0, 1, 1, clone, 1, 1, 1, 1]), { control: 2 });
+  assert.deepEqual(
+    (await images.get(destination).pixels()).subarray(0, 4),
+    composed.subarray(20, 24),
+  );
+  await call(114, [clone]);
 });
 
 test('63 Flow and warning FES honor the configured Control key only during the skippable wait', async (t) => {

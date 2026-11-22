@@ -7,6 +7,7 @@ import { nativeImagePathParts } from './image-file.mjs';
 import { readNativeResource, nativeCategoryFilename } from './resource-file.mjs';
 import { ImageStore, HG3 } from '../formats/hg3.mjs';
 import { SceneImagePreparation } from './scene-image-preparation.mjs';
+import { parseNativeInteger } from './standard.mjs';
 const f = Math.fround;
 const retainedBackings = new WeakMap();
 const size = (width, height, empty = false) => {
@@ -685,23 +686,39 @@ export class NativeImages {
   }
   async formattedLoad(text, owner) {
     let handle = 0;
+    const physical = nativeABI(this.world.profile).graphics.formattedBitmapPhysical;
     for (const token of text.split(' ').filter(Boolean)) {
       const { stem, extension } = nativeImagePathParts(token),
-        match = /^(.*):([+-]?\d+)$/.exec(stem),
-        next = await this.load(
-          match ? match[1] + extension : token,
-          match ? Number(match[2]) >>> 0 : 0,
-          owner,
-        );
+        match = (physical ? /^([^:]*):(.*)$/ : /^(.*):([+-]?\d+)$/).exec(stem),
+        frame = match && (physical ? parseNativeInteger(match[2]) : Number(match[2])),
+        next = await this.load(match ? match[1] + extension : token, (frame ?? 0) >>> 0, owner);
       if (!handle) handle = next;
       else if (next) {
         const destination = this.get(handle),
-          source = this.get(next);
-        await destination.blit(source, {
-          dx: source.state.offsetX - destination.state.offsetX,
-          dy: source.state.offsetY - destination.state.offsetY,
-        });
-        await this.release(next);
+          source = this.get(next),
+          x = source.state.offsetX - destination.state.offsetX,
+          y = source.state.offsetY - destination.state.offsetY;
+        try {
+          if (physical) {
+            const dx = Math.max(0, x),
+              bottom = Math.max(0, y),
+              height = Math.min(source.height, destination.height - bottom);
+            if (
+              x + source.width > 0 &&
+              y + source.height > 0 &&
+              dx < destination.width &&
+              height > 0
+            )
+              await destination.blit(source, {
+                dx,
+                dy: destination.height - bottom - height,
+                sy: source.height - height,
+                height,
+              });
+          } else await destination.blit(source, { dx: x, dy: y });
+        } finally {
+          await this.release(next);
+        }
       }
     }
     return handle;
