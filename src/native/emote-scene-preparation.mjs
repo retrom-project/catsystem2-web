@@ -3,6 +3,7 @@ import { Binary } from '../binary.mjs';
 import { hasMountedRangeBacking } from '../files.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NativeSceneReader } from './scene-data.mjs';
+import { acquireSceneWorker, canPrepareSceneWorker } from './scene-workers.mjs';
 
 const MAX_SCENE_FILE = 512 * 1024;
 const MAX_SCENE_BODY = 2 * 1024 * 1024;
@@ -35,32 +36,16 @@ function selectModel(declarations, profiles, documents) {
   return selected;
 }
 
-function expandInWorker(packed, length, signal) {
-  const transfer = new Uint8Array(packed);
-  const worker = new Worker(new URL('../emote/psz-worker.mjs', import.meta.url), {
-    type: 'module',
-  });
-  let cancel;
-  return new Promise((resolve, reject) => {
-    cancel = () => resolve(null);
-    signal.addEventListener('abort', cancel, { once: true });
-    worker.onmessage = ({ data }) =>
-      resolve(
-        data?.expanded instanceof Uint8Array && data.expanded.length === length ? data : null,
-      );
-    worker.onerror = (event) => {
-      event.preventDefault();
-      resolve(null);
-    };
-    try {
-      worker.postMessage({ bytes: transfer, length }, [transfer.buffer]);
-    } catch (error) {
-      reject(error);
-    }
-  }).finally(() => {
-    signal.removeEventListener('abort', cancel);
-    worker.terminate();
-  });
+async function expandInWorker(world, packed, length, signal) {
+  const worker = acquireSceneWorker(world, 'model');
+  if (!worker) return null;
+  try {
+    const bytes = new Uint8Array(packed);
+    const data = await worker.send({ bytes, length }, [bytes.buffer], signal);
+    return data?.expanded instanceof Uint8Array && data.expanded.length === length ? data : null;
+  } finally {
+    worker.release();
+  }
 }
 
 export class M2ScenePreparation {
@@ -112,7 +97,7 @@ export class M2ScenePreparation {
   }
 
   resume() {
-    if (typeof Worker !== 'function' || this.owner.world.prepareSceneWorkers === false) return;
+    if (!canPrepareSceneWorker(this.owner.world, 'model')) return;
     const scene = this.#activeScene(),
       entry = scene?.history.path.at(-1);
     if (entry) this.hint(scene, entry.nameBytes ?? entry.scene, entry.value);
@@ -121,8 +106,7 @@ export class M2ScenePreparation {
   hint(scene, filename, block) {
     const { world, profiles } = this.owner;
     if (
-      typeof Worker !== 'function' ||
-      world.prepareSceneWorkers === false ||
+      !canPrepareSceneWorker(world, 'model') ||
       !profiles ||
       world.closed ||
       world.disposalRequested ||
@@ -199,6 +183,7 @@ export class M2ScenePreparation {
     const length = container.u32(8);
     if (length < MAX_PACKED_MODEL || length > MAX_MODEL) return;
     const result = await expandInWorker(
+      world,
       container.range(16, container.u32(4)),
       length,
       job.abort.signal,

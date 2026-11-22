@@ -105,6 +105,8 @@ Retrom PFB 可调用 `.github/rpg-runtime/build-candidate.sh`，传入绝对路�
 `await prepareBrowserModules({ signal })`，准备原生文字与压缩模块以及固定后备字体。
 游戏文件由宿主通过其内容接口离线提供。离线宿主还可为 `CatSystem2` 传入
 `prepareSceneWorkers: false`，让场景图像和模型通过正常解码路径按需加载。
+使用 `prepareBrowserModules({ signal, prepareSceneWorkers: true })` 可在联网时准备后台解码器，
+并将返回值作为新引擎的 `sceneWorkers`。引擎退出时释放这些解码器。
 
 公共测试使用自制数据，覆盖解析边界、VM、FES、CST、E-mote、WebGL 遮罩、Range 读取和 IndexedDB。
 私有游戏验证与公共测试分开运行。先按上文挂载游戏、转换影片，再执行：

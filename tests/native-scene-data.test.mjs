@@ -138,7 +138,7 @@ test('restored scene hints prepare one explicit M2 resource from the same mounte
   globalThis.Worker = class {
     postMessage({ bytes, length }) {
       assert.equal(bytes.length, 65536);
-      pending.resolve(() => this.onmessage({ data: { expanded: new Uint8Array(length) } }));
+      pending.resolve(() => this.onmessage?.({ data: { expanded: new Uint8Array(length) } }));
     }
     terminate() {
       terminated++;

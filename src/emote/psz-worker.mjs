@@ -31,8 +31,13 @@ function buildAtlas(expanded) {
   };
 }
 
-self.onmessage = async ({ data: { bytes, length } }) => {
+self.onmessage = async ({ data }) => {
+  if (data === 'ready') {
+    self.postMessage('ready');
+    return;
+  }
   try {
+    const { bytes, length } = data;
     const expanded = await inflate(bytes, length, 64 * 1024 * 1024);
     let atlas = null;
     try {

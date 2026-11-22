@@ -26,11 +26,12 @@ import { nativeABI, NATIVE_ABIS } from './native/abi/index.mjs';
 import { loadNativeFreeType } from './native/font-backend.mjs';
 import { loadNativeZlib } from './native/zlib.mjs';
 import { NativeInputBindings } from './native/input-bindings.mjs';
+import { prepareSceneWorkerPool } from './native/scene-workers.mjs';
 import { browserWindowsLanguageID } from './native/windows-language-ids.mjs';
 import { NativeSteam } from './native/steam.mjs';
 import { requireCheckpointRestoreOwner } from './native/original-adapter.mjs';
 
-export async function prepareBrowserModules({ signal } = {}) {
+export async function prepareBrowserModules({ signal, prepareSceneWorkers = false } = {}) {
   signal?.throwIfAborted();
   const freeTypeVersions = new Set(
       Object.values(NATIVE_ABIS)
@@ -43,22 +44,22 @@ export async function prepareBrowserModules({ signal } = {}) {
       ...Array.from(freeTypeVersions, loadNativeFreeType),
       new CanvasTextGlyphs().ready(),
     ]);
-  if (!signal) {
-    await prepared;
-    return;
+  if (!signal) await prepared;
+  else {
+    // A launch can stop waiting while the immutable module state remains shared.
+    let onAbort;
+    const aborted = new Promise((resolve, reject) => {
+      onAbort = () => reject(signal.reason);
+      signal.addEventListener('abort', onAbort, { once: true });
+    });
+    try {
+      await Promise.race([prepared, aborted]);
+      signal.throwIfAborted();
+    } finally {
+      signal.removeEventListener('abort', onAbort);
+    }
   }
-  // A launch can stop waiting while the immutable module state remains shared.
-  let onAbort;
-  const aborted = new Promise((resolve, reject) => {
-    onAbort = () => reject(signal.reason);
-    signal.addEventListener('abort', onAbort, { once: true });
-  });
-  try {
-    await Promise.race([prepared, aborted]);
-    signal.throwIfAborted();
-  } finally {
-    signal.removeEventListener('abort', onAbort);
-  }
+  if (prepareSceneWorkers) return await prepareSceneWorkerPool(signal);
 }
 
 export class CatSystem2 {
@@ -75,6 +76,7 @@ export class CatSystem2 {
     randomSeed,
     storageNamespace,
     prepareSceneWorkers = true,
+    sceneWorkers = null,
     transitionalExe = null,
     onState = () => {},
     onClosed = () => {},
@@ -92,6 +94,7 @@ export class CatSystem2 {
       requestedUILanguage: uiLanguage,
       randomSeed,
       prepareSceneWorkers,
+      sceneWorkers,
       transitionalExe,
       steam,
       globals: {},
@@ -225,6 +228,7 @@ export class CatSystem2 {
     const world = new NativeWorld({
       transitionalExe: this.transitionalExe,
       prepareSceneWorkers: this.prepareSceneWorkers,
+      sceneWorkers: this.sceneWorkers,
       game,
       images: this.images,
       host: this.host,
@@ -994,6 +998,7 @@ export class CatSystem2 {
     await attempt(() => this.host.nativeDispose?.());
     if (this.world?.frameSettled) await attempt(() => this.world.frameSettled);
     await attempt(() => this.world?.close());
+    await attempt(() => this.sceneWorkers?.close());
     await attempt(() => this.steam?.close());
     await attempt(() => this.particles?.close());
     await attempt(() => this.emote?.dispose());

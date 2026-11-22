@@ -3,6 +3,7 @@ import { hasMountedRangeBacking } from '../files.mjs';
 import { HG3 } from '../formats/hg3.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NativeFileStorage } from './storage.mjs';
+import { acquireSceneWorker, canPrepareSceneWorker } from './scene-workers.mjs';
 
 const decoder = new TextDecoder('shift_jis');
 const MAX_PACKED = 8 * 1024 * 1024;
@@ -64,33 +65,6 @@ function blockImages(images, reader, block) {
   return backgrounds === 1 && items.length >= 2 ? items : null;
 }
 
-function prepareFrame(worker, bytes, remaining, signal) {
-  const copy = bytes.slice();
-  return new Promise((resolve, reject) => {
-    const finish = (result, error) => {
-      signal.removeEventListener('abort', cancel);
-      worker.onmessage = null;
-      worker.onerror = null;
-      worker.onmessageerror = null;
-      if (error) reject(error);
-      else resolve(result);
-    };
-    const cancel = () => finish(null);
-    signal.addEventListener('abort', cancel, { once: true });
-    worker.onmessage = ({ data }) => finish(data);
-    worker.onerror = (event) => {
-      event.preventDefault();
-      finish(null, new Error('Image preparation worker stopped'));
-    };
-    worker.onmessageerror = () => finish(null, new Error('Image worker reply could not be read'));
-    try {
-      worker.postMessage({ bytes: copy, remaining }, [copy.buffer]);
-    } catch (error) {
-      finish(null, error);
-    }
-  });
-}
-
 export class SceneImagePreparation {
   #loaded = new WeakMap();
   #requested = new WeakMap();
@@ -125,8 +99,7 @@ export class SceneImagePreparation {
     const { world } = this.images,
       { reader } = scene;
     if (
-      typeof Worker !== 'function' ||
-      world.prepareSceneWorkers === false ||
+      !canPrepareSceneWorker(world, 'image') ||
       world.closed ||
       world.disposalRequested ||
       world.transitionalExe ||
@@ -187,7 +160,8 @@ export class SceneImagePreparation {
 
   async #run(job) {
     const { signal } = job.abort,
-      { resourceCache } = this.images.world;
+      world = this.images.world,
+      { resourceCache } = world;
     let worker,
       remaining = MAX_RGBA;
     try {
@@ -202,11 +176,11 @@ export class SceneImagePreparation {
         item.read = file.read(offset, size, signal).catch(() => null);
         const bytes = await item.read;
         if (!bytes || item.claimed || !this.#current(job)) continue;
-        worker ??= new Worker(new URL('./hg3-prepare-worker.mjs', import.meta.url), {
-          type: 'module',
-        });
+        worker ??= acquireSceneWorker(world, 'image');
+        if (!worker) return;
+        const copy = bytes.slice();
         job.decoding = item;
-        const result = await prepareFrame(worker, bytes, remaining, signal);
+        const result = await worker.send({ bytes: copy, remaining }, [copy.buffer], signal);
         job.decoding = null;
         if (!this.#current(job) || item.claimed || !(result?.rgba instanceof Uint8ClampedArray))
           continue;
@@ -216,7 +190,7 @@ export class SceneImagePreparation {
         remaining -= rgba.length;
       }
     } finally {
-      worker?.terminate();
+      worker?.release();
     }
   }
 

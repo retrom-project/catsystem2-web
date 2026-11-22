@@ -2,6 +2,10 @@
 import { HG3 } from '../formats/hg3.mjs';
 
 globalThis.onmessage = async ({ data }) => {
+  if (data === 'ready') {
+    globalThis.postMessage('ready');
+    return;
+  }
   try {
     const { bytes, remaining } = data,
       image = new HG3(bytes),
