@@ -17,6 +17,7 @@ import { PSB } from '../src/formats/psb.mjs';
 import { parseXML } from '../src/xml.mjs';
 import { sourceIdentity } from '../src/identity.mjs';
 import { catScene, translation, kif, hg3, ascii, u32 } from './helpers.mjs';
+import { encodeAuthoredPSB } from './fixtures/emote-psb-fixture.mjs';
 
 test('binary magic includes embedded NUL and rejects incomplete signatures', () => {
   assert.equal(new Binary(new Uint8Array([75, 67, 83, 0])).magic('KCS\0'), true);
@@ -234,6 +235,14 @@ test('HG3 reconstructs known RGBA pixels, including vertical order and horizonta
   const image = new HG3(hg3(2, 2, pixels));
   await image.decode(image.frames[0]);
   assert.deepEqual([...image.frames[0].rgba], [...pixels]);
+});
+test('PSB root strings reuse decoded values without retaining a cache for raw readers', () => {
+  const bytes = encodeAuthoredPSB(['same', 'same']),
+    psb = new PSB(bytes);
+  assert.deepEqual(psb.root, ['same', 'same']);
+  bytes[psb.stringData + psb.strings[0]] = 'n'.charCodeAt(0);
+  assert.deepEqual(psb.value(psb.b.u32(36)), ['name', 'name']);
+  assert.deepEqual(psb.root, ['same', 'same']);
 });
 test('PSB parses tagged scalar/list values and rejects out-of-bounds references', () => {
   const array = [13, 0, 13],

@@ -6,7 +6,11 @@ export async function readPSB(bytes, options) {
   if (b.magic('PSZ\0')) bytes = await inflate(b.range(16, b.u32(4)), b.u32(8));
   return new PSB(bytes, options);
 }
+const utf8 = new TextDecoder();
+
 export class PSB {
+  #rootStrings = null;
+
   constructor(bytes, { allowUnverifiedVersion = false } = {}) {
     this.b = new Binary(bytes, 'PSB');
     if (!this.b.magic('PSB\0')) throw new Error('Expected PSB');
@@ -31,7 +35,7 @@ export class PSB {
         out.push((chr - charset[code]) & 255);
         chr = code;
       }
-      this.names.push(new TextDecoder().decode(new Uint8Array(out.reverse())));
+      this.names.push(utf8.decode(new Uint8Array(out.reverse())));
     }
     this.strings = this.integers({ at: b.u32(16) });
     this.stringData = b.u32(20);
@@ -43,7 +47,14 @@ export class PSB {
     for (let i = 0; i < this.chunkOffsets.length; i++)
       b.requireRange(this.chunkData + this.chunkOffsets[i], this.chunkLengths[i]);
     this.nodes = 0;
-    this.root = this.value(b.u32(36));
+    // Repeated string references in the graph share the decode during this
+    // synchronous parse. Later calls to value() still read the backing bytes.
+    if (b.bytes.buffer instanceof ArrayBuffer) this.#rootStrings = new Map();
+    try {
+      this.root = this.value(b.u32(36));
+    } finally {
+      this.#rootStrings = null;
+    }
   }
   uint(at, count) {
     if (count < 1 || count > 8) throw new Error('PSB invalid integer width');
@@ -90,7 +101,11 @@ export class PSB {
     if (type >= 21 && type <= 24) {
       const index = this.uint(at + 1, type - 20);
       if (index >= this.strings.length) throw new Error('PSB invalid string reference');
-      return b.str(this.stringData + this.strings[index], undefined, 'utf-8');
+      const cached = this.#rootStrings?.get(index);
+      if (cached !== undefined) return cached;
+      const value = b.str(this.stringData + this.strings[index], undefined, 'utf-8');
+      if (this.#rootStrings?.size < 8192) this.#rootStrings.set(index, value);
+      return value;
     }
     if (type >= 25 && type <= 28) return { resource: this.uint(at + 1, type - 24) };
     if (type === 30) return b.f32(at + 1);
