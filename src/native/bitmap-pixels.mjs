@@ -179,8 +179,8 @@ export async function bitmapTransfer(world, destination, source, args, copy, tas
       { dx: dr[0], dy: destination.height - dr[1] - dh, width: dw, height: dh, copy: true },
     );
   }
-  width = Math.min(sr[2] - sr[0], dr[2] - dr[0]);
-  height = Math.min(sr[3] - sr[1], dr[3] - dr[1]);
+  width = Math.min(sr[2] - sr[0], (args.useSourceSize ? destination.width : dr[2]) - dr[0]);
+  height = Math.min(sr[3] - sr[1], (args.useSourceSize ? destination.height : dr[3]) - dr[1]);
   sx = sr[0];
   sy = sr[1];
   dx = dr[0];

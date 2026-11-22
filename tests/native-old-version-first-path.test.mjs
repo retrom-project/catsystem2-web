@@ -1420,10 +1420,14 @@ async function verifyCursorVisibility(t, profile, cursorMessage = 22) {
         result: NATIVE_UNWRITTEN_WORD,
       },
     );
-    await assert.rejects(
-      world.engineMessages.dispatch(main.id, input.id, profile === title67Profile ? 9 : 65),
-      /Unreviewed ABI behavior .*\/messages\.scriptBaseOnly/,
+    const extra = world.engineMessages.dispatch(
+      main.id,
+      input.id,
+      profile === title67Profile ? 9 : 65,
     );
+    if (profile === 'rebellions-jp-engine-2.6.1.63')
+      assert.deepEqual(await extra, { routed: true, handled: true, result: 1 });
+    else await assert.rejects(extra, /Unreviewed ABI behavior .*\/messages\.scriptBaseOnly/);
   } finally {
     world.sound.audio = audio;
     try {
@@ -1992,6 +1996,52 @@ test('63 packed image buffers zero only the mapped metadata record and own the s
   }
 });
 
+test('63 Script bitmaps own their decoded pixels and use the clipped source extent', async (t) => {
+  const rgba = Uint8Array.of(17, 34, 51, 255, 68, 85, 102, 255),
+    { world, audio } = await oldTitleWorld(
+      { 'packed.hg3': hg3(2, 1, rgba) },
+      undefined,
+      'rebellions-jp-engine-2.6.1.63',
+    );
+  t.after(async () => {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  });
+  const main = await world.initialize('empty.kcs'),
+    m = main.machine,
+    call = (id, args) => world.runtime.native('main', id, args, m, main),
+    images = world.graphics.images,
+    { value: empty } = await call(112, [0, 0]),
+    { value: destination } = await call(112, [4, 1]);
+  assert.ok(empty);
+  assert.deepEqual([images.get(empty).width, images.get(empty).height], [0, 0]);
+  await call(114, [empty]);
+  m.writeString('packed', 128);
+  const { value: buffer } = await call(365, [128]),
+    { value: source } = await call(364, [buffer, 0]);
+  assert.equal(images.get(source).owner, main.id);
+  assert.equal(images.get(source).state.bpp, 4);
+  await call(366, [buffer]);
+  m.store(256, 99);
+  m.store(260, 99);
+  assert.deepEqual(await call(362, [source, 256, 260]), { control: 2 });
+  assert.deepEqual([m.load(256), m.load(260)], [2, 1]);
+  await images.get(destination).fill(0, 0, 4, 1, 0xff102030);
+  assert.deepEqual(await call(367, [destination, 0, 0, 1, 1, source, 0, 0, 2, 1]), {
+    control: 2,
+  });
+  assert.deepEqual(
+    await images.get(destination).pixels(),
+    Uint8ClampedArray.of(...rgba, 16, 32, 48, 255, 16, 32, 48, 255),
+  );
+  await call(114, [source]);
+  assert.equal(world.runtime.handles.records.has(source), false);
+  assert.equal(world.runtime.handles.records.has(empty), false);
+});
+
 test('63 Flow and warning FES honor the configured Control key only during the skippable wait', async (t) => {
   const packetAddress = 384,
     keyScript = kcsProgram([
@@ -2144,10 +2194,11 @@ test('63 Flow and warning FES honor the configured Control key only during the s
       await world.engineMessages.dispatch(inactiveScript, keyPlane, edge, planeNativeID, 12),
       { routed: true, handled: true, result: 1 },
     );
-  await assert.rejects(
-    world.engineMessages.dispatch(main.id, keyPlane, 65, planeNativeID, 12),
-    /Unreviewed ABI behavior .*\/messages\.scriptBaseOnly/,
-  );
+  assert.deepEqual(await world.engineMessages.dispatch(main.id, keyPlane, 65, planeNativeID, 12), {
+    routed: true,
+    handled: true,
+    result: 1,
+  });
 });
 
 test('63 startup file GCALLs import bounded flags through the selected Script owner', async (t) => {

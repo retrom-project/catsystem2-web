@@ -1116,6 +1116,11 @@ sends zero. Both return control 2.
 Main365 owns the full packed resource from the image category. Main368
 initializes the 36-byte metadata output for a live image owner and mapped
 destination before inspecting the frame. Main366 releases the buffer owner.
+Main112 allocates a Script bitmap, including a valid zero-sized bitmap,
+and Main114 releases it. Main364 decodes an owned packed frame into an
+independent bitmap with four-byte pixels. Main362 reads the recorded canvas
+size with the bitmap dimensions as fallback. Main367 starts at the clipped
+destination and uses the clipped source extent until the destination edge.
 
 Main308 sets the motion manager's float32 speed. Main785 sets the display
 log's unsigned block limit and immediately prunes its oldest blocks.

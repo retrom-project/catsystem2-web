@@ -66,6 +66,7 @@ export class NativeBitmapOperations {
       if (source) {
         const words = Array.from({ length: 10 }, (_, i) => a(i));
         words.operation = 'clipped-blend';
+        words.useSourceSize = nativeABI(this.world.profile).graphics.bitmapBlitUsesSourceSize;
         await bitmapTransfer(this.world, bitmap, source, words, false, task);
       }
       return done();
