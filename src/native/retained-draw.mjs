@@ -6,6 +6,8 @@ import { NativeBitmap } from './image.mjs';
 import { RetainedAnimation } from './retained-animation.mjs';
 import { rasterizeRetainedBitmap, flipBitmapRows } from './raster-kernel.mjs';
 
+const MAX_FORCE_SOURCE_BYTES = 2 * 1024 * 1024;
+
 function readyRasterSources(graphics, bitmap, pixels, items) {
   const { images, vramHandle } = graphics;
   if (vramHandle) {
@@ -46,6 +48,102 @@ function readyRasterSources(graphics, bitmap, pixels, items) {
   return layers;
 }
 
+function forceRasterSources(layers, height) {
+  const sources = new Map();
+  let bytes = 0;
+  for (const { item, state, rgba } of layers) {
+    if (!item.visible || !item.alpha || !state.width || !state.height) continue;
+    const { width, height: sourceHeight } = state,
+      clip = state.clip ?? [0, 0, width, sourceHeight];
+    if (
+      item.mode !== 0 ||
+      state.bpp !== 4 ||
+      state.mask ||
+      state.blendType ||
+      !Number.isSafeInteger(width) ||
+      !Number.isSafeInteger(sourceHeight) ||
+      clip[0] < 0 ||
+      clip[1] < 0 ||
+      clip[2] > width ||
+      clip[3] > sourceHeight ||
+      rgba.byteLength !== width * sourceHeight * 4 ||
+      rgba.byteOffset % 4 ||
+      !(rgba.buffer instanceof ArrayBuffer)
+    )
+      return null;
+    const x =
+        ((state.offsetX | 0) + truncateFloat32(item.position[0]) - truncateFloat32(item.base[0])) |
+        0,
+      y =
+        ((state.offsetY | 0) + truncateFloat32(item.position[1]) - truncateFloat32(item.base[1])) |
+        0,
+      top = Math.max(0, item.clip[1], y + clip[1]),
+      bottom = Math.min(height, item.clip[3], y + clip[3]);
+    if (top >= bottom) continue;
+    bytes += rgba.byteLength;
+    if (bytes > MAX_FORCE_SOURCE_BYTES) return null;
+    sources.set(item.key, {
+      top,
+      bottom,
+      shape: [
+        item.layer,
+        item.alpha,
+        state.alphaHint,
+        width,
+        sourceHeight,
+        x,
+        y,
+        ...item.clip,
+        ...clip,
+      ],
+      pixels: new Uint32Array(rgba.buffer, rgba.byteOffset, rgba.byteLength / 4),
+    });
+  }
+  return sources;
+}
+
+function sameForceSource(before, after) {
+  if (!after || before.shape.some((value, i) => value !== after.shape[i])) return false;
+  const a = before.pixels,
+    b = after.pixels;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
+}
+
+function forceRasterBand(before, current, renderer) {
+  let [top, bottom] = before.touched;
+  const include = (y0, y1) => {
+    top = Math.min(top, y0);
+    bottom = Math.max(bottom, y1);
+  };
+  for (const [, y0, , y1] of renderer.dirtyRects) include(y0, y1);
+  const covered = (source) => top <= source.top && bottom >= source.bottom;
+  for (const [key, source] of before.sources) {
+    const next = current.get(key);
+    if (next && covered(source) && covered(next)) continue;
+    if (sameForceSource(source, next)) {
+      next.snapshot = source.pixels;
+      continue;
+    }
+    include(source.top, source.bottom);
+    if (next) include(next.top, next.bottom);
+  }
+  for (const [key, source] of current)
+    if (!before.sources.has(key)) include(source.top, source.bottom);
+  top = Math.max(top, 0);
+  bottom = Math.min(bottom, renderer.height);
+  // A full-width band keeps the same left and right transparent RGB borders
+  // as a complete paint. Unrelated partial renders may have changed any row
+  // they intersected, so their rows are also recomposited here.
+  return Number.isInteger(top) &&
+    Number.isInteger(bottom) &&
+    top < bottom &&
+    (bottom - top) * 2 < renderer.height
+    ? [0, top, renderer.width, bottom]
+    : null;
+}
+
 function outputState(state, pixels) {
   const frame = {};
   for (const field of Object.keys(state)) if (field !== 'rgba') frame[field] = state[field];
@@ -54,6 +152,8 @@ function outputState(state, pixels) {
 }
 
 export class NativeRetainedDraw {
+  #lastForce = null;
+
   constructor(world) {
     this.world = world;
     this.items = new Map();
@@ -417,7 +517,7 @@ export class NativeRetainedDraw {
       previous = ordinary ? bitmap.retainedBacking() : null,
       bitmapPixels = await (previous?.pixels ?? bitmap.pixels());
     if (!areas.length && !forceOutput && (!draw.state.enabled || !draw.state.pending)) return;
-    const area = areas.length
+    let area = areas.length
       ? [
           Math.min(...areas.map((a) => a[0])),
           Math.min(...areas.map((a) => a[1])),
@@ -431,38 +531,65 @@ export class NativeRetainedDraw {
     area[3] = Math.min(renderer.height, area[3]);
     const hasArea = area[0] < area[2] && area[1] < area[3],
       items = hasArea ? renderer.items.toSorted((a, b) => a.layer - b.layer || a.key - b.key) : [],
-      ready =
-        hasArea &&
+      plainBacking =
         ordinary &&
-        !forceOutput &&
-        !draw.state.pending &&
         !renderer.externalPaint &&
-        (area[3] - area[1]) * 2 < renderer.height &&
-        area.every(Number.isInteger) &&
         bitmap.width === renderer.width &&
         bitmap.height === renderer.height &&
-        bitmapPixels.length === renderer.width * renderer.height * 4 &&
+        bitmapPixels.length === renderer.width * renderer.height * 4,
+      remembered = this.#lastForce,
+      clearColor = renderer.clearColor,
+      prior =
+        remembered?.renderer === renderer &&
+        previous &&
+        remembered.backing === previous &&
+        remembered.revision === bitmap.state.revision &&
+        remembered.clearColor === clearColor,
+      forceLayers =
+        hasArea &&
+        forceOutput &&
+        plainBacking &&
+        items.length <= 32 &&
+        bitmapPixels.byteLength >= 1024 * 1024 &&
+        area[0] === 0 &&
+        area[1] === 0 &&
+        area[2] === renderer.width &&
+        area[3] === renderer.height &&
         readyRasterSources(graphics, bitmap, bitmapPixels, items),
+      forceSources = forceLayers && forceRasterSources(forceLayers, renderer.height),
+      band =
+        forceSources &&
+        prior &&
+        bitmap.retainedBacking() === previous &&
+        forceRasterBand(remembered, forceSources, renderer);
+    if (band) area = band;
+    const ready = band
+        ? forceLayers
+        : hasArea &&
+          plainBacking &&
+          !forceOutput &&
+          !draw.state.pending &&
+          (area[3] - area[1]) * 2 < renderer.height &&
+          area.every(Number.isInteger) &&
+          readyRasterSources(graphics, bitmap, bitmapPixels, items),
       reuse = ready && previous && bitmap.retainedBacking() === previous,
       firstRow = reuse ? renderer.height - area[3] : 0,
       rowBytes = renderer.width * 4,
       start = firstRow * rowBytes,
       replaceRows =
         !reuse &&
-        ordinary &&
         hasArea &&
-        !renderer.externalPaint &&
+        plainBacking &&
         area[0] === 0 &&
         area[2] === renderer.width &&
         area.every(Number.isInteger) &&
         bitmapPixels instanceof Uint8ClampedArray &&
-        bitmapPixels.buffer instanceof ArrayBuffer &&
-        bitmap.width === renderer.width &&
-        bitmap.height === renderer.height &&
-        bitmapPixels.length === rowBytes * renderer.height,
-      rows = reuse
-        ? bitmapPixels.slice(start, start + (area[3] - area[1]) * rowBytes)
-        : new Uint8ClampedArray(replaceRows ? bitmapPixels.length : bitmapPixels),
+        bitmapPixels.buffer instanceof ArrayBuffer,
+      rows = band
+        ? new Uint8ClampedArray((area[3] - area[1]) * rowBytes)
+        : reuse
+          ? bitmapPixels.slice(start, start + (area[3] - area[1]) * rowBytes)
+          : new Uint8ClampedArray(replaceRows ? bitmapPixels.length : bitmapPixels),
       clearSources =
         replaceRows && renderer.clearColor === 0 && draw.state.pending && items.length <= 32
           ? readyRasterSources(graphics, bitmap, bitmapPixels, items)
@@ -491,10 +618,11 @@ export class NativeRetainedDraw {
       rows.set(bitmapPixels.subarray(0, first));
       rows.set(bitmapPixels.subarray(end), end);
     }
-    let publication = null;
+    let publication = null,
+      revision;
     try {
       if (hasArea) {
-        if (!renderer.externalPaint && (!replaceRows || renderer.clearColor !== 0)) {
+        if (!renderer.externalPaint && (!(replaceRows || band) || renderer.clearColor !== 0)) {
           const color = renderer.clearColor,
             rgba = Uint8Array.of(
               (color >>> 16) & 255,
@@ -511,8 +639,8 @@ export class NativeRetainedDraw {
         }
         // A cleared region can use its ready normal sources in one
         // synchronous pass. The rasterizer records each clipped write area.
-        if (reuse || cleared) {
-          for (const { item, state, rgba } of reuse ? ready : clearSources)
+        if (reuse || cleared || forceSources) {
+          for (const { item, state, rgba } of reuse ? ready : cleared ? clearSources : forceLayers)
             rasterizeRetainedBitmap(
               rows,
               renderer.width,
@@ -539,6 +667,9 @@ export class NativeRetainedDraw {
             );
           }
         }
+        if (forceSources)
+          for (const source of forceSources.values())
+            source.pixels = source.snapshot ?? source.pixels.slice();
         if (reuse) {
           // The copied rows include the adjacent pixels that receive zero-alpha RGB.
           bitmapPixels.set(rows, start);
@@ -551,7 +682,9 @@ export class NativeRetainedDraw {
         // returns, a nested Draw must take the full-copy path.
         if (publication) publication.publishing = true;
         bitmap.state.source = null;
-        await bitmap.changed();
+        const changed = bitmap.changed();
+        revision = bitmap.state.revision;
+        await changed;
       }
       if ((draw.state.enabled && (areas.length || draw.state.pending)) || forceOutput) {
         const pixels = reuse ? bitmapPixels : rows;
@@ -575,6 +708,36 @@ export class NativeRetainedDraw {
     } finally {
       if (publication) publication.publishing = false;
     }
+    if (
+      hasArea &&
+      this.#lastForce === remembered &&
+      (forceSources || remembered?.renderer === renderer)
+    ) {
+      if (
+        publication &&
+        bitmap.retainedBacking() === publication &&
+        bitmap.state.revision === revision
+      ) {
+        if (forceSources) {
+          this.#lastForce = {
+            renderer,
+            backing: publication,
+            revision,
+            clearColor,
+            sources: forceSources,
+            touched: [renderer.height, 0],
+          };
+          return;
+        }
+        if (prior && reuse && !forceOutput) {
+          remembered.revision = revision;
+          remembered.touched[0] = Math.min(remembered.touched[0], area[1]);
+          remembered.touched[1] = Math.max(remembered.touched[1], area[3]);
+          return;
+        }
+      }
+      this.#lastForce = null;
+    }
   }
   async remove(draw, key) {
     const id = this.key(draw, key),
@@ -584,6 +747,7 @@ export class NativeRetainedDraw {
     await this.sources.release(record.source);
   }
   async removeSurface(draw) {
+    if (this.#lastForce?.renderer === draw.state.renderer) this.#lastForce = null;
     for (const [id, record] of [...this.items])
       if (record.surface === draw.record.id) {
         this.items.delete(id);
@@ -594,9 +758,11 @@ export class NativeRetainedDraw {
     return structuredClone({ items: [...this.items] });
   }
   restore(state) {
+    this.#lastForce = null;
     this.items = new Map(structuredClone(state.items));
   }
   async close() {
+    this.#lastForce = null;
     for (const record of this.items.values()) await this.sources.release(record.source);
     this.items.clear();
   }

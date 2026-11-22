@@ -243,6 +243,47 @@ test('a forced Draw retains its new backing for the next small raster', async ()
   );
 });
 
+test('a partial forced raster matches a full paint and still overwrites VRAM outside its rows', async () => {
+  const world = fixture(),
+    id = await surface(world, 256, 1024),
+    images = world.graphics.images,
+    task = world.graphics.drawTasks.get(id),
+    bitmap = world.graphics.surface(id).bitmap,
+    earlier = images.create(3, 2),
+    later = images.create(2, 1),
+    oldSource = images.get(earlier),
+    externallyWritable = images.get(later);
+  await oldSource.fill(0, 0, 3, 2, 0x8002a31f);
+  await externallyWritable.fill(0, 0, 2, 1, 0x00443492);
+  oldSource.state.alphaHint = externallyWritable.state.alphaHint = 2;
+  await draw(world, id, 7, earlier, { position: [2, 30], alpha: 200 });
+  await draw(world, id, 8, later, { position: [7, 314] });
+  await task.message([99, 292, 0, 0]);
+  const backing = bitmap.retainedBacking();
+  assert(backing);
+  task.state.renderer.dirtyRects = [];
+
+  await oldSource.fill(0, 0, 3, 2, 0x8022b33f);
+  await task.render([1, 30, 6, 32]);
+  // This alias has changed without a new bitmap revision or dirty rectangle.
+  (await externallyWritable.pixels()).set([44, 55, 66, 0]);
+  const vram = await images.get(world.graphics.vramHandle).pixels(),
+    foreign = 700 * 256 * 4;
+  vram.set([22, 33, 44, 255], foreign);
+  await task.message([99, 292, 0, 0]);
+  assert.equal(bitmap.retainedBacking(), backing);
+  assert.deepEqual([...vram.slice(foreign, foreign + 4)], [0, 0, 0, 0]);
+  const exact = backing.pixels.slice(),
+    changed = ((1024 - 1 - 314) * 256 + 7) * 4;
+  assert.deepEqual([...exact.slice(changed, changed + 4)], [44, 55, 66, 0]);
+
+  const borrowed = await bitmap.pixels();
+  await task.message([99, 292, 0, 0]);
+  assert.notEqual(bitmap.retainedBacking(), backing);
+  assert.deepEqual(await bitmap.pixels(), exact);
+  assert.deepEqual(borrowed, exact);
+});
+
 test('a cleared pending Draw preserves borrowed rows, touching transparent borders and clipped pixels', async (t) => {
   const world = fixture(),
     id = await surface(world, 10, 6),
