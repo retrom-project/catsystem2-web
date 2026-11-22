@@ -83,6 +83,11 @@ npm run test:full
 分组与 fixture 规则见 [问题定位](docs/debugging.md#原生差分)。
 
 `dist/` 是可直接静态托管的浏览器文件及内容摘要，不包含游戏。
+Retrom PFB 可调用 `.github/rpg-runtime/build-candidate.sh`，传入绝对路径指向的空目录。
+使用上文准备的固定 zlib、FreeType 和 Node.js 依赖，以及 GNU tar 和 gzip。
+候选包含带完整资源清单和许可证的 `catsystem2-web.tar.gz`、单独的 MPL 许可证和
+`retrom-core-candidate.json`。归档规范化文件顺序、权限、拥有者和时间戳。
+
 公共测试使用自制数据，覆盖解析边界、VM、FES、CST、E-mote、WebGL 遮罩、Range 读取和 IndexedDB。
 私有游戏验证与公共测试分开运行。先按上文挂载游戏、转换影片，再执行：
 

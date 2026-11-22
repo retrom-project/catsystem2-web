@@ -2,19 +2,22 @@
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { join, dirname } from 'node:path';
+import { join, dirname, isAbsolute } from 'node:path';
 import { productionFiles, validateOrdinaryDistribution } from './production-files.mjs';
 import { checkPluginBoundary, validatePluginDistribution } from './check-plugin-boundary.mjs';
 import { checkNativeEntry } from './check-native-entry.mjs';
 import { walk } from './node-files.mjs';
 import { NATIVE_ZLIB_FILES, NATIVE_ZLIB_SHA256 } from '../src/native/zlib-artifact.mjs';
 import { NATIVE_FREETYPE_FILES, NATIVE_FREETYPE_SHA256 } from '../src/native/freetype-artifact.mjs';
-const root = fileURLToPath(new URL('..', import.meta.url)),
-  output = join(root, 'dist');
+const root = fileURLToPath(new URL('..', import.meta.url));
+const args = process.argv.slice(2);
+if (args.length && (args.length !== 2 || args[0] !== '--output' || !isAbsolute(args[1])))
+  throw new Error('Usage: npm run build -- [--output <new absolute directory>]');
+const output = args[1] ?? join(root, 'dist');
 await checkNativeEntry(root);
 const plan = await productionFiles(root);
 await checkPluginBoundary(root);
-await rm(output, { recursive: true, force: true });
+if (!args.length) await rm(output, { recursive: true, force: true });
 await mkdir(output);
 for (const path of plan.files.filter((path) => !path.startsWith('vendor/'))) {
   await mkdir(dirname(join(output, path)), { recursive: true });
