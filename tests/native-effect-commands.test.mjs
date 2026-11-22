@@ -4,6 +4,35 @@ import assert from 'node:assert/strict';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { floatBits } from '../src/kcs.mjs';
 
+test('63 authored screen capture owns its targets and skips a failed preparation', async () => {
+  const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
+  try {
+    const { main, stageRenderer } = world;
+    const call = (id, args) => world.runtime.native('main', id, args, main.machine, main);
+    const rendering = world.screenEffects.rendering;
+    world.graphics.view.configure({
+      clientWidth: 4,
+      clientHeight: 3,
+      drawingRectangle: [0, 0, 4, 3],
+    });
+    assert.deepEqual(await call(858, [2]), { control: 2 });
+    assert.equal(rendering.captures.length, 2);
+    const [first, second] = rendering.captures;
+    const revision = (id) => stageRenderer.surfaces.get(id).revision;
+    const range = [floatBits(1), floatBits(2)];
+    assert.deepEqual(await call(859, [1, ...range]), { control: 2 });
+    assert.equal(revision(second), 1);
+    assert.deepEqual(await call(568, range), { control: 2 });
+    assert.deepEqual(rendering.captures, [first, second]);
+    assert.equal(revision(first), 1);
+    world.configuration.fields.general.renderTargetCount = 0;
+    assert.deepEqual(await call(568, range), { control: 2 });
+    assert.equal(revision(first), 1);
+  } finally {
+    await world.close();
+  }
+});
+
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
   test(
     profile + ' JS effect wrappers retain masks, clocks and independent restored state',

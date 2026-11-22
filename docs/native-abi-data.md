@@ -1248,6 +1248,9 @@ operations return control 2. Main 452 delivers Base message 23, returning the
 FES task's signed exit word or the initialized -1 when no receiver writes it.
 Main 453 sets the exit word of the current task. Main 94 clamps signed alpha
 to 0–255 and sends raw Plane 60 with dispatch flag 1 to the selected target.
+Main 568 prepares one screen capture and draws the supplied priority range
+into slot zero after successful preparation. Main 858 and 859 expose the
+separate count and slot operations.
 
 Main 78 sends an eight-word textured rectangle packet to the live Plane.
 Main 466 writes the coordinate mode into the current D3D render model.

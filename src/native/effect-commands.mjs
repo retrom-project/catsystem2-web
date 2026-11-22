@@ -83,8 +83,7 @@ export class NativeEffectCommands {
     if (id === 0x35a) await rendering.prepare(a[0]);
     else if (id === 0x35b) await rendering.capture(a[0], bitsFloat(a[1]), bitsFloat(a[2]));
     else if (id === 0x238) {
-      await rendering.prepare(1);
-      await rendering.capture(0, bitsFloat(a[0]), bitsFloat(a[1]));
+      if (await rendering.prepare(1)) await rendering.capture(0, bitsFloat(a[0]), bitsFloat(a[1]));
     } else if (id === 0x208) {
       if (!a[0]) return nativeReply(1, 0);
       // An untouched result is the address of the wrapper's own result word.
