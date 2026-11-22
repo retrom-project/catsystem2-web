@@ -13,6 +13,13 @@ const utf8 = (text) => new TextEncoder().encode(text),
   join = (...parts) => Uint8Array.from(parts.flatMap((part) => [...part])),
   corpora = [utf8('あ'), encodeCP932('猫'), Uint8Array.of(0xc2, 0xa5)];
 
+test('unreviewed STRING layouts report the profile and object type', () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63';
+  assert.throws(() => new NativeFESTextLayout({ profile, type: 21 }), {
+    message: `Unrecovered FES text layout object type 21 for ${profile}`,
+  });
+});
+
 function regions() {
   const frame = hg3(24, 16, new Uint8Array(24 * 16 * 4)),
     output = new Uint8Array(frame.length * 2 - 12),

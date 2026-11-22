@@ -53,8 +53,9 @@ const NATIVE_NOOP = new Set(
 );
 export class NativeFESTextLayout {
   constructor({ profile, type = 21, bytes, profiles = {}, revision = 0 } = {}) {
-    const definition = nativeABI(profile);
-    if (!Object.hasOwn(definition.text.fesLayouts, type))
+    const definition = nativeABI(profile),
+      layouts = definition.text.fesLayouts;
+    if (!layouts || !Object.hasOwn(layouts, type))
       throw new Error(`Unrecovered FES text layout object type ${type} for ${profile}`);
     this.profile = profile;
     this.type = type;
@@ -62,7 +63,7 @@ export class NativeFESTextLayout {
     if (this.bytes.length !== 0x800) throw new Error('Invalid FES text layout record');
     this.profiles = structuredClone(profiles);
     this.revision = revision;
-    this.abi = definition.text.fesLayouts[type];
+    this.abi = layouts[type];
     this.definition = definition;
   }
   word(index, value) {
