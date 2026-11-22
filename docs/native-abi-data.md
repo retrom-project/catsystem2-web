@@ -1113,6 +1113,11 @@ selected vertex or texture transform, and the scale receiver uses the
 vertex transform. Blend values 1–5 reach the renderer and other values
 select mode zero.
 
+Main 343 and 345 write the live Plane's cached width and height or its
+four local bounds coordinates into VM memory. These bounds come from the
+local shape before the Plane's position, scale and matrix are applied.
+Target zero preserves the output addresses. Both wrappers return control 2.
+
 Main 630 delivers raw FES message 325 with the formatted event and an
 optional 32-byte object name followed by its index. The receiver runs the
 event, synchronizes changed resources and forces the bound Draw surface when

@@ -1732,6 +1732,19 @@ test('63 textured Plane coordinate mode belongs to its current render model', as
     assert.equal(plane.state.blendMode, 3);
     assert.deepEqual(await call(402, [target, 9]), { control: 2 });
     assert.equal(plane.state.blendMode, 0);
+    machine.bytes(208, 16).fill(0xa5);
+    assert.deepEqual(await call(345, [0, 208, 212, 216, 220]), { control: 2 });
+    assert.deepEqual([...machine.bytes(208, 16)], new Array(16).fill(0xa5));
+    assert.deepEqual(await call(345, [target, 208, 212, 216, 220]), { control: 2 });
+    assert.deepEqual(
+      [208, 212, 216, 220].map((at) => bitsFloat(machine.load(at))),
+      [0, 0, 20.5, 12.25],
+    );
+    assert.deepEqual(await call(343, [target, 224, 228]), { control: 2 });
+    assert.deepEqual(
+      [224, 228].map((at) => bitsFloat(machine.load(at))),
+      [20.5, 12.25],
+    );
     assert.deepEqual(await call(78, [target, width, height]), { control: 2 });
     assert.equal(plane.state.coordMode, 0);
     assert.deepEqual(await call(79, [target, width, height, 0xffeeeeee]), { control: 2 });
