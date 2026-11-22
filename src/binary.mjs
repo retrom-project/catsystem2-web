@@ -90,13 +90,14 @@ export async function inflate(bytes, expected, limit = 256 * 1024 * 1024) {
     (!Number.isSafeInteger(expected) || expected < 0 || expected > limit)
   )
     throw new Error(`Invalid inflated size ${expected}`);
-  const streamLargeInput =
+  const snapshotInput =
     expected !== undefined &&
     bytes instanceof Uint8Array &&
-    bytes.byteLength > INFLATE_INPUT_CHUNK &&
     bytes.buffer instanceof ArrayBuffer &&
     !bytes.buffer.resizable;
-  const stream = streamLargeInput ? snapshotChunks(bytes) : new Blob([bytes]).stream();
+  const streamLargeInput = snapshotInput && bytes.byteLength > INFLATE_INPUT_CHUNK;
+  // Feed the snapshot directly so small frames avoid waiting on Blob stream I/O.
+  const stream = snapshotInput ? snapshotChunks(bytes) : new Blob([bytes]).stream();
   const reader = stream.pipeThrough(new DecompressionStream('deflate')).getReader();
   let length = 0;
   const chunks = [];

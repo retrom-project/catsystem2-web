@@ -23,30 +23,32 @@ test('zlib validates output size, truncation, and an explicit expansion ceiling'
   await assert.rejects(inflate(compressed.subarray(0, -1), 4096));
   await assert.rejects(inflate(compressed, 4096, 1024), /size/);
 });
-test('large sized zlib streams retain input snapshots and validate the whole stream', async () => {
-  const bytes = Uint8Array.from({ length: 131072 }, (_, at) => (at * 71 + 23) & 255);
-  const compressed = new Uint8Array(deflateSync(bytes, { level: 0 }));
-  const backing = new Uint8Array(compressed.length + 7);
-  backing.set(compressed, 3);
-  const input = backing.subarray(3, -4);
-  const pending = [inflate(input, bytes.length), inflate(input, bytes.length)];
-  input.fill(0);
-  const [first, second] = await Promise.all(pending);
-  assert.deepEqual(first, bytes);
-  assert.deepEqual(second, bytes);
-  assert.notEqual(first.buffer, second.buffer);
-  assert.equal(first.byteLength, first.buffer.byteLength);
+for (const length of [4096, 131072]) {
+  test(`sized zlib stream (${length} bytes) keeps its input snapshot and validates the whole stream`, async () => {
+    const bytes = Uint8Array.from({ length }, (_, at) => (at * 71 + 23) & 255);
+    const compressed = new Uint8Array(deflateSync(bytes, { level: 0 }));
+    const backing = new Uint8Array(compressed.length + 7);
+    backing.set(compressed, 3);
+    const input = backing.subarray(3, -4);
+    const pending = [inflate(input, bytes.length), inflate(input, bytes.length)];
+    input.fill(0);
+    const [first, second] = await Promise.all(pending);
+    assert.deepEqual(first, bytes);
+    assert.deepEqual(second, bytes);
+    assert.notEqual(first.buffer, second.buffer);
+    assert.equal(first.byteLength, first.buffer.byteLength);
 
-  const corruptChecksum = compressed.slice();
-  corruptChecksum[corruptChecksum.length - 1] ^= 1;
-  const trailing = new Uint8Array(compressed.length + 1);
-  trailing.set(compressed);
-  trailing[compressed.length] = 80;
-  for (const malformed of [compressed.subarray(0, -1), corruptChecksum, trailing])
-    await assert.rejects(inflate(malformed, bytes.length));
-  await assert.rejects(inflate(compressed, bytes.length - 1), /exceeds/);
-  await assert.rejects(inflate(compressed, bytes.length + 1), /Inflated size/);
-});
+    const corruptChecksum = compressed.slice();
+    corruptChecksum[corruptChecksum.length - 1] ^= 1;
+    const trailing = new Uint8Array(compressed.length + 1);
+    trailing.set(compressed);
+    trailing[compressed.length] = 80;
+    for (const malformed of [compressed.subarray(0, -1), corruptChecksum, trailing])
+      await assert.rejects(inflate(malformed, bytes.length));
+    await assert.rejects(inflate(compressed, bytes.length - 1), /exceeds/);
+    await assert.rejects(inflate(compressed, bytes.length + 1), /Inflated size/);
+  });
+}
 test('KIF reads entry boundaries and refuses encrypted input explicitly', async () => {
   const archive = await KIFArchive.open(
     new BlobFile(new Blob([kif([['test.bin', new Uint8Array([1, 2, 3])]])])),
