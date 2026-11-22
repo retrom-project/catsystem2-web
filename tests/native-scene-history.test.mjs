@@ -123,6 +123,12 @@ test('63 direct history saves read and write original compact records', async ()
     assert.deepEqual(file.read(90), new Uint8Array());
     assert.deepEqual(await call(386, [save, 90, target, 1]), { control: 1, value: 1 });
     assert.equal(restored.path.length, 0);
+    assert.deepEqual(await call(389, [0]), { control: 1, value: 0 });
+    assert.deepEqual(await call(389, [save]), { control: 1, value: 1 });
+    assert.equal(file.capacity, 0x80000);
+    assert.equal(file.used, 0);
+    assert.equal(file.tag, 0x89234567);
+    assert.equal(file.read(89), null);
   } finally {
     await world.close({ flushFiles: false });
   }

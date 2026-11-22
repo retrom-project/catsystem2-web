@@ -1101,6 +1101,8 @@ CP932 character boundaries.
 
 Main390 clones a global-file owner, retaining its tag and capacity and
 copying its records independently of the source.
+Main389 clears the entries and returns the owner to its 512 KiB initial
+capacity while preserving the tag.
 Main248 reads that tag. Main385 and Main386 write and restore the seen or
 path list through an entry. The .63 format uses 40-byte records without a
 header, followed by 72-byte numbered-string records. An empty list has an
