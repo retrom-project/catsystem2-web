@@ -225,10 +225,9 @@ for (const [version, profile, soundTypeMessage, otherType] of versions) {
         await assert.rejects(world.window.broadcast(), /Unreviewed.*broadcast/);
         await assert.rejects(world.window.command(40096), /Unreviewed.*windowReturnTitle/);
         assert.deepEqual(world.window.snapshot(), windowState);
-        assert.throws(
-          () => world.runtime.native('main', 385, [0, 0, 0, 0], machine, main),
-          /Unsupported|unrecovered/i,
-        );
+        const historySave = () => world.runtime.native('main', 385, [0, 0, 0, 0], machine, main);
+        if (version === '2.6.1.63') assert.deepEqual(historySave(), { control: 1, value: 0 });
+        else assert.throws(historySave, /Unsupported|unrecovered/i);
         assert.throws(
           () => world.runtime.native('main', 856, [0, 0, 0, 0, 0, 0, 0], machine, main),
           /Unsupported|unrecovered/i,
@@ -311,7 +310,7 @@ for (const [version, profile, soundTypeMessage, otherType] of versions) {
 }
 
 test('old ABI Runtime binds only present slots and preserves unknown dispatch', () => {
-  for (const [, profile] of versions) {
+  for (const [version, profile] of versions) {
     const runtime = new NativeRuntime({ profile, read: async () => null });
     const tables = [...runtime.tables].map(([name, entries]) => [name, entries.length]);
     const callback = () => {
@@ -338,10 +337,9 @@ test('old ABI Runtime binds only present slots and preserves unknown dispatch', 
     assert.equal(runtime.handlers.get('main:359'), callback);
     const machine = { pc: 16, debug: null },
       task = { id: 1, name: 'owned-runtime-control' };
-    for (const [id, words] of [
-      [385, 4],
-      [856, 7],
-    ]) {
+    const unknown = [[856, 7]];
+    if (version === '2.6.1.67') unknown.push([385, 4]);
+    for (const [id, words] of unknown) {
       assert.equal(runtime.register('main', id, callback), true);
       assert.throws(
         () => runtime.native('main', id, new Array(words).fill(0), machine, task),
@@ -2975,10 +2973,10 @@ async function verifyCloseBoundaries(profile, emptyStringResult) {
     await assert.rejects(() => world.runtime.scheduler.execute(empty), /unwritten|uninitialized/);
     assert.equal(empty.machine.load(64), 0xa5a5a5a5);
     assert.deepEqual(world.runtime.handles.snapshot(), before);
-    for (const id of [239, 385, 856, 871])
+    for (const id of [239, 856, 871])
       assert.equal(nativeABI(profile).tables.main.entries[id].status, 'unknown');
     if (profile === title67Profile)
-      for (const id of [836, 869, 873])
+      for (const id of [385, 836, 869, 873])
         assert.equal(nativeABI(profile).tables.main.entries[id].status, 'unknown');
   } finally {
     await source.world.close();

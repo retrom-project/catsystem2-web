@@ -8,6 +8,7 @@ import {
 } from '../src/native/scene-history.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeGlobalFile, createGlobalEntries } from '../src/native/persistence.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 test('history encoding preserves current record fields, duplicate string keys and unused tails', () => {
   const h = new NativeSceneHistory();
@@ -80,6 +81,51 @@ test('scene persistence natives write original history bytes through the shared 
   assert.equal(nativeSceneData(0xf9, [file, 2, 42, 1], null, services).value, 1);
   assert.equal(destination.history.path[0].value, 10);
   assert.equal(nativeSceneData(0xf9, [file, 3, 42, 1], null, services).value, 0);
+});
+
+test('63 direct history saves read and write original compact records', async () => {
+  const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
+  try {
+    const { main } = world,
+      m = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, m, main),
+      source = (await call(323, [])).value,
+      target = (await call(323, [])).value,
+      save = (await call(238, [0x89234567])).value,
+      data = world.runtime.handles.get(source, 'scene-data'),
+      file = world.runtime.handles.get(save, 'global-file');
+    assert.deepEqual(await call(248, [save]), { control: 1, value: 0x89234567 });
+    assert.deepEqual(await call(248, [0]), { control: 1, value: 0 });
+    m.writeString('start.cst', 256);
+    await call(329, [source, 256, 3]);
+    data.history.setString(0, 1, 2, Uint8Array.of(65));
+    data.history.path[0].extra = Uint8Array.of(7, 8);
+    assert.deepEqual(await call(385, [save, 89, source, 1]), { control: 1, value: 1 });
+    const packed = file.read(89),
+      view = new DataView(packed.buffer, packed.byteOffset, packed.length);
+    assert.equal(packed.length, 112);
+    assert.deepEqual([...packed.subarray(0, 6)], [115, 116, 97, 114, 116, 0]);
+    assert.deepEqual(
+      [32, 36, 40, 44, 48].map((offset) => view.getUint32(offset, true)),
+      [3, 1, 1, 2, 65],
+    );
+    assert.deepEqual(await call(386, [save, 89, target, 1]), { control: 1, value: 1 });
+    const restored = world.runtime.handles.get(target, 'scene-data').history;
+    assert.deepEqual(
+      restored.path.map(({ scene, value, extra }) => [scene, value, extra]),
+      [['start', 3, null]],
+    );
+    assert.deepEqual(restored.getString(0, 1, 2).bytes, Uint8Array.of(65));
+    assert.deepEqual(await call(386, [save, 90, target, 1]), { control: 1, value: 0 });
+    assert.equal(restored.path.length, 1);
+    assert.deepEqual(await call(331, [source]), { control: 2 });
+    assert.deepEqual(await call(385, [save, 90, source, 1]), { control: 1, value: 1 });
+    assert.deepEqual(file.read(90), new Uint8Array());
+    assert.deepEqual(await call(386, [save, 90, target, 1]), { control: 1, value: 1 });
+    assert.equal(restored.path.length, 0);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
 });
 
 test('path extra data uses the native CTS memory record and separate copy operations', () => {

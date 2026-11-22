@@ -1093,6 +1093,10 @@ CP932 character boundaries.
 
 Main390 clones a global-file owner, retaining its tag and capacity and
 copying its records independently of the source.
+Main248 reads that tag. Main385 and Main386 write and restore the seen or
+path list through an entry. The .63 format uses 40-byte records without a
+header, followed by 72-byte numbered-string records. An empty list has an
+empty entry, and a missing entry preserves the existing history.
 
 Main143 loads a Script through raw message 154 and binds the caller's
 shared memory through raw 165. Main69 sends four words immediately through

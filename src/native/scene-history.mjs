@@ -4,20 +4,23 @@
 import { Binary } from '../binary.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 
-export function encodeNativeSceneHistory(records, includeExtra = false) {
+export function encodeNativeSceneHistory(records, includeExtra = false, legacy = false) {
+  const headerSize = legacy ? 0 : 4,
+    recordSize = legacy ? 40 : 48;
+  includeExtra &&= !legacy;
   const size =
-    4 +
+    headerSize +
     records.reduce(
       (total, entry) =>
         total +
-        48 +
+        recordSize +
         72 * (entry.strings?.length ?? 0) +
         (includeExtra ? (entry.extra?.length ?? 0) : 0),
       0,
     );
   const bytes = new Uint8Array(size),
     view = new DataView(bytes.buffer);
-  let at = 4;
+  let at = headerSize;
   for (const entry of records) {
     const name = entry.nameBytes?.slice() ?? new Uint8Array(32);
     if (!entry.nameBytes) name.set(encodeCP932(entry.scene));
@@ -26,9 +29,11 @@ export function encodeNativeSceneHistory(records, includeExtra = false) {
     const count = entry.strings?.length ?? 0;
     const extra = includeExtra ? entry.extra : null;
     view.setUint32(at + 36, count, true);
-    view.setUint32(at + 40, extra?.length ?? 0, true);
-    view.setUint32(at + 44, extra?.length ? 48 + 72 * count : 0, true);
-    let pairAt = at + 48;
+    if (!legacy) {
+      view.setUint32(at + 40, extra?.length ?? 0, true);
+      view.setUint32(at + 44, extra?.length ? recordSize + 72 * count : 0, true);
+    }
+    let pairAt = at + recordSize;
     for (const [key, value] of entry.strings ?? []) {
       const [first, second] = key.split(':').map(Number);
       view.setUint32(pairAt, first, true);
@@ -42,9 +47,12 @@ export function encodeNativeSceneHistory(records, includeExtra = false) {
   return bytes;
 }
 
-export function decodeNativeSceneHistory(bytes, { side = 'path', companionPath = null } = {}) {
+export function decodeNativeSceneHistory(
+  bytes,
+  { side = 'path', companionPath = null, legacy = false } = {},
+) {
   const b = new Binary(bytes, 'Native scene history'),
-    modern = b.u32(0) === 0;
+    modern = !legacy && b.u32(0) === 0;
   const records = [];
   let at = modern ? 4 : 0;
   const recordSize = modern ? 48 : 40;

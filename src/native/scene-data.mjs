@@ -326,13 +326,13 @@ export class NativeSceneHistory {
     if (entry && !this.findSeen(destination))
       this.seen.push(record(resetName(nameBytes(destination)), entry.value));
   }
-  encode(side, includeExtra = false) {
+  encode(side, includeExtra = false, legacy = false) {
     if (!['seen', 'path'].includes(side)) throw new Error('Invalid native scene history list');
-    return encodeNativeSceneHistory(this[side], includeExtra);
+    return encodeNativeSceneHistory(this[side], includeExtra, legacy);
   }
-  decode(side, bytes, companionPath = null) {
+  decode(side, bytes, companionPath = null, legacy = false) {
     if (!['seen', 'path'].includes(side)) throw new Error('Invalid native scene history list');
-    this[side] = decodeNativeSceneHistory(bytes, { side, companionPath });
+    this[side] = decodeNativeSceneHistory(bytes, { side, companionPath, legacy });
   }
   snapshot() {
     return structuredClone({ seen: this.seen, path: this.path });
@@ -411,6 +411,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
   if ([0xef, 0xf9, 0x181, 0x182].includes(id)) {
     if (!services.globalEntries) return undefined;
     if (!args[0]) return word(0);
+    const legacy = services.profile && nativeABI(services.profile).scene?.legacyHistoryRecords;
     const direct = id === 0x181 || id === 0x182;
     if (direct && !services.handles) return undefined;
     if (!direct && !services.sceneDataForTask) return undefined;
@@ -423,11 +424,15 @@ export function nativeSceneData(id, args, machine, services = {}) {
       if (!data) return word(0);
       const side = args[3] ? 'path' : 'seen';
       if (id === 0xef || id === 0x181)
-        services.globalEntries.write(args[0], args[1], data.history.encode(side, !!args[4]));
+        services.globalEntries.write(
+          args[0],
+          args[1],
+          data.history.encode(side, !!args[4], legacy),
+        );
       else {
         const bytes = services.globalEntries.read(args[0], args[1]);
         if (bytes === null) return word(0);
-        data.history.decode(side, bytes);
+        data.history.decode(side, bytes, null, legacy);
       }
       return word(1);
     };
