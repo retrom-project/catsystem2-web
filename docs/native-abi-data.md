@@ -20,7 +20,7 @@ selected or enabled by proximity to another version number.
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2             |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------------------- |
 | 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered              |
-| 2.6.1.63 | 938        | 78        | 0             | 0             | 860     | 3 generic and 15 particle v2 recovered |
+| 2.6.1.63 | 938        | 79        | 0             | 0             | 859     | 3 generic and 15 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered              |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                           |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                           |
@@ -973,6 +973,8 @@ zero/nonzero value to update command `0x77`. Main8 writes the virtual
 dimensions through two translated VM pointers. Main13 copies narrow bytes,
 writes two terminating zero bytes and returns the destination address.
 Guest byte zero is a valid destination.
+Main15 appends the second narrow string to the first, writes two terminators
+and returns the original destination address with control 1.
 
 The first episode's `sscript` calls Main5 with no arguments after Main8.
 The .63 wrapper writes one unsigned word and returns control 1. Its task clock

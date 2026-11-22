@@ -757,6 +757,10 @@ test('63 startup GCALLs read the clock, configuration and viewport before a Scri
         [37, 556],
         [37, 560],
         [43, 739, 8],
+        [37, 600],
+        [37, 800],
+        [43, 15, 8],
+        [38, [0x13, 564]],
         [37, 0],
         [37, 768],
         [43, 13, 8],
@@ -775,7 +779,10 @@ test('63 startup GCALLs read the clock, configuration and viewport before a Scri
         [43, 71, 4],
         [59],
       ],
-      [[768, 'owned']],
+      [
+        [768, 'owned'],
+        [800, '尾'],
+      ],
     );
   let source;
   try {
@@ -799,6 +806,8 @@ test('63 startup GCALLs read the clock, configuration and viewport before a Scri
       windowShift: [3, -2],
     });
     machine.bytes(0, 8).fill(0xa5);
+    machine.bytes(600, 8).fill(0xa5);
+    machine.writeString('古', 600);
     await world.tick();
 
     assert.equal(world.menu.get(0x77), false);
@@ -809,6 +818,8 @@ test('63 startup GCALLs read the clock, configuration and viewport before a Scri
       [41, 7, 1, 0],
     );
     assert.deepEqual([machine.load(556) | 0, machine.load(560) | 0], [4, -3]);
+    assert.equal(machine.load(564), 600);
+    assert.deepEqual([...machine.bytes(600, 7)], [...bytes('古尾'), 0, 0, 0xa5]);
     const { name, signature } = nativeABI(profile).tables.main.entries[5];
     assert.equal(name, 'task.clock');
     assert.equal(signature.argumentWords, 0);
