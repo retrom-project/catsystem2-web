@@ -20,7 +20,7 @@ selected or enabled by proximity to another version number.
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
 | 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered               |
-| 2.6.1.63 | 938        | 293       | 9             | 1             | 635     | 15 generic and 15 particle v2 recovered |
+| 2.6.1.63 | 938        | 302       | 9             | 1             | 626     | 15 generic and 15 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                            |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                            |
@@ -1422,6 +1422,17 @@ FES NVSTRING creates the original paired CP932 text plane. Its raw messages
 448–465 carry a 456-byte packet with two 184-byte parser configurations and
 separate rectangles. The writer owns both sections. FES reset keeps the
 divided view while refreshing the parser defaults.
+
+## 2.6.1.63 movie window
+
+Main265 formats the CP932 movie resource and opens an owned decoder. The
+wrapper queries the Root Input task with message 32, sends that task raw
+139 and takes the renderer and cursor gates. The raw 139 receiver has no
+side effects. Close and failed open release the gates. Main266 through 270
+use the shared playback, repeat, close, status and redraw logic. Main417
+always scales the requested volume by the effective BGM level and honors
+master and BGM mute. Main787 writes the drawing rectangle as left, top,
+width and height. Main788 sets the movie destination with those same units.
 
 ## 2.6.1.63 title Particle
 

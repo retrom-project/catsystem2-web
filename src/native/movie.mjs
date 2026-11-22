@@ -34,6 +34,7 @@ export class NativeMovies {
     disabled = () => false,
     active = () => true,
     audio = () => ({ factor: 100, mute: false }),
+    alwaysUseBgmVolume = false,
     diagnostic = () => {},
     directShow = () => null,
     planeMovies = () => null,
@@ -48,6 +49,7 @@ export class NativeMovies {
       disabled,
       active,
       audio,
+      alwaysUseBgmVolume,
       diagnostic,
       directShow,
       planeMovies,
@@ -211,7 +213,7 @@ export class NativeMovies {
   volume(handle, word) {
     const record = this.get(handle),
       settings = this.audio();
-    if (!this.active())
+    if (this.alwaysUseBgmVolume || !this.active())
       word = settings.mute ? 0 : Math.floor((Math.imul(word, settings.factor) >>> 0) / 100);
     record.volume = word >>> 0;
     record.decibels = nativeMovieDecibels(word);
@@ -319,6 +321,7 @@ export function installNativeMovies(world) {
     disabled: () => Boolean(world.configuration.fields.general.disableMovie),
     active: () =>
       world.host.nativeWindowActive ? world.host.nativeWindowActive(world) : world.input.foreground,
+    alwaysUseBgmVolume: nativeABI(world.profile).movie?.alwaysUseBgmVolume,
     audio: () => {
       const config = world.configuration,
         b = config.blocks[0],

@@ -2,9 +2,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { NativeHandles } from '../src/native/handles.mjs';
+import { abiForEngineVersion } from '../src/native/abi/index.mjs';
 import { NativeMovies, nativeMovie } from '../src/native/movie.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
-function fixture() {
+function fixture(movieOptions = {}) {
   const handles = new NativeHandles(),
     events = [],
     sessions = [],
@@ -52,6 +53,7 @@ function fixture() {
         sessions.push(session);
         return session;
       },
+      ...movieOptions,
     }),
     call = (id, words = []) => nativeMovie(id, words, {}, { id: 73 }, movies, (value) => value);
   return { handles, events, sessions, settings, movies, call };
@@ -131,6 +133,24 @@ test('movie open/run/stop failures and null calls retain original wrapper side e
   for (const id of [0x10b, 0x10c, 0x10d, 0x3e6])
     assert.deepEqual(await f.call(id, [0]), { control: 1, value: 0 });
   assert.deepEqual(await f.call(0x3e5, [0, 1]), { control: 2 });
+});
+test('2.6.1.63 uses the BGM gain and mute for an active movie window', async () => {
+  const abi = abiForEngineVersion('2.6.1.63');
+  for (const id of [265, 266, 267, 268, 269, 270, 417, 787, 788])
+    assert.equal(abi.tables.main.entries[id].status, 'recovered', `Main ${id}`);
+  assert.deepEqual(abi.messages.movieInput, { query: 32, gate: 143 });
+  const f = fixture(abi.movie);
+  try {
+    const handle = (await f.call(0x109, ['opening'])).value;
+    await f.call(0x1a1, [handle, 50]);
+    assert.equal(f.movies.get(handle).volume, 13);
+    f.settings.mute = true;
+    await f.call(0x1a1, [handle, 50]);
+    assert.equal(f.sessions[0].state.decibels, -10000);
+    assert.deepEqual(await f.call(0x10c, [handle]), { control: 1, value: 1 });
+  } finally {
+    await f.movies.close();
+  }
 });
 test('portable movie checkpoints seek in a fresh decoder and defer visible playback until activation', async () => {
   const f = fixture();
