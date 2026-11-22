@@ -2757,6 +2757,20 @@ test('63 voice queries use the configured archive and full CP932 name', async ()
     assert.deepEqual(await query('VOICES.int/line.wav'), [1, 7, 83]);
     assert.deepEqual(await query('表ACTOR_01.wav'), [1, 7, 83]);
     assert.deepEqual(await query('other/表ACTOR_01.wav'), [0xffffffff, 0, 0]);
+
+    const categories = world.game.nativeResources.entries;
+    categories[63].name = 'voices';
+    categories[64].name = 'outside';
+    machine.writeString('表ACTOR_01.wav', 256);
+    const category = (name) => {
+      machine.writeString(name, 320);
+      return world.runtime.native('main', 674, [256, 320], machine, main);
+    };
+    assert.deepEqual(await category('SOUND'), { control: 1, value: 63 });
+    assert.deepEqual(await category('Voices'), { control: 1, value: 63 });
+    assert.deepEqual(await category('outside'), { control: 1, value: 0xffffffff });
+    const result = await world.runtime.native('main', 397, [floatBits(1), 0], machine, main);
+    assert.deepEqual(result, { control: 1, value: floatBits(Math.PI / 2) });
   } finally {
     await world.close();
     await audio.dispose();

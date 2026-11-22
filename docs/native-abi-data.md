@@ -1228,6 +1228,8 @@ forms pass the unsigned caller ticks converted to milliseconds.
 Main 606, 607 and 844 return the configured enable word, master gain and
 index. The lookup checks the archive directory before the lowercased full
 CP932 filename prefix.
+Main 674 searches the 64 configured archive category slots. The Sound query
+uses that same voice row's archive name.
 Main 903 reads a formatted tag from the selected bank. Selector −1 uses the
 first matching bank in order.
 

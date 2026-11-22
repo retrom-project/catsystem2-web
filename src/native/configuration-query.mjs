@@ -218,7 +218,8 @@ export function nativeConfigurationQuery(id, args, machine, services) {
         : voiceText(configuration, index, archiveByte, 32);
     if (archive === null) return value(-1);
   }
-  for (let i = 0; i < 128; i++)
+  const capacity = abi.resources?.categoryCount ?? 128;
+  for (let i = 0; i < capacity; i++)
     if (equal(archive, nativeDataString(encode(resources[i]?.name ?? '')))) return value(i);
   return value(-1);
 }
