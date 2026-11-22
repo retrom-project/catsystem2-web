@@ -1229,7 +1229,10 @@ address 0. Enable, hover and drag requests each carry their literal DWORD.
 Destruction releases the Input registration with the plane.
 
 Main 256, 260 and 262 initialize the Draw renderer, set its offsets and write
-its enabled word. A rising edge sets the pending word. Main 341 sends raw
+its enabled word. A rising edge sets the pending word. Main 339 sends
+the caller's clip rectangle to its layer and Main 534 sets the Draw dirty
+word. Main 717 and 724 query the bitmap's base point or its five-word
+attribute by a sixteen-bit ID. Main 341 sends raw
 message 279 to clear its retained entries and bitmap and reinsert the visible
 base. Main342 sends raw
 message 280 to the selected Draw owner. The receiver marks that surface dirty

@@ -1158,7 +1158,11 @@ async function clipGCALL(world, record, words) {
   assert.equal(machine.sp, sp);
   assert.deepEqual([...machine.bytes(800, 8)], Array(8).fill(0xa5));
 }
-for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+for (const profile of [
+  'rebellions-jp-engine-2.6.1.63',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+])
   test(
     profile + ' main339 GCALL preserves clipping reset, equality and cold bitmap ownership',
     async () => {
@@ -1189,12 +1193,12 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
         await scene.runtime.native('main', 0x104, [target, 0, 0], scene.main.machine, scene.main);
         const image = scene.graphics.images.create(3, 2, scene.main.id);
         await scene.graphics.images.get(image).fill(0, 0, 3, 2, 0xff123456);
-        await scene.runtime.native(
-          'main',
+        await nativeDraw(
           0x101,
           [target, rawKey, image, 0, 0, 0, 0, 0, floatBits(1), floatBits(1), 255, 1, 0],
           caller.implementation.task.machine,
           caller.implementation.task,
+          scene,
         );
         await scene.graphics.images.release(image);
         const item = draw.entry(entryKey);

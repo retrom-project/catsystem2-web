@@ -29,6 +29,20 @@ test('63 Script image owners load, query, resize, fill and release their own bit
     size = () => [m.load(192), m.load(196)];
   assert.equal(owner.owner, main.id);
   assert.deepEqual(await graphics.images.get(owner.bitmap).pixels(), Uint8ClampedArray.from(rgba));
+  const bitmap = graphics.images.get(owner.bitmap);
+  bitmap.state.baseX = -3;
+  bitmap.state.baseY = 4;
+  assert.deepEqual(await native(717, [source, 192, 196]), { control: 1, value: 1 });
+  assert.deepEqual(size(), [0xfffffffd, 4]);
+  bitmap.state.attributes = [{ id: 7, rect: [10, -20, 30, -40], color: 0xff800123 }];
+  const outputs = Array.from({ length: 5 }, (_, index) => 512 + index * 4);
+  assert.deepEqual(await native(724, [source, 0x10007, ...outputs]), { control: 1, value: 1 });
+  assert.deepEqual(
+    outputs.map((at) => m.load(at)),
+    [10, 0xffffffec, 30, 0xffffffd8, 0xff800123],
+  );
+  assert.deepEqual(await native(724, [source, 8, ...outputs]), { control: 1, value: 0 });
+  assert.equal(m.load(outputs[0]), 10);
   await native(714, [source, 192, 196]);
   assert.deepEqual(size(), [3, 2]);
   await native(730, [source, 6, 4]);
