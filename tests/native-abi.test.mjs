@@ -31,11 +31,14 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
       .reduce((total, table) => total + table.count, 0),
     2344,
   );
-  for (const version of ['2.6.1.63', '2.6.1.67']) {
+  for (const [version, fileStatus] of [
+    ['2.6.1.63', 'recovered'],
+    ['2.6.1.67', 'unknown'],
+  ]) {
     const abi = abiForEngineVersion(version);
     assert.equal(abi.tables.main.count, 938);
     assert.equal(abi.tables.main.entries[0x181].signature.argumentWords, 4);
-    assert.equal(abi.tables.main.entries[0x181].status, 'unknown');
+    assert.equal(abi.tables.main.entries[0x181].status, fileStatus);
     assert.equal(abi.tables.main.entries[0x358].signature.argumentWords, 7);
     assert.equal(abi.tables.main.entries[0x358].status, 'unknown');
   }
