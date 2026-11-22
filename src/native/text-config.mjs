@@ -39,8 +39,9 @@ export function textConfig(profile, mode, configuration, { fes = false } = {}) {
   return out;
 }
 export function textPacket(profile, mode, configuration) {
-  const abi = nativeABI(profile).layouts.textCores[mode],
-    out = new Uint8Array(abi.packetSize ?? abi.configSize + 16),
+  const abi = nativeABI(profile).layouts?.textCores?.[mode];
+  if (!abi) throw new Error(`Unavailable text mode ${mode} for ${profile}`);
+  const out = new Uint8Array(abi.packetSize ?? abi.configSize + 16),
     v = new DataView(out.buffer);
   v.setUint32(0, out.length, true);
   if (mode !== 'nv') out.set(textConfig(profile, mode, configuration), 4);

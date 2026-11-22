@@ -14,10 +14,71 @@ const utf8 = (text) => new TextEncoder().encode(text),
   corpora = [utf8('あ'), encodeCP932('猫'), Uint8Array.of(0xc2, 0xa5)];
 
 test('unreviewed STRING layouts report the profile and object type', () => {
-  const profile = 'rebellions-jp-engine-2.6.1.63';
+  const profile = 'bokutomo-engine-2.6.1.67';
   assert.throws(() => new NativeFESTextLayout({ profile, type: 21 }), {
     message: `Unrecovered FES text layout object type 21 for ${profile}`,
   });
+});
+
+test('ABI 2.6.1.63 FES STRING sends the 200-byte configuration and draws retained CP932 text', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    source = encodeCP932('折り返し'),
+    body = encodeCP932(`#DEFINE
+STRING text
+#OBJECT SIZE POS PRI DISP
+text 48,24 4,4 60001 1
+#START
+text layout vdraw 0
+text layout scrolltype 1
+text layout wipewidth 6
+text layout color 32 64 128
+text layout size 8
+text layout frame 0
+text layout shadow 0 0
+text str 折り返し
+text draw
+text skip
+next IDLE
+#IDLE
+#RESET
+text reset
+break
+`),
+    world = await defaultFESWorld(profile, { 'screen.fes': body });
+  let fresh;
+  try {
+    const { task, instance } = await loadDefaultFES(world);
+    await task.tick();
+    await task.tick();
+    const text = instance.collection.lookup('text', 0),
+      child = world.objects.objects.get(text.nativeTaskID),
+      writer = await child.implementation.writer(),
+      packet = new DataView(child.implementation.text.config.buffer);
+    assert.equal(child.kind, 48);
+    assert.equal(child.parent, instance.runtimeID);
+    assert.equal(packet.byteLength, 200);
+    assert.deepEqual(
+      [0, 4, 8, 12, 16, 28, 104, 108, 180, 196].map((at) => packet.getUint32(at, true)),
+      [200, 1, 48, 24, 0xff804020, 8, 0, 1, 6, 1],
+    );
+    assert.deepEqual(writer.parser.source, source);
+    assert.ok(writer.frame().rgba.some((value) => value !== 0));
+    await task.player.notify('RESET');
+    await task.syncObjects();
+    const reset = new DataView(child.implementation.text.config.buffer);
+    assert.deepEqual(
+      [4, 8, 12, 16, 28, 180, 196].map((at) => reset.getUint32(at, true)),
+      [1, 48, 24, 0xff804020, 24, 6, 1],
+    );
+    fresh = await defaultFESWorld(profile, {}, { initialize: false });
+    await fresh.restore(world.snapshot());
+    const restored = fresh.objects.objects.get(child.id);
+    assert.deepEqual(restored.implementation.text.config, child.implementation.text.config);
+    assert.deepEqual((await restored.implementation.writer()).parser.source, source);
+  } finally {
+    await fresh?.close();
+    await world.close();
+  }
 });
 
 function regions() {

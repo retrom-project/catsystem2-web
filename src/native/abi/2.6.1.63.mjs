@@ -10,6 +10,8 @@ export default {
   engineVersion: '2.6.1.63',
   xmlEncoding: 'Shift_JIS',
   text: {
+    freeTypeCharacterEncoding: 'cp932',
+    freeTypeVersion: '2.4.8',
     settingsCharacterBytes: 1,
     pathBytes: 260,
     configurationLayout: {
@@ -19,14 +21,61 @@ export default {
       bytes: 5592,
       encoding: 'CP932',
     },
-    fesLayouts: null,
-    layoutModes: null,
+    fesLayouts: {
+      // The original STRING configuration starts at word 190. The JS
+      // layout stores that same packet at its canonical word 191.
+      21: {
+        dirty: 241,
+        colors: 329,
+        fontIndex: 236,
+        flags: 318,
+        weight: 231,
+        shadow: 232,
+        fix: 234,
+        wipe: 235,
+        profile: 333,
+        shift: 338,
+        category: null,
+        fontBytes: 32,
+        configBytes: 184,
+        packetOutput: 1,
+        resetKeepsLayout: true,
+      },
+    },
+    layoutModes: [
+      'view',
+      'color',
+      'vcolor',
+      'acolor',
+      'vacolor',
+      'pcolor',
+      'vpcolor',
+      'margin',
+      'move',
+      'ruby',
+      'frame',
+      'font',
+      'fontind',
+      'shadow',
+      'size',
+      'rsize',
+      'indent',
+      'weight',
+      'd_prof',
+      'prof',
+      'shift',
+      'scrolltype',
+      'wipewidth',
+      'fontfix',
+    ],
     resourceMessages: {
       first: {
         nv: null,
-        cp932: null,
+        cp932: 430,
         utf8: null,
       },
+      clearCategory: false,
+      maxOperation: 17,
     },
   },
   configuration: {
@@ -1071,17 +1120,9 @@ export default {
     },
   },
   unreviewed: {
-    'text.fesLayouts':
-      'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
-    'text.layoutModes':
-      'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'text.resourceMessages.first.nv':
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
-    'text.resourceMessages.first.cp932':
-      'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'text.resourceMessages.first.utf8':
-      'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
-    layouts:
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'sound.controlBytes':
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
@@ -1172,5 +1213,13 @@ export default {
     'fes.controlResources':
       'Control skin/resource policy is unreviewed; require own evidence when a control task is actually constructed.',
   },
-  layouts: null,
+  layouts: {
+    textCores: {
+      cp932: {
+        size: 72,
+        defaultAt: 208,
+        configSize: 184,
+      },
+    },
+  },
 };

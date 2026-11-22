@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // These records describe layout; glyph rasterization is a separate service.
 import { nativeABI } from './abi/index.mjs';
+import { textConfig } from './text-config.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { fesSourceBytes } from '../fes/tokens.mjs';
 
@@ -76,6 +77,23 @@ export class NativeFESTextLayout {
   }
   config() {
     return this.bytes.slice(764, 764 + this.abi.configBytes);
+  }
+  reset(configuration) {
+    const mode = this.type === 37 ? 'utf8' : 'cp932',
+      config = textConfig(this.profile, mode, configuration, { fes: true });
+    if (this.abi.resetKeepsLayout) {
+      const current = this.config(),
+        words = new DataView(config.buffer),
+        fontEnd = config.indexOf(0, 128) + 1,
+        wipeOffset = (this.abi.wipe - 191) * 4;
+      config.set(current.subarray(0, 12));
+      for (let i = 0; i < 3; i++) words.setUint32(12 + i * 4, this.word(this.abi.colors + i), true);
+      config.set(current.subarray(fontEnd, 128 + this.abi.fontBytes), fontEnd);
+      config.set(current.subarray(wipeOffset, wipeOffset + 4), wipeOffset);
+      this.word(this.abi.dirty, 1);
+    }
+    this.bytes.set(config, 764);
+    for (let at = -1; at <= 2; at++) this.word(this.abi.flags + at, 1);
   }
   fontName() {
     const face = this.bytes.subarray(892, 892 + this.abi.fontBytes);

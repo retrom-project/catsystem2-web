@@ -343,14 +343,7 @@ export class FESStringDriver {
         break;
       case 'reset':
         if (layout) {
-          const cfg = textConfig(
-            this.world.profile,
-            target.nativeType === 37 ? 'utf8' : 'cp932',
-            this.world.configuration,
-            { fes: true },
-          );
-          layout.bytes.set(cfg, 764);
-          for (let at = -1; at <= 2; at++) layout.word(layout.abi.flags + at, 1);
+          layout.reset(this.world.configuration);
           this.saveLayout(target, layout);
         } else {
           s.nv = nvConfiguration(this.world.profile, this.world.configuration);
@@ -725,7 +718,8 @@ export class FESStringDriver {
         const at = 4 + cfg.length;
         v.setInt32(at, Math.trunc(object.vramX), true);
         v.setInt32(at + 4, Math.trunc(object.vramY), true);
-        v.setUint32(at + 8, layout ? layout.word(layout.abi.flags - 1) : 1, true);
+        const output = layout ? (layout.abi.packetOutput ?? layout.word(layout.abi.flags - 1)) : 1;
+        v.setUint32(at + 8, output, true);
         return b;
       };
     if (s.first) {

@@ -1101,6 +1101,21 @@ and override word to the startup Plane through its own raw message 56. These
 operations return control 2. Main 452 delivers Base message 23, returning the
 FES task's signed exit word or the initialized -1 when no receiver writes it.
 
+## 2.6.1.63 FES STRING
+
+The narrow STRING object is original FES type 20 and canonical type 21. Its
+owned task is kind 48. The receiver uses raw messages 430–447 for operations
+0–17. Initialization and configuration updates pass 200 bytes, including
+184 configuration bytes, two VRAM coordinates and the output flag. The
+CP932 face occupies 32 bytes. The FreeType backend uses version 2.4.8 and
+converts the original narrow character codes for glyph lookup.
+
+The FES layout handler selects 24 literal modes. An unknown mode such as
+`vdraw` leaves STRING state unchanged. Reset takes the settings font and
+preserves the current dimensions, scroll type, wipe width and layout colors.
+The reset and the packet output flag follow the original STRING object
+independently of the font settings flags. NVSTRING admission remains separate.
+
 ## 2.6.1.63 close and persistence
 
 The window-close message selects the Script's persistence callback. Main
