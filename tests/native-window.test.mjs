@@ -5,10 +5,12 @@ import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { CatSystem2 } from '../web/transitional-entry.mjs';
 import { EngineHost } from '../src/host.mjs';
+import { BrowserNativeWindow } from '../src/native/window-browser.mjs';
+import { NativeWorld as OrdinaryNativeWorld } from '../src/native/world.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
-async function fixture(profile = 'sdk-4.01-engine-2.6.1.74') {
+async function fixture(profile = 'sdk-4.01-engine-2.6.1.74', World = NativeWorld) {
   const game = memoryGame({ 'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]) }),
     random = new ParticleRandom(),
     configuration = new NativeConfiguration({ profile }),
@@ -23,7 +25,7 @@ async function fixture(profile = 'sdk-4.01-engine-2.6.1.74') {
         configuration.screen.fullscreen = message.lParam;
       },
     },
-    world = new NativeWorld({
+    world = new World({
       game,
       images: {},
       host,
@@ -196,16 +198,8 @@ test('Engine disposal cancels an open platform dialog and waits for its running 
   assert.equal(world.objects.objects.size, 0);
 });
 
-test('the host can settle an open modal before disposing its engine', async () => {
-  const { world, host } = await fixture();
-  let resolve;
-  host.nativeWindowAction = () =>
-    new Promise((done) => {
-      resolve = done;
-    });
-  world.window.post(0x10);
-  const frame = world.tick();
-  while (!resolve) await new Promise(setImmediate);
+test('host exit settles its open modal and a second window queued behind a settings write', async () => {
+  const { world, host } = await fixture('sdk-4.01-engine-2.6.1.74', OrdinaryNativeWorld);
   const engine = {
     world,
     renderer: { dispose() {} },
@@ -213,11 +207,31 @@ test('the host can settle an open modal before disposing its engine', async () =
     disposed: false,
   };
   engine.host = new EngineHost(engine);
+  engine.host.windowService = new BrowserNativeWindow(engine);
+  const opened = Promise.withResolvers(),
+    writing = Promise.withResolvers(),
+    persisted = Promise.withResolvers();
+  host.nativeWindowAction = (action, owner) => {
+    if (action.type !== 'confirm-close') return engine.host.nativeWindowAction(action, owner);
+    return new Promise((resolve) => {
+      engine.host.windowService.cancel = () => resolve(false);
+      opened.resolve();
+    });
+  };
+  world.flushConfiguration = () => {
+    writing.resolve();
+    return persisted.promise;
+  };
   let closedClipboard = false;
-  engine.host.windowService = { close: () => resolve(false) };
   engine.host.clipboardService = { close: () => (closedClipboard = true) };
+  world.window.post(0x10);
+  world.window.post(0x111, 40057);
+  const frame = world.tick();
   try {
+    await opened.promise;
     CatSystem2.prototype.cancelHostModal.call(engine);
+    await writing.promise;
+    persisted.resolve();
     await frame;
     assert.equal(world.frameSettled, null);
     assert.equal(world.quitRequested, undefined);
@@ -228,4 +242,11 @@ test('the host can settle an open modal before disposing its engine', async () =
   }
   assert.equal(closedClipboard, true);
   assert.equal(world.closed, true);
+});
+
+test('host exit before its first window preserves native message box cancellation results', async () => {
+  const host = new EngineHost({});
+  assert.equal(host.windowService, undefined);
+  host.cancelHostModal();
+  assert.equal(await host.nativeWindowAction({ type: 'script-message-box', buttons: 4 }, {}), 7);
 });

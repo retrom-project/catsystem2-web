@@ -84,6 +84,8 @@ const element = (tag, text) => {
     ],
   ];
 export class BrowserNativeWindow {
+  #exiting = false;
+
   constructor(engine) {
     this.engine = engine;
     this.dialog = null;
@@ -100,6 +102,7 @@ export class BrowserNativeWindow {
       owner = null,
     } = {},
   ) {
+    if (this.#exiting) return false;
     if (this.dialog) throw new Error('A native window dialog is already open');
     const dialog = element('dialog'),
       heading = element('h2', title),
@@ -449,5 +452,9 @@ export class BrowserNativeWindow {
     if (owner !== null && this.dialogOwner !== owner) return false;
     this.cancel?.();
     return true;
+  }
+  cancelForExit() {
+    this.#exiting = true;
+    this.close();
   }
 }

@@ -75,7 +75,8 @@ export class EngineHost {
     return this.windowService.perform(action, world);
   }
   cancelHostModal() {
-    this.windowService?.close();
+    this.windowService ??= new BrowserNativeWindow(this.engine);
+    this.windowService.cancelForExit();
   }
   nativeDispose() {
     this.cancelHostModal();
