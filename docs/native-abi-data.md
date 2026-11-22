@@ -1109,6 +1109,9 @@ through raw messages 328 and 329. Out-of-range writes are ignored and
 out-of-range reads return zero. The notification and write return control 2.
 The read returns control 1 with the bank word.
 
+Main 741 takes no arguments and returns the Settings `mw_pos` word in
+fullscreen or zero in windowed mode, with control 1.
+
 ## 2.6.1.63 FES STRING
 
 The narrow STRING object is original FES type 20 and canonical type 21. Its

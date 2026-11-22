@@ -760,6 +760,8 @@ test('63 startup GCALLs read the clock, configuration and viewport before a Scri
         [37, 556],
         [37, 560],
         [43, 739, 8],
+        [43, 741, 0],
+        [38, [0x13, 568]],
         [37, 600],
         [37, 800],
         [43, 15, 8],
@@ -799,6 +801,7 @@ test('63 startup GCALLs read the clock, configuration and viewport before a Scri
       task = await world.spawnScript('entry63.kcs'),
       machine = task.machine;
     world.configuration.variableRanges.global.set([41, 7], 14);
+    world.configuration.screen.multiWindowPosition = 3;
     world.graphics.view.configure({
       virtualWidth: 800,
       virtualHeight: 600,
@@ -821,6 +824,16 @@ test('63 startup GCALLs read the clock, configuration and viewport before a Scri
       [41, 7, 1, 0],
     );
     assert.deepEqual([machine.load(556) | 0, machine.load(560) | 0], [4, -3]);
+    assert.equal(machine.load(568), 0);
+    world.configuration.screen.fullscreen = 1;
+    try {
+      assert.deepEqual(world.runtime.native('main', 741, [], machine, task), {
+        control: 1,
+        value: 3,
+      });
+    } finally {
+      world.configuration.screen.fullscreen = 0;
+    }
     assert.equal(machine.load(564), 600);
     assert.deepEqual([...machine.bytes(600, 7)], [...bytes('古尾'), 0, 0, 0xa5]);
     const { name, signature } = nativeABI(profile).tables.main.entries[5];
