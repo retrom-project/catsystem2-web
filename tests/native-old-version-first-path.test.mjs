@@ -1653,6 +1653,41 @@ test('63 FES GCALLs use and publish the real Draw owner before waiting', async (
   }
 });
 
+test('63 Script motion manager and matrix initialization use owned resource handles', async () => {
+  const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
+  try {
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, machine, main),
+      { control, value: handle } = call(294, []),
+      { owner, manager } = world.runtime.handles.get(handle, 'motion-manager'),
+      expected = Array.from({ length: 16 }, (_, i) => floatBits(i % 5 === 0 ? 1 : 0));
+    assert.equal(control, 1);
+    assert.equal(owner, main.id);
+    assert.equal(manager.speed, 1);
+    assert.equal(manager.records.size, 0);
+    assert.equal(new DataView(manager.base.buffer).getUint32(MOTION_ABI.color, true), 0xffffffff);
+    assert.deepEqual(manager.working, manager.base);
+    machine.bytes(128, 72).fill(0xa5);
+    assert.deepEqual(call(207, [132]), { control: 2 });
+    assert.deepEqual(
+      expected.map((_, i) => machine.load(132 + i * 4)),
+      expected,
+    );
+    assert.equal(machine.load(128), 0xa5a5a5a5);
+    assert.equal(machine.load(196), 0xa5a5a5a5);
+    assert.deepEqual(call(295, [0]), { control: 2 });
+    assert.deepEqual(call(295, [handle]), { control: 2 });
+    assert.equal(world.runtime.handles.records.has(handle), false);
+  } finally {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  }
+});
+
 test('63 Flow and warning FES honor the configured Control key only during the skippable wait', async (t) => {
   const packetAddress = 384,
     keyScript = kcsProgram([

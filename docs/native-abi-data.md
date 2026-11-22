@@ -1112,6 +1112,11 @@ The read returns control 1 with the bank word.
 Main 741 takes no arguments and returns the Settings `mw_pos` word in
 fullscreen or zero in windowed mode, with control 1.
 
+Main 294 creates an owned motion manager at speed 1 with empty motion state
+and an identity base transform. Main 295 releases a nonzero manager handle
+and returns control 2. Main 207 initializes the 16-word identity matrix
+through a single VM address, using the current global matrix on native NULL.
+
 ## 2.6.1.63 FES STRING
 
 The narrow STRING object is original FES type 20 and canonical type 21. Its
