@@ -29,6 +29,8 @@ import { NativeSteam } from './native/steam.mjs';
 import { requireCheckpointRestoreOwner } from './native/original-adapter.mjs';
 
 export class CatSystem2 {
+  #storageNamespace;
+
   constructor({
     game,
     canvas,
@@ -38,10 +40,14 @@ export class CatSystem2 {
     uiLanguage,
     steam = null,
     randomSeed,
+    storageNamespace,
     transitionalExe = null,
     onState = () => {},
     onClosed = () => {},
   }) {
+    if (storageNamespace != null && (typeof storageNamespace !== 'string' || !storageNamespace))
+      throw new TypeError('CatSystem2 storage namespace requires a nonempty string');
+    this.#storageNamespace = storageNamespace;
     Object.assign(this, {
       game,
       canvas,
@@ -84,6 +90,9 @@ export class CatSystem2 {
     this.audio = new AudioMixer(game, audioContext);
     this.host = new EngineHost(this);
     this.random = new ParticleRandom(randomSeed);
+  }
+  get storageNamespace() {
+    return this.#storageNamespace;
   }
   async initialize({ checkpoint } = {}) {
     let selected, identity;
@@ -138,7 +147,8 @@ export class CatSystem2 {
       .map((n) => ({ code: n.value('prefix'), name: n.value('lang') }));
     if (!this.languages.length) this.languages = [{ code: 'jp', name: 'Japanese' }];
     this.identity = identity ?? (await this.game.fingerprint());
-    this.saves = new SaveStore(this.identity);
+    const storageNamespace = this.#storageNamespace ?? this.identity;
+    this.saves = new SaveStore(storageNamespace);
     await this.saves.open();
     this.quickSaveStart = Number(this.adv.value('save', 'quicksave', 'start')) || 5000;
     this.temporarySaveStart = Number(this.adv.value('save', 'autoerase', 'start')) || 7000;
@@ -154,7 +164,7 @@ export class CatSystem2 {
         : this.game.read('config.int/gamedef.xml')),
       gamedef = gamedefBytes ? parseNativeXML(gamedefBytes, abi.xmlEncoding) : undefined;
     this.nativeDocuments = { startup, gamedef };
-    this.nativeStorage = new NativeFileStorage(this.game, this.identity);
+    this.nativeStorage = new NativeFileStorage(this.game, storageNamespace);
     await this.nativeStorage.open();
     this.nativeFES = new Map();
     this.world = this.createNativeWorld();
@@ -296,7 +306,8 @@ export class CatSystem2 {
     }
   }
   persistSettings() {
-    localStorage.setItem(`catsystem2:${this.identity}:settings`, JSON.stringify(this.settings));
+    const storageNamespace = this.#storageNamespace ?? this.identity;
+    localStorage.setItem(`catsystem2:${storageNamespace}:settings`, JSON.stringify(this.settings));
   }
   setFlag(name, value) {
     const n = Number(this.adv.value('sysflag', name));
