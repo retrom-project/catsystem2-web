@@ -16,6 +16,24 @@ export function multiply(left, right) {
     );
   });
 }
+function float32Product(vector, matrix, column, paired) {
+  const xy = f(f(vector[0] * matrix[column]) + f(vector[1] * matrix[column + 4])),
+    z = f(vector[2] * matrix[column + 8]),
+    w = f(vector[3] * matrix[column + 12]);
+  return paired ? f(xy + f(z + w)) : f(f(xy + z) + w);
+}
+export function multiplySSE(left, right) {
+  const result = [];
+  for (let row = 0; row < 4; row++) {
+    const vector = left.slice(row * 4, row * 4 + 4);
+    for (let column = 0; column < 4; column++)
+      result.push(float32Product(vector, right, column, row === 0 || row === 3));
+  }
+  return result;
+}
+export function transformFloat32Pairs(vector, matrix) {
+  return Array.from({ length: 4 }, (_, column) => float32Product(vector, matrix, column, true));
+}
 export function transform(vector, matrix) {
   return [
     f(

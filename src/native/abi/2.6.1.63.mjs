@@ -134,6 +134,7 @@ export default {
     anglesUseX87: true,
     lerpUsesX87: true,
     vectorTransformPairwise: true,
+    motionMatrixMultiplySSE: true,
   },
   motion: {
     addUsesFormat: true,
@@ -1540,18 +1541,30 @@ export default {
       count: 45,
       slots: {
         unknown: [
-          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 25,
-          26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 39, 40, 42, 43, 44,
+          0, 3, 4, 6, 8, 10, 11, 12, 13, 15, 18, 19, 20, 21, 22, 24, 25, 27, 28, 29, 30, 31, 32, 33,
+          34, 35, 36, 37, 39, 40,
         ],
-        recovered: [17, 38, 41],
+        recovered: [1, 2, 5, 7, 9, 14, 16, 17, 23, 26, 38, 41, 42, 43, 44],
       },
       evidence: [
+        {
+          ids: [1, 2, 5, 7, 9, 14, 16, 42],
+          value:
+            '2.6.1.63 own MOT table scalar wrappers and the signed quarter-period triangle wave.',
+        },
+        {
+          ids: [23, 26, 43, 44],
+          value:
+            '2.6.1.63 own MOT row-vector matrix operations use identity, successive XYZ rotations, yaw/pitch/roll, and axes from a reference transform. The normal SSE matrix product reduces the first and fourth rows in pairs.',
+        },
         {
           ids: [17, 38, 41],
           value: '2.6.1.63-own-warning-title-motion-calls-wrappers-and-authored-control',
         },
       ],
       signatures: [
+        { ids: [1, 2, 5, 7, 9, 14, 16, 42], fields: { resultWritten: true } },
+        { ids: [23, 26, 43, 44], fields: { resultWritten: false } },
         { ids: [17, 41], fields: { resultWritten: true } },
         { ids: [38], fields: { resultWritten: false } },
       ],

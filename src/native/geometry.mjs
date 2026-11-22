@@ -4,6 +4,7 @@ import { nativeReply, bitsFloat, floatBits } from '../kcs/vm.mjs';
 import { roundX87Single as r } from '../ppi/x87.mjs';
 import { inverseNativeMatrix } from './calculation-math.mjs';
 import { matrixStorage, floats, floatBytes } from './calculation-memory.mjs';
+import { transformFloat32Pairs } from '../motion/matrix.mjs';
 const f = Math.fround;
 export const NATIVE_GEOMETRY_OPERATIONS = Object.freeze([
   'matrix.inverse',
@@ -57,16 +58,13 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     output = v.map((n) => f(n * factor));
   } else {
     const m = read(machine, b, 16);
-    output = Array.from({ length: 4 }, (_, i) => {
-      if (math?.vectorTransformPairwise) {
-        const xy = f(f(v[0] * m[i]) + f(v[1] * m[i + 4]));
-        const zw = f(f(v[2] * m[i + 8]) + f(v[3] * m[i + 12]));
-        return f(xy + zw);
-      }
-      return f(
-        r(r(r(r(v[0] * m[i]) + r(v[1] * m[i + 4])) + r(v[2] * m[i + 8])) + r(v[3] * m[i + 12])),
-      );
-    });
+    output = math?.vectorTransformPairwise
+      ? transformFloat32Pairs(v, m)
+      : Array.from({ length: 4 }, (_, i) =>
+          f(
+            r(r(r(r(v[0] * m[i]) + r(v[1] * m[i + 4])) + r(v[2] * m[i + 8])) + r(v[3] * m[i + 12])),
+          ),
+        );
   }
   machine.bytes(a, 16).set(floatBytes(output));
   return nativeReply(2);

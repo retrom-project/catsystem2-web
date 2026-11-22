@@ -17,20 +17,19 @@ signature differences, observations and evidence. They also own their existing
 service behavior, capability, message, encoding and layout records. No engine is
 selected or enabled by proximity to another version number.
 
-| Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2             |
-| -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------------------- |
-| 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered              |
-| 2.6.1.63 | 938        | 80        | 0             | 0             | 858     | 3 generic and 15 particle v2 recovered |
-| 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered              |
-| 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                           |
-| 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                           |
+| Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
+| -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
+| 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered               |
+| 2.6.1.63 | 938        | 282       | 9             | 1             | 646     | 15 generic and 15 particle v2 recovered |
+| 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
+| 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                            |
+| 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                            |
 
 The registry represents 5,509 slots, including 2,344 SDK74/Game76 slots.
-The older registrations retain unknown auxiliary slots and
-unadmitted stub observations; their zero reserved/constant columns describe
-admission, not absence of native stubs. SDK74/Game76 auxiliary generic entries
-retain `recovered` and particle entries retain `declared`. Neither status
-establishes that a native body is implemented.
+The older registrations retain unknown auxiliary slots and unadmitted stub
+observations. The counts reflect the classified slots in each registration.
+SDK74/Game76 auxiliary generic entries retain `recovered` and particle entries
+retain `declared`.
 
 ## 2.6.1.23 startup and title
 
@@ -1403,6 +1402,14 @@ input buffer returns zero. A NULL database leaves the import result unwritten.
 An owned Script waits for the close message, persists its banks and releases
 its typed handles. A fresh World restores the complete saved fixture before
 running its own close and produces the same bytes.
+
+## 2.6.1.63 story motion
+
+The story MOT resources use the generic scalar table for sine, cosine,
+arccosine, atan2, absolute values, conversion to radians and a signed
+quarter-period triangle wave. MOT matrix calls use the native row-vector
+orientation. The normal SSE products use paired sums on the first and
+fourth rows and sequential sums on the middle rows.
 
 ## 2.6.1.63 title Particle
 

@@ -6,6 +6,7 @@ import { ParticleRandom } from '../ppi/random.mjs';
 import {
   degreeToRadian,
   radianToDegree,
+  x87AngleConversion,
   linearInterpolate,
   roundInteger,
   triangleWave,
@@ -16,7 +17,9 @@ import {
   identity,
   inverse,
   multiply,
+  multiplySSE,
   transform,
+  transformFloat32Pairs,
   normalize,
   lengthSquared,
   translation,
@@ -60,7 +63,11 @@ export class MotionInstance {
     this.script = script;
     this.profile = profile;
     this.contracts = nativeCatalog(profile, 'generic');
-    this.skipBypassesDelay = nativeABI(profile).motion?.skipBypassesDelay !== false;
+    const abi = nativeABI(profile);
+    this.math = abi.math;
+    this.multiplyMatrix = abi.math?.motionMatrixMultiplySSE ? multiplySSE : multiply;
+    this.transformVector = abi.math?.vectorTransformPairwise ? transformFloat32Pairs : transform;
+    this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
     this.shared = new Uint8Array(MOTION_ABI.sharedSize);
     this.view = new DataView(this.shared.buffer);
     this.object.set(initialMotionObject());
@@ -159,6 +166,8 @@ export class MotionInstance {
     const put = (address, numbers) =>
       numbers.forEach((value, i) => machine.store(address + i * 4, floatBits(value)));
     this.calls.set(id, (this.calls.get(id) || 0) + 1);
+    if (id === 14 && this.math?.anglesUseX87)
+      return real(x87AngleConversion(bitsFloat(args[0]), true));
     if (unary.has(id)) return real(unary.get(id)(bitsFloat(args[0])));
     switch (id) {
       case 0: {
@@ -209,7 +218,7 @@ export class MotionInstance {
       case 23: {
         let matrix = vector(args[0], 16);
         args.slice(1).forEach((angle, i) => {
-          matrix = multiply(matrix, rotation(['x', 'y', 'z'][i], bitsFloat(angle)));
+          matrix = this.multiplyMatrix(matrix, rotation(['x', 'y', 'z'][i], bitsFloat(angle)));
         });
         put(args[0], matrix);
         return done();
@@ -269,18 +278,26 @@ export class MotionInstance {
       case 37:
         put(args[0], transform(vector(args[0], 4), vector(args[1], 16)));
         return done();
-      case 43:
-        put(args[0], multiply(vector(args[0], 16), yawPitchRoll(...args.slice(1).map(bitsFloat))));
+      case 43: {
+        put(
+          args[0],
+          this.multiplyMatrix(vector(args[0], 16), yawPitchRoll(...args.slice(1).map(bitsFloat))),
+        );
         return done();
+      }
       case 44: {
         const reference = vector(args[1], 16),
           angles = vector(args[2], 3);
-        const x = transform([-1, 0, 0, 0], reference);
+        const x = this.transformVector([-1, 0, 0, 0], reference);
         x[1] = 0;
-        const axes = [normalize(x), [0, -1, 0, 0], normalize(transform([0, 0, -1, 0], reference))];
+        const axes = [
+          normalize(x),
+          [0, -1, 0, 0],
+          normalize(this.transformVector([0, 0, -1, 0], reference)),
+        ];
         let matrix = vector(args[0], 16);
         axes.forEach((axis, i) => {
-          matrix = multiply(matrix, rotationAxis(axis.slice(0, 3), angles[i]));
+          matrix = this.multiplyMatrix(matrix, rotationAxis(axis.slice(0, 3), angles[i]));
         });
         put(args[0], matrix);
         return done();

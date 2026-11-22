@@ -3084,7 +3084,7 @@ test('63 warning and title motions run the selected round, linear and clear cont
     ),
     motion = new MotionInstance(script, { profile: 'rebellions-jp-engine-2.6.1.63' }),
     initialSP = motion.machine.sp;
-  assert.throws(() => motion.native(42, [], motion.machine), /Unrecovered MOT native .*:2a/);
+  assert.throws(() => motion.native(3, [], motion.machine), /Unrecovered MOT native .*:3/);
   assert.equal(motion.update(3).active, false);
   assert.equal(motion.machine.load(512) | 0, -1);
   assert.deepEqual(
@@ -3101,6 +3101,34 @@ test('63 warning and title motions run the selected round, linear and clear cont
   );
   assert.equal(motion.machine.pop(), title67Sentinel);
   assert.equal(motion.machine.sp, initialSP);
+});
+
+test('63 story motions run their own scalar and matrix contracts through the guest', async () => {
+  const script = await readKCS(
+      kcsProgram([
+        ...title67Call(2, [floatBits(0)], 512),
+        ...title67Call(7, [floatBits(1), floatBits(0)], 516),
+        ...title67Call(14, [floatBits(180)], 520),
+        ...title67Call(42, [floatBits(135), floatBits(180)], 524),
+        ...title67Call(26, [600]),
+        ...title67Call(23, [600, floatBits(Math.PI / 2), 0, 0]),
+        ...title67Call(38, []),
+        [59],
+      ]),
+    ),
+    motion = new MotionInstance(script, { profile: 'rebellions-jp-engine-2.6.1.63' }),
+    read = (at) => bitsFloat(motion.machine.load(at));
+  assert.equal(motion.update(2).active, false);
+  assert.deepEqual([512, 516, 520, 524].map(read), [
+    1,
+    Math.fround(Math.PI / 2),
+    Math.fround(Math.PI),
+    -1,
+  ]);
+  assert.equal(read(600), 1);
+  assert.equal(read(624), 1);
+  assert.equal(read(636), -1);
+  assert.ok(Math.abs(read(640)) < 1e-6);
 });
 
 test('67 first-title motion runs own round linear triangle and clear contracts', async () => {
