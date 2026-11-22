@@ -2612,6 +2612,39 @@ test('63 spatial bank positioning uses its four-vector reduction and a live enab
   }
 });
 
+test('63 voice queries use the configured archive and full CP932 name', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    { world, audio } = await oldTitleWorld({}, undefined, profile);
+  try {
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      configuration = world.configuration,
+      entries = configuration.blocks[0],
+      data = new DataView(entries.buffer, entries.byteOffset, entries.byteLength),
+      row = configuration.voiceRecordByte(1);
+    data.setUint32(row, 7, true);
+    data.setUint32(row + 36, 83, true);
+    entries.set(bytes('表actor'), row + 40);
+    entries.set(bytes('voices'), row + configuration.voiceLayout.archiveByte);
+    const query = async (filename) => {
+      machine.writeString(filename, 256);
+      return Promise.all(
+        [844, 606, 607].map(async (id) => {
+          const reply = await world.runtime.native('main', id, [256], machine, main);
+          assert.equal(reply.control, 1);
+          return reply.value;
+        }),
+      );
+    };
+    assert.deepEqual(await query('VOICES.int/line.wav'), [1, 7, 83]);
+    assert.deepEqual(await query('表ACTOR_01.wav'), [1, 7, 83]);
+    assert.deepEqual(await query('other/表ACTOR_01.wav'), [0xffffffff, 0, 0]);
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
 test('63 FES sound loads, plays and closes through its own Sound receiver', async (t) => {
   const profile = 'rebellions-jp-engine-2.6.1.63',
     { world, audio } = await oldTitleWorld(

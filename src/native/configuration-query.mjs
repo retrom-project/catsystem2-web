@@ -16,15 +16,23 @@ const fold = (byte) => (byte >= 65 && byte <= 90 ? byte + 32 : byte);
 function equal(a, b) {
   return a.length === b.length && a.every((byte, i) => fold(byte) === fold(b[i]));
 }
-function lower(bytes) {
+function lower(bytes, pairs) {
   const result = bytes.slice();
   for (let at = 0; at < result.length; at++) {
-    if (nativeDataPair(result, at)) at++;
+    if (nativeDataPair(result, at, pairs)) at++;
     else result[at] = fold(result[at]);
   }
   return result;
 }
 const separator = (bytes) => Math.max(bytes.lastIndexOf(47), bytes.lastIndexOf(92));
+function pairedSeparator(bytes, pairs) {
+  let slash = -1;
+  for (let at = 0; at < bytes.length; at++) {
+    if (nativeDataPair(bytes, at, pairs)) at++;
+    else if (bytes[at] === 47 || bytes[at] === 92) slash = at;
+  }
+  return slash;
+}
 function withoutExtension(bytes) {
   const dot = bytes.lastIndexOf(46);
   return dot > separator(bytes) ? bytes.subarray(0, dot) : bytes;
@@ -41,12 +49,16 @@ function directoryIndex(configuration, path) {
   return -1;
 }
 function legacyIndex(configuration, filename) {
-  const slash = separator(filename);
+  const policy = nativeABI(configuration.profile).sound.filenamePolicy,
+    paired = policy?.classification === 'cp932-pair-directory',
+    slash = paired ? pairedSeparator(filename, policy.pairs) : separator(filename);
+  if (paired && filename.length > policy.maximumBytes)
+    throw new Error('Unreviewed sound filename exceeds its CString domain');
   if (slash > 0) {
     const index = directoryIndex(configuration, filename.subarray(0, slash));
     if (index >= 0) return index;
   }
-  const name = lower(filename),
+  const name = lower(filename, paired ? policy.pairs : undefined),
     { count, headBytes } = configuration.voiceLayout;
   for (let i = 0; i < count; i++) {
     const head = voiceText(configuration, i, 40, headBytes);
@@ -89,13 +101,8 @@ function flatSoundGain(configuration, filename, policy) {
   // The wrapper always formats into its fixed scratch before the getter's mute gate.
   if (configuration.voiceMuted()) return 0;
   folded(filename);
-  let slash = 0,
-    row = -1;
-  for (let at = 0; at < filename.length; at++) {
-    if (pair(filename, at)) at++;
-    else if (filename[at] === 47 || filename[at] === 92) slash = at;
-  }
-  if (slash) row = directoryIndex(configuration, filename.subarray(0, slash));
+  const slash = pairedSeparator(filename, policy.pairs);
+  let row = slash > 0 ? directoryIndex(configuration, filename.subarray(0, slash)) : -1;
   if (row < 0) {
     const last = separator(filename),
       name = folded(filename.subarray(last > 0 ? last + 1 : 0));
