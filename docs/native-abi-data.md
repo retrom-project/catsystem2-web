@@ -1220,6 +1220,10 @@ without loading any Sound bank.
 
 Main 168 sends three float words to the selected Sound bank. The device
 applies the position when 3D sound is configured and that bank has a buffer.
+Main 347 and 348 write the loaded bank's velocity and Doppler factor.
+Main 604, 935 and 936 retain the 280-byte Sound load packet. The group scan
+excludes its end and falls back to the first pending release. The option
+forms pass the unsigned caller ticks converted to milliseconds.
 Main 606, 607 and 844 return the configured enable word, master gain and
 index. The lookup checks the archive directory before the lowercased full
 CP932 filename prefix.

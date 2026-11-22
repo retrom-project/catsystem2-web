@@ -645,19 +645,27 @@ export class NativeSoundTask {
   }
   allocate(minimum, maximum) {
     const first = Math.max(0, Math.min(this.sound.bankCount, minimum | 0)),
-      last = Math.max(0, Math.min(this.sound.bankCount, maximum | 0));
-    const range = () => Array.from({ length: Math.max(0, last - first + 1) }, (_, i) => first + i);
+      last = Math.max(0, Math.min(this.sound.bankCount, maximum | 0)),
+      exclusive = this.sound.abi.sound.groupEndExclusive,
+      end = exclusive ? last : last + 1;
+    const range = () => Array.from({ length: Math.max(0, end - first) }, (_, i) => first + i);
     for (const bank of range())
       if (this.valid(bank) && !this.sound.device[bank].loaded) return bank;
-    let bank = range().find(
-      (index) => this.valid(index) && this.controls[index].word(C.releasePending),
-    );
-    bank ??= range().find(
-      (index) => this.valid(index) && this.controls[index].word(C.endAfterPlayback),
-    );
-    bank ??= first;
-    if (!this.valid(bank))
-      throw new Error(`Native sound group writes outside bank table: ${first}..${last}`);
+    let bank;
+    if (exclusive) {
+      bank = this.controls.findIndex((control) => control.word(C.releasePending));
+      if (bank < 0) return bank;
+    } else {
+      bank = range().find(
+        (index) => this.valid(index) && this.controls[index].word(C.releasePending),
+      );
+      bank ??= range().find(
+        (index) => this.valid(index) && this.controls[index].word(C.endAfterPlayback),
+      );
+      bank ??= first;
+      if (!this.valid(bank))
+        throw new Error(`Native sound group writes outside bank table: ${first}..${last}`);
+    }
     this.sound.release(bank);
     const control = this.controls[bank];
     control.word(C.flags, 0);
@@ -853,6 +861,7 @@ export class NativeSoundTask {
               .find((record) => record.typeCode === packet.load(8));
       if (!group) return 0xffffffff;
       const allocated = this.allocate(group.min, group.max);
+      if (allocated < 0) return 0xffffffff;
       packet.store(0, allocated);
       return (await this.load(
         packet,
@@ -1013,10 +1022,8 @@ export class NativeSoundTask {
         this.sound.refresh(selected[0]);
         return 0;
       case 193:
-        if (
-          this.sound.abi.sound.positionRequiresEnabledOutput &&
-          (!this.world.configuration.soundOptions.use3d || !device.loaded)
-        )
+        if (this.sound.abi.sound.spatialRequiresLoadedBuffer && !device.loaded) return 0;
+        if (this.sound.abi.sound.positionRequires3D && !this.world.configuration.soundOptions.use3d)
           return 0;
         device.nativeSpatial.position = [readFloat(l), readFloat(l + 4), readFloat(l + 8)];
         if (!device.nativeSpatial.enabled)
@@ -1027,10 +1034,12 @@ export class NativeSoundTask {
         this.sound.refresh(selected[0]);
         return 0;
       case 195:
+        if (this.sound.abi.sound.spatialRequiresLoadedBuffer && !device.loaded) return 0;
         device.nativeSpatial.velocity = [readFloat(l), readFloat(l + 4), readFloat(l + 8)];
         this.sound.refresh(selected[0]);
         return 0;
       case 196:
+        if (this.sound.abi.sound.spatialRequiresLoadedBuffer && !device.loaded) return 0;
         device.nativeSpatial.dopplerFactor = readFloat(l);
         this.sound.refresh(selected[0]);
         return 0;

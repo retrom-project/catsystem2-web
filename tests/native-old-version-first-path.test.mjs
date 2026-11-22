@@ -2606,6 +2606,34 @@ test('63 spatial bank positioning uses its four-vector reduction and a live enab
     world.configuration.soundOptions.use3d = 1;
     assert.deepEqual(await call(168, position), { control: 2 });
     assert.deepEqual(world.sound.device[4].nativeSpatial.position, [3, 4, 5]);
+    assert.deepEqual(await call(347, [4, ...[6, 7, 8].map(floatBits)]), { control: 2 });
+    assert.deepEqual(await call(348, [4, floatBits(1.5)]), { control: 2 });
+    assert.deepEqual(world.sound.device[4].nativeSpatial.velocity, [6, 7, 8]);
+    assert.equal(world.sound.device[4].nativeSpatial.dopplerFactor, 1.5);
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
+test('63 Sound bank allocation keeps the group end exclusive and its decoder option', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    { world, audio } = await oldTitleWorld({ 'owned.wav': title67Wave() }, undefined, profile);
+  try {
+    world.configuration.soundGroups[0] = { id: 3, type: 'bgm', min: 4, max: 5 };
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, machine, main);
+    machine.writeString('owned.wav', 256);
+    assert.deepEqual(await call(936, [3, 0, 256, 1, 1, 9]), { control: 1, value: 4 });
+    assert.equal(world.sound.device[4].decoderOption, 150);
+    assert.deepEqual(await call(604, [3, 0, 256, 1, 2]), { control: 1, value: 0xffffffff });
+    assert.equal(world.sound.device[5].loaded, false);
+    assert.deepEqual(await call(156, [4]), { control: 2 });
+    assert.deepEqual(await call(604, [3, 0, 256, 0, 2]), { control: 1, value: 4 });
+    assert.equal(world.sound.device[4].sourceMode, 'static');
+    assert.deepEqual(await call(935, [8, 0, 256, 1, 9]), { control: 1, value: 1 });
+    assert.equal(world.sound.device[8].decoderOption, 150);
   } finally {
     await world.close();
     await audio.dispose();
