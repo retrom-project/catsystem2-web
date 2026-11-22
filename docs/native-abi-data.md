@@ -1085,6 +1085,9 @@ its delimiter or capacity and writes two terminators. Main212/213 set expression
 evaluate it, and Main278 expands the Script string bank. Main46 rounds the
 scaled percentage to float32 after division, and Main319 writes the low
 word after the float32 rounded result is converted to a signed 64-bit integer.
+Main45 clears its destination before searching the live byte buffers. The
+final suffix follows the forward DWORD and byte copies used by the three
+engine versions.
 
 Main633–638 load, query and release the name table from the configured FES
 category. Rows follow source order and use three 32-byte CP932 fields.

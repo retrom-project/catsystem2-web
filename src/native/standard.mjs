@@ -35,7 +35,7 @@ function forwardsIntoSource(source, destination) {
     destination.byteOffset < source.byteOffset + source.byteLength
   );
 }
-function appendCString(m, address, tail, source) {
+function appendCString(m, address, tail, source, zeroes = 2) {
   const append = address + cstring(m, address).length;
   if (source !== undefined) {
     const from = m.bytes(source, tail.length + 1),
@@ -51,11 +51,11 @@ function appendCString(m, address, tail, source) {
       const [buffer, offset] = m.region(address),
         end = buffer.indexOf(0, offset);
       if (end < 0) throw new Error('Native string append removed the terminating NUL');
-      m.store(address + end - offset, 0, 2);
+      m.store(address + end - offset, 0, zeroes);
       return;
     }
   }
-  write(m, append, tail);
+  write(m, append, tail, zeroes);
 }
 function formattedCString(services, m, address) {
   const bytes = formatBytes(services, m, address),
@@ -192,6 +192,18 @@ function indexOfBytes(haystack, needle, start = 0, pairPolicy = null) {
     let i = 0;
     while (i < needle.length && at + i < haystack.length && haystack[at + i] === needle[i]) i++;
     if (i === needle.length) return at;
+  }
+  return -1;
+}
+function indexOfLiveCString(machine, source, needle) {
+  for (let offset = 0; machine.load(source + offset, 1); offset++) {
+    let matched = 0;
+    for (;;) {
+      const next = machine.load(needle + matched, 1);
+      if (!next) return offset;
+      if (machine.load(source + offset + matched, 1) !== next) break;
+      matched++;
+    }
   }
   return -1;
 }
@@ -516,23 +528,22 @@ export function nativeStandard(id, args, m, services = {}) {
     }
     case 0x2d: {
       requireArguments(4);
-      const source = cstring(m, args[1]),
-        needle = cstring(m, args[2]),
-        replacement = cstring(m, args[3]);
-      if (!needle.length && source.length)
-        throw new Error(
-          'KCS replacement with an empty needle does not terminate in the native engine',
-        );
-      out = [];
-      let at = 0,
-        found;
-      while ((found = indexOfBytes(source, needle, at)) >= 0) {
-        out.push(...source.subarray(at, found), ...replacement);
-        at = found + needle.length;
+      const [destination, , needle, replacement] = args,
+        needleLength = cstring(m, needle).length,
+        replacementLength = cstring(m, replacement).length;
+      let source = args[1],
+        written = 0;
+      m.store(destination, 0, 1);
+      for (let found; (found = indexOfLiveCString(m, source, needle)) >= 0; ) {
+        const advance = found + needleLength;
+        if (!advance) throw new Error('KCS replacement with an empty needle does not advance');
+        for (let i = 0; i < found; i++) m.store(destination + written++, m.load(source + i, 1), 1);
+        for (let i = 0; i < replacementLength; i++)
+          m.store(destination + written++, m.load(replacement + i, 1), 1);
+        source += advance;
       }
-      write(m, args[0], out);
-      out.push(...source.subarray(at));
-      write(m, args[0], out, 1);
+      m.store(destination + written, 0, 2);
+      appendCString(m, destination, cstring(m, source), source, 1);
       return done();
     }
     case 0x2e: {

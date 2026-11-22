@@ -276,6 +276,18 @@ test('native replacement, percentage conversion and search return their actual c
   assert.equal(m.string(300), '1.5%');
 });
 
+test('native replacement searches after the initial clear and appends from live overlapping bytes', () => {
+  const m = machine();
+  put(m, 200, 'absent');
+  put(m, 250, 'new');
+  put(m, 100, 'ABCDE');
+  assert.deepEqual(invoke(m, 45, [100, 100, 200, 250]), { control: 2 });
+  assert.deepEqual([...m.bytes(100, 6)], [0, 0, 67, 68, 69, 0]);
+  put(m, 100, 'ABCDE');
+  assert.deepEqual(invoke(m, 45, [102, 100, 200, 250]), { control: 2 });
+  assert.deepEqual([...m.bytes(100, 6)], [65, 66, 65, 66, 65, 0]);
+});
+
 test('memory and file natives distinguish void, pointer and byte-count results', () => {
   const m = machine(),
     allocated = result(m, 0x1b, [12]);
