@@ -1036,6 +1036,11 @@ literal balanced parentheses and separating a preceding ASCII word. Main 44
 clears its destination before joining the inclusive range of list entries.
 Each selected entry contributes a trailing space. Both return control 2.
 
+Main 4 returns the platform millisecond clock as a DWORD. Main 17 counts raw
+bytes to the first NUL. Main 318 clamps linear interpolation to its input
+interval and preserves the engine's x87 rounding and unordered comparisons.
+Main 439 is the original control-2 stub.
+
 Main594 opens an owned CP932 name and RGB table from a formatted filename.
 The .63 Script uses this interface for background tone groups. Main596
 looks up a group and Main597 resolves an alias through its group. A match
@@ -1241,6 +1246,8 @@ and a vertically mapped rectangle. Main 100 then applies the requested color
 and override word to the startup Plane through its own raw message 56. These
 operations return control 2. Main 452 delivers Base message 23, returning the
 FES task's signed exit word or the initialized -1 when no receiver writes it.
+Main 453 sets the exit word of the current task. Main 94 clamps signed alpha
+to 0–255 and sends raw Plane 60 with dispatch flag 1 to the selected target.
 
 Main 78 sends an eight-word textured rectangle packet to the live Plane.
 Main 466 writes the coordinate mode into the current D3D render model.

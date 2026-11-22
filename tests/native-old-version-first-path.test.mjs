@@ -1810,6 +1810,10 @@ test('63 motion authoring prepares in-place spline points and converts angles wi
       call = (id, args) => world.runtime.native('main', id, args, m, main);
     assert.deepEqual(await call(62, [0x7f7fffff]), { control: 1, value: 0x7c8efa35 });
     assert.deepEqual(await call(63, [floatBits(Math.PI)]), { control: 1, value: floatBits(180) });
+    assert.deepEqual(await call(318, [0, floatBits(100), 0xff7fffff, 0x7f7fffff, 0x7effffff]), {
+      control: 1,
+      value: 0,
+    });
     assert.deepEqual(await call(320, [0xffffffff, 2]), { control: 2 });
     const points = [0, 4, 7, 8, 9, 4, 12, 7, 8, 9, 8, 20, 7, 8, 9];
     for (const [index, point] of points.entries()) m.store(512 + index * 4, floatBits(point));
@@ -1887,6 +1891,11 @@ test('63 textured Plane coordinate mode belongs to its current render model', as
     assert.deepEqual(plane.state.shapeWords, [0, 0, 0, width, height, 32, 1, 0xffffffff]);
     assert.deepEqual(plane.state.rect, [0, 0, 20.5, 12.25]);
     assert.equal(plane.graph.vram, true);
+    assert.deepEqual(await call(94, [target, -1]), { control: 2 });
+    const color = new DataView(plane.graph.kx2.buffer);
+    assert.equal(color.getUint32(MOTION_ABI.color, true) >>> 24, 0);
+    assert.deepEqual(await call(94, [target, 256]), { control: 2 });
+    assert.equal(color.getUint32(MOTION_ABI.color, true) >>> 24, 255);
     assert.deepEqual(await call(466, [target, 2]), { control: 2 });
     assert.equal(plane.state.coordMode, 2);
     assert.deepEqual(await call(88, [target, floatBits(90)]), { control: 2 });
@@ -2336,6 +2345,8 @@ test('63 command split and list joining read and write the live CP932 buffers', 
       call = (id, args) => world.runtime.native('main', id, args, m, script);
     m.writeString('tag(:a(b)c),tail', 128);
     m.writeString(' ,', 160);
+    m.writeString('猫a', 168);
+    assert.deepEqual(await call(17, [168]), { control: 1, value: 3 });
     const list = encodeCP932('tag\0(:a(b)c)\0tail\0\0');
     assert.deepEqual(await call(43, [192, 128, 160]), { control: 2 });
     assert.deepEqual(m.bytes(192, list.length), list);

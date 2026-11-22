@@ -23,6 +23,14 @@ export function linearInterpolate(areaMin, areaMax, inputMin, inputMax, value) {
   if (!(n < hi)) return b;
   return f(f(f(f(n - lo) / f(hi - lo)) * f(b - a)) + a);
 }
+export function x87LinearInterpolate(a, b, lo, hi, n) {
+  // The original unordered comparisons fall through to the calculation.
+  if (lo >= n) return a;
+  if (hi <= n) return b;
+  const fraction = roundX87Single(roundX87Single(n - lo) / f(hi - lo));
+  const offset = f(roundX87Single(fraction * f(b - a)));
+  return f(a + offset);
+}
 
 export function truncateFloat32(value) {
   value = f(value);

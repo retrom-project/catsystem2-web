@@ -5,7 +5,7 @@ import { nativeReply, bitsFloat } from '../kcs.mjs';
 import { initialMotionObject } from '../motion/abi.mjs';
 import { encodeMotionRecords, restoreMotionRecords } from '../motion/checkpoint.mjs';
 import { prepareMotionSpline } from '../motion/spline.mjs';
-import { linearInterpolate, roundInteger } from '../ppi/numeric.mjs';
+import { linearInterpolate, roundInteger, x87LinearInterpolate } from '../ppi/numeric.mjs';
 import { roundX87Single } from '../ppi/x87.mjs';
 import { floatBits } from '../kcs.mjs';
 import { nativeABI } from './abi/index.mjs';
@@ -121,7 +121,13 @@ const ids = new Set([
 const returning = new Set([0x130, 0x133, 0x135, 0x136, 0x137, 0x13b, 0x13c, 0x1b8, 0x202, 0x217]);
 
 export function nativeMotion(id, args, machine, services = {}) {
-  if (id === 0x13e) return value(floatBits(linearInterpolate(...args.map(bitsFloat))));
+  if (id === 0x13e) {
+    const interpolate =
+      services.profile && nativeABI(services.profile).math?.lerpUsesX87
+        ? x87LinearInterpolate
+        : linearInterpolate;
+    return value(floatBits(interpolate(...args.map(bitsFloat))));
+  }
   if (id === 0x13f) {
     const input = bitsFloat(args[0]);
     if (services.math?.roundIntegerResult !== 'int64-low-word') return value(roundInteger(input));
