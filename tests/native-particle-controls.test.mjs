@@ -10,7 +10,35 @@ import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { floatBits } from '../src/kcs.mjs';
 import { nativeParticleFixture } from './fixtures/ppi-native-fixture.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
+
+test('2.6.1.63 story Particle controls route signed alpha and neutral attachment', async () => {
+  const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
+  try {
+    const particle = await world.objects.create({ kind: 16, parent: world.root }),
+      target = world.nativeTaskID(particle),
+      task = world.main,
+      call = (id, args) => world.runtime.native('main', id, args, task.machine, task),
+      state = world.particles.get(particle).state;
+    assert.deepEqual(await call(426, [0, 0]), { control: 2 });
+    assert.equal(state.alpha, 256);
+    for (const [word, alpha] of [
+      [254, 254],
+      [255, 256],
+      [0xffffffff, -1],
+    ]) {
+      assert.deepEqual(await call(426, [target, word]), { control: 2 });
+      assert.equal(state.alpha, alpha);
+    }
+    assert.deepEqual(await call(427, [target, 77]), { control: 2 });
+    assert.equal(state.attachment, 77);
+    assert.deepEqual(await call(427, [target, 0]), { control: 2 });
+    assert.equal(state.attachment, -1);
+  } finally {
+    await world.close();
+  }
+});
 
 for (const [profile, variable, receiver, offset] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE', 0x4d06f0, 5],

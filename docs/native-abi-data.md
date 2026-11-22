@@ -20,7 +20,7 @@ selected or enabled by proximity to another version number.
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
 | 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered               |
-| 2.6.1.63 | 938        | 291       | 9             | 1             | 637     | 15 generic and 15 particle v2 recovered |
+| 2.6.1.63 | 938        | 293       | 9             | 1             | 635     | 15 generic and 15 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                            |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                            |
@@ -1433,6 +1433,11 @@ The FES init, param and start commands use the owned kind 16 receiver.
 The normal particle host checks the active engine table on load and cold
 restore. The authored FES control reaches all fifteen selected calls, rejects
 an unknown v2 slot before mutation and restores the complete raw World state.
+
+Main426 and Main427 carry signed alpha and the graph attachment word to
+the owned Particle receiver with raw messages 308 and 309. Alpha words
+below 255 keep their signed value and larger words select 256. A zero
+attachment clears the reference. Both wrappers return control 2.
 
 The selected warning and title motion programs use Generic 17, 38 and 41.
 The round and clamped interpolation calls each write a result. Generic 38
