@@ -22,11 +22,44 @@ import { NativeWorld } from './native/world.mjs';
 import { NativeConfiguration } from './native/config.mjs';
 import { NativeFileStorage } from './native/storage.mjs';
 import { parseNativeXML } from './native/xml.mjs';
-import { nativeABI } from './native/abi/index.mjs';
+import { nativeABI, NATIVE_ABIS } from './native/abi/index.mjs';
+import { loadNativeFreeType } from './native/font-backend.mjs';
+import { loadNativeZlib } from './native/zlib.mjs';
 import { NativeInputBindings } from './native/input-bindings.mjs';
 import { browserWindowsLanguageID } from './native/windows-language-ids.mjs';
 import { NativeSteam } from './native/steam.mjs';
 import { requireCheckpointRestoreOwner } from './native/original-adapter.mjs';
+
+export async function prepareBrowserModules({ signal } = {}) {
+  signal?.throwIfAborted();
+  const freeTypeVersions = new Set(
+      Object.values(NATIVE_ABIS)
+        .map(({ text }) => text.freeTypeVersion)
+        .filter((version) => version !== undefined),
+    ),
+    prepared = Promise.all([
+      import('./native/fes-text-layout.mjs'),
+      loadNativeZlib(),
+      ...Array.from(freeTypeVersions, loadNativeFreeType),
+      new CanvasTextGlyphs().ready(),
+    ]);
+  if (!signal) {
+    await prepared;
+    return;
+  }
+  // A launch can stop waiting while the immutable module state remains shared.
+  let onAbort;
+  const aborted = new Promise((resolve, reject) => {
+    onAbort = () => reject(signal.reason);
+    signal.addEventListener('abort', onAbort, { once: true });
+  });
+  try {
+    await Promise.race([prepared, aborted]);
+    signal.throwIfAborted();
+  } finally {
+    signal.removeEventListener('abort', onAbort);
+  }
+}
 
 export class CatSystem2 {
   #storageNamespace;

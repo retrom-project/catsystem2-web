@@ -101,6 +101,10 @@ Retrom PFB 可调用 `.github/rpg-runtime/build-candidate.sh`，传入绝对路�
 候选包含带完整资源清单和许可证的 `catsystem2-web.tar.gz`、单独的 MPL 许可证和
 `retrom-core-candidate.json`。归档规范化文件顺序、权限、拥有者和时间戳。
 
+嵌入宿主在开始离线游玩前，可在加载引擎模块的浏览器文档中调用
+`await prepareBrowserModules({ signal })`，准备原生文字与压缩模块以及固定后备字体。
+游戏文件仍由宿主通过其内容接口离线提供。
+
 公共测试使用自制数据，覆盖解析边界、VM、FES、CST、E-mote、WebGL 遮罩、Range 读取和 IndexedDB。
 私有游戏验证与公共测试分开运行。先按上文挂载游戏、转换影片，再执行：
 

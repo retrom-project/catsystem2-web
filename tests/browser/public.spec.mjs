@@ -5,6 +5,64 @@ import { basename, dirname, resolve } from 'node:path';
 import { hg3, kcsProgram, kif } from '../helpers.mjs';
 import { startupVersionImage, startupXML } from '../fixtures/ordinary-startup.mjs';
 
+test('embedded browser preparation keeps first native text and compression available offline', async ({
+  page,
+  context,
+}) => {
+  await page.route('**/embed-preload.html', (route) =>
+    route.fulfill({ contentType: 'text/html', body: '<!doctype html>' }),
+  );
+  await page.goto('/embed-preload.html');
+  const aborted = await page.evaluate(async () => {
+    const { prepareBrowserModules } = await import('/src/engine.mjs'),
+      launch = new AbortController();
+    const preparation = prepareBrowserModules({ signal: launch.signal });
+    launch.abort();
+    const result = await preparation.catch((error) => error.name);
+    await prepareBrowserModules({ signal: new AbortController().signal });
+    return result;
+  });
+  expect(aborted).toBe('AbortError');
+  await context.setOffline(true);
+  const offlineRequests = [];
+  page.on('request', (request) => offlineRequests.push(request.url()));
+  const result = await page.evaluate(async () => {
+    const { JSTextRuntime } = await import('/src/native/text-core.mjs'),
+      { loadNativeFreeType } = await import('/src/native/font-backend.mjs'),
+      { nativeDeflate, nativeInflate } = await import('/src/native/zlib.mjs'),
+      { encodeCP932 } = await import('/src/kcs/strings.mjs'),
+      { FIXED_TEXT_FAMILY } = await import('/src/render/native-text.mjs'),
+      text = new JSTextRuntime({ profile: 'nekopara-vol3-engine-2.6.1.76' });
+    await text.ready();
+    const layout = await text.fesLayout(21),
+      legacyFont = await loadNativeFreeType('2.4.8'),
+      source = encodeCP932('日本'),
+      encoded = await nativeDeflate(source, new Uint8Array(64)),
+      decoded = await nativeInflate(
+        encoded.bytes.subarray(0, encoded.result),
+        new Uint8Array(source.length),
+      );
+    await text.close();
+    return {
+      layoutBytes: layout.bytes.length,
+      fontLoaded: [...document.fonts].some(
+        (face) => face.family === FIXED_TEXT_FAMILY && face.status === 'loaded',
+      ),
+      legacyFont: typeof legacyFont._cs2_font_open,
+      decoded: [...decoded.bytes],
+      decodedLength: decoded.result,
+    };
+  });
+  expect(result).toEqual({
+    layoutBytes: 0x800,
+    fontLoaded: true,
+    legacyFont: 'function',
+    decoded: [0x93, 0xfa, 0x96, 0x7b],
+    decodedLength: 4,
+  });
+  expect(offlineRequests).toEqual([]);
+});
+
 test('ordinary renderless Plane movies decode through the production Host and retain real pixels across cold restore', async ({
   page,
 }, info) => {
