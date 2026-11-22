@@ -1113,6 +1113,10 @@ Main571 and Main572 send raw 426 and 425 through the same task routing.
 Main571 reads an optional DWORD pointer for the payload and Main572
 sends zero. Both return control 2.
 
+Main882 sets a named FES word through raw 340, and Main883 reads it through
+raw 339. The dictionary uses the original formatted CP932 bytes as the key.
+The same bytes select the value after a fresh checkpoint restore.
+
 Main365 owns the full packed resource from the image category. Main368
 initializes the 36-byte metadata output for a live image owner and mapped
 destination before inspecting the frame. Main366 releases the buffer owner.

@@ -194,3 +194,37 @@ test('main454 copies a loaded Script caller context CString into its owned guest
     }
   }
 });
+
+test('63 FES named words use the original formatted CP932 bytes across restoration', async (t) => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    files = { 'screen.fes': new TextEncoder().encode('#START\nnext HOLD\n#HOLD\n') },
+    world = await defaultFESWorld(profile, files);
+  let fresh;
+  t.after(async () => {
+    try {
+      await fresh?.close();
+    } finally {
+      await world.close();
+    }
+  });
+  const loaded = await loadDefaultFES(world),
+    native = (current, id, args) =>
+      current.runtime.native('main', id, args, current.main.machine, current.main),
+    target = world.nativeTaskID(loaded.id),
+    m = world.main.machine;
+  m.writeStringBytes(Uint8Array.of(0x87, 0x90), 128);
+  m.writeStringBytes(Uint8Array.of(0x81, 0xe0), 144);
+  for (const [address, value] of [
+    [128, 0xfedcba98],
+    [144, 23],
+    [128, 0x84211345],
+  ])
+    assert.deepEqual(await native(world, 882, [target, address, value]), { control: 2 });
+  assert.deepEqual(await native(world, 883, [target, 128]), { control: 1, value: 0x84211345 });
+  assert.deepEqual(await native(world, 883, [target, 144]), { control: 1, value: 23 });
+  assert.deepEqual(await native(world, 883, [target, 0]), { control: 1, value: 0 });
+  fresh = await defaultFESWorld(profile, files, { initialize: false });
+  await fresh.restore(structuredClone(world.snapshot()));
+  assert.deepEqual(await native(fresh, 883, [target, 128]), { control: 1, value: 0x84211345 });
+  assert.deepEqual(await native(fresh, 883, [target, 144]), { control: 1, value: 23 });
+});

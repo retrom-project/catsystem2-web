@@ -45,7 +45,9 @@ function notification(event, name, index) {
 }
 
 function stringsPacket(values, start = 16) {
-  const encoded = values.map((text) => Uint8Array.from([...encodeCP932(text), 0])),
+  const encoded = values.map((value) =>
+      Uint8Array.from([...(typeof value === 'string' ? encodeCP932(value) : value), 0]),
+    ),
     data = new Uint8Array(start + encoded.reduce((n, bytes) => n + bytes.length, 0)),
     addresses = [];
   let at = start;
@@ -135,9 +137,8 @@ export function nativeFES(id, args, machine, task, world) {
       value(result === NATIVE_UNWRITTEN_WORD ? -1 : result),
     );
   if (id === 0x372 || id === 0x373) {
-    const name = format(1);
-    if (encodeCP932(name).length > 255)
-      throw new Error('Native FES word name exceeds its 256-byte stack field');
+    const name = world.runtime.services.formatBytes?.(args[1], machine) ?? encodeCP932(format(1));
+    if (name.length > 255) throw new Error('Native FES word name exceeds its 256-byte stack field');
     const packet = stringsPacket([name]);
     return Promise.resolve(
       send(id === 0x372 ? 352 : 351, packet.addresses[0], id === 0x372 ? args[2] : 0, {

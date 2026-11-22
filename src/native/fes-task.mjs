@@ -484,7 +484,7 @@ export function createNativeFESTask(world, record) {
           context.machine ||
           world.objects.machine(context.nativeSenderWorldID ?? words[0]);
         if (!memory) throw new Error('FES named word access requires sender memory');
-        const key = encodeCP932(memory.string(wParam));
+        const key = memory.bytes ? labelBytes(memory, wParam) : encodeCP932(memory.string(wParam));
         if (message === 351) memory.store(lParam, this.nativeDictionary.get(key));
         else this.nativeDictionary.set(key, lParam);
         return NATIVE_UNWRITTEN_WORD;
