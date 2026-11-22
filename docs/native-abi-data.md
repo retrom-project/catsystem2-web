@@ -20,7 +20,7 @@ selected or enabled by proximity to another version number.
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2             |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------------------- |
 | 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered              |
-| 2.6.1.63 | 938        | 74        | 0             | 0             | 864     | 3 generic and 15 particle v2 recovered |
+| 2.6.1.63 | 938        | 78        | 0             | 0             | 860     | 3 generic and 15 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered              |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                           |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                           |
@@ -1029,6 +1029,12 @@ Main 210 returns an in-range Script variable or zero, and Main 276 writes
 the Script's narrow string bank. Main 590–593 open and release an XML owner
 and query integer and narrow text nodes. Missing integer paths keep the
 supplied default. Missing text paths leave the VM buffer intact.
+
+Main594 opens an owned CP932 name and RGB table from a formatted filename.
+The .63 Script uses this interface for background tone groups. Main596
+looks up a group and Main597 resolves an alias through its group. A match
+writes three color words and returns one. A miss returns zero and preserves
+the outputs. Main595 releases the table and returns control 2.
 
 ## 2.6.1.63 CG registration
 

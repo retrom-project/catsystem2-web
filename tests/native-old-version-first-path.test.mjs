@@ -1208,6 +1208,72 @@ test('63 Script owns and persists its CG registrations and releases the restored
   }
 });
 
+test('63 Script opens, queries and releases a grouped tone table', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    table = [0x13, 512],
+    lookup = (id, name, output, result) => [
+      [37, table],
+      [37, name],
+      [37, output],
+      [37, output + 4],
+      [37, output + 8],
+      [43, id, 20],
+      [38, [0x13, result]],
+    ];
+  const { world } = await oldTitleWorld(
+    {
+      'tones.tbl': bytes('#Dusk(31,64,127)\r\nGarden//alias\r\n'),
+      'tones63.kcs': kcsProgram(
+        [
+          [37, 1024],
+          [43, 594, 4],
+          [38, table],
+          ...lookup(596, 1056, 520, 532),
+          ...lookup(597, 1088, 536, 548),
+          ...lookup(597, 1120, 536, 552),
+          [37, table],
+          [43, 595, 4],
+          [37, 1152],
+          [43, 594, 4],
+          [38, [0x13, 556]],
+          [37, 576],
+          [43, 71, 4],
+          [59],
+        ],
+        [
+          [1024, 'owned.int/tones.tbl'],
+          [1056, '#DUSK'],
+          [1088, 'garden'],
+          [1120, 'missing'],
+          [1152, 'owned.int/missing.tbl'],
+        ],
+      ),
+    },
+    undefined,
+    profile,
+  );
+  try {
+    await world.initialize('main.kcs');
+    const { machine } = await world.spawnScript('tones63.kcs');
+    await world.tick();
+    assert.deepEqual(
+      [520, 524, 528, 532].map((at) => machine.load(at)),
+      [31, 64, 127, 1],
+    );
+    assert.deepEqual(
+      [536, 540, 544, 548, 552, 556].map((at) => machine.load(at)),
+      [31, 64, 127, 1, 0, 0],
+    );
+    assert(machine.load(512));
+    assert.throws(
+      () => world.runtime.handles.get(machine.load(512), 'character-names'),
+      /released/,
+    );
+  } finally {
+    await world.close();
+  }
+});
+
 async function verifyCursorVisibility(t, profile, cursorMessage = 22) {
   const { world, audio } = await oldTitleWorld(
     {
