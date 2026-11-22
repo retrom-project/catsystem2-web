@@ -57,7 +57,8 @@ function setup(t) {
     history = { value: 0 },
     blocks = [
       [[0x30, 'wait'], [0x30, 'pcm first'], [0x21], [0x20], [2]],
-      [[0x30, 'pcm second'], [0x21], [0x20], [2]],
+      [[0x30, 'se effect'], [0x30, 'pcm second'], [0x21], [0x20], [2]],
+      [[0x30, 'pl 1'], [0x30, 'pcm third'], [0x21], [0x20], [2]],
     ],
     scene = {
       history: { path: [history] },
@@ -75,6 +76,7 @@ function setup(t) {
   };
   mount('first.ogg', ogg(3));
   mount('second.ogg', ogg(5));
+  mount('third.ogg', ogg(7));
   const audio = {
       game,
       context: { state: 'running' },
@@ -96,7 +98,7 @@ function setup(t) {
   return { prep, owner, scene, history, audio, pendingIdle, runIdle, mount };
 }
 
-test('a voiced dialogue can reuse one prepared buffer and then prepare the next literal page', async (t) => {
+test('each consumed voiced dialogue can prepare one adjacent literal page', async (t) => {
   const { prep, owner, scene, history, audio, runIdle } = setup(t);
   assert.equal(prep.hint(scene, owner.id, 0), true);
   await runIdle();
@@ -108,11 +110,20 @@ test('a voiced dialogue can reuse one prepared buffer and then prepare the next 
   assert.strictEqual(audio.buffers.get('first.ogg'), audio.decoded[0]);
   prep.continued(first);
   await runIdle();
+  assert.deepEqual(audio.decoded, [{ id: 3 }, { id: 5 }]);
   history.value = 1;
   scene.reader.body = { bytes: scene.reader.body.bytes.slice() };
   prep.loaded(scene, 'mounted.cst', true);
-  prep.take('second.ogg', owner.id);
+  const second = prep.take('second.ogg', owner.id);
+  assert(second);
   assert.strictEqual(audio.buffers.get('second.ogg'), audio.decoded[1]);
+  prep.continued(second);
+  await runIdle();
+  assert.deepEqual(audio.decoded, [{ id: 3 }, { id: 5 }, { id: 7 }]);
+  assert.equal(audio.buffers.has('third.ogg'), false);
+  history.value = 2;
+  assert(prep.take('third.ogg', owner.id));
+  assert.strictEqual(audio.buffers.get('third.ogg'), audio.decoded[2]);
 });
 
 test('early demand, replaced backing and released scene ownership leave audio to the regular load', async (t) => {

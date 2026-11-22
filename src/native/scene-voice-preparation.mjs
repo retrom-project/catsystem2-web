@@ -8,11 +8,11 @@ import {
   captureArchiveRange,
 } from '../files.mjs';
 
-const MAX_PACKED = 256 * 1024;
+const MAX_PACKED = 384 * 1024;
 const MAX_SAMPLES = 2 * 1024 * 1024;
 const decoder = new TextDecoder('shift_jis');
 
-function dialogueVoice(reader, block, adjacent) {
+function dialogueVoice(reader, block) {
   if (block < 0 || block >= reader.blockCount) return null;
   const { count } = reader.blockInfo(block);
   if (count < 4 || count > 64) return null;
@@ -21,7 +21,7 @@ function dialogueVoice(reader, block, adjacent) {
     const source = decoder.decode(reader.text(block, line)).trim();
     const match = /^pcm[ \t]+([a-z0-9_]{1,60})(?:\.ogg)?$/i.exec(source);
     if (!match) {
-      if (adjacent || !/^(?:frameoff|wait|pl|rwipe|bg|eg)\b/i.test(source)) return null;
+      if (!/^(?:frameoff|wait|pl|rwipe|bg|eg|se)\b/i.test(source)) return null;
       continue;
     }
     if (
@@ -198,7 +198,7 @@ export class SceneVoicePreparation {
   #schedule(scope, block, adjacent) {
     if (this.#job || this.#decoding || this.audio.context.state !== 'running') return false;
     try {
-      const voice = dialogueVoice(scope.scene.reader, block, adjacent);
+      const voice = dialogueVoice(scope.scene.reader, block);
       if (!voice) return false;
       const mount = this.#mount(voice.name);
       if (!mount || this.audio.pending.has(mount.key) || this.audio.buffers.has(mount.key))
@@ -279,15 +279,28 @@ export class SceneVoicePreparation {
     if (job.mount.key !== key) return null;
     let active = false;
     try {
-      active = this.#active(job) && sameMount(job.mount, this.#mount(key));
-      if (active && job.buffer && !this.audio.pending.has(key) && !this.audio.buffers.has(key))
+      const mount = this.#mount(key);
+      active = this.#active(job) && sameMount(job.mount, mount);
+      if (
+        active &&
+        job.buffer &&
+        (!job.opened ||
+          matchesArchiveRange(job.opened.range, mount, this.audio.game.nativeSearch)) &&
+        !this.audio.pending.has(key) &&
+        !this.audio.buffers.has(key)
+      )
         this.audio.rememberBuffer(key, job.buffer);
     } catch {
       active = false;
     } finally {
       this.discard();
     }
-    return active && !job.adjacent ? job : null;
+    if (!active || job.history.value !== job.voice.block) return null;
+    // Chain from the block whose sound was actually requested. A same-name
+    // sound in the preceding block does not advance the preparation cursor.
+    job.block = job.voice.block;
+    job.adjacent = false;
+    return job;
   }
 
   continued(job) {
