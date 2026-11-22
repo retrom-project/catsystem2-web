@@ -64,10 +64,11 @@ the observed emission:
 
 | ABI | Strings                                                                             | Character literals                                                         |
 | --- | ----------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| 63  | Reconstruct with surrounding quotes, removing only the escape before a double quote | Wrap the original character lexeme in one additional pair of single quotes |
 | 74  | Reconstruct with surrounding quotes, removing only the escape before a double quote | Wrap the original character lexeme in one additional pair of single quotes |
 | 76  | Retain raw lexeme                                                                   | Retain raw lexeme                                                          |
 
-Both preserve the tested decimal, hexadecimal, signed-zero, floating and
+The reviewed emitters preserve decimal, hexadecimal, signed-zero, floating and
 exponent spellings. Other backslashes retain their spelling. With no macro
 dictionary, the original method leaves the line untouched. No profile-prefix
 branch or unregistered engine was introduced.

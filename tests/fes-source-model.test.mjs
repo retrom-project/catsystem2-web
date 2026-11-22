@@ -10,7 +10,7 @@ import {
 } from '../src/fes/source.mjs';
 import { tokenizeFESLine } from '../src/fes/tokens.mjs';
 import { tokenizeNativeFESSoundConfiguration } from '../src/native/fes-sound-config.mjs';
-import { nativeABI } from '../src/native/abi/index.mjs';
+import { nativeABI, nativeABIBehavior } from '../src/native/abi/index.mjs';
 const oracle = JSON.parse(
   await readFile(new URL('./fixtures/fes-source-model.json', import.meta.url), 'utf8'),
 );
@@ -61,6 +61,24 @@ test('macro replacement matches both original literal emission strategies and do
     'no macro table means no lexical reconstruction',
   );
   assert.equal(text(replaceFESMacros('NAME NAME2', new Map([['NAME', '']]))), ' NAME2');
+});
+
+test('ABI 2.6.1.63 reconstructs macro string and character literals', () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    literalPolicy = {
+      string: nativeABIBehavior(profile, 'fes.macroLiterals.string'),
+      character: nativeABIBehavior(profile, 'fes.macroLiterals.character'),
+    },
+    source = String.raw`text A "x\"y\z" 'a'`,
+    macros = new Map([
+      ['A', 'B'],
+      ['B', '7'],
+    ]);
+  assert.equal(
+    text(replaceFESMacros(source, macros, literalPolicy)),
+    String.raw`text B "x"y\z" ''a''`,
+  );
+  assert.equal(text(replaceFESMacros(source, new Map(), literalPolicy)), source);
 });
 
 test('raw text tails retain quotes and spaces inserted after source preparation', () => {

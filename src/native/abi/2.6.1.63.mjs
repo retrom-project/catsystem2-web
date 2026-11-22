@@ -735,10 +735,7 @@ export default {
       patternEncoding: null,
       keyEncoding: null,
     },
-    macroLiterals: {
-      string: null,
-      character: null,
-    },
+    macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
     controlResources: null,
   },
   graphics: {
@@ -1172,10 +1169,6 @@ export default {
     'fes.fileList.patternEncoding':
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'fes.fileList.keyEncoding':
-      'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
-    'fes.macroLiterals.string':
-      'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
-    'fes.macroLiterals.character':
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'language.storage':
       'Global translation service is unreviewed; the selected startup title uses the proven raw path. No absence claim for the whole engine.',
