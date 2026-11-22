@@ -87,6 +87,12 @@ for (const [profile, variable] of [
       }
     },
   );
+}
+for (const profile of [
+  'rebellions-jp-engine-2.6.1.63',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+]) {
   test(
     profile + ' JS section tables restore imported bytes independently of source files',
     async () => {
@@ -117,3 +123,38 @@ for (const [profile, variable] of [
     },
   );
 }
+
+test('63 section table lookup returns CP932 data and its integer wrapper reads the same buffer', async () => {
+  const world = await dataWorld('rebellions-jp-engine-2.6.1.63', {
+    'table.txt': encodeCP932('#name\r\nkey 0x2b\r\nkey -27trailing\r\nkey 日本語\r\n'),
+  });
+  try {
+    const { main } = world,
+      m = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, m, main);
+    m.writeString('table.txt', 256);
+    m.writeString('#name', 512);
+    m.writeString('key', 768);
+    const handle = (await call(683, [256])).value;
+    assert.ok(handle);
+    for (const [ordinal, expected] of [
+      [0, 43],
+      [1, -27 >>> 0],
+    ]) {
+      assert.deepEqual(await call(685, [handle, 512, 768, ordinal, 1024]), {
+        control: 1,
+        value: 1,
+      });
+      assert.deepEqual(await call(25, [1024]), { control: 1, value: expected });
+    }
+    assert.deepEqual(await call(685, [handle, 512, 768, 2, 1024]), { control: 1, value: 1 });
+    assert.equal(m.string(1024), '日本語');
+    assert.deepEqual(await call(685, [handle, 512, 768, 3, 1024]), { control: 1, value: 0 });
+    assert.equal(m.string(1024), '日本語');
+    m.writeString('12.5', 1024);
+    assert.deepEqual(await call(25, [1024]), { control: 1, value: 0 });
+    assert.deepEqual(await call(684, [handle]), { control: 2 });
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});

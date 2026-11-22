@@ -1043,6 +1043,12 @@ Main542 allocates missing configured texture pages, starting with the
 543, 546, 550 and 652 share the .63 control-2 stub and leave the result
 unwritten.
 
+Main683 loads an owned CP932 section table. Main685 selects the zero-based
+match within a section and key, preserving authored row order. It copies
+the NUL-terminated value on a hit and leaves the destination intact on
+a miss. Main684 releases that owner. Main25 parses the resulting signed
+integer prefix with decimal and hexadecimal rules.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420
