@@ -25,7 +25,7 @@ import {
 import { checkpointDifference } from './browser/checkpoint-observation.mjs';
 import { AudioMixer } from '../src/audio.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
-import { MOTION_ABI } from '../src/motion/abi.mjs';
+import { MOTION_ABI, motionVector } from '../src/motion/abi.mjs';
 import { NativeDatabase } from '../src/native/database.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
@@ -1712,6 +1712,26 @@ test('63 textured Plane coordinate mode belongs to its current render model', as
     assert.equal(plane.graph.vram, true);
     assert.deepEqual(await call(466, [target, 2]), { control: 2 });
     assert.equal(plane.state.coordMode, 2);
+    assert.deepEqual(await call(88, [target, floatBits(90)]), { control: 2 });
+    assert.deepEqual(await call(85, [target, floatBits(3), floatBits(5), 0]), { control: 2 });
+    assert.deepEqual(motionVector(plane.graph.kx2, MOTION_ABI.base), [3, 5, 90]);
+    assert.deepEqual(await call(84, [target, ...[6, 7, 8].map(floatBits), 0]), { control: 2 });
+    assert.deepEqual(motionVector(plane.graph.kx2, MOTION_ABI.pos), [6, 7, 8]);
+    for (let i = 0; i < 16; i++) machine.store(128 + i * 4, floatBits(i));
+    assert.deepEqual(await call(344, [target, 128, 1]), { control: 2 });
+    assert.deepEqual(
+      plane.graph.textureTransform.subarray(MOTION_ABI.matrix, MOTION_ABI.matrix + 64),
+      machine.bytes(128, 64),
+    );
+    assert.deepEqual(await call(93, [target, ...[-5, 10, 15].map(floatBits), 0]), { control: 2 });
+    assert.deepEqual(motionVector(plane.graph.kx2, MOTION_ABI.rotation), [-5, 10, 15]);
+    assert.deepEqual(await call(101, [target, ...[2, 3, 4].map(floatBits), 1]), { control: 2 });
+    assert.deepEqual(motionVector(plane.graph.kx2, MOTION_ABI.scale), [2, 3, 4]);
+    assert.deepEqual(motionVector(plane.graph.textureTransform, MOTION_ABI.scale), [1, 1, 1]);
+    assert.deepEqual(await call(402, [target, 3]), { control: 2 });
+    assert.equal(plane.state.blendMode, 3);
+    assert.deepEqual(await call(402, [target, 9]), { control: 2 });
+    assert.equal(plane.state.blendMode, 0);
     assert.deepEqual(await call(78, [target, width, height]), { control: 2 });
     assert.equal(plane.state.coordMode, 0);
     assert.deepEqual(await call(79, [target, width, height, 0xffeeeeee]), { control: 2 });

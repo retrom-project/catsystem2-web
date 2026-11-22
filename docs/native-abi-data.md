@@ -1106,6 +1106,13 @@ Main 466 writes the coordinate mode into the current D3D render model.
 Creating a replacement model starts with coordinate mode zero. Both
 wrappers skip a zero target and return control 2.
 
+Main 84, 85, 93, 101, 344 and 402 update Plane position, base X/Y,
+rotation, scale, matrix and blend mode. The base X/Y update retrieves
+the current priority before replacing X and Y. The matrix uses the
+selected vertex or texture transform, and the scale receiver uses the
+vertex transform. Blend values 1–5 reach the renderer and other values
+select mode zero.
+
 Main 630 delivers raw FES message 325 with the formatted event and an
 optional 32-byte object name followed by its index. The receiver runs the
 event, synchronizes changed resources and forces the bound Draw surface when
