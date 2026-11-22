@@ -27,6 +27,25 @@ function program(instructions, name = 'authored') {
 }
 const machine = (instructions, native) => new KCSMachine(program(instructions), { native });
 
+test('KCS complete local words and mapped words keep unaligned and segment boundaries', () => {
+  const vm = machine([[59]]),
+    size = vm.memory.length;
+  vm.store(size - 5, 0x93a7651b);
+  assert.equal(vm.load(size - 5), 0x93a7651b);
+  assert.deepEqual(vm.bytes(size - 5, 4), Uint8Array.of(0x1b, 0x65, 0xa7, 0x93));
+  const heap = vm.allocate(8);
+  vm.store(heap + 1, 0x11223344);
+  vm.store(0x80000001, 0xffffffff);
+  assert.equal(vm.load(heap + 1), 0x11223344);
+  assert.equal(vm.load(0x80000001), 0xffffffff);
+  assert.throws(() => vm.store(size - 3, 0), /KCS memory/);
+  const backing = new Uint8Array(size);
+  vm.bindMemory({ bytes: () => backing });
+  vm.store(size - 4, 0xa0b0c0d0);
+  assert.equal(vm.load(size - 4), 0xa0b0c0d0);
+  assert.deepEqual(backing.slice(-4), Uint8Array.of(0xd0, 0xc0, 0xb0, 0xa0));
+});
+
 test('native argument reads retain mapped adjacent stack words beyond the declared byte count', () => {
   const vm = machine([[37, 71], [43, 0x13b, 4], [59]], (id, args, current) => {
     assert.equal(id, 0x13b);

@@ -24,15 +24,15 @@ export function bitsFloat(value) {
 export function nativeReply(control, value, wait) {
   if (!Number.isInteger(control) || control < 0 || control > 5)
     throw new Error(`Invalid KCS native control ${control}`);
-  if ([1, 3].includes(control) && !Number.isInteger(value))
+  const returnsValue = control === 1 || control === 3;
+  if (returnsValue && !Number.isInteger(value))
     throw new Error('A KCS result native must supply a 32-bit result');
-  if (![1, 3].includes(control) && value !== undefined)
+  if (!returnsValue && value !== undefined)
     throw new Error('A void KCS native cannot supply a result');
-  return {
-    control,
-    ...(value === undefined ? {} : { value: value >>> 0 }),
-    ...(wait ? { wait } : {}),
-  };
+  const reply = { control };
+  if (returnsValue) reply.value = value >>> 0;
+  if (wait) reply.wait = wait;
+  return reply;
 }
 function arithmetic(op, a, b, left, right) {
   const floating = op >= 15 ? Boolean(left & 4) : Boolean((left | right) & 4);
@@ -271,7 +271,17 @@ export class KCSMachine {
     return this.load(this.nativeArgumentBase + index * 4);
   }
   load(address, width = 4, signed = false) {
-    const [buffer, at] = this.region(address >>> 0, width);
+    const word = address >>> 0,
+      local = this.memoryStorage;
+    if (width === 4 && local && word < 0x80000000 && word + 4 <= local.length)
+      return (
+        (local[word] |
+          (local[word + 1] << 8) |
+          (local[word + 2] << 16) |
+          (local[word + 3] << 24)) >>>
+        0
+      );
+    const [buffer, at] = this.region(word, width);
     const byte = buffer[at];
     if (width === 1) return signed ? ((byte << 24) >> 24) >>> 0 : byte;
     const low = byte | (buffer[at + 1] << 8);
@@ -280,7 +290,17 @@ export class KCSMachine {
     return (low | (buffer[at + 2] << 16) | (buffer[at + 3] << 24)) >>> 0;
   }
   store(address, value, width = 4) {
-    const [buffer, at] = this.region(address >>> 0, width);
+    const addressWord = address >>> 0,
+      local = this.memoryStorage;
+    if (width === 4 && local && addressWord < 0x80000000 && addressWord + 4 <= local.length) {
+      const word = value >>> 0;
+      local[addressWord] = word;
+      local[addressWord + 1] = word >>> 8;
+      local[addressWord + 2] = word >>> 16;
+      local[addressWord + 3] = word >>> 24;
+      return;
+    }
+    const [buffer, at] = this.region(addressWord, width);
     if (width !== 1 && width !== 2 && width !== 4)
       throw new Error(`KCS invalid store width ${width}`);
     const word = value >>> 0;
@@ -392,7 +412,7 @@ export class KCSMachine {
       this.sp += count;
       next = instructionPC;
     }
-    if ([0, 3, 4, 5].includes(checked.control)) this.suspended = true;
+    if (checked.control === 0 || checked.control >= 3) this.suspended = true;
     this.waiting = checked.wait ? { ...checked.wait, native: call.id } : null;
     return next;
   }
@@ -429,7 +449,7 @@ export class KCSMachine {
     let next = this.pc + size;
     this.steps++;
     const read = (i) => this.read(o[i]);
-    if (op > 0 && op <= 20 && ![8, 12].includes(op)) {
+    if (op > 0 && op <= 20 && op !== 8 && op !== 12) {
       const a = read(0),
         b = read(1);
       this.push(arithmetic(op, a, b, o[0].mode, o[1].mode));
