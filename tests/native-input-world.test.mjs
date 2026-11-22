@@ -18,6 +18,21 @@ import {
   startupEnvironment,
 } from './fixtures/ordinary-startup.mjs';
 
+test('63 Main285 combines all four sources from the caller-owned Input task', async (t) => {
+  const world = await dataWorld('rebellions-jp-engine-2.6.1.63', {
+    'case.kcs': kcsProgram([[59]]),
+  });
+  t.after(() => world.close());
+  const { main, input, runtime } = world,
+    call = () => runtime.native('main', 285, [12], main.machine, main);
+  assert.deepEqual(await call(), { control: 1, value: 0 });
+  for (const [slot, source] of [2, 4, 8, 16].entries()) input.key(12, true, source, slot);
+  input.key(11, true, 1);
+  assert.deepEqual(await call(), { control: 1, value: 30 });
+  input.key(12, false, 4, 1);
+  assert.deepEqual(await call(), { control: 1, value: 26 });
+});
+
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
   const create = () => {
     const game = memoryGame({
