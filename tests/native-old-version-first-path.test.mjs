@@ -1771,7 +1771,8 @@ test('63 scene setup sets motion speed and prunes the live backlog to its config
   const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
   try {
     const main = await world.initialize('empty.kcs'),
-      call = (id, args) => world.runtime.native('main', id, args, main.machine, main),
+      m = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, m, main),
       motion = (await call(294, [])).value,
       { manager } = world.runtime.handles.get(motion, 'motion-manager');
     assert.deepEqual(await call(308, [motion, floatBits(0.625)]), { control: 2 });
@@ -1779,22 +1780,32 @@ test('63 scene setup sets motion speed and prunes the live backlog to its config
     assert.deepEqual(await call(308, [0, floatBits(0)]), { control: 2 });
     assert.equal(manager.speed, 0.625);
     const logs = world.displayLogs,
-      handle = logs.create(main.id),
+      { value: handle } = await call(696, []),
       model = logs.get(handle);
+    m.writeString('owned', 256);
+    m.writeString('猫', 288);
+    m.writeString('本文', 320);
     for (const block of [3, 4, 5])
-      logs.append(model, bytes('owned'), block, bytes(''), bytes('本文'), false, false);
+      assert.deepEqual(await call(698, [handle, 256, block, 288, 320, 0, 0]), { control: 2 });
     assert.deepEqual(await call(785, [handle, 2]), { control: 2 });
     assert.deepEqual(
       model.blocks.map((block) => block[2]),
       [4, 5],
     );
     assert.equal(model.blockBase, 1);
+    assert.deepEqual(await call(700, [handle, 384, 0]), { control: 2 });
+    assert.equal(m.string(384), model.config.nameFirst + '猫' + model.config.nameLast);
     assert.deepEqual(await call(785, [handle, -1]), { control: 2 });
-    logs.append(model, bytes('owned'), 6, bytes(''), bytes('次の文'), false, false);
+    m.writeString('次の文', 320);
+    assert.deepEqual(await call(698, [handle, 256, 6, 288, 320, 0, 0]), { control: 2 });
     assert.deepEqual(
       model.blocks.map((block) => block[2]),
       [4, 5, 6],
     );
+    assert.deepEqual(await call(876, [handle]), { control: 2 });
+    assert.equal(model.rows.length, 0);
+    assert.deepEqual(await call(697, [handle]), { control: 2 });
+    assert.throws(() => logs.get(handle), /released/);
   } finally {
     await world.close();
     await audio.dispose();

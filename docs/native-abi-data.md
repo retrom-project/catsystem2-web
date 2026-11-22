@@ -1116,6 +1116,10 @@ Main155–164 use the same .63 Sound owner as FES. Main155 sends the
 280-byte load packet to raw 173 or 174, followed by raw 175–183 for
 playback and bank controls.
 
+Main696 creates the CP932 backlog with the current log configuration.
+Main698 appends an authored block and Main700 writes the speaker for a
+visible row. Main876 clears the lists and Main697 releases the owner.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420
