@@ -1294,6 +1294,9 @@ Main 111 loads a formatted list of bitmaps and composes its overlays using
 physical bitmap offsets. A colon supplies the original numeric frame prefix.
 Main 115 copies from the source rectangle, and Main 118 creates a bitmap
 copy owned by the caller.
+Main 712 reads the composed image size, and Main 715 reads its signed offset.
+Main 218 clips the caller's rectangle in place and writes a zero rectangle
+when the intersection is empty.
 
 Main 565 and 566 read the active view's recording word and counter. Main 567
 writes a formatted CP932 line and CRLF at the last existing byte of the

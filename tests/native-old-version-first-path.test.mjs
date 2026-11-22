@@ -2647,6 +2647,42 @@ test('63 Sound bank allocation keeps the group end exclusive and its decoder opt
   }
 });
 
+test('63 image owner dimensions and offsets feed a clipped in-place Script rectangle', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    { world, audio } = await oldTitleWorld({}, undefined, profile);
+  try {
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, machine, main),
+      owner = (await call(733, [7, 9])).value,
+      image = world.graphics.images.get(world.imageOwners.get(owner).bitmap);
+    Object.assign(image.state, { offsetX: -4, offsetY: 6 });
+    assert.deepEqual(await call(712, [owner, 256, 260]), { control: 2 });
+    assert.deepEqual(await call(715, [owner, 264, 268]), { control: 2 });
+    assert.deepEqual(
+      [256, 260, 264, 268].map((at) => machine.load(at) | 0),
+      [7, 9, -4, 6],
+    );
+    const empty = world.imageOwners.add(0, main.id, []);
+    assert.deepEqual(await call(712, [empty, 256, 260]), { control: 2 });
+    assert.equal(machine.load(256) | machine.load(260), 0);
+    [0, -2, 7, 9].forEach((word, i) => machine.store(320 + i * 4, word));
+    assert.deepEqual(await call(218, [320, 2, 1, 8, 6]), { control: 2 });
+    assert.deepEqual(
+      [320, 324, 328, 332].map((at) => machine.load(at) | 0),
+      [2, 1, 7, 6],
+    );
+    await call(218, [320, 7, 1, 8, 6]);
+    assert.deepEqual(
+      [320, 324, 328, 332].map((at) => machine.load(at)),
+      [0, 0, 0, 0],
+    );
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
 test('63 Plane script commands preserve VRAM type and the formatted notification', async () => {
   const profile = 'rebellions-jp-engine-2.6.1.63',
     { world, audio } = await oldTitleWorld({}, undefined, profile);

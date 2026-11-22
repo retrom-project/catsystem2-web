@@ -5,6 +5,7 @@ import { loadImageOwner } from './image-owner-load.mjs';
 import { imageOwnerPixels } from './image-owner-pixels.mjs';
 import { bitmapExpand } from './bitmap-pixels.mjs';
 import { nativeDataArgument, nativeDataMapped } from './data-text.mjs';
+import { nativeABI } from './abi/index.mjs';
 const rows = [
   [0x2c6, 1, 1],
   [0x2c7, 1, 2],
@@ -110,7 +111,13 @@ export class NativeImageOwners {
     if (query.has(id)) {
       if (!first) return id === 0x2cd ? value(1) : done();
       const record = this.get(first);
-      if (!record.bitmap) return id === 0x2cd ? value(0) : done();
+      if (!record.bitmap) {
+        if (id === 0x2c8 && nativeABI(this.world.profile).graphics.emptyImageSizeWritesZero) {
+          machine.store(argument(1), 0);
+          machine.store(argument(2), 0);
+        }
+        return id === 0x2cd ? value(0) : done();
+      }
       const state = images.get(record.bitmap).state;
       const words = query.get(id).map((key) => state[key] ?? 0);
       if (id === 0x2ca) {
