@@ -1282,6 +1282,12 @@ unread. Main 62/63 convert degrees and radians using the original
 single-precision x87 arithmetic with its extended exponent before storing
 the final float word.
 
+Main 307 updates the ordered MOT records from the base state using the
+caller's frame and shifted start time. Its third word defers the start of
+records with no previous tick. Main 310 reports group activity and Main 313
+sets skip on that group. A pending delay still applies to a skipped record.
+Main 673 and 686 share the original control-2 stub with no memory effects.
+
 The optional-animation branch at the start of the Script calls Main 925.
 The original table binds it to a zero result with control 1. Adjacent
 Main 908 and 926 discard their input and return control 2 at the original

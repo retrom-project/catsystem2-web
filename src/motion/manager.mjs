@@ -2,6 +2,8 @@
 import { MotionInstance } from './instance.mjs';
 import { MOTION_ABI, initialMotionObject } from './abi.mjs';
 import { ParticleRandom } from '../ppi/random.mjs';
+import { nativeABI } from '../native/abi/index.mjs';
+import { roundX87Single } from '../ppi/x87.mjs';
 
 const f = Math.fround;
 export class MotionManager {
@@ -16,6 +18,7 @@ export class MotionManager {
     if (!(base instanceof Uint8Array) || base.length !== MOTION_ABI.objectSize)
       throw new TypeError('A MOT manager requires a 0x90-byte base KX2 object');
     this.profile = profile;
+    this.elapsedUsesX87 = profile && nativeABI(profile).motion?.elapsedUsesX87;
     this.base = base.slice();
     this.working = base.slice();
     this.speed = f(speed);
@@ -51,8 +54,13 @@ export class MotionManager {
         record.startTick = frame;
       }
       record.instance.object.set(this.working);
-      const elapsed =
-        Math.trunc(f(f(f((frame - record.startTick) >>> 0) * this.speed) + 0.5)) >>> 0;
+      const delta = (frame - record.startTick) | 0;
+      const time = this.elapsedUsesX87
+        ? roundX87Single(
+            roundX87Single((delta < 0 ? f(delta + 2 ** 32) : delta) * this.speed) + 0.5,
+          )
+        : f(f(f(delta >>> 0) * this.speed) + 0.5);
+      const elapsed = Math.trunc(time) >>> 0;
       record.instance.update(elapsed);
       this.lastProcessed = true;
       this.working.set(record.instance.object);

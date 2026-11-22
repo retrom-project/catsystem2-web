@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { KCSMachine, nativeReply, floatBits, bitsFloat, formatNative } from '../kcs.mjs';
 import { nativeCatalog } from '../native/catalog.mjs';
+import { nativeABI } from '../native/abi/index.mjs';
 import { ParticleRandom } from '../ppi/random.mjs';
 import {
   degreeToRadian,
@@ -59,6 +60,7 @@ export class MotionInstance {
     this.script = script;
     this.profile = profile;
     this.contracts = nativeCatalog(profile, 'generic');
+    this.skipBypassesDelay = nativeABI(profile).motion?.skipBypassesDelay !== false;
     this.shared = new Uint8Array(MOTION_ABI.sharedSize);
     this.view = new DataView(this.shared.buffer);
     this.object.set(initialMotionObject());
@@ -124,7 +126,7 @@ export class MotionInstance {
   update(elapsed) {
     if (!Number.isInteger(elapsed) || elapsed < 0 || elapsed > 0xffffffff)
       throw new RangeError('MOT elapsed frame must be uint32');
-    if (!this.skip && elapsed < this.delay)
+    if (elapsed < this.delay && (!this.skipBypassesDelay || !this.skip))
       return { active: this.active, executed: 0, delayed: true };
     this.view.setUint32(MOTION_ABI.frame, elapsed - this.delay, true);
     // Native updates still execute inactive records until their owner removes them.

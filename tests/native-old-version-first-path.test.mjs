@@ -1783,6 +1783,19 @@ test('63 motion state transfers and formatted script add preserve the manager an
     assert.equal(delayed.group, 29);
     assert.equal(delayed.instance.script.name, 'owned-7');
     assert.equal(delayed.instance.delay, 11);
+    assert.deepEqual(await call(310, [handle, 29]), { control: 1, value: 1 });
+    assert.deepEqual(await call(310, [handle, 17]), { control: 1, value: 0 });
+    assert.deepEqual(await call(307, [handle, 100, 1]), { control: 1, value: 0 });
+    assert.equal(delayed.startTick, 0);
+    assert.deepEqual(await call(313, [handle, 29]), { control: 2 });
+    assert.equal(delayed.instance.skip, true);
+    assert.deepEqual(await call(307, [handle, 100, 0]), { control: 1, value: 1 });
+    assert.equal(delayed.startTick, 100);
+    assert.equal(delayed.instance.frame, 0);
+    assert.deepEqual(await call(307, [handle, 113, 0]), { control: 1, value: 1 });
+    assert.equal(delayed.instance.frame, 2);
+    assert.deepEqual(await call(673, [0xffffffff]), { control: 2 });
+    assert.deepEqual(await call(686, [0xffffffff, 0xffffffff, 0xffffffff]), { control: 2 });
   } finally {
     await world.close();
     await audio.dispose();
