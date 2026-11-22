@@ -74,8 +74,11 @@ export class EngineHost {
     this.windowService ??= new BrowserNativeWindow(this.engine);
     return this.windowService.perform(action, world);
   }
-  nativeDispose() {
+  cancelHostModal() {
     this.windowService?.close();
+  }
+  nativeDispose() {
+    this.cancelHostModal();
     this.clipboardService?.close();
   }
   get nativeClipboard() {

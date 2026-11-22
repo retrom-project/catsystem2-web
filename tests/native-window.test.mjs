@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { CatSystem2 } from '../web/transitional-entry.mjs';
+import { EngineHost } from '../src/host.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
@@ -193,4 +194,38 @@ test('Engine disposal cancels an open platform dialog and waits for its running 
   assert.equal(world.running, false);
   assert.equal(world.frameSettled, null);
   assert.equal(world.objects.objects.size, 0);
+});
+
+test('the host can settle an open modal before disposing its engine', async () => {
+  const { world, host } = await fixture();
+  let resolve;
+  host.nativeWindowAction = () =>
+    new Promise((done) => {
+      resolve = done;
+    });
+  world.window.post(0x10);
+  const frame = world.tick();
+  while (!resolve) await new Promise(setImmediate);
+  const engine = {
+    world,
+    renderer: { dispose() {} },
+    audio: { dispose() {} },
+    disposed: false,
+  };
+  engine.host = new EngineHost(engine);
+  let closedClipboard = false;
+  engine.host.windowService = { close: () => resolve(false) };
+  engine.host.clipboardService = { close: () => (closedClipboard = true) };
+  try {
+    CatSystem2.prototype.cancelHostModal.call(engine);
+    await frame;
+    assert.equal(world.frameSettled, null);
+    assert.equal(world.quitRequested, undefined);
+    assert.equal(engine.disposed, false);
+    assert.equal(closedClipboard, false);
+  } finally {
+    await CatSystem2.prototype.dispose.call(engine);
+  }
+  assert.equal(closedClipboard, true);
+  assert.equal(world.closed, true);
 });

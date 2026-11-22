@@ -967,6 +967,9 @@ export class CatSystem2 {
       resources: this.game.index.size,
     };
   }
+  cancelHostModal() {
+    this.host.cancelHostModal();
+  }
   async dispose() {
     if (this.disposed) return;
     this.disposed = true;
