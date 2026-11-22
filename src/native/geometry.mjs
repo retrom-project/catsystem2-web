@@ -18,7 +18,7 @@ export const NATIVE_GEOMETRY_OPERATIONS = Object.freeze([
 ]);
 const read = (m, a, n) => Array.from({ length: n }, (_, i) => bitsFloat(m.load((a + i * 4) >>> 0)));
 const dot = (v) => f(f(f(f(v[0] * v[0]) + f(v[1] * v[1])) + f(v[2] * v[2])) + f(v[3] * v[3]));
-export function nativeGeometry(operation, args, machine, argumentWords, state) {
+export function nativeGeometry(operation, args, machine, argumentWords, state, math) {
   const words = Array.from(args);
   while (words.length < argumentWords) words.push(machine.nativeArgument(words.length));
   const [a, b] = words;
@@ -57,15 +57,23 @@ export function nativeGeometry(operation, args, machine, argumentWords, state) {
     output = v.map((n) => f(n * factor));
   } else {
     const m = read(machine, b, 16);
-    output = Array.from({ length: 4 }, (_, i) =>
-      f(r(r(r(r(v[0] * m[i]) + r(v[1] * m[i + 4])) + r(v[2] * m[i + 8])) + r(v[3] * m[i + 12]))),
-    );
+    output = Array.from({ length: 4 }, (_, i) => {
+      if (math?.vectorTransformPairwise) {
+        const xy = f(f(v[0] * m[i]) + f(v[1] * m[i + 4]));
+        const zw = f(f(v[2] * m[i + 8]) + f(v[3] * m[i + 12]));
+        return f(xy + zw);
+      }
+      return f(
+        r(r(r(r(v[0] * m[i]) + r(v[1] * m[i + 4])) + r(v[2] * m[i + 8])) + r(v[3] * m[i + 12])),
+      );
+    });
   }
   machine.bytes(a, 16).set(floatBytes(output));
   return nativeReply(2);
 }
 export function installNativeGeometry(world) {
-  for (const entry of nativeABI(world.profile).tables.main.entries)
+  const abi = nativeABI(world.profile);
+  for (const entry of abi.tables.main.entries)
     if (NATIVE_GEOMETRY_OPERATIONS.includes(entry.name))
       world.runtime.register('main', entry.id, (args, machine) =>
         nativeGeometry(
@@ -74,6 +82,7 @@ export function installNativeGeometry(world) {
           machine,
           entry.signature.argumentWords,
           world.calculations,
+          abi.math,
         ),
       );
 }

@@ -28,6 +28,8 @@ matrix storage do not consume this fallback. No PE projection is required here.
 Copies and add/subtract retain forward instruction ordering, including overlapping
 operands. Float32 storage and the normal x87 PC=24 intermediate rounding points
 are explicit in [`calculation-math.mjs`](../src/native/calculation-math.mjs).
+Main 358 in 2.6.1.63 uses paired float32 sums on the normal SSE path and writes
+the temporary four-vector after reading both operands.
 D3DX rotation uses direct FSINCOS: for finite magnitudes at least 2^63, the pinned
 oracle leaves the argument as cosine and reads zero on its second stack pop.
 This observed backend behavior differs from the scalar CRT reduction path and is

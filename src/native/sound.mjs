@@ -1013,6 +1013,11 @@ export class NativeSoundTask {
         this.sound.refresh(selected[0]);
         return 0;
       case 193:
+        if (
+          this.sound.abi.sound.positionRequiresEnabledOutput &&
+          (!this.world.configuration.soundOptions.use3d || !device.loaded)
+        )
+          return 0;
         device.nativeSpatial.position = [readFloat(l), readFloat(l + 4), readFloat(l + 8)];
         if (!device.nativeSpatial.enabled)
           device.pan = nativeSoundPositionPan(

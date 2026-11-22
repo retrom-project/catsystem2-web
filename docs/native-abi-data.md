@@ -1218,6 +1218,9 @@ Main 284 formats the filename, resolves the Sound resource category and
 returns whether the resource can be opened. It releases a successful open
 without loading any Sound bank.
 
+Main 168 sends three float words to the selected Sound bank. The device
+applies the position when 3D sound is configured and that bank has a buffer.
+
 Main 400 resolves the formatted table and each filename through the sound
 resources. Its Sound receiver requires ordered signed 64-bit endpoints.
 The default end of −1 is valid when the start is less than −1. Duplicate
