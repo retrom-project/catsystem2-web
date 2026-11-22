@@ -20,7 +20,7 @@ selected or enabled by proximity to another version number.
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2             |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------------------- |
 | 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered              |
-| 2.6.1.63 | 938        | 72        | 0             | 0             | 866     | 3 generic and 15 particle v2 recovered |
+| 2.6.1.63 | 938        | 74        | 0             | 0             | 864     | 3 generic and 15 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered              |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                           |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                           |
@@ -978,6 +978,12 @@ The first episode's `sscript` calls Main5 with no arguments after Main8.
 The .63 wrapper writes one unsigned word and returns control 1. Its task clock
 receiver subtracts the paused-frame count from the effective frame, matching the
 existing shared `task.clock` implementation.
+
+Main790 returns one configured start/count pair through two guest pointers.
+A zero class selects local ranges and a nonzero class selects global ranges.
+Indices 0 through 7 return one, and an out-of-range unsigned index returns
+zero with both outputs unchanged. Main739 writes the virtual coordinates
+calculated from twice each device offset and returns control 2.
 
 Main789 returns the variable capacity set by `GAME/flag/max`. Main209
 creates the owner's zeroed bank. Main211 writes an in-range word and marks
