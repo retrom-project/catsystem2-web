@@ -2634,6 +2634,45 @@ test('63 Sound bank allocation keeps the group end exclusive and its decoder opt
     assert.equal(world.sound.device[4].sourceMode, 'static');
     assert.deepEqual(await call(935, [8, 0, 256, 1, 9]), { control: 1, value: 1 });
     assert.equal(world.sound.device[8].decoderOption, 150);
+    const control = world.sound.primary(main.id).controls[8];
+    control.tags.set('sample', 42);
+    machine.writeString('sample', 256);
+    assert.deepEqual(await call(903, [8, 256]), { control: 1, value: 42 });
+    assert.deepEqual(await call(903, [0xffffffff, 256]), { control: 1, value: 42 });
+    assert.deepEqual(await call(903, [0, 256]), { control: 1, value: 0 });
+    assert.deepEqual(await call(903, [8, 0xffffffff]), { control: 1, value: 0 });
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
+test('63 recording queries and formatted line output use their live view and file state', async () => {
+  const files = new Map(),
+    profile = 'rebellions-jp-engine-2.6.1.63',
+    storage = {
+      read: async (name) => files.get(name) ?? null,
+      write: async (name, data) => {
+        files.set(name, data.slice());
+        return true;
+      },
+    },
+    { world, audio } = await oldTitleWorld({}, storage, profile);
+  try {
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      call = (id, args = []) => world.runtime.native('main', id, args, machine, main);
+    assert.deepEqual(await call(565), { control: 1, value: 0 });
+    world.screenCapture.restore({ recording: 3, counter: 0xfffffffe, prefix: 'owned' });
+    assert.deepEqual(await call(565), { control: 1, value: 3 });
+    assert.deepEqual(await call(566), { control: 1, value: 0xfffffffe });
+    machine.writeString('owned.log', 256);
+    machine.writeString('あ', 320);
+    assert.deepEqual(await call(567, [256, 320]), { control: 2 });
+    assert.deepEqual(files.get('owned.log'), bytes('あ\r\n'));
+    machine.writeString('い', 320);
+    assert.deepEqual(await call(567, [256, 320]), { control: 2 });
+    assert.deepEqual(files.get('owned.log'), bytes('あ\rい\r\n'));
   } finally {
     await world.close();
     await audio.dispose();

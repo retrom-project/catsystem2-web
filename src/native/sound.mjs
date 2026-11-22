@@ -14,6 +14,7 @@ import {
 import { lowerSoundName } from './sound-config.mjs';
 import { readLoopPoints } from './loop-points.mjs';
 import { SceneVoicePreparation } from './scene-voice-preparation.mjs';
+import { nativeDataFormat } from './data-text.mjs';
 
 const f = Math.fround;
 const cvtt = (n) =>
@@ -1320,8 +1321,10 @@ export async function nativeSound(id, args, machine, task, world) {
     return done();
   }
   if (id === 0x387) {
+    const tag = nativeDataFormat(args, machine, world.runtime.services, 1);
+    if (tag === null) return reply(0);
     const packet = new NativeSoundPacket([], 1024);
-    packet.writeString(world.runtime.services.format(argument(1), machine), 0);
+    packet.bytes(0, tag.length + 1).set(tag);
     return reply(await send(214, argument(0), 0, packet));
   }
   if (id === 0x11c) {

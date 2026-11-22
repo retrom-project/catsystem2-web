@@ -1227,6 +1227,8 @@ forms pass the unsigned caller ticks converted to milliseconds.
 Main 606, 607 and 844 return the configured enable word, master gain and
 index. The lookup checks the archive directory before the lowercased full
 CP932 filename prefix.
+Main 903 reads a formatted tag from the selected bank. Selector −1 uses the
+first matching bank in order.
 
 Main 400 resolves the formatted table and each filename through the sound
 resources. Its Sound receiver requires ordered signed 64-bit endpoints.
@@ -1285,6 +1287,10 @@ Main 111 loads a formatted list of bitmaps and composes its overlays using
 physical bitmap offsets. A colon supplies the original numeric frame prefix.
 Main 115 copies from the source rectangle, and Main 118 creates a bitmap
 copy owned by the caller.
+
+Main 565 and 566 read the active view's recording word and counter. Main 567
+writes a formatted CP932 line and CRLF at the last existing byte of the
+literal filename.
 
 Main 78 sends an eight-word textured rectangle packet to the live Plane.
 Main 466 writes the coordinate mode into the current D3D render model.
