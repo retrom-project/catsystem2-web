@@ -93,13 +93,14 @@ export default {
     ],
     resourceMessages: {
       first: {
-        nv: null,
+        nv: 448,
         cp932: 430,
         utf8: null,
       },
       clearCategory: false,
       maxOperation: 17,
     },
+    nvResetKeepsView: true,
   },
   configuration: {
     blockSizes: [5628, 60, 28, 12],
@@ -1613,8 +1614,6 @@ export default {
     },
   },
   unreviewed: {
-    'text.resourceMessages.first.nv':
-      'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'text.resourceMessages.first.utf8':
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'sound.controlBytes':
@@ -1711,6 +1710,13 @@ export default {
       wide: false,
     },
     textCores: {
+      nv: {
+        size: 488,
+        configSize: 408,
+        packetSize: 456,
+        bitmapAt: 420,
+        dirtyAt: 424,
+      },
       cp932: {
         size: 72,
         defaultAt: 208,

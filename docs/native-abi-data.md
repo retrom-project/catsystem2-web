@@ -1413,6 +1413,13 @@ quarter-period triangle wave. MOT matrix calls use the native row-vector
 orientation. The normal SSE products use paired sums on the first and
 fourth rows and sequential sums on the middle rows.
 
+## 2.6.1.63 NV text
+
+FES NVSTRING creates the original paired CP932 text plane. Its raw messages
+448–465 carry a 456-byte packet with two 184-byte parser configurations and
+separate rectangles. The writer owns both sections. FES reset keeps the
+divided view while refreshing the parser defaults.
+
 ## 2.6.1.63 title Particle
 
 The title emitter uses the v2 particle table. Own slots 1, 2, 6, 19, 34 and

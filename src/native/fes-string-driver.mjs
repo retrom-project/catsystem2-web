@@ -49,10 +49,16 @@ export function initializeFESString(object, { profile, configuration }) {
   object.dirty = true;
   return object;
 }
-function nvConfiguration(profile, configuration) {
-  const cores = nativeABI(profile).layouts.textCores,
+function nvConfiguration(profile, configuration, current = null) {
+  const abi = nativeABI(profile),
+    cores = abi.layouts.textCores,
     bytes = textPacket(profile, 'nv', configuration).slice(4, 4 + cores.nv.configSize),
     view = new DataView(bytes.buffer);
+  if (current && abi.text.nvResetKeepsView) {
+    const subView = 24 + cores.cp932.configSize;
+    bytes.set(current.subarray(0, 36));
+    bytes.set(current.subarray(subView, subView + 28), subView);
+  }
   for (const offset of [24, 24 + cores.cp932.configSize + 16])
     view.setUint32(offset + 124, configuration.fields.font.prop, true);
   return bytes;
@@ -346,7 +352,7 @@ export class FESStringDriver {
           layout.reset(this.world.configuration);
           this.saveLayout(target, layout);
         } else {
-          s.nv = nvConfiguration(this.world.profile, this.world.configuration);
+          s.nv = nvConfiguration(this.world.profile, this.world.configuration, s.nv);
           s.nvFontDefault = true;
           s.nvFixedDefault = s.nvWeightDefault = s.nvShadowDefault = true;
         }

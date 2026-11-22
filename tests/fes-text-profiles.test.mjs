@@ -81,6 +81,63 @@ break
   }
 });
 
+test('ABI 2.6.1.63 NVSTRING retains both CP932 section writers and the divided view on reset', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    source = encodeCP932('折り返し'),
+    secondary = encodeCP932('猫'),
+    body = encodeCP932(`#DEFINE
+NVSTRING text
+#OBJECT SIZE POS PRI DISP DIV
+text 72,32 4,4 60001 1 18
+#START
+text reset
+text layout size 8
+text layout frame 0
+text layout shadow 0 0
+text insert
+text apend 折り返し
+text name 猫
+text draw
+text skip
+next IDLE
+#IDLE
+#RESET
+text reset
+break
+`),
+    world = await defaultFESWorld(profile, { 'screen.fes': body });
+  let fresh;
+  try {
+    const { task, instance } = await loadDefaultFES(world);
+    await task.tick();
+    await task.tick();
+    const text = instance.collection.lookup('text', 0),
+      child = world.objects.objects.get(text.nativeTaskID),
+      writer = await child.implementation.writer(),
+      readPacket = () => new DataView(child.implementation.text.config.buffer),
+      dimensions = () =>
+        [0, 4, 8, 12, 20, 24, 212, 220, 224].map((at) => readPacket().getUint32(at, true));
+    assert.equal(child.kind, 49);
+    assert.equal(child.parent, instance.runtimeID);
+    assert.equal(readPacket().byteLength, 456);
+    assert.deepEqual(dimensions(), [456, 72, 32, 18, 54, 32, 0, 18, 32]);
+    assert.deepEqual(writer.main[0].parser.source, source);
+    assert.deepEqual(writer.sub[0].parser.source, secondary);
+    assert.ok(writer.frame().rgba.some((value) => value !== 0));
+    await task.player.notify('RESET');
+    await task.syncObjects();
+    assert.deepEqual(dimensions(), [456, 72, 32, 18, 54, 32, 0, 18, 32]);
+    fresh = await defaultFESWorld(profile, {}, { initialize: false });
+    await fresh.restore(world.snapshot());
+    const restored = fresh.objects.objects.get(child.id).implementation;
+    assert.deepEqual(restored.text.config, child.implementation.text.config);
+    assert.deepEqual((await restored.writer()).sub[0].parser.source, secondary);
+  } finally {
+    await fresh?.close();
+    await world.close();
+  }
+});
+
 function regions() {
   const frame = hg3(24, 16, new Uint8Array(24 * 16 * 4)),
     output = new Uint8Array(frame.length * 2 - 12),
