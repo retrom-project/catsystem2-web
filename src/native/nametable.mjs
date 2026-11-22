@@ -81,19 +81,24 @@ function replaceFilename(machine, source, destination, pattern, template) {
   write(append, 0);
 }
 export class NativeNameTable {
-  constructor(bytes = null, aliases = false) {
+  constructor(bytes = null, aliases = false, legacyFieldBytes) {
     this.rows = [];
     for (const fields of bytes ? nativeDataTSV(bytes) : []) {
       const id = fields[0],
         name = fields[1];
       if (!id?.length || id[0] < 48 || id[0] > 57 || !name) continue;
-      if (fields.slice(1, 4).some((field) => field.length > 255))
+      if (legacyFieldBytes && name.length >= legacyFieldBytes) continue;
+      if (!legacyFieldBytes && fields.slice(1, 4).some((field) => field.length > 255))
         throw new RangeError('Native name-table field exceeds its 256-byte buffer');
       this.rows.push({
         id: parseNativeInteger(nativeDataKey(id)) ?? 0,
         name: name.slice(),
         names: [name, ...(aliases ? fields.slice(4) : [])].map(nativeDataKey),
-        fields: [fields[2]?.slice() ?? new Uint8Array(), fields[3]?.slice() ?? new Uint8Array()],
+        fields: [2, 3].map(
+          (index) =>
+            fields[index]?.slice(0, legacyFieldBytes ? legacyFieldBytes - 1 : undefined) ??
+            new Uint8Array(),
+        ),
       });
     }
   }
@@ -118,7 +123,10 @@ export async function nativeNameTable(id, args, machine, services) {
     const bytes = await services.read(filename, 'fes');
     return nativeReply(
       1,
-      handles.add('nametable', new NativeNameTable(bytes, services.nameTableAliases)),
+      handles.add(
+        'nametable',
+        new NativeNameTable(bytes, services.nameTableAliases, services.nameTableLegacyFieldBytes),
+      ),
     );
   }
   if (id === 0x27a) {
@@ -163,7 +171,9 @@ export async function nativeNameTable(id, args, machine, services) {
   return nativeReply(1, 1);
 }
 export function installNativeNameTables(world) {
-  world.runtime.services.nameTableAliases = nativeABI(world.profile).capabilities.nameTableAliases;
+  const abi = nativeABI(world.profile);
+  world.runtime.services.nameTableAliases = abi.capabilities.nameTableAliases;
+  world.runtime.services.nameTableLegacyFieldBytes = abi.nameTable?.legacyFieldBytes;
   for (const id of NATIVE_NAME_TABLE_IDS)
     world.runtime.register('main', id, (args, machine) =>
       nativeNameTable(id, args, machine, world.runtime.services),

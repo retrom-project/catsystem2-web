@@ -183,8 +183,12 @@ function listEntry(m, address, index) {
   for (let i = 0; i < (index | 0) && m.load(at, 1); i++) at += cstring(m, at).length + 1;
   return { address: at, bytes: cstring(m, at) };
 }
-function indexOfBytes(haystack, needle, start = 0, boundaries = false) {
-  for (let at = start; at < haystack.length; at += boundaries && doubleByte(haystack, at) ? 2 : 1) {
+function indexOfBytes(haystack, needle, start = 0, pairPolicy = null) {
+  for (
+    let at = start;
+    at < haystack.length;
+    at += pairPolicy && nativeDataPair(haystack, at, pairPolicy) ? 2 : 1
+  ) {
     let i = 0;
     while (i < needle.length && at + i < haystack.length && haystack[at + i] === needle[i]) i++;
     if (i === needle.length) return at;
@@ -563,12 +567,16 @@ export function nativeStandard(id, args, m, services = {}) {
       for (let at = 0; at < a.length; count++) at += nativeDataPair(a, at, policy) ? 2 : 1;
       return value(count);
     }
-    case 0x31:
+    case 0x31: {
       requireArguments(2);
       a = cstring(m, args[0]);
       b = cstring(m, args[1]);
-      out = indexOfBytes(a, b, 0, true);
+      const policy = services.profile
+        ? nativeABI(services.profile).text.characterLengthPairs
+        : undefined;
+      out = indexOfBytes(a, b, 0, policy ?? 'standard');
       return value(out < 0 ? a.length : out);
+    }
     case 0x32:
     case 0x33:
     case 0x34:

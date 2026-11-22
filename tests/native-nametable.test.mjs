@@ -4,6 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { nameTableFixture, nameTableFiles } from './fixtures/name-table-fixture.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
@@ -133,3 +134,39 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       }
     },
   );
+
+test('63 name table uses CP932 fields capped at 32 bytes and keeps authored row order', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    world = await dataWorld(profile, {
+      'names.csv': encodeCP932(
+        `8\t${'x'.repeat(32)}\tignored\r\n7\t猫\t${'a'.repeat(40)}\t${'b'.repeat(40)}\talias\r\n3\t犬\tbg*\t%r\r\n`,
+      ),
+    });
+  try {
+    const { main } = world,
+      m = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, m, main);
+    m.writeString('names.csv', 256);
+    const { value: handle } = await call(633, [256]);
+    assert.ok(handle);
+    assert.deepEqual(await call(636, [handle, 0]), { control: 1, value: 7 });
+    assert.deepEqual(await call(636, [handle, 1]), { control: 1, value: 3 });
+    m.writeString('alias', 512);
+    assert.deepEqual(await call(635, [handle, 512]), { control: 1, value: 0xffffffff });
+    assert.deepEqual(await call(637, [handle, 0, 1024]), { control: 1, value: 1 });
+    assert.equal(m.string(1024), '猫');
+    for (const [index, byte] of [
+      [0, 'a'],
+      [1, 'b'],
+    ]) {
+      assert.deepEqual(await call(638, [handle, 0, index, 1024]), { control: 1, value: 1 });
+      assert.equal(m.string(1024), byte.repeat(31));
+    }
+    m.bytes(512, 4).set([0xa1, 0x41, 0x42, 0]);
+    m.writeString('A', 1024);
+    assert.deepEqual(await call(49, [512, 1024]), { control: 1, value: 3 });
+    assert.deepEqual(await call(634, [handle]), { control: 2 });
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
