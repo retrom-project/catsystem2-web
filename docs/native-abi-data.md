@@ -1112,8 +1112,10 @@ Main35 copies the requested number of bytes between mapped VM ranges.
 Main633–638 load, query and release the name table from the configured FES
 category. Rows follow source order and use three 32-byte CP932 fields.
 An overlong name skips the row, and optional fields are limited to 31 bytes
-before their terminator. Main49 reports byte offsets at the engine's wide
-CP932 character boundaries.
+before their terminator. Main639 matches the filename prefix by the row's
+stem and extension wildcards. Main640 applies its live-buffer replacement
+template. Main49 reports byte offsets at the engine's wide CP932 character
+boundaries.
 
 Main390 clones a global-file owner, retaining its tag and capacity and
 copying its records independently of the source.

@@ -2647,6 +2647,34 @@ test('63 Sound bank allocation keeps the group end exclusive and its decoder opt
   }
 });
 
+test('63 name-table filename rules match and transform the authored row', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    { world, audio } = await oldTitleWorld(
+      { 'rules.fes': bytes('7\t名前\tbg*.hg2\tsprite%n,%s\r\n') },
+      undefined,
+      profile,
+    );
+  try {
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, machine, main);
+    machine.writeString('rules.fes', 256);
+    const table = (await call(633, [256])).value;
+    assert.ok(table);
+    machine.writeString('bga.hg2', 512);
+    assert.deepEqual(await call(639, [table, 0, 512]), { control: 1, value: 1 });
+    machine.writeString('Bga.hg2', 512);
+    assert.deepEqual(await call(639, [table, 0, 512]), { control: 1, value: 0 });
+    machine.writeString('ch065', 512);
+    assert.deepEqual(await call(640, [table, 0, 512, 768]), { control: 1, value: 1 });
+    assert.equal(machine.string(768), 'sprite065,ch065');
+    assert.deepEqual(await call(634, [table]), { control: 2 });
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
 test('63 recording queries and formatted line output use their live view and file state', async () => {
   const files = new Map(),
     profile = 'rebellions-jp-engine-2.6.1.63',
