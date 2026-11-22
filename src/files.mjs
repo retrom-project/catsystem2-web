@@ -192,7 +192,7 @@ export class GameFiles {
         nativeArchives.set(logicalArchive, mountedArchive);
       for (const entry of archive.entries) {
         const key = resourcePath(entry.name).split('/').pop(),
-          hit = { file: archive.file, offset: entry.offset, size: entry.size, path };
+          hit = { file: archive.file, offset: entry.offset, size: entry.size, path, archive: true };
         if (!mountedArchive.entries.has(resourcePath(entry.name)))
           mountedArchive.entries.set(resourcePath(entry.name), hit);
         if (patch || !this.index.has(key)) this.index.set(key, hit);

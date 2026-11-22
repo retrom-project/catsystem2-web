@@ -1,24 +1,35 @@
 // SPDX-License-Identifier: MPL-2.0
 // ANM has an independent fixed-width bytecode and the World's integer RNG.
 import { truncateFloat32 as trunc } from '../ppi/numeric.mjs';
+const ANM_HEADER_BYTES = 32;
+const ANM_INSTRUCTION_BYTES = 68;
 const f = Math.fround;
 const initialOutput = () => ({ frame: 0xffffffff, alpha: 255, display: 1, x: 0, y: 0 });
+const animationView = (bytes) => new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+const hasSignature = (view) =>
+  view.byteLength >= ANM_HEADER_BYTES && view.getUint32(0, true) === 0x004d4e41;
+function instructionCount(view) {
+  const count = view.getUint32(8, true);
+  return count <= Math.floor((view.byteLength - ANM_HEADER_BYTES) / ANM_INSTRUCTION_BYTES)
+    ? count
+    : 0;
+}
+
+export function hasValidAnimationHeader(bytes) {
+  const view = animationView(bytes);
+  return hasSignature(view) && instructionCount(view) > 0;
+}
 
 export class RetainedAnimation {
   constructor(bytes, random) {
     this.random = random;
-    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-    if (
-      bytes.length < 32 ||
-      view.getUint32(0, true) !== 0x004d4e41 /* little-endian ANM file signature  */
-    )
-      throw new Error('Invalid ANM header');
-    const count = view.getUint32(8, true);
-    if (!count || count > Math.floor((bytes.length - 32) / 68))
-      throw new Error('Invalid ANM instruction count');
+    const view = animationView(bytes);
+    if (!hasSignature(view)) throw new Error('Invalid ANM header');
+    const count = instructionCount(view);
+    if (!count) throw new Error('Invalid ANM instruction count');
     this.headerWord = view.getUint32(4, true);
     this.instructions = Array.from({ length: count }, (_, i) => {
-      const at = 32 + i * 68;
+      const at = ANM_HEADER_BYTES + i * ANM_INSTRUCTION_BYTES;
       return {
         opcode: view.getUint32(at, true),
         operands: Array.from({ length: 8 }, (_, j) => [

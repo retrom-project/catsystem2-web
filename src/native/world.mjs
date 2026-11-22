@@ -1112,6 +1112,7 @@ export class NativeWorld {
     await attempt(() => this.graphics.cursor.close());
     await attempt(() => this.screenEffects.close());
     await attempt(() => this.resourceCache.close());
+    this.imageFiles.close();
     if (this.ownsSteam) await attempt(() => this.steamService.close());
     await attempt(() => this.transitionalExe?.closeWorld?.(this));
     await attempt(() => this.graphics.texturePages?.close());

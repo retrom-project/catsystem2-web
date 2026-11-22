@@ -4,6 +4,10 @@ import { nativeCategoryFilename, readNativeResource } from './resource-file.mjs'
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeDataFormat, nativeDataKey, nativeDataPair, nativeDataTSV } from './data-text.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { captureArchiveRange, matchesArchiveRange } from '../files.mjs';
+import { hasValidAnimationHeader } from './retained-animation.mjs';
+const MAX_MOUNTED_ANIMATIONS = 4;
+const MAX_MOUNTED_ANIMATION_BYTES = 32 * 1024;
 export const NATIVE_IMAGE_FILE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x1ae, words: 1, control: 1 }),
 ]);
@@ -22,6 +26,8 @@ function lowerKey(value) {
   return nativeDataKey(bytes);
 }
 export class NativeImageFiles {
+  #mountedAnimations = new Map();
+
   constructor(world) {
     this.world = world;
     this.loaded = false;
@@ -32,7 +38,39 @@ export class NativeImageFiles {
     return nativeCategoryFilename(this.world.game, name, 'image');
   }
   readResolved(name) {
-    return readNativeResource(this.world, name);
+    return /\.anm$/i.test(name)
+      ? readNativeResource(this.world, name, 3, undefined, (hit) => this.#readAnimationRange(hit))
+      : readNativeResource(this.world, name);
+  }
+  async #readAnimationRange(hit) {
+    const { game } = this.world,
+      { file, offset, size } = hit,
+      cached = this.#mountedAnimations.get(hit);
+    // The resolver has already checked providers, named preloads and saved files.
+    // Keep only small, validated programs from the read-only mounted archive.
+    if (cached) {
+      if (hit.archive && matchesArchiveRange(cached.range, hit, game.nativeSearch))
+        return cached.bytes.slice();
+      this.#mountedAnimations.delete(hit);
+    }
+    const range =
+        hit.archive &&
+        size <= MAX_MOUNTED_ANIMATION_BYTES &&
+        captureArchiveRange(hit, game.nativeSearch),
+      bytes = await file.read(offset, size);
+    if (
+      range &&
+      bytes instanceof Uint8Array &&
+      bytes.length === size &&
+      game === this.world.game &&
+      matchesArchiveRange(range, hit, game.nativeSearch) &&
+      hasValidAnimationHeader(bytes)
+    ) {
+      this.#mountedAnimations.set(hit, { range, bytes: new Uint8Array(bytes) });
+      if (this.#mountedAnimations.size > MAX_MOUNTED_ANIMATIONS)
+        this.#mountedAnimations.delete(this.#mountedAnimations.keys().next().value);
+    }
+    return bytes;
   }
   async read(name) {
     const file = this.resolve(name);
@@ -78,9 +116,13 @@ export class NativeImageFiles {
     return { loaded: this.loaded, bytes: this.bytes?.slice() ?? null, entries: [...this.entries] };
   }
   restore(state) {
+    this.#mountedAnimations.clear();
     this.loaded = state.loaded;
     this.bytes = state.bytes?.slice() ?? null;
     this.entries = new Map(state.entries);
+  }
+  close() {
+    this.#mountedAnimations.clear();
   }
 }
 export function installNativeImageFiles(world) {
