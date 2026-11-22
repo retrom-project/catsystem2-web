@@ -10,16 +10,24 @@ const MAX_PACKED_MODEL = 8 * 1024 * 1024;
 const MAX_MODEL = 64 * 1024 * 1024;
 const decoder = new TextDecoder('shift_jis');
 
-function modelInBlock(reader, block, profiles, documents) {
-  const { count } = reader.blockInfo(block);
-  let selected;
+function modelDeclarations(reader, block) {
+  const { count } = reader.blockInfo(block),
+    declarations = [];
   for (let line = 0; line < Math.min(count, 64); line++) {
     if (reader.type(block, line) !== 0x30) continue;
     const bytes = reader.text(block, line);
     if (!bytes) continue;
     const match = /^\s*mpl\s+\d+\s+([a-z0-9_]+)\s*,\s*(\d+)(?=,|\s|$)/i.exec(decoder.decode(bytes));
-    if (!match || !Object.hasOwn(profiles.profileFiles, match[1].toLowerCase())) continue;
-    const model = profiles.profile(match[1]).bodies[Number(match[2])];
+    if (match) declarations.push([match[1], Number(match[2])]);
+  }
+  return declarations;
+}
+
+function selectModel(declarations, profiles, documents) {
+  let selected;
+  for (const [profile, body] of declarations) {
+    if (!Object.hasOwn(profiles.profileFiles, profile.toLowerCase())) continue;
+    const model = profiles.profile(profile).bodies[body];
     if (!model || documents.has(model)) continue;
     if (selected && selected !== model) return null;
     selected = model;
@@ -158,9 +166,11 @@ export class M2ScenePreparation {
   async #run(job) {
     const { world, profiles, documents } = this.owner;
     const { game } = world;
+    if (job.body.bytes.length > MAX_SCENE_BODY) return;
+    const declarations = modelDeclarations(job.scene.reader, job.block);
+    if (!declarations.length) return;
     const sceneFile = this.#mount(job.name, 'scene');
-    if (!sceneFile || sceneFile.size > MAX_SCENE_FILE || job.body.bytes.length > MAX_SCENE_BODY)
-      return;
+    if (!sceneFile || sceneFile.size > MAX_SCENE_FILE) return;
     const original = await game.requireCategory(job.name, 'scene');
     if (!this.#current(job) || original.length < 16) return;
     const header = new Binary(original, 'CatScene');
@@ -174,7 +184,7 @@ export class M2ScenePreparation {
     )
       return;
 
-    const model = modelInBlock(job.scene.reader, job.block, profiles, documents);
+    const model = selectModel(declarations, profiles, documents);
     if (!model) return;
     const file = this.#mount(model, 'm2psb');
     if (!file || file.size <= 64 * 1024 || file.size > MAX_PACKED_MODEL) return;

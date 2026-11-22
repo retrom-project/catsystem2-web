@@ -71,7 +71,20 @@ test('restored scene hints prepare one explicit M2 resource from the same mounte
     if (workerBefore === undefined) delete globalThis.Worker;
     else globalThis.Worker = workerBefore;
   });
-  const sceneBytes = cst([[[0x30, 'mpl 1 sample,2,pose']]], false),
+  const sceneBytes = cst(
+      [
+        [[0x30, 'mpl 1 sample,2,pose']],
+        [
+          [0x30, 'vo speech'],
+          [0x20, 'Dialogue'],
+        ],
+        [
+          [0x30, 'mpl 1 sample,2,pose'],
+          [0x30, 'mpl 1 sample,3,pose'],
+        ],
+      ],
+      false,
+    ),
     scene = new NativeSceneData(),
     packed = new Uint8Array(16 + 65536);
   await scene.reader.load(sceneBytes);
@@ -86,8 +99,12 @@ test('restored scene hints prepare one explicit M2 resource from the same mounte
   const resourceCache = { pending: 0, entries: [] };
   let mountedScene = sceneBytes;
   let modelOffset = 0;
+  let onSceneRead;
   const owner = {
-    profiles: { profileFiles: { sample: 'test' }, profile: () => ({ bodies: { 2: 'model' } }) },
+    profiles: {
+      profileFiles: { sample: 'test' },
+      profile: () => ({ bodies: { 2: 'model', 3: 'already-loaded' } }),
+    },
     documents: new Map(),
     world: {
       profile: 'nekopara-vol3-engine-2.6.1.76',
@@ -101,6 +118,7 @@ test('restored scene hints prepare one explicit M2 resource from the same mounte
         },
         async requireCategory(name, category) {
           reads.push([name, category]);
+          if (name === 'active') onSceneRead?.();
           return name === 'active' ? mountedScene : packed;
         },
       },
@@ -162,6 +180,27 @@ test('restored scene hints prepare one explicit M2 resource from the same mounte
   assert.equal(terminated, 4);
   resourceCache.entries.length = 0;
 
+  reads.length = 0;
+  scene.history.appendPath('active', 1);
+  preparation.resume();
+  await new Promise(setImmediate);
+  assert.deepEqual(reads, [], 'blocks without model declarations need no speculative CST read');
+  assert.equal(preparation.take('model'), null);
+
+  pending = Promise.withResolvers();
+  scene.history.appendPath('active', 2);
+  onSceneRead = () => owner.documents.set('already-loaded', {});
+  preparation.resume();
+  (await pending.promise)();
+  await new Promise(setImmediate);
+  assert.deepEqual(reads, [
+    ['active', 'scene'],
+    ['model', 'm2psb'],
+  ]);
+  assert.equal(preparation.take('model')?.packed, packed);
+  assert.equal(terminated, 5);
+  onSceneRead = null;
+
   pending = Promise.withResolvers();
   preparation.resume();
   const afterClose = await pending.promise;
@@ -170,7 +209,7 @@ test('restored scene hints prepare one explicit M2 resource from the same mounte
   afterClose();
   await new Promise(setImmediate);
   assert.equal(preparation.take('model'), null);
-  assert.equal(terminated, 5);
+  assert.equal(terminated, 6);
 });
 const machine = () =>
   new KCSMachine({
