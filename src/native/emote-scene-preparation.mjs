@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { Binary } from '../binary.mjs';
-import { BlobFile, HTTPFile } from '../files.mjs';
+import { hasMountedRangeBacking } from '../files.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NativeSceneReader } from './scene-data.mjs';
 
@@ -108,7 +108,7 @@ export class M2ScenePreparation {
       return null;
     // NativeWorld's cache misses use this archive search, including update overrides.
     const hit = game.nativeCandidates(path, 3).find((entry) => entry.hit)?.hit;
-    return hit?.file instanceof HTTPFile || hit?.file instanceof BlobFile ? hit : null;
+    return hasMountedRangeBacking(hit?.file) ? hit : null;
   }
 
   resume() {

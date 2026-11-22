@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 import { Binary } from '../binary.mjs';
 import {
-  BlobFile,
   GameFiles,
-  HTTPFile,
+  hasMountedRangeBacking,
   matchesArchiveRange,
   captureArchiveRange,
 } from '../files.mjs';
@@ -144,16 +143,7 @@ export class SceneVoicePreparation {
     if (!path || !/\.ogg$/i.test(path)) return null;
     const hit = game.lookup(path),
       file = hit?.file;
-    if (
-      !file ||
-      hit.size > MAX_PACKED ||
-      hit.size < 58 ||
-      !(
-        (file instanceof HTTPFile && file.read === HTTPFile.prototype.read) ||
-        (file instanceof BlobFile && file.read === BlobFile.prototype.read)
-      )
-    )
-      return null;
+    if (!hasMountedRangeBacking(file) || hit.size > MAX_PACKED || hit.size < 58) return null;
     return { file, offset: hit.offset, size: hit.size, key: path.toLowerCase() };
   }
 

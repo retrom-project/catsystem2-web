@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { BlobFile, HTTPFile } from '../files.mjs';
+import { hasMountedRangeBacking } from '../files.mjs';
 import { HG3 } from '../formats/hg3.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NativeFileStorage } from './storage.mjs';
@@ -28,7 +28,7 @@ function mountedImage(images, name) {
       if (stored === undefined) return null;
       hit = stored ?? hit;
     }
-    if (hit) return hit.file instanceof HTTPFile || hit.file instanceof BlobFile ? hit : null;
+    if (hit) return hasMountedRangeBacking(hit.file) ? hit : null;
   }
   return null;
 }

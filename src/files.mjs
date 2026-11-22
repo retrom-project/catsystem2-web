@@ -77,17 +77,17 @@ const mountedBacking = (file) => {
   return file instanceof RangeFile ? file : file.url;
 };
 
+export function hasMountedRangeBacking(file) {
+  return (
+    (file instanceof HTTPFile && file.read === HTTPFile.prototype.read) ||
+    (file instanceof BlobFile && file.read === BlobFile.prototype.read) ||
+    (file instanceof RangeFile && file.read === RangeFile.prototype.read)
+  );
+}
+
 export function captureArchiveRange(hit, epoch) {
   const { file, offset, size } = hit;
-  if (
-    !epoch ||
-    !(
-      (file instanceof HTTPFile && file.read === HTTPFile.prototype.read) ||
-      (file instanceof BlobFile && file.read === BlobFile.prototype.read) ||
-      (file instanceof RangeFile && file.read === RangeFile.prototype.read)
-    )
-  )
-    return null;
+  if (!epoch || !hasMountedRangeBacking(file)) return null;
   return {
     epoch,
     file,

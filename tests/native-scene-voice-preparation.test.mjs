@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { BlobFile, GameFiles } from '../src/files.mjs';
+import { BlobFile, GameFiles, RangeFile } from '../src/files.mjs';
 import { SceneVoicePreparation } from '../src/native/scene-voice-preparation.mjs';
 
 const encoder = new TextEncoder();
@@ -124,6 +124,31 @@ test('each consumed voiced dialogue can prepare one adjacent literal page', asyn
   history.value = 2;
   assert(prep.take('third.ogg', owner.id));
   assert.strictEqual(audio.buffers.get('third.ogg'), audio.decoded[2]);
+});
+
+test('voiced dialogue preparation uses the host-file range and the current mount', async (t) => {
+  const { prep, scene, owner, audio, mount, runIdle } = setup(t),
+    voice = ogg(7),
+    bytes = await voice.read(0, voice.size),
+    archiveOffset = 64;
+  const host = new RangeFile(archiveOffset + bytes.length, (offset, count, signal) => {
+    assert.equal(offset, archiveOffset);
+    assert.equal(count, bytes.length);
+    assert.equal(signal.aborted, false);
+    return bytes.slice();
+  });
+  mount('first.ogg', host);
+  const hit = audio.game.lookup('first.ogg');
+  hit.offset = archiveOffset;
+  hit.size = bytes.length;
+  audio.game.nativeSearch = {};
+  assert.equal(prep.hint(scene, owner.id, 0), true);
+  await runIdle();
+  assert.deepEqual(prep.openedBytes('first.ogg', owner, hit), bytes);
+  audio.game.nativeSearch = {};
+  assert.equal(prep.openedBytes('first.ogg', owner, hit), null);
+  assert(prep.take('first.ogg', owner.id));
+  assert.equal(audio.buffers.has('first.ogg'), false);
 });
 
 test('early demand, replaced backing and released scene ownership leave audio to the regular load', async (t) => {
