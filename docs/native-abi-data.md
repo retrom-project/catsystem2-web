@@ -1093,6 +1093,10 @@ CP932 character boundaries.
 Main390 clones a global-file owner, retaining its tag and capacity and
 copying its records independently of the source.
 
+Main143 loads a Script through raw message 154 and binds the caller's
+shared memory through raw 165. Main69 sends four words immediately through
+raw 166 and reselects the caller's expression context after delivery.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420

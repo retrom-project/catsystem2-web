@@ -9,6 +9,7 @@ import { kcsProgram, memoryGame } from './helpers.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { KCSScheduler } from '../src/kcs/scheduler.mjs';
 import { readKCS, nativeReply } from '../src/kcs.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 test('standalone Script scheduler drains packets appended during the same frame', async () => {
   const program = await readKCS(
@@ -30,6 +31,41 @@ test('standalone Script scheduler drains packets appended during the same frame'
   assert.equal(task.machine.load(132), 0x2222);
   assert.equal(task.status, 'finished');
   assert.deepEqual(task.messages, []);
+});
+
+test('63 main Script load binds live shared memory and relays a four-word packet', async () => {
+  const world = await dataWorld(
+    'rebellions-jp-engine-2.6.1.63',
+    {
+      'caller.kcs': kcsProgram([
+        [37, 240],
+        [43, 71, 4],
+        [41, 0],
+      ]),
+      'worker.kcs': kcsProgram([[37, 512], [43, 71, 4], [45], [37, 544], [43, 71, 4], [59]]),
+    },
+    { initialize: false },
+  );
+  try {
+    const task = await world.initialize('caller.kcs'),
+      m = task.machine,
+      call = (id, args) => world.runtime.native('main', id, args, m, task),
+      worker = await world.objects.create({ kind: 12, parent: task.id, name: 'worker' }),
+      workerID = world.nativeTaskID(worker);
+    m.writeString('worker.kcs', 256);
+    assert.deepEqual(await call(143, [workerID, 256, 0]), { control: 2 });
+    const child = world.runtime.scheduler.tasks.get(worker);
+    assert.equal(child.name, 'worker.kcs');
+    assert.equal(child.machine.shared.buffer, m.shared.buffer);
+    await world.runtime.scheduler.execute(child);
+    assert.deepEqual(await call(69, [workerID, 0x4321, 7, 9]), { control: 1, value: 1 });
+    assert.deepEqual(
+      [512, 516, 520, 524].map((at) => child.machine.load(at)),
+      [world.nativeTaskID(task.id), 0x4321, 7, 9],
+    );
+  } finally {
+    await world.close({ flushFiles: false });
+  }
 });
 test('known empty word natives push the fresh GCALL sentinel and retain diagnostics after restore', async () => {
   const game = memoryGame({
