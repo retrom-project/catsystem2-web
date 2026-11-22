@@ -1116,6 +1116,8 @@ Main 294 creates an owned motion manager at speed 1 with empty motion state
 and an identity base transform. Main 295 releases a nonzero manager handle
 and returns control 2. Main 207 initializes the 16-word identity matrix
 through a single VM address, using the current global matrix on native NULL.
+Main 586 stores a full DWORD of default flags on the live manager. Motion
+creation reads that DWORD. A zero manager leaves state untouched.
 
 ## 2.6.1.63 FES STRING
 

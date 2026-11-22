@@ -1668,6 +1668,10 @@ test('63 Script motion manager and matrix initialization use owned resource hand
     assert.equal(manager.records.size, 0);
     assert.equal(new DataView(manager.base.buffer).getUint32(MOTION_ABI.color, true), 0xffffffff);
     assert.deepEqual(manager.working, manager.base);
+    assert.deepEqual(call(586, [handle, 0x80000001]), { control: 2 });
+    assert.equal(manager.flags, 0x80000001);
+    assert.deepEqual(call(586, [0, 0]), { control: 2 });
+    assert.equal(manager.flags, 0x80000001);
     machine.bytes(128, 72).fill(0xa5);
     assert.deepEqual(call(207, [132]), { control: 2 });
     assert.deepEqual(
