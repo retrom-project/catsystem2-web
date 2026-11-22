@@ -1106,6 +1106,10 @@ Main70 appends the four words to the receiving Script's deferred queue
 through raw 167. Main454 copies the caller's original CP932 context name
 through its terminator and returns control 2.
 
+Main571 and Main572 send raw 426 and 425 through the same task routing.
+Main571 reads an optional DWORD pointer for the payload and Main572
+sends zero. Both return control 2.
+
 Main365 owns the full packed resource from the image category. Main368
 initializes the 36-byte metadata output for a live image owner and mapped
 destination before inspecting the frame. Main366 releases the buffer owner.

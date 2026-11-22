@@ -69,6 +69,40 @@ for (const profile of golden.profiles)
     assert.equal(hash(JSON.stringify(results)), profile.resultsSHA256);
   });
 
+test('63 Main571 and Main572 deliver their native DWORD packets to the live Top', async (t) => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    world = await dataWorld(profile, { 'case.kcs': kcsProgram([[59]]) }),
+    { main, runtime, root } = world,
+    target = world.nativeTaskID(root),
+    sender = world.nativeTaskID(main.id),
+    top = world.objects.objects.get(root).implementation,
+    address = runtime.imageDataBuffers.process.allocate(4),
+    result = 0x8123abce,
+    received = [],
+    message = top.message;
+  t.after(() => world.close());
+  runtime.imageDataBuffers.process.store(address, result);
+  t.mock.method(top, 'message', function (words, context) {
+    received.push([...words, context.flags]);
+    return message.call(this, words, context);
+  });
+  for (const [id, operands] of [
+    [571, [target, address]],
+    [571, [target, 0]],
+    [572, [target]],
+  ])
+    assert.deepEqual(await runtime.native('main', id, operands, main.machine, main), {
+      control: 2,
+    });
+  assert.deepEqual(received, [
+    [sender, 445, 0, result, 0],
+    [sender, 445, 0, 0, 0],
+    [sender, 444, 0, 0, 0],
+  ]);
+  assert.equal(runtime.imageDataBuffers.process.load(address), result);
+  runtime.imageDataBuffers.process.free(address);
+});
+
 test('task messages distinguish routing, handling and output initialization without losing their context', async () => {
   const { world, messages } = await engineMessageFixture(game),
     context = { marker: {} },
