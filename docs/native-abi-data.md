@@ -1146,6 +1146,12 @@ The original table binds it to a zero result with control 1. Adjacent
 Main 908 and 926 discard their input and return control 2 at the original
 shared reserved entry.
 
+Main 434–438 clear the file-server preload queue, queue a formatted
+category resource, start the queue, check a signed progress threshold
+and age its entries. A duplicate queue entry refreshes its lifetime.
+Main 437 returns the threshold result with control 1. The other four
+operations return control 2.
+
 ## 2.6.1.63 FES STRING
 
 The narrow STRING object is original FES type 20 and canonical type 21. Its

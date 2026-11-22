@@ -1781,6 +1781,41 @@ test('63 textured Plane coordinate mode belongs to its current render model', as
   }
 });
 
+test('63 preload GCALLs own the loaded archive bytes and age the live queue', async () => {
+  const image = hg3(2, 2, new Uint8Array(16).fill(0x65)),
+    { world, audio } = await oldTitleWorld(
+      { 'preload.hg3': image },
+      undefined,
+      'rebellions-jp-engine-2.6.1.63',
+    );
+  try {
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      call = (id, args = []) => world.runtime.native('main', id, args, machine, main),
+      cache = world.resourceCache;
+    cache.enabled = 1;
+    machine.writeString('preload', 128);
+    machine.writeString('image', 160);
+    assert.deepEqual(await call(434), { control: 2 });
+    assert.deepEqual(await call(435, [128, 160, 2]), { control: 2 });
+    assert.deepEqual(await call(436), { control: 2 });
+    await cache.settle();
+    assert.deepEqual(await call(437, [2]), { control: 1, value: 1 });
+    assert.equal(cache.entries.length, 1);
+    assert.deepEqual(await cache.peek(cache.entries[0].filename), image);
+    assert.deepEqual(await call(438), { control: 2 });
+    assert.equal(cache.entries[0].lifetime, 1);
+    assert.deepEqual(await call(434), { control: 2 });
+    assert.equal(cache.entries.length, 0);
+  } finally {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  }
+});
+
 test('63 Flow and warning FES honor the configured Control key only during the skippable wait', async (t) => {
   const packetAddress = 384,
     keyScript = kcsProgram([
