@@ -6,6 +6,7 @@ import { imageOwnerFixture } from './fixtures/image-owner-fixture.mjs';
 import { imageOwnerFiles } from './fixtures/image-owner-fixture.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { floatBits } from '../src/kcs.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { memoryGame, kcsProgram, hg3 } from './helpers.mjs';
@@ -75,8 +76,27 @@ test('63 Script image owners load, query, resize, fill and release their own bit
     await graphics.images.get(targetBitmap).pixels(),
     Uint8ClampedArray.of(0x22, 0x44, 0x66, 255, 0x22, 0x44, 0x66, 255),
   );
+  const drawID = await world.objects.create({ kind: 15, parent: main.id });
+  const draw = graphics.drawTasks.get(drawID);
+  const drawTarget = world.nativeTaskID(drawID);
+  await native(256, [drawTarget, 8, 6]);
+  await native(260, [drawTarget, 0, 0]);
+  const args = [drawTarget, 1, target, 0, 0, 0, 0, 0, floatBits(1), floatBits(1), 512, 1, 0];
+  assert.deepEqual(await native(731, args), { control: 2 });
+  const key = (world.nativeTaskID(main.id) | (1 << 16)) >>> 0;
+  assert.equal(draw.entry(key).alpha, 255);
+  args[3] = floatBits(1);
+  assert.deepEqual(await native(732, args), { control: 2 });
+  assert.deepEqual(draw.entry(key).position, [1, 0]);
   await native(711, [source]);
   await native(711, [target]);
+  const drawn = graphics.images.get(draw.entry(key).image);
+  assert.deepEqual(
+    (await drawn.pixels()).subarray(0, 4),
+    Uint8ClampedArray.of(0x22, 0x44, 0x66, 255),
+  );
+  await native(258, [drawTarget, 1]);
+  assert.equal(draw.entry(key), undefined);
   assert(!runtime.handles.records.has(source));
   assert(!runtime.handles.records.has(targetBitmap));
 });

@@ -1260,6 +1260,8 @@ The initialization packets carry the priority range and duration in the
 original order. The wipe retains its mask through the transition.
 
 Main 625 changes the animation enable word of the selected Draw entry.
+Main 257/259 and 731/732 bind a bitmap or logical image owner to the
+selected Draw entry with its authored transform, opacity and visibility.
 Main 713 scales RGB by three authored percentages. Main 723 and 727
 rotate or reflect the collection and rebuild its bitmap. Main 728 sets the
 bitmap's mask word. Main 737 applies the authored color filter to each

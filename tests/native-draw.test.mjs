@@ -793,12 +793,12 @@ for (const profile of [
       await scene.graphics.images.get(overlay).fill(0, 0, 2, 2, 0xffaabbcc);
       await scene.sendEngine(surfaceID, scene.main.id, 296, 0, base);
       const captured = draw.state.baseImage;
-      await nativeDraw(
+      await scene.runtime.native(
+        'main',
         0x101,
         [target, 7, overlay, 0, 0, 0, 0, 0, floatBits(1), floatBits(1), 255, 1, 0],
         scene.main.machine,
         scene.main,
-        scene,
       );
       await draw.render();
       assert.equal(draw.state.renderer.items.length, 2);
@@ -1193,12 +1193,12 @@ for (const profile of [
         await scene.runtime.native('main', 0x104, [target, 0, 0], scene.main.machine, scene.main);
         const image = scene.graphics.images.create(3, 2, scene.main.id);
         await scene.graphics.images.get(image).fill(0, 0, 3, 2, 0xff123456);
-        await nativeDraw(
+        await scene.runtime.native(
+          'main',
           0x101,
           [target, rawKey, image, 0, 0, 0, 0, 0, floatBits(1), floatBits(1), 255, 1, 0],
           caller.implementation.task.machine,
           caller.implementation.task,
-          scene,
         );
         await scene.graphics.images.release(image);
         const item = draw.entry(entryKey);
