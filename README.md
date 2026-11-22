@@ -47,6 +47,10 @@ Ctrl 快进。游戏自己的标题、设置、存读档和历史窗口由其 FE
 的 SHA-256 目录树算法。宿主在挂载期间保持源内容不变，再调用 `await game.open()` 解析归档。
 带有自己传输封装的宿主可使用 `src/checkpoint.mjs` 的 `encodeCheckpointGraph` 和
 `decodeCheckpointGraph` 交换未压缩的状态图。普通入口的导出仍使用带文件签名的 gzip。
+若宿主同时提供 `convertedMovie`，回调接收实际影片的归档区间或流。
+回调验证源文件和转换输出的内容摘要后返回 `{ blob, release }`，其中 Blob 类型为
+`video/mp4` 或 `video/webm`。引擎管理播放 URL 并归还 Blob 租约。
+回调返回空值时仍按原影片路径处理。
 
 ## 验证和构建
 

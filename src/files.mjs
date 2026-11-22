@@ -142,11 +142,16 @@ export class KIFArchive {
 
 // All inputs are read-only. Archive payloads are fetched on demand, never preloaded as one game-sized buffer.
 export class GameFiles {
-  constructor(files, { identity } = {}) {
+  constructor(files, { identity, convertedMovie } = {}) {
     if (identity !== undefined) {
       if (typeof identity !== 'string' || !/^[0-9a-f]{64}$/.test(identity))
         throw new TypeError('Invalid mounted game identity');
       this.identity = identity;
+    }
+    if (convertedMovie !== undefined) {
+      if (typeof convertedMovie !== 'function')
+        throw new TypeError('Invalid host movie conversion callback');
+      this.convertedMovie = convertedMovie;
     }
     this.input = files;
     this.index = new Map();
@@ -429,7 +434,31 @@ export class GameFiles {
   async movieSource(name, canPlayType, stream = null) {
     const hit = stream ? null : this.lookup(name);
     if (!stream && !hit) return null;
-    const named = this.media?.[resourcePath(name)],
+    const path = resourcePath(name);
+    if (this.convertedMovie) {
+      const prepared = await this.convertedMovie(path, hit, stream, canPlayType);
+      if (prepared != null) {
+        if (typeof prepared.release !== 'function')
+          throw new Error('Host movie conversion requires a releasable Blob');
+        let retained = false;
+        try {
+          const { blob } = prepared;
+          if (
+            !(blob instanceof Blob) ||
+            !blob.size ||
+            !['video/mp4', 'video/webm'].includes(blob.type)
+          )
+            throw new Error('Host movie conversion requires a verified MP4 or WebM Blob');
+          if (!canPlayType(blob.type)) return null;
+          const source = movieBlob(blob, () => prepared.release());
+          retained = true;
+          return source;
+        } finally {
+          if (!retained) prepared.release();
+        }
+      }
+    }
+    const named = this.media?.[path],
       matches = (record) =>
         record?.sourceSize === stream.bytes.length && record.sourceSha256 === stream.sha256,
       converted = stream && !matches(named) ? Object.values(this.media ?? {}).find(matches) : named;
@@ -457,10 +486,9 @@ export class GameFiles {
     if (!mime || !canPlayType(mime)) return null;
     if (hit && hit.offset === 0 && hit.size === hit.file.size && hit.file.url)
       return { url: hit.file.url };
-    const url = URL.createObjectURL(
+    return movieBlob(
       new Blob([stream?.bytes ?? (await hit.file.read(hit.offset, hit.size))], { type: mime }),
     );
-    return { url, release: () => URL.revokeObjectURL(url) };
   }
   async fingerprint() {
     if (this.identity) return this.identity;
@@ -468,6 +496,23 @@ export class GameFiles {
     this.identity = await this.identityPromise;
     return this.identity;
   }
+}
+
+function movieBlob(blob, release) {
+  const url = URL.createObjectURL(blob);
+  let retained = true;
+  return {
+    url,
+    release() {
+      if (!retained) return;
+      retained = false;
+      try {
+        URL.revokeObjectURL(url);
+      } finally {
+        release?.();
+      }
+    },
+  };
 }
 
 function escapeRegExp(text) {
