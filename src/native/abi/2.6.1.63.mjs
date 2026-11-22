@@ -806,9 +806,11 @@ export default {
           846, 847, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865,
           866, 867, 868, 871, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886, 887,
           888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905,
-          906, 907, 908, 909, 910, 911, 912, 913, 914, 915, 916, 917, 918, 919, 920, 921, 922, 923,
-          924, 925, 926, 927, 928, 929, 930, 931, 932, 933, 934, 935, 936, 937,
+          906, 907, 909, 910, 911, 912, 913, 914, 915, 916, 917, 918, 919, 920, 921, 922, 923, 924,
+          927, 928, 929, 930, 931, 932, 933, 934, 935, 936, 937,
         ],
+        reserved: [908, 926],
+        'constant-zero': [925],
         recovered: [
           1, 5, 8, 13, 14, 15, 29, 30, 32, 36, 41, 66, 67, 68, 71, 78, 79, 84, 85, 88, 92, 93, 100,
           101, 104, 105, 108, 117, 207, 209, 210, 211, 238, 240, 244, 245, 246, 247, 250, 254, 256,
@@ -819,6 +821,16 @@ export default {
         ],
       },
       evidence: [
+        {
+          ids: [908, 926],
+          value:
+            '2.6.1.63 own Main table binds the authored adjacent optional-animation calls to the same no-op entry returning control 2.',
+        },
+        {
+          ids: [925],
+          value:
+            '2.6.1.63 own Main table binds this zero-argument optional-animation probe to an explicit zero writer returning control 1.',
+        },
         {
           ids: [343, 345],
           value:
@@ -991,6 +1003,7 @@ export default {
         },
       ],
       signatures: [
+        { ids: [925], fields: { resultWritten: true } },
         { ids: [343, 345], fields: { resultWritten: false } },
         { ids: [84, 85, 93, 101, 344, 402], fields: { resultWritten: false } },
         { ids: [78, 466], fields: { resultWritten: false } },

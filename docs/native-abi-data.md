@@ -1136,6 +1136,11 @@ through a single VM address, using the current global matrix on native NULL.
 Main 586 stores a full DWORD of default flags on the live manager. Motion
 creation reads that DWORD. A zero manager leaves state untouched.
 
+The optional-animation branch at the start of the Script calls Main 925.
+The original table binds it to a zero result with control 1. Adjacent
+Main 908 and 926 discard their input and return control 2 at the original
+shared reserved entry.
+
 ## 2.6.1.63 FES STRING
 
 The narrow STRING object is original FES type 20 and canonical type 21. Its

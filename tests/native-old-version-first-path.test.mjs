@@ -762,6 +762,13 @@ test('63 startup GCALLs read the clock, configuration and viewport before a Scri
         [43, 739, 8],
         [43, 741, 0],
         [38, [0x13, 568]],
+        [37, 0xc0ffee01],
+        [43, 908, 4],
+        [37, 0xc0ffee01],
+        [37, 0xc0ffee02],
+        [43, 926, 8],
+        [43, 925, 0],
+        [38, [0x13, 572]],
         [37, 600],
         [37, 800],
         [43, 15, 8],
@@ -825,6 +832,7 @@ test('63 startup GCALLs read the clock, configuration and viewport before a Scri
     );
     assert.deepEqual([machine.load(556) | 0, machine.load(560) | 0], [4, -3]);
     assert.equal(machine.load(568), 0);
+    assert.equal(machine.load(572), 0);
     world.configuration.screen.fullscreen = 1;
     try {
       assert.deepEqual(world.runtime.native('main', 741, [], machine, task), {
