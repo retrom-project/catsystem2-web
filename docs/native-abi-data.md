@@ -1349,6 +1349,10 @@ independently of the font settings flags. NVSTRING admission remains separate.
 The same `draw` dispatcher returns immediately for a BUTTON selection.
 Only its explicit Plane and text-family cases process the optional value.
 
+Main 937 takes no arguments. It resolves the caller's Top Input task through
+raw message 32 and clears the pending wheel directions through raw 153.
+It returns control 2.
+
 ## 2.6.1.63 close and persistence
 
 The window-close message selects the Script's persistence callback. Main

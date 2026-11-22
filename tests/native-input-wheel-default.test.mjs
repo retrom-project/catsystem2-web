@@ -4,7 +4,6 @@ import assert from 'node:assert/strict';
 import { NativeWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeInputBindings } from '../src/native/input-bindings.mjs';
-import { nativeABI } from '../src/native/abi/index.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
@@ -19,12 +18,13 @@ function fixture(profile) {
       ]),
       'wheel.kcs': kcsProgram([
         [37, sentinel],
-        [43, 0x41, 0],
-        [43, 0x3a9, 0],
-        [43, 0x41, 0],
         [37, 256],
         [43, 0x47, 4],
-        [41, 39],
+        [45],
+        [43, 0x3a9, 0],
+        [37, 256],
+        [43, 0x47, 4],
+        [59],
       ]),
     }),
     random = new ParticleRandom(19, 23),
@@ -57,11 +57,10 @@ function fixture(profile) {
   return { world, originalAttempts: () => originalAttempts };
 }
 
-function observe(world, task) {
+function observe(world, task, query) {
   const packets = [],
     received = [],
     replies = [],
-    query = nativeABI(world.profile).messages.movieInput.query,
     top = world.engineMessages.closestTop(task.id),
     inputRecord = world.objects.objects.get(top.implementation.input),
     send = world.sendNativeEngine,
@@ -108,9 +107,10 @@ function observe(world, task) {
   return { packets, received, replies, inputRecord, query };
 }
 
-for (const [name, profile] of [
-  ['Game', 'nekopara-vol3-engine-2.6.1.76'],
-  ['SDK', 'sdk-4.01-engine-2.6.1.74'],
+for (const [name, profile, query] of [
+  ['2.6.1.63', 'rebellions-jp-engine-2.6.1.63', 32],
+  ['Game', 'nekopara-vol3-engine-2.6.1.76', 34],
+  ['SDK', 'sdk-4.01-engine-2.6.1.74', 32],
 ]) {
   test(`${name} normal wheel-reset GCALL routes through its Top Input owner and survives a fresh World`, async () => {
     const first = fixture(profile),
@@ -131,8 +131,8 @@ for (const [name, profile] of [
         world.nativeTaskID(world.objects.objects.get(top).implementation.input),
         world.nativeTaskID(top),
       );
-      assert.equal(script.status, 'yielded');
-      assert.equal(script.machine.pc, 17);
+      assert.equal(script.status, 'waiting');
+      assert.equal(script.machine.pc, 23);
       assert.equal(script.machine.load(script.machine.sp - 4), sentinel);
       assert.equal(
         world.objects.objects.get(top).implementation.input !==
@@ -150,10 +150,13 @@ for (const [name, profile] of [
       assert.equal(fresh.world.inputBindings.input, fresh.world.input);
       assert.notEqual(fresh.world.inputBindings.pulses, world.inputBindings.pulses);
       const restored = fresh.world.runtime.scheduler.tasks.get(script.id),
-        sourceTrace = observe(world, script),
-        freshTrace = observe(fresh.world, restored),
+        sourceTrace = observe(world, script, query),
+        freshTrace = observe(fresh.world, restored, query),
         originalSP = script.machine.sp;
-      await fresh.world.runtime.scheduler.execute(restored);
+      assert.equal(
+        (await fresh.world.runtime.scheduler.send(restored.id, [1, 2, 3, 4])).accepted,
+        true,
+      );
       assert.deepEqual(
         fresh.world.inputBindings.pulses,
         [],
@@ -164,7 +167,7 @@ for (const [name, profile] of [
         checkpoint,
         'fresh wheel reset leaves the source owner unchanged',
       );
-      await world.runtime.scheduler.execute(script);
+      assert.equal((await world.runtime.scheduler.send(script.id, [1, 2, 3, 4])).accepted, true);
       for (const [current, owner, trace] of [
         [world, script, sourceTrace],
         [fresh.world, restored, freshTrace],
@@ -201,7 +204,7 @@ for (const [name, profile] of [
         assert.deepEqual(trace.replies, [{ args: [], value: { control: 2 } }]);
         assert.equal(owner.machine.sp, originalSP, 'a void reply does not push a VM result');
         assert.equal(owner.machine.load(owner.machine.sp - 4), sentinel);
-        assert.equal(owner.machine.pc, 39);
+        assert.equal(owner.machine.pc, 52);
         current.inputBindings.sample();
         assert.equal(current.inputBindings.query(0, 0), 0);
         assert.equal(current.inputBindings.query(1, 0), 0);

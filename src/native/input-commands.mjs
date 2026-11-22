@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalOwner, originalFeature } from './original-adapter.mjs';
-import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeEngineWord } from './engine-message.mjs';
 
@@ -20,7 +19,7 @@ export function installNativeInputCommands(world) {
           await world.sendNativeEngine(
             0,
             task.id,
-            nativeABI(world.profile).messages.movieInput.query,
+            world.engineMessages.layout.rootStart + 2,
             0,
             0,
             { flags: 0 },
