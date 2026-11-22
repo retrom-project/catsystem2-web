@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { CGRegistry, CGGallery, parseCGReference, readCGList } from '../gallery.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 export const nativeGalleryCodec = {
   snapshot: (gallery) => ({ list: gallery.list, registrations: gallery.registry.write() }),
@@ -76,8 +77,10 @@ export function nativeGallery(id, args, machine, services = {}) {
     if (!services.read) return undefined;
     const name = services.format(args[1], machine);
     return Promise.resolve(services.read(name, 'config')).then((bytes) => {
-      if (bytes?.length) gallery.list = readCGList(bytes);
-      else services.diagnostic?.({ native: id, resource: name, error: 'CG list was not found' });
+      if (bytes?.length) {
+        const abi = services.profile ? nativeABI(services.profile) : null;
+        gallery.list = readCGList(bytes, abi?.gallery?.listVariantWidth);
+      } else services.diagnostic?.({ native: id, resource: name, error: 'CG list was not found' });
       return done();
     });
   }

@@ -15,10 +15,12 @@ function cstring(binary, at, width) {
   return decoder.decode(bytes.subarray(0, end));
 }
 
-export function readCGList(bytes) {
+export function readCGList(bytes, expectedVariantWidth) {
   let b = new Binary(bytes, 'CGL');
   const variantWidth =
     b.bytes.length > 4 && b.u32(0) === 0x004c4743 /* CGL file signature  */ ? 256 : 64;
+  if (expectedVariantWidth !== undefined && variantWidth !== expectedVariantWidth)
+    throw new Error(`CGL variant width ${variantWidth} does not match ${expectedVariantWidth}`);
   if (variantWidth === 256) b = new Binary(b.bytes.subarray(4), 'CGL');
   const sections = [],
     groups = [],

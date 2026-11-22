@@ -54,7 +54,8 @@ const sample = () => [
 
 test('CGL reads both native record widths, relative section links and group namespaces', () => {
   for (const width of [64, 256]) {
-    const parsed = readCGList(list(sample(), width));
+    const bytes = list(sample(), width);
+    const parsed = readCGList(bytes, width);
     const gallery = new CGGallery(parsed);
     assert.equal(parsed.variantWidth, width);
     assert.equal(gallery.group('oPENING', 7).ordinal, 2);
@@ -66,6 +67,7 @@ test('CGL reads both native record widths, relative section links and group name
     assert.deepEqual(gallery.variants('Opening'), sample()[0].groups[0].variants);
     const truncated = list(sample(), width).subarray(0, 20);
     assert.throws(() => readCGList(truncated), /range|count/);
+    assert.throws(() => readCGList(bytes, width === 64 ? 256 : 64), /variant width/);
   }
 });
 

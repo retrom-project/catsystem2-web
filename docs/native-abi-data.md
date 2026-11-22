@@ -20,7 +20,7 @@ selected or enabled by proximity to another version number.
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2             |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------------------- |
 | 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered              |
-| 2.6.1.63 | 938        | 63        | 0             | 0             | 875     | 3 generic and 15 particle v2 recovered |
+| 2.6.1.63 | 938        | 72        | 0             | 0             | 866     | 3 generic and 15 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered              |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                           |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                           |
@@ -1023,6 +1023,22 @@ Main 210 returns an in-range Script variable or zero, and Main 276 writes
 the Script's narrow string bank. Main 590–593 open and release an XML owner
 and query integer and narrow text nodes. Missing integer paths keep the
 supplied default. Missing text paths leave the VM buffer intact.
+
+## 2.6.1.63 CG registration
+
+Main419 creates an independent registration tree and an empty list. Main420
+releases both, and Main421 clears only the registrations. Main422 and Main423
+share the formatted base and variant name. Selectors use signed CP932 first
+bytes. The .63 register wrapper also records the alternate name with `L`
+before an underscore removed.
+
+Main424 and Main425 save and load the tree in a global-file entry. A filename
+record occupies 68 bytes and a selector node occupies eight bytes. A missing
+entry leaves the current tree in place. Main458 loads a list into that owner.
+The .63 list has 64-byte variant fields and a failed lookup leaves the existing
+list in place. Main459 registers the selected section and group through the
+same tree. The owned Script test exercises these calls in order and resumes
+from a fresh checkpoint before releasing the gallery.
 
 ## 2.6.1.63 FES sound playback and release
 

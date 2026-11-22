@@ -1066,6 +1066,118 @@ async function oldTitleWorld(
   return { world, audio };
 }
 
+test('63 Script owns and persists its CG registrations and releases the restored handle', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    gallery = [0x13, 512],
+    globalFile = [0x13, 516],
+    mark = 7,
+    list = new Uint8Array(12 + 72 + 64),
+    view = new DataView(list.buffer);
+  view.setInt32(4, 3, true);
+  view.setUint32(8, 1, true);
+  list.set(bytes('Opening'), 16);
+  view.setUint32(80, 1, true);
+  list.set(bytes('shot,2,4'), 84);
+  const files = {
+    'sample-cg.dat': list,
+    'cg63.kcs': kcsProgram(
+      [
+        [43, 419, 0],
+        [38, gallery],
+        [37, gallery],
+        [37, 1024],
+        [43, 458, 8],
+        [37, gallery],
+        [37, 1056],
+        [43, 458, 8],
+        [37, gallery],
+        [37, 3],
+        [37, 1088],
+        [43, 459, 12],
+        [37, gallery],
+        [37, 1120],
+        [43, 422, 8],
+        [37, gallery],
+        [37, 1152],
+        [43, 423, 8],
+        [38, [0x13, 520]],
+        [37, globalFile],
+        [37, mark],
+        [37, gallery],
+        [43, 424, 12],
+        [38, [0x13, 524]],
+        [37, gallery],
+        [43, 421, 4],
+        [37, gallery],
+        [37, 1184],
+        [43, 423, 8],
+        [38, [0x13, 528]],
+        [37, globalFile],
+        [37, mark],
+        [37, gallery],
+        [43, 425, 12],
+        [38, [0x13, 532]],
+        [37, gallery],
+        [37, 1184],
+        [43, 423, 8],
+        [38, [0x13, 536]],
+        [37, 576],
+        [43, 71, 4],
+        [37, gallery],
+        [43, 420, 4],
+        [59],
+      ],
+      [
+        [1024, 'owned.int/sample-cg.dat'],
+        [1056, 'owned.int/missing.dat'],
+        [1088, 'opening'],
+        [1120, 'heroL,02,3'],
+        [1152, 'hero,02,3'],
+        [1184, 'shot,2,4'],
+      ],
+    ),
+  };
+  let fresh;
+  const { world } = await oldTitleWorld(files, undefined, profile);
+  try {
+    await world.initialize('main.kcs');
+    const task = await world.spawnScript('cg63.kcs'),
+      state = new NativeGlobalFile(0, 0x80000),
+      file = world.runtime.handles.add('global-file', state);
+    task.machine.store(516, file);
+    await world.tick();
+
+    const handle = task.machine.load(512),
+      owned = world.runtime.handles.get(handle, 'cg-registration');
+    assert.deepEqual(
+      [520, 524, 528, 532, 536].map((at) => task.machine.load(at)),
+      [1, 1, 0, 1, 1],
+    );
+    assert.deepEqual(owned.variants('opening', 3, true), ['shot,2,4']);
+    const stored = state.read(mark),
+      header = new DataView(stored.buffer, stored.byteOffset, stored.byteLength);
+    assert.equal(stored.length, 3 * (68 + 2 * 8));
+    assert.equal(header.getUint32(0, true), 1);
+    assert.equal(header.getUint32(68, true), 1);
+    assert.equal(header.getInt32(76 + 4, true), -1);
+    assert.deepEqual(owned.registry.write(), stored);
+
+    ({ world: fresh } = await oldTitleWorld(files, undefined, profile));
+    await fresh.restore(world.snapshot());
+    const restored = fresh.runtime.handles.get(handle, 'cg-registration');
+    assert.notStrictEqual(restored, owned);
+    assert.deepEqual(restored.registry.write(), stored);
+    assert.deepEqual(restored.variants('opening', 3, true), ['shot,2,4']);
+    await fresh.runtime.scheduler.send(task.id, [1, 0xffff0001, 0, 0]);
+    await fresh.tick();
+    assert.throws(() => fresh.runtime.handles.get(handle, 'cg-registration'), /handle/i);
+    assert.deepEqual(fresh.runtime.handles.get(file, 'global-file').read(mark), stored);
+  } finally {
+    await fresh?.close();
+    await world.close();
+  }
+});
+
 async function verifyCursorVisibility(t, profile, cursorMessage = 22) {
   const { world, audio } = await oldTitleWorld(
     {
