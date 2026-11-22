@@ -112,7 +112,7 @@ export class M2ScenePreparation {
   }
 
   resume() {
-    if (typeof Worker !== 'function') return;
+    if (typeof Worker !== 'function' || this.owner.world.prepareSceneWorkers === false) return;
     const scene = this.#activeScene(),
       entry = scene?.history.path.at(-1);
     if (entry) this.hint(scene, entry.nameBytes ?? entry.scene, entry.value);
@@ -122,6 +122,7 @@ export class M2ScenePreparation {
     const { world, profiles } = this.owner;
     if (
       typeof Worker !== 'function' ||
+      world.prepareSceneWorkers === false ||
       !profiles ||
       world.closed ||
       world.disposalRequested ||

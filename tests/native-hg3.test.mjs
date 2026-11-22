@@ -6,7 +6,7 @@ import { NativeEngineProcess } from '../oracle/engine-process.mjs';
 import { NativeDataBuffers } from '../oracle/data-buffer.mjs';
 import { unpackHG32RGBA, unpackHGPixels } from '../src/formats/hg-codec.mjs';
 import { HG3 } from '../src/formats/hg3.mjs';
-import { BlobFile } from '../src/files.mjs';
+import { BlobFile, RangeFile } from '../src/files.mjs';
 import { SceneImagePreparation } from '../src/native/scene-image-preparation.mjs';
 import { authoredHG3, authoredHG3Frames } from './fixtures/hg3.mjs';
 import { hg3 } from './helpers.mjs';
@@ -75,23 +75,21 @@ test('scene image preparation keeps mount identity and falls back on early deman
     nativeBlob = new Blob([bytes, new Uint8Array(64 * 1024)]),
     encoder = new TextEncoder(),
     rows = ['bg 0 background', 'eg 1 overlay'];
-  for (const demand of ['ready', 'reading', 'decoding', 'failure', 'named']) {
+  for (const demand of ['offline', 'ready', 'reading', 'decoding', 'failure', 'named']) {
     const calls = [],
       waitForCache = Promise.withResolvers(),
       readStarted = Promise.withResolvers(),
       waitForRead = Promise.withResolvers();
     const mounts = new Map(
       ['background', 'overlay'].map((name) => {
-        const file = new BlobFile(nativeBlob);
-        const read = file.read.bind(file);
-        file.read = async (offset, size) => {
+        const file = new RangeFile(nativeBlob.size, async (offset, size) => {
           calls.push(name);
           if (name === 'background') {
             readStarted.resolve();
             await waitForRead.promise;
           }
-          return read(offset, size);
-        };
+          return new Uint8Array(await nativeBlob.slice(offset, offset + size).arrayBuffer());
+        });
         return [name, { file, size: nativeBlob.size, offset: 0 }];
       }),
     );
@@ -125,6 +123,17 @@ test('scene image preparation keeps mount identity and falls back on early deman
     failWorker = demand === 'failure';
     workerCount = 0;
     preparation.loaded(scene);
+    if (demand === 'offline') {
+      mounted.prepareSceneWorkers = false;
+      assert.equal(preparation.hint(scene, 1, 0), false);
+      waitForRead.resolve();
+      const image = new HG3(await preparation.read(background));
+      assert.equal(preparation.apply(image, image.frames[0]), false);
+      assert.deepEqual([...(await image.decode(image.frames[0])).rgba], [...pixels]);
+      assert.equal(workerCount, 0);
+      assert.deepEqual(calls, ['background']);
+      continue;
+    }
     assert.equal(preparation.hint(scene, 1, 0), true);
     assert.equal(workerCount, 0);
     assert.deepEqual(calls, []);

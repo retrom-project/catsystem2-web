@@ -125,6 +125,7 @@ export class NativeWorld {
     bootstrapOwner = null,
     startupDocument,
     transitionalExe = null,
+    prepareSceneWorkers = true,
     installM2 = installNativeM2,
     particleRegistry,
   }) {
@@ -141,6 +142,7 @@ export class NativeWorld {
       bootstrapOwner,
       startupDocument,
       transitionalExe,
+      prepareSceneWorkers,
     });
     this.transitionalExe?.installWorldRuntime?.(this);
     this.dispatchContext = new NativeDispatchContext();

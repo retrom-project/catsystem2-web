@@ -202,6 +202,12 @@ test('restored scene hints prepare one explicit M2 resource from the same mounte
     },
   };
   const preparation = new M2ScenePreparation(owner);
+  owner.world.prepareSceneWorkers = false;
+  preparation.resume();
+  preparation.hint(scene, 'active', 0);
+  assert.deepEqual(reads, []);
+  assert.equal(preparation.take('model'), null);
+  owner.world.prepareSceneWorkers = true;
   owner.world.profile = 'sdk-4.01-engine-2.6.1.74';
   preparation.resume();
   assert.deepEqual(reads, []);

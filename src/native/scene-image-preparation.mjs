@@ -126,6 +126,7 @@ export class SceneImagePreparation {
       { reader } = scene;
     if (
       typeof Worker !== 'function' ||
+      world.prepareSceneWorkers === false ||
       world.closed ||
       world.disposalRequested ||
       world.transitionalExe ||
