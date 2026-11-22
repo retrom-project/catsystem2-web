@@ -1781,6 +1781,44 @@ test('63 textured Plane coordinate mode belongs to its current render model', as
   }
 });
 
+test('63 texture allocation retains existing pages and authored optional calls return control 2', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    { world, audio } = await oldTitleWorld({}, undefined, profile);
+  try {
+    const texture = world.configuration.fields.texture;
+    texture.size.set([8, 8]);
+    texture.grid.set([2, 2]);
+    texture.bppY.set([0, 1]);
+    texture.bpp = 32;
+    for (const area of texture.areas) area.fill(0xffffffff);
+    texture.areas[0].set([0, 0, 1, 1]);
+    const main = await world.initialize('empty.kcs'),
+      call = (id, args) => world.runtime.native('main', id, args, main.machine, main);
+    assert.deepEqual(await call(542, []), { control: 2 });
+    const pages = world.graphics.texturePages,
+      existing = pages.frame(0);
+    existing.rgba[0] = 79;
+    assert.equal(pages.pages.has(1), false);
+    texture.areas[0].set([0, 0, 2, 2]);
+    assert.deepEqual(await call(542, []), { control: 2 });
+    assert.equal(pages.frame(0), existing);
+    assert.equal(existing.rgba[0], 79);
+    assert.equal(pages.pages.get(1).bpp, 32);
+    assert.equal(pages.pages.get(2).bpp, 16);
+    for (const [id, words] of [
+      [543, 3],
+      [546, 2],
+      [550, 3],
+      [652, 3],
+    ])
+      assert.deepEqual(await call(id, new Array(words).fill(0xffffffff)), { control: 2 });
+    assert.equal(nativeABI(profile).tables.main.entries[544].status, 'unknown');
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
 test('63 preload GCALLs own the loaded archive bytes and age the live queue', async () => {
   const image = hg3(2, 2, new Uint8Array(16).fill(0x65)),
     { world, audio } = await oldTitleWorld(

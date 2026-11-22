@@ -1038,6 +1038,11 @@ looks up a group and Main597 resolves an alias through its group. A match
 writes three color words and returns one. A miss returns zero and preserves
 the outputs. Main595 releases the table and returns control 2.
 
+Main542 allocates missing configured texture pages, starting with the
+16-bit rows. Already allocated pages keep their pixels and depth. Main
+543, 546, 550 and 652 share the .63 control-2 stub and leave the result
+unwritten.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420
