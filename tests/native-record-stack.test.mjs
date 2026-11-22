@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeRecordStack, nativeRecordStack } from '../src/native/record-stack.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 import {
   recordStackSpecifications,
   recordStackOperations,
@@ -111,4 +112,37 @@ test('zero-byte records and null stacks preserve original control behavior', () 
   assert.equal(nativeRecordStack(0x35e, [], f.machine, services), undefined);
   assert.equal(nativeRecordStack(0x35f, [1, 1], f.machine, {}), undefined);
   assert.throws(() => nativeRecordStack(0x35f, [1], f.machine, services), /expects 2 arguments/);
+});
+
+test('63 record-stack GCALLs preserve fixed records through a fresh World', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    world = await dataWorld(profile);
+  let fresh;
+  const call = (w, id, args) => w.runtime.native('main', id, args, w.main.machine, w.main);
+  try {
+    const source = (await call(world, 863, [4, 1])).value,
+      target = (await call(world, 863, [2, 1])).value;
+    world.main.machine.store(256, 0x89abcde1);
+    assert.deepEqual(await call(world, 865, [source, 256]), { control: 1, value: 1 });
+    world.main.machine.store(256, 0x12345678);
+    assert.deepEqual(await call(world, 865, [source, 256]), { control: 1, value: 1 });
+    assert.deepEqual(await call(world, 868, [target, source]), { control: 2 });
+    fresh = await dataWorld(profile, undefined, { initialize: false });
+    await fresh.restore(structuredClone(world.snapshot()));
+    for (const [remaining, expected] of [
+      [2, 0x12345678],
+      [1, 0x89abcde1],
+    ]) {
+      assert.deepEqual(await call(fresh, 867, [target]), { control: 1, value: remaining });
+      assert.deepEqual(await call(fresh, 866, [target, 512]), { control: 1, value: 1 });
+      assert.equal(fresh.main.machine.load(512), expected);
+    }
+    assert.deepEqual(await call(fresh, 866, [target, 512]), { control: 1, value: 0 });
+    assert.equal(fresh.main.machine.load(512), 0x89abcde1);
+    assert.deepEqual(await call(fresh, 864, [target]), { control: 2 });
+    assert.deepEqual(await call(world, 867, [source]), { control: 1, value: 2 });
+  } finally {
+    await fresh?.close({ flushFiles: false });
+    await world.close({ flushFiles: false });
+  }
 });

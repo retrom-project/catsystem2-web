@@ -1059,6 +1059,10 @@ Main328/332 mark and query the greatest seen value, independently of the
 ordered path. Main330/331 clear the respective lists. Main324 releases the
 reader and its history together.
 
+Main863–868 own fixed-record stacks used by the script. Their push grows
+capacity before reading the VM record. Pop copies the last record out,
+and copying a stack preserves its full capacity, including popped bytes.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420
