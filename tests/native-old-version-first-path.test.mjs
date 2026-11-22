@@ -1580,8 +1580,8 @@ test('63 FES GCALLs use and publish the real Draw owner before waiting', async (
   const { world, audio } = await oldTitleWorld(
     {
       'entry.fes': bytes(
-        '#DEFINE\nVIEW marker[2]\n#START\n$8=73\nwait 2\n$8=74\nwait frame 4\n$8=75\nwait\n$8=76\n' +
-          '#PING\n$10=91\nbreak\n#marker.PING\n$10=92\nbreak\n',
+        '#DEFINE\nVIEW marker[2]\nBUTTON icon\n#START\n$8=73\nwait 2\n$8=74\nwait frame 4\n$8=75\nwait\n$8=76\n' +
+          '#PING\nicon draw 1\n$10=91\nbreak\n#marker.PING\n$10=92\nbreak\n',
       ),
     },
     undefined,

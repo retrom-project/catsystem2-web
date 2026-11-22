@@ -1302,6 +1302,12 @@ export class FESCoordinator {
       });
       return 0;
     }
+    if (
+      verb === 'draw' &&
+      lookup(first)?.nativeType === 6 &&
+      nativeABI(world.profile).fes.buttonDrawNoop
+    )
+      return 0;
     if (!FES_BUILTIN_VERBS.has(verb)) {
       const raw = instance.program.subcommands[verb];
       if (!raw) {

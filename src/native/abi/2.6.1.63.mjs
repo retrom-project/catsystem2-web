@@ -627,6 +627,7 @@ export default {
   },
   fes: {
     variableBankOffset: 1800,
+    buttonDrawNoop: true,
     commonHeads: {
       shared: [
         '_redirect',
