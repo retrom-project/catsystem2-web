@@ -3,6 +3,7 @@
 // Keep the frozen engine's endpoint formula and float32 temporaries verbatim
 // as arithmetic contracts; using a library's cubic spline changes the result.
 const bits = new DataView(new ArrayBuffer(4));
+const quietNaNBit = 1 << 22;
 const word = (value) => {
   bits.setFloat32(0, value, true);
   return bits.getUint32(0, true);
@@ -12,8 +13,8 @@ const real = (value) => {
   return bits.getFloat32(0, true);
 };
 function binary(a, b, operation, round) {
-  if (Number.isNaN(a)) return real(word(a) | 0x400000 /* IEEE quiet NaN bit  */);
-  if (Number.isNaN(b)) return real(word(b) | 0x400000 /* IEEE quiet NaN bit  */);
+  if (Number.isNaN(a)) return real(word(a) | quietNaNBit);
+  if (Number.isNaN(b)) return real(word(b) | quietNaNBit);
   const result = round(operation(a, b));
   return Number.isNaN(result) ? real(0xffc00000) : result;
 }
