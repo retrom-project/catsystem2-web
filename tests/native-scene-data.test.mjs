@@ -84,6 +84,12 @@ test('63 direct CST reads file markers and restores independent CP932 path histo
     };
     assert.deepEqual(await call(325, [handle, 256]), { control: 1, value: 1 });
     assert.deepEqual(reads, ['owned.cst']);
+    assert.deepEqual(await call(328, [handle, 256, 9]), { control: 1, value: 1 });
+    m.writeString('OWNED', 768);
+    m.writeString('alias', 832);
+    assert.deepEqual(await call(934, [handle, 768, 832]), { control: 2 });
+    assert.deepEqual(await call(332, [handle, 832]), { control: 1, value: 9 });
+    assert.deepEqual(await call(934, [handle, 0xffffffff, 832]), { control: 2 });
     assert.deepEqual(await call(329, [handle, 256, 4]), { control: 1, value: 1 });
     m.writeString('later.cst', 512);
     assert.deepEqual(await call(329, [handle, 512, 2]), { control: 1, value: 1 });

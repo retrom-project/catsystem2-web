@@ -569,6 +569,11 @@ export function nativeSceneData(id, args, machine, services = {}) {
   }
   if (id === 0x3a6) {
     if (!services.formatBytes && !services.format) return undefined;
+    if (
+      behavior?.directHistoryFormatFailure === 'zero' &&
+      (!mapped(machine, args[1]) || !mapped(machine, args[2]))
+    )
+      return done();
     const source = formatHistoryName(args[1], machine, services, 'alias'),
       destination = formatHistoryName(args[2], machine, services, 'alias');
     history.aliasSeen(source, destination);

@@ -1058,6 +1058,8 @@ Main338. Main329 appends to the path and returns one on a valid request.
 Main328/332 mark and query the greatest seen value, independently of the
 ordered path. Main330/331 clear the respective lists. Main324 releases the
 reader and its history together.
+Main934 aliases a seen value to a new formatted name and preserves an
+existing destination.
 
 The .63 MOT wrappers transfer the entire 144-byte base or working object
 through separate vectors, matrix and scalar fields. Main303 copies the
