@@ -1101,6 +1101,11 @@ and override word to the startup Plane through its own raw message 56. These
 operations return control 2. Main 452 delivers Base message 23, returning the
 FES task's signed exit word or the initialized -1 when no receiver writes it.
 
+Main 78 sends an eight-word textured rectangle packet to the live Plane.
+Main 466 writes the coordinate mode into the current D3D render model.
+Creating a replacement model starts with coordinate mode zero. Both
+wrappers skip a zero target and return control 2.
+
 Main 630 delivers raw FES message 325 with the formatted event and an
 optional 32-byte object name followed by its index. The receiver runs the
 event, synchronizes changed resources and forces the bound Draw surface when

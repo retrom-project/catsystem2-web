@@ -517,6 +517,9 @@ export class NativeGraphicTask {
     this.world = graphics.world;
     this.record = record;
     this.base = this.world.base(record);
+    this.coordinateModeRequiresGraph = Boolean(
+      this.world.profile && nativeABI(this.world.profile).graphics.coordinateModeRequiresGraph,
+    );
     // Initial BasePlane and SimplePlane state.
     this.state = {
       receiver: -1,
@@ -676,6 +679,7 @@ export class NativeGraphicTask {
         'vramType',
       ].map((key) => [key, structuredClone(this.state[key])]),
     );
+    if (this.coordinateModeRequiresGraph) style.coordMode = 0;
     this.graph = {
       registrationEnabled: UNVERIFIED_REGISTRATION,
       ...shape,
@@ -1134,7 +1138,8 @@ export class NativeGraphicTask {
         this.sync();
         return 0;
       case 82:
-        this.state.coordMode = l;
+        if (!this.coordinateModeRequiresGraph) this.state.coordMode = l;
+        else if (this.graph) this.graph.style.coordMode = l;
         return 0;
       case 83: {
         const rect = this.state.rect,

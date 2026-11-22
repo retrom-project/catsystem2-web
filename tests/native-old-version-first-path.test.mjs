@@ -1692,6 +1692,40 @@ test('63 Script motion manager and matrix initialization use owned resource hand
   }
 });
 
+test('63 textured Plane coordinate mode belongs to its current render model', async () => {
+  const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
+  try {
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, machine, main),
+      id = await world.objects.create({ kind: 2, parent: main.id }),
+      plane = world.graphics.get(id),
+      target = world.nativeTaskID(id),
+      width = floatBits(20.5),
+      height = floatBits(12.25);
+    assert.deepEqual(await call(78, [0, width, height]), { control: 2 });
+    assert.deepEqual(await call(466, [target, 1]), { control: 2 });
+    assert.equal(plane.state.coordMode, 0);
+    assert.deepEqual(await call(78, [target, width, height]), { control: 2 });
+    assert.deepEqual(plane.state.shapeWords, [0, 0, 0, width, height, 32, 1, 0xffffffff]);
+    assert.deepEqual(plane.state.rect, [0, 0, 20.5, 12.25]);
+    assert.equal(plane.graph.vram, true);
+    assert.deepEqual(await call(466, [target, 2]), { control: 2 });
+    assert.equal(plane.state.coordMode, 2);
+    assert.deepEqual(await call(78, [target, width, height]), { control: 2 });
+    assert.equal(plane.state.coordMode, 0);
+    assert.deepEqual(await call(79, [target, width, height, 0xffeeeeee]), { control: 2 });
+    assert.deepEqual(await call(466, [target, 1]), { control: 2 });
+    assert.equal(plane.state.coordMode, 1);
+  } finally {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  }
+});
+
 test('63 Flow and warning FES honor the configured Control key only during the skippable wait', async (t) => {
   const packetAddress = 384,
     keyScript = kcsProgram([
