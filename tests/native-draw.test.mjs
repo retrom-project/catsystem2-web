@@ -958,7 +958,11 @@ async function captureBaseCall(world, target, bitmap, nativeID) {
   assert.deepEqual([...machine.bytes(800, 8)], Array(8).fill(0xa5));
   return task;
 }
-for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+for (const profile of [
+  'rebellions-jp-engine-2.6.1.63',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+])
   test(`${profile} main455 GCALL captures owned base pixels and hides without releasing the copy`, async () => {
     const files = { 'case.kcs': kcsProgram([[59]]), 'capture.kcs': captureBaseCode },
       scene = await dataWorld(profile, files);
@@ -1048,7 +1052,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       assert.notEqual(current, captured);
       assert.equal(scene.runtime.handles.records.has(captured), false);
       await scene.graphics.images.release(replacement);
-      await scene.runtime.native('main', 341, [target], scene.main.machine, scene.main);
+      await scene.sendEngine(surfaceID, scene.main.id, 291);
       assert.deepEqual(
         draw.state.renderer.items.map((item) => item.key),
         [0],

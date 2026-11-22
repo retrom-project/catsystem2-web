@@ -1122,6 +1122,10 @@ Main696 creates the CP932 backlog with the current log configuration.
 Main698 appends an authored block and Main700 writes the speaker for a
 visible row. Main876 clears the lists and Main697 releases the owner.
 
+Main455 sends raw Draw message 284 with the optional bitmap and no crop.
+The receiver copies a live bitmap into its owned base image. Zero hides
+the base plane and removes its drawing entry while keeping that bitmap.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420
