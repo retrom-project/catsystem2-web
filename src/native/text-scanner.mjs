@@ -3,23 +3,24 @@ import { nativeDataPair } from './data-text.mjs';
 import { nativeUTF16 } from './utf8-codec.mjs';
 import { parseNativeIntegerPrefix } from './standard.mjs';
 
-export function nativeTextUnits(bytes, utf8 = false) {
+export function nativeTextUnits(bytes, utf8 = false, pairs = 'standard') {
   if (utf8) {
     const text = nativeUTF16(bytes);
     return Array.from({ length: text.length }, (_, i) => text.charCodeAt(i));
   }
   const out = [];
   for (let i = 0; i < bytes.length && bytes[i]; i++) {
-    if (nativeDataPair(bytes, i)) out.push((bytes[i++] << 8) | bytes[i]);
+    if (nativeDataPair(bytes, i, pairs)) out.push((bytes[i++] << 8) | bytes[i]);
     else out.push(bytes[i] === 255 ? 65535 : bytes[i]);
   }
   return out;
 }
 export function scanNativeText(
   input,
-  { utf8 = false, parse = true, ruby = true, config = [], rate = 60, state = null } = {},
+  { utf8 = false, parse = true, ruby = true, config = [], rate = 60, state = null, pairs } = {},
 ) {
-  const units = input instanceof Uint8Array ? nativeTextUnits(input, utf8) : Array.from(input),
+  const units =
+      input instanceof Uint8Array ? nativeTextUnits(input, utf8, pairs) : Array.from(input),
     records = [];
   const get = (i, fallback = 0) => config[i] ?? fallback;
   let at = state?.at ?? 0,
@@ -278,10 +279,10 @@ export function scanNativeText(
     },
   };
 }
-export function plainNativeText(bytes, utf8 = false) {
+export function plainNativeText(bytes, utf8 = false, pairs) {
   const out = [],
     encoder = new TextEncoder();
-  for (const r of scanNativeText(bytes, { utf8 }).records)
+  for (const r of scanNativeText(bytes, { utf8, pairs }).records)
     if (r.code > 9 && r.code !== 65535 && r.mode !== 2) {
       if (utf8) out.push(...encoder.encode(String.fromCharCode(r.code)));
       else {

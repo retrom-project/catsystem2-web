@@ -1129,6 +1129,10 @@ Main882 sets a named FES word through raw 340, and Main883 reads it through
 raw 339. The dictionary uses the original formatted CP932 bytes as the key.
 The same bytes select the value after a fresh checkpoint restore.
 
+Main392 writes the formatted base text bytes to a VM destination and
+returns their byte count. The .63 writer and extractor use the same wide
+CP932 pair test as the original string character counter.
+
 Main365 owns the full packed resource from the image category. Main368
 initializes the 36-byte metadata output for a live image owner and mapped
 destination before inspecting the frame. Main366 releases the buffer owner.

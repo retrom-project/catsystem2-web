@@ -8,6 +8,23 @@ import { nativePlainText } from '../src/native/text-plain.mjs';
 import { KCSMachine } from '../src/kcs/vm.mjs';
 import { formatNativeAt, encodeCP932 } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
+
+test('63 Main392 preserves wide CP932 pairs and emits only the displayed base text', async (t) => {
+  const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
+  t.after(() => world.close());
+  const { main, runtime } = world,
+    m = main.machine,
+    source = Uint8Array.of(0xf1, 0x5b, ...encodeCP932('[春/はる]\\n。')),
+    expected = Uint8Array.of(0xf1, 0x5b, ...encodeCP932('春。'));
+  m.writeStringBytes(source, 128);
+  m.bytes(256, 40).fill(0xa5);
+  const call = (destination) => runtime.native('main', 392, [destination, 128], m, main);
+  assert.deepEqual(await call(256), { control: 1, value: expected.length });
+  assert.deepEqual(m.bytes(256, expected.length + 2), Uint8Array.of(...expected, 0, 0xa5));
+  assert.deepEqual(await call(0xffffffff), { control: 1, value: 0 });
+});
+
 const glyphs = {
   measure: (_font, text) => ({
     width: text.length * 8,

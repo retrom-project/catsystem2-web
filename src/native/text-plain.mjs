@@ -16,7 +16,11 @@ export async function nativePlainText(id, args, machine, world) {
   } catch {
     return nativeReply(1, 0);
   }
-  const output = plainNativeText(bytes, id === 0x419);
+  const output = plainNativeText(
+    bytes,
+    id === 0x419,
+    nativeABI(world.profile).text.characterLengthPairs,
+  );
   machine.bytes(args[0], output.length + 1).set([...output, 0]);
   return nativeReply(1, output.length);
 }

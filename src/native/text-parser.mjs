@@ -103,7 +103,11 @@ export class NativeTextParser {
   append(bytes) {
     bytes = bytes.subarray(0, bytes.includes(0) ? bytes.indexOf(0) : bytes.length);
     this.source = join(this.source, bytes);
-    const decoded = nativeTextUnits(this.source.subarray(this.rawCursor), this.utf8);
+    const decoded = nativeTextUnits(
+      this.source.subarray(this.rawCursor),
+      this.utf8,
+      nativeABI(this.profile).text.characterLengthPairs,
+    );
     this.units.push(...decoded);
     this.rawCursor = this.source.length;
     this.dirty = true;
