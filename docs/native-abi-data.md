@@ -1109,6 +1109,9 @@ destination before inspecting the frame. Main366 releases the buffer owner.
 Main308 sets the motion manager's float32 speed. Main785 sets the display
 log's unsigned block limit and immediately prunes its oldest blocks.
 
+Main403 and Main404 use the Root Input owner to set one key gate through
+raw 146 or to reset all gates through raw 147.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420

@@ -7,6 +7,7 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.74'])
   test(`${profile} KCS input gates control real routing, preserve auto-hide state and restore`, async () => {
@@ -59,3 +60,21 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
       await restored?.close({ flushFiles: false });
     }
   });
+
+test('63 Input GCALLs disable a key and restore the gates through the Root Input owner', async () => {
+  const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
+  try {
+    const main = world.main,
+      call = (id, args) => world.runtime.native('main', id, args, main.machine, main);
+    assert.deepEqual(await call(403, [2, 0]), { control: 2 });
+    world.input.key(2, true, 1);
+    await world.input.tick(1);
+    assert.equal(world.input.held[8], 0);
+    assert.deepEqual(await call(404, []), { control: 2 });
+    await world.input.tick(2);
+    assert.equal(world.input.held[8], 1);
+    assert.equal(world.input.enabled[2], 1);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
