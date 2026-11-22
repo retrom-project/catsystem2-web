@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { AudioMixer } from '../src/audio.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
 import { NativeSoundPacket } from '../src/native/sound.mjs';
+import { NativePCMWindows } from '../src/native/audio-pcm.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { EmoteRuntime } from '../src/emote/runtime.mjs';
 import {
@@ -16,6 +17,44 @@ import {
 import { audioFixture as fixture } from './fixtures/audio-context.mjs';
 const command = (mixer, group, banks, verb, args = []) =>
   mixer.command({ group, banks, verb, args });
+
+test('prepared voice keeps its initial PCM ring off the publication path', async (t) => {
+  const warm = fixture(),
+    cold = fixture(),
+    bytes = Uint8Array.of(1),
+    channel = {
+      channel: 'native:0',
+      file: 'voice',
+      sourceMode: 'stream',
+      group: 'native',
+      nativeCategory: 'voice',
+      tags: {},
+    },
+    decode = async () => ({
+      duration: 2,
+      sampleRate: 60,
+      numberOfChannels: 1,
+      length: 120,
+      getChannelData: () => Float32Array.from({ length: 120 }, (_, i) => (i % 5) / 5),
+    });
+  warm.context.decodeAudioData = cold.context.decodeAudioData = decode;
+  const fill = t.mock.method(NativePCMWindows.prototype, 'fill');
+  const prepared = await warm.mixer.decodeBuffer(bytes, 1000);
+  warm.mixer.rememberBuffer(channel.file, prepared);
+  assert.equal(fill.mock.callCount(), 1);
+  assert.equal(warm.context.sources.length, 0);
+  const warmChannel = await warm.mixer.play(channel);
+  assert.equal(fill.mock.callCount(), 1);
+  const coldChannel = await cold.mixer.play(channel);
+  assert.equal(fill.mock.callCount(), 2);
+  assert.deepEqual(warmChannel.pcmWindows.snapshot(), coldChannel.pcmWindows.snapshot());
+
+  const warmSeeked = await warm.mixer.play({ ...channel, offset: 0.25 });
+  const coldSeeked = await cold.mixer.play({ ...channel, offset: 0.25 });
+  assert.equal(fill.mock.callCount(), 4);
+  assert.deepEqual(warmSeeked.pcmWindows.snapshot(), coldSeeked.pcmWindows.snapshot());
+  assert.notDeepEqual(warmSeeked.pcmWindows.snapshot(), warmChannel.pcmWindows.snapshot());
+});
 
 test('retained native voice completion exposes real metadata without extending playback', async () => {
   const environment = startupEnvironment(),

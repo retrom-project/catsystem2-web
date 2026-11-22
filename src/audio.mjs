@@ -96,7 +96,13 @@ export class AudioMixer {
     if (buffer.length * buffer.numberOfChannels > maxSamples) return null;
     this.sourceRates.set(buffer, sourceSampleRate(bytes) || buffer.sampleRate);
     this.sourceMetadata.set(buffer, readAudioSource(bytes, buffer));
-    this.pcmSources.set(buffer, sourcePCM(bytes, this.sourceMetadata.get(buffer), buffer));
+    const pcm = sourcePCM(bytes, this.sourceMetadata.get(buffer), buffer);
+    if (Number.isFinite(maxSamples)) {
+      const windows = new NativePCMWindows(pcm);
+      windows.fill(0, pcm.pcm.subarray(0, windows.halfSecondBytes * 8), { initial: true });
+      pcm.initialWindows = windows.snapshot();
+    }
+    this.pcmSources.set(buffer, pcm);
     return buffer;
   }
   rememberBuffer(name, buffer) {
@@ -187,11 +193,13 @@ export class AudioMixer {
     channel.pcmClock = this.context.currentTime;
     const pcmFrom =
       Math.floor(channel.pcmOrigin * pcm.sampleRate) * pcm.channels * (pcm.bitsPerSample >>> 3);
-    channel.pcmWindows.fill(
-      0,
-      pcm.pcm.subarray(pcmFrom, pcmFrom + channel.pcmWindows.halfSecondBytes * 8),
-      { initial: true },
-    );
+    if (pcmFrom === 0 && pcm.initialWindows) channel.pcmWindows.restore(pcm.initialWindows);
+    else
+      channel.pcmWindows.fill(
+        0,
+        pcm.pcm.subarray(pcmFrom, pcmFrom + channel.pcmWindows.halfSecondBytes * 8),
+        { initial: true },
+      );
     if (sound.pcmState) channel.pcmWindows.restore(sound.pcmState.values);
     this.configureLoop(channel);
     channel.offset = this.wrapPosition(channel, channel.offset);
