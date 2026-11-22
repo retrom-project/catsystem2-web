@@ -1059,6 +1059,12 @@ Main328/332 mark and query the greatest seen value, independently of the
 ordered path. Main330/331 clear the respective lists. Main324 releases the
 reader and its history together.
 
+The .63 MOT wrappers transfer the entire 144-byte base or working object
+through separate vectors, matrix and scalar fields. Main303 copies the
+working object to the base. Main304 formats the script name and resolves it
+through the mounted MOT category, then copies up to 256 register words and
+any mapped auxiliary data into the instance.
+
 Main863–868 own fixed-record stacks used by the script. Their push grows
 capacity before reading the VM record. Pop copies the last record out,
 and copying a stack preserves its full capacity, including popped bytes.

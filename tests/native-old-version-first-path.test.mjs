@@ -1714,6 +1714,61 @@ test('63 Script motion manager and matrix initialization use owned resource hand
   }
 });
 
+test('63 motion state transfers and formatted script add preserve the manager and arguments', async () => {
+  const { world, audio } = await oldTitleWorld(
+    { 'owned-7.kcs': kcsProgram([[59]]) },
+    undefined,
+    'rebellions-jp-engine-2.6.1.63',
+  );
+  try {
+    const main = await world.initialize('empty.kcs'),
+      m = main.machine,
+      call = (id, args) => world.runtime.native('main', id, args, m, main),
+      handle = (await call(294, [])).value,
+      { manager } = world.runtime.handles.get(handle, 'motion-manager'),
+      pointers = [64, 96, 128, 160, 240, 256, 272, 288, 304],
+      input = [handle, ...pointers];
+    m.store(128, floatBits(4.5));
+    input[6] = 0x12345678;
+    input[9] = 0x80000001;
+    assert.deepEqual(await call(301, input), { control: 2 });
+    assert.equal(motionVector(manager.working, MOTION_ABI.pos)[0], 4.5);
+    assert.equal(motionVector(manager.base, MOTION_ABI.pos)[0], 0);
+    assert.deepEqual(await call(303, [handle]), { control: 2 });
+    assert.deepEqual(manager.base, manager.working);
+    const outputs = pointers.map((pointer) => pointer + 512);
+    assert.deepEqual(await call(300, [handle, ...outputs]), { control: 2 });
+    assert.equal(m.load(outputs[2]), floatBits(4.5));
+    assert.equal(m.load(outputs[5]), 0x12345678);
+    assert.equal(m.load(outputs[8]), 0x80000001);
+    m.store(512, 7);
+    m.writeString('owned-%d[G512]', 320);
+    m.store(352, floatBits(9));
+    m.bytes(368, 3).set([1, 2, 3]);
+    assert.deepEqual(await call(304, [handle, 0xffffffff, 352, 1, 368, 3, 17]), {
+      control: 1,
+      value: 0,
+    });
+    const added = await call(304, [handle, 320, 352, 1, 368, 3, 17]);
+    assert.deepEqual(added, { control: 1, value: 1 });
+    const { group, instance } = manager.records.get(added.value);
+    assert.equal(group, 17);
+    assert.equal(instance.script.name, 'owned-7');
+    m.store(352, 0);
+    m.bytes(368, 3).fill(0);
+    assert.equal(instance.view.getUint32(MOTION_ABI.registers, true), floatBits(9));
+    assert.deepEqual(
+      [...instance.machine.bytes(instance.view.getUint32(MOTION_ABI.extraData, true), 3)],
+      [1, 2, 3],
+    );
+    assert.deepEqual(await call(298, [handle, 17]), { control: 2 });
+    assert.equal(manager.records.size, 0);
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
 test('63 textured Plane coordinate mode belongs to its current render model', async () => {
   const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
   try {

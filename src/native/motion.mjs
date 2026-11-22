@@ -7,7 +7,10 @@ import { encodeMotionRecords, restoreMotionRecords } from '../motion/checkpoint.
 import { prepareMotionSpline } from '../motion/spline.mjs';
 import { linearInterpolate, roundInteger } from '../ppi/numeric.mjs';
 import { floatBits } from '../kcs.mjs';
+import { nativeABI } from './abi/index.mjs';
+import { nativeDataFormat, nativeDataMapped } from './data-text.mjs';
 
+const cp932 = new TextDecoder('shift_jis');
 const value = (word) => nativeReply(1, word >>> 0),
   done = () => nativeReply(2);
 const transfer = [
@@ -181,11 +184,19 @@ export function nativeMotion(id, args, machine, services = {}) {
         return done();
       case 0x130:
       case 0x217: {
-        const name = machine.string(args[1]);
+        const formatted =
+          id === 0x130 && services.profile && nativeABI(services.profile).motion?.addUsesFormat;
+        const name = formatted
+          ? cp932.decode(nativeDataFormat(args, machine, services, 1) ?? undefined)
+          : machine.string(args[1]);
         if (!name || name === '-') return value(0);
         const count = Math.min(args[3] >>> 0, 256);
-        const registerWords = machine.bytes(args[2], count * 4).slice();
-        const extra = args[5] ? machine.bytes(args[4], args[5]).slice() : null;
+        const registerWords =
+          formatted && !count ? new Uint8Array() : machine.bytes(args[2], count * 4).slice();
+        const extra =
+          args[5] && (!formatted || nativeDataMapped(machine, args[4]))
+            ? machine.bytes(args[4], args[5]).slice()
+            : null;
         const script = registry.library.optional
           ? registry.library.optional(name)
           : registry.library.load(name);
