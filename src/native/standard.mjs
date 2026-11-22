@@ -401,10 +401,22 @@ export function nativeStandard(id, args, m, services = {}) {
     case 0x26:
     case 0x27: {
       requireArguments(4);
+      const limit = ((args[3] >>> 0) - 2) >>> 0;
+      if (id === 0x26 && services.profile && nativeABI(services.profile).text.tokenLiveCopy) {
+        const separators = delimiters(cstring(m, args[2]), false);
+        let length = 0;
+        while (length < limit) {
+          const byte = m.load(args[1] + length, 1);
+          if (!byte || separators.has(byte)) break;
+          m.store(args[0] + length, byte, 1);
+          length++;
+        }
+        m.store(args[0] + length, 0, 2);
+        return value(length);
+      }
       a = id === 0x27 ? formatBytes(services, m, args[1]) : cstring(m, args[1]);
       if (a === undefined) return undefined;
-      const separators = delimiters(cstring(m, args[2]), id === 0x27),
-        limit = ((args[3] >>> 0) - 2) >>> 0;
+      const separators = delimiters(cstring(m, args[2]), id === 0x27);
       let length = 0;
       while (length < a.length && length < limit && !separators.has(a[length])) length++;
       write(m, args[0], a.subarray(0, length));

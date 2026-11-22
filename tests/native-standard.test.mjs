@@ -203,6 +203,10 @@ test('63 command arguments retain original list, arithmetic and string-bank sema
     m.bytes(256, 8).set([65, 0, 66, 0, 0, 0xa5, 0xa5, 0xa5]);
     assert.deepEqual(await call(42, [257, 256, 1]), { control: 1, value: 0 });
     assert.deepEqual([...m.bytes(256, 6)], [65, 66, 0, 0, 0, 0xa5]);
+    m.writeString('ABCD', 256);
+    m.writeString(',', 512);
+    assert.deepEqual(await call(38, [257, 256, 512, 5]), { control: 1, value: 3 });
+    assert.deepEqual([...m.bytes(256, 6)], [65, 65, 65, 65, 0, 0]);
     await call(209, [16]);
     assert.deepEqual(await call(212, [7]), { control: 2 });
     assert.equal(world.runtime.variableBank(main, false).contextValue, 7);
