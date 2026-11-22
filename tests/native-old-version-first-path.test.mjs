@@ -1762,6 +1762,8 @@ test('63 motion state transfers and formatted script add preserve the manager an
     assert.deepEqual(await call(440, [handle]), { control: 1, value: 1 });
     assert.equal(instance.frame, frame);
     assert.equal(instance.skip, skip);
+    assert.deepEqual(await call(314, [handle]), { control: 2 });
+    assert.equal(instance.skip, true);
     m.store(352, 0);
     m.bytes(368, 3).fill(0);
     assert.equal(instance.view.getUint32(MOTION_ABI.registers, true), floatBits(9));

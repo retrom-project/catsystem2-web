@@ -1073,6 +1073,7 @@ data. A one-word Main315 call still reads the frame from the adjacent VM
 stack word, as the original wrapper does.
 Main311 queries the live MOT list. Main440 rebuilds the working state from
 the base and runs each motion with the final-frame flag.
+Main314 sets the skip word of every MOT record in that manager.
 
 Main863–868 own fixed-record stacks used by the script. Their push grows
 capacity before reading the VM record. Pop copies the last record out,
@@ -1092,8 +1093,8 @@ word after the float32 rounded result is converted to a signed 64-bit integer.
 Main45 clears its destination before searching the live byte buffers. The
 final suffix follows the forward DWORD and byte copies used by the three
 engine versions.
-Main21 compares the second raw string to the first using unsigned bytes and
-ASCII case folding.
+Main19 compares the second raw string to the first using signed bytes.
+Main21 uses unsigned bytes and ASCII case folding in the same operand order.
 Main35 copies the requested number of bytes between mapped VM ranges.
 
 Main633–638 load, query and release the name table from the configured FES
