@@ -1214,6 +1214,10 @@ An owned FES program loads an authored WAV into a fixed bank and through the
 legacy group allocator, plays both banks, and uses the same FES and Sound
 owners during the destruction request and cleanup.
 
+Main 284 formats the filename, resolves the Sound resource category and
+returns whether the resource can be opened. It releases a successful open
+without loading any Sound bank.
+
 Main 400 resolves the formatted table and each filename through the sound
 resources. Its Sound receiver requires ordered signed 64-bit endpoints.
 The default end of −1 is valid when the start is less than −1. Duplicate

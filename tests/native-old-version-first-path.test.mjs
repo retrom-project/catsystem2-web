@@ -2558,6 +2558,24 @@ test('63 Script sound GCALLs load, play, stop and release a mounted wave', async
   }
 });
 
+test('63 Main sound open reports whether the formatted resource can be opened', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    { world, audio } = await oldTitleWorld({ 'owned.wav': title67Wave() }, undefined, profile);
+  try {
+    const main = await world.initialize('empty.kcs'),
+      machine = main.machine,
+      open = (unused) => world.runtime.native('main', 284, [unused, 256], machine, main);
+    machine.writeString('owned.wav', 256);
+    assert.deepEqual(await open(0x12345678), { control: 1, value: 1 });
+    assert.equal(audio.channels.size, 0);
+    machine.writeString('missing.wav', 256);
+    assert.deepEqual(await open(0), { control: 1, value: 0 });
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
 test('63 FES sound loads, plays and closes through its own Sound receiver', async (t) => {
   const profile = 'rebellions-jp-engine-2.6.1.63',
     { world, audio } = await oldTitleWorld(
