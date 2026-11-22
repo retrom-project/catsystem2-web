@@ -4,7 +4,11 @@ import assert from 'node:assert/strict';
 import { NativeRuntime } from '../src/native/runtime.mjs';
 import { readKCS, encodeCP932 } from '../src/kcs.mjs';
 import { kcsProgram } from './helpers.mjs';
-for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+for (const profile of [
+  'rebellions-jp-engine-2.6.1.63',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+])
   test(`${profile} expression arrays retain bank side effects, alias writes, wrapped ranges and fresh runtime contexts`, async () => {
     const program = kcsProgram([[59]]),
       runtime = new NativeRuntime({ profile, read: async () => program }),

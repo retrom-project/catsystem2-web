@@ -1090,6 +1090,8 @@ its delimiter or capacity and writes two terminators. Main212/213 set expression
 evaluate it, and Main278 expands the Script string bank. Main46 rounds the
 scaled percentage to float32 after division, and Main319 writes the low
 word after the float32 rounded result is converted to a signed 64-bit integer.
+Main539 evaluates a single argument, bracketed list or bracketed range using
+the caller's variable bank and writes up to the requested number of DWORDs.
 Main45 clears its destination before searching the live byte buffers. The
 final suffix follows the forward DWORD and byte copies used by the three
 engine versions.
