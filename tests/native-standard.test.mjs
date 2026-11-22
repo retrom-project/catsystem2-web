@@ -288,6 +288,22 @@ test('native replacement searches after the initial clear and appends from live 
   assert.deepEqual([...m.bytes(100, 6)], [65, 66, 65, 66, 65, 0]);
 });
 
+test('63 Main21 folds ASCII locally and compares its raw operands in native order', async (t) => {
+  const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
+  t.after(() => world.close());
+  const { main, runtime } = world,
+    m = main.machine,
+    compare = () => runtime.native('main', 21, [128, 144], m, main);
+  put(m, 128, 'SceneA');
+  put(m, 144, 'sCeNea');
+  assert.deepEqual(compare(), { control: 1, value: 0 });
+  put(m, 144, 'SceneC');
+  assert.deepEqual(compare(), { control: 1, value: 2 });
+  m.writeStringBytes(Uint8Array.of(0x81), 128);
+  m.writeStringBytes(Uint8Array.of(0xff), 144);
+  assert.deepEqual(compare(), { control: 1, value: 126 });
+});
+
 test('memory and file natives distinguish void, pointer and byte-count results', () => {
   const m = machine(),
     allocated = result(m, 0x1b, [12]);
