@@ -8,6 +8,7 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { memoryGame, u32 } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 function kcs(instructions, strings = []) {
   const code = instructions.flatMap(([op, ...args]) => [
     op,
@@ -393,37 +394,56 @@ test('nested Top tasks allocate independent native IDs and keep KCS identity, lo
   await second.close();
 });
 
-test('script task messages use the original synchronous and queued packets and write bank queries through lParam', async () => {
-  const current = world({ 'main.kcs': kcs([[37, 128], [43, 0x47, 4], [43, 0x41, 0], [59]]) });
-  await current.initialize('main.kcs');
-  const task = current.main,
-    scheduler = current.runtime.scheduler;
-  const query = current.runtime.native(
-    'main',
-    0x45,
-    [3, 77, 81, 82],
-    task.machine,
-    task,
-    scheduler,
-  );
-  assert.equal((await query).value, 1);
-  assert.deepEqual(
-    Array.from({ length: 4 }, (_, i) => task.machine.load(128 + i * 4)),
-    [3, 77, 81, 82],
-  );
-  assert.equal(
-    (await current.runtime.native('main', 0x46, [3, 88, 91, 92], task.machine, task, scheduler))
-      .value,
-    1,
-  );
-  assert.deepEqual(task.messages, [[3, 88, 91, 92]]);
-  const bank = current.runtime.variableBank(task);
-  bank.initialize(8);
-  task.machine.store(64, 0xcafebabe);
-  await current.sendEngine(task.id, task.id, 176, 0, 64);
-  assert.equal(task.machine.load(64), task.context.variableBank);
-  await current.close();
-});
+for (const engineProfile of [profile, 'rebellions-jp-engine-2.6.1.63'])
+  test(`${engineProfile} Script sends immediate and queued packets and writes bank queries through lParam`, async (t) => {
+    const current = await dataWorld(engineProfile, {
+      'case.kcs': kcs([[37, 128], [43, 0x47, 4], [37, 160], [43, 0x47, 4], [59]]),
+    });
+    t.after(() => current.close());
+    const task = current.main,
+      scheduler = current.runtime.scheduler;
+    const nativeTask = current.nativeTaskID(task.id),
+      query = current.runtime.native(
+        'main',
+        0x45,
+        [nativeTask, 77, 81, 82],
+        task.machine,
+        task,
+        scheduler,
+      );
+    assert.equal((await query).value, 1);
+    assert.deepEqual(
+      Array.from({ length: 4 }, (_, i) => task.machine.load(128 + i * 4)),
+      [nativeTask, 77, 81, 82],
+    );
+    assert.equal(
+      (
+        await current.runtime.native(
+          'main',
+          0x46,
+          [nativeTask, 88, 91, 92],
+          task.machine,
+          task,
+          scheduler,
+        )
+      ).value,
+      1,
+    );
+    assert.deepEqual(task.messages, [[nativeTask, 88, 91, 92]]);
+    const bank = current.runtime.variableBank(task);
+    bank.initialize(8);
+    task.machine.store(64, 0xcafebabe);
+    await current.sendEngine(task.id, task.id, 176, 0, 64);
+    assert.equal(task.machine.load(64), task.context.variableBank);
+    assert.equal(task.machine.waiting.address, 160);
+    await current.tick();
+    assert.deepEqual(task.messages, []);
+    assert.deepEqual(
+      Array.from({ length: 4 }, (_, i) => task.machine.load(160 + i * 4)),
+      [nativeTask, 88, 91, 92],
+    );
+    assert.equal(task.status, 'finished');
+  });
 
 test('released native IDs stay reserved until the parent finishes its whole child frame walk', async () => {
   const current = world({ 'main.kcs': kcs([[43, 0x41, 0], [59]]) });

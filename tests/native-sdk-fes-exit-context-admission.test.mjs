@@ -122,16 +122,20 @@ test('main452 queries real FES and Script exit-code words through both explicit 
   }
 });
 
-test('main454 copies a loaded Script caller context CString into its owned guest block in both profiles', async () => {
-  for (const profile of profiles) {
+test('main454 copies a loaded Script caller context CString into its owned guest block', async () => {
+  for (const profile of [...profiles, 'rebellions-jp-engine-2.6.1.63']) {
     const world = await defaultFESWorld(profile, { 'child.kcs': kcsProgram([[59]]) });
     try {
       const parent = world.main,
         parentMachine = parent.machine,
-        name = 'owned-script-context',
-        nameBytes = new TextEncoder().encode(name),
+        name = 'owned-script-context≒',
+        nameBytes = Uint8Array.from([
+          ...new TextEncoder().encode('owned-script-context'),
+          0x87,
+          0x90,
+        ]),
         input = parentMachine.allocate(nameBytes.length + 1);
-      parentMachine.writeString(name, input);
+      parentMachine.writeStringBytes(nameBytes, input);
       await world.sendEngine(parent.id, parent.id, 26, 0, input, { machine: parentMachine });
       const id = await world.objects.create({ kind: 12, parent: parent.id, name: 'loaded child' }),
         record = world.objects.objects.get(id);

@@ -324,10 +324,9 @@ layout branches. The ordinary JS test supplies a valid ASCII CString through
 Script message26, creates and loads a real child Script, and observes the normal
 parent message25 inheritance into that child's actual scheduler context. The
 copy writes only that caller's allocated guest block, preserving surrounding
-canaries and the rest of its machine snapshot. A subsequent parent name change
-does not replace the child's context. This proves the existing valid owned
-CString domain, not arbitrary buffers, unterminated strings, Unicode support or
-a new pointer/encoding contract. Shared pointer types remain unknown.
+canaries and the rest of its machine snapshot. The child retains its context
+when its parent receives a different name. A second CP932 spelling of the same
+character verifies that the preserved bytes reach the destination unchanged.
 
 Game registration data, other slots, table lengths and the central unknown-slot
 guard are unchanged. SDK455 remains unknown. These are normal JS receiver
@@ -1103,6 +1102,9 @@ empty entry, and a missing entry preserves the existing history.
 Main143 loads a Script through raw message 154 and binds the caller's
 shared memory through raw 165. Main69 sends four words immediately through
 raw 166 and reselects the caller's expression context after delivery.
+Main70 appends the four words to the receiving Script's deferred queue
+through raw 167. Main454 copies the caller's original CP932 context name
+through its terminator and returns control 2.
 
 Main365 owns the full packed resource from the image category. Main368
 initializes the 36-byte metadata output for a live image owner and mapped

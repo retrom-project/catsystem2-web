@@ -2,6 +2,7 @@
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
+import { scriptContextBytes } from './script-task.mjs';
 
 export const NATIVE_FES_IDS = Object.freeze([
   0x1bf, 0x1c0, 0x1c1, 0x1c2, 0x1c3, 0x1c4, 0x1c5, 0x1c6, 0x276, 0x277, 0x278, 0x285, 0x286, 0x287,
@@ -126,7 +127,7 @@ export function nativeFES(id, args, machine, task, world) {
     return done();
   }
   if (id === 0x1c6) {
-    machine.writeString(own.context.contextName || '', args[0]);
+    machine.writeStringBytes(scriptContextBytes(own), args[0]);
     return done();
   }
   if (id === 0x1c4)

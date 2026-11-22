@@ -43,7 +43,7 @@ const setContextName = (record, bytes) => {
   record.context.contextNameBytes = bytes.slice();
   record.context.contextName = decodeCString(bytes);
 };
-const contextBytes = (record) => {
+export const scriptContextBytes = (record) => {
   const bytes = record.context.contextNameBytes;
   return bytes && decodeCString(bytes) === record.context.contextName
     ? bytes
@@ -313,7 +313,7 @@ export function createNativeScriptTask(world, record) {
         if (hasPointer(lParam)) {
           const source = memory();
           if (source.write || source.bytes || source.read)
-            putBytes(source, lParam, Uint8Array.from([...contextBytes(record), 0]));
+            putBytes(source, lParam, Uint8Array.from([...scriptContextBytes(record), 0]));
           else putString(source, lParam, record.context.contextName || '');
         }
         return NATIVE_UNWRITTEN_WORD;
