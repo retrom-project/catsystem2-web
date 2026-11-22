@@ -81,9 +81,9 @@ export class MotionManager {
       if (group === undefined || record.group === group) record.instance.setSkip();
   }
   busy(group) {
-    return [...this.records.values()].some(
-      (record) => (group === undefined || record.group === group) && record.instance.active,
-    );
+    for (const record of this.records.values())
+      if ((group === undefined || record.group === group) && record.instance.active) return true;
+    return false;
   }
   remove(handle) {
     return this.records.delete(handle);

@@ -89,28 +89,28 @@ export class NativeMotionRegistry {
   }
 }
 
-function setState(manager, working, args, machine) {
+function setState(manager, working, word, machine) {
   const bytes = new Uint8Array(0x90),
     view = new DataView(bytes.buffer);
   for (const [index, offset, length] of transfer) {
-    if (index === 6 || index === 9) view.setUint32(offset, args[index], true);
-    else bytes.set(machine.bytes(args[index], length), offset);
+    if (index === 6 || index === 9) view.setUint32(offset, word(index), true);
+    else bytes.set(machine.bytes(word(index), length), offset);
   }
   (working ? manager.working : manager.base).set(bytes);
 }
-function getState(manager, working, args, machine) {
+function getState(manager, working, word, machine) {
   const state = working ? manager.working : manager.base;
   for (const [index, offset, length] of transfer) {
     if (working && index === 9) {
       // This mode needs a mapped host pointer. Zero is
       // a valid guest data address; an unmapped VM pointer translates to NULL.
       try {
-        machine.region(args[index], length);
+        machine.region(word(index), length);
       } catch {
         continue;
       }
     }
-    machine.bytes(args[index], length).set(state.subarray(offset, offset + length));
+    machine.bytes(word(index), length).set(state.subarray(offset, offset + length));
   }
 }
 
@@ -149,50 +149,44 @@ export function nativeMotion(id, args, machine, services = {}) {
   // Some older shipped KCS scripts pass fewer words than a frozen wrapper
   // reads (SDK 13B). The C wrapper observes adjacent guest stack words. Do not
   // invent a zero default: GCALL leaves its argument block at machine.sp.
-  const argumentBase = machine.sp;
-  args = new Proxy(args, {
-    get: (words, key) => {
-      if (typeof key === 'string' && /^\d+$/.test(key) && Number(key) >= words.length)
-        return machine.load(argumentBase + Number(key) * 4);
-      return Reflect.get(words, key);
-    },
-  });
+  const argumentBase = machine.sp,
+    word = (index) => (index < args.length ? args[index] : machine.load(argumentBase + index * 4));
   const registry = services.motion;
   if (id === 0x126) return value(registry.create(services.owner));
-  if (!args[0]) return returning.has(id) ? value(0) : done();
+  if (!word(0)) return returning.has(id) ? value(0) : done();
   if (id === 0x127) {
-    registry.release(args[0]);
+    registry.release(word(0));
     return done();
   }
   if (id === 0x13d) {
-    registry.handles.release(args[0], 'motion-checkpoint');
+    registry.handles.release(word(0), 'motion-checkpoint');
     return done();
   }
   if (id === 0x13c) {
-    const checkpoint = registry.handles.get(args[0], 'motion-checkpoint');
+    const checkpoint = registry.handles.get(word(0), 'motion-checkpoint');
     return registry.with(checkpoint.owner, (manager) => {
-      checkpoint.bytes = encodeMotionRecords(manager, args[1], checkpoint.bytes);
+      checkpoint.bytes = encodeMotionRecords(manager, word(1), checkpoint.bytes);
       return value(1);
     });
   }
-  return registry.with(args[0], (manager) => {
+  return registry.with(word(0), (manager) => {
     switch (id) {
       case 0x128:
         manager.clear();
         return done();
       case 0x129:
-        manager.remove(args[1]);
+        manager.remove(word(1));
         return done();
       case 0x12a:
-        manager.removeGroup(args[1]);
+        manager.removeGroup(word(1));
         return done();
       case 0x12b:
       case 0x12d:
-        setState(manager, id === 0x12d, args, machine);
+        setState(manager, id === 0x12d, word, machine);
         return done();
       case 0x12c:
       case 0x12e:
-        getState(manager, id === 0x12e, args, machine);
+        getState(manager, id === 0x12e, word, machine);
         return done();
       case 0x12f:
         manager.base.set(manager.working);
@@ -202,14 +196,14 @@ export function nativeMotion(id, args, machine, services = {}) {
         const formatted = services.profile && nativeABI(services.profile).motion?.addUsesFormat;
         const name = formatted
           ? cp932.decode(nativeDataFormat(args, machine, services, 1) ?? undefined)
-          : machine.string(args[1]);
+          : machine.string(word(1));
         if (!name || name === '-') return value(0);
-        const count = Math.min(args[3] >>> 0, 256);
+        const count = Math.min(word(3) >>> 0, 256);
         const registerWords =
-          formatted && !count ? new Uint8Array() : machine.bytes(args[2], count * 4).slice();
+          formatted && !count ? new Uint8Array() : machine.bytes(word(2), count * 4).slice();
         const extra =
-          args[5] && (!formatted || nativeDataMapped(machine, args[4]))
-            ? machine.bytes(args[4], args[5]).slice()
+          word(5) && (!formatted || nativeDataMapped(machine, word(4)))
+            ? machine.bytes(word(4), word(5)).slice()
             : null;
         const script = registry.library.optional
           ? registry.library.optional(name)
@@ -220,8 +214,8 @@ export function nativeMotion(id, args, machine, services = {}) {
                 manager.add(script, {
                   registerWords,
                   extra,
-                  group: args[6],
-                  delay: id === 0x217 ? args[7] : 0,
+                  group: word(6),
+                  delay: id === 0x217 ? word(7) : 0,
                 }),
               )
             : value(0),
@@ -229,33 +223,33 @@ export function nativeMotion(id, args, machine, services = {}) {
       }
       case 0x131:
         for (const record of manager.records.values())
-          if (!args[1] || record.handle === args[1]) record.startTick = args[2] >>> 0;
+          if (!word(1) || record.handle === word(1)) record.startTick = word(2) >>> 0;
         return done();
       case 0x132: {
-        const record = manager.records.get(args[1]);
+        const record = manager.records.get(word(1));
         if (record)
           record.instance.setRegisterWords(
-            machine.bytes(args[2], Math.min(args[3] >>> 0, 256) * 4),
+            machine.bytes(word(2), Math.min(word(3) >>> 0, 256) * 4),
           );
         return done();
       }
       case 0x133:
-        manager.update(args[1] >>> 0, args[2] !== 0);
+        manager.update(word(1) >>> 0, word(2) !== 0);
         return value(Number(manager.lastProcessed));
       case 0x134:
-        manager.speed = bitsFloat(args[1]);
+        manager.speed = bitsFloat(word(1));
         return done();
       case 0x135:
-        return value(Number(manager.records.get(args[1])?.instance.active || false));
+        return value(Number(manager.records.get(word(1))?.instance.active || false));
       case 0x136:
-        return value(Number(manager.busy(args[1])));
+        return value(Number(manager.busy(word(1))));
       case 0x137:
         return value(Number(manager.busy()));
       case 0x138:
-        manager.records.get(args[1])?.instance.setSkip();
+        manager.records.get(word(1))?.instance.setSkip();
         return done();
       case 0x139:
-        manager.skip(args[1]);
+        manager.skip(word(1));
         return done();
       case 0x13a:
         manager.skip();
@@ -263,8 +257,8 @@ export function nativeMotion(id, args, machine, services = {}) {
       case 0x13b:
         return value(
           registry.handles.add('motion-checkpoint', {
-            owner: args[0],
-            bytes: encodeMotionRecords(manager, args[1]),
+            owner: word(0),
+            bytes: encodeMotionRecords(manager, word(1)),
           }),
         );
       case 0x1b8: {
@@ -274,7 +268,7 @@ export function nativeMotion(id, args, machine, services = {}) {
       }
       case 0x202: {
         manager.working.set(manager.base);
-        const name = machine.string(args[1]).replaceAll('\\', '/').split('/').at(-1).toLowerCase();
+        const name = machine.string(word(1)).replaceAll('\\', '/').split('/').at(-1).toLowerCase();
         return value(
           Number(
             [...manager.records.values()].some(
@@ -289,7 +283,7 @@ export function nativeMotion(id, args, machine, services = {}) {
         );
       }
       case 0x24a:
-        manager.flags = args[1] >>> 0;
+        manager.flags = word(1) >>> 0;
         return done();
       default:
         throw new Error(`Missing recovered MOT dispatch ${id.toString(16)}`);

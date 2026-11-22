@@ -39,6 +39,30 @@ function setup(handles = new NativeHandles(), selectedProfile = profile) {
   return { registry, handles, machine, call, script };
 }
 
+test('a suspended MOT lookup reads undeclared arguments from the original guest stack', async () => {
+  let useManager;
+  const managerReady = new Promise((resolve) => {
+    useManager = resolve;
+  });
+  const motion = {
+    with(handle, lookup) {
+      assert.equal(handle, 15);
+      return managerReady.then(lookup);
+    },
+  };
+  const machine = {
+    sp: 100,
+    load(address) {
+      assert.equal(address, 104);
+      return 7;
+    },
+  };
+  const result = nativeMotion(0x136, [15], machine, { motion });
+  machine.sp = 500;
+  useManager({ busy: (group) => group === 7 });
+  assert.deepEqual(await result, { control: 1, value: 1 });
+});
+
 test('main MOT resources retain typed handles and explicit zero/null control replies', async () => {
   const { call, handles } = setup();
   const h = (await call(0x126)).value;
