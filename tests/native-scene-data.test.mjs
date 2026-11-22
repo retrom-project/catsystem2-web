@@ -8,6 +8,7 @@ import { formatNativeAt } from '../src/kcs.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { KCSMachine } from '../src/kcs/vm.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
+import { NativeRuntime } from '../src/native/runtime.mjs';
 import { NativeStringBank } from '../src/native/string-bank.mjs';
 import { M2ScenePreparation } from '../src/native/emote-scene-preparation.mjs';
 import {
@@ -516,6 +517,34 @@ test('history string substitution snapshots only referenced values and expands o
   strings.set(3, 'changed');
   nativeSceneData(0x151, [handle, 0, 9, 0], m, services);
   assert.equal(m.string(0), 'Astored $str4 Blate C');
+});
+
+test('63 Main336 captures the referenced bytes from an existing caller string bank', async () => {
+  const runtime = new NativeRuntime({
+      profile: 'rebellions-jp-engine-2.6.1.63',
+      read: async () => kcsProgram([[59]]),
+    }),
+    task = await runtime.spawn('case.kcs'),
+    m = task.machine,
+    call = (id, args) => runtime.native('main', id, args, m, task, runtime.scheduler),
+    { value: handle } = await call(323, []),
+    data = runtime.handles.get(handle, 'scene-data');
+  data.history.appendPath('scene', 1);
+  m.writeString('A$str3 B$str9', 128);
+  assert.deepEqual(await call(336, [handle, 0, 11, 128]), { control: 2 });
+  assert.equal(runtime.stringBank(task, false), null);
+  assert.equal(data.history.path[0].strings, null);
+  const bank = runtime.stringBank(task);
+  bank.setBytes(3, Uint8Array.of(0x87, 0x90));
+  bank.set(5, 'unreferenced');
+  assert.deepEqual(await call(336, [handle, 0, 11, 128]), { control: 2 });
+  bank.set(3, 'later');
+  assert.deepEqual(data.history.getString(0, 11, 3), {
+    found: true,
+    bytes: Uint8Array.of(0x87, 0x90),
+  });
+  assert.equal(data.history.getString(0, 11, 9).found, false);
+  assert.equal(data.history.getString(0, 11, 5).found, false);
 });
 
 function queuedNumberProgram() {

@@ -1057,6 +1057,8 @@ Main338. Main329 appends to the path and returns one on a valid request.
 Main328/332 mark and query the greatest seen value, independently of the
 ordered path. Main330/331 clear the respective lists. Main324 releases the
 reader and its history together.
+Main336 snapshots the numbered string references using the caller's existing
+string bank. A caller with no bank leaves the history record untouched.
 Main934 aliases a seen value to a new formatted name and preserves an
 existing destination.
 

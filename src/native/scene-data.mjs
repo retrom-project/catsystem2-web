@@ -625,7 +625,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
     return word(Number(entry?.found ?? false));
   }
   if (id === 0x150) {
-    if (!services.strings) return undefined;
+    if (!services.strings) return behavior?.historyCaptureUsesExistingBank ? done() : undefined;
     scanReferences(cbytes(machine, args[3]), (index) => {
       const value = services.strings.getBytes(index);
       if (value === undefined) return false;

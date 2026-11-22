@@ -274,8 +274,11 @@ export class NativeRuntime {
       services.allowVariableInitialization = task.context.allowVariableInitialization !== false;
     }
     if (table === 'main' && id === 0x21b) services.variables = this.variableBank(task, false);
-    if (table === 'main' && [0x114, 0x115, 0x116, 0xf3, 0xfd, 0x150, 0xe7].includes(id))
-      services.strings = this.stringBank(task);
+    if (table === 'main' && [0x114, 0x115, 0x116, 0xf3, 0xfd, 0x150, 0xe7].includes(id)) {
+      const existingOnly =
+        id === 0x150 && nativeABI(this.profile).scene?.historyCaptureUsesExistingBank;
+      services.strings = this.stringBank(task, !existingOnly);
+    }
     services.sceneData = this.sceneData(task);
     services.initializeSceneData = () => {
       if (task.context.sceneData) {
