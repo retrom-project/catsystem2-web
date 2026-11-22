@@ -1063,6 +1063,10 @@ Main863–868 own fixed-record stacks used by the script. Their push grows
 capacity before reading the VM record. Pop copies the last record out,
 and copying a stack preserves its full capacity, including popped bytes.
 
+Main515–518 own the command dictionary. Keys are raw CP932 bytes. Inserting
+the same key preserves its first value, and lookup returns `0xffffffff`
+for a missing key or dictionary.
+
 ## 2.6.1.63 CG registration
 
 Main419 creates an independent registration tree and an empty list. Main420

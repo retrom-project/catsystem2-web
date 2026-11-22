@@ -85,6 +85,28 @@ test('legacy dictionaries keep the first raw byte key, do not format it and reta
   assert.throws(() => invoke(0x206, [handle, 0]), /released/);
 });
 
+test('63 command dictionaries use the original raw keys and return controls', async () => {
+  const profile = 'rebellions-jp-engine-2.6.1.63',
+    runtime = new NativeRuntime({ profile, read: async () => null }),
+    task = { id: 1, name: 'owned-command-table', context: {} },
+    m = machine(),
+    invoke = (r, id, args = []) => r.native('main', id, args, m, task);
+  const { control, value: handle } = invoke(runtime, 515);
+  assert.equal(control, 1);
+  m.writeString('$str8', 32);
+  m.writeString('$str9', 64);
+  assert.deepEqual(invoke(runtime, 517, [handle, 32, 5]), { control: 2 });
+  assert.deepEqual(invoke(runtime, 517, [handle, 32, 6]), { control: 2 });
+  const restored = new NativeRuntime({ profile, read: async () => null });
+  await restored.restore(structuredClone(runtime.snapshot()));
+  assert.deepEqual(invoke(restored, 518, [handle, 32]), { control: 1, value: 5 });
+  assert.deepEqual(invoke(restored, 518, [handle, 64]), { control: 1, value: 0xffffffff });
+  assert.deepEqual(invoke(restored, 518, [0, 0xffffffff]), { control: 1, value: 0xffffffff });
+  assert.deepEqual(invoke(restored, 516, [handle]), { control: 2 });
+  assert.throws(() => invoke(restored, 518, [handle, 32]), /released/);
+  assert.deepEqual(invoke(runtime, 518, [handle, 32]), { control: 1, value: 5 });
+});
+
 test('both dictionary families serialize into raw native heap memory and import it after fresh restore', async () => {
   for (const shift of [0, -9]) {
     const runtime = new NativeRuntime({ profile, read: async () => null }),
