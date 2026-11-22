@@ -72,6 +72,36 @@ function enabled(world, id) {
   return [record.scriptEnabled, record.implementation.machine.executionMode];
 }
 
+test('2.6.1.63 Main9 routes cancelled confirmation and direct close through native window messages', async () => {
+  const current = await fixture('rebellions-jp-engine-2.6.1.63'),
+    { world, state } = current,
+    task = world.main,
+    call = (value) => world.runtime.native('main', 9, [value], task.machine, task);
+  try {
+    observeScripts(current);
+    assert.deepEqual(await call(1), { control: 2 });
+    assert.deepEqual(world.windowMessages, [{ message: 0x10, wParam: 0, lParam: 0 }]);
+    await world.tick();
+    assert.deepEqual(
+      state.actions.map(({ type }) => type),
+      ['confirm-close'],
+    );
+    assert(!world.quitRequested);
+    assert.deepEqual(await call(0), { control: 2 });
+    assert.deepEqual(world.windowMessages, [{ message: 0x433, wParam: 0, lParam: 0 }]);
+    await world.tick();
+    assert.deepEqual(
+      state.actions.map(({ type }) => type),
+      ['confirm-close', 'hide', 'close'],
+    );
+    assert(state.scriptEvents.some((event) => event.words[1] === 162));
+    assert(world.quitRequested);
+    assert.deepEqual(world.windowMessages, []);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+
 test('normal window preparation resets real Input idle state before a cancelled close request', async () => {
   for (const profile of profiles) {
     const current = await fixture(profile),

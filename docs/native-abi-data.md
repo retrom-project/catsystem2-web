@@ -20,7 +20,7 @@ selected or enabled by proximity to another version number.
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
 | 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered               |
-| 2.6.1.63 | 938        | 308       | 9             | 1             | 620     | 15 generic and 21 particle v2 recovered |
+| 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                            |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                            |
@@ -1389,6 +1389,11 @@ raw message 32 and clears the pending wheel directions through raw 153.
 It returns control 2.
 
 ## 2.6.1.63 close and persistence
+
+Main9 returns control 2 and posts a window message. A nonzero argument asks
+for window confirmation using the fixed prompt and configured title. Zero
+selects raw 0x433 and skips that prompt.
+Both accepted routes hide the view and post the 0x410 Script shutdown.
 
 The window-close message selects the Script's persistence callback. Main
 238, 240, 244, 245 and 469 handle CSS creation, variable export, raw VM

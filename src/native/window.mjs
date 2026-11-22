@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Window message/action ordering from the two original application handlers.
-import { nativeABIBehavior } from './abi/index.mjs';
+import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import {
   isNativeWindowCommandMessage,
   nativeWindowLanguageCommand,
@@ -20,6 +20,9 @@ const preparation = new Set([119, 40002, 40027, 40057, 40011, 40041, 40019, 4003
 export class NativeWindow {
   constructor(world) {
     this.world = world;
+    const { windowDirectClose, windowCloseConfirmation } = nativeABI(world.profile).messages;
+    this.directCloseMessage = windowDirectClose;
+    this.closeConfirmation = windowCloseConfirmation;
     // The original Game owner constructor712820 initializes this raw DWORD.
     this.broadcastFlag = 0;
   }
@@ -65,6 +68,7 @@ export class NativeWindow {
     return (
       message === 0x10 ||
       message === 0x410 ||
+      (this.directCloseMessage !== undefined && message === this.directCloseMessage) ||
       [0x467, 0x468, 0x46e, 0x46f, 0x470].includes(message) ||
       (message === 0x112 && (wParam & 0xfff0) === 0xf020)
     );
@@ -308,17 +312,21 @@ export class NativeWindow {
       await this.action('minimize');
       return true;
     }
-    if (message.message === 0x10) {
-      const title = this.text(this.world.configuration.fields.application.title),
-        template = this.text('$0000-0042$'),
-        yes = await this.action('confirm-close', {
-          caption: this.text('$0000-0043$'),
-          message: template.replace('%s', title),
-        });
-      if (yes) {
-        await this.action('hide');
-        this.post(0x410);
+    const directClose =
+      this.directCloseMessage !== undefined && message.message === this.directCloseMessage;
+    if (message.message === 0x10 || directClose) {
+      if (!directClose) {
+        const applicationTitle = this.world.configuration.fields.application.title,
+          title = this.closeConfirmation ? applicationTitle : this.text(applicationTitle),
+          template = this.closeConfirmation?.template ?? this.text('$0000-0042$'),
+          yes = await this.action('confirm-close', {
+            caption: this.closeConfirmation?.caption ?? this.text('$0000-0043$'),
+            message: template.replace('%s', () => title),
+          });
+        if (!yes) return true;
       }
+      await this.action('hide');
+      this.post(0x410);
       return true;
     }
     if (message.message === 0x410) {

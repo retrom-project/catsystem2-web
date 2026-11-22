@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 export const isNativeWindowCommandMessage = (message) => message >= 0x469 && message <= 0x46c;
 
@@ -41,6 +42,9 @@ export function nativeWindowLanguageCommand(command) {
   return { field: ['ui', 'main', 'sub'][Math.floor(index / 10)], index: index % 10 };
 }
 export function installNativeWindowCommands(world) {
+  const directClose = nativeABI(world.profile).messages.windowDirectClose;
+  if (directClose !== undefined)
+    world.runtime.services.exit = (confirm) => world.window.post(confirm ? 0x10 : directClose);
   for (const [id, message] of scriptMessages)
     world.runtime.register('main', id, () => {
       world.window.post(message);
