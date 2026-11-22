@@ -20,7 +20,7 @@ selected or enabled by proximity to another version number.
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2             |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------------------- |
 | 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered              |
-| 2.6.1.63 | 938        | 79        | 0             | 0             | 859     | 3 generic and 15 particle v2 recovered |
+| 2.6.1.63 | 938        | 80        | 0             | 0             | 858     | 3 generic and 15 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered              |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                           |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                           |
@@ -1085,7 +1085,10 @@ address 0. Enable, hover and drag requests each carry their literal DWORD.
 Destruction releases the Input registration with the plane.
 
 Main 256, 260 and 262 initialize the Draw renderer, set its offsets and write
-its enabled word. A rising edge sets the pending word. The own FES common
+its enabled word. A rising edge sets the pending word. Main342 sends raw
+message 280 to the selected Draw owner. The receiver marks that surface dirty
+and forces its full output, then clears the pending word after the render.
+The wrapper returns control 2. The own FES common
 `wait` callback uses the numeric, no-argument and object-reference forms and
 the `frame` and `tag` selectors. The tag uses record 32 and a 32-byte field.
 The owned control reaches timed, frame-relative and no-argument suspensions

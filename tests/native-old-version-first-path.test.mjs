@@ -1536,7 +1536,7 @@ test('63 cold Script idle clears VRAM, updates its Plane and polls the live FES 
   assert.deepEqual(await query(0x7fffff00), { control: 1, value: 0xffffffff });
 });
 
-test('63 FES GCALLs use the real Draw owner and suspend on reviewed FES waits', async () => {
+test('63 FES GCALLs use and publish the real Draw owner before waiting', async (t) => {
   const { world, audio } = await oldTitleWorld(
     { 'entry.fes': bytes('#START\n$8=73\nwait 2\n$8=74\nwait frame 4\n$8=75\nwait\n$8=76\n') },
     undefined,
@@ -1566,6 +1566,18 @@ test('63 FES GCALLs use the real Draw owner and suspend on reviewed FES waits', 
     assert.deepEqual(await call(262, [drawTask.value, 9]), { control: 2 });
     assert.deepEqual(draw.state.offset, [-1, 2]);
     assert.deepEqual([draw.state.enabled, draw.state.pending], [9, 1]);
+    const output = t.mock.method(world.graphics, 'output');
+    assert.deepEqual(await call(342, [drawTask.value]), { control: 2 });
+    assert.equal(draw.state.pending, 0);
+    assert.deepEqual(
+      output.mock.calls.map(({ arguments: [bitmap, offset, area] }) => [
+        bitmap.width,
+        bitmap.height,
+        offset,
+        area,
+      ]),
+      [[4, 3, [-1, 2], null]],
+    );
     assert.deepEqual(await call(449, [created.value, drawTask.value]), { control: 2 });
     assert.equal(fes.surface, drawID);
     assert.deepEqual(await call(447, [created.value, 160]), { control: 2 });
