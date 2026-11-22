@@ -325,6 +325,29 @@ test('all 51 declared PTCL native slots have explicit ABI replies and pointer wr
   assert.throws(() => v1.native(44, [0], v1.machine), /Unknown PTCL/);
 });
 
+test('2.6.1.63 Particle v2 routes authored rotation and projected bounds', () => {
+  const particle = instance(authoredScript(), { profile: 'rebellions-jp-engine-2.6.1.63' }),
+    machine = particle.machine,
+    call = (id, args) => particle.native(id, args, machine);
+  assert.deepEqual(call(7, [0]), { control: 1, value: floatBits(1) });
+  assert.deepEqual(call(16, [-6.5, 2].map(floatBits)), { control: 1, value: floatBits(-0.5) });
+  call(30, [128]);
+  const input = readPTCLQuad(machine.bytes(128, 112))[1];
+  assert.deepEqual(call(24, [128, floatBits(Math.PI / 2)]), { control: 2 });
+  const rotated = readPTCLQuad(machine.bytes(128, 112))[1];
+  assert.ok(Math.abs(rotated.x) < 0.00001);
+  assert.equal(rotated.y, -64);
+  assert.equal(rotated.w, input.w);
+  assert.equal(rotated.color, input.color);
+  const outputs = [64, 68, 72, 76];
+  assert.deepEqual(call(38, [floatBits(500), ...outputs]), { control: 2 });
+  assert.deepEqual(
+    outputs.map((at) => bitsFloat(machine.load(at))),
+    [320, 180, 960, 540],
+  );
+  assert.throws(() => call(8, [0]), /Unreviewed PTCL native/);
+});
+
 test('native projection golden keeps priority arithmetic and the zero denominator special case', () => {
   const z = [0, 100, 500, -500, 1000, 1500];
   const golden = [

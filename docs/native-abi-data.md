@@ -20,7 +20,7 @@ selected or enabled by proximity to another version number.
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
 | 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered               |
-| 2.6.1.63 | 938        | 308       | 9             | 1             | 620     | 15 generic and 15 particle v2 recovered |
+| 2.6.1.63 | 938        | 308       | 9             | 1             | 620     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 830       | 82            | 19            | 78      | 45 / 44 / 51                            |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                            |
@@ -1455,6 +1455,12 @@ fields, the count and priority, 32 registers and a cleared draw word.
 Main272 and Main273 start and stop the bank. Main274 initializes its result to
 zero and reads the active word through raw 306. Main275 passes the register
 buffer to the live Particle task through raw 307.
+
+Particle v2 slots 7 and 16 return cosine and floating-point remainder.
+Slots 22–24 rotate the four owned vertices in place and keep their other
+fields. Slot 38 writes the four projected bounds at the requested depth
+using the bank priority and view. All four pointer-writing calls return
+control 2.
 
 The selected warning and title motion programs use Generic 17, 38 and 41.
 The round and clamped interpolation calls each write a result. Generic 38

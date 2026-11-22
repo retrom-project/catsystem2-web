@@ -1628,18 +1628,25 @@ export default {
       count: 51,
       slots: {
         unknown: [
-          0, 3, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 29, 32, 33, 37,
-          38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+          0, 3, 4, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 20, 21, 29, 32, 33, 37, 39, 40, 41, 42, 43,
+          44, 45, 46, 47, 48, 49,
         ],
-        recovered: [1, 2, 5, 6, 19, 25, 26, 27, 28, 30, 31, 34, 35, 36, 50],
+        recovered: [1, 2, 5, 6, 7, 16, 19, 22, 23, 24, 25, 26, 27, 28, 30, 31, 34, 35, 36, 38, 50],
       },
       evidence: [
+        {
+          ids: [7, 16, 22, 23, 24, 38],
+          value:
+            '2.6.1.63 own Particle v2 cosine and remainder write float results. The three rotation wrappers update four 28-byte vertices. The projection wrapper writes four bounds from the inverse view at the bank priority and requested depth.',
+        },
         {
           ids: [1, 2, 5, 6, 19, 25, 26, 27, 28, 30, 31, 34, 35, 36, 50],
           value: '2.6.1.63-own-title-particle-v2-wrappers-receiver-and-authored-control',
         },
       ],
       signatures: [
+        { ids: [7, 16], fields: { resultWritten: true } },
+        { ids: [22, 23, 24, 38], fields: { resultWritten: false } },
         {
           ids: [1, 2, 6, 19, 34, 36],
           fields: { resultWritten: true },
