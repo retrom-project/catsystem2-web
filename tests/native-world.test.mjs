@@ -5,6 +5,7 @@ import { deflateSync } from 'node:zlib';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeObjects } from '../src/native/objects.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { memoryGame, u32 } from './helpers.mjs';
@@ -444,6 +445,24 @@ for (const engineProfile of [profile, 'rebellions-jp-engine-2.6.1.63'])
     );
     assert.equal(task.status, 'finished');
   });
+
+test('63 Script distinguishes the immediate render notification from Top messages', async (t) => {
+  const current = await dataWorld('rebellions-jp-engine-2.6.1.63', {
+    'case.kcs': kcs([[37, 128], [43, 0x47, 4], [59]]),
+  });
+  t.after(() => current.close());
+  const { main, root } = current,
+    packet = () => [128, 132, 136, 140].map((address) => main.machine.load(address));
+  for (const message of [30, 31]) {
+    const before = packet();
+    assert.equal(await current.sendEngine(main.id, root, message, 99, 99), NATIVE_UNWRITTEN_WORD);
+    assert.deepEqual(packet(), before);
+    assert.equal(main.status, 'waiting');
+  }
+  assert.equal(await current.sendEngine(main.id, root, 4, 61, 62), NATIVE_UNWRITTEN_WORD);
+  assert.deepEqual(packet(), [current.nativeTaskID(root), 0xffff0001, 61, 62]);
+  assert.equal(main.status, 'finished');
+});
 
 test('released native IDs stay reserved until the parent finishes its whole child frame walk', async () => {
   const current = world({ 'main.kcs': kcs([[43, 0x41, 0], [59]]) });

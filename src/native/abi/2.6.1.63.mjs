@@ -609,6 +609,7 @@ export default {
     },
     soundBaseOnly: [22],
     scriptForward: [9, 10, 22],
+    scriptBaseOnly: [30, 31],
     screenEvent: null,
     tilePlaneCommand: null,
   },

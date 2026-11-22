@@ -1105,6 +1105,9 @@ raw 166 and reselects the caller's expression context after delivery.
 Main70 appends the four words to the receiving Script's deferred queue
 through raw 167. Main454 copies the caller's original CP932 context name
 through its terminator and returns control 2.
+Script message 4 forwards the render notification through the waiting VM.
+Messages 30 and 31 use the Top receiver. The Script receiver delegates them
+to Base.
 
 Main571 and Main572 send raw 426 and 425 through the same task routing.
 Main571 reads an optional DWORD pointer for the payload and Main572
