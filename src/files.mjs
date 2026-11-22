@@ -40,7 +40,42 @@ export class BlobFile {
   }
 }
 
-const mountedBacking = (file) => (file instanceof BlobFile ? file.blob : file.url);
+// A host transfers ownership of each read result and keeps the mounted file
+// immutable for the lifetime of this backing.
+export class RangeFile {
+  #readAt;
+
+  constructor(size, readAt, modifiedMs) {
+    if (!Number.isSafeInteger(size) || size < 0 || typeof readAt !== 'function')
+      throw new TypeError('Host range backing requires an exact file size and readAt callback');
+    this.size = size;
+    this.modifiedMs = modifiedMs;
+    this.#readAt = readAt;
+    Object.freeze(this);
+  }
+  async read(at, count, signal) {
+    if (
+      !Number.isSafeInteger(at) ||
+      !Number.isSafeInteger(count) ||
+      at < 0 ||
+      count < 0 ||
+      count > this.size - at
+    )
+      throw new Error('File read out of bounds');
+    signal?.throwIfAborted();
+    if (!count) return new Uint8Array();
+    const bytes = await this.#readAt(at, count, signal);
+    signal?.throwIfAborted();
+    if (!(bytes instanceof Uint8Array) || bytes.byteLength !== count)
+      throw new Error('Host readAt did not return the exact byte range');
+    return bytes;
+  }
+}
+
+const mountedBacking = (file) => {
+  if (file instanceof BlobFile) return file.blob;
+  return file instanceof RangeFile ? file : file.url;
+};
 
 export function captureArchiveRange(hit, epoch) {
   const { file, offset, size } = hit;
@@ -48,7 +83,8 @@ export function captureArchiveRange(hit, epoch) {
     !epoch ||
     !(
       (file instanceof HTTPFile && file.read === HTTPFile.prototype.read) ||
-      (file instanceof BlobFile && file.read === BlobFile.prototype.read)
+      (file instanceof BlobFile && file.read === BlobFile.prototype.read) ||
+      (file instanceof RangeFile && file.read === RangeFile.prototype.read)
     )
   )
     return null;
@@ -106,7 +142,12 @@ export class KIFArchive {
 
 // All inputs are read-only. Archive payloads are fetched on demand, never preloaded as one game-sized buffer.
 export class GameFiles {
-  constructor(files) {
+  constructor(files, { identity } = {}) {
+    if (identity !== undefined) {
+      if (typeof identity !== 'string' || !/^[0-9a-f]{64}$/.test(identity))
+        throw new TypeError('Invalid mounted game identity');
+      this.identity = identity;
+    }
     this.input = files;
     this.index = new Map();
     this.qualifiedIndex = new Map();

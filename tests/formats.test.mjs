@@ -3,7 +3,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { deflateSync } from 'node:zlib';
 import { Binary, inflate } from '../src/binary.mjs';
-import { BlobFile, GameFiles, KIFArchive } from '../src/files.mjs';
+import {
+  BlobFile,
+  GameFiles,
+  KIFArchive,
+  RangeFile,
+  captureArchiveRange,
+  matchesArchiveRange,
+} from '../src/files.mjs';
 import { readScene, readTranslation, readFES } from '../src/formats/scene.mjs';
 import { HG3 } from '../src/formats/hg3.mjs';
 import { PSB } from '../src/formats/psb.mjs';
@@ -65,6 +72,63 @@ test('KIF reads entry boundaries and refuses encrypted input explicitly', async 
   const malformed = kif([['test', new Uint8Array([1])]]);
   new DataView(malformed.buffer).setUint32(76, 999, true);
   await assert.rejects(KIFArchive.open(new BlobFile(new Blob([malformed])), 'broken.int'), /entry/);
+});
+test('host range backing preserves exact ranges, mount identity and archive ownership', async () => {
+  const archive = kif([['hello.bin', Uint8Array.of(1, 2, 3)]]),
+    reads = [],
+    read = (at, count) => {
+      reads.push([at, count]);
+      return archive.slice(at, at + count);
+    },
+    file = new RangeFile(archive.length, read),
+    identity = await sourceIdentity(new Map([['base.int', new BlobFile(new Blob([archive]))]])),
+    game = new GameFiles(new Map([['base.int', file]]), { identity });
+  await game.open();
+  assert.deepEqual(await game.require('hello.bin'), Uint8Array.of(1, 2, 3));
+  assert.deepEqual(reads, [
+    [0, 8],
+    [8, 72],
+    [80, 3],
+  ]);
+  assert.equal(await game.fingerprint(), identity);
+  assert.equal(reads.length, 3);
+  assert.equal('url' in file, false);
+  assert.throws(() => new GameFiles(new Map(), { identity: 'bad' }), /identity/);
+  const hit = game.lookup('hello.bin'),
+    range = captureArchiveRange(hit, game.nativeSearch);
+  assert.ok(range);
+  assert.ok(matchesArchiveRange(range, hit, game.nativeSearch));
+  assert.equal(matchesArchiveRange(range, hit, {}), false);
+  assert.equal(
+    matchesArchiveRange(
+      range,
+      { ...hit, file: new RangeFile(archive.length, read) },
+      game.nativeSearch,
+    ),
+    false,
+  );
+  assert.equal(matchesArchiveRange(range, { ...hit, size: 1 }, game.nativeSearch), false);
+});
+test('host range backing rejects truncated results and respects read cancellation', async () => {
+  const controller = new AbortController(),
+    reason = new Error('mount closed');
+  let reads = 0;
+  const file = new RangeFile(9, (at, count, signal) => {
+    assert.equal(at, 2);
+    assert.equal(count, 3);
+    assert.equal(signal, controller.signal);
+    reads++;
+    controller.abort(reason);
+    return Uint8Array.of(1, 2, 3);
+  });
+  assert.deepEqual(await file.read(9, 0), new Uint8Array());
+  await assert.rejects(file.read(10, 0), /bounds/);
+  await assert.rejects(file.read(1.5, 3), /bounds/);
+  await assert.rejects(file.read(2, 3, controller.signal), reason);
+  await assert.rejects(file.read(2, 3, controller.signal), reason);
+  assert.equal(reads, 1);
+  await assert.rejects(new RangeFile(9, () => Uint8Array.of(1)).read(2, 3), /exact byte range/);
+  await assert.rejects(new RangeFile(9, () => new ArrayBuffer(3)).read(2, 3), /exact byte range/);
 });
 test('loose patch data wins over patch archives, and patch archives win over base', async () => {
   const file = (b) => new BlobFile(new Blob([b]));

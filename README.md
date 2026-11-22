@@ -41,6 +41,11 @@ npm run prepare:media -- /path/to/prepared-game
 Ctrl 快进。游戏自己的标题、设置、存读档和历史窗口由其 FES 脚本绘制和控制。
 页面工具栏另提供快速存读档和便携二进制 checkpoint 导出、导入。
 
+宿主可用 `src/files.mjs` 的 `RangeFile(size, readAt, modifiedMs?)` 挂载已准备的只读文件。
+`readAt(offset, count, signal?)` 返回正好 `count` 字节的独占 `Uint8Array`，并转交其所有权。
+`GameFiles(files, { identity })` 可接收宿主已校验的内容身份，来自 `src/identity.mjs`
+的 SHA-256 目录树算法。宿主在挂载期间保持源内容不变，再调用 `await game.open()` 解析归档。
+
 ## 验证和构建
 
 ```sh
