@@ -336,6 +336,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 spatial and sound group wrappers 0x47e2f0–0x47e3be and 0x47e880–0x47ea9c; receiver 0x44bf20 uses raw 182–183 and 190–195',
   },
+  {
+    ids: [358],
+    value:
+      'Own 2.6.1.23 wrapper 0x47dc00 maps both VM pointers; 0x4ca510 transforms into a temporary before writing the four-word vector',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -532,7 +537,7 @@ export default {
   },
   globalFile: { growthBytes: 524288 },
   nameTable: { legacyFieldBytes: 32 },
-  math: { lerpUsesX87: true, roundIntegerResult: 'int64-low-word' },
+  math: { lerpUsesX87: true, roundIntegerResult: 'int64-low-word', vectorTransformWFirst: true },
   motion: { addUsesFormat: true, elapsedUsesX87: true },
   scene: {
     translations: false,

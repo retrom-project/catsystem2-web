@@ -7,6 +7,32 @@ import { NativeGeometry } from '../oracle/geometry.mjs';
 import { NativeMatrices } from '../oracle/matrix.mjs';
 import { KCSMachine, floatBits, bitsFloat } from '../src/kcs/vm.mjs';
 import { Binary } from '../src/binary.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
+
+test('23 Main358 transforms the mapped vector with native summation and overlap', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const { main, runtime } = world,
+    m = main.machine,
+    matrix = 0x80000c3c,
+    value = 128,
+    put = (address, floats) => floats.forEach((n, i) => m.store(address + 4 * i, floatBits(n))),
+    read = (address) => Array.from({ length: 4 }, (_, i) => bitsFloat(m.load(address + 4 * i))),
+    transform = (a, b) => runtime.native('main', 358, [a, b], m, main);
+  put(value, [1, 2, 3, 4]);
+  put(matrix, [2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 8, 0, 5, -3, 7, 1]);
+  m.store(value + 16, 0x12345678);
+  assert.deepEqual(await transform(value, matrix), { control: 2 });
+  assert.deepEqual(read(value), [22, -4, 52, 4]);
+  assert.equal(m.load(value + 16), 0x12345678);
+  put(value, [1, 1, 1, 1]);
+  put(matrix, [1, 1, 1, 1, 33554432, 0, 0, 0, 1, 0, 0, 0, -33554432, 0, 0, 0]);
+  await transform(value, matrix);
+  assert.deepEqual(read(value), [2, 1, 1, 1]);
+  await transform(matrix, matrix);
+  assert.deepEqual(read(matrix), [2, 1, 1, 1]);
+  assert.deepEqual(read(matrix + 16), [33554432, 0, 0, 0]);
+});
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],

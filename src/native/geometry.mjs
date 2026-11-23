@@ -58,13 +58,17 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     output = v.map((n) => f(n * factor));
   } else {
     const m = read(machine, b, 16);
-    output = math?.vectorTransformPairwise
-      ? transformFloat32Pairs(v, m)
-      : Array.from({ length: 4 }, (_, i) =>
-          f(
-            r(r(r(r(v[0] * m[i]) + r(v[1] * m[i + 4])) + r(v[2] * m[i + 8])) + r(v[3] * m[i + 12])),
-          ),
-        );
+    if (math?.vectorTransformPairwise) output = transformFloat32Pairs(v, m);
+    else
+      output = Array.from({ length: 4 }, (_, i) => {
+        const x = r(v[0] * m[i]),
+          y = r(v[1] * m[i + 4]),
+          z = r(v[2] * m[i + 8]),
+          w = r(v[3] * m[i + 12]);
+        if (math?.vectorTransformWFirst)
+          return i === 0 ? f(r(r(r(w + y) + z) + x)) : f(r(r(r(w + y) + x) + z));
+        return f(r(r(r(x + y) + z) + w));
+      });
   }
   machine.bytes(a, 16).set(floatBytes(output));
   return nativeReply(2);
