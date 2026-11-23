@@ -180,6 +180,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 identity matrix writer, motion owner constructor 0x597780, clear and release, and full flag word at +0x134',
   },
+  {
+    ids: [78, 84, 85, 93, 94],
+    value:
+      'Own 2.6.1.23 Plane wrappers 0x47eaa0, 0x47ee70, 0x47eed0, 0x47f1e0 and 0x47f240: raw messages 38, 47, 57/45, 51 and 59',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -479,6 +484,7 @@ export default {
     drawEnablePendingPolicy: 'rising-edge',
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: null,
+    planeAlphaFlags: 1,
   },
   gallery: { listVariantWidth: 64 },
   startup: {
@@ -522,7 +528,8 @@ export default {
         { ids: mainConstantZero, fields: { resultWritten: true } },
         {
           ids: [
-            65, 207, 295, 296, 420, 421, 422, 451, 453, 458, 459, 586, 595, 630, 645, 647, 739, 740,
+            65, 78, 84, 85, 93, 94, 207, 295, 296, 420, 421, 422, 451, 453, 458, 459, 586, 595, 630,
+            645, 647, 739, 740,
           ],
           fields: { resultWritten: false },
         },

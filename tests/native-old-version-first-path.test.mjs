@@ -2192,6 +2192,37 @@ test('63 textured Plane coordinate mode belongs to its current render model', as
   }
 });
 
+test('2.6.1.23 Plane draws its own textured rectangle and applies the native transform words', async (t) => {
+  const { world, audio } = await oldTitleWorld({}, undefined, 'grisaia-jp-engine-2.6.1.23');
+  t.after(async () => {
+    await world.close();
+    await audio.dispose();
+  });
+  const main = await world.initialize('empty.kcs'),
+    call = (id, args) => world.runtime.native('main', id, args, main.machine, main),
+    id = await world.objects.create({ kind: 2, parent: main.id }),
+    plane = world.graphics.get(id),
+    target = world.nativeTaskID(id),
+    width = floatBits(20.5),
+    height = floatBits(12.25);
+  assert.deepEqual(await call(78, [0, width, height]), { control: 2 });
+  assert.deepEqual(await call(78, [target, width, height]), { control: 2 });
+  assert.deepEqual(plane.state.shapeWords, [0, 0, 0, width, height, 32, 1, 0xffffffff]);
+  assert.deepEqual(plane.state.rect, [0, 0, 20.5, 12.25]);
+  assert.equal(plane.graph.vram, true);
+  assert.deepEqual(await call(84, [target, ...[2, 3, 4].map(floatBits), 0]), { control: 2 });
+  assert.deepEqual(await call(85, [target, floatBits(5), floatBits(6), 0]), { control: 2 });
+  assert.deepEqual(await call(93, [target, ...[7, 8, 9].map(floatBits), 0]), { control: 2 });
+  assert.deepEqual(motionVector(plane.graph.kx2, MOTION_ABI.pos), [2, 3, 4]);
+  assert.deepEqual(motionVector(plane.graph.kx2, MOTION_ABI.base), [5, 6, 5000]);
+  assert.deepEqual(motionVector(plane.graph.kx2, MOTION_ABI.rotation), [7, 8, 9]);
+  const color = new DataView(plane.graph.kx2.buffer);
+  assert.deepEqual(await call(94, [target, -1]), { control: 2 });
+  assert.equal(color.getUint32(MOTION_ABI.color, true) >>> 24, 0);
+  assert.deepEqual(await call(94, [target, 256]), { control: 2 });
+  assert.equal(color.getUint32(MOTION_ABI.color, true) >>> 24, 255);
+});
+
 test('63 texture allocation retains existing pages and authored optional calls return control 2', async () => {
   const profile = 'rebellions-jp-engine-2.6.1.63',
     { world, audio } = await oldTitleWorld({}, undefined, profile);

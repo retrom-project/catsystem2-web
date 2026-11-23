@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 97        | 57            | 17            | 698     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 102       | 57            | 17            | 693     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -72,6 +72,11 @@ The title's pointer handlers use Main 108 to set the Plane's input return
 word. Its wrapper sends raw Plane message 88 with W zero and the full 32-bit
 value in L. The current input dispatch consumes and clears this word. The
 wrapper returns control 2 without writing a VM result.
+
+Main 78 creates a textured Plane through raw message 38 with an eight-word
+rectangle packet. Main 84, 85 and 93 update its position, planar base or
+rotation. The planar base update reads and preserves depth. Main 94 clamps
+the signed alpha to 0 through 255 and sends raw message 59 with flag one.
 
 Main 450 and 451 use raw FES messages 306 and 307 for label selection and
 the saved object word. Main 630 synchronously dispatches raw 308 with the
