@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 215       | 57            | 17            | 580     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 216       | 57            | 17            | 579     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -57,7 +57,8 @@ Sound queries are 31 and 32, with the Sound reset routed to message 181.
 The startup Script uses Main 14 for a formatted CP932 copy. It returns the
 destination pointer and writes two zero bytes after the string. Its startup
 XML branches also use Main 1 for formatted logging and Main 36 to fill a
-bounded byte table. The three calls use the shared standard handlers.
+bounded byte table. Main 35 copies the requested span between mapped VM ranges,
+including shared Script memory. These calls use the shared standard handlers.
 
 Story setup uses Main 15 to append raw narrow bytes to the destination and
 return its VM address. It writes two terminating zero bytes. Main 594–597

@@ -235,6 +235,21 @@ test('2.6.1.23 expands scene text through the caller bank without creating one o
   assert.equal(m.string(512), 'abc 犬');
 });
 
+test('2.6.1.23 memory copy crosses the mapped private and shared VM ranges', async () => {
+  const runtime = new NativeRuntime({
+      profile: 'grisaia-jp-engine-2.6.1.23',
+      read: async () => kcsProgram([[59]]),
+    }),
+    task = await runtime.spawn('case.kcs'),
+    m = task.machine,
+    base = 0x80000000;
+  m.shared = Uint8Array.of(0xad, 0x43, 0x53, 0x53, 0xad);
+  m.bytes(255, 5).fill(0xcf);
+  assert.deepEqual(await runtime.native('main', 35, [256, base + 1, 3], m, task), { control: 2 });
+  assert.deepEqual(m.bytes(255, 5), Uint8Array.of(0xcf, 0x43, 0x53, 0x53, 0xcf));
+  assert.deepEqual(m.shared, Uint8Array.of(0xad, 0x43, 0x53, 0x53, 0xad));
+});
+
 test('63 command arguments retain original list, arithmetic and string-bank semantics', async () => {
   const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
   try {

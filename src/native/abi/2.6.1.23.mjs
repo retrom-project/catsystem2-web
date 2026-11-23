@@ -292,6 +292,10 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 scalar sine wrapper 0x48c4d0 and Draw bitmap packet 0x47fcc0 through raw 254',
   },
+  {
+    ids: [35],
+    value: 'Own 2.6.1.23 memory copy 0x48b000 maps both operands and copies the requested span',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -641,6 +645,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [35], fields: { resultWritten: false } },
         { ids: [50], fields: { resultWritten: true } },
         { ids: [257], fields: { resultWritten: false } },
         { ids: [111, 112, 118, 364, 365, 368], fields: { resultWritten: true } },
