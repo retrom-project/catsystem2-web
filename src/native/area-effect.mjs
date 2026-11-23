@@ -65,7 +65,9 @@ export class NativeAreaEffectTask {
     this.record = record;
     this.base = this.world.base(record);
     this.positionedWipeMask =
-      record.kind === 26 && nativeABI(this.world.profile).graphics.positionedAreaWipeMask === true;
+      nativeABI(this.world.profile).graphics.positionedAreaWipeKinds?.includes(record.kind) ===
+      true;
+    this.clippedWipeUpload = this.positionedWipeMask && record.kind !== 26;
     this.state = {
       initialized: false,
       active: 0,
@@ -453,13 +455,19 @@ export class NativeAreaEffectTask {
         (mx + state.width > stencil.width || my + state.height > stencil.height))
     )
       throw new RangeError('Area effect bitmap rectangle exceeds its borrowed storage');
-    if (kind === 30)
-      await prepareAreaWipeSource(input, target, state.sourceOrigin, state.destinationOrigin);
-    if (this.positionedWipeMask)
-      await prepareAreaWipeSource(input, target, state.sourceOrigin, state.destinationOrigin, [
-        Math.min(input.width - sx, target.width - dx),
-        Math.min(input.height - sy, target.height - dy),
-      ]);
+    if (kind === 30 || (kind === 26 && this.positionedWipeMask))
+      await prepareAreaWipeSource(
+        input,
+        target,
+        state.sourceOrigin,
+        state.destinationOrigin,
+        this.positionedWipeMask
+          ? [
+              Math.min(input.width - sx, target.width - dx),
+              Math.min(input.height - sy, target.height - dy),
+            ]
+          : undefined,
+      );
     state.work = images.create(state.width, state.height, this.record.id);
     // The positioned wipe allocates a zeroed surface and writes only its masked rectangle.
     if (this.positionedWipeMask) {
@@ -520,8 +528,9 @@ export class NativeAreaEffectTask {
     );
     await work.changed();
   }
-  async upload(handle, origin = [0, 0], offset = null) {
+  async upload(handle, origin = [0, 0], offset = null, extent = null) {
     const state = this.state,
+      [width, height] = extent ?? [state.width, state.height],
       bitmap = this.world.graphics.images.get(handle),
       frame = await bitmap.frame(),
       rgba = flipBitmapRows(frame.rgba, frame.width, frame.height);
@@ -536,8 +545,8 @@ export class NativeAreaEffectTask {
       [
         origin[0],
         origin[1],
-        Math.min(frame.width, origin[0] + state.width),
-        Math.min(frame.height, origin[1] + state.height),
+        Math.min(frame.width, origin[0] + width),
+        Math.min(frame.height, origin[1] + height),
       ],
     );
   }
@@ -548,11 +557,12 @@ export class NativeAreaEffectTask {
       await this.calculate(
         state.duration + ([30, 31].includes(this.record.kind) ? state.blendDuration : 0),
       );
-    await this.upload(
-      alpha ? state.work : state.destination,
-      alpha ? [0, 0] : state.destinationOrigin,
-      alpha ? state.output.map((n, i) => n + state.maskOrigin[i]) : null,
-    );
+    const origin = alpha ? [0, 0] : state.destinationOrigin,
+      positionedOutput =
+        alpha || this.clippedWipeUpload
+          ? state.output.map((n, i) => n + state.maskOrigin[i] - origin[i])
+          : null;
+    await this.upload(alpha ? state.work : state.destination, origin, positionedOutput);
     state.active = 0;
   }
   async drawTick() {
@@ -569,8 +579,15 @@ export class NativeAreaEffectTask {
       state.active = 0;
       return;
     }
+    if (this.clippedWipeUpload && (!state.blendWidth || !state.blendHeight)) return;
     await this.calculate(elapsed);
-    await this.upload(state.work, alpha ? state.maskOrigin : [0, 0], alpha ? state.output : null);
+    if (this.clippedWipeUpload)
+      await this.upload(state.work, state.maskOrigin, state.output, [
+        state.blendWidth,
+        state.blendHeight,
+      ]);
+    else
+      await this.upload(state.work, alpha ? state.maskOrigin : [0, 0], alpha ? state.output : null);
   }
   snapshot() {
     return { state: structuredClone(this.state), rainGraph: this.rainGraph?.snapshot() ?? null };

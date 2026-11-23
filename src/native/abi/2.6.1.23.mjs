@@ -862,7 +862,7 @@ export default {
     retimeActiveScreenTransitions: true,
     drawEnablePendingPolicy: 'rising-edge',
     emptyImageSizeWritesZero: true,
-    positionedAreaWipeMask: true,
+    positionedAreaWipeKinds: [26, 29, 30],
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: null,
     planeAlphaFlags: 1,

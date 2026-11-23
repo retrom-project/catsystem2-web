@@ -38,13 +38,13 @@ test('2.6.1.23 area natives start and finish an owned bitmap wipe', async (t) =>
   assert.deepEqual([...machine.bytes(128, 56)], [...new NativeGraphicsPacket(params).bytes(0, 56)]);
 });
 
-test('2.6.1.23 positions a separate wipe mask within the common bitmap extent', async (t) => {
+async function checkPositionedWipe(t, kind, maskedPixels) {
   const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
   t.after(() => world.close());
   const { machine } = world.main,
     call = (id, args) => world.runtime.native('main', id, args, machine, world.main),
     images = world.graphics.images,
-    task = await world.objects.create({ kind: 26, parent: world.root }),
+    task = await world.objects.create({ kind, parent: world.root }),
     nativeID = world.nativeTaskID(task),
     area = world.areaEffects.tasks.get(task),
     handles = [
@@ -57,6 +57,9 @@ test('2.6.1.23 positions a separate wipe mask within the common bitmap extent', 
       [source, destination, mask].map((image) => image.pixels()),
     ),
     uploads = recordAreaUploads(world),
+    clippedUpload = kind !== 26,
+    offset = [4, 3],
+    fullRegion = [0, 0, 4, 3],
     at = (image, x, y) => ((image.height - y - 1) * image.width + x) * 4;
   for (let i = 0; i < from.length; i += 4) from.set([40, 100, 200, 255], i);
   for (let i = 0; i < to.length; i += 4) to.set([180, 60, 80, 200], i);
@@ -68,14 +71,17 @@ test('2.6.1.23 positions a separate wipe mask within the common bitmap extent', 
   stencil[at(mask, 0, 1) + 2] = 64;
   stencil[at(mask, 1, 1) + 2] = 255;
   const params = areaPixelParameters(
-    { kind: 26, duration: 4, extent: [19, 22], maskOrigin: [2, 1] },
+    { kind, duration: 4, extent: [19, 22], maskOrigin: [2, 1] },
     handles,
   );
   params.forEach((value, i) => machine.store(128 + i * 4, value));
   assert.deepEqual(await call(196, [nativeID, 128]), { control: 2 });
   assert.deepEqual([area.state.width, area.state.height], [4, 3]);
   assert.deepEqual([area.state.blendWidth, area.state.blendHeight], [2, 2]);
-  assert.deepEqual([...from.slice(at(source, 0, 0), at(source, 0, 0) + 4)], [180, 60, 80, 0]);
+  assert.deepEqual(
+    [...from.slice(at(source, 0, 0), at(source, 0, 0) + 4)],
+    kind === 29 ? [1, 2, 3, 0] : [180, 60, 80, 0],
+  );
   assert.deepEqual([...from.slice(at(source, 5, 0), at(source, 5, 0) + 4)], [11, 12, 13, 0]);
   assert.deepEqual(await call(197, [nativeID]), { control: 2 });
   area.record.effectiveFrame = area.state.start + (area.record.pausedFrames ?? 0) + 2;
@@ -84,28 +90,65 @@ test('2.6.1.23 positions a separate wipe mask within the common bitmap extent', 
     {
       width: 4,
       height: 3,
-      offset: [4, 3],
-      region: [0, 0, 4, 3],
-      pixels: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 30, 50, 0, 110,
-        80, 140, 227, 0, 0, 0, 0, 0, 0, 0, 0, 75, 90, 170, 241, 179, 60, 80, 200,
-      ],
+      offset,
+      region: clippedUpload ? [2, 1, 4, 3] : fullRegion,
+      pixels: Array.from({ length: 12 }, (_, i) => maskedPixels[i] ?? [0, 0, 0, 0]).flat(),
     },
   ]);
-  area.record.effectiveFrame = area.state.start + (area.record.pausedFrames ?? 0) + 4;
+  const end = kind === 30 ? 6 : 4,
+    finalPixels = Array.from({ length: 12 }, (_, i) =>
+      i === 6 ? [10, 30, 50, 128] : [180, 60, 80, 200],
+    ).flat();
+  area.record.effectiveFrame = area.state.start + (area.record.pausedFrames ?? 0) + end - 1;
+  await area.drawTick();
+  assert.deepEqual(await call(200, [nativeID]), { control: 1, value: 1 });
+  area.record.effectiveFrame++;
   await area.drawTick();
   assert.deepEqual(await call(200, [nativeID]), { control: 1, value: 0 });
   assert.deepEqual(area.state.maskOrigin, [0, 0]);
-  assert.deepEqual(uploads[1], {
+  assert.deepEqual(uploads[2], {
     width: 4,
     height: 3,
-    offset: [4, 3],
-    region: [0, 0, 4, 3],
-    pixels: Array.from({ length: 12 }, (_, i) =>
-      i === 6 ? [10, 30, 50, 128] : [180, 60, 80, 200],
-    ).flat(),
+    offset,
+    region: fullRegion,
+    pixels: finalPixels,
   });
-});
+  await call(196, [nativeID, 128]);
+  await call(197, [nativeID]);
+  assert.deepEqual(await call(203, [nativeID]), { control: 2 });
+  assert.deepEqual(await call(200, [nativeID]), { control: 1, value: 0 });
+  assert.deepEqual(uploads[3], {
+    width: 4,
+    height: 3,
+    offset: clippedUpload ? [6, 4] : offset,
+    region: fullRegion,
+    pixels: finalPixels,
+  });
+}
+
+test('2.6.1.23 places the mask of a blended wipe within the shared extent', (t) =>
+  checkPositionedWipe(t, 26, {
+    6: [10, 30, 50, 0],
+    7: [110, 80, 140, 227],
+    10: [75, 90, 170, 241],
+    11: [179, 60, 80, 200],
+  }));
+
+test('2.6.1.23 threshold wipe publishes only the mask region, preserving source RGB', (t) =>
+  checkPositionedWipe(t, 29, {
+    6: [70, 45, 31, 0],
+    7: [180, 60, 80, 200],
+    10: [40, 100, 200, 255],
+    11: [180, 60, 80, 200],
+  }));
+
+test('2.6.1.23 delayed wipe publishes the mask region through its full blend duration', (t) =>
+  checkPositionedWipe(t, 30, {
+    6: [10, 30, 50, 0],
+    7: [40, 100, 200, 255],
+    10: [40, 100, 200, 255],
+    11: [180, 60, 80, 200],
+  }));
 
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
   test(

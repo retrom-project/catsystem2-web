@@ -192,18 +192,22 @@ Main 625 sends the selected entry's full animation enable word through raw
 Draw 269. Main 728 writes the bitmap's mask word without rebinding its owner.
 Main 862 sends the four original RECT boundaries through raw Draw 284.
 The receiver marks its own surface dirty and redraws that rectangle immediately.
-Main 196 selects an Area initializer by the receiver's kind. Kind 26
-uses the 56-byte bitmap wipe packet in raw 248. Main 197 starts that
-task through raw 231, Main 200 reads its activity through raw 233,
-and Main 203 finishes an active wipe through raw 235. The legacy
-queries require a written reply because the source wrapper's scratch
-word has no initial value.
-The kind 26 receiver allocates a zeroed work bitmap with the smaller width
-and height of the two images. The mask starts at its own origin. Its offsets
-place it in the work bitmap and the borrowed images, and the remaining work
-extent clips its width and height. The initializer copies destination RGB
-into fully transparent source pixels. During the effect it uploads the full
-work bitmap, and completion uploads the destination rectangle.
+Main 196 selects an Area initializer by the receiver's kind. Kinds 26 and
+29 read a 56-byte bitmap wipe packet in raw 248. Kind 30 reads a 60-byte
+packet with a second duration in raw 251. Main 197 starts the task through
+raw 231, Main 200 reads its activity through raw 233, and Main 203 finishes
+an active wipe through raw 235. The legacy queries require a written reply
+because the source wrapper's scratch word has no initial value.
+These receivers allocate a zeroed work bitmap with the smaller width and
+height of the two images. The mask starts at its own origin. Its offsets
+place it in the work bitmap and the borrowed images. The remaining work
+extent clips its width and height. Kinds 26 and 30 copy destination RGB into
+fully transparent source pixels. Kind 29 copies each whole pixel from the
+source or destination according to the advancing threshold. Kind 26
+uploads the full work bitmap. Kinds 29 and 30 upload only the clipped mask
+rectangle. Natural completion clears the mask offset and uploads the
+destination rectangle. An explicit finish for kinds 29 and 30 retains the
+mask offset on that upload.
 Main 76 reads the caller's parent ID. Main 536 searches an owned bitmap
 attribute using the low 16 bits of the selector. A match writes four rectangle
 words and the color, while a null bitmap or missing attribute returns zero
