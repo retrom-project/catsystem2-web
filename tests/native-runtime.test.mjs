@@ -283,7 +283,7 @@ test('unknown admission precedes the main built-in fallback and resource service
     preparation = 0,
     error;
   const runtime = new NativeRuntime({
-    profile: sdkProfile,
+    profile: 'bokutomo-engine-2.6.1.67',
     read: async () => compiled([[59]]),
     services: {
       objects: {

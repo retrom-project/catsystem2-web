@@ -79,6 +79,13 @@ const copyProgram = kcsProgram([
   [59],
 ]);
 
+async function createScript(world, name) {
+  const id = await world.objects.create({ kind: 12, parent: world.main.id, name });
+  const script = world.objects.objects.get(id).implementation;
+  await script.loadScript(name + '.kcs');
+  return script.task;
+}
+
 for (const engine of [profile, game.profile])
   test(`${engine} GCALL writes and reads bytes on the live target Script`, async () => {
     const world = await dataWorld(engine, {
@@ -86,14 +93,8 @@ for (const engine of [profile, game.profile])
       'caller.kcs': copyProgram,
     });
     try {
-      const makeScript = async (name) => {
-        const id = await world.objects.create({ kind: 12, parent: world.main.id, name });
-        const script = world.objects.objects.get(id).implementation;
-        await script.loadScript(name + '.kcs');
-        return script.task;
-      };
-      const target = await makeScript('receiver'),
-        caller = await makeScript('caller');
+      const target = await createScript(world, 'receiver'),
+        caller = await createScript(world, 'caller');
       const stack = caller.machine.sp;
       caller.machine.store(128, world.nativeTaskID(target.id));
       caller.machine.bytes(512, 5).set([19, 28, 37, 46, 55]);
@@ -121,3 +122,54 @@ for (const engine of [profile, game.profile])
       await world.close({ flushFiles: false });
     }
   });
+
+test('SDK GCALL defers a four-word packet to its live Script and returns the queued result', async () => {
+  const world = await dataWorld(profile, {
+    'receiver.kcs': kcsProgram([
+      [37, 256],
+      [43, 0x47, 4],
+      [38, 128],
+      [41, 0],
+    ]),
+    'caller.kcs': kcsProgram([
+      [37, [0x13, 128]],
+      [37, 1],
+      [37, 0],
+      [37, 0x7b],
+      [43, 0x46, 16],
+      [38, 64],
+      [59],
+    ]),
+  });
+  try {
+    const target = await createScript(world, 'receiver');
+    await world.runtime.scheduler.execute(target);
+    const caller = await createScript(world, 'caller');
+    caller.machine.store(128, world.nativeTaskID(target.id));
+    target.machine.bytes(256, 16).fill(0xa5);
+    const packet = [world.nativeTaskID(caller.id), 1, 0, 0x7b];
+
+    await world.runtime.scheduler.execute(caller);
+
+    assert.equal(caller.machine.halted, true);
+    assert.equal(caller.machine.load(64), 1);
+    assert.deepEqual(target.messages, [packet]);
+    assert.deepEqual(target.machine.bytes(256, 16), new Uint8Array(16).fill(0xa5));
+    await world.tick();
+    assert.deepEqual(target.messages, []);
+    assert.deepEqual(
+      Array.from({ length: 4 }, (_, index) => target.machine.load(256 + index * 4)),
+      packet,
+    );
+    const entry = nativeABI(profile).tables.main.entries[0x46];
+    assert.equal(entry.status, 'recovered');
+    assert.equal(entry.name, NATIVE_SEMANTICS.main[0x46].name);
+    assert.equal(entry.signature.argumentWords, 4);
+    assert.deepEqual(entry.signature.controlCodes, [1]);
+    assert.deepEqual(entry.observedArgumentWords, [4]);
+    assert.equal(entry.signature.resultWritten, true);
+    assert.match(entry.evidence, /SDK-2\.6\.1\.74-main70.*deferred/);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});

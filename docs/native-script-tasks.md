@@ -80,6 +80,12 @@ appended during delivery before doing its normal idle execution. Pausing retains
 the queue. Both the World Script driver and standalone KCS scheduler follow this
 ordering.
 
+SDK Main `0x46` (`529070`) posts to the target Script with raw message 171
+(canonical 173). The four call arguments are the native target ID, message,
+W and L. The receiver copies the sender ID, message, W and L into its queue.
+For a routed Script, the wrapper writes the receiver's result (1) and returns
+control 1. The ordinary Load menu uses this deferred handoff.
+
 Message 330 updates its own context first, then directly routes an embedded
 message 26 through **that Script's subtree**. It does not climb to the Top.
 Parents and siblings keep their context. Copies preserve CP932 bytes, including

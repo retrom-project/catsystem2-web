@@ -22,7 +22,7 @@ selected or enabled by proximity to another version number.
 | 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
-| 2.6.1.74 | 1009       | 832       | 82            | 19            | 76      | 45 / 44 / 51                            |
+| 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                            |
 
 The registry represents 5,509 slots, including 2,344 SDK74/Game76 slots.
