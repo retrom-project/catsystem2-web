@@ -405,6 +405,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 rectangle wrapper 0x486200 intersects a guest RECT; Plane wrappers 0x47fac0–0x47fc1f send raw 79–81 to 0x46a940',
   },
+  {
+    ids: [852],
+    value:
+      'Own 2.6.1.23 getter 0x47da80 reads the startup GAME/log/static word via the configuration view at +0x210',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -781,6 +786,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [852], fields: { resultWritten: true } },
         { ids: [218, 653, 654, 655], fields: { resultWritten: false } },
         { ids: [339, 340, 341, 342, 534], fields: { resultWritten: false } },
         { ids: [38, 39, 42], fields: { resultWritten: true } },

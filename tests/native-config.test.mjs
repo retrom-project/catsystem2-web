@@ -5,6 +5,7 @@ import { Binary } from '../src/binary.mjs';
 import { KCSMachine, nativeReply } from '../src/kcs/vm.mjs';
 import { parseXML } from '../src/xml.mjs';
 import { NativeConfiguration, nativeConfiguration } from '../src/native/config.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 const game = 'nekopara-vol3-engine-2.6.1.76';
 const sdk = 'sdk-4.01-engine-2.6.1.74';
@@ -158,6 +159,16 @@ test('native configuration copies accept address zero and invalid optional mappi
     () => new NativeConfiguration({ profile: sdk }).restore(config.snapshot()),
     /profile/,
   );
+});
+
+test('2.6.1.23 reads the live static-log configuration word during native load', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close({ flushFiles: false }));
+  const { configuration, main } = world,
+    read = () => world.runtime.native('main', 852, [], main.machine, main);
+  assert.deepEqual(await read(), nativeReply(1, 0));
+  configuration.setField('scene.staticLog', 3);
+  assert.deepEqual(await read(), nativeReply(1, 3));
 });
 
 test('configuration getters preserve system-voice neighbors, RNG consumption and distinct fullscreen settings', () => {

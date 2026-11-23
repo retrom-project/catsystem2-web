@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 295       | 57            | 17            | 500     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 296       | 57            | 17            | 499     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -126,6 +126,9 @@ Main 113 captures the active view as an owned opaque bitmap. Main 116
 clips equally sized source and destination requests to the smaller
 surviving span. Main 241 and 251 write and restore an independent HG
 bitmap through CSS, and Main 850 and 851 persist the display log there.
+Main 852 returns the full `GAME/log/static` configuration word with
+control 1. The original getter's view begins 0x210 bytes into the
+startup configuration read by the XML parser.
 Main 568 prepares one screen capture, then draws the requested floating-point
 priority range into slot zero. Main 858 and 859 expose separate preparation
 and capture. All three leave the VM result unwritten.
