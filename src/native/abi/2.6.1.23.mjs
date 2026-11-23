@@ -252,6 +252,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Sound wrappers 0x47dc40–0x47e260: Root 32, filename load, raw 166–176 and 180, and the formatted Sound file probe',
   },
+  {
+    ids: [696, 697, 698, 700, 785],
+    value:
+      'Own 2.6.1.23 display-log wrappers 0x4771b0–0x4778e0 and append helper 0x5a2c20: CP932 rows, speaker names and block limit',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -599,6 +604,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [696], fields: { resultWritten: true } },
+        { ids: [697, 698, 700, 785], fields: { resultWritten: false } },
         { ids: [155, 160, 162, 284], fields: { resultWritten: true } },
         { ids: [156, 157, 158, 159, 161, 163, 164, 168], fields: { resultWritten: false } },
         { ids: [403, 404], fields: { resultWritten: false } },

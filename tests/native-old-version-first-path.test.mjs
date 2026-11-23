@@ -2136,8 +2136,12 @@ test('63 motion authoring prepares in-place spline points and converts angles wi
   }
 });
 
-test('63 scene setup sets motion speed and prunes the live backlog to its configured limit', async () => {
-  const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} scene setup sets motion speed and prunes the live backlog to its configured limit`, () =>
+    verifyLegacyBacklog(profile));
+
+async function verifyLegacyBacklog(profile) {
+  const { world, audio } = await oldTitleWorld({}, undefined, profile);
   try {
     const main = await world.initialize('empty.kcs'),
       m = main.machine,
@@ -2171,15 +2175,17 @@ test('63 scene setup sets motion speed and prunes the live backlog to its config
       model.blocks.map((block) => block[2]),
       [4, 5, 6],
     );
-    assert.deepEqual(await call(876, [handle]), { control: 2 });
-    assert.equal(model.rows.length, 0);
+    if (nativeABI(profile).tables.main.count > 876) {
+      assert.deepEqual(await call(876, [handle]), { control: 2 });
+      assert.equal(model.rows.length, 0);
+    }
     assert.deepEqual(await call(697, [handle]), { control: 2 });
     assert.throws(() => logs.get(handle), /released/);
   } finally {
     await world.close();
     await audio.dispose();
   }
-});
+}
 
 test('63 textured Plane coordinate mode belongs to its current render model', async () => {
   const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
