@@ -257,6 +257,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 display-log wrappers 0x4771b0–0x4778e0 and append helper 0x5a2c20: CP932 rows, speaker names and block limit',
   },
+  {
+    ids: [258, 261, 455],
+    value:
+      'Own 2.6.1.23 Draw wrappers 0x47fdd0, 0x47ff60 and 0x480220 send raw removal 255, bitmap query 259 and base image 270',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -604,6 +609,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [261], fields: { resultWritten: true } },
+        { ids: [258, 455], fields: { resultWritten: false } },
         { ids: [696], fields: { resultWritten: true } },
         { ids: [697, 698, 700, 785], fields: { resultWritten: false } },
         { ids: [155, 160, 162, 284], fields: { resultWritten: true } },

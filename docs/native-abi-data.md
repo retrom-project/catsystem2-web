@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 185       | 57            | 17            | 610     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 188       | 57            | 17            | 607     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -86,6 +86,9 @@ writes coordinates only to a present render model. A replacement model
 starts with coordinate mode zero.
 Main 541 releases the texture pages intersecting its rectangle. Main 542
 allocates missing configured pages while preserving existing pages.
+Main 258 removes a selected Draw entry. Main 261 queries the bitmap owned
+by the Draw task. Main 455 copies an optional source into its independent
+base image. A zero source hides the base image.
 
 Main 450 and 451 use raw FES messages 306 and 307 for label selection and
 the saved object word. Main 630 synchronously dispatches raw 308 with the

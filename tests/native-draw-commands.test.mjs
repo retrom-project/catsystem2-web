@@ -9,6 +9,33 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { floatBits } from '../src/kcs.mjs';
 import { imageOwnerFiles } from './fixtures/image-owner-fixture.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
+
+test('2.6.1.23 Draw owns the returned bitmap and copies an independent base image', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close({ flushFiles: false }));
+  const { main } = world,
+    call = (id, args) => world.runtime.native('main', id, args, main.machine, main),
+    id = await world.objects.create({ kind: 15, parent: world.root }),
+    nativeID = world.nativeTaskID(id),
+    draw = world.graphics.drawTasks.get(id),
+    images = world.graphics.images;
+  await world.sendEngine(id, main.id, 279, 8, 6);
+  await world.sendEngine(id, main.id, 283, 0, 0);
+  assert.deepEqual(await call(261, [nativeID]), { control: 1, value: draw.state.renderer.bitmap });
+  const handle = images.create(2, 2),
+    source = images.get(handle);
+  await source.fill(0, 0, 2, 2, 0xff123456);
+  assert.deepEqual(await call(455, [nativeID, handle]), { control: 2 });
+  const copied = images.get(draw.state.baseImage);
+  await source.fill(0, 0, 2, 2, 0xffabcdef);
+  assert.equal(draw.state.baseVisible, true);
+  assert.deepEqual((await copied.pixels()).slice(0, 4), Uint8ClampedArray.of(18, 52, 86, 255));
+  assert.deepEqual(await call(258, [nativeID, 0]), { control: 2 });
+  assert.deepEqual(await call(455, [nativeID, 0]), { control: 2 });
+  assert.equal(draw.state.baseVisible, false);
+  assert.equal(draw.entry(0), undefined);
+});
 
 test(
   'SDK full World retains decoded image pixels and original ANM control across fresh restoration',
