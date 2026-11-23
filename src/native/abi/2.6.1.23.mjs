@@ -123,6 +123,21 @@ const mainEvidence = [
     ids: [790],
     value: 'Own 2.6.1.23 Main 0x47d9b0 reads eight pairs per local or global variable range',
   },
+  {
+    ids: [15],
+    value:
+      'Own 2.6.1.23 Main 0x48aa10 appends raw bytes, writes two terminators and returns the destination',
+  },
+  {
+    ids: [594, 595, 596, 597],
+    value:
+      'Own 2.6.1.23 tone-table wrappers 0x478f10–0x479110 open, release and query group or alias RGB words',
+  },
+  {
+    ids: [739],
+    value:
+      'Own 2.6.1.23 Main 0x47bc50 doubles truncated device offset and projects it into two VM coordinates',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -412,9 +427,12 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
-        { ids: [69, 70, 419, 423, 424, 425, 790], fields: { resultWritten: true } },
+        {
+          ids: [15, 69, 70, 419, 423, 424, 425, 594, 596, 597, 790],
+          fields: { resultWritten: true },
+        },
         { ids: mainConstantZero, fields: { resultWritten: true } },
-        { ids: [420, 421, 422, 458, 459], fields: { resultWritten: false } },
+        { ids: [420, 421, 422, 458, 459, 595, 739], fields: { resultWritten: false } },
       ],
     },
     generic: {

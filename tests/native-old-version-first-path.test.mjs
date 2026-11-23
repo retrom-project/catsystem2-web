@@ -1258,9 +1258,12 @@ async function verifyCGRegistrations(profile) {
   }
 }
 
-test('63 Script opens, queries and releases a grouped tone table', async () => {
-  const profile = 'rebellions-jp-engine-2.6.1.63',
-    table = [0x13, 512],
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} Script opens, queries and releases a grouped tone table`, () =>
+    verifyGroupedTone(profile));
+
+async function verifyGroupedTone(profile) {
+  const table = [0x13, 512],
     lookup = (id, name, output, result) => [
       [37, table],
       [37, name],
@@ -1322,7 +1325,7 @@ test('63 Script opens, queries and releases a grouped tone table', async () => {
   } finally {
     await world.close();
   }
-});
+}
 
 async function verifyCursorVisibility(t, profile, cursorMessage = 22) {
   const { world, audio } = await oldTitleWorld(
@@ -1554,6 +1557,37 @@ test('2.6.1.23 Script reads an owned variable range and leaves invalid outputs u
   assert.deepEqual([machine.load(128), machine.load(132)], [517, 43]);
   assert.deepEqual(await read(0, 8), { control: 1, value: 0 });
   assert.deepEqual([machine.load(128), machine.load(132)], [517, 43]);
+});
+
+test('2.6.1.23 story setup appends CP932 data and selects the current viewport border', async (t) => {
+  const { world, audio } = await oldTitleWorld({}, undefined, 'grisaia-jp-engine-2.6.1.23');
+  t.after(async () => {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  });
+  const main = await world.initialize('empty.kcs'),
+    machine = main.machine,
+    call = (id, args) => world.runtime.native('main', id, args, machine, main);
+  machine.bytes(128, 16).fill(0xa5);
+  machine.writeString('猫', 128);
+  machine.writeString('/log/', 160);
+  assert.deepEqual(await call(15, [128, 160]), { control: 1, value: 128 });
+  assert.deepEqual(machine.bytes(128, 10), Uint8Array.of(...bytes('猫/log/'), 0, 0, 0xa5));
+
+  world.graphics.view.configure({
+    virtualWidth: 800,
+    virtualHeight: 600,
+    clientWidth: 1600,
+    clientHeight: 900,
+    deviceOffset: [20.75, -11.25],
+    deviceScale: 1.5,
+    windowShift: [3, -2],
+  });
+  assert.deepEqual(await call(739, [192, 196]), { control: 2 });
+  assert.deepEqual([machine.load(192) | 0, machine.load(196) | 0], [4, -3]);
 });
 
 test('63 startup Plane GCALLs bind and release the owned Input region', async () => {
