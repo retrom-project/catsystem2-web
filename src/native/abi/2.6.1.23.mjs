@@ -287,6 +287,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 bitmap and packed image wrappers 0x488260–0x489520; sized file data, frame metadata, cropped copies and independent image owners',
   },
+  {
+    ids: [50, 257],
+    value:
+      'Own 2.6.1.23 scalar sine wrapper 0x48c4d0 and Draw bitmap packet 0x47fcc0 through raw 254',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -636,6 +641,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [50], fields: { resultWritten: true } },
+        { ids: [257], fields: { resultWritten: false } },
         { ids: [111, 112, 118, 364, 365, 368], fields: { resultWritten: true } },
         { ids: [114, 115, 362, 366, 367], fields: { resultWritten: false } },
         { ids: [243, 253], fields: { resultWritten: true } },

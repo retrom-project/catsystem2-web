@@ -1614,6 +1614,8 @@ test('2.6.1.23 Script and MOT scalar contracts preserve their word and floating-
     call = (id, args) => world.runtime.native('main', id, args, main.machine, main);
   assert.deepEqual(await call(64, [0x80000000]), { control: 1, value: 0x80000000 });
   assert.deepEqual(await call(64, [-23]), { control: 1, value: 23 });
+  assert.deepEqual(await call(50, [floatBits(Math.PI / 2)]), { control: 1, value: floatBits(1) });
+  assert.deepEqual(await call(50, [0x80000000]), { control: 1, value: 0x80000000 });
   assert.deepEqual(await call(319, [floatBits(-1.5)]), { control: 1, value: 0xffffffff });
   assert.deepEqual(await call(319, [floatBits(2 ** 32)]), { control: 1, value: 0 });
   assert.ok(Number.isNaN(bitsFloat((await call(318, [0, 200, 20, 60, NaN].map(floatBits))).value)));

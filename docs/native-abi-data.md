@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 213       | 57            | 17            | 582     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 215       | 57            | 17            | 580     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -43,8 +43,9 @@ handler or impose arity on the ignored operand lists.
 Main 140, 142 and 549 use a separate control-1 body at `0x487a50`. The
 body leaves the result unwritten. GCALL pushes its fresh `0xcccccccc` scratch
 word and reports the unwritten result. Main 6 copies its input word, Main 65
-yields and Main 453 sets the caller's exit word. Main 64 and Generic 16 take
-the signed absolute value. Main 318 uses x87 interpolation and Main 319
+yields and Main 453 sets the caller's exit word. Main 50 returns single-precision
+sine. Main 64 and Generic 16 take the signed absolute value. Main 318 uses
+x87 interpolation and Main 319
 writes the low word of the integer64 after half-step rounding.
 
 The Grisaia base profile selects the exact loose `config/startup.xml` and
@@ -86,6 +87,7 @@ writes coordinates only to a present render model. A replacement model
 starts with coordinate mode zero.
 Main 541 releases the texture pages intersecting its rectangle. Main 542
 allocates missing configured pages while preserving existing pages.
+Main 257 adds a bitmap entry with its transform and clamped opacity.
 Main 258 removes a selected Draw entry. Main 261 queries the bitmap owned
 by the Draw task. Main 455 copies an optional source into its independent
 base image. A zero source hides the base image.
