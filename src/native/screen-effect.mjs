@@ -346,6 +346,14 @@ export class NativeScreenEffectTask {
       state.minimum = bitsFloat(params[0]);
       state.maximum = bitsFloat(params[1]);
       state.duration = params[2];
+      if (
+        state.active &&
+        (kind === 38 || kind === 39) &&
+        nativeABI(this.world.profile).graphics.retimeActiveScreenTransitions
+      ) {
+        state.start = this.clock();
+        state.end = (state.start + state.duration) >>> 0;
+      }
       if (kind === 39) {
         let handle = params[3],
           imported = 0;

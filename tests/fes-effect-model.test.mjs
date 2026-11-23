@@ -55,6 +55,51 @@ test('2.6.1.23 screen capture prepares once and draws the requested priority ran
   }
 });
 
+test('2.6.1.23 transition wrappers retain the captured fade and wipe inputs', async () => {
+  const world = await makeWorld('grisaia-jp-engine-2.6.1.23');
+  try {
+    const { screenEffects, main } = world,
+      invoke = (id, ...args) => world.runtime.native('main', id, args, main.machine, main),
+      read = (task) => invoke(520, task).then(({ value }) => value);
+    assert.deepEqual(await invoke(568, floatBits(0), floatBits(30)), { control: 2 });
+    assert.equal(await read(0), 0);
+    const fadeID = await world.objects.create({ kind: 38, parent: main.id }),
+      fade = screenEffects.tasks.get(fadeID),
+      fadeTask = world.nativeTaskID(fadeID);
+    assert.equal(await read(fadeTask), 0);
+    assert.deepEqual(await invoke(527, fadeTask, 8, floatBits(2), floatBits(23)), { control: 2 });
+    assert.deepEqual([fade.state.minimum, fade.state.maximum, fade.state.duration], [2, 23, 8]);
+    assert.deepEqual(await invoke(528, fadeTask, 1), { control: 2 });
+    assert.equal(await read(fadeTask), 1);
+    fade.record.effectiveFrame += 2;
+    assert.deepEqual(await invoke(527, fadeTask, 13, floatBits(4), floatBits(23)), { control: 2 });
+    assert.equal(fade.state.start, fade.clock());
+    assert.equal(fade.state.end, fade.clock() + 13);
+    await world.objects.release(fadeID);
+
+    assert.deepEqual(await invoke(568, floatBits(0), floatBits(30)), { control: 2 });
+    const wipeID = await world.objects.create({ kind: 39, parent: main.id }),
+      wipe = screenEffects.tasks.get(wipeID),
+      wipeTask = world.nativeTaskID(wipeID),
+      mask = world.graphics.images.create(2, 1, main.id);
+    await fillBitmap(world, mask, [5, 18, 125, 255]);
+    assert.deepEqual(await invoke(530, wipeTask, 9, floatBits(3), floatBits(24), mask), {
+      control: 2,
+    });
+    assert.deepEqual([wipe.state.minimum, wipe.state.maximum, wipe.state.duration], [3, 24, 9]);
+    assert.deepEqual(
+      [...world.stageRenderer.surfacePixels(wipe.state.mask).subarray(0, 4)],
+      [5, 18, 125, 255],
+    );
+    assert.deepEqual(await invoke(531, wipeTask, 1), { control: 2 });
+    assert.equal(await read(wipeTask), 1);
+    await world.graphics.images.release(mask);
+    assert.equal(world.graphics.images.get(wipe.state.maskSource).width, 2);
+  } finally {
+    await world.close();
+  }
+});
+
 test('command defaults, signed duration and unsigned32-to-f32 ranges are explicit', () => {
   assert.deepEqual(fesScreenEffectOptions(31, [], numbers), {
     duration: 30,

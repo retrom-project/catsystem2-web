@@ -385,6 +385,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Main 0x48b680 scales signed integer percentages from an unsigned base; 0x48c5c0 and 0x48c5e0 use the native x87 angle constants in inverse order',
   },
+  {
+    ids: [520, 527, 528, 530, 531],
+    value:
+      'Own 2.6.1.23 Main 0x479670, 0x4798f0–0x479950 and 0x4799d0–0x479a30 target the active read and paired Fade and Wipe receivers at 0x468670 and 0x456d00',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -666,6 +671,11 @@ export default {
     channels: {
       base: { unmapped: 'reject', raw: baseMessages, canonical: baseMessages },
       control: { unmapped: 'reject', raw: [], canonical: [] },
+      screen: {
+        unmapped: 'reject',
+        raw: [342, 349, 350, 352, 353].map((id) => toMessage(id, 35)),
+        canonical: [377, 384, 385, 387, 388].map((id) => toMessage(id, -35)),
+      },
       sound: {
         unmapped: 'reject',
         canonical: [
@@ -710,6 +720,7 @@ export default {
     bitmapBlitUsesSourceSize: true,
     sameSizeBitmapCopyClips: true,
     screenCaptureOpaque: true,
+    retimeActiveScreenTransitions: true,
     drawEnablePendingPolicy: 'rising-edge',
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: null,
@@ -749,6 +760,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [520], fields: { resultWritten: true } },
+        { ids: [527, 528, 530, 531], fields: { resultWritten: false } },
         { ids: [46], fields: { resultWritten: false } },
         { ids: [62, 63], fields: { resultWritten: true } },
         { ids: [568, 858, 859], fields: { resultWritten: false } },
