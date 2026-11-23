@@ -457,7 +457,7 @@ const particleInterpreterEvidence = [
     value: 'Own 2.6.1.23 Particle 0x48c3b0 truncates to an integer64 and clamps the low DWORD',
   },
   {
-    ids: [6, 13, 14, 15, 17, 19, 20, 21, 41, 42],
+    ids: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 20, 21, 41, 42],
     value:
       'Own 2.6.1.23 scalar bodies match their MOT peers; 19/20/41/42 also share the Main pointers',
   },
@@ -468,7 +468,7 @@ const particleInterpreterEvidence = [
 ];
 const particleInterpreterSignatures = [
   {
-    ids: [1, 2, 3, 4, 6, 13, 14, 15, 17, 19, 20, 21, 33, 36, 40, 41, 42],
+    ids: [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 20, 21, 33, 36, 40, 41, 42],
     fields: { resultWritten: true },
   },
 ];
@@ -962,6 +962,11 @@ export default {
           value: 'Own 2.6.1.23 MOT sin, ceil, absolute, floor and sqrt match the Particle bodies',
         },
         {
+          ids: [2, 3, 4, 5, 6, 7],
+          value:
+            'Own 2.6.1.23 CRT trigonometry has the same wrappers in each interpreter and its own atan2 classification table',
+        },
+        {
           ids: [14, 15],
           value: 'Own 2.6.1.23 MOT 0x595470/0x595450 match the Main/Particle x87 angle bodies',
         },
@@ -973,7 +978,10 @@ export default {
         },
       ]),
       signatures: [
-        { ids: [1, 8, 9, 10, 12, 14, 15, 16, 17, 39, 41], fields: { resultWritten: true } },
+        {
+          ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 17, 39, 41],
+          fields: { resultWritten: true },
+        },
       ],
     },
     'particle-v1': {

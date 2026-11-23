@@ -90,6 +90,40 @@ test('2.6.1.23 MOT and both PTCL tables run their shared scalar bodies through G
   }
 });
 
+test('2.6.1.23 MOT and PTCL trigonometry preserve the original exceptional result words', async () => {
+  for (const [mot, ptcl, args, expected] of [
+    [2, 7, [0x80000000], 0x3f800000],
+    [2, 7, [0x40490fdb], 0xbf800000],
+    [2, 7, [0x7149f2ca], 0x3ed3a9bb],
+    [2, 7, [0x7f800000], 0xffc00000],
+    [3, 8, [0x80000000], 0x80000000],
+    [3, 8, [0x7149f2ca], 0xc00cf6bc],
+    [3, 8, [0xff800000], 0xffc00000],
+    [4, 9, [0xbf800000], 0xbfc90fdb],
+    [4, 9, [0x80000000], 0x80000000],
+    [4, 9, [0x40000000], 0xffc00000],
+    [4, 9, [0xff852038], 0xffc52038],
+    [5, 10, [0xbf800000], 0x40490fdb],
+    [5, 10, [0x3f800000], 0],
+    [5, 10, [0x40000000], 0xffc00000],
+    [6, 11, [0x7f800000], 0x3fc90fdb],
+    [6, 11, [0xff800000], 0xbfc90fdb],
+    [6, 11, [0x80000000], 0x80000000],
+    [7, 12, [0x3f800000, 0x40000000], 0x3eed6338],
+    [7, 12, [0x80000000, 0x80000000], 0xc0490fdb],
+    [7, 12, [0x7f800000, 0x3f800000], 0x3fc90fdb],
+    [7, 12, [0x7f800000, 0xff800000], 0xffc00000],
+    [7, 12, [0xffc00010, 0x7fc01000], 0x7fc01000],
+    [7, 12, [0xffc00010, 0x7fc00010], 0x7fc00010],
+    [7, 12, [0x3f800000, 0xff800123], 0xffc00123],
+  ]) {
+    for (const [table, id] of [['generic', mot], ...particles.map((table) => [table, ptcl])]) {
+      const { run } = await guest(table, id, args);
+      run(1, expected);
+    }
+  }
+});
+
 test('2.6.1.23 MOT and PTCL integer draws share and restore the integer RNG state', async () => {
   const random = new ParticleRandom(4357, 7),
     real = random.real.snapshot();

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Single-precision operation order recovered from native particle handlers.
+import { bitsFloat, floatBits } from '../kcs/vm.mjs';
 import { roundX87Single } from './x87.mjs';
 const f = Math.fround;
 const pi = f(Math.PI);
@@ -9,6 +10,25 @@ export const radianToDegree = (radians) => f(f(f(radians) * 180) / pi);
 export function x87AngleConversion(angle, toRadians) {
   const product = roundX87Single(f(angle) * (toRadians ? pi : 180));
   return f(roundX87Single(product / (toRadians ? 180 : pi)));
+}
+
+export function x87Atan2Word(y, x) {
+  const infinity = 0x7f800000,
+    quietBit = 0x00400000,
+    magnitudeY = y & 0x7fffffff,
+    magnitudeX = x & 0x7fffffff;
+  if (magnitudeY === infinity && magnitudeX === infinity) return 0xffc00000;
+  if (magnitudeY > infinity && magnitudeX > infinity) {
+    // Both operands are quieted by FLD. FADDP selects the larger payload,
+    // with a positive sign winning identical payloads.
+    const payloadY = magnitudeY | quietBit,
+      payloadX = magnitudeX | quietBit;
+    const selected = payloadY === payloadX ? y & x : payloadY > payloadX ? y : x;
+    return (selected | quietBit) >>> 0;
+  }
+  if (magnitudeY > infinity) return (y | quietBit) >>> 0;
+  if (magnitudeX > infinity) return (x | quietBit) >>> 0;
+  return floatBits(Math.atan2(bitsFloat(y), bitsFloat(x)));
 }
 
 function scaleFrameX87(frame, rate) {

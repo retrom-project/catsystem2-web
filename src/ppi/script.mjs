@@ -9,6 +9,7 @@ import {
   calcFrame,
   degreeToRadian,
   radianToDegree,
+  x87Atan2Word,
   linearInterpolate,
   x87LinearInterpolate,
   roundInteger,
@@ -169,6 +170,7 @@ export class ParticleScriptInstance {
     };
     const base = this.now * 4,
       quadOffset = this.now * 112;
+    if (this.interpreterMath && id === 12) return scalar(x87Atan2Word(...args));
     const scalarReply =
       this.interpreterMath &&
       nativeScalarMath(
