@@ -186,8 +186,7 @@ export function nativePCMLevel(bytes, channels, bitsPerSample) {
   if (![8, 16].includes(bitsPerSample) || ![1, 2].includes(channels)) return 0;
   const width = bitsPerSample >>> 3,
     samples = Math.floor(bytes.length / width);
-  if (!samples || (channels === 2 && samples < 3))
-    throw new Error('Native PCM level window reads outside its sample range');
+  if (samples < channels) throw new Error('Native PCM level window reads outside its sample range');
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const sample = bitsPerSample === 8 ? (i) => bytes[i] : (i) => view.getInt16(i * 2, true);
   const scale = bitsPerSample === 8 ? 256 : 1;

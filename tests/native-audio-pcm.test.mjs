@@ -66,6 +66,21 @@ test('native PCM windows retain difference levels until enabled stream writes an
   assert.equal(ring.level(0, true), 199);
 });
 
+test('short final stereo windows have no activity between frames', () => {
+  for (const [sampleRate, tailBytes] of [
+    [44100, 4],
+    [22050, 2],
+  ]) {
+    const ring = new NativePCMWindows({ channels: 2, bitsPerSample: 16, sampleRate }),
+      pcm = new Uint8Array(ring.windowBytes + tailBytes),
+      view = new DataView(pcm.buffer);
+    for (let at = 0; at < pcm.length; at += 2) view.setInt16(at, at % 8 < 4 ? -300 : 300, true);
+    ring.fill(0, pcm, { initial: true });
+    assert.equal(ring.level(0, true), 599);
+    assert.equal(ring.level(ring.windowBytes, true), 0);
+  }
+});
+
 test('native multi-level queries zero-fill the requested capacity and preserve the write-index early break', () => {
   const ring = new NativePCMWindows({ channels: 1, bitsPerSample: 16, sampleRate: 8000 });
   ring.values.set(Array.from({ length: 80 }, (_, i) => i + 1));

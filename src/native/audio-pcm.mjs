@@ -80,16 +80,16 @@ export class NativePCMWindows {
   }
   fill(offset, pcm, { initial = false, enabled = false, regionBytes = pcm.length } = {}) {
     if (!initial && !enabled) return;
+    const frameBytes = this.channels * (this.bitsPerSample >>> 3);
     let index = initial ? 0 : Math.floor(offset / this.windowBytes);
-    for (let at = 0; index < 80 && at < regionBytes; at += this.windowBytes, index++)
+    for (let at = 0; index < 80 && at < regionBytes; at += this.windowBytes, index++) {
+      const end = Math.min(pcm.length, at + this.windowBytes);
+      // The device's byte-sized windows can split a frame at the end of a clip.
       this.values[index] =
-        at >= pcm.length
+        end - at < frameBytes
           ? 0
-          : nativePCMLevel(
-              pcm.subarray(at, Math.min(pcm.length, at + this.windowBytes)),
-              this.channels,
-              this.bitsPerSample,
-            );
+          : nativePCMLevel(pcm.subarray(at, end), this.channels, this.bitsPerSample);
+    }
   }
   level(playCursor, playing) {
     const index = Math.floor(playCursor / this.windowBytes);
