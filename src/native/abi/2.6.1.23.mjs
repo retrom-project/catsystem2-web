@@ -301,6 +301,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 motion status, skip and finish wrappers 0x4825a0–0x482670 and 0x482800, with instance/group/manager selection',
   },
+  {
+    ids: [649, 650],
+    value:
+      'Own 2.6.1.23 wrappers 0x4842e0 and 0x484e70 use raw FES 314 and 315 for the selected 512-word CSS bank',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -650,6 +655,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [649, 650], fields: { resultWritten: true } },
         { ids: [309, 310, 311, 440], fields: { resultWritten: true } },
         { ids: [312, 313, 314], fields: { resultWritten: false } },
         { ids: [35], fields: { resultWritten: false } },

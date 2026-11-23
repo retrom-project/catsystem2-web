@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { deflateSync } from 'node:zlib';
 import { NativeWorld } from '../web/transitional-entry.mjs';
+import { NativeWorld as BrowserWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
@@ -46,14 +47,14 @@ function mainScript() {
     ...deflateSync(code),
   ]);
 }
-function fixture(profile, extraFiles = {}) {
+function fixture(profile, extraFiles = {}, World = NativeWorld) {
   const game = memoryGame({
       'main.kcs': mainScript(),
       'authored.fes': new TextEncoder().encode('#START\n\\0=19\nresult 0xfedcba98\nexit 7\n'),
       ...extraFiles,
     }),
     random = new ParticleRandom();
-  return new NativeWorld({
+  return new World({
     game,
     images: {},
     host: {},
@@ -70,60 +71,69 @@ function fixture(profile, extraFiles = {}) {
   });
 }
 
+for (const [profile, World] of [
+  ['nekopara-vol3-engine-2.6.1.76', NativeWorld],
+  ['sdk-4.01-engine-2.6.1.74', NativeWorld],
+  ['grisaia-jp-engine-2.6.1.23', BrowserWorld],
+])
+  test(`${profile} FES save entries export and restore the selected private bank`, () =>
+    verifyFESBankSave(profile, World));
+
+async function verifyFESBankSave(profile, World) {
+  const files = {
+      'saved.fes': new TextEncoder().encode('#START\nnext WAIT\n#WAIT\n#_LOAD_\nnext WAIT\n'),
+    },
+    world = fixture(profile, files, World),
+    invoke = (w, id, args) => w.runtime.native('main', id, args, w.main.machine, w.main),
+    ok = { control: 1, value: 1 },
+    miss = { control: 1, value: 0 };
+  let fresh;
+  try {
+    await world.initialize('main.kcs');
+    const id = await world.objects.create({ kind: 34, parent: world.main.id }),
+      nativeID = world.nativeTaskID(id),
+      file = (await invoke(world, 0xee, [0])).value;
+    assert.deepEqual(await invoke(world, 0x289, [0, 22, nativeID]), miss);
+    assert.deepEqual(await invoke(world, 0x289, [file, 22, nativeID]), miss);
+    world.main.machine.writeString('saved', 64);
+    await invoke(world, 0x1bf, [nativeID, 64]);
+    const fes = world.objects.objects.get(id),
+      key = fes.context.fesVariableContextKey,
+      bank = world.runtime.variableBank(world.main);
+    bank.registerContext(world.main.id);
+    bank.selectContext(world.main.id);
+    const selected = bank.context(world.main.id).words;
+    selected[0] = 0xfedcba98;
+    selected[511] = 0x12345678;
+    bank.context(key).words[0] = 31;
+    assert.deepEqual(await invoke(world, 0x289, [file, 22, nativeID]), ok);
+    const store = world.runtime.handles.get(file, 'global-file'),
+      bytes = store.read(22);
+    assert.equal(bytes.length, 2048);
+    assert.deepEqual(bytes, new Uint8Array(selected.buffer));
+    store.write(23, Uint8Array.of(0x12, 0x34, 0x56));
+    selected.fill(0);
+    fresh = fixture(profile, files, World);
+    await fresh.restore(structuredClone(world.snapshot()));
+    const restored = fresh.objects.objects.get(id).implementation,
+      restoredBank = fresh.runtime.variableBank(fresh.main);
+    assert.deepEqual(await invoke(fresh, 0x28a, [file, 24, nativeID]), miss);
+    assert.deepEqual(await invoke(fresh, 0x28a, [file, 22, nativeID]), ok);
+    assert.equal(restoredBank.selectedContext, fresh.main.id);
+    assert.equal(restoredBank.context(fresh.main.id).words[0], 0xfedcba98);
+    assert.equal(restoredBank.context(fresh.main.id).words[511], 0x12345678);
+    assert.equal(restoredBank.context(key).words[0], 31);
+    assert.equal(restored.player.root.label, '_LOAD_');
+    assert.deepEqual(await invoke(fresh, 0x28a, [file, 23, nativeID]), ok);
+    assert.equal(restoredBank.context(fresh.main.id).words[0], 0xfe563412);
+    assert.equal(restoredBank.context(fresh.main.id).words[511], 0x12345678);
+  } finally {
+    await fresh?.close();
+    await world.close();
+  }
+}
+
 for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.74']) {
-  test(`${profile} FES save entries export and restore the selected private bank`, async () => {
-    const files = {
-        'saved.fes': new TextEncoder().encode('#START\nnext WAIT\n#WAIT\n#_LOAD_\nnext WAIT\n'),
-      },
-      world = fixture(profile, files),
-      invoke = (w, id, args) => w.runtime.native('main', id, args, w.main.machine, w.main),
-      ok = { control: 1, value: 1 },
-      miss = { control: 1, value: 0 };
-    let fresh;
-    try {
-      await world.initialize('main.kcs');
-      const id = await world.objects.create({ kind: 34, parent: world.main.id }),
-        nativeID = world.nativeTaskID(id),
-        file = (await invoke(world, 0xee, [0])).value;
-      assert.deepEqual(await invoke(world, 0x289, [0, 22, nativeID]), miss);
-      assert.deepEqual(await invoke(world, 0x289, [file, 22, nativeID]), miss);
-      world.main.machine.writeString('saved', 64);
-      await invoke(world, 0x1bf, [nativeID, 64]);
-      const fes = world.objects.objects.get(id),
-        key = fes.context.fesVariableContextKey,
-        bank = world.runtime.variableBank(world.main);
-      bank.registerContext(world.main.id);
-      bank.selectContext(world.main.id);
-      const selected = bank.context(world.main.id).words;
-      selected[0] = 0xfedcba98;
-      selected[511] = 0x12345678;
-      bank.context(key).words[0] = 31;
-      assert.deepEqual(await invoke(world, 0x289, [file, 22, nativeID]), ok);
-      const store = world.runtime.handles.get(file, 'global-file'),
-        bytes = store.read(22);
-      assert.equal(bytes.length, 2048);
-      assert.deepEqual(bytes, new Uint8Array(selected.buffer));
-      store.write(23, Uint8Array.of(0x12, 0x34, 0x56));
-      selected.fill(0);
-      fresh = fixture(profile, files);
-      await fresh.restore(structuredClone(world.snapshot()));
-      const restored = fresh.objects.objects.get(id).implementation,
-        restoredBank = fresh.runtime.variableBank(fresh.main);
-      assert.deepEqual(await invoke(fresh, 0x28a, [file, 24, nativeID]), miss);
-      assert.deepEqual(await invoke(fresh, 0x28a, [file, 22, nativeID]), ok);
-      assert.equal(restoredBank.selectedContext, fresh.main.id);
-      assert.equal(restoredBank.context(fresh.main.id).words[0], 0xfedcba98);
-      assert.equal(restoredBank.context(fresh.main.id).words[511], 0x12345678);
-      assert.equal(restoredBank.context(key).words[0], 31);
-      assert.equal(restored.player.root.label, '_LOAD_');
-      assert.deepEqual(await invoke(fresh, 0x28a, [file, 23, nativeID]), ok);
-      assert.equal(restoredBank.context(fresh.main.id).words[0], 0xfe563412);
-      assert.equal(restoredBank.context(fresh.main.id).words[511], 0x12345678);
-    } finally {
-      await fresh?.close();
-      await world.close();
-    }
-  });
   test(`${profile} execfes allocates an independent private bank context for each child interpreter`, async () => {
     const world = fixture(profile, {
       'parent.fes': new TextEncoder().encode('#START\n\\0=19\nexecfes child 3\nnext WAIT\n#WAIT\n'),
