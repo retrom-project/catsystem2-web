@@ -500,6 +500,12 @@ new game transition reaches this path. The reviewed `wait` binding takes a
 260-byte operand buffer and preserves frame thresholds, named object references
 and the no-argument delay.
 
+The .23 macro emitter at `0x5ad8a0` leaves the row alone when the macro
+dictionary is empty. Its narrow lexer consumes valid CP932 pairs before
+interpreting a single-byte backslash. It removes the escape before a double
+quote in a string literal and surrounds a character literal's complete raw
+span with another pair of single quotes.
+
 `nativeFESCommonHead(profile, narrowBytes)` resolves the exact registered profile
 before querying its data. A complete registration returns a tagged `present`
 descriptor or `absent`. The lookup compares narrow bytes through the first NUL,

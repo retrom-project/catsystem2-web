@@ -449,7 +449,7 @@ export default {
       filenameComparison: null,
     },
     fileList: { patternEncoding: null, keyEncoding: null },
-    macroLiterals: { string: null, character: null },
+    macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
   },
   graphics: {
     drawEnablePendingPolicy: 'rising-edge',
@@ -567,8 +567,6 @@ export default {
       'fes.configurationMessage.filenameComparison',
       'fes.fileList.patternEncoding',
       'fes.fileList.keyEncoding',
-      'fes.macroLiterals.string',
-      'fes.macroLiterals.character',
       'graphics.texturedBoundsQuery',
     ].map((path) => [path, 'Outside the verified 2.6.1.23 startup and title bindings']),
   ),

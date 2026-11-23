@@ -63,23 +63,25 @@ test('macro replacement matches both original literal emission strategies and do
   assert.equal(text(replaceFESMacros('NAME NAME2', new Map([['NAME', '']]))), ' NAME2');
 });
 
-test('ABI 2.6.1.63 reconstructs macro string and character literals', () => {
-  const profile = 'rebellions-jp-engine-2.6.1.63',
-    literalPolicy = {
-      string: nativeABIBehavior(profile, 'fes.macroLiterals.string'),
-      character: nativeABIBehavior(profile, 'fes.macroLiterals.character'),
-    },
-    source = String.raw`text A "x\"y\z" 'a'`,
-    macros = new Map([
-      ['A', 'B'],
-      ['B', '7'],
-    ]);
-  assert.equal(
-    text(replaceFESMacros(source, macros, literalPolicy)),
-    String.raw`text B "x"y\z" ''a''`,
-  );
-  assert.equal(text(replaceFESMacros(source, new Map(), literalPolicy)), source);
-});
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} reconstructs macro string and character literals`, () => {
+    const literalPolicy = {
+        string: nativeABIBehavior(profile, 'fes.macroLiterals.string'),
+        character: nativeABIBehavior(profile, 'fes.macroLiterals.character'),
+      },
+      source = String.raw`text A "x\"y\z" 'a'`,
+      macros = new Map([
+        ['A', 'B'],
+        ['B', '7'],
+      ]);
+    assert.equal(
+      text(replaceFESMacros(source, macros, literalPolicy)),
+      String.raw`text B "x"y\z" ''a''`,
+    );
+    assert.equal(text(replaceFESMacros(source, new Map(), literalPolicy)), source);
+    for (const lexeme of ["''", "'\\\\'", "'\\''"])
+      assert.equal(text(replaceFESMacros(lexeme, macros, literalPolicy)), "'" + lexeme + "'");
+  });
 
 test('raw text tails retain quotes and spaces inserted after source preparation', () => {
   const line = prepareFESSource('obj str "a  b"')[0];

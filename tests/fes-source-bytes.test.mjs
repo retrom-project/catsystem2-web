@@ -56,7 +56,7 @@ test('FES scanning keeps BOM, codec-ambiguous and invalid bytes at their actual 
 });
 
 test('FES macro lexing preserves CP932 pair bytes before identifier and quote interpretation', () => {
-  for (const profile of profiles) {
+  for (const profile of [...profiles, 'grisaia-jp-engine-2.6.1.23']) {
     const literals = nativeABI(profile).fes.macroLiterals,
       macros = new Map([['A', utf8('replacement')]]),
       pairWithA = Uint8Array.of(0x82, 0x41),
