@@ -1917,8 +1917,12 @@ test('63 FES GCALLs use and publish the real Draw owner before waiting', async (
   }
 });
 
-test('63 Script motion manager and matrix initialization use owned resource handles', async () => {
-  const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} Script motion manager and matrix initialization use owned resource handles`, () =>
+    verifyMotionOwner(profile));
+
+async function verifyMotionOwner(profile) {
+  const { world, audio } = await oldTitleWorld({}, undefined, profile);
   try {
     const main = await world.initialize('empty.kcs'),
       machine = main.machine,
@@ -1944,6 +1948,9 @@ test('63 Script motion manager and matrix initialization use owned resource hand
     );
     assert.equal(machine.load(128), 0xa5a5a5a5);
     assert.equal(machine.load(196), 0xa5a5a5a5);
+    assert.deepEqual(call(296, [handle]), { control: 2 });
+    assert.equal(manager.records.size, 0);
+    assert.equal(manager.flags, 0x80000001);
     assert.deepEqual(call(295, [0]), { control: 2 });
     assert.deepEqual(call(295, [handle]), { control: 2 });
     assert.equal(world.runtime.handles.records.has(handle), false);
@@ -1954,7 +1961,7 @@ test('63 Script motion manager and matrix initialization use owned resource hand
       await audio.dispose();
     }
   }
-});
+}
 
 test('63 motion state transfers and formatted script add preserve the manager and arguments', async () => {
   const { world, audio } = await oldTitleWorld(

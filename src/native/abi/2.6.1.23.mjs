@@ -175,6 +175,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 raw FES 311–313 select the private 512-word bank or change the sleeping state',
   },
+  {
+    ids: [207, 294, 295, 296, 586],
+    value:
+      'Own 2.6.1.23 identity matrix writer, motion owner constructor 0x597780, clear and release, and full flag word at +0x134',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -509,12 +514,16 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         {
-          ids: [6, 15, 64, 69, 70, 318, 319, 419, 423, 424, 425, 450, 594, 596, 597, 646, 741, 790],
+          ids: [
+            6, 15, 64, 69, 70, 294, 318, 319, 419, 423, 424, 425, 450, 594, 596, 597, 646, 741, 790,
+          ],
           fields: { resultWritten: true },
         },
         { ids: mainConstantZero, fields: { resultWritten: true } },
         {
-          ids: [65, 420, 421, 422, 451, 453, 458, 459, 595, 630, 645, 647, 739, 740],
+          ids: [
+            65, 207, 295, 296, 420, 421, 422, 451, 453, 458, 459, 586, 595, 630, 645, 647, 739, 740,
+          ],
           fields: { resultWritten: false },
         },
         {

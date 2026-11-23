@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 92        | 57            | 17            | 703     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 97        | 57            | 17            | 698     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -86,6 +86,11 @@ through raw Script message 160. Both write the receiver result and return
 control 1. Main 72 reads from the addressed Script and Main 73 writes to it.
 Both resolve that Script's address space through raw message 161 and copy the
 requested byte span. They return control 2 with the VM result untouched.
+
+Main 207 writes a 16-word identity matrix. Main 294 creates an owned motion
+manager at speed one with an empty list. Main 295 releases that owner, and
+Main 296 clears the current motions. Main 586 writes the full flag word
+used by subsequent motion instances.
 
 Main 790 reads a start and count pair from one of eight configured variable
 ranges. The first word selects local or global storage. An out-of-range
