@@ -47,6 +47,33 @@ test('23 captures an opaque owned bitmap and round-trips a clipped CSS thumbnail
   assert.deepEqual([...(await graphics.images.get(restored).pixels())], clipped);
 });
 
+test('23 choice setup reads the caller parent and the authored bitmap attribute', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const child = await world.spawnScript('case.kcs', { parent: world.main.id }),
+    { machine } = child,
+    call = (id, args) => world.runtime.native('main', id, args, machine, child);
+  assert.deepEqual(await call(76, []), { control: 1, value: world.nativeTaskID(world.main.id) });
+
+  const handle = world.graphics.images.create(2, 1, child.id),
+    bitmap = world.graphics.images.get(handle),
+    outputs = [512, 516, 520, 524, 528],
+    words = () => [...outputs, 532].map((address) => machine.load(address));
+  bitmap.state.attributes = [{ id: 7, rect: [10, -20, 30, -40], color: 0xff800123 }];
+  machine.bytes(512, 24).fill(0xa5);
+  assert.deepEqual(await call(536, [handle, 0x10007, ...outputs]), { control: 1, value: 1 });
+  assert.deepEqual(words(), [10, -20 >>> 0, 30, -40 >>> 0, 0xff800123, 0xa5a5a5a5]);
+
+  for (const args of [
+    [0, 7, ...outputs],
+    [handle, 8, ...outputs],
+  ]) {
+    const prior = words();
+    assert.deepEqual(await call(536, args), { control: 1, value: 0 });
+    assert.deepEqual(words(), prior);
+  }
+});
+
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],

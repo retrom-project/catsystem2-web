@@ -445,6 +445,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 narrow Text wrappers 0x487b80, 0x487d00, 0x487d50 and 0x4881a0 use raw kind-8 messages 94, 96, 97 and 114 at 0x41bc80',
   },
+  {
+    ids: [76, 536],
+    value:
+      'Own 2.6.1.23 task parent 0x48a860 and bitmap attribute 0x489c30 write the parent ID or five selected metadata words',
+  },
 ];
 const particleInterpreterEvidence = [
   {
@@ -859,6 +864,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [76, 536], fields: { resultWritten: true } },
         { ids: [124, 125, 418, 557], fields: { resultWritten: false } },
         { ids: [320], fields: { resultWritten: false } },
         { ids: [265, 266, 267, 268, 269], fields: { resultWritten: true } },

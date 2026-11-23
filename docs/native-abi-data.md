@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 328       | 57            | 17            | 467     | Generic 21 of 45, Particle 32 of 44 and 33 of 51 |
+| 2.6.1.23 | 869        | 330       | 57            | 17            | 465     | Generic 21 of 45, Particle 32 of 44 and 33 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -188,6 +188,10 @@ low 16-bit ID. Main 713, 726, 730 and 737 tone, blur, resize and filter the
 image. An empty image owner writes zero dimensions in Main 712.
 Main 625 sends the selected entry's full animation enable word through raw
 Draw 269. Main 728 writes the bitmap's mask word without rebinding its owner.
+Main 76 reads the caller's parent ID. Main 536 searches an owned bitmap
+attribute using the low 16 bits of the selector. A match writes four rectangle
+words and the color, while a null bitmap or missing attribute returns zero
+without writing to the destinations.
 
 Main 265 opens a formatted movie filename and queries the Input task
 through Root 31. It sends raw Input 136, a handled notification with no
