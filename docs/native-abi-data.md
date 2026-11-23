@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 108       | 57            | 17            | 687     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 118       | 57            | 17            | 677     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -100,6 +100,12 @@ Main 207 writes a 16-word identity matrix. Main 294 creates an owned motion
 manager at speed one with an empty list. Main 295 releases that owner, and
 Main 296 clears the current motions. Main 586 writes the full flag word
 used by subsequent motion instances.
+Main 298 removes the requested group. Main 299–303 transfer or commit the
+manager's 144-byte base and working records. Main 302 allows an unmapped
+display output pointer. Main 304 and 535 read a formatted CP932 motion
+name from the `mot` archive and return a new handle or zero. Main 535 adds
+the authored delay word. Main 307 advances elapsed frames with x87 rounding,
+and Main 308 sets the speed.
 
 Main 790 reads a start and count pair from one of eight configured variable
 ranges. The first word selects local or global storage. An out-of-range

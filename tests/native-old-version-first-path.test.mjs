@@ -1963,6 +1963,67 @@ async function verifyMotionOwner(profile) {
   }
 }
 
+test('2.6.1.23 motion transfers a complete owner record and adds a formatted archived motion', async (t) => {
+  const { world, audio } = await oldTitleWorld(
+    { 'owned-7.kcs': kcsProgram([[59]]) },
+    undefined,
+    'grisaia-jp-engine-2.6.1.23',
+  );
+  t.after(async () => {
+    await world.close();
+    await audio.dispose();
+  });
+  const task = await world.initialize('empty.kcs'),
+    machine = task.machine,
+    call = (id, args) => world.runtime.native('main', id, args, machine, task),
+    handle = call(294, []).value,
+    { manager } = world.runtime.handles.get(handle, 'motion-manager'),
+    pointers = [64, 96, 128, 160, 240, 256, 272, 288, 304],
+    output = pointers.map((p) => p + 512);
+  const words = [handle, ...pointers];
+  words[6] = 0x12345678;
+  words[9] = 0x80000001;
+  machine.bytes(64, 192).fill(0x3f);
+  machine.store(128, floatBits(4.5));
+  assert.deepEqual(call(299, words), { control: 2 });
+  assert.deepEqual(call(300, [handle, ...output]), { control: 2 });
+  assert.equal(machine.load(output[2]), floatBits(4.5));
+  assert.equal(machine.load(output[5]), 0x12345678);
+  assert.equal(machine.load(output[8]), 0x80000001);
+  words[9] = 0x10000001;
+  assert.deepEqual(call(301, words), { control: 2 });
+  assert.deepEqual(call(302, [handle, ...output.slice(0, -1), 0xffffffff]), { control: 2 });
+  assert.equal(machine.load(output[8]), 0x80000001);
+  assert.deepEqual(call(303, [handle]), { control: 2 });
+  assert.deepEqual(manager.base, manager.working);
+  machine.store(512, 7);
+  machine.writeString('owned-%d[G512]', 320);
+  machine.store(352, floatBits(9));
+  machine.bytes(368, 3).set([2, 4, 8]);
+  assert.deepEqual(await call(304, [handle, 320, 352, 1, 368, 3, 17]), { control: 1, value: 1 });
+  assert.deepEqual(await call(535, [handle, 320, 0xffffffff, 0, 0, 0, 19, 11]), {
+    control: 1,
+    value: 2,
+  });
+  const first = manager.records.get(1),
+    delayed = manager.records.get(2);
+  assert.equal(first.group, 17);
+  assert.equal(first.instance.view.getUint32(MOTION_ABI.registers, true), floatBits(9));
+  assert.deepEqual(
+    [...first.instance.machine.bytes(first.instance.view.getUint32(MOTION_ABI.extraData, true), 3)],
+    [2, 4, 8],
+  );
+  assert.equal(delayed.instance.delay, 11);
+  assert.deepEqual(call(298, [handle, 17]), { control: 2 });
+  assert.deepEqual([...manager.records.keys()], [2]);
+  assert.deepEqual(call(308, [handle, floatBits(0.5)]), { control: 2 });
+  assert.deepEqual(call(307, [handle, 100, 1]), { control: 1, value: 0 });
+  assert.deepEqual(call(307, [handle, 100, 0]), { control: 1, value: 1 });
+  assert.deepEqual(call(307, [handle, 126, 0]), { control: 1, value: 1 });
+  assert.equal(delayed.startTick, 100);
+  assert.equal(delayed.instance.frame, 2);
+});
+
 test('63 motion state transfers and formatted script add preserve the manager and arguments', async () => {
   const { world, audio } = await oldTitleWorld(
     { 'owned-7.kcs': kcsProgram([[59]]) },

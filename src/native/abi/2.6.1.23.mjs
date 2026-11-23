@@ -190,6 +190,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Plane receiver 0x46a940 switches raw scale 61, bounds 70–71, matrix 53, blend 76 and live model coordinates 77',
   },
+  {
+    ids: [298, 299, 300, 301, 302, 303, 304, 307, 308, 535],
+    value:
+      'Own 2.6.1.23 Motion 0x481d70–0x482580 and 0x4828c0: owned group removal, 0x90-byte transfers, x87 elapsed frames and formatted archive add',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -383,6 +388,7 @@ export default {
   },
   globalFile: { growthBytes: 524288 },
   math: { lerpUsesX87: true, roundIntegerResult: 'int64-low-word' },
+  motion: { addUsesFormat: true, elapsedUsesX87: true },
   stringBank: { emptyGetResult: 1 },
   database: { nullExportPolicy: null },
   sound: {
@@ -527,15 +533,16 @@ export default {
       signatures: [
         {
           ids: [
-            6, 15, 64, 69, 70, 294, 318, 319, 419, 423, 424, 425, 450, 594, 596, 597, 646, 741, 790,
+            6, 15, 64, 69, 70, 294, 304, 307, 318, 319, 419, 423, 424, 425, 450, 535, 594, 596, 597,
+            646, 741, 790,
           ],
           fields: { resultWritten: true },
         },
         { ids: mainConstantZero, fields: { resultWritten: true } },
         {
           ids: [
-            65, 78, 84, 85, 93, 94, 101, 207, 295, 296, 343, 344, 345, 402, 420, 421, 422, 451, 453,
-            458, 459, 466, 586, 595, 630, 645, 647, 739, 740,
+            65, 78, 84, 85, 93, 94, 101, 207, 295, 296, 298, 299, 300, 301, 302, 303, 308, 343, 344,
+            345, 402, 420, 421, 422, 451, 453, 458, 459, 466, 586, 595, 630, 645, 647, 739, 740,
           ],
           fields: { resultWritten: false },
         },
