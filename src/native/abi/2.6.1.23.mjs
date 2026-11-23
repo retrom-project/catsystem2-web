@@ -420,6 +420,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 image selection 0x489dc0, Script bitmap owners 0x476380–0x477100 and the 60-byte Draw packet through raw 256 at 0x4809e0',
   },
+  {
+    ids: [712, 713, 715, 717, 724, 726, 730, 737],
+    value:
+      'Own 2.6.1.23 Script images 0x4765a0–0x476b1c and 0x477110 read geometry and attributes and apply authored tone, blur, resize and filter',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -758,6 +763,7 @@ export default {
     screenCaptureOpaque: true,
     retimeActiveScreenTransitions: true,
     drawEnablePendingPolicy: 'rising-edge',
+    emptyImageSizeWritesZero: true,
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: null,
     planeAlphaFlags: 1,
@@ -796,6 +802,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [717, 724], fields: { resultWritten: true } },
+        { ids: [712, 713, 715, 726, 730, 737], fields: { resultWritten: false } },
         { ids: [598, 710, 733], fields: { resultWritten: true } },
         { ids: [711, 714, 732, 736], fields: { resultWritten: false } },
         { ids: [699], fields: { resultWritten: false } },

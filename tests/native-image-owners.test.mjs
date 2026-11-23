@@ -34,10 +34,46 @@ test('23 Script resolves a base image and owns its decoded and generated canvase
   assert.deepEqual(await graphics.images.get(sourceBitmap).pixels(), Uint8ClampedArray.from(rgba));
   assert.deepEqual(await call(714, [source, 176, 180]), { control: 2 });
   assert.deepEqual([machine.load(176), machine.load(180)], [2, 1]);
+  const loaded = graphics.images.get(sourceBitmap);
+  Object.assign(loaded.state, {
+    offsetX: -4,
+    offsetY: 6,
+    baseX: -2,
+    baseY: 3,
+    attributes: [{ id: 7, rect: [10, -20, 30, -40], color: 0xff800123 }],
+  });
+  assert.deepEqual(await call(717, [source, 176, 180]), { control: 1, value: 1 });
+  assert.deepEqual([machine.load(176) | 0, machine.load(180)], [-2, 3]);
+  await call(715, [source, 176, 180]);
+  assert.deepEqual([machine.load(176) | 0, machine.load(180)], [-4, 6]);
+  const fields = [192, 196, 200, 204, 208];
+  assert.deepEqual(await call(724, [source, 0x10007, ...fields]), { control: 1, value: 1 });
+  assert.deepEqual(
+    fields.map((at) => machine.load(at)),
+    [10, -20 >>> 0, 30, -40 >>> 0, 0xff800123],
+  );
+  const empty = imageOwners.add(0, main.id, []);
+  assert.deepEqual(await call(712, [empty, 176, 180]), { control: 2 });
+  assert.deepEqual([machine.load(176), machine.load(180)], [0, 0]);
+  Object.assign(loaded.state, { offsetX: 0, offsetY: 0 });
+  await call(713, [source, 200, 100, 100]);
+  assert.equal((await loaded.pixels())[0], 34);
+  await call(730, [source, 4, 2]);
+  await call(714, [source, 176, 180]);
+  assert.deepEqual([machine.load(176), machine.load(180)], [4, 2]);
+  const resized = graphics.images.get(imageOwners.get(source).bitmap),
+    revision = resized.state.revision;
+  await call(726, [source, 1, 1]);
+  assert.ok(resized.state.revision > revision);
   assert.deepEqual(await call(736, [target, 1, 0, 1, 1, 0xff224466]), { control: 2 });
   assert.deepEqual(
     (await graphics.images.get(targetBitmap).pixels()).subarray(4, 8),
     Uint8ClampedArray.of(34, 68, 102, 255),
+  );
+  await call(737, [target, 3]);
+  assert.deepEqual(
+    (await graphics.images.get(targetBitmap).pixels()).subarray(4, 8),
+    Uint8ClampedArray.of(221, 187, 153, 255),
   );
   const drawID = await world.objects.create({ kind: 15, parent: world.root }),
     draw = graphics.drawTasks.get(drawID),
