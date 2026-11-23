@@ -35,6 +35,7 @@ const mainEntry = [
   244, 245, 246, 247, 250, 254, 256, 260, 262, 276, 277, 359, 360, 393, 400, 447, 448, 449, 452,
   465, 469, 582, 583, 584, 590, 591, 592, 593, 789, 848, 849,
 ];
+const planeInputReturn = 108;
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const baseMessages = [1, 2, 3].map((id) => toMessage(id));
 const cursorVisibility = 21;
@@ -48,7 +49,7 @@ const tables = (count, slots = [], evidence) => ({
     unknown: Array.from({ length: count }, (_, id) => id).filter((id) => !slots.includes(id)),
     ...(slots.length ? { recovered: slots } : {}),
   },
-  ...(slots.length
+  ...(evidence
     ? {
         evidence: [
           {
@@ -230,11 +231,19 @@ export default {
     accelerators: 'ansi-resource',
   },
   tables: {
-    main: tables(
-      869,
-      mainEntry,
-      'Own 2.6.1.23 startup KCS calls, task receivers, compact Settings and close CSS removal',
-    ),
+    main: {
+      ...tables(869, [...mainEntry, planeInputReturn].sort((a, b) => a - b)),
+      evidence: [
+        {
+          ids: mainEntry,
+          value: 'Own 2.6.1.23 startup KCS calls, task receivers, compact Settings and close CSS removal',
+        },
+        {
+          ids: [planeInputReturn],
+          value: 'Own 2.6.1.23 Main 0x48a2e0 sends raw Plane 88 with a 32-bit result and returns control 2',
+        },
+      ],
+    },
     generic: {
       ...tables(45, [17, 38, 41], 'Own 2.6.1.23 MOT handlers and fixed-base logo motion calls'),
       signatures: [{ ids: [17, 41], fields: { resultWritten: true } }],

@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 54        | 0             | 0             | 815     | 3 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 55        | 0             | 0             | 814     | 3 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -45,6 +45,11 @@ XML branches also use Main 1 for formatted logging and Main 36 to fill a
 bounded byte table. The three calls use the shared standard handlers.
 
 Its title draws through the caller-owned Input, Plane, Draw and FES tasks.
+The title's pointer handlers use Main 108 to set the Plane's input return
+word. Its wrapper sends raw Plane message 88 with W zero and the full 32-bit
+value in L. The current input dispatch consumes and clears this word. The
+wrapper returns control 2 without writing a VM result.
+
 Sound load messages carry the selected bank or group in W and the filename in
 L. The grouped stream uses the low word for the group ID and the high word to
 skip the loop-point lookup. Ranges are clamped to the 32 banks and exclude the
