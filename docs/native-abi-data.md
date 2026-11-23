@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 286       | 57            | 17            | 509     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 291       | 57            | 17            | 504     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -148,6 +148,10 @@ Main 257 adds a bitmap entry with its transform and clamped opacity.
 Main 258 removes a selected Draw entry. Main 261 queries the bitmap owned
 by the Draw task. Main 455 copies an optional source into its independent
 base image. A zero source hides the base image.
+Main 339–342 use raw Draw messages 263–266 to clip an entry, redraw, clear
+the retained entries and force output. Clear releases the entries and
+reinstates the base image when present. Main 534 sets the Draw update word
+through raw 278. These wrappers return control 2 without a VM result.
 
 Main 111 loads a formatted image list. Main 112 creates a bitmap, Main 114
 releases it, and Main 118 clones its pixels into an independent owner.

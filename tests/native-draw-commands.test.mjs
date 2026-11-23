@@ -41,8 +41,26 @@ test('2.6.1.23 Draw owns the returned bitmap and copies an independent base imag
   await source.fill(0, 0, 2, 2, 0xffabcdef);
   assert.equal(draw.state.baseVisible, true);
   assert.deepEqual((await copied.pixels()).slice(0, 4), Uint8ClampedArray.of(18, 52, 86, 255));
+  await call(257, [nativeID, 6, handle, one, one, 0, 0, 0, one, one, 255, 1, 0]);
+  const key = (world.nativeTaskID(main.id) | (6 << 16)) >>> 0;
+  assert.deepEqual(await call(339, [nativeID, 6, 1, 2, 3, 4]), { control: 2 });
+  assert.deepEqual(draw.entry(key).clip, [1, 2, 4, 6]);
+  assert.deepEqual(await call(534, [nativeID, 0]), { control: 2 });
+  assert.equal(draw.state.dirty, false);
+  assert.deepEqual(await call(340, [nativeID]), { control: 2 });
+  assert.deepEqual(await call(341, [nativeID]), { control: 2 });
+  assert.deepEqual(draw.state.renderer.items.map(({ key }) => key), [0]);
+  assert.equal(images.get(draw.entry(0).image).dataHandle, copied.dataHandle);
+  assert.deepEqual(await call(342, [nativeID]), { control: 2 });
+  const bitmap = images.get(draw.state.renderer.bitmap),
+    firstLogicalRow = (bitmap.height - 1) * bitmap.width * 4;
+  assert.deepEqual(
+    (await bitmap.pixels()).slice(firstLogicalRow, firstLogicalRow + 4),
+    Uint8ClampedArray.of(18, 52, 86, 255),
+  );
   assert.deepEqual(await call(258, [nativeID, 0]), { control: 2 });
   assert.deepEqual(await call(455, [nativeID, 0]), { control: 2 });
+  assert.deepEqual(await call(341, [nativeID]), { control: 2 });
   assert.equal(draw.state.baseVisible, false);
   assert.equal(draw.entry(0), undefined);
 });

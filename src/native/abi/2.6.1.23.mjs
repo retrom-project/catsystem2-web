@@ -395,6 +395,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Main 0x48b1c0–0x48b520 preserve live byte reads and copy counts, tab escapes, grouped tokens and NUL-list ownership',
   },
+  {
+    ids: [339, 340, 341, 342, 534],
+    value:
+      'Own 2.6.1.23 Draw wrappers 0x480060–0x480180 and 0x480300 send raw 263–266 and 278 to the retained receiver at 0x4277e0',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -771,6 +776,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [339, 340, 341, 342, 534], fields: { resultWritten: false } },
         { ids: [38, 39, 42], fields: { resultWritten: true } },
         { ids: [41, 43, 44], fields: { resultWritten: false } },
         { ids: [520], fields: { resultWritten: true } },
