@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
+import { NativeRuntime } from '../src/native/runtime.mjs';
 import assert from 'node:assert/strict';
 import { NativeResourceCache, nativeResourceCache } from '../src/native/resource-cache.mjs';
 import { KCSMachine, readKCS } from '../src/kcs.mjs';
@@ -197,4 +198,33 @@ test('all five KCS preload wrappers execute the cache and keep their control and
   } finally {
     await cache.close();
   }
+});
+
+test('2.6.1.23 Script preloads an authored category and ages it through the shared queue', async (t) => {
+  const reads = [],
+    resourceCache = new NativeResourceCache({
+      read: async (name) => {
+        reads.push(name);
+        return Uint8Array.of(7, 8);
+      },
+    }),
+    runtime = new NativeRuntime({
+      profile: 'grisaia-jp-engine-2.6.1.23',
+      read: async () => kcsProgram([[59]]),
+      services: { resourceCache, resourceFilename: (name, category) => `${category}/${name}` },
+    }),
+    task = await runtime.spawn('cache.kcs'),
+    m = task.machine,
+    call = (id, args = []) => runtime.native('main', id, args, m, task);
+  t.after(() => resourceCache.close());
+  m.writeString('owned.hg3', 256);
+  m.writeString('image', 320);
+  assert.deepEqual(await call(434), { control: 2 });
+  assert.deepEqual(await call(435, [256, 320, 2]), { control: 2 });
+  assert.deepEqual(await call(436), { control: 2 });
+  await resourceCache.settle();
+  assert.deepEqual(reads, ['image/owned.hg3']);
+  assert.deepEqual(await call(437, [2]), { control: 1, value: 1 });
+  assert.deepEqual(await call(438), { control: 2 });
+  assert.equal(resourceCache.entries[0].lifetime, 1);
 });

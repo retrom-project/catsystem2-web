@@ -267,6 +267,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 narrow compare 0x48ac50, live replace 0x48b610, own-bank expansion 0x483040 and raw space token offset 0x47a0c0',
   },
+  {
+    ids: [434, 435, 436, 437, 438],
+    value:
+      'Own 2.6.1.23 file-server preload wrappers 0x47bee0–0x47bfc0 clear, queue, start, poll and age the mounted file records',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -614,6 +619,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [437], fields: { resultWritten: true } },
+        { ids: [434, 435, 436, 438], fields: { resultWritten: false } },
         { ids: [21, 540], fields: { resultWritten: true } },
         { ids: [45, 278], fields: { resultWritten: false } },
         { ids: [261], fields: { resultWritten: true } },
