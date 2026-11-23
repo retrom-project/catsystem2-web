@@ -430,6 +430,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 0x4805f0 uses raw Draw 269 to enable the selected animation; 0x476ab0 writes the owned image mask DWORD',
   },
+  {
+    ids: [265, 266, 267, 268, 269, 270, 417, 787, 788],
+    value:
+      'Own 2.6.1.23 movie window wrappers 0x483790–0x483bc3 use Root 31 and raw Input 136; 0x47be50 reads the drawing rectangle',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -640,6 +645,7 @@ export default {
     vectorTransformWFirst: true,
   },
   motion: { addUsesFormat: true, elapsedUsesX87: true },
+  movie: { alwaysUseBgmVolume: true },
   scene: {
     translations: false,
     legacyHistoryRecords: true,
@@ -737,6 +743,7 @@ export default {
       },
     },
     root: { start: 29, captionWide: false, soundReset: 181 },
+    movieInput: { query: 31, gate: 143 },
     cursorVisibility,
     soundBaseOnly: [22],
     scriptForward: [9, 10, cursorVisibility, 64],
@@ -807,6 +814,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [265, 266, 267, 268, 269], fields: { resultWritten: true } },
+        { ids: [270, 417, 787, 788], fields: { resultWritten: false } },
         { ids: [625, 728], fields: { resultWritten: false } },
         { ids: [717, 724], fields: { resultWritten: true } },
         { ids: [712, 713, 715, 726, 730, 737], fields: { resultWritten: false } },
