@@ -2016,6 +2016,9 @@ test('2.6.1.23 motion transfers a complete owner record and adds a formatted arc
     [2, 4, 8],
   );
   assert.equal(delayed.instance.delay, 11);
+  assert.deepEqual(call(309, [handle, 1]), { control: 1, value: 1 });
+  assert.deepEqual(call(310, [handle, 17]), { control: 1, value: 1 });
+  assert.deepEqual(call(311, [handle]), { control: 1, value: 1 });
   assert.deepEqual(call(298, [handle, 17]), { control: 2 });
   assert.deepEqual([...manager.records.keys()], [2]);
   assert.deepEqual(call(308, [handle, floatBits(0.5)]), { control: 2 });
@@ -2024,6 +2027,15 @@ test('2.6.1.23 motion transfers a complete owner record and adds a formatted arc
   assert.deepEqual(call(307, [handle, 126, 0]), { control: 1, value: 1 });
   assert.equal(delayed.startTick, 100);
   assert.equal(delayed.instance.frame, 2);
+  assert.deepEqual(call(310, [handle, 17]), { control: 1, value: 0 });
+  assert.deepEqual(call(312, [handle, 2]), { control: 2 });
+  assert.deepEqual(call(313, [handle, 19]), { control: 2 });
+  assert.deepEqual(call(314, [handle]), { control: 2 });
+  assert.equal(delayed.instance.skip, true);
+  assert.deepEqual(call(440, [handle]), { control: 1, value: 1 });
+  assert.deepEqual(call(296, [handle]), { control: 2 });
+  assert.deepEqual(call(311, [handle]), { control: 1, value: 0 });
+  assert.deepEqual(call(440, [handle]), { control: 1, value: 0 });
 });
 
 test('63 motion state transfers and formatted script add preserve the manager and arguments', async () => {

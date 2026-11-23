@@ -296,6 +296,11 @@ const mainEvidence = [
     ids: [35],
     value: 'Own 2.6.1.23 memory copy 0x48b000 maps both operands and copies the requested span',
   },
+  {
+    ids: [309, 310, 311, 312, 313, 314, 440],
+    value:
+      'Own 2.6.1.23 motion status, skip and finish wrappers 0x4825a0–0x482670 and 0x482800, with instance/group/manager selection',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -645,6 +650,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [309, 310, 311, 440], fields: { resultWritten: true } },
+        { ids: [312, 313, 314], fields: { resultWritten: false } },
         { ids: [35], fields: { resultWritten: false } },
         { ids: [50], fields: { resultWritten: true } },
         { ids: [257], fields: { resultWritten: false } },
