@@ -67,7 +67,11 @@ test('63 main Script load binds live shared memory and relays a four-word packet
     await world.close({ flushFiles: false });
   }
 });
-test('known empty word natives push the fresh GCALL sentinel and retain diagnostics after restore', async () => {
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} empty word natives push the fresh GCALL sentinel after restore`, () =>
+    verifyEmptyWords(profile));
+
+async function verifyEmptyWords(profile) {
   const game = memoryGame({
       'main.kcs': kcsProgram([
         [37, 7],
@@ -83,7 +87,7 @@ test('known empty word natives push the fresh GCALL sentinel and retain diagnost
     make = async () => {
       const { NativeRuntime } = await import('../src/native/runtime.mjs');
       return new NativeRuntime({
-        profile: 'sdk-4.01-engine-2.6.1.74',
+        profile,
         read: (name) => game.read(name),
         services: { diagnostic: (e) => events.push(e) },
       });
@@ -111,7 +115,7 @@ test('known empty word natives push the fresh GCALL sentinel and retain diagnost
     true,
   );
   assert.throws(() => nativeReply(1), /32-bit result/);
-});
+}
 
 for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.74']) {
   const make = () => {

@@ -1590,6 +1590,40 @@ test('2.6.1.23 story setup appends CP932 data and selects the current viewport b
   assert.deepEqual([machine.load(192) | 0, machine.load(196) | 0], [4, -3]);
 });
 
+test('2.6.1.23 Script and MOT scalar contracts preserve their word and floating-point results', async (t) => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    { world, audio } = await oldTitleWorld({}, undefined, profile);
+  t.after(async () => {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  });
+  const main = await world.initialize('empty.kcs'),
+    call = (id, args) => world.runtime.native('main', id, args, main.machine, main);
+  assert.deepEqual(await call(64, [0x80000000]), { control: 1, value: 0x80000000 });
+  assert.deepEqual(await call(64, [-23]), { control: 1, value: 23 });
+  assert.deepEqual(await call(319, [floatBits(-1.5)]), { control: 1, value: 0xffffffff });
+  assert.deepEqual(await call(319, [floatBits(2 ** 32)]), { control: 1, value: 0 });
+  assert.ok(Number.isNaN(bitsFloat((await call(318, [0, 200, 20, 60, NaN].map(floatBits))).value)));
+  assert.deepEqual(await call(318, [0, 200, 20, 60, 40].map(floatBits)), {
+    control: 1,
+    value: floatBits(100),
+  });
+
+  const program = await readKCS(kcsProgram([...title67Call(16, [0xfffffffb], 512), [59]])),
+    mot = new MotionInstance(program, { profile });
+  mot.update(1);
+  assert.equal(mot.machine.load(512), 5);
+
+  const own = world.nativeTaskID(main.id);
+  assert.deepEqual(await call(453, [0x8ffe5da1]), { control: 2 });
+  assert.deepEqual(await call(452, [own]), { control: 1, value: 0x8ffe5da1 });
+  assert.deepEqual(await call(453, [0]), { control: 2 });
+  assert.deepEqual(await call(452, [own]), { control: 1, value: 0 });
+});
+
 test('63 startup Plane GCALLs bind and release the owned Input region', async () => {
   const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
   try {

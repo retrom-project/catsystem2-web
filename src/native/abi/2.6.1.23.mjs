@@ -138,6 +138,24 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Main 0x47bc50 doubles truncated device offset and projects it into two VM coordinates',
   },
+  {
+    ids: [6, 64, 65],
+    value:
+      'Own 2.6.1.23 Main 0x47b3d0 copies a word, 0x48c600 takes signed absolute value, and 0x47b380 yields',
+  },
+  {
+    ids: [318, 319],
+    value:
+      'Own 2.6.1.23 Main 0x48ce70 interpolates with x87 and 0x48cf50 writes the low word of an integer64',
+  },
+  {
+    ids: [453],
+    value: 'Own 2.6.1.23 Main 0x47b850 sets the full exit word on its caller',
+  },
+  {
+    ids: [140, 142, 549],
+    value: 'Own 2.6.1.23 shared 0x487a50 returns control 1 and leaves the GCALL sentinel untouched',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -330,6 +348,7 @@ export default {
     extendedQueries: null,
   },
   globalFile: { growthBytes: 524288 },
+  math: { lerpUsesX87: true, roundIntegerResult: 'int64-low-word' },
   stringBank: { emptyGetResult: 1 },
   database: { nullExportPolicy: null },
   sound: {
@@ -471,18 +490,27 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         {
-          ids: [15, 69, 70, 419, 423, 424, 425, 594, 596, 597, 790],
+          ids: [6, 15, 64, 69, 70, 318, 319, 419, 423, 424, 425, 594, 596, 597, 790],
           fields: { resultWritten: true },
         },
         { ids: mainConstantZero, fields: { resultWritten: true } },
-        { ids: [420, 421, 422, 458, 459, 595, 739], fields: { resultWritten: false } },
+        { ids: [65, 420, 421, 422, 453, 458, 459, 595, 739], fields: { resultWritten: false } },
+        {
+          ids: [140, 142, 549],
+          fields: {
+            argumentWords: null,
+            parameters: { kind: 'ignored', description: 'ignored' },
+            resultWritten: false,
+          },
+        },
       ],
     },
     generic: {
       ...tables(45, [
+        { ids: [16], value: 'Own 2.6.1.23 Generic 0x595650 writes the signed absolute value word' },
         { ids: [17, 38, 41], value: 'Own 2.6.1.23 MOT handlers and fixed-base logo motion calls' },
       ]),
-      signatures: [{ ids: [17, 41], fields: { resultWritten: true } }],
+      signatures: [{ ids: [16, 17, 41], fields: { resultWritten: true } }],
     },
     'particle-v1': tables(44),
     'particle-v2': tables(51),

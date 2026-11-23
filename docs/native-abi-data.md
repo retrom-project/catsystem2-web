@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 75        | 57            | 17            | 720     | 3 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 84        | 57            | 17            | 711     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -39,6 +39,13 @@ zero and returns control 1. Both bodies ignore their operands. Literal GCALLs
 in the fixed script archives establish separate widths for 435 Main slots,
 including 34 of these stubs. A width observation does not bind an unresolved
 handler or impose arity on the ignored operand lists.
+
+Main 140, 142 and 549 use a separate control-1 body at `0x487a50`. The
+body leaves the result unwritten. GCALL pushes its fresh `0xcccccccc` scratch
+word and reports the unwritten result. Main 6 copies its input word, Main 65
+yields and Main 453 sets the caller's exit word. Main 64 and Generic 16 take
+the signed absolute value. Main 318 uses x87 interpolation and Main 319
+writes the low word of the integer64 after half-step rounding.
 
 The Grisaia base profile selects the exact loose `config/startup.xml` and
 checks its executable resources after applying preferences. Startup then
