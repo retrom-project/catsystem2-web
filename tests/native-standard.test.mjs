@@ -181,6 +181,27 @@ test('original numeric text accepts D exponents and writes one NUL for percentag
   assert.deepEqual(invoke(m, 0x2e, [0x7fffffff, 80]), { control: 2 });
 });
 
+test('2.6.1.23 narrow dictionary keeps the first exact key and returns its miss word', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close({ flushFiles: false }));
+  const { main } = world,
+    m = main.machine,
+    call = (id, args) => world.runtime.native('main', id, args, m, main),
+    { value: handle } = await call(515, []);
+  m.writeString('猫%s', 256);
+  m.writeString('犬', 288);
+  assert.deepEqual(await call(517, [handle, 256, 0x80000001]), { control: 2 });
+  assert.deepEqual(await call(517, [handle, 256, 5]), { control: 2 });
+  assert.deepEqual(await call(518, [handle, 256]), { control: 1, value: 0x80000001 });
+  assert.deepEqual(await call(518, [handle, 288]), { control: 1, value: 0xffffffff });
+  assert.deepEqual(await call(518, [0, 256]), { control: 1, value: 0xffffffff });
+  assert.deepEqual(await call(516, [handle]), { control: 2 });
+  assert.throws(() => world.runtime.handles.get(handle, 'dictionary'), /released/);
+  m.writeString('motion (2 + 3) 149913%', 256);
+  assert.deepEqual(await call(519, [512, 256, 1]), { control: 1, value: 1 });
+  assert.equal(m.string(512), '(2 + 3)');
+});
+
 test('63 command arguments retain original list, arithmetic and string-bank semantics', async () => {
   const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
   try {

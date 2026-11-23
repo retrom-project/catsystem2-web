@@ -217,6 +217,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 CSS entries, tag, clear and clone at 0x483fc0, 0x484650, 0x484910 and 0x484c90–0x484cd0',
   },
+  {
+    ids: [515, 516, 517, 518, 519],
+    value:
+      'Own 2.6.1.23 narrow dictionary wrappers 0x477e20/0x477e90 and 0x479d60/0x479ee0 and grouped word selector 0x47a000',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -561,6 +566,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [515, 518, 519], fields: { resultWritten: true } },
+        { ids: [516, 517], fields: { resultWritten: false } },
         {
           ids: [
             6, 15, 64, 69, 70, 242, 248, 252, 294, 304, 307, 318, 319, 323, 325, 326, 327, 328, 329,
