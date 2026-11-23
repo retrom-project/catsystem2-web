@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 271       | 57            | 17            | 524     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 272       | 57            | 17            | 523     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -81,6 +81,8 @@ escapes and treats the `r` in `\wr` as ordinary text. It terminates the
 output and returns its CP932 byte length.
 Main 212 sets the caller's expression context word. Main 213 evaluates the
 mapped narrow expression in that bank after removing a trailing `%`.
+Main 539 evaluates scalar, comma-list and inclusive range arguments in the
+same bank. It writes at most the supplied capacity and returns the word count.
 Main 609 and 610 copy the bank's capacity in bytes between its live and
 backup allocations. Main 658 and 659 access its selected private context
 with a 512-word bound.

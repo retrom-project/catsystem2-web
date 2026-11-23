@@ -375,6 +375,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Main wrappers at 0x479ab0, 0x479c60 and 0x479c80 prepare and capture the caller priority range into a retained target',
   },
+  {
+    ids: [539],
+    value:
+      'Own 2.6.1.23 Main 0x485df0 evaluates scalar, comma-list or signed inclusive range arguments in the caller bank and writes a bounded word count',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -762,7 +767,7 @@ export default {
         { ids: [570, 571, 572], fields: { resultWritten: false } },
         { ids: [437], fields: { resultWritten: true } },
         { ids: [434, 435, 436, 438], fields: { resultWritten: false } },
-        { ids: [21, 540], fields: { resultWritten: true } },
+        { ids: [21, 539, 540], fields: { resultWritten: true } },
         { ids: [45, 278], fields: { resultWritten: false } },
         { ids: [261], fields: { resultWritten: true } },
         { ids: [258, 455], fields: { resultWritten: false } },

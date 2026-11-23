@@ -5,6 +5,7 @@ import { NativeRuntime } from '../src/native/runtime.mjs';
 import { readKCS, encodeCP932 } from '../src/kcs.mjs';
 import { kcsProgram } from './helpers.mjs';
 for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
   'rebellions-jp-engine-2.6.1.63',
   'sdk-4.01-engine-2.6.1.74',
   'nekopara-vol3-engine-2.6.1.76',
