@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 58        | 0             | 0             | 811     | 3 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 67        | 0             | 0             | 802     | 3 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -85,6 +85,12 @@ The close callback uses Main 469 with a CSS handle and a record ID. The engine
 compacts the remaining tagged records after removing the first match. The
 wrapper returns control 2 with the VM output word untouched. A null handle or
 missing record takes the no-op branch.
+
+The story's CG owner uses Main 419–425 and Main 458–459 for the registration
+tree, global-file records and CGL list. The `.23` tree serializes each filename
+in a 68-byte record with eight-byte selector nodes. The original CGL group
+walker at `0x592b40` advances by 64 bytes per variant. The shared gallery service
+preserves these widths and the registered tree when replacing its list.
 
 ## Registration data
 

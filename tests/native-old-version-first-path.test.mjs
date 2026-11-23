@@ -1143,9 +1143,13 @@ async function oldTitleWorld(
   return { world, audio };
 }
 
-test('63 Script owns and persists its CG registrations and releases the restored handle', async () => {
-  const profile = 'rebellions-jp-engine-2.6.1.63',
-    gallery = [0x13, 512],
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} Script persists its owned CG registrations and releases the restored handle`, () =>
+    verifyCGRegistrations(profile),
+  );
+
+async function verifyCGRegistrations(profile) {
+  const gallery = [0x13, 512],
     globalFile = [0x13, 516],
     mark = 7,
     list = new Uint8Array(12 + 72 + 64),
@@ -1157,7 +1161,7 @@ test('63 Script owns and persists its CG registrations and releases the restored
   list.set(bytes('shot,2,4'), 84);
   const files = {
     'sample-cg.dat': list,
-    'cg63.kcs': kcsProgram(
+    'registrations.kcs': kcsProgram(
       [
         [43, 419, 0],
         [38, gallery],
@@ -1218,7 +1222,7 @@ test('63 Script owns and persists its CG registrations and releases the restored
   const { world } = await oldTitleWorld(files, undefined, profile);
   try {
     await world.initialize('main.kcs');
-    const task = await world.spawnScript('cg63.kcs'),
+    const task = await world.spawnScript('registrations.kcs'),
       state = new NativeGlobalFile(0, 0x80000),
       file = world.runtime.handles.add('global-file', state);
     task.machine.store(516, file);
@@ -1253,7 +1257,7 @@ test('63 Script owns and persists its CG registrations and releases the restored
     await fresh?.close();
     await world.close();
   }
-});
+}
 
 test('63 Script opens, queries and releases a grouped tone table', async () => {
   const profile = 'rebellions-jp-engine-2.6.1.63',

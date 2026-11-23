@@ -110,6 +110,11 @@ const mainEvidence = [
     ids: [72, 73],
     value: 'Own 2.6.1.23 wrappers 0x48a630 and 0x48a6a0 copy VM bytes through raw Script 161',
   },
+  {
+    ids: [419, 420, 421, 422, 423, 424, 425, 458, 459],
+    value:
+      'Own 2.6.1.23 CG wrappers and owned tree, eight-byte selector nodes, 68-byte entries and 64-byte CGL variants',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const baseMessages = [1, 2, 3].map((id) => toMessage(id));
@@ -287,6 +292,7 @@ export default {
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: null,
   },
+  gallery: { listVariantWidth: 64 },
   startup: {
     loosePath: 'config/startup.xml',
     resourceCheck: 'after-preferences',
@@ -303,7 +309,10 @@ export default {
   tables: {
     main: {
       ...tables(869, mainEvidence),
-      signatures: [{ ids: [70], fields: { resultWritten: true } }],
+      signatures: [
+        { ids: [70, 419, 423, 424, 425], fields: { resultWritten: true } },
+        { ids: [420, 421, 422, 458, 459], fields: { resultWritten: false } },
+      ],
     },
     generic: {
       ...tables(45, [
