@@ -6,6 +6,7 @@ import { nativeTextUnits } from './text-scanner.mjs';
 import { LegacyTextState } from './legacy-text-state.mjs';
 import { rasterTextGlyph, compositeTextGlyph } from './text-raster.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
+import { nativeABI } from './abi/index.mjs';
 export const NATIVE_LEGACY_TEXT_IDS = Object.freeze([
   ...Array.from({ length: 17 }, (_, i) => 0x7b + i),
   0x187,
@@ -37,6 +38,9 @@ export class NativeLegacyTextRuntime {
   constructor(world) {
     this.world = world;
     this.tasks = new Map();
+    const text = world.profile && nativeABI(world.profile).text;
+    this.configurationBytes = text?.legacyConfigurationBytes ?? 1116;
+    this.clearPublishes = text?.legacyClearPublishes;
   }
   async create(record) {
     const task = new NativeLegacyTextTask(this, record);
@@ -71,7 +75,7 @@ export class NativeLegacyTextRuntime {
                 .get(target)
                 ?.message([task.id, message, w, l], bytes ? { payload: payload(bytes) } : {});
     if (id === 0x7b || id === 0x1a2) {
-      const bytes = new Uint8Array(1116),
+      const bytes = new Uint8Array(this.configurationBytes),
         v = new DataView(bytes.buffer);
       bytes.set(machine.bytes(arg(1), 96));
       for (const [at, index] of [[96, 2], ...(id === 0x1a2 ? [[612, 3]] : [])]) {
@@ -200,7 +204,7 @@ export class NativeLegacyTextTask {
     return ((this.record.effectiveFrame ?? 0) - (this.record.pausedFrames ?? 0)) >>> 0;
   }
   async configure(bytes) {
-    this.text.configure(bytes);
+    this.text.configure(bytes, this.owner.configurationBytes / 4);
     if (this.bitmap) await this.world.graphics.images.release(this.bitmap);
     this.bitmap = this.world.graphics.images.create(this.text.w(179), this.text.w(180));
     this.plane.makeGraph({
@@ -292,7 +296,7 @@ export class NativeLegacyTextTask {
     switch (message) {
       case 101:
         if (m) {
-          const bytes = m.bytes(l, 1116).slice();
+          const bytes = m.bytes(l, this.owner.configurationBytes).slice();
           if (new DataView(bytes.buffer).getUint32(60, true)) await this.configure(bytes);
         }
         return 0;
@@ -306,8 +310,9 @@ export class NativeLegacyTextTask {
       case 104:
         if (this.bitmap) {
           const b = this.world.graphics.images.get(this.bitmap);
-          b.state.rgba.fill(0);
+          (await b.pixels()).fill(0);
           await b.changed();
+          if (this.owner.clearPublishes) await this.output();
         }
         t.clear();
         return 0;

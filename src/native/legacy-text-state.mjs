@@ -14,9 +14,9 @@ export class LegacyTextState {
     if (n !== undefined) this.words[i] = n | 0;
     return this.words[i];
   }
-  configure(bytes) {
+  configure(bytes, count = 279) {
     const v = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-    for (let i = 0; i < 279; i++) this.words[177 + i] = v.getInt32(i * 4, true);
+    for (let i = 0; i < count; i++) this.words[177 + i] = v.getInt32(i * 4, true);
     this.rows = [];
     this.configured = true;
     for (let i = 471; i <= 475; i++) this.words[i] = this.words[183];

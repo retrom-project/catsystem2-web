@@ -2151,6 +2151,45 @@ for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1
     }
   });
 
+test('23 legacy Text retains both line-break tables and the Script color and text words', async () => {
+  const { world, audio } = await oldTitleWorld({}, undefined, 'grisaia-jp-engine-2.6.1.23');
+  try {
+    const main = await world.initialize('empty.kcs'),
+      { machine } = main,
+      drawTask = await world.objects.create({ kind: 8, parent: world.root }),
+      target = world.nativeTaskID(drawTask),
+      text = world.legacyText.tasks.get(drawTask).text,
+      call = (id, args) => world.runtime.native('main', id, args, machine, main);
+    for (const [index, word] of [
+      [2, 96],
+      [3, 48],
+      [6, 12],
+      [15, 32],
+      [16, 0xffffffff],
+      [17, 1],
+    ])
+      machine.store(256 + index * 4, word);
+    machine.writeString('あ', 512);
+    machine.writeString('a'.repeat(254) + 'あ', 768);
+    assert.deepEqual(await call(418, [target, 256, 512, 768]), { control: 2 });
+    assert.deepEqual([...text.profile(201, 202)], [0x82a0]);
+    assert.deepEqual([...text.profile(330, 331)], [97, 0x82a0]);
+    assert.deepEqual(await call(557, [target, 0xff123456]), { control: 2 });
+    assert.equal(text.w(470) >>> 0, 0xff123456);
+    machine.writeString('本文', 512);
+    assert.deepEqual(await call(124, [target, 512]), { control: 2 });
+    assert.deepEqual(
+      text.rows.map((row) => row[0]),
+      [0x967b, 0x95b6],
+    );
+    assert.deepEqual(await call(125, [target]), { control: 2 });
+    assert.deepEqual(text.rows, []);
+  } finally {
+    await world.close();
+    await audio.dispose();
+  }
+});
+
 for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
   test(`${profile} scene setup sets motion speed and prunes the live backlog to its configured limit`, () =>
     verifyLegacyBacklog(profile));

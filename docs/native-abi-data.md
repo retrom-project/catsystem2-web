@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 324       | 57            | 17            | 471     | Generic 12 of 45, Particle 25 of 44 and 26 of 51 |
+| 2.6.1.23 | 869        | 328       | 57            | 17            | 467     | Generic 12 of 45, Particle 25 of 44 and 26 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -83,6 +83,12 @@ Main 392 formats and extracts narrow text without ruby annotations or
 layout controls. Its older scanner copies literal tabs, consumes unknown
 escapes and treats the `r` in `\wr` as ordinary text. It terminates the
 output and returns its CP932 byte length.
+Main 418 configures the kind 8 Text task with the 1128-byte packet and
+both line-break tables. Main 124 appends formatted narrow text, Main 125
+clears the task and Main 557 sets its secondary color. These use raw
+94, 96, 97 and 114, respectively for configuration, append, clear and color.
+Clear publishes the empty bitmap when the configuration directs output
+to the virtual surface.
 Main 212 sets the caller's expression context word. Main 213 evaluates the
 mapped narrow expression in that bank after removing a trailing `%`.
 Main 539 evaluates scalar, comma-list and inclusive range arguments in the

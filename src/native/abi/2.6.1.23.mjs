@@ -440,6 +440,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 spline wrapper 0x4816b0 updates the five-float point records with x87 intermediates and returns control 2',
   },
+  {
+    ids: [124, 125, 418, 557],
+    value:
+      'Own 2.6.1.23 narrow Text wrappers 0x487b80, 0x487d00, 0x487d50 and 0x4881a0 use raw kind-8 messages 94, 96, 97 and 114 at 0x41bc80',
+  },
 ];
 const particleInterpreterEvidence = [
   {
@@ -573,6 +578,8 @@ export default {
   engineVersion: '2.6.1.23',
   xmlEncoding: 'Shift_JIS',
   text: {
+    legacyConfigurationBytes: 1128,
+    legacyClearPublishes: true,
     settingsCharacterBytes: 1,
     pathBytes: 260,
     plainSyntax: 'legacy-narrow',
@@ -847,6 +854,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [124, 125, 418, 557], fields: { resultWritten: false } },
         { ids: [320], fields: { resultWritten: false } },
         { ids: [265, 266, 267, 268, 269], fields: { resultWritten: true } },
         { ids: [270, 417, 787, 788], fields: { resultWritten: false } },
