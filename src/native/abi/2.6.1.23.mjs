@@ -277,6 +277,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 directed task notifications 0x482eb0/0x482ee0/0x482f40 send raw 400/403/402; 403 copies one host word or zero',
   },
+  {
+    ids: [243, 253],
+    value:
+      'Own 2.6.1.23 CSS string-bank wrappers 0x484060 and 0x484990 look up the current bank or the saved entry before creating a bank',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -481,7 +486,7 @@ export default {
     directTextNull: 'reject',
     directPathResult: 'success',
   },
-  stringBank: { emptyGetResult: 1, expandUsesExistingBank: true },
+  stringBank: { emptyGetResult: 1, expandUsesExistingBank: true, cssOwnerLookupOnly: true },
   database: { nullExportPolicy: null },
   sound: {
     banks: 32,
@@ -624,6 +629,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [243, 253], fields: { resultWritten: true } },
         { ids: [570, 571, 572], fields: { resultWritten: false } },
         { ids: [437], fields: { resultWritten: true } },
         { ids: [434, 435, 436, 438], fields: { resultWritten: false } },

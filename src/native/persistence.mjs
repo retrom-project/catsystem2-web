@@ -375,12 +375,15 @@ export function nativePersistence(id, args, machine, services = {}) {
     );
   }
   if (id === 0xf3 || id === 0xfd) {
-    if (!services.strings) return undefined;
-    if (id === 0xf3) container.write(args[1], serializeStringBank(services.strings));
-    else {
+    if (!services.strings && !services.createStrings) return undefined;
+    if (id === 0xf3) {
+      if (!services.strings) return result(0);
+      container.write(args[1], serializeStringBank(services.strings));
+    } else {
       const bytes = container.read(args[1]);
       if (bytes === null) return result(0);
-      importStringBank(services.strings, bytes);
+      const strings = services.strings ?? services.createStrings();
+      importStringBank(strings, bytes);
       services.markStringsDirty?.();
     }
     return result(1);

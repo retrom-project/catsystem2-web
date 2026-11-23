@@ -6,6 +6,7 @@ import { KCSMachine, nativeReply } from '../src/kcs/vm.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeVariableBank } from '../src/native/bank.mjs';
 import { NativeStringBank } from '../src/native/string-bank.mjs';
+import { NativeRuntime } from '../src/native/runtime.mjs';
 import {
   NativeGlobalFile,
   createGlobalEntries,
@@ -13,6 +14,7 @@ import {
   serializeStringBank,
   importStringBank,
 } from '../src/native/persistence.mjs';
+import { kcsProgram } from './helpers.mjs';
 
 const machine = () =>
   new KCSMachine({
@@ -60,6 +62,36 @@ test('string variable persistence sorts unsigned indices, replaces the bank, and
   assert.equal(restored.get(8), '猫');
   assert.equal(restored.get(-1), 'end');
   assert.equal(restored.dirty, true);
+});
+
+test('2.6.1.23 CSS stores the existing caller string bank and creates one only for a present entry', async () => {
+  const runtime = new NativeRuntime({
+      profile: 'grisaia-jp-engine-2.6.1.23',
+      read: async () => kcsProgram([[59]]),
+    }),
+    source = await runtime.spawn('source.kcs'),
+    target = await runtime.spawn('target.kcs'),
+    call = (task, id, args) => runtime.native('main', id, args, task.machine, task),
+    { value: file } = await call(source, 238, [0x81234567]);
+  for (const [id, args] of [
+    [243, [0, 7]],
+    [243, [file, 7]],
+    [253, [0, 7]],
+    [253, [file, 7]],
+  ])
+    assert.deepEqual(await call(target, id, args), { control: 1, value: 0 });
+  assert.equal(runtime.stringBank(target, false), null);
+  const bank = runtime.stringBank(source);
+  bank.set(0x82123456, '猫');
+  assert.deepEqual(await call(source, 243, [file, 7]), { control: 1, value: 1 });
+  assert.deepEqual(runtime.handles.get(file, 'global-file').read(7), serializeStringBank(bank));
+  assert.deepEqual(await call(target, 253, [file, 7]), { control: 1, value: 1 });
+  const restored = runtime.stringBank(target, false);
+  assert.notEqual(restored, bank);
+  assert.equal(restored.get(0x82123456), '猫');
+  assert.equal(restored.dirty, true);
+  restored.set(0x82123456, '犬');
+  assert.equal(bank.get(0x82123456), '猫');
 });
 
 test('global-file clear retains its tag and restores initial capacity while clones own independent payloads', () => {

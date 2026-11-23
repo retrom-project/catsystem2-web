@@ -279,7 +279,9 @@ export class NativeRuntime {
       const existingOnly =
         (id === 0x150 && abi.scene?.historyCaptureUsesExistingBank) ||
         (id === 0x116 && abi.stringBank?.expandUsesExistingBank);
-      services.strings = this.stringBank(task, !existingOnly);
+      const lookupOnly = (id === 0xf3 || id === 0xfd) && abi.stringBank?.cssOwnerLookupOnly;
+      services.strings = this.stringBank(task, !(existingOnly || lookupOnly));
+      if (lookupOnly) services.createStrings = () => this.stringBank(task);
     }
     services.sceneData = this.sceneData(task);
     services.initializeSceneData = () => {

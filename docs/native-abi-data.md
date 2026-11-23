@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 200       | 57            | 17            | 595     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 202       | 57            | 17            | 593     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -136,6 +136,9 @@ The native CSS history wrappers 385 and 386 take four words. They use
 40-byte headerless records followed by 72 bytes per saved string. The
 CSS file wrappers 242, 248, 252, 389 and 390 store or extract an owned
 nested file, query the tag, clear contents, and clone the file.
+Main 243 saves the existing caller string bank. Main 253 loads one only
+after finding its CSS entry. An absent bank or entry leaves caller
+ownership unchanged.
 
 Main 515–518 create and release a narrow dictionary, keep the first word
 for each exact byte key, and return `0xffffffff` on a miss. Main 519
