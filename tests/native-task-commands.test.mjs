@@ -7,6 +7,35 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { floatBits } from '../src/kcs.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
+
+test('2.6.1.23 Plane restore applies the VRAM selector and retains its notification state', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close({ flushFiles: false }));
+  const { main } = world,
+    machine = main.machine,
+    plane = await world.objects.create({ kind: 2, parent: world.root }),
+    target = world.nativeTaskID(plane),
+    call = (id, args) => world.runtime.native('main', id, args, machine, main);
+  assert.deepEqual(await call(653, [target, 17]), { control: 2 });
+  const state = world.graphics.get(plane).state;
+  assert.equal(state.vramType, 17);
+  machine.writeString('first', 96);
+  machine.writeString('second', 128);
+  const before = structuredClone(state);
+  assert.deepEqual(await call(654, [target, 96, 128]), { control: 2 });
+  assert.deepEqual(await call(655, [target, 96]), { control: 2 });
+  assert.deepEqual(state, before);
+  assert.deepEqual(await call(653, [0, 29]), { control: 2 });
+  assert.equal(state.vramType, 17);
+  const address = 48,
+    read = () => Array.from({ length: 5 }, (_, i) => machine.load(address + i * 4) | 0);
+  [0, -2, 7, 9, 37].forEach((word, i) => machine.store(address + i * 4, word));
+  assert.deepEqual(await call(218, [address, 2, 1, 8, 6]), { control: 2 });
+  assert.deepEqual(read(), [2, 1, 7, 6, 37]);
+  await call(218, [address, 7, 0, 9, 8]);
+  assert.deepEqual(read(), [0, 0, 0, 0, 37]);
+});
 
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
   test(`${profile} task command routing retains nested Top state, raw strings and draw queries after restore`, async () => {

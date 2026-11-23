@@ -400,6 +400,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Draw wrappers 0x480060–0x480180 and 0x480300 send raw 263–266 and 278 to the retained receiver at 0x4277e0',
   },
+  {
+    ids: [218, 653, 654, 655],
+    value:
+      'Own 2.6.1.23 rectangle wrapper 0x486200 intersects a guest RECT; Plane wrappers 0x47fac0–0x47fc1f send raw 79–81 to 0x46a940',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -776,6 +781,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [218, 653, 654, 655], fields: { resultWritten: false } },
         { ids: [339, 340, 341, 342, 534], fields: { resultWritten: false } },
         { ids: [38, 39, 42], fields: { resultWritten: true } },
         { ids: [41, 43, 44], fields: { resultWritten: false } },

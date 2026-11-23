@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 291       | 57            | 17            | 504     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 295       | 57            | 17            | 500     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -152,6 +152,12 @@ Main 339–342 use raw Draw messages 263–266 to clip an entry, redraw, clear
 the retained entries and force output. Clear releases the entries and
 reinstates the base image when present. Main 534 sets the Draw update word
 through raw 278. These wrappers return control 2 without a VM result.
+Main 653 applies the full VRAM type word through raw Plane message 79.
+Main 654 and 655 format two or one CP932 strings and send raw 80 and 81.
+The Plane consumes both notifications without changing its state.
+Main 218 replaces the caller's signed rectangle with its intersection,
+using four zero words for an empty result. All four wrappers leave the
+VM result unwritten.
 
 Main 111 loads a formatted image list. Main 112 creates a bitmap, Main 114
 releases it, and Main 118 clones its pixels into an independent owner.
