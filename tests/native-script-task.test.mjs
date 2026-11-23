@@ -71,6 +71,36 @@ async function verifyScriptLoad(profile) {
     await world.close({ flushFiles: false });
   }
 }
+
+test('2.6.1.23 task notifications preserve the directed word without changing guest control', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close({ flushFiles: false }));
+  const { main } = world,
+    target = world.nativeTaskID(main.id),
+    before = main.machine.pc,
+    process = world.runtime.imageDataBuffers.process,
+    word = process.allocate(4),
+    sent = [],
+    send = world.sendNativeEngine;
+  process.store(word, 0xdeadbeef);
+  t.mock.method(world, 'sendNativeEngine', async function (...args) {
+    sent.push(args.slice(0, 5));
+    return Reflect.apply(send, this, args);
+  });
+  for (const [id, message, args, value] of [
+    [570, 442, [target], 0],
+    [571, 445, [target, word], 0xdeadbeef],
+    [571, 445, [target, 0], 0],
+    [572, 444, [0], 0],
+  ]) {
+    assert.deepEqual(await world.runtime.native('main', id, args, main.machine, main), {
+      control: 2,
+    });
+    assert.deepEqual(sent.at(-1), [args[0], main.id, message, 0, value]);
+  }
+  assert.equal(main.machine.pc, before);
+});
+
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'grisaia-jp-engine-2.6.1.23'])
   test(`${profile} empty word natives push the fresh GCALL sentinel after restore`, () =>
     verifyEmptyWords(profile));

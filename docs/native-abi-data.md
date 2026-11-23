@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 197       | 57            | 17            | 598     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 200       | 57            | 17            | 595     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -106,6 +106,9 @@ requested byte span. They return control 2 with the VM result untouched.
 Main 143 sends the formatted `kcs` path through raw Script message 147
 and binds the caller's shared memory through raw 158. Its last operand
 selects control 2 or 4 and the wrapper leaves the VM result untouched.
+Main 570–572 send directed messages through raw 400, 403 and 402. Main
+571 reads one addressed host word or sends zero for a null pointer.
+All three return control 2 with the VM result untouched.
 
 Main 207 writes a 16-word identity matrix. Main 294 creates an owned motion
 manager at speed one with an empty list. Main 295 releases that owner, and
