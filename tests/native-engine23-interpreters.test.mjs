@@ -127,8 +127,17 @@ test('2.6.1.23 MOT and PTCL trigonometry preserve the original exceptional resul
   }
 });
 
-test('2.6.1.23 Main absolute value and atan2 preserve x87 result words through GCALL', async (t) => {
+test('2.6.1.23 Main sound geometry helpers preserve x87 result words through GCALL', async (t) => {
   const cases = [
+    [51, [0x80000000], 0x3f800000],
+    [51, [0x40490fdb], 0xbf800000],
+    [51, [0x7149f2ca], 0x3ed3a9bb],
+    [51, [0x7f800000], 0xffc00000],
+    [54, [0xbf800000], 0x40490fdb],
+    [54, [0], 0x3fc90fdb],
+    [54, [0x3f800000], 0],
+    [54, [0x40000000], 0xffc00000],
+    [54, [0xff852038], 0xffc52038],
     [57, [0xc0400000], 0x40400000],
     [57, [0x80000000], 0],
     [57, [0x80000001], 1],
@@ -158,6 +167,8 @@ test('2.6.1.23 Main absolute value and atan2 preserve x87 result words through G
     expected.map((_, i) => machine.load(first + i * 4)),
     expected,
   );
+  assert.equal(world.runtime.calls.get('main:51'), 4);
+  assert.equal(world.runtime.calls.get('main:54'), 5);
   assert.equal(world.runtime.calls.get('main:57'), 4);
   assert.equal(world.runtime.calls.get('main:397'), 6);
 });

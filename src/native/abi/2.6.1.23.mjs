@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [51, 54],
+    value:
+      'Own 2.6.1.23 Main 0x481510/0x481570 read one f32 and use the same CRT cosine and arccosine as Generic 2/5 and Particle 7/10',
+  },
+  {
     ids: [57, 397],
     value:
       'Own 2.6.1.23 Main 0x48c560 loads one f32 and applies x87 FABS; 0x48c530 loads y and x with the same CRT atan2 target as Generic 7 and Particle 12',
@@ -907,7 +912,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
-        { ids: [57, 397], fields: { resultWritten: true } },
+        { ids: [51, 54, 57, 397], fields: { resultWritten: true } },
         { ids: [76, 536], fields: { resultWritten: true } },
         { ids: [80, 81, 149, 196, 197, 203, 862], fields: { resultWritten: false } },
         { ids: [200], fields: { resultWritten: true } },
