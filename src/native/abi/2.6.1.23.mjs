@@ -311,6 +311,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Root 31 Input wrappers 0x4876e0/0x487750; raw 137 ORs four source words and raw 138 resets region activity and cursor position',
   },
+  {
+    ids: [392],
+    value:
+      'Own 2.6.1.23 wrapper 0x48b880 formats CP932 and invokes parser 0x4e2150 and plain writer 0x4e25c0',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -420,6 +425,7 @@ export default {
   text: {
     settingsCharacterBytes: 1,
     pathBytes: 260,
+    plainSyntax: 'legacy-narrow',
     configurationLayout: {
       fontBytes: 64,
       keyNameBytes: 32,
@@ -660,6 +666,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [392], fields: { resultWritten: true } },
         { ids: [285], fields: { resultWritten: true } },
         { ids: [286], fields: { resultWritten: false } },
         { ids: [649, 650], fields: { resultWritten: true } },

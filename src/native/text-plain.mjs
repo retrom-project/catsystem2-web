@@ -8,6 +8,7 @@ export async function nativePlainText(id, args, machine, world) {
   if (args.length !== 2) throw new Error('Native plain-text extraction expects two arguments');
   if (id === 0x419 && !nativeABI(world.profile).capabilities.utf8Text) return undefined;
   const service = world.runtime.services,
+    text = nativeABI(world.profile).text,
     bytes = service.formatBytes
       ? service.formatBytes(args[1], machine)
       : encodeCP932(service.format(args[1], machine));
@@ -16,11 +17,7 @@ export async function nativePlainText(id, args, machine, world) {
   } catch {
     return nativeReply(1, 0);
   }
-  const output = plainNativeText(
-    bytes,
-    id === 0x419,
-    nativeABI(world.profile).text.characterLengthPairs,
-  );
+  const output = plainNativeText(bytes, id === 0x419, text.characterLengthPairs, text.plainSyntax);
   machine.bytes(args[0], output.length + 1).set([...output, 0]);
   return nativeReply(1, output.length);
 }

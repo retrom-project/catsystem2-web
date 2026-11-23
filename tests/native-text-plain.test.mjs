@@ -10,6 +10,25 @@ import { formatNativeAt, encodeCP932 } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 
+test('23 Main392 extracts CP932 base text into shared memory and supports aliased source', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const { main, runtime } = world,
+    m = main.machine,
+    shared = 0x80000c3c,
+    source = Uint8Array.of(0x81, 0x5c, ...encodeCP932('[夏/なつ]\\n\\c0xff;光。\tA\\wrB\\qC\\iD')),
+    expected = Uint8Array.of(0x81, 0x5c, ...encodeCP932('夏光。\tArBCD'));
+  m.writeStringBytes(source, 128);
+  m.bytes(shared, 32).fill(0xa5);
+  const call = (destination, address) =>
+    runtime.native('main', 392, [destination, address], m, main);
+  assert.deepEqual(await call(shared, 128), { control: 1, value: expected.length });
+  assert.deepEqual(m.bytes(shared, expected.length + 2), Uint8Array.of(...expected, 0, 0xa5));
+  assert.deepEqual(await call(128, 128), { control: 1, value: expected.length });
+  assert.deepEqual(m.bytes(128, expected.length + 1), Uint8Array.of(...expected, 0));
+  assert.deepEqual(await call(0xffffffff, 128), { control: 1, value: 0 });
+});
+
 test('63 Main392 preserves wide CP932 pairs and emits only the displayed base text', async (t) => {
   const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
   t.after(() => world.close());
