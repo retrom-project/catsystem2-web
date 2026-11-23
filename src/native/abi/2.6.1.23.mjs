@@ -139,6 +139,11 @@ const mainEvidence = [
       'Own 2.6.1.23 Main 0x47bc50 doubles truncated device offset and projects it into two VM coordinates',
   },
   {
+    ids: [740, 741],
+    value:
+      'Own 2.6.1.23 Main 0x47bcb0 projects three full-position modes and 0x47d950 queries fullscreen mw_pos',
+  },
+  {
     ids: [6, 64, 65],
     value:
       'Own 2.6.1.23 Main 0x47b3d0 copies a word, 0x48c600 takes signed absolute value, and 0x47b380 yields',
@@ -504,12 +509,12 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         {
-          ids: [6, 15, 64, 69, 70, 318, 319, 419, 423, 424, 425, 450, 594, 596, 597, 646, 790],
+          ids: [6, 15, 64, 69, 70, 318, 319, 419, 423, 424, 425, 450, 594, 596, 597, 646, 741, 790],
           fields: { resultWritten: true },
         },
         { ids: mainConstantZero, fields: { resultWritten: true } },
         {
-          ids: [65, 420, 421, 422, 451, 453, 458, 459, 595, 630, 645, 647, 739],
+          ids: [65, 420, 421, 422, 451, 453, 458, 459, 595, 630, 645, 647, 739, 740],
           fields: { resultWritten: false },
         },
         {

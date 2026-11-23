@@ -1588,6 +1588,16 @@ test('2.6.1.23 story setup appends CP932 data and selects the current viewport b
   });
   assert.deepEqual(await call(739, [192, 196]), { control: 2 });
   assert.deepEqual([machine.load(192) | 0, machine.load(196) | 0], [4, -3]);
+
+  const screen = world.configuration.screen;
+  screen.multiWindowPosition = 2;
+  assert.deepEqual(await call(741, []), { control: 1, value: 0 });
+  screen.fullscreen = 1;
+  assert.deepEqual(await call(741, []), { control: 1, value: 2 });
+  screen.virtualHeight = 600;
+  screen.fullPosition = 2;
+  assert.deepEqual(await call(740, [192, 196]), { control: 2 });
+  assert.deepEqual([machine.load(192), machine.load(196)], [0, 600]);
 });
 
 test('2.6.1.23 Script and MOT scalar contracts preserve their word and floating-point results', async (t) => {
