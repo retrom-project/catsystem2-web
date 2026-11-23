@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 242       | 57            | 17            | 553     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 246       | 57            | 17            | 549     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -72,6 +72,9 @@ Main 16–20 and 22–24 implement formatted append, raw/formatted byte
 counts, byte comparisons and pair-aware truncation. The second compare
 formatter writes 1,024 bytes below the first, so a sufficiently long
 second result replaces the first string's beginning.
+Main 40 and 47–49 use the narrow CP932 pair rules for classification,
+character counts and search boundaries. Search returns a byte offset or
+the whole input byte length when absent.
 Main 392 formats and extracts narrow text without ruby annotations or
 layout controls. Its older scanner copies literal tabs, consumes unknown
 escapes and treats the `r` in `\wr` as ordinary text. It terminates the

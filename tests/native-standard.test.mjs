@@ -139,6 +139,22 @@ test('23 native length, append, compare, and truncation use narrow bytes and rev
   assert.equal(await call(20, [first, second]), 97);
 });
 
+test('23 character helpers use CP932 boundaries and keep byte-based search results', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const { main, runtime } = world,
+    m = main.machine,
+    call = async (id, args) => (await runtime.native('main', id, args, m, main)).value;
+  m.writeStringBytes(Uint8Array.of(0x81, 0x5c, 0xfa, 0x41, 0x5c), 64);
+  assert.equal(await call(40, [64]), 1);
+  assert.equal(await call(40, [66]), 0);
+  assert.equal(await call(47, [64]), 4);
+  assert.equal(await call(48, [put(m, 128, '本文A')]), 3);
+  assert.equal(await call(49, [64, put(m, 128, '\\')]), 4);
+  assert.equal(await call(49, [64, put(m, 128, '!')]), 5);
+  assert.equal(await call(49, [64, put(m, 128, '')]), 0);
+});
+
 test('an explicit byte formatter preserves UTF8 and invalid CP932 without a text round trip', () => {
   const m = machine(),
     bytes = Uint8Array.from([...new TextEncoder().encode('猫'), 0x81, 0x30, 0xfa, 0x40]);

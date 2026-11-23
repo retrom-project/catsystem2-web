@@ -326,6 +326,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 narrow string primitives 0x48aa90–0x48adc5, 0x4b1220 pair classification and descending formatter scratch',
   },
+  {
+    ids: [40, 47, 48, 49],
+    value:
+      'Own 2.6.1.23 narrow character helpers 0x48b3c0 and 0x48b710–0x48b87a use the standard pair classifier at 0x4b1220',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -677,6 +682,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [40, 47, 48, 49], fields: { resultWritten: true } },
         { ids: [16, 17, 18, 19, 20, 22, 23, 24], fields: { resultWritten: true } },
         { ids: [212, 609, 610, 659], fields: { resultWritten: false } },
         { ids: [213, 658], fields: { resultWritten: true } },
