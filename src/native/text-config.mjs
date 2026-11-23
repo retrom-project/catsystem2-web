@@ -41,22 +41,36 @@ export function textConfig(profile, mode, configuration, { fes = false } = {}) {
 export function textPacket(profile, mode, configuration) {
   const abi = nativeABI(profile).layouts?.textCores?.[mode];
   if (!abi) throw new Error(`Unavailable text mode ${mode} for ${profile}`);
+  if (mode !== 'nv') return packTextConfiguration(abi, textConfig(profile, mode, configuration));
   const out = new Uint8Array(abi.packetSize ?? abi.configSize + 16),
-    v = new DataView(out.buffer);
+    v = new DataView(out.buffer),
+    size = nativeABI(profile).layouts.textCores.cp932.configSize,
+    second = 24 + size + 16;
   v.setUint32(0, out.length, true);
-  if (mode !== 'nv') out.set(textConfig(profile, mode, configuration), 4);
-  else {
-    const size = nativeABI(profile).layouts.textCores.cp932.configSize,
-      second = 24 + size + 16;
-    v.setUint32(4, 800, true);
-    v.setUint32(8, 600, true);
-    for (const at of [12, second - 12]) {
-      v.setUint32(at + 8, 800, true);
-      v.setUint32(at + 12, 600, true);
-    }
-    out.set(textConfig(profile, 'cp932', configuration), 28);
-    out.set(textConfig(profile, 'cp932', configuration), second + 4);
-    v.setUint32(second + 4 + 104, 0, true);
+  v.setUint32(4, 800, true);
+  v.setUint32(8, 600, true);
+  for (const at of [12, second - 12]) {
+    v.setUint32(at + 8, 800, true);
+    v.setUint32(at + 12, 600, true);
   }
+  out.set(textConfig(profile, 'cp932', configuration), 28);
+  out.set(textConfig(profile, 'cp932', configuration), second + 4);
+  v.setUint32(second + 4 + 104, 0, true);
+  return out;
+}
+
+export function packTextConfiguration(binding, config, x = 0, y = 0, output = 0) {
+  const native = binding.nativeConfig,
+    bytes = native
+      ? config.subarray(native.offsetInParser, native.offsetInParser + native.size)
+      : config,
+    out = new Uint8Array(binding.packetSize ?? bytes.length + 16),
+    v = new DataView(out.buffer),
+    at = 4 + bytes.length;
+  v.setUint32(0, out.length, true);
+  out.set(bytes, 4);
+  v.setInt32(at, x, true);
+  v.setInt32(at + 4, y, true);
+  v.setUint32(at + 8, output, true);
   return out;
 }

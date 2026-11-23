@@ -7,7 +7,7 @@ import {
   fesConfigurationFontBytes,
   fesNativeFontFace,
 } from './fes-text-layout.mjs';
-import { textConfig, textPacket } from './text-config.mjs';
+import { packTextConfiguration, textConfig, textPacket } from './text-config.mjs';
 import { initializeFESPlane } from './fes-object-factory.mjs';
 import { markFESObjectDirty } from './fes-common-model.mjs';
 import { fesDefinitionResourceReference } from './fes-definitions.mjs';
@@ -691,6 +691,7 @@ export class FESStringDriver {
       task = this.validate(instance, object);
     const runtime = await this.world.text.runtime(),
       mode = object.nativeType === 29 ? 'nv' : object.nativeType === 37 ? 'utf8' : 'cp932',
+      messages = nativeABI(this.world.profile).text.resourceMessages,
       first = mode === 'nv' ? 489 : mode === 'utf8' ? 469 : 449,
       scratch = this.workspace(object);
     let cursorMask = 0;
@@ -715,19 +716,14 @@ export class FESStringDriver {
           ...context,
           ...(bytes ? { payload: payload(bytes), nativeSenderWorldID: instance.runtimeID } : {}),
         }),
-      packet = () => {
-        const cfg = layout ? layout.config() : s.nv,
-          b = new Uint8Array(mode === 'nv' ? runtime.bindings(mode).packetSize : cfg.length + 16),
-          v = new DataView(b.buffer);
-        v.setUint32(0, b.length, true);
-        b.set(cfg, 4);
-        const at = 4 + cfg.length;
-        v.setInt32(at, Math.trunc(object.vramX), true);
-        v.setInt32(at + 4, Math.trunc(object.vramY), true);
-        const output = layout ? (layout.abi.packetOutput ?? layout.word(layout.abi.flags - 1)) : 1;
-        v.setUint32(at + 8, output, true);
-        return b;
-      };
+      packet = () =>
+        packTextConfiguration(
+          runtime.bindings(mode),
+          layout ? layout.config() : s.nv,
+          Math.trunc(object.vramX),
+          Math.trunc(object.vramY),
+          layout ? (layout.abi.packetOutput ?? layout.word(layout.abi.flags - 1)) : 1,
+        );
     if (s.first) {
       await send(1, 0, 0, packet());
       s.first = false;
@@ -769,12 +765,12 @@ export class FESStringDriver {
     if (layout) {
       let layoutChanged = false;
       const abi = layout.abi;
-      if (layout.word(abi.shift + 1)) {
+      if (abi.shift !== null && layout.word(abi.shift + 1)) {
         await send(15, 0, layout.word(abi.shift));
         layout.word(abi.shift + 1, 0);
         layoutChanged = true;
       }
-      if (nativeABI(this.world.profile).text.resourceMessages.clearCategory)
+      if (messages.clearCategory)
         for (let i = 0; i < 4; i++)
           if (layout.word(abi.category + i)) {
             await send(19, i);
@@ -824,11 +820,11 @@ export class FESStringDriver {
       if (s.source.length) await send(3, 0, 0, join(s.source, Uint8Array.of(0)));
       s.oldLength = s.source.length;
       s.fullSource = false;
-      if (mode !== 'nv') s.line = await send(14);
+      if (mode !== 'nv' && messages.maxOperation >= 14) s.line = await send(14);
     } else if (s.oldLength !== s.source.length) {
       await send(3, 0, 0, join(s.source.subarray(s.oldLength), Uint8Array.of(0)));
       s.oldLength = s.source.length;
-      if (mode !== 'nv') s.line = await send(14);
+      if (mode !== 'nv' && messages.maxOperation >= 14) s.line = await send(14);
     }
 
     if (object.dirty) {
@@ -847,7 +843,7 @@ export class FESStringDriver {
     }
     if (s.remaining !== 0) {
       s.remaining = await send(mode === 'nv' ? 6 : 5);
-      if (mode !== 'nv') s.remainingPage = await send(17);
+      if (mode !== 'nv' && messages.maxOperation >= 17) s.remainingPage = await send(17);
     }
     scratch.cursorWritten = 0;
     await send(mode === 'nv' ? 12 : 11, 0, 4, null, { payload: scratch.cursorMemory });

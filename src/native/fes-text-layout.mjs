@@ -182,7 +182,8 @@ export class NativeFESTextLayout {
       case 'font':
       case 'fontind': {
         let face = args[mode === 'fontind' ? 1 : 0];
-        if (face === undefined) face = defaults.fontBytes?.();
+        if (face === undefined)
+          face = abi.defaultFont ? encodeCP932(abi.defaultFont) : defaults.fontBytes?.();
         if (face === undefined) throw new Error('FES font requires its complete narrow face bytes');
         this.setFont(face, mode === 'fontind' ? p(0) : 0);
         dirty();

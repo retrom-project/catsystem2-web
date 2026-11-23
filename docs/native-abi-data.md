@@ -111,6 +111,18 @@ in a 68-byte record with eight-byte selector nodes. The original CGL group
 walker at `0x592b40` advances by 64 bytes per variant. The shared gallery service
 preserves these widths and the registered tree when replacing its list.
 
+The .23 STRING object creates its own kind 48 text task. Raw messages 407–419
+operate on a 188-byte packet. Its 172-byte configuration starts with width
+and height and includes the 32-byte CP932 face at configuration offset 124.
+The packet ends with two VRAM coordinates and the output flag. The writer
+projects those fields into the shared parser and preserves the native packet
+for task updates and restore.
+
+The .23 layout dispatcher has 17 literal modes. Five color aliases perform no
+action on STRING. The remaining modes include dimensions, colors, margins,
+sizes and font. The default `font` operand selects the fixed MS Gothic face.
+Reset reloads the settings font and retains dimensions and layout colors.
+
 ## Registration data
 
 Each table has an explicit `count` and `slots` object. Its `recovered` and

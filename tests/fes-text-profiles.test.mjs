@@ -20,6 +20,65 @@ test('unreviewed STRING layouts report the profile and object type', () => {
   });
 });
 
+test('ABI 2.6.1.23 FES STRING publishes its 188-byte packet and draws and restores CP932', async () => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    source = encodeCP932('折り返し'),
+    body = encodeCP932(`#DEFINE
+STRING text
+#OBJECT SIZE POS PRI DISP
+text 48,24 4,4 60001 1
+#START
+text layout vdraw 0
+text layout color 32 64 128
+text layout size 8
+text layout frame 0
+text layout shadow 0 0
+text str 折り返し
+text draw
+text skip
+next IDLE
+#IDLE
+#RESET
+text reset
+break
+`),
+    world = await defaultFESWorld(profile, { 'screen.fes': body });
+  let fresh;
+  try {
+    const { task, instance } = await loadDefaultFES(world);
+    await task.tick();
+    await task.tick();
+    const text = instance.collection.lookup('text', 0),
+      child = world.objects.objects.get(text.nativeTaskID),
+      writer = await child.implementation.writer(),
+      raw = () => new DataView(child.implementation.text.config.buffer);
+    assert.equal(child.kind, 48);
+    assert.equal(child.parent, instance.runtimeID);
+    assert.equal(raw().byteLength, 188);
+    assert.deepEqual(
+      [0, 4, 8, 12, 24, 176, 180, 184].map((at) => raw().getUint32(at, true)),
+      [188, 48, 24, 0xff804020, 8, 0, 0, 1],
+    );
+    assert.deepEqual(writer.parser.source, source);
+    assert.ok(writer.frame().rgba.some((value) => value !== 0));
+    await task.player.notify('RESET');
+    await task.syncObjects();
+    assert.deepEqual(
+      [4, 8, 12, 24, 184].map((at) => raw().getUint32(at, true)),
+      [48, 24, 0xff804020, 24, 1],
+    );
+
+    fresh = await defaultFESWorld(profile, {}, { initialize: false });
+    await fresh.restore(world.snapshot());
+    const restored = fresh.objects.objects.get(child.id).implementation;
+    assert.deepEqual(restored.text.config, child.implementation.text.config);
+    assert.deepEqual((await restored.writer()).parser.source, source);
+  } finally {
+    await fresh?.close();
+    await world.close();
+  }
+});
+
 test('ABI 2.6.1.63 FES STRING sends the 200-byte configuration and draws retained CP932 text', async () => {
   const profile = 'rebellions-jp-engine-2.6.1.63',
     source = encodeCP932('折り返し'),

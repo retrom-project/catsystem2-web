@@ -6,6 +6,7 @@ import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicTask } from './graphics.mjs';
 import { NativeBitmap } from './image.mjs';
 import { NativeTextRuntime, NativeTextWriter } from './text.mjs';
+import { textConfig } from './text-config.mjs';
 import { CanvasTextGlyphs } from '../render/native-text.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
 import { nativeReply } from '../kcs.mjs';
@@ -182,13 +183,15 @@ export class NativeTextTask {
     }
     const runtime = await this.service.runtime(),
       bindings = runtime.bindings(this.mode),
+      packetSize = bindings.packetSize ?? bindings.configSize + 16,
+      configEnd = 4 + (bindings.nativeConfig?.size ?? bindings.configSize),
       memory = this.memory(sender, context),
       pointer = l !== 0 || context.payload;
     let writer = await this.writer();
     if (operation === 0) {
-      if (pointer && memory?.load(l) === bindings.configSize + 16)
+      if (pointer && memory?.load(l) === packetSize)
         if (memory.write) memory.write(l, await runtime.defaultPacket(this.mode));
-        else memory.bytes(l, bindings.configSize + 16).set(await runtime.defaultPacket(this.mode));
+        else memory.bytes(l, packetSize).set(await runtime.defaultPacket(this.mode));
       return 0;
     }
     if (operation === 1 || operation === 2) {
@@ -203,15 +206,16 @@ export class NativeTextTask {
         this.text.sourceEvents = [];
         this.text.source = '';
       }
-      if (memory.load(l) !== bindings.configSize + 16) return 0;
-      this.text.config = memory.bytes(l, bindings.configSize + 16).slice();
-      const config = this.text.config.subarray(4, 4 + bindings.configSize),
+      if (memory.load(l) !== packetSize) return 0;
+      this.text.config = memory.bytes(l, packetSize).slice();
+      const payload = this.text.config.subarray(4, configEnd),
+        config = bindings.nativeConfig
+          ? textConfig(this.world.profile, this.mode, this.world.configuration)
+          : payload,
         view = new DataView(this.text.config.buffer);
-      this.text.vram = [
-        view.getInt32(4 + bindings.configSize, true),
-        view.getInt32(8 + bindings.configSize, true),
-      ];
-      this.text.output = view.getUint32(12 + bindings.configSize, true);
+      if (bindings.nativeConfig) config.set(payload, bindings.nativeConfig.offsetInParser);
+      this.text.vram = [view.getInt32(configEnd, true), view.getInt32(configEnd + 4, true)];
+      this.text.output = view.getUint32(configEnd + 8, true);
       await writer.configure(config);
       if (operation === 1) {
         this.text.sourceEvents = [];
@@ -219,10 +223,11 @@ export class NativeTextTask {
         this.text.active = false;
         this.text.source = '';
         this.text.sourceEvents = [];
+        const dimensions = new DataView(config.buffer, config.byteOffset, config.byteLength);
         this.makeGraph({
           type: 1,
-          width: view.getUint32(8, true),
-          height: view.getUint32(12, true),
+          width: dimensions.getUint32(4, true),
+          height: dimensions.getUint32(8, true),
           vram: true,
         });
         setMotionVector(this.graph.textureTransform, MOTION_ABI.pos, [...this.text.vram, 0]);
