@@ -193,14 +193,14 @@ function copyParenthesis(m, destination, source) {
   m.store(destination + size, 0, 2);
   return size;
 }
-function splitLiveParentheses(m, destination, source, separators) {
+function splitLiveTokens(m, destination, source, separators, groups) {
   if (![destination, source, separators].every((address) => nativeDataMapped(m, address))) return;
   let read = 0,
     written = 0,
     separated = true,
     previous = 0;
   for (let byte; (byte = m.load(source + read, 1)); ) {
-    if (byte === 40) {
+    if (groups && byte === 40) {
       if (alphabetic(previous) && !separated) m.store(destination + written++, 0, 1);
       const size = copyParenthesis(m, destination + written, source + read);
       read += size;
@@ -458,8 +458,10 @@ export function nativeStandard(id, args, m, services = {}) {
     case 0x26:
     case 0x27: {
       requireArguments(4);
-      const limit = ((args[3] >>> 0) - 2) >>> 0;
-      if (id === 0x26 && services.profile && nativeABI(services.profile).text.tokenLiveCopy) {
+      const limit = ((args[3] >>> 0) - 2) >>> 0,
+        text = services.profile && nativeABI(services.profile).text,
+        formattedTokens = id === 0x27 && !text?.formattedTokenBackslashT;
+      if (id === 0x26 && text?.tokenLiveCopy) {
         const separators = delimiters(cstring(m, args[2]), false);
         let length = 0;
         while (length < limit) {
@@ -471,9 +473,14 @@ export function nativeStandard(id, args, m, services = {}) {
         m.store(args[0] + length, 0, 2);
         return value(length);
       }
-      a = id === 0x27 ? formatBytes(services, m, args[1]) : cstring(m, args[1]);
+      a =
+        id === 0x26
+          ? cstring(m, args[1])
+          : formattedTokens
+            ? formatBytes(services, m, args[1])
+            : formattedCString(services, m, args[1]);
       if (a === undefined) return undefined;
-      const separators = delimiters(cstring(m, args[2]), id === 0x27);
+      const separators = delimiters(cstring(m, args[2]), formattedTokens);
       let length = 0;
       while (length < a.length && length < limit && !separators.has(a[length])) length++;
       write(m, args[0], a.subarray(0, length));
@@ -484,16 +491,15 @@ export function nativeStandard(id, args, m, services = {}) {
       a = cstring(m, args[0]);
       return value(Number(doubleByte(a, 0)));
     case 0x29:
-    case 0x2b:
+    case 0x2b: {
       requireArguments(3);
-      if (
-        id === 0x2b &&
-        services.profile &&
-        nativeABI(services.profile).text.plainParenthesisTokens
-      )
-        splitLiveParentheses(m, ...args);
-      else split(m, args[0], cstring(m, args[1]), new Set(cstring(m, args[2])), id === 0x2b);
+      const text = services.profile && nativeABI(services.profile).text,
+        groups = id === 0x2b;
+      if (groups ? text?.plainParenthesisTokens : text?.tokenSplitBytewise)
+        splitLiveTokens(m, ...args, groups);
+      else split(m, args[0], cstring(m, args[1]), new Set(cstring(m, args[2])), groups);
       return done();
+    }
     case 0x2a: {
       requireArguments(3);
       const selected = listEntry(m, args[1], args[2]);

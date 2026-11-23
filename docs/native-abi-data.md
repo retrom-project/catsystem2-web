@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 280       | 57            | 17            | 515     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 286       | 57            | 17            | 509     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -75,6 +75,10 @@ second result replaces the first string's beginning.
 Main 40 and 47–49 use the narrow CP932 pair rules for classification,
 character counts and search boundaries. Search returns a byte offset or
 the whole input byte length when absent.
+Main 38 and 39 copy up to the first separator or capacity and write two NULs.
+Both recognize literal `\t` as a separator escape. Main 41 splits the live
+source bytewise, Main 43 keeps nested parenthesized groups, and Main 42/44
+select and join the live NUL-delimited entries.
 Main 392 formats and extracts narrow text without ruby annotations or
 layout controls. Its older scanner copies literal tabs, consumes unknown
 escapes and treats the `r` in `\wr` as ordinary text. It terminates the

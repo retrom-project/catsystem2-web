@@ -322,6 +322,41 @@ test('2.6.1.23 converts integer percentages and angles with x87 intermediates', 
   assert.deepEqual(await call(63, 1), { control: 1, value: 57 });
 });
 
+test('2.6.1.23 token and list commands preserve their live narrow byte reads', async () => {
+  const runtime = new NativeRuntime({
+      profile: 'grisaia-jp-engine-2.6.1.23',
+      read: async () => kcsProgram([[59]]),
+    }),
+    task = await runtime.spawn('case.kcs'),
+    m = task.machine,
+    call = (id, ...args) => runtime.native('main', id, args, m, task);
+  m.writeString('ABCD', 256);
+  m.writeString('\\t', 512);
+  assert.deepEqual(await call(38, 257, 256, 512, 5), { control: 1, value: 3 });
+  assert.deepEqual(m.bytes(256, 6), Uint8Array.of(65, 65, 65, 65, 0, 0));
+  m.writeString('one\ttwo', 256);
+  assert.deepEqual(await call(39, 768, 256, 512, 12), { control: 1, value: 3 });
+  assert.equal(m.string(768), 'one');
+
+  m.writeStringBytes(Uint8Array.of(0x81, 0x5c, 65), 256);
+  m.writeString('\\', 512);
+  assert.deepEqual(await call(41, 768, 256, 512), { control: 2 });
+  assert.deepEqual(m.bytes(768, 5), Uint8Array.of(0x81, 0, 65, 0, 0));
+  m.bytes(256, 6).set([65, 0, 66, 0, 0, 0xa5]);
+  assert.deepEqual(await call(42, 257, 256, 1), { control: 1, value: 0 });
+  assert.deepEqual(m.bytes(256, 6), Uint8Array.of(65, 66, 0, 0, 0, 0xa5));
+
+  m.writeString('f(1, 2) (:猫 (a b)),x', 256);
+  m.writeString(', ', 512);
+  assert.deepEqual(await call(43, 768, 256, 512), { control: 2 });
+  assert.deepEqual(await call(42, 960, 768, 2), { control: 1, value: 1 });
+  assert.equal(m.string(960), '(:猫 (a b))');
+  assert.deepEqual(await call(44, 960, 768, 1, 2), { control: 2 });
+  assert.equal(m.string(960), '(1, 2) (:猫 (a b)) ');
+  assert.deepEqual(await call(44, 768, 768, 0, 0xffffffff), { control: 2 });
+  assert.equal(m.string(768), '');
+});
+
 test('63 command arguments retain original list, arithmetic and string-bank semantics', async () => {
   const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
   try {

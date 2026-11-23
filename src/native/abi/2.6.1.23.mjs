@@ -390,6 +390,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Main 0x479670, 0x4798f0–0x479950 and 0x4799d0–0x479a30 target the active read and paired Fade and Wipe receivers at 0x468670 and 0x456d00',
   },
+  {
+    ids: [38, 39, 41, 42, 43, 44],
+    value:
+      'Own 2.6.1.23 Main 0x48b1c0–0x48b520 preserve live byte reads and copy counts, tab escapes, grouped tokens and NUL-list ownership',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -502,6 +507,12 @@ export default {
     plainSyntax: 'legacy-narrow',
     formattedComparisonSecondBeforeFirst: true,
     percentProduct: 'x87-integer',
+    formattedTokenBackslashT: true,
+    tokenLiveCopy: true,
+    tokenSplitBytewise: true,
+    plainParenthesisTokens: true,
+    listEntryLiveCopy: true,
+    listJoinLiveCopy: true,
     configurationLayout: {
       fontBytes: 64,
       keyNameBytes: 32,
@@ -760,6 +771,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [38, 39, 42], fields: { resultWritten: true } },
+        { ids: [41, 43, 44], fields: { resultWritten: false } },
         { ids: [520], fields: { resultWritten: true } },
         { ids: [527, 528, 530, 531], fields: { resultWritten: false } },
         { ids: [46], fields: { resultWritten: false } },
