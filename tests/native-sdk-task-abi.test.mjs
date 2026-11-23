@@ -9,6 +9,7 @@ import { kcsProgram } from './helpers.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 
 const profile = 'sdk-4.01-engine-2.6.1.74';
+const legacy = 'grisaia-jp-engine-2.6.1.23';
 const game = nativeABI('nekopara-vol3-engine-2.6.1.76');
 const specs = [
   { id: 0x42, label: 'task creation', words: 3, args: [27, 0, 0], evidence: 'task-create' },
@@ -86,7 +87,7 @@ async function createScript(world, name) {
   return script.task;
 }
 
-for (const engine of [profile, game.profile])
+for (const engine of [profile, game.profile, legacy])
   test(`${engine} GCALL writes and reads bytes on the live target Script`, async () => {
     const world = await dataWorld(engine, {
       'receiver.kcs': kcsProgram([[59]]),
@@ -115,7 +116,8 @@ for (const engine of [profile, game.profile])
         assert.equal(declaration.signature.argumentWords, 4);
         assert.deepEqual(declaration.signature.controlCodes, [2]);
         assert.equal(declaration.signature.resultWritten, false);
-        assert.deepEqual(declaration.observedArgumentWords, [4]);
+        if (engine !== legacy) assert.deepEqual(declaration.observedArgumentWords, [4]);
+        if (engine === legacy) assert.match(declaration.evidence, /2\.6\.1\.23.*copy VM bytes/);
         if (engine === profile) assert.match(declaration.evidence, /SDK-2\.6\.1\.74.*VM-byte-copy/);
       }
     } finally {
@@ -123,53 +125,54 @@ for (const engine of [profile, game.profile])
     }
   });
 
-test('SDK GCALL defers a four-word packet to its live Script and returns the queued result', async () => {
-  const world = await dataWorld(profile, {
-    'receiver.kcs': kcsProgram([
-      [37, 256],
-      [43, 0x47, 4],
-      [38, 128],
-      [41, 0],
-    ]),
-    'caller.kcs': kcsProgram([
-      [37, [0x13, 128]],
-      [37, 1],
-      [37, 0],
-      [37, 0x7b],
-      [43, 0x46, 16],
-      [38, 64],
-      [59],
-    ]),
+for (const engine of [profile, legacy])
+  test(`${engine} GCALL defers a four-word packet and returns the queued result`, async () => {
+    const world = await dataWorld(engine, {
+      'receiver.kcs': kcsProgram([
+        [37, 256],
+        [43, 0x47, 4],
+        [38, 128],
+        [41, 0],
+      ]),
+      'caller.kcs': kcsProgram([
+        [37, [0x13, 128]],
+        [37, 1],
+        [37, 0],
+        [37, 0x7b],
+        [43, 0x46, 16],
+        [38, 64],
+        [59],
+      ]),
+    });
+    try {
+      const target = await createScript(world, 'receiver');
+      await world.runtime.scheduler.execute(target);
+      const caller = await createScript(world, 'caller');
+      caller.machine.store(128, world.nativeTaskID(target.id));
+      target.machine.bytes(256, 16).fill(0xa5);
+      const packet = [world.nativeTaskID(caller.id), 1, 0, 0x7b];
+
+      await world.runtime.scheduler.execute(caller);
+
+      assert.equal(caller.machine.halted, true);
+      assert.equal(caller.machine.load(64), 1);
+      assert.deepEqual(target.messages, [packet]);
+      assert.deepEqual(target.machine.bytes(256, 16), new Uint8Array(16).fill(0xa5));
+      await world.tick();
+      assert.deepEqual(target.messages, []);
+      assert.deepEqual(
+        Array.from({ length: 4 }, (_, index) => target.machine.load(256 + index * 4)),
+        packet,
+      );
+      const entry = nativeABI(engine).tables.main.entries[0x46];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(entry.name, NATIVE_SEMANTICS.main[0x46].name);
+      assert.equal(entry.signature.argumentWords, 4);
+      assert.deepEqual(entry.signature.controlCodes, [1]);
+      if (engine !== legacy) assert.deepEqual(entry.observedArgumentWords, [4]);
+      assert.equal(entry.signature.resultWritten, true);
+      assert.match(entry.evidence, /(?:SDK-2\.6\.1\.74-main70|2\.6\.1\.23 Main 70).*deferred/);
+    } finally {
+      await world.close({ flushFiles: false });
+    }
   });
-  try {
-    const target = await createScript(world, 'receiver');
-    await world.runtime.scheduler.execute(target);
-    const caller = await createScript(world, 'caller');
-    caller.machine.store(128, world.nativeTaskID(target.id));
-    target.machine.bytes(256, 16).fill(0xa5);
-    const packet = [world.nativeTaskID(caller.id), 1, 0, 0x7b];
-
-    await world.runtime.scheduler.execute(caller);
-
-    assert.equal(caller.machine.halted, true);
-    assert.equal(caller.machine.load(64), 1);
-    assert.deepEqual(target.messages, [packet]);
-    assert.deepEqual(target.machine.bytes(256, 16), new Uint8Array(16).fill(0xa5));
-    await world.tick();
-    assert.deepEqual(target.messages, []);
-    assert.deepEqual(
-      Array.from({ length: 4 }, (_, index) => target.machine.load(256 + index * 4)),
-      packet,
-    );
-    const entry = nativeABI(profile).tables.main.entries[0x46];
-    assert.equal(entry.status, 'recovered');
-    assert.equal(entry.name, NATIVE_SEMANTICS.main[0x46].name);
-    assert.equal(entry.signature.argumentWords, 4);
-    assert.deepEqual(entry.signature.controlCodes, [1]);
-    assert.deepEqual(entry.observedArgumentWords, [4]);
-    assert.equal(entry.signature.resultWritten, true);
-    assert.match(entry.evidence, /SDK-2\.6\.1\.74-main70.*deferred/);
-  } finally {
-    await world.close({ flushFiles: false });
-  }
-});

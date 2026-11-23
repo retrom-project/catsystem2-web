@@ -88,12 +88,29 @@ export const engine23CommonHeads = {
   reviewedBindings: ['engine23-common-wait-frame-reference'],
 };
 
-const mainEntry = [
-  1, 5, 8, 9, 13, 14, 36, 66, 67, 68, 71, 79, 88, 92, 100, 104, 105, 117, 209, 210, 211, 238, 240,
-  244, 245, 246, 247, 250, 254, 256, 260, 262, 276, 277, 359, 360, 393, 400, 447, 448, 449, 452,
-  465, 469, 582, 583, 584, 590, 591, 592, 593, 789, 848, 849,
+const mainEvidence = [
+  {
+    ids: [
+      1, 5, 8, 9, 13, 14, 36, 66, 67, 68, 71, 79, 88, 92, 100, 104, 105, 117, 209, 210, 211, 238,
+      240, 244, 245, 246, 247, 250, 254, 256, 260, 262, 276, 277, 359, 360, 393, 400, 447, 448, 449,
+      452, 465, 469, 582, 583, 584, 590, 591, 592, 593, 789, 848, 849,
+    ],
+    value: 'Own 2.6.1.23 startup KCS calls, task receivers, compact Settings and close CSS removal',
+  },
+  {
+    ids: [108],
+    value:
+      'Own 2.6.1.23 Main 0x48a2e0 sends raw Plane 88 with a 32-bit result and returns control 2',
+  },
+  {
+    ids: [70],
+    value: 'Own 2.6.1.23 Main 70 at 0x48a5a0 sends four deferred packet words to raw Script 160',
+  },
+  {
+    ids: [72, 73],
+    value: 'Own 2.6.1.23 wrappers 0x48a630 and 0x48a6a0 copy VM bytes through raw Script 161',
+  },
 ];
-const planeInputReturn = 108;
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const baseMessages = [1, 2, 3].map((id) => toMessage(id));
 const cursorVisibility = 21;
@@ -101,23 +118,18 @@ const soundMessages = [
   166, 167, 168, 169, 170, 171, 172, 173, 176, 181, 185, 187, 190, 191, 192, 193, 196, 197,
 ];
 const toSound = (id) => toMessage(id + 13, -13);
-const tables = (count, slots = [], evidence) => ({
-  count,
-  slots: {
-    unknown: Array.from({ length: count }, (_, id) => id).filter((id) => !slots.includes(id)),
-    ...(slots.length ? { recovered: slots } : {}),
-  },
-  ...(evidence
-    ? {
-        evidence: [
-          {
-            ids: slots,
-            value: evidence,
-          },
-        ],
-      }
-    : {}),
-});
+const tables = (count, evidence = []) => {
+  const recovered = evidence.flatMap(({ ids }) => ids).sort((a, b) => a - b),
+    known = new Set(recovered);
+  return {
+    count,
+    slots: {
+      unknown: Array.from({ length: count }, (_, id) => id).filter((id) => !known.has(id)),
+      ...(recovered.length ? { recovered } : {}),
+    },
+    ...(evidence.length ? { evidence } : {}),
+  };
+};
 
 export default {
   id: 'cs2-2.6.1.23',
@@ -290,20 +302,13 @@ export default {
   },
   tables: {
     main: {
-      ...tables(869, [...mainEntry, planeInputReturn].sort((a, b) => a - b)),
-      evidence: [
-        {
-          ids: mainEntry,
-          value: 'Own 2.6.1.23 startup KCS calls, task receivers, compact Settings and close CSS removal',
-        },
-        {
-          ids: [planeInputReturn],
-          value: 'Own 2.6.1.23 Main 0x48a2e0 sends raw Plane 88 with a 32-bit result and returns control 2',
-        },
-      ],
+      ...tables(869, mainEvidence),
+      signatures: [{ ids: [70], fields: { resultWritten: true } }],
     },
     generic: {
-      ...tables(45, [17, 38, 41], 'Own 2.6.1.23 MOT handlers and fixed-base logo motion calls'),
+      ...tables(45, [
+        { ids: [17, 38, 41], value: 'Own 2.6.1.23 MOT handlers and fixed-base logo motion calls' },
+      ]),
       signatures: [{ ids: [17, 41], fields: { resultWritten: true } }],
     },
     'particle-v1': tables(44),

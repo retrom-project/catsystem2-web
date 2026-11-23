@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 55        | 0             | 0             | 814     | 3 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 58        | 0             | 0             | 811     | 3 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -49,6 +49,12 @@ The title's pointer handlers use Main 108 to set the Plane's input return
 word. Its wrapper sends raw Plane message 88 with W zero and the full 32-bit
 value in L. The current input dispatch consumes and clears this word. The
 wrapper returns control 2 without writing a VM result.
+
+Main 70 defers four message words to raw Script message 160. It writes the
+receiver's result and returns control 1. Main 72 reads from the addressed Script
+and Main 73 writes to it. Both resolve that Script's address space through raw
+message 161 and copy the requested byte span. They return control 2 with the
+VM result untouched.
 
 Sound load messages carry the selected bank or group in W and the filename in
 L. The grouped stream uses the low word for the group ID and the high word to
