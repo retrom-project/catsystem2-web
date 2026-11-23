@@ -366,6 +366,10 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 0x4844e0/0x484ff0 write and read the four display-log sections and two cursor bases through CSS',
   },
+  {
+    ids: [675, 676],
+    value: 'Own 2.6.1.23 dictionary slots 675/676 share the exact handlers of Main 515/516',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -723,6 +727,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [675], fields: { resultWritten: true } },
+        { ids: [676], fields: { resultWritten: false } },
         { ids: [113, 241, 251, 850, 851], fields: { resultWritten: true } },
         { ids: [674, 844], fields: { resultWritten: true } },
         { ids: [565, 566], fields: { resultWritten: true } },

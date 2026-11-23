@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 266       | 57            | 17            | 529     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 268       | 57            | 17            | 527     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -198,6 +198,7 @@ ownership unchanged.
 Main 515–518 create and release a narrow dictionary, keep the first word
 for each exact byte key, and return `0xffffffff` on a miss. Main 519
 selects one space-separated group and preserves grouped expressions.
+Main 675 and 676 use the same native allocation and release as 515 and 516.
 Main 21 compares reversed narrow operands without ASCII case differences,
 Main 45 replaces bytes using the live operand buffers, and Main 540 finds
 the selected space-separated token's offset. Main 278 expands numbered
