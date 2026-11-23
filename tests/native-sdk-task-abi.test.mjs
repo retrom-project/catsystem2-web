@@ -176,3 +176,44 @@ for (const engine of [profile, legacy])
       await world.close({ flushFiles: false });
     }
   });
+
+test('legacy GCALL sends its packet immediately and restores the caller variable context', async () => {
+  const wait = [
+      [37, 256],
+      [43, 71, 4],
+      [38, 128],
+    ],
+    world = await dataWorld(legacy, {
+      'case.kcs': kcsProgram([[37, 16], [43, 209, 4], ...wait, [59]]),
+      'receiver.kcs': kcsProgram([...wait, [41, 0]]),
+      'caller.kcs': kcsProgram([
+        [37, [0x13, 128]],
+        [37, 37],
+        [37, 0x12345678],
+        [37, 0x87654321],
+        [43, 69, 16],
+        [38, 64],
+        [59],
+      ]),
+    });
+  try {
+    const target = await createScript(world, 'receiver'),
+      caller = await createScript(world, 'caller'),
+      bank = world.runtime.variableBank(world.main, false);
+    assert.equal(caller.context.variableBank, target.context.variableBank);
+    await world.runtime.scheduler.execute(target);
+    caller.machine.store(128, world.nativeTaskID(target.id));
+    const frame = world.frame;
+    await world.runtime.scheduler.execute(caller);
+    assert.equal(world.frame, frame);
+    assert.equal(caller.machine.load(64), 1);
+    assert.deepEqual(target.messages, []);
+    assert.deepEqual(
+      [256, 260, 264, 268].map((at) => target.machine.load(at)),
+      [world.nativeTaskID(caller.id), 37, 0x12345678, 0x87654321],
+    );
+    assert.equal(bank.selectedContext, caller.id);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});

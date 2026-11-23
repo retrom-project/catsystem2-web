@@ -1145,8 +1145,7 @@ async function oldTitleWorld(
 
 for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
   test(`${profile} Script persists its owned CG registrations and releases the restored handle`, () =>
-    verifyCGRegistrations(profile),
-  );
+    verifyCGRegistrations(profile));
 
 async function verifyCGRegistrations(profile) {
   const gallery = [0x13, 512],
@@ -1531,6 +1530,30 @@ test('2.6.1.23 FES continues through an authored common-table miss', async (t) =
   assert.equal(await flow.loadSource('transition.fes'), true);
   await world.tick();
   assert.equal(bank.words[9], 17);
+});
+
+test('2.6.1.23 Script reads an owned variable range and leaves invalid outputs untouched', async (t) => {
+  const { world, audio } = await oldTitleWorld({}, undefined, 'grisaia-jp-engine-2.6.1.23');
+  t.after(async () => {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  });
+  const main = await world.initialize('empty.kcs'),
+    machine = main.machine,
+    read = (global, index) =>
+      world.runtime.native('main', 790, [global, index, 128, 132], machine, main);
+  world.configuration.variableRanges.local.set([11, 29], 2);
+  world.configuration.variableRanges.global.set([517, 43], 2);
+
+  assert.deepEqual(await read(0, 1), { control: 1, value: 1 });
+  assert.deepEqual([machine.load(128), machine.load(132)], [11, 29]);
+  assert.deepEqual(await read(0x80000000, 1), { control: 1, value: 1 });
+  assert.deepEqual([machine.load(128), machine.load(132)], [517, 43]);
+  assert.deepEqual(await read(0, 8), { control: 1, value: 0 });
+  assert.deepEqual([machine.load(128), machine.load(132)], [517, 43]);
 });
 
 test('63 startup Plane GCALLs bind and release the owned Input region', async () => {

@@ -103,6 +103,10 @@ const mainEvidence = [
       'Own 2.6.1.23 Main 0x48a2e0 sends raw Plane 88 with a 32-bit result and returns control 2',
   },
   {
+    ids: [69],
+    value: 'Own 2.6.1.23 Main 69 at 0x48a510 sends a synchronous packet through raw Script 159',
+  },
+  {
     ids: [70],
     value: 'Own 2.6.1.23 Main 70 at 0x48a5a0 sends four deferred packet words to raw Script 160',
   },
@@ -114,6 +118,10 @@ const mainEvidence = [
     ids: [419, 420, 421, 422, 423, 424, 425, 458, 459],
     value:
       'Own 2.6.1.23 CG wrappers and owned tree, eight-byte selector nodes, 68-byte entries and 64-byte CGL variants',
+  },
+  {
+    ids: [790],
+    value: 'Own 2.6.1.23 Main 0x47d9b0 reads eight pairs per local or global variable range',
   },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
@@ -310,7 +318,7 @@ export default {
     main: {
       ...tables(869, mainEvidence),
       signatures: [
-        { ids: [70, 419, 423, 424, 425], fields: { resultWritten: true } },
+        { ids: [69, 70, 419, 423, 424, 425, 790], fields: { resultWritten: true } },
         { ids: [420, 421, 422, 458, 459], fields: { resultWritten: false } },
       ],
     },
