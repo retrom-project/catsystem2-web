@@ -124,6 +124,28 @@ test('2.6.1.23 MOT and PTCL trigonometry preserve the original exceptional resul
   }
 });
 
+test('2.6.1.23 remainder preserves the original CRT classification and FPREM result', async () => {
+  for (const [args, expected] of [
+    [[0xbf800000, 0x3f000000], 0x80000000],
+    [[0x80000000, 0x3f800000], 0],
+    [[0xc0e00000, 0x40000000], 0xbf800000],
+    [[0x40e00000, 0xc0000000], 0x3f800000],
+    [[0x7f7fffff, 0x40400000], 0],
+    [[0x80000001, 0x7f7fffff], 0x80000001],
+    [[0x3f800000, 0x80000001], 0],
+    [[0x3f800000, 0x7f800000], 0xffc00000],
+    [[0x3f800000, 0x80000000], 0xffc00000],
+    [[0x7f800000, 0x3f800000], 0xffc00000],
+    [[0x3f800000, 0xff800123], 0xffc00123],
+    [[0xffc00122, 0x7fc00123], 0x7fc00123],
+  ]) {
+    for (const [table, id] of [['generic', 11], ...particles.map((table) => [table, 16])]) {
+      const { run } = await guest(table, id, args);
+      run(1, expected);
+    }
+  }
+});
+
 test('2.6.1.23 MOT and PTCL integer draws share and restore the integer RNG state', async () => {
   const random = new ParticleRandom(4357, 7),
     real = random.real.snapshot();

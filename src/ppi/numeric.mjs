@@ -12,23 +12,42 @@ export function x87AngleConversion(angle, toRadians) {
   return f(roundX87Single(product / (toRadians ? 180 : pi)));
 }
 
-export function x87Atan2Word(y, x) {
+function x87BinaryNaNWord(left, right) {
   const infinity = 0x7f800000,
     quietBit = 0x00400000,
-    magnitudeY = y & 0x7fffffff,
-    magnitudeX = x & 0x7fffffff;
-  if (magnitudeY === infinity && magnitudeX === infinity) return 0xffc00000;
-  if (magnitudeY > infinity && magnitudeX > infinity) {
+    magnitudeLeft = left & 0x7fffffff,
+    magnitudeRight = right & 0x7fffffff;
+  if (magnitudeLeft > infinity && magnitudeRight > infinity) {
     // Both operands are quieted by FLD. FADDP selects the larger payload,
     // with a positive sign winning identical payloads.
-    const payloadY = magnitudeY | quietBit,
-      payloadX = magnitudeX | quietBit;
-    const selected = payloadY === payloadX ? y & x : payloadY > payloadX ? y : x;
+    const payloadLeft = magnitudeLeft | quietBit,
+      payloadRight = magnitudeRight | quietBit;
+    const selected =
+      payloadLeft === payloadRight ? left & right : payloadLeft > payloadRight ? left : right;
     return (selected | quietBit) >>> 0;
   }
-  if (magnitudeY > infinity) return (y | quietBit) >>> 0;
-  if (magnitudeX > infinity) return (x | quietBit) >>> 0;
-  return floatBits(Math.atan2(bitsFloat(y), bitsFloat(x)));
+  if (magnitudeLeft > infinity) return (left | quietBit) >>> 0;
+  if (magnitudeRight > infinity) return (right | quietBit) >>> 0;
+}
+
+export function x87Atan2Word(y, x) {
+  const nan = x87BinaryNaNWord(y, x);
+  if (nan !== undefined) return nan;
+  const valueY = bitsFloat(y),
+    valueX = bitsFloat(x);
+  if (!Number.isFinite(valueY) && !Number.isFinite(valueX)) return 0xffc00000;
+  return floatBits(Math.atan2(valueY, valueX));
+}
+
+export function x87RemainderWord(dividend, divisor) {
+  const nan = x87BinaryNaNWord(dividend, divisor);
+  if (nan !== undefined) return nan;
+  const a = bitsFloat(dividend),
+    b = bitsFloat(divisor);
+  if (!Number.isFinite(a) || !Number.isFinite(b) || b === 0) return 0xffc00000;
+  // The CRT's zero-dividend branch loads positive zero. A nonzero dividend
+  // reaches FPREM, where a zero remainder retains the dividend's sign.
+  return a === 0 ? 0 : floatBits(a % b);
 }
 
 function scaleFrameX87(frame, rate) {

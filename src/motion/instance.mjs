@@ -9,6 +9,7 @@ import {
   radianToDegree,
   x87AngleConversion,
   x87Atan2Word,
+  x87RemainderWord,
   linearInterpolate,
   x87LinearInterpolate,
   roundInteger,
@@ -171,6 +172,7 @@ export class MotionInstance {
       numbers.forEach((value, i) => machine.store(address + i * 4, floatBits(value)));
     this.calls.set(id, (this.calls.get(id) || 0) + 1);
     if (this.interpreterMath && id === 7) return word(x87Atan2Word(...args));
+    if (this.interpreterMath && id === 11) return word(x87RemainderWord(...args));
     const scalarReply =
       this.interpreterMath &&
       nativeScalarMath(
