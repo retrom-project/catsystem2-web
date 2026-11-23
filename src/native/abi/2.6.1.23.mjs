@@ -242,6 +242,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 load wrapper 0x487980 formats the kcs name, sends raw 147 then raw 158 to bind caller memory, and selects control 2 or 4',
   },
+  {
+    ids: [403, 404],
+    value:
+      'Own 2.6.1.23 Input gates 0x4878d0 and 0x487930; Root 31 resolves the owner for raw Input 143 and 144',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -588,6 +593,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [403, 404], fields: { resultWritten: false } },
         { ids: [143], fields: { resultWritten: false } },
         { ids: [315, 316, 387, 388], fields: { resultWritten: true } },
         { ids: [317], fields: { resultWritten: false } },

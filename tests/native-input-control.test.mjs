@@ -61,8 +61,12 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
     }
   });
 
-test('63 Input GCALLs disable a key and restore the gates through the Root Input owner', async () => {
-  const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} Input GCALLs disable a key and restore the gates through the Root Input owner`, () =>
+    verifyLegacyInputGates(profile));
+
+async function verifyLegacyInputGates(profile) {
+  const world = await dataWorld(profile);
   try {
     const main = world.main,
       call = (id, args) => world.runtime.native('main', id, args, main.machine, main);
@@ -77,4 +81,4 @@ test('63 Input GCALLs disable a key and restore the gates through the Root Input
   } finally {
     await world.close({ flushFiles: false });
   }
-});
+}

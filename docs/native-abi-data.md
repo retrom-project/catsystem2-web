@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 166       | 57            | 17            | 629     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 168       | 57            | 17            | 627     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -72,6 +72,9 @@ The title's pointer handlers use Main 108 to set the Plane's input return
 word. Its wrapper sends raw Plane message 88 with W zero and the full 32-bit
 value in L. The current input dispatch consumes and clears this word. The
 wrapper returns control 2 without writing a VM result.
+Main 403 sets a single key's gate by raw Input message 143. Main 404
+restores all key gates by raw 144. Both resolve the owner through Root 31
+and return control 2.
 
 Main 78 creates a textured Plane through raw message 38 with an eight-word
 rectangle packet. Main 84, 85 and 93 update its position, planar base or
