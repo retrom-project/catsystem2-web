@@ -114,9 +114,12 @@ test('zero-byte records and null stacks preserve original control behavior', () 
   assert.throws(() => nativeRecordStack(0x35f, [1], f.machine, services), /expects 2 arguments/);
 });
 
-test('63 record-stack GCALLs preserve fixed records through a fresh World', async () => {
-  const profile = 'rebellions-jp-engine-2.6.1.63',
-    world = await dataWorld(profile);
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} record-stack GCALLs preserve fixed records through a fresh World`, () =>
+    verifyRecordStack(profile));
+
+async function verifyRecordStack(profile) {
+  const world = await dataWorld(profile);
   let fresh;
   const call = (w, id, args) => w.runtime.native('main', id, args, w.main.machine, w.main);
   try {
@@ -145,4 +148,4 @@ test('63 record-stack GCALLs preserve fixed records through a fresh World', asyn
     await fresh?.close({ flushFiles: false });
     await world.close({ flushFiles: false });
   }
-});
+}

@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 146       | 57            | 17            | 649     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 152       | 57            | 17            | 643     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -122,6 +122,10 @@ nested file, query the tag, clear contents, and clone the file.
 Main 515–518 create and release a narrow dictionary, keep the first word
 for each exact byte key, and return `0xffffffff` on a miss. Main 519
 selects one space-separated group and preserves grouped expressions.
+
+Main 863–868 own fixed-length record stacks. A push grows a full stack
+before translating the guest pointer. A valid pop copies the last record.
+Copy includes every byte in the allocated capacity, including popped records.
 
 Main 790 reads a start and count pair from one of eight configured variable
 ranges. The first word selects local or global storage. An out-of-range

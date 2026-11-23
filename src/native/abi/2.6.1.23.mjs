@@ -222,6 +222,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 narrow dictionary wrappers 0x477e20/0x477e90 and 0x479d60/0x479ee0 and grouped word selector 0x47a000',
   },
+  {
+    ids: [863, 864, 865, 866, 867, 868],
+    value:
+      'Own 2.6.1.23 record stack 0x474810–0x474a60: five-word owner, signed reserve, LIFO copy/pop and full-capacity assignment',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -566,6 +571,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [863, 865, 866, 867], fields: { resultWritten: true } },
+        { ids: [864, 868], fields: { resultWritten: false } },
         { ids: [515, 518, 519], fields: { resultWritten: true } },
         { ids: [516, 517], fields: { resultWritten: false } },
         {
