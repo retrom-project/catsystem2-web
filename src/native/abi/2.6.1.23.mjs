@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [57, 397],
+    value:
+      'Own 2.6.1.23 Main 0x48c560 loads one f32 and applies x87 FABS; 0x48c530 loads y and x with the same CRT atan2 target as Generic 7 and Particle 12',
+  },
+  {
     ids: [80, 81],
     value:
       'Own 2.6.1.23 Plane wrappers 0x47ec10 and 0x47ec50 and raw 41/64 receivers 0x46ac21 and 0x46acb3, retaining the mounted KX2 triangle resource',
@@ -717,6 +722,7 @@ export default {
   nameTable: { legacyFieldBytes: 32 },
   math: {
     anglesUseX87: true,
+    atan2UsesX87: true,
     interpreterUsesNativeScalarMath: true,
     lerpUsesX87: true,
     triangleWaveUsesX87: true,
@@ -901,6 +907,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [57, 397], fields: { resultWritten: true } },
         { ids: [76, 536], fields: { resultWritten: true } },
         { ids: [80, 81, 149, 196, 197, 203, 862], fields: { resultWritten: false } },
         { ids: [200], fields: { resultWritten: true } },

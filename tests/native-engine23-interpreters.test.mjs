@@ -127,6 +127,41 @@ test('2.6.1.23 MOT and PTCL trigonometry preserve the original exceptional resul
   }
 });
 
+test('2.6.1.23 Main absolute value and atan2 preserve x87 result words through GCALL', async (t) => {
+  const cases = [
+    [57, [0xc0400000], 0x40400000],
+    [57, [0x80000000], 0],
+    [57, [0x80000001], 1],
+    [57, [0xff812345], 0x7fc12345],
+    [397, [0x3f800000, 0x40000000], 0x3eed6338],
+    [397, [0x80000000, 0x80000000], 0xc0490fdb],
+    [397, [0x7f800000, 0xff800000], 0xffc00000],
+    [397, [0xffc00010, 0x7fc01000], 0x7fc01000],
+    [397, [0xffc00010, 0x7fc00010], 0x7fc00010],
+    [397, [0x3f800000, 0xff800123], 0xffc00123],
+  ];
+  const world = await dataWorld(profile, {
+    'case.kcs': kcsProgram([
+      [37, sentinel],
+      ...cases.flatMap(([id, args]) => [
+        ...args.map((word) => [37, word]),
+        [43, id, args.length * 4],
+      ]),
+      [59],
+    ]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const { machine } = world.main,
+    expected = [sentinel, ...cases.map(([, , result]) => result)],
+    first = machine.sp - expected.length * 4;
+  assert.deepEqual(
+    expected.map((_, i) => machine.load(first + i * 4)),
+    expected,
+  );
+  assert.equal(world.runtime.calls.get('main:57'), 4);
+  assert.equal(world.runtime.calls.get('main:397'), 6);
+});
+
 test('2.6.1.23 remainder preserves the original CRT classification and FPREM result', async () => {
   for (const [args, expected] of [
     [[0xbf800000, 0x3f000000], 0x80000000],

@@ -2,7 +2,12 @@
 // Script-visible f32 words in the normal engine precision/rounding environment.
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply, bitsFloat, floatBits } from '../kcs/vm.mjs';
-import { degreeToRadian, radianToDegree, x87AngleConversion } from '../ppi/numeric.mjs';
+import {
+  degreeToRadian,
+  radianToDegree,
+  x87AngleConversion,
+  x87Atan2Word,
+} from '../ppi/numeric.mjs';
 const f = Math.fround;
 const unary = {
   sin: Math.sin,
@@ -69,7 +74,14 @@ function triangle(value, period) {
   if (f(quarter * 3) > phase) return -wave;
   return f(wave - 1);
 }
-export function nativeScalarMath(operation, args, machine, argumentWords, anglesUseX87 = false) {
+export function nativeScalarMath(
+  operation,
+  args,
+  machine,
+  argumentWords,
+  anglesUseX87 = false,
+  atan2UsesX87 = false,
+) {
   const name = operation?.replace(/^math\./, '');
   if (!names.has(name)) return undefined;
   const words = Array.from(args);
@@ -83,6 +95,7 @@ export function nativeScalarMath(operation, args, machine, argumentWords, angles
   if (name === 'packWords') return nativeReply(1, (a & 65535) | (b << 16));
   if (name === 'integerAbs') return nativeReply(1, Math.abs(a | 0));
   if (name === 'abs') return nativeReply(1, (nan(a) ? quiet(a) : a) & 0x7fffffff);
+  if (name === 'atan2' && atan2UsesX87) return nativeReply(1, x87Atan2Word(a, b));
   const x = bitsFloat(a),
     y = bitsFloat(b);
   if (name !== 'triangleWave') {
@@ -122,6 +135,7 @@ export function installNativeScalarMath(world) {
         machine,
         entry.signature.argumentWords,
         abi.math?.anglesUseX87,
+        abi.math?.atan2UsesX87,
       ),
     );
   }
