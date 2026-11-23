@@ -878,9 +878,15 @@ export class NativeSoundTask {
       return 0;
     }
     if ([205, 206, 207, 208].includes(id)) {
-      if (filenameFormat && (id === 205 || id === 206)) {
-        const streaming = id === 205,
-          group = this.groups.get(streaming ? bank & 0xffff : bank);
+      if (filenameFormat) {
+        const streaming = id === 205 || id === 207,
+          selector = streaming ? bank & 0xffff : bank,
+          group =
+            id === 205 || id === 206
+              ? this.groups.get(selector)
+              : [...this.groups.values()]
+                  .sort((a, b) => a.id - b.id)
+                  .find((record) => record.typeCode === selector);
         if (!group || (!l && !context.payload)) return 0xffffffff;
         const selected = this.allocateFilenameGroup(group);
         if (selected === -1) return 0xffffffff;
@@ -1300,32 +1306,16 @@ export async function nativeSound(id, args, machine, task, world) {
     const name = world.runtime.services.format(argument(2), machine),
       file = world.game.resolveCategory ? world.game.resolveCategory(name, 'sound') : name;
     if (!file) return reply(allocated ? 0xffffffff : 0);
-    if (id === 0x9b && sound.abi.sound.loadMessageFormat === 'filename')
-      return reply(await send(type === 1 ? 179 : 180, selector, 0, { string: () => file }));
+    const message = allocated ? (argument(3) ? 204 : 206) + type : 178 + type;
+    if ((id === 0x9b || id === 0x25c) && sound.abi.sound.loadMessageFormat === 'filename')
+      return reply(await send(message, selector, 0, { string: () => file }));
     const packet = new NativeSoundPacket([], sound.abi.sound.mainLoadPacketBytes ?? 288);
     packet.store(allocated ? 4 : 0, selector);
     packet.writeString(file, 12);
     packet.store(272, Number(!(selector & 0xffff0000)));
     if (id === 0x3a7 || id === 0x3a8)
       packet.store(276, Number((BigInt(argument(allocated ? 5 : 4) >>> 0) * 1000n) / 60n));
-    return reply(
-      await send(
-        allocated
-          ? argument(3)
-            ? type === 1
-              ? 205
-              : 206
-            : type === 1
-              ? 207
-              : 208
-          : type === 1
-            ? 179
-            : 180,
-        0,
-        0,
-        packet,
-      ),
-    );
+    return reply(await send(message, 0, 0, packet));
   }
   if (id === 0xa3 || id === 0xa6) {
     await send(

@@ -506,6 +506,59 @@ test('2.6.1.23 Main sound uses a bank word and a filename through its own Sound 
   assert.deepEqual(wire.at(-1), { words: [100, 167, 3, 0], filename: 'b_line.wav' });
 });
 
+test('2.6.1.23 Sound groups put the selector in W and the filename in L', async (t) => {
+  const { world, sound, task: receiver } = fixture('grisaia-jp-engine-2.6.1.23'),
+    task = { id: 100 },
+    call = (id, args) => nativeSound(id, args, null, task, world),
+    wire = [];
+  world.nativeTaskID = (id) => id;
+  const message = receiver.message;
+  t.mock.method(receiver, 'message', function (words, context) {
+    wire.push(words);
+    return Reflect.apply(message, this, [words, context]);
+  });
+  assert.deepEqual(await call(347, [1, floatBits(2), floatBits(-3), floatBits(4)]), {
+    control: 2,
+  });
+  assert.deepEqual(sound.device[1].nativeSpatial.velocity, [0, 0, 0]);
+  assert.deepEqual(await call(604, [0x10002, 123, 'voice.wav', 0, 1]), {
+    control: 1,
+    value: 1,
+  });
+  assert.deepEqual(wire.at(-1), [100, 194, 0x10002, 0]);
+  assert.equal(sound.device[1].file, 'voice.wav');
+  assert.equal(sound.device[1].category, 'voice');
+  assert.equal(receiver.controls[1].word(C.autoRelease), 1);
+  assert.deepEqual(await call(347, [1, floatBits(2), floatBits(-3), floatBits(4)]), {
+    control: 2,
+  });
+  assert.deepEqual(wire.at(-1), [100, 182, 1, 0]);
+  assert.deepEqual(sound.device[1].nativeSpatial.velocity, [2, -3, 4]);
+  await call(348, [1, floatBits(0.5)]);
+  assert.deepEqual(wire.at(-1), [100, 183, 1, 0]);
+  assert.equal(sound.device[1].nativeSpatial.dopplerFactor, 0.5);
+  assert.deepEqual(await call(604, [2, 0, 'voice.wav', 0, 2]), {
+    control: 1,
+    value: 0xffffffff,
+  });
+  assert.deepEqual(wire.at(-1), [100, 195, 2, 0]);
+  await call(602, [8, 1, 4, 6, 72]);
+  assert.deepEqual(wire.at(-1), [100, 190, 8, 0]);
+  assert.deepEqual(receiver.groups.get(8), { id: 8, typeCode: 1, min: 4, max: 6, volume: 72 });
+  for (const [type, bank] of [
+    [1, 4],
+    [2, 5],
+  ]) {
+    assert.deepEqual(await call(604, [8, 0, 'se.wav', 1, type]), { control: 1, value: bank });
+    assert.deepEqual(wire.at(-1), [100, 191 + type, 8, 0]);
+    assert.equal(sound.device[bank].category, 'se');
+  }
+  await call(603, [8]);
+  assert.deepEqual(wire.at(-1), [100, 191, 8, 0]);
+  assert.equal(receiver.groups.has(8), false);
+  assert.equal((await call(604, [8, 0, 'se.wav', 1, 1])).value, 0xffffffff);
+});
+
 for (const profile of [gameProfile, sdkProfile])
   test(`${profile} sound opens share only the same owner's successful mounted read in one tick`, async (t) => {
     const file = new BlobFile(

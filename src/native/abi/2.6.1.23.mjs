@@ -331,6 +331,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 narrow character helpers 0x48b3c0 and 0x48b710–0x48b87a use the standard pair classifier at 0x4b1220',
   },
+  {
+    ids: [347, 348, 602, 603, 604],
+    value:
+      'Own 2.6.1.23 spatial and sound group wrappers 0x47e2f0–0x47e3be and 0x47e880–0x47ea9c; receiver 0x44bf20 uses raw 182–183 and 190–195',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -413,8 +418,8 @@ const mainUnobservedIds = Array.from({ length: mainCount }, (_, id) => id).filte
 const baseMessages = [1, 2, 3].map((id) => toMessage(id));
 const cursorVisibility = 21;
 const soundMessages = [
-  166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 180, 181, 185, 187, 190, 191, 192, 193,
-  196, 197,
+  166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 180, 181, 182, 183, 185, 187, 190, 191,
+  192, 193, 194, 195, 196, 197,
 ];
 const toSound = (id) => toMessage(id + 13, -13);
 const tables = (count, evidence = [], stubs = {}) => {
@@ -566,6 +571,7 @@ export default {
     completionFrame: null,
     loopPointEndPolicy: 'allow-unordered',
     loadMessageFormat: 'filename',
+    spatialRequiresLoadedBuffer: true,
   },
   language: {
     storage: null,
@@ -682,6 +688,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [347, 348, 602, 603], fields: { resultWritten: false } },
+        { ids: [604], fields: { resultWritten: true } },
         { ids: [40, 47, 48, 49], fields: { resultWritten: true } },
         { ids: [16, 17, 18, 19, 20, 22, 23, 24], fields: { resultWritten: true } },
         { ids: [212, 609, 610, 659], fields: { resultWritten: false } },

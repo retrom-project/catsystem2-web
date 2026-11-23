@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 246       | 57            | 17            | 549     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 251       | 57            | 17            | 544     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -96,6 +96,13 @@ and invalidate the last cursor position.
 Main 403 sets a single key's gate by raw Input message 143. Main 404
 restores all key gates by raw 144. Both resolve the owner through Root 31
 and return control 2.
+
+Main 347 and 348 send velocity and Doppler words to the selected loaded
+Sound bank through raw 182 and 183. Main 602 and 603 register and release
+sound groups. Main 604 sends a resolved filename and a group selector to
+raw 192–195. The receiver chooses the group by ID or type, allocates a
+bank within its exclusive bound or among releasing banks, and preserves the
+streaming loop flag in the high selector word.
 
 Main 78 creates a textured Plane through raw message 38 with an eight-word
 rectangle packet. Main 84, 85 and 93 update its position, planar base or
