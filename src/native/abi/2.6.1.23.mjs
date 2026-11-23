@@ -356,6 +356,16 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Main 0x47da40 returns the narrow voice row at 0x5c2be0; 0x47bbc0 searches 48 archive categories through 0x5c2ca0',
   },
+  {
+    ids: [113, 116, 241, 251],
+    value:
+      'Own 2.6.1.23 0x488620 captures the view and 0x4889c0 clips bitmap copies; 0x483ef0/0x484820 store and restore HG image data through CSS',
+  },
+  {
+    ids: [850, 851],
+    value:
+      'Own 2.6.1.23 0x4844e0/0x484ff0 write and read the four display-log sections and two cursor bases through CSS',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -672,6 +682,8 @@ export default {
   graphics: {
     formattedBitmapPhysical: true,
     bitmapBlitUsesSourceSize: true,
+    sameSizeBitmapCopyClips: true,
+    screenCaptureOpaque: true,
     drawEnablePendingPolicy: 'rising-edge',
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: null,
@@ -711,6 +723,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [113, 241, 251, 850, 851], fields: { resultWritten: true } },
         { ids: [674, 844], fields: { resultWritten: true } },
         { ids: [565, 566], fields: { resultWritten: true } },
         { ids: [567], fields: { resultWritten: false } },

@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 260       | 57            | 17            | 535     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 266       | 57            | 17            | 529     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -112,6 +112,10 @@ resolves its archive through the original 48-entry category table.
 Main 565 and 566 read the recording state and counter from the active
 view. Main 567 writes a formatted CP932 line through the owned native
 files and retains the original append cursor before CRLF.
+Main 113 captures the active view as an owned opaque bitmap. Main 116
+clips equally sized source and destination requests to the smaller
+surviving span. Main 241 and 251 write and restore an independent HG
+bitmap through CSS, and Main 850 and 851 persist the display log there.
 
 Main 78 creates a textured Plane through raw message 38 with an eight-word
 rectangle packet. Main 84, 85 and 93 update its position, planar base or

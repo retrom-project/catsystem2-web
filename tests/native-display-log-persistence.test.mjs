@@ -11,6 +11,35 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 import { installFESProjectionOracle } from '../oracle/fes-projection-world.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
+
+test('23 CSS log wrappers preserve the four native sections and independent ownership', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const { main, runtime } = world,
+    call = (id, args = []) => runtime.native('main', id, args, main.machine, main),
+    source = (await call(696)).value,
+    target = (await call(696)).value,
+    file = (await call(238, [3])).value,
+    entry = 250,
+    model = runtime.handles.get(source, 'display-log');
+  model.blockBase = 11;
+  model.rowBase = 12;
+  const reply = (value) => ({ control: 1, value });
+  assert.deepEqual(await call(850, [file, entry, 0]), reply(0));
+  assert.deepEqual(await call(850, [file, entry, source]), reply(1));
+  const bytes = runtime.handles.get(file, 'global-file').read(entry),
+    view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  assert.deepEqual(
+    Array.from({ length: 6 }, (_, i) => view.getUint32(4 * i, true)),
+    [24, 28, 32, 36, 11, 12],
+  );
+  assert.deepEqual(await call(851, [file, entry + 1, target]), reply(0));
+  assert.deepEqual(await call(851, [file, entry, target]), reply(1));
+  model.blockBase = 30;
+  const copy = runtime.handles.get(target, 'display-log');
+  assert.deepEqual([copy.blockBase, copy.rowBase], [11, 12]);
+});
 
 for (const [profile, fixture] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],

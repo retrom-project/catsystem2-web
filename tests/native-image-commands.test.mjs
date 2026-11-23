@@ -8,6 +8,44 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
+
+test('23 captures an opaque owned bitmap and round-trips a clipped CSS thumbnail', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const { main, runtime, graphics } = world,
+    call = (id, args = []) => runtime.native('main', id, args, main.machine, main),
+    view = graphics.view,
+    input = Uint8Array.of(10, 20, 30, 35, 11, 21, 31, 37, 12, 22, 32, 39),
+    target = { width: 3, height: 1 };
+  world.stageRenderer = {
+    gpu: { primaryTarget: target, pixels: () => input },
+    render: async () => {},
+    dispose: () => {},
+  };
+  view.active = false;
+  assert.deepEqual(await call(113), { control: 1, value: 0 });
+  view.active = true;
+  const capture = (await call(113)).value,
+    bitmap = graphics.images.get(capture),
+    expected = [10, 20, 30, 255, 11, 21, 31, 255, 12, 22, 32, 255];
+  assert.deepEqual([...(await bitmap.pixels())], expected);
+  assert.equal(input[3], 35);
+  const thumbnail = graphics.images.create(4, 1, main.id);
+  await graphics.images.get(thumbnail).fill(0, 0, 4, 1, 0xff020304);
+  assert.deepEqual(await call(116, [thumbnail, 0, 0, 4, 1, capture, 0, 0, 4, 1]), { control: 2 });
+  const clipped = [...expected, 2, 3, 4, 255];
+  assert.deepEqual([...(await graphics.images.get(thumbnail).pixels())], clipped);
+
+  const file = (await call(238, [7])).value;
+  assert.deepEqual(await call(241, [file, 31, thumbnail]), { control: 1, value: 1 });
+  assert.deepEqual(await call(251, [file, 32]), { control: 1, value: 0 });
+  const restored = (await call(251, [file, 31])).value,
+    css = runtime.handles.get(file, 'global-file');
+  assert.equal(new TextDecoder().decode(css.read(31).subarray(0, 4)), 'HG-2');
+  assert.notEqual(restored, thumbnail);
+  assert.deepEqual([...(await graphics.images.get(restored).pixels())], clipped);
+});
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],

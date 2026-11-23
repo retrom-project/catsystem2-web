@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalOwner, originalOperation } from './original-adapter.mjs';
+import { nativeABI } from './abi/index.mjs';
 // Integer bitmap arithmetic follows the reviewed packed-pixel algorithms.
 import { resampleBitmap } from './image.mjs';
 const f = Math.fround;
@@ -150,7 +151,17 @@ export async function bitmapTransfer(world, destination, source, args, copy, tas
     ? crop([dx, dy, dx + (args[3] | 0), dy + (args[4] | 0)], destination.state)
     : intersect([dx, dy, dx + width, dy + height], [0, 0, destination.width, destination.height]);
   if (sr[0] >= sr[2] || sr[1] >= sr[3] || dr[0] >= dr[2] || dr[1] >= dr[3]) return;
-  if (copy && (sr[2] - sr[0] !== dr[2] - dr[0] || sr[3] - sr[1] !== dr[3] - dr[1])) {
+  const sameSizeCopy =
+    copy &&
+    world.profile &&
+    nativeABI(world.profile).graphics.sameSizeBitmapCopyClips &&
+    (args[3] | 0) === width &&
+    (args[4] | 0) === height;
+  if (
+    copy &&
+    !sameSizeCopy &&
+    (sr[2] - sr[0] !== dr[2] - dr[0] || sr[3] - sr[1] !== dr[3] - dr[1])
+  ) {
     const sw = sr[2] - sr[0],
       sh = sr[3] - sr[1],
       dw = dr[2] - dr[0],

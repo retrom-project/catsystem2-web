@@ -63,6 +63,8 @@ export class NativeScreenCapture {
       stride = width * 4;
     for (let y = 0; y < height; y++)
       pixels.set(rgba.subarray(y * stride, (y + 1) * stride), (height - 1 - y) * stride);
+    if (nativeABI(this.world.profile).graphics.screenCaptureOpaque)
+      for (let at = 3; at < pixels.length; at += 4) pixels[at] = 255;
     bitmap.changed();
     return nativeReply(1, handle);
   }
