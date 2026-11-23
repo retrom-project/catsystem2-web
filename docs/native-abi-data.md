@@ -442,11 +442,13 @@ register those ABIs or qualify any of their handlers for execution. The existing
 Game/SDK binding reviews still require their matching complete modern sets;
 an older set cannot inherit them by containing the same keyword.
 
-`.23` declares the 20 command members verified for its title path. The shared
-lookup returns `unreviewed` for other common heads in this profile and the
-dispatcher rejects them. The reviewed `wait` binding takes a 260-byte operand
-buffer. It preserves frame thresholds, named object references and the
-no-argument delay.
+The complete `.23` common table has 78 members in 20-byte records at `0x624328`.
+The dispatcher at `0x5b1ca0` uses the table's zero handler sentinel to identify
+a miss. It then evaluates the original row in its owning variable context and
+returns control word zero. An undeclared object head such as `bgm stop` in the
+new game transition reaches this path. The reviewed `wait` binding takes a
+260-byte operand buffer and preserves frame thresholds, named object references
+and the no-argument delay.
 
 `nativeFESCommonHead(profile, narrowBytes)` resolves the exact registered profile
 before querying its data. A complete registration returns a tagged `present`

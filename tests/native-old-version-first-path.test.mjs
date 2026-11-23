@@ -1505,6 +1505,30 @@ test('2.6.1.23 Plane routes real input edges and receives the Script return word
   }
 });
 
+test('2.6.1.23 FES continues through an authored common-table miss', async (t) => {
+  const { world, audio } = await oldTitleWorld(
+    { 'transition.fes': bytes('#START\nbgm stop\n$9=17\nnext WAIT\n#WAIT\n') },
+    undefined,
+    'grisaia-jp-engine-2.6.1.23',
+  );
+  t.after(async () => {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  });
+  const main = await world.initialize('empty.kcs'),
+    bank = world.runtime.variableBank(main),
+    owner = await world.objects.create({ kind: 34, parent: main.id }),
+    flow = world.objects.objects.get(owner).implementation;
+  bank.initialize(16);
+  await flow.initialize(main.context.variableBank);
+  assert.equal(await flow.loadSource('transition.fes'), true);
+  await world.tick();
+  assert.equal(bank.words[9], 17);
+});
+
 test('63 startup Plane GCALLs bind and release the owned Input region', async () => {
   const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
   try {

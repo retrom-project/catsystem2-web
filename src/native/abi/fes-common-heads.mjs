@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Reviewed native FES common membership. Name crossrefs are navigation only;
 // they do not establish semantic equivalence or bind a handler.
-import { engine23TitleCommonHeads } from './2.6.1.23.mjs';
+import { engine23CommonHeads } from './2.6.1.23.mjs';
 import engine63 from './2.6.1.63.mjs';
 import engine67 from './2.6.1.67.mjs';
 const shared = {
@@ -276,9 +276,8 @@ const boundEntries = freeze(
 );
 const reviewRegistrations = freeze([
   {
-    shared: engine23TitleCommonHeads.shared,
-    additions: engine23TitleCommonHeads.additions,
-    complete: false,
+    shared: engine23CommonHeads.shared,
+    additions: engine23CommonHeads.additions,
     reviews: [engine23WaitReview],
   },
   {

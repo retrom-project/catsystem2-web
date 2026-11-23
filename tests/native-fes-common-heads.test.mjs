@@ -3,7 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import * as abiAPI from '../src/native/abi/index.mjs';
-import { engine23TitleCommonHeads } from '../src/native/abi/2.6.1.23.mjs';
+import { engine23CommonHeads } from '../src/native/abi/2.6.1.23.mjs';
 import { FESCoordinator } from '../src/native/fes-coordinator.mjs';
 import {
   lookupFESCommonHead,
@@ -31,20 +31,22 @@ const bytes = (value) => new TextEncoder().encode(value),
     'steam_isenable',
   ];
 
-test('2.6.1.23 scopes common command membership to its reviewed title path', () => {
-  const registration = engine23TitleCommonHeads;
-  assert.equal(registration.count, 20);
-  assert.equal(registration.complete, false);
+test('2.6.1.23 distinguishes complete common command membership from dispatch', () => {
+  const registration = engine23CommonHeads;
+  assert.equal(registration.count, 78);
+  assert.equal(registration.complete, true);
   const lookup = (name) => lookupFESCommonHead(registration, bytes(name));
   assert.equal(lookup('wait').entry.dispatchBinding, 'native-wait');
   assert.equal(lookup('baseimg').entry.dispatchBinding, null);
-  assert.deepEqual(lookup('WAIT'), { kind: 'unreviewed' });
-  assert.deepEqual(lookup('cgreg'), { kind: 'unreviewed' });
+  assert.equal(lookup('cgreg').entry.dispatchBinding, null);
+  assert.deepEqual(lookup('WAIT'), { kind: 'absent' });
+  assert.deepEqual(lookup('bgm'), { kind: 'absent' });
+  assert.deepEqual(lookup('setsndconfex'), { kind: 'absent' });
   const invented = structuredClone(registration);
   invented.shared[0] = 'bitcount';
   assert.throws(() => validateFESCommonHeads(invented), /FES common head registration/);
   assert.throws(
-    () => validateFESCommonHeads({ ...registration, complete: true }),
+    () => validateFESCommonHeads({ ...registration, complete: false }),
     /FES common head registration/,
   );
   assert.throws(
@@ -58,7 +60,7 @@ test('2.6.1.23 scopes common command membership to its reviewed title path', () 
 });
 
 test('2.6.1.23 wait selects its frame threshold, named object and no-argument delay', () => {
-  const policy = lookupFESCommonHead(engine23TitleCommonHeads, bytes('wait')).entry.waitPolicy,
+  const policy = lookupFESCommonHead(engine23CommonHeads, bytes('wait')).entry.waitPolicy,
     driver = Object.create(FESCoordinator.prototype),
     waitParameters = { frameThreshold: 0, reference: null };
   driver.instance = {
