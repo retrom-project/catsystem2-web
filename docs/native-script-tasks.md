@@ -93,6 +93,15 @@ wrappers execute the real routing protocol rather than substituting a no-op.
 
 ## Shared interpreter memory
 
+Main `0x48` and `0x49` take four words in order: the target Script's native
+task ID, its VM address, a byte count and a local VM address. The SDK 2.6.1.74
+wrappers at `5290F0` and `529210` obtain the target interpreter with raw
+message 172 (canonical 174). Each address is resolved in its owner's VM.
+`0x48` copies from the target into the caller and `0x49` copies from the
+caller into the target. Both return control 2 and leave the VM result word
+unwritten. The SDK and game share the ordinary bounded VM copy implementation.
+The SDK save menu uses this pair to exchange values between its scripts.
+
 The scheduler's default shared storage, each interpreter's contiguous data/stack
 storage and every extension allocation use one backing allocation in the shared
 engine process once materialized. Native x86 writes and JavaScript VM reads are
