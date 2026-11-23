@@ -2206,6 +2206,7 @@ test('2.6.1.23 Plane draws its own textured rectangle and applies the native tra
     width = floatBits(20.5),
     height = floatBits(12.25);
   assert.deepEqual(await call(78, [0, width, height]), { control: 2 });
+  assert.deepEqual(await call(466, [target, 2]), { control: 2 });
   assert.deepEqual(await call(78, [target, width, height]), { control: 2 });
   assert.deepEqual(plane.state.shapeWords, [0, 0, 0, width, height, 32, 1, 0xffffffff]);
   assert.deepEqual(plane.state.rect, [0, 0, 20.5, 12.25]);
@@ -2221,6 +2222,34 @@ test('2.6.1.23 Plane draws its own textured rectangle and applies the native tra
   assert.equal(color.getUint32(MOTION_ABI.color, true) >>> 24, 0);
   assert.deepEqual(await call(94, [target, 256]), { control: 2 });
   assert.equal(color.getUint32(MOTION_ABI.color, true) >>> 24, 255);
+  assert.equal(plane.graph.style.coordMode, 0);
+  assert.deepEqual(await call(466, [target, 2]), { control: 2 });
+  assert.equal(plane.graph.style.coordMode, 2);
+  assert.deepEqual(await call(101, [target, ...[2, 3, 4].map(floatBits), 1]), { control: 2 });
+  assert.deepEqual(motionVector(plane.graph.kx2, MOTION_ABI.scale), [2, 3, 4]);
+  const matrix = Array.from({ length: 16 }, (_, i) => floatBits(i));
+  matrix.forEach((n, i) => main.machine.store(128 + i * 4, n));
+  assert.deepEqual(await call(344, [target, 128, 1]), { control: 2 });
+  assert.deepEqual(
+    plane.graph.textureTransform.subarray(MOTION_ABI.matrix, MOTION_ABI.matrix + 64),
+    main.machine.bytes(128, 64),
+  );
+  assert.deepEqual(await call(343, [target, 208, 212]), { control: 2 });
+  assert.deepEqual(
+    [208, 212].map((at) => bitsFloat(main.machine.load(at))),
+    [20.5, 12.25],
+  );
+  assert.deepEqual(await call(345, [target, 216, 220, 224, 228]), { control: 2 });
+  assert.deepEqual(
+    [216, 220, 224, 228].map((at) => bitsFloat(main.machine.load(at))),
+    [0, 0, 20.5, 12.25],
+  );
+  assert.deepEqual(await call(402, [target, 3]), { control: 2 });
+  assert.equal(plane.state.blendMode, 3);
+  assert.deepEqual(await call(402, [target, 7]), { control: 2 });
+  assert.equal(plane.state.blendMode, 0);
+  assert.deepEqual(await call(78, [target, width, height]), { control: 2 });
+  assert.equal(plane.graph.style.coordMode, 0);
 });
 
 test('63 texture allocation retains existing pages and authored optional calls return control 2', async () => {
