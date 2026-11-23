@@ -11,10 +11,31 @@ export function x87AngleConversion(angle, toRadians) {
   return f(roundX87Single(product / (toRadians ? 180 : pi)));
 }
 
-export function calcFrame(frame, fps) {
+function scaleFrameX87(frame, rate) {
+  // FILD keeps the integer exact until FMUL. A wider product can fall on the
+  // wrong side of a float32 midpoint if it is rounded to double first.
+  if (frame < 2 ** 29 || rate === 0) return f(frame * rate);
+  const unit = 2 ** (Math.floor(Math.log2(rate)) - 23);
+  const exactProduct = BigInt(frame) * BigInt(rate / unit);
+  const shift = BigInt(exactProduct.toString(2).length - 24);
+  const significand = exactProduct >> shift;
+  const remainder = exactProduct - (significand << shift);
+  const halfway = 1n << (shift - 1n);
+  const roundUp = remainder > halfway || (remainder === halfway && (significand & 1n) !== 0n);
+  return Number(significand + BigInt(roundUp)) * unit * 2 ** Number(shift);
+}
+
+export function calcFrame(frame, fps, scale) {
   frame >>>= 0;
   if (!frame || frame & 0x80000000) return frame;
-  return Math.max(1, Math.trunc(f(f((fps >>> 0) / 60) * f(frame)))) >>> 0;
+  const rate = fps >>> 0;
+  if (scale === 'x87-uint32') {
+    // The unsigned rate uses x87 FADD before FDIV when its high bit is set.
+    const unsignedRate = rate & 0x80000000 ? f(rate) : rate;
+    const frames = scaleFrameX87(frame, f(unsignedRate / 60));
+    return Math.max(1, frames >>> 0);
+  }
+  return Math.max(1, Math.trunc(f(f(rate / 60) * f(frame)))) >>> 0;
 }
 
 export function linearInterpolate(areaMin, areaMax, inputMin, inputMax, value) {
@@ -39,8 +60,9 @@ export function truncateFloat32(value) {
     : -2147483648;
 }
 
-export function roundInteger(value) {
+export function roundInteger(value, result) {
   const n = f(Math.floor(f(f(value) + 0.5)));
+  if (result === 'int64-low-word') return n >= -(2 ** 63) && n < 2 ** 63 ? n >>> 0 : 0;
   return Number.isFinite(n) && n >= -2147483648 && n < 2147483648 ? n | 0 : -2147483648;
 }
 

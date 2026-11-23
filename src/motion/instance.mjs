@@ -2,12 +2,14 @@
 import { KCSMachine, nativeReply, floatBits, bitsFloat, formatNative } from '../kcs.mjs';
 import { nativeCatalog } from '../native/catalog.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
+import { nativeScalarMath } from '../native/scalar-math.mjs';
 import { ParticleRandom } from '../ppi/random.mjs';
 import {
   degreeToRadian,
   radianToDegree,
   x87AngleConversion,
   linearInterpolate,
+  x87LinearInterpolate,
   roundInteger,
   triangleWave,
   rotateVector,
@@ -65,6 +67,7 @@ export class MotionInstance {
     this.contracts = nativeCatalog(profile, 'generic');
     const abi = nativeABI(profile);
     this.math = abi.math;
+    this.interpreterMath = this.math?.interpreterUsesNativeScalarMath ? this.math : null;
     this.multiplyMatrix = abi.math?.motionMatrixMultiplySSE ? multiplySSE : multiply;
     this.transformVector = abi.math?.vectorTransformPairwise ? transformFloat32Pairs : transform;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
@@ -166,6 +169,16 @@ export class MotionInstance {
     const put = (address, numbers) =>
       numbers.forEach((value, i) => machine.store(address + i * 4, floatBits(value)));
     this.calls.set(id, (this.calls.get(id) || 0) + 1);
+    const scalarReply =
+      this.interpreterMath &&
+      nativeScalarMath(
+        contract.name,
+        args,
+        machine,
+        contract.argumentWords,
+        this.interpreterMath.anglesUseX87,
+      );
+    if (scalarReply) return scalarReply;
     if (id === 14 && this.math?.anglesUseX87)
       return real(x87AngleConversion(bitsFloat(args[0]), true));
     if (unary.has(id)) return real(unary.get(id)(bitsFloat(args[0])));
@@ -187,7 +200,7 @@ export class MotionInstance {
       case 16:
         return word(Math.abs(args[0] | 0));
       case 17:
-        return word(roundInteger(bitsFloat(args[0])));
+        return word(roundInteger(bitsFloat(args[0]), this.interpreterMath?.roundIntegerResult));
       case 18:
       case 19:
       case 20: {
@@ -310,7 +323,11 @@ export class MotionInstance {
       case 40:
         return real(this.random.frand());
       case 41:
-        return real(linearInterpolate(...values()));
+        return real(
+          (this.interpreterMath?.lerpUsesX87 ? x87LinearInterpolate : linearInterpolate)(
+            ...values(),
+          ),
+        );
       case 42:
         return real(triangleWave(...values()));
       default:

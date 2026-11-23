@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { KCSMachine, nativeReply, floatBits, bitsFloat, formatNative } from '../kcs.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
+import { nativeScalarMath } from '../native/scalar-math.mjs';
 import { PTCL_ABI, initialParticle, readPTCLQuad, writePTCLQuad } from './abi.mjs';
 import { particleNativeContract } from './contracts.mjs';
 import { ParticleRandom } from './random.mjs';
@@ -9,6 +10,7 @@ import {
   degreeToRadian,
   radianToDegree,
   linearInterpolate,
+  x87LinearInterpolate,
   roundInteger,
   triangleWave,
   rotateVector,
@@ -29,6 +31,12 @@ const scalarMath = new Map([
   [17, Math.sqrt],
   [19, degreeToRadian],
   [20, radianToDegree],
+]);
+const particleScalarNames = new Map([
+  [14, 'abs'],
+  [19, 'degreeToRadian'],
+  [20, 'radianToDegree'],
+  [21, 'integerAbs'],
 ]);
 
 export class ParticleScriptInstance {
@@ -59,8 +67,10 @@ export class ParticleScriptInstance {
     this.script = script;
     this.profile = profile;
     this.table = script.scriptVersion === 0x20000 ? 'particle-v2' : 'particle-v1';
-    this.nativeEntries =
-      profile === undefined ? null : nativeABI(profile).tables[this.table].entries;
+    const abi = profile === undefined ? null : nativeABI(profile);
+    this.nativeEntries = abi?.tables[this.table].entries ?? null;
+    this.interpreterMath = abi?.math?.interpreterUsesNativeScalarMath ? abi.math : null;
+    this.frameScale = abi?.particle?.frameScale;
     this.count = count;
     this.width = f(width);
     this.height = f(height);
@@ -159,6 +169,16 @@ export class ParticleScriptInstance {
     };
     const base = this.now * 4,
       quadOffset = this.now * 112;
+    const scalarReply =
+      this.interpreterMath &&
+      nativeScalarMath(
+        particleScalarNames.get(id) ?? contract.name,
+        args,
+        machine,
+        argumentWords,
+        this.interpreterMath.anglesUseX87,
+      );
+    if (scalarReply) return scalarReply;
     if (scalarMath.has(id)) return real(scalarMath.get(id)(bitsFloat(args[0])));
     switch (id) {
       case 0: {
@@ -172,7 +192,7 @@ export class ParticleScriptInstance {
       case 2:
         return scalar(this.before);
       case 3:
-        return scalar(calcFrame(args[0], this.fps));
+        return scalar(calcFrame(args[0], this.fps, this.frameScale));
       case 4:
         return scalar(this.fps);
       case 5:
@@ -281,9 +301,13 @@ export class ParticleScriptInstance {
       case 40:
         return scalar(this.count - 1);
       case 41:
-        return real(linearInterpolate(...floats()));
+        return real(
+          (this.interpreterMath?.lerpUsesX87 ? x87LinearInterpolate : linearInterpolate)(
+            ...floats(),
+          ),
+        );
       case 42:
-        return scalar(roundInteger(bitsFloat(args[0])));
+        return scalar(roundInteger(bitsFloat(args[0]), this.interpreterMath?.roundIntegerResult));
       case 43:
         return real(triangleWave(...floats()));
       case 44:

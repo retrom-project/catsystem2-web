@@ -436,6 +436,32 @@ const mainEvidence = [
       'Own 2.6.1.23 movie window wrappers 0x483790–0x483bc3 use Root 31 and raw Input 136; 0x47be50 reads the drawing rectangle',
   },
 ];
+const particleInterpreterEvidence = [
+  {
+    ids: [1, 2, 4, 5, 27, 28, 30, 31, 32, 35, 36, 39, 40],
+    value:
+      'Own 2.6.1.23 particle tables share these frame, viewport, quad, register and control bodies',
+  },
+  {
+    ids: [3],
+    value: 'Own 2.6.1.23 Particle 0x48c3b0 truncates to an integer64 and clamps the low DWORD',
+  },
+  {
+    ids: [6, 13, 14, 15, 17, 19, 20, 21, 41, 42],
+    value:
+      'Own 2.6.1.23 scalar bodies match their MOT peers; 19/20/41/42 also share the Main pointers',
+  },
+  {
+    ids: [33],
+    value: 'Own 2.6.1.23 Particle 0x48cbb0 shares the integer MT19937 stream with MOT 0x595af0',
+  },
+];
+const particleInterpreterSignatures = [
+  {
+    ids: [1, 2, 3, 4, 6, 13, 14, 15, 17, 19, 20, 21, 33, 36, 40, 41, 42],
+    fields: { resultWritten: true },
+  },
+];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
   0, 2, 3, 141, 169, 170, 172, 173, 180, 182, 184, 185, 187, 188, 189, 190, 191, 429, 439, 464, 543,
@@ -640,11 +666,13 @@ export default {
   nameTable: { legacyFieldBytes: 32 },
   math: {
     anglesUseX87: true,
+    interpreterUsesNativeScalarMath: true,
     lerpUsesX87: true,
     roundIntegerResult: 'int64-low-word',
     vectorTransformWFirst: true,
   },
   motion: { addUsesFormat: true, elapsedUsesX87: true },
+  particle: { frameScale: 'x87-uint32' },
   movie: { alwaysUseBgmVolume: true },
   scene: {
     translations: false,
@@ -915,13 +943,36 @@ export default {
     },
     generic: {
       ...tables(45, [
+        {
+          ids: [1, 8, 9, 10, 12],
+          value: 'Own 2.6.1.23 MOT sin, ceil, absolute, floor and sqrt match the Particle bodies',
+        },
+        {
+          ids: [14, 15],
+          value: 'Own 2.6.1.23 MOT 0x595470/0x595450 match the Main/Particle x87 angle bodies',
+        },
         { ids: [16], value: 'Own 2.6.1.23 Generic 0x595650 writes the signed absolute value word' },
         { ids: [17, 38, 41], value: 'Own 2.6.1.23 MOT handlers and fixed-base logo motion calls' },
+        {
+          ids: [39],
+          value: 'Own 2.6.1.23 MOT 0x595af0 draws from the shared integer MT19937 stream',
+        },
       ]),
-      signatures: [{ ids: [16, 17, 41], fields: { resultWritten: true } }],
+      signatures: [
+        { ids: [1, 8, 9, 10, 12, 14, 15, 16, 17, 39, 41], fields: { resultWritten: true } },
+      ],
     },
-    'particle-v1': tables(44),
-    'particle-v2': tables(51),
+    'particle-v1': {
+      ...tables(44, particleInterpreterEvidence),
+      signatures: particleInterpreterSignatures,
+    },
+    'particle-v2': {
+      ...tables(51, [
+        ...particleInterpreterEvidence,
+        { ids: [50], value: 'Own 2.6.1.23 Particle v2 blend mode stores 1–5 or zero' },
+      ]),
+      signatures: particleInterpreterSignatures,
+    },
   },
   layouts: {
     motionCheckpoint: {
