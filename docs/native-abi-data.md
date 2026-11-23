@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 258       | 57            | 17            | 537     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 260       | 57            | 17            | 535     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -107,6 +107,8 @@ Main 605 reads the selected raw group gain, or 100 for an unmatched
 group. Main 606 and 607 return the original play and master-volume
 words from the compact 88-byte voice rows. Matching uses the standard
 CP932 directory splitter before the original prefix comparison.
+Main 844 returns the same voice row index used by those getters. Main 674
+resolves its archive through the original 48-entry category table.
 Main 565 and 566 read the recording state and counter from the active
 view. Main 567 writes a formatted CP932 line through the owned native
 files and retains the original append cursor before CRLF.

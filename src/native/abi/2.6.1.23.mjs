@@ -351,6 +351,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 recording getters 0x47b6f0/0x47b710 read view words at +0x84/+0x88; 0x47b910 writes a CP932 formatted line and CRLF',
   },
+  {
+    ids: [674, 844],
+    value:
+      'Own 2.6.1.23 Main 0x47da40 returns the narrow voice row at 0x5c2be0; 0x47bbc0 searches 48 archive categories through 0x5c2ca0',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -588,7 +593,9 @@ export default {
     loadMessageFormat: 'filename',
     spatialRequiresLoadedBuffer: true,
     groupGainUsesMute: false,
+    categoryLookupUsesFlatVoice: true,
   },
+  resources: { categoryCount: 48 },
   language: {
     storage: null,
     singleTable: null,
@@ -704,6 +711,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [674, 844], fields: { resultWritten: true } },
         { ids: [565, 566], fields: { resultWritten: true } },
         { ids: [567], fields: { resultWritten: false } },
         { ids: [605, 606, 607], fields: { resultWritten: true } },

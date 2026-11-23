@@ -35,6 +35,18 @@ test('23 narrow Settings queries return raw group gain and words from 88-byte vo
   assert.deepEqual(await call(607, 'SPEAKER01.ogg'), { control: 1, value: 0xabcdef01 });
   assert.deepEqual(await call(607, 'other.ogg'), { control: 1, value: 0 });
   assert.deepEqual(await call(605, 'other.ogg'), { control: 1, value: 100 });
+  assert.deepEqual(await call(844, 'SPEAKER01.ogg'), { control: 1, value: 2 });
+  assert.deepEqual(await call(844, 'other.ogg'), { control: 1, value: 0xffffffff });
+  const entries = [];
+  world.game.nativeResources = { entries };
+  entries[46] = { name: 'speech' };
+  entries[48] = { name: 'outside' };
+  m.writeString('speaker01.ogg', 128);
+  m.writeString('sound', 256);
+  const category = () => runtime.native('main', 674, [128, 256], m, main);
+  assert.deepEqual(await category(), { control: 1, value: 46 });
+  m.writeString('outside', 256);
+  assert.deepEqual(await category(), { control: 1, value: 0xffffffff });
 });
 
 for (const [profile, variable] of [

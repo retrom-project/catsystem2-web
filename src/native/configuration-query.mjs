@@ -212,11 +212,12 @@ export function nativeConfigurationQuery(id, args, machine, services) {
     sound = services.world.soundConfiguration;
   let archive = category;
   if (equal(category, encodeCP932('sound'))) {
-    archive = sound.loaded
-      ? soundArchive(sound.parts, lower(filename), encode)
-      : index < 0
-        ? null
-        : voiceText(configuration, index, archiveByte, 32);
+    archive =
+      sound.loaded && !abi.sound.categoryLookupUsesFlatVoice
+        ? soundArchive(sound.parts, lower(filename), encode)
+        : index < 0
+          ? null
+          : voiceText(configuration, index, archiveByte, 32);
     if (archive === null) return value(-1);
   }
   const capacity = abi.resources?.categoryCount ?? 128;
