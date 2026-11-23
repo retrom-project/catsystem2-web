@@ -195,6 +195,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Motion 0x481d70–0x482580 and 0x4828c0: owned group removal, 0x90-byte transfers, x87 elapsed frames and formatted archive add',
   },
+  {
+    ids: [541, 542],
+    value:
+      'Own 2.6.1.23 wrappers 0x47fa30 and 0x47fa80 release intersecting pages at 0x4d1260 or allocate missing configured pages at 0x4d1370',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -542,7 +547,8 @@ export default {
         {
           ids: [
             65, 78, 84, 85, 93, 94, 101, 207, 295, 296, 298, 299, 300, 301, 302, 303, 308, 343, 344,
-            345, 402, 420, 421, 422, 451, 453, 458, 459, 466, 586, 595, 630, 645, 647, 739, 740,
+            345, 402, 420, 421, 422, 451, 453, 458, 459, 466, 541, 542, 586, 595, 630, 645, 647,
+            739, 740,
           ],
           fields: { resultWritten: false },
         },

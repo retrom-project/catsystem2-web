@@ -2313,9 +2313,14 @@ test('2.6.1.23 Plane draws its own textured rectangle and applies the native tra
   assert.equal(plane.graph.style.coordMode, 0);
 });
 
-test('63 texture allocation retains existing pages and authored optional calls return control 2', async () => {
-  const profile = 'rebellions-jp-engine-2.6.1.63',
-    { world, audio } = await oldTitleWorld({}, undefined, profile);
+test('63 texture allocation retains existing pages and authored optional calls return control 2', () =>
+  verifyTextureAllocation('rebellions-jp-engine-2.6.1.63', false));
+
+test('2.6.1.23 texture allocation retains unaffected pages and releases intersecting pages', () =>
+  verifyTextureAllocation('grisaia-jp-engine-2.6.1.23', true));
+
+async function verifyTextureAllocation(profile, releasesPages) {
+  const { world, audio } = await oldTitleWorld({}, undefined, profile);
   try {
     const texture = world.configuration.fields.texture;
     texture.size.set([8, 8]);
@@ -2337,6 +2342,13 @@ test('63 texture allocation retains existing pages and authored optional calls r
     assert.equal(existing.rgba[0], 79);
     assert.equal(pages.pages.get(1).bpp, 32);
     assert.equal(pages.pages.get(2).bpp, 16);
+    if (releasesPages) {
+      assert.deepEqual(await call(541, [8, 0, 8, 8]), { control: 2 });
+      assert.equal(pages.pages.has(1), false);
+      assert.equal(pages.frame(0), existing);
+      assert.deepEqual(await call(542, []), { control: 2 });
+      assert.equal(pages.pages.get(1).bpp, 32);
+    }
     for (const [id, words] of [
       [543, 3],
       [546, 2],
@@ -2344,12 +2356,15 @@ test('63 texture allocation retains existing pages and authored optional calls r
       [652, 3],
     ])
       assert.deepEqual(await call(id, new Array(words).fill(0xffffffff)), { control: 2 });
-    assert.equal(nativeABI(profile).tables.main.entries[544].status, 'unknown');
+    assert.equal(
+      nativeABI(profile).tables.main.entries[544].status,
+      profile === 'grisaia-jp-engine-2.6.1.23' ? 'reserved' : 'unknown',
+    );
   } finally {
     await world.close();
     await audio.dispose();
   }
-});
+}
 
 test('63 preload GCALLs own the loaded archive bytes and age the live queue', async () => {
   const image = hg3(2, 2, new Uint8Array(16).fill(0x65)),

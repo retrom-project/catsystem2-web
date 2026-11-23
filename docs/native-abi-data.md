@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 118       | 57            | 17            | 677     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 120       | 57            | 17            | 675     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -81,6 +81,8 @@ Main 101 and 344 set scale and a selected transform matrix. Main 343 and
 345 read the authored local bounds. Main 402 sets blend mode, and Main 466
 writes coordinates only to a present render model. A replacement model
 starts with coordinate mode zero.
+Main 541 releases the texture pages intersecting its rectangle. Main 542
+allocates missing configured pages while preserving existing pages.
 
 Main 450 and 451 use raw FES messages 306 and 307 for label selection and
 the saved object word. Main 630 synchronously dispatches raw 308 with the
