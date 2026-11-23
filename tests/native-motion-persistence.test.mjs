@@ -49,7 +49,11 @@ function fixture(profile) {
         : nativeMotion(id, args, machine, services);
   return { handles, motion, machine, call };
 }
-for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.74'])
+for (const profile of [
+  'nekopara-vol3-engine-2.6.1.76',
+  'sdk-4.01-engine-2.6.1.74',
+  'grisaia-jp-engine-2.6.1.23',
+])
   test(`${profile} CTS motion envelopes restore an independent authored animation after source disposal`, async () => {
     const before = fixture(profile),
       source = before.motion.create(73);

@@ -232,6 +232,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 name-table wrappers 0x478530–0x4788c0, fes lookup and 32-byte narrow records from 0x4f3b00',
   },
+  {
+    ids: [315, 316, 317, 387, 388],
+    value:
+      'Own 2.6.1.23 motion save wrappers 0x482690–0x4827a0, 0x4841d0 and 0x484ab0, serializer 0x596780 and reload 0x597ba0',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -578,6 +583,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [315, 316, 387, 388], fields: { resultWritten: true } },
+        { ids: [317], fields: { resultWritten: false } },
         { ids: [633, 635, 636, 637, 638, 639, 640], fields: { resultWritten: true } },
         { ids: [634], fields: { resultWritten: false } },
         { ids: [863, 865, 866, 867], fields: { resultWritten: true } },
@@ -630,6 +637,13 @@ export default {
     'particle-v2': tables(51),
   },
   layouts: {
+    motionCheckpoint: {
+      size: 1076,
+      group: 36,
+      registers: 40,
+      nameBytes: 32,
+      wide: false,
+    },
     textCores: {
       cp932: {
         configSize: 184,

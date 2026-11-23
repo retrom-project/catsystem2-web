@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 160       | 57            | 17            | 635     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 165       | 57            | 17            | 630     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -108,6 +108,12 @@ display output pointer. Main 304 and 535 read a formatted CP932 motion
 name from the `mot` archive and return a new handle or zero. Main 535 adds
 the authored delay word. Main 307 advances elapsed frames with x87 rounding,
 and Main 308 sets the speed.
+Main 315–317 own an independent motion record buffer. Main 315 reads
+the two adjacent stack words for the manager and frame even where the
+authored GCALL encodes one word. The buffer has an eight-byte header and
+1,076-byte CP932 motion records, plus each record's extra bytes.
+Main 387 stores the allocated buffer in CSS. Main 388 restores an owned
+copy, optionally rebuilding the motions at the supplied frame.
 
 Main 323–327 allocate, release and read the owned CP932 CatScene document.
 The reader copies file markers from the records with types `0xf0` and
