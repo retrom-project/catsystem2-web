@@ -693,7 +693,8 @@ export class FESStringDriver {
       task = this.validate(instance, object);
     const runtime = await this.world.text.runtime(),
       mode = object.nativeType === 29 ? 'nv' : object.nativeType === 37 ? 'utf8' : 'cp932',
-      messages = nativeABI(this.world.profile).text.resourceMessages,
+      textABI = nativeABI(this.world.profile).text,
+      messages = textABI.resourceMessages,
       first = mode === 'nv' ? 489 : mode === 'utf8' ? 469 : 449,
       scratch = this.workspace(object);
     let cursorMask = 0;
@@ -855,7 +856,11 @@ export class FESStringDriver {
         s.end[i] = scratch.cursor[i];
       }
       s.endKnown = scratch.cursorWritten === 3;
-    } else if (scratch.cursorWritten !== 0 || cursorMask !== 0 || !s.endKnown)
+    } else if (
+      scratch.cursorWritten !== 0 ||
+      cursorMask !== 0 ||
+      (!s.endKnown && !(mode === 'nv' && textABI.nvEndPositionRequiresSection))
+    )
       throw new Error('FES text cursor query left outputs unwritten without a complete known end');
     if (s.finish) {
       await send(mode === 'nv' ? 7 : 6);

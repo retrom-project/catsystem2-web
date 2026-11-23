@@ -694,6 +694,7 @@ export default {
     nvResetKeepsView: true,
     nvResetKeepsColors: true,
     nvFesSecondaryUsesDefaults: true,
+    nvEndPositionRequiresSection: true,
   },
   configuration: {
     blockSizes: [2856, 56, 28, 12],

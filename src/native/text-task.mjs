@@ -561,7 +561,9 @@ export class NativeNVTextTask extends NativeTextTask {
         await writer.resourceMessage(10, w, l);
         return 0;
       case 12: {
-        const [x, y] = await writer.endPosition();
+        const position = await writer.endPosition();
+        if (!position) return 0;
+        const [x, y] = position;
         memory.store(w, x);
         memory.store(l, y);
         return 0;

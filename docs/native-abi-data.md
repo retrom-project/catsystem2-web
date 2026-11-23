@@ -386,6 +386,9 @@ its 432-byte packet. The primary and secondary rectangles each precede a
 are at offsets 388 and 392, followed by the output flag at 396. The shared
 writer keeps the parsers and their section contents separate. FES reset
 refreshes text settings and retains the divided view and base colors.
+The end-position query writes both coordinates when the main section exists.
+Before the first section or after clearing the sections, it leaves both
+destination words untouched.
 
 The .23 layout dispatcher has 17 literal modes. Five color aliases perform no
 action on STRING. The remaining modes include dimensions, colors, margins,

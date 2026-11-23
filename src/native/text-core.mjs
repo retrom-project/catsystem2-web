@@ -636,7 +636,8 @@ export class JSNVTextWriter extends JSTextWriter {
   }
   async endPosition() {
     const s = this.main.at(-1);
-    if (!s) return [0, 0];
+    if (!s)
+      return nativeABI(this.runtime.profile).text.nvEndPositionRequiresSection ? null : [0, 0];
     const v = this.configView;
     return [
       s.parser.cachedEnd[0] + s.x + v.getInt32(8, true),

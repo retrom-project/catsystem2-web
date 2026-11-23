@@ -203,8 +203,10 @@ test('ABI 2.6.1.23 NVSTRING publishes two compact CP932 layouts and restores the
     secondary = encodeCP932('猫'),
     body = encodeCP932(`#DEFINE
 NVSTRING text
+NVSTRING empty
 #OBJECT SIZE VRAM POS PRI DISP DIV
 text 72,32 2,6 4,4 60001 1 18
+empty 24,16 0,0 0,0 60002 0 0
 #START
 text reset
 text layout size 8
@@ -221,6 +223,9 @@ next IDLE
 #RESET
 text reset
 break
+#CLEAR
+text clear
+break
 `),
     world = await defaultFESWorld(profile, { 'screen.fes': body });
   let fresh;
@@ -230,11 +235,20 @@ break
     await task.tick();
     const text = instance.collection.lookup('text', 0),
       child = world.objects.objects.get(text.nativeTaskID),
+      empty = world.objects.objects.get(instance.collection.lookup('empty', 0).nativeTaskID),
       writer = await child.implementation.writer(),
       defaults = new DataView((await world.text.core.defaultPacket('nv')).buffer),
       words = (offsets) => {
         const view = new DataView(child.implementation.text.config.buffer);
         return offsets.map((at) => view.getUint32(at, true));
+      };
+    const sentinel = [0x12345678, 0x87654321],
+      queryEnd = async (record) => {
+        const words = sentinel.slice();
+        await record.implementation.message([record.parent, 501, 0, 4], {
+          payload: { store: (address, word) => (words[address / 4] = word) },
+        });
+        return words;
       };
     assert.equal(child.kind, 49);
     assert.equal(child.parent, instance.runtimeID);
@@ -253,6 +267,8 @@ break
     );
     assert.deepEqual(writer.main[0].parser.source, source);
     assert.deepEqual(writer.sub[0].parser.source, secondary);
+    assert.deepEqual(await queryEnd(empty), sentinel);
+    assert.deepEqual(await queryEnd(child), await writer.endPosition());
     const frame = writer.frame();
     assert.ok(frame.rgba.some((alpha, i) => i % 4 === 3 && (i >>> 2) % 72 < 18 && alpha));
     assert.ok(frame.rgba.some((alpha, i) => i % 4 === 3 && (i >>> 2) % 72 >= 18 && alpha));
@@ -269,6 +285,13 @@ break
     assert.deepEqual(restored.text.config, child.implementation.text.config);
     assert.deepEqual(rebuilt.sub[0].parser.source, secondary);
     assert.deepEqual(rebuilt.frame(), writer.frame());
+    assert.deepEqual(await queryEnd(fresh.objects.objects.get(empty.id)), sentinel);
+    const previousEnd = text.nativeTextState.end.slice();
+    await task.player.notify('CLEAR');
+    await task.syncObjects();
+    assert.equal(writer.main.length, 0);
+    assert.deepEqual(await queryEnd(child), sentinel);
+    assert.deepEqual(text.nativeTextState.end, previousEnd);
   } finally {
     await fresh?.close();
     await world.close();
