@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 120       | 57            | 17            | 675     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 141       | 57            | 17            | 654     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -108,6 +108,16 @@ display output pointer. Main 304 and 535 read a formatted CP932 motion
 name from the `mot` archive and return a new handle or zero. Main 535 adds
 the authored delay word. Main 307 advances elapsed frames with x87 rounding,
 and Main 308 sets the speed.
+
+Main 323–327 allocate, release and read the owned CP932 CatScene document.
+The reader copies file markers from the records with types `0xf0` and
+`0xf1`. Main 338 queries those markers and Main 608 queries the block count.
+Main 328–333 update or read the independent seen and path lists. Main 336
+captures the strings referenced in a record from the caller's existing bank.
+The native CSS history wrappers 385 and 386 take four words. They use
+40-byte headerless records followed by 72 bytes per saved string. The
+CSS file wrappers 242, 248, 252, 389 and 390 store or extract an owned
+nested file, query the tag, clear contents, and clone the file.
 
 Main 790 reads a start and count pair from one of eight configured variable
 ranges. The first word selects local or global storage. An out-of-range

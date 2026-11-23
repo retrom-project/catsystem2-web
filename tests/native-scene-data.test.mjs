@@ -131,6 +131,46 @@ test('63 direct CST reads file markers and restores independent CP932 path histo
   }
 });
 
+test('2.6.1.23 Script owns a narrow scene reader and path history', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23', {
+    'owned.cst': cst([
+      [
+        [0xf0, '本文'],
+        [0xf1, '0x1c'],
+        [0x20, '日本語の本文'],
+      ],
+    ]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const { main } = world,
+    m = main.machine,
+    call = (id, args) => world.runtime.native('main', id, args, m, main),
+    value = (word) => ({ control: 1, value: word >>> 0 }),
+    { value: handle } = call(323, []);
+  assert.deepEqual(await call(608, [handle]), value(-1));
+  m.writeString('owned.cst', 256);
+  assert.deepEqual(await call(325, [handle, 256]), value(1));
+  assert.deepEqual(await call(608, [handle]), value(1));
+  assert.deepEqual(await call(326, [handle, 0, 0]), value(0xf0));
+  assert.deepEqual(await call(326, [handle, 0, 1]), value(0xf1));
+  assert.deepEqual(await call(338, [handle, 512]), value(28));
+  assert.equal(m.string(512), '本文');
+  const text = encodeCP932('日本語の本文');
+  m.bytes(512, text.length + 2).fill(0xad);
+  assert.deepEqual(await call(327, [handle, 512, 0, 2]), value(text.length));
+  assert.deepEqual(m.bytes(512, text.length + 2), Uint8Array.of(...text, 0, 0xad));
+  assert.deepEqual(await call(329, [handle, 256, 4]), value(1));
+  m.writeString('', 320);
+  assert.deepEqual(await call(329, [handle, 320, 9]), value(1));
+  const data = world.runtime.handles.get(handle, 'scene-data');
+  assert.deepEqual(
+    data.history.path.map(({ scene, value }) => [scene, value]),
+    [['owned', 4]],
+  );
+  assert.deepEqual(await call(324, [handle]), { control: 2 });
+  assert.throws(() => world.runtime.handles.get(handle, 'scene-data'), /released/);
+});
+
 test('restored scene hints prepare one explicit M2 resource from the same mounted scene', async (t) => {
   const workerBefore = globalThis.Worker;
   let pending = Promise.withResolvers();

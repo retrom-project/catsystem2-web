@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
+import { NATIVE_SEMANTICS } from './semantics.mjs';
+
 export const engine23CommonHeads = {
   shared: [
     'automove',
@@ -200,6 +202,21 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 wrappers 0x47fa30 and 0x47fa80 release intersecting pages at 0x4d1260 or allocate missing configured pages at 0x4d1370',
   },
+  {
+    ids: [323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 336, 338, 608],
+    value:
+      'Own 2.6.1.23 scene owner and CP932 reader at 0x480b40–0x481490; authored scene file markers and path history',
+  },
+  {
+    ids: [385, 386],
+    value:
+      'Own 2.6.1.23 four-word CSS scene history wrappers and 0x5a39e0 headerless 40-byte records',
+  },
+  {
+    ids: [242, 248, 252, 389, 390],
+    value:
+      'Own 2.6.1.23 CSS entries, tag, clear and clone at 0x483fc0, 0x484650, 0x484910 and 0x484c90–0x484cd0',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -394,6 +411,14 @@ export default {
   globalFile: { growthBytes: 524288 },
   math: { lerpUsesX87: true, roundIntegerResult: 'int64-low-word' },
   motion: { addUsesFormat: true, elapsedUsesX87: true },
+  scene: {
+    translations: false,
+    legacyHistoryRecords: true,
+    historyCaptureUsesExistingBank: true,
+    cstFileMarkers: true,
+    directTextNull: 'reject',
+    directPathResult: 'success',
+  },
   stringBank: { emptyGetResult: 1 },
   database: { nullExportPolicy: null },
   sound: {
@@ -538,17 +563,18 @@ export default {
       signatures: [
         {
           ids: [
-            6, 15, 64, 69, 70, 294, 304, 307, 318, 319, 419, 423, 424, 425, 450, 535, 594, 596, 597,
-            646, 741, 790,
+            6, 15, 64, 69, 70, 242, 248, 252, 294, 304, 307, 318, 319, 323, 325, 326, 327, 328, 329,
+            332, 333, 338, 386, 389, 390, 419, 423, 424, 425, 450, 535, 594, 596, 597, 608, 646,
+            741, 790,
           ],
           fields: { resultWritten: true },
         },
         { ids: mainConstantZero, fields: { resultWritten: true } },
         {
           ids: [
-            65, 78, 84, 85, 93, 94, 101, 207, 295, 296, 298, 299, 300, 301, 302, 303, 308, 343, 344,
-            345, 402, 420, 421, 422, 451, 453, 458, 459, 466, 541, 542, 586, 595, 630, 645, 647,
-            739, 740,
+            65, 78, 84, 85, 93, 94, 101, 207, 295, 296, 298, 299, 300, 301, 302, 303, 308, 324, 330,
+            331, 336, 343, 344, 345, 402, 420, 421, 422, 451, 453, 458, 459, 466, 541, 542, 586,
+            595, 630, 645, 647, 739, 740,
           ],
           fields: { resultWritten: false },
         },
@@ -558,6 +584,14 @@ export default {
             argumentWords: null,
             parameters: { kind: 'ignored', description: 'ignored' },
             resultWritten: false,
+          },
+        },
+        {
+          ids: [385],
+          fields: {
+            argumentWords: 4,
+            parameters: NATIVE_SEMANTICS.main[385].signature.parameters.slice(0, 4),
+            resultWritten: true,
           },
         },
       ],

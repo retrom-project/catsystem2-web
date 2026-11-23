@@ -83,8 +83,12 @@ test('scene persistence natives write original history bytes through the shared 
   assert.equal(nativeSceneData(0xf9, [file, 3, 42, 1], null, services).value, 0);
 });
 
-test('63 direct history saves read and write original compact records', async () => {
-  const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} direct history saves read and write original compact records`, () =>
+    verifyCompactHistory(profile));
+
+async function verifyCompactHistory(profile) {
+  const world = await dataWorld(profile);
   try {
     const { main } = world,
       m = main.machine,
@@ -132,7 +136,7 @@ test('63 direct history saves read and write original compact records', async ()
   } finally {
     await world.close({ flushFiles: false });
   }
-});
+}
 
 test('path extra data uses the native CTS memory record and separate copy operations', () => {
   const handles = new NativeHandles(),
