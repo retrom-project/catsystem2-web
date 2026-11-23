@@ -190,7 +190,7 @@ export default {
     root: { start: 29, captionWide: false, soundReset: 181 },
     cursorVisibility,
     soundBaseOnly: [22],
-    scriptForward: [cursorVisibility],
+    scriptForward: [9, 10, cursorVisibility, 64],
     screenEvent: null,
     tilePlaneCommand: null,
   },

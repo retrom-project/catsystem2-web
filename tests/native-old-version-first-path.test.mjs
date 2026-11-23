@@ -1447,6 +1447,55 @@ for (const [version, profile] of versions) {
 test('2.6.1.23 Input cursor changes reach Sound, Script and FES through its own message', (t) =>
   verifyCursorVisibility(t, 'grisaia-jp-engine-2.6.1.23', 21));
 
+test('2.6.1.23 Plane routes real input edges to its waiting Script', async () => {
+  const profile = 'grisaia-jp-engine-2.6.1.23';
+  const { world, audio } = await oldTitleWorld(
+    {
+      'main.kcs': kcsProgram([
+        [37, 512],
+        [43, 71, 4],
+        [45],
+        [37, 528],
+        [43, 71, 4],
+        [45],
+        [37, 544],
+        [43, 71, 4],
+        [59],
+      ]),
+    },
+    undefined,
+    profile,
+  );
+  try {
+    const main = await world.initialize('main.kcs'),
+      plane = await world.objects.create({ kind: 2, parent: main.id }),
+      sender = world.nativeTaskID(plane),
+      call = (id, args) => world.runtime.native('main', id, args, main.machine, main),
+      packet = (base) => Array.from({ length: 4 }, (_, word) => main.machine.load(base + word * 4));
+    await call(79, [sender, floatBits(4), floatBits(3), 0xffffffff]);
+    await call(92, [sender, 1]);
+    await call(104, [sender, 0, 0, 4, 3, 23, 0]);
+    await call(105, [sender, 1]);
+    world.input.pointer(1, 1);
+
+    assert.equal(await world.input.route(5, true, 2), false);
+    assert.deepEqual(packet(512), [sender, 0xffff0003, sender, 5]);
+    assert.equal(await world.input.route(5, false, 2), true);
+    assert.deepEqual(packet(528), [sender, 0xffff0004, sender, 5]);
+    assert.equal(world.input.captures[5], 0);
+
+    const hover = await world.engineMessages.dispatch(main.id, plane, 64, sender, 1);
+    assert.deepEqual(packet(544), [sender, 0xffff0005, sender, 1]);
+    assert.deepEqual(hover, { routed: true, handled: true, result: NATIVE_UNWRITTEN_WORD });
+  } finally {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  }
+});
+
 test('63 startup Plane GCALLs bind and release the owned Input region', async () => {
   const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
   try {

@@ -49,6 +49,13 @@ delegates to Base with audio enabled and writes zero without an audio owner.
 FES delegates to Base. The ordinary World regression follows both visibility
 changes and checks the received words and the preserved output.
 
+The 2.6.1.23 Script receives input down and up as raw messages 8 and 9. The
+shared World routes them as 9 and 10. The receiver synchronously delivers
+`0xffff0003` or `0xffff0004` with the original sender, W and L and writes
+zero. A Script without an interpreter writes one. The same receiver forwards
+raw hover message 60 (canonical 64) as `0xffff0005` with the output word
+untouched.
+
 In 2.6.1.63, Input sends message 4 to the registered BasePlane on each configured
 keyboard edge. The plane sends raw 9 or 10 to its bound Script or FES with its
 native ID in both the sender and wParam fields and the key index as lParam.
