@@ -410,6 +410,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 getter 0x47da80 reads the startup GAME/log/static word via the configuration view at +0x210',
   },
+  {
+    ids: [699],
+    value:
+      'Own 2.6.1.23 rebuild at 0x477340–0x4777fa takes backlog and scene owners plus two formatted command names and traverses the saved path',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -786,6 +791,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [699], fields: { resultWritten: false } },
         { ids: [852], fields: { resultWritten: true } },
         { ids: [218, 653, 654, 655], fields: { resultWritten: false } },
         { ids: [339, 340, 341, 342, 534], fields: { resultWritten: false } },

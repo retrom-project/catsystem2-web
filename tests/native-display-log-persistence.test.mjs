@@ -12,6 +12,42 @@ import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 import { installFESProjectionOracle } from '../oracle/fes-projection-world.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { scene } from './fixtures/fes-log-model.mjs';
+
+test('23 native load rebuilds displayed backlog only through the saved scene position', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23', {
+    'history.cst': scene([
+      [
+        [33, '名前'],
+        [32, '本文'],
+        [48, 'voice line.ogg'],
+      ],
+      [[32, '先の台詞']],
+    ]),
+    'line.ogg': Uint8Array.of(1),
+  });
+  t.after(() => world.close());
+  world.game.resolveCategory = (name, category) =>
+    category === 'scene' && !name.endsWith('.cst') ? name + '.cst' : name;
+  const { main, runtime } = world,
+    { machine } = main,
+    call = (id, args = []) => runtime.native('main', id, args, machine, main),
+    log = (await call(696)).value,
+    cursor = (await call(323)).value,
+    model = runtime.handles.get(log, 'display-log');
+  machine.writeString('history.cst', 48);
+  machine.writeString('voice', 80);
+  machine.writeString('paragraph', 96);
+  assert.deepEqual(await call(329, [cursor, 48, 1]), { control: 1, value: 1 });
+  assert.deepEqual(await call(699, [log, cursor, 80, 96]), { control: 2 });
+  assert.equal(model.blocks.length, 1);
+  assert.equal(model.blocks[0][0] & 7, 7);
+  const rows = model.rows.map(({ first }) => new TextDecoder('shift_jis').decode(first));
+  assert.ok(rows.join('').includes('本文'));
+  assert.ok(!rows.join('').includes('先の台詞'));
+  assert.deepEqual(await call(699, [log, 0, 80, 96]), { control: 2 });
+  assert.equal(model.blocks.length, 1);
+});
 
 test('23 CSS log wrappers preserve the four native sections and independent ownership', async (t) => {
   const world = await dataWorld('grisaia-jp-engine-2.6.1.23');

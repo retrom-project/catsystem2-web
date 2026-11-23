@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 296       | 57            | 17            | 499     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 297       | 57            | 17            | 498     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -243,8 +243,10 @@ The narrow records cap their fields at 32 bytes, keep authored row order,
 and provide exact-name queries and filename matching and substitution.
 
 Main 696 creates a configured CP932 backlog. Main 698 appends a scene
-block, Main 700 writes a row's speaker, and Main 785 sets the pruning
-limit. Main 697 releases the backlog owner.
+block and Main 699 rebuilds the backlog through a saved scene path using
+the caller's formatted voice and paragraph commands. Main 700 writes a
+row's speaker and Main 785 sets the pruning limit. Main 697 releases the
+backlog owner.
 
 Main 863–868 own fixed-length record stacks. A push grows a full stack
 before translating the guest pointer. A valid pop copies the last record.
