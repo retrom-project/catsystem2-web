@@ -148,6 +148,32 @@ test('2.6.1.23 remainder preserves the original CRT classification and FPREM res
   }
 });
 
+test('2.6.1.23 MOT and PTCL triangle waves share the ordered x87 quarter branches', async () => {
+  for (const [left, right, expected] of [
+    [0x80000000, 0x41000000, 0],
+    [0x3f800000, 0x41000000, 0x3f000000],
+    [0x40000000, 0x41000000, 0x3f800000],
+    [0x40400000, 0x41000000, 0x3f000000],
+    [0x40800000, 0x41000000, 0x80000000],
+    [0xc0a00000, 0xc1000000, 0xbf000000],
+    [0x40c00000, 0x41000000, 0xbf800000],
+    [0x40e00000, 0x41000000, 0xbf000000],
+    [0x41000000, 0x41000000, 0],
+    [0x3f800000, 0x7f800000, 0xbf800000],
+    [0x7f800000, 0x3f800000, 0xbf800000],
+    [0xff812345, 0x41000000, 0],
+    [0x3f800000, 0xff812345, 0x7fc12345],
+    [0, 0, 0xffc00000],
+    [1, 2, 0xffc00000],
+    [2, 5, 0x80000000],
+  ]) {
+    for (const [table, id] of [['generic', 42], ...particles.map((table) => [table, 43])]) {
+      const { run } = await guest(table, id, [left, right]);
+      run(1, expected);
+    }
+  }
+});
+
 test('2.6.1.23 MOT and PTCL integer draws share and restore the integer RNG state', async () => {
   const random = new ParticleRandom(4357, 7),
     real = random.real.snapshot();

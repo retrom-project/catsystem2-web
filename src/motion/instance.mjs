@@ -11,6 +11,7 @@ import {
   x87AngleConversion,
   x87Atan2Word,
   x87RemainderWord,
+  x87TriangleWaveWord,
   linearInterpolate,
   x87LinearInterpolate,
   roundInteger,
@@ -177,6 +178,8 @@ export class MotionInstance {
     this.calls.set(id, (this.calls.get(id) || 0) + 1);
     if (this.interpreterMath && id === 7) return word(x87Atan2Word(...args));
     if (this.interpreterMath && id === 11) return word(x87RemainderWord(...args));
+    if (this.interpreterMath?.triangleWaveUsesX87 && id === 42)
+      return word(x87TriangleWaveWord(...args));
     if (this.currentMatrixFallback && (id === 23 || id === 26))
       return nativeMatrix(contract.name, args, machine, this.calculations);
     const scalarReply =

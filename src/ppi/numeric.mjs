@@ -4,6 +4,7 @@ import { bitsFloat, floatBits } from '../kcs/vm.mjs';
 import { roundX87Single } from './x87.mjs';
 const f = Math.fround;
 const pi = f(Math.PI);
+const quietNaNBit = 1 << 22;
 
 export const degreeToRadian = (degrees) => f(f(f(degrees) * pi) / 180);
 export const radianToDegree = (radians) => f(f(f(radians) * 180) / pi);
@@ -14,20 +15,19 @@ export function x87AngleConversion(angle, toRadians) {
 
 function x87BinaryNaNWord(left, right) {
   const infinity = 0x7f800000,
-    quietBit = 1 << 22,
     magnitudeLeft = left & 0x7fffffff,
     magnitudeRight = right & 0x7fffffff;
   if (magnitudeLeft > infinity && magnitudeRight > infinity) {
     // Both operands are quieted by FLD. FADDP selects the larger payload,
     // with a positive sign winning identical payloads.
-    const payloadLeft = magnitudeLeft | quietBit,
-      payloadRight = magnitudeRight | quietBit;
+    const payloadLeft = magnitudeLeft | quietNaNBit,
+      payloadRight = magnitudeRight | quietNaNBit;
     const selected =
       payloadLeft === payloadRight ? left & right : payloadLeft > payloadRight ? left : right;
-    return (selected | quietBit) >>> 0;
+    return (selected | quietNaNBit) >>> 0;
   }
-  if (magnitudeLeft > infinity) return (left | quietBit) >>> 0;
-  if (magnitudeRight > infinity) return (right | quietBit) >>> 0;
+  if (magnitudeLeft > infinity) return (left | quietNaNBit) >>> 0;
+  if (magnitudeRight > infinity) return (right | quietNaNBit) >>> 0;
 }
 
 export function x87Atan2Word(y, x) {
@@ -118,6 +118,21 @@ export function triangleWave(value, period) {
     wave = f(quarter * 3) <= phase ? f(wave - 1) : -wave;
   }
   return wave;
+}
+
+export function x87TriangleWaveWord(value, period) {
+  value &= 0x7fffffff;
+  period &= 0x7fffffff;
+  const quarter = f(bitsFloat(period) * 0.25);
+  if (Number.isNaN(quarter)) return period | quietNaNBit;
+  if (quarter === 0) return 0xffc00000;
+  const phase = bitsFloat(value) > 0 ? bitsFloat(x87RemainderWord(value, period)) : 0;
+  const part = phase > 0 ? bitsFloat(x87RemainderWord(floatBits(phase), floatBits(quarter))) : 0;
+  const wave = f(roundX87Single(part / quarter));
+  if (quarter > phase) return floatBits(wave);
+  if (quarter + quarter > phase) return floatBits(1 - wave);
+  if (roundX87Single(3 * quarter) > phase) return floatBits(-wave);
+  return floatBits(wave - 1);
 }
 
 // Native matrices use this sign convention; do not substitute a DOM rotation.

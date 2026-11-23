@@ -470,10 +470,16 @@ const particleInterpreterEvidence = [
     ids: [33],
     value: 'Own 2.6.1.23 Particle 0x48cbb0 shares the integer MT19937 stream with MOT 0x595af0',
   },
+  {
+    ids: [43],
+    value: 'Own 2.6.1.23 Particle 0x48cfc0 shares the x87 triangle wave body with MOT 0x595490',
+  },
 ];
 const particleInterpreterSignatures = [
   {
-    ids: [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 33, 36, 40, 41, 42],
+    ids: [
+      1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 33, 36, 40, 41, 42, 43,
+    ],
     fields: { resultWritten: true },
   },
 ];
@@ -685,6 +691,7 @@ export default {
     anglesUseX87: true,
     interpreterUsesNativeScalarMath: true,
     lerpUsesX87: true,
+    triangleWaveUsesX87: true,
     roundIntegerResult: 'int64-low-word',
     vectorTransformWFirst: true,
   },
@@ -997,10 +1004,15 @@ export default {
           ids: [39],
           value: 'Own 2.6.1.23 MOT 0x595af0 draws from the shared integer MT19937 stream',
         },
+        {
+          ids: [42],
+          value:
+            'Own 2.6.1.23 MOT 0x595490 shares the x87 triangle wave body with Particle 0x48cfc0',
+        },
       ]),
       signatures: [
         {
-          ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 39, 41],
+          ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 39, 41, 42],
           fields: { resultWritten: true },
         },
       ],

@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 330       | 57            | 17            | 465     | Generic 21 of 45, Particle 32 of 44 and 33 of 51 |
+| 2.6.1.23 | 869        | 330       | 57            | 17            | 465     | Generic 22 of 45, Particle 33 of 44 and 34 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -323,6 +323,11 @@ Generic 26 takes one matrix address and writes identity. Both translate the
 guest address and select the World current matrix on an unmapped address.
 Guest address zero is valid memory. Both return control 2 without writing a
 result. The archived zero-word form of Generic 23 is rejected by the VM.
+
+Generic 42 and Particle 43 in both script tables take the value and period as
+float32 words. They use the same x87 triangle wave with two CRT remainders and
+ordered quarter-period comparisons. The result is a float32 word with control
+1, including negative zero at the half-period boundary.
 
 The close callback uses Main 469 with a CSS handle and a record ID. The engine
 compacts the remaining tagged records after removing the first match. The
