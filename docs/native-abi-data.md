@@ -373,6 +373,13 @@ The packet ends with two VRAM coordinates and the output flag. The writer
 projects those fields into the shared parser and preserves the native packet
 for task updates and restore.
 
+NVSTRING creates a separate kind 49 task. Raw messages 420–437 operate on
+its 432-byte packet. The primary and secondary rectangles each precede a
+172-byte CP932 configuration at packet offsets 28 and 216. VRAM coordinates
+are at offsets 388 and 392, followed by the output flag at 396. The shared
+writer keeps the parsers and their section contents separate. FES reset
+refreshes text settings and retains the divided view and base colors.
+
 The .23 layout dispatcher has 17 literal modes. Five color aliases perform no
 action on STRING. The remaining modes include dimensions, colors, margins,
 sizes and font. The default `font` operand selects the fixed MS Gothic face.

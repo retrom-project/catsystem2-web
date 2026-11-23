@@ -197,6 +197,84 @@ break
   }
 });
 
+test('ABI 2.6.1.23 NVSTRING publishes two compact CP932 layouts and restores their pixels', async () => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    source = encodeCP932('折り返し'),
+    secondary = encodeCP932('猫'),
+    body = encodeCP932(`#DEFINE
+NVSTRING text
+#OBJECT SIZE VRAM POS PRI DISP DIV
+text 72,32 2,6 4,4 60001 1 18
+#START
+text reset
+text layout size 8
+text layout frame 0
+text layout shadow 0 0
+text layout color 32 64 128 0 0 0 255 255 255
+text insert
+text apend 折り返し
+text name 猫
+text draw
+text skip
+next IDLE
+#IDLE
+#RESET
+text reset
+break
+`),
+    world = await defaultFESWorld(profile, { 'screen.fes': body });
+  let fresh;
+  try {
+    const { task, instance } = await loadDefaultFES(world);
+    await task.tick();
+    await task.tick();
+    const text = instance.collection.lookup('text', 0),
+      child = world.objects.objects.get(text.nativeTaskID),
+      writer = await child.implementation.writer(),
+      defaults = new DataView((await world.text.core.defaultPacket('nv')).buffer),
+      words = (offsets) => {
+        const view = new DataView(child.implementation.text.config.buffer);
+        return offsets.map((at) => view.getUint32(at, true));
+      };
+    assert.equal(child.kind, 49);
+    assert.equal(child.parent, instance.runtimeID);
+    assert.equal(child.implementation.text.config.length, 432);
+    assert.deepEqual(
+      [0, 4, 8, 28, 32, 128, 200, 208, 212, 216, 220, 316, 396].map((at) =>
+        defaults.getUint32(at, true),
+      ),
+      [432, 800, 600, 800, 600, 1, 0, 800, 600, 800, 600, 0, 0],
+    );
+    assert.deepEqual(
+      words([
+        0, 4, 8, 12, 20, 24, 28, 32, 36, 48, 200, 208, 212, 216, 220, 224, 236, 388, 392, 396,
+      ]),
+      [432, 72, 32, 18, 54, 32, 54, 32, 0xff804020, 8, 0, 18, 32, 18, 32, 0xff804020, 8, 2, 6, 1],
+    );
+    assert.deepEqual(writer.main[0].parser.source, source);
+    assert.deepEqual(writer.sub[0].parser.source, secondary);
+    const frame = writer.frame();
+    assert.ok(frame.rgba.some((alpha, i) => i % 4 === 3 && (i >>> 2) % 72 < 18 && alpha));
+    assert.ok(frame.rgba.some((alpha, i) => i % 4 === 3 && (i >>> 2) % 72 >= 18 && alpha));
+    await task.player.notify('RESET');
+    await task.syncObjects();
+    assert.deepEqual(
+      words([4, 8, 12, 20, 24, 36, 48, 200, 208, 212, 224, 236, 388, 392, 396]),
+      [72, 32, 18, 54, 32, 0xff804020, 24, 0, 18, 32, 0xff804020, 24, 2, 6, 1],
+    );
+    fresh = await defaultFESWorld(profile, {}, { initialize: false });
+    await fresh.restore(world.snapshot());
+    const restored = fresh.objects.objects.get(child.id).implementation,
+      rebuilt = await restored.writer();
+    assert.deepEqual(restored.text.config, child.implementation.text.config);
+    assert.deepEqual(rebuilt.sub[0].parser.source, secondary);
+    assert.deepEqual(rebuilt.frame(), writer.frame());
+  } finally {
+    await fresh?.close();
+    await world.close();
+  }
+});
+
 function regions() {
   const frame = hg3(24, 16, new Uint8Array(24 * 16 * 4)),
     output = new Uint8Array(frame.length * 2 - 12),

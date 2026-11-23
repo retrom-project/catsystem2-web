@@ -6,7 +6,7 @@ import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicTask } from './graphics.mjs';
 import { NativeBitmap } from './image.mjs';
 import { NativeTextRuntime, NativeTextWriter } from './text.mjs';
-import { textConfig } from './text-config.mjs';
+import { nvTextConfig, textConfig, unpackTextConfiguration } from './text-config.mjs';
 import { CanvasTextGlyphs } from '../render/native-text.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
 import { nativeReply } from '../kcs.mjs';
@@ -208,12 +208,13 @@ export class NativeTextTask {
       }
       if (memory.load(l) !== packetSize) return 0;
       this.text.config = memory.bytes(l, packetSize).slice();
-      const payload = this.text.config.subarray(4, configEnd),
-        config = bindings.nativeConfig
-          ? textConfig(this.world.profile, this.mode, this.world.configuration)
-          : payload,
+      const config = unpackTextConfiguration(
+          bindings,
+          this.text.config,
+          bindings.nativeConfig &&
+            textConfig(this.world.profile, this.mode, this.world.configuration),
+        ),
         view = new DataView(this.text.config.buffer);
-      if (bindings.nativeConfig) config.set(payload, bindings.nativeConfig.offsetInParser);
       this.text.vram = [view.getInt32(configEnd, true), view.getInt32(configEnd + 4, true)];
       this.text.output = view.getUint32(configEnd + 8, true);
       await writer.configure(config);
@@ -400,7 +401,8 @@ export class NativeNVTextTask extends NativeTextTask {
       this.text.active = false;
       return;
     }
-    this.text.active = new DataView(this.text.config.buffer).getInt32(140, true) !== 0;
+    // The primary parser's frame mode follows the NV rectangle in the normalized configuration.
+    this.text.active = writer.configView.getInt32(136, true) !== 0;
     if (this.text.sectionPending) {
       this.text.elapsed = 0;
       this.text.sectionPending = false;
@@ -467,10 +469,16 @@ export class NativeNVTextTask extends NativeTextTask {
       if (memory.load(l) !== bindings.packetSize) return 0;
       this.text.config = memory.bytes(l, bindings.packetSize).slice();
       const view = new DataView(this.text.config.buffer),
-        at = bindings.configSize + 4;
+        at = 4 + (bindings.nativeConfig?.size ?? bindings.configSize);
       this.text.vram = [view.getInt32(at, true), view.getInt32(at + 4, true)];
       this.text.output = view.getUint32(at + 8, true);
-      await writer.configure(this.text.config.subarray(4, at));
+      await writer.configure(
+        unpackTextConfiguration(
+          bindings,
+          this.text.config,
+          bindings.nativeConfig && nvTextConfig(this.world.profile, this.world.configuration),
+        ),
+      );
       if (operation === 1) {
         this.text.sourceEvents = [];
         this.text.elapsed = this.text.pageLimit = 0;

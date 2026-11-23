@@ -7,7 +7,7 @@ import {
   fesConfigurationFontBytes,
   fesNativeFontFace,
 } from './fes-text-layout.mjs';
-import { packTextConfiguration, textConfig, textPacket } from './text-config.mjs';
+import { nvTextConfig, packTextConfiguration, textConfig } from './text-config.mjs';
 import { initializeFESPlane } from './fes-object-factory.mjs';
 import { markFESObjectDirty } from './fes-common-model.mjs';
 import { fesDefinitionResourceReference } from './fes-definitions.mjs';
@@ -51,16 +51,18 @@ export function initializeFESString(object, { profile, configuration }) {
 }
 function nvConfiguration(profile, configuration, current = null) {
   const abi = nativeABI(profile),
-    cores = abi.layouts.textCores,
-    bytes = textPacket(profile, 'nv', configuration).slice(4, 4 + cores.nv.configSize),
-    view = new DataView(bytes.buffer);
+    size = abi.layouts.textCores.cp932.configSize,
+    bytes = nvTextConfig(profile, configuration, { fes: true });
   if (current && abi.text.nvResetKeepsView) {
-    const subView = 24 + cores.cp932.configSize;
+    const subView = 24 + size;
     bytes.set(current.subarray(0, 36));
     bytes.set(current.subarray(subView, subView + 28), subView);
   }
-  for (const offset of [24, 24 + cores.cp932.configSize + 16])
-    view.setUint32(offset + 124, configuration.fields.font.prop, true);
+  if (current && abi.text.nvResetKeepsColors) {
+    const colors = current.subarray(36, 48);
+    bytes.set(colors, 36);
+    bytes.set(colors, 52 + size);
+  }
   return bytes;
 }
 function createTextState(object, profile, configuration) {

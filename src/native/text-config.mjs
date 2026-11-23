@@ -41,36 +41,61 @@ export function textConfig(profile, mode, configuration, { fes = false } = {}) {
 export function textPacket(profile, mode, configuration) {
   const abi = nativeABI(profile).layouts?.textCores?.[mode];
   if (!abi) throw new Error(`Unavailable text mode ${mode} for ${profile}`);
-  if (mode !== 'nv') return packTextConfiguration(abi, textConfig(profile, mode, configuration));
-  const out = new Uint8Array(abi.packetSize ?? abi.configSize + 16),
+  return packTextConfiguration(
+    abi,
+    mode === 'nv' ? nvTextConfig(profile, configuration) : textConfig(profile, mode, configuration),
+  );
+}
+
+export function nvTextConfig(profile, configuration, { fes = false } = {}) {
+  const abi = nativeABI(profile),
+    { cp932, nv } = abi.layouts.textCores;
+  if (!nv) throw new Error(`Unavailable text mode nv for ${profile}`);
+  const out = new Uint8Array(nv.configSize),
     v = new DataView(out.buffer),
-    size = nativeABI(profile).layouts.textCores.cp932.configSize,
-    second = 24 + size + 16;
-  v.setUint32(0, out.length, true);
-  v.setUint32(4, 800, true);
-  v.setUint32(8, 600, true);
-  for (const at of [12, second - 12]) {
+    second = 24 + cp932.configSize + 16,
+    section = textConfig(profile, 'cp932', configuration, { fes });
+  v.setUint32(0, 800, true);
+  v.setUint32(4, 600, true);
+  for (const at of [8, second - 16]) {
     v.setUint32(at + 8, 800, true);
     v.setUint32(at + 12, 600, true);
   }
-  out.set(textConfig(profile, 'cp932', configuration), 28);
-  out.set(textConfig(profile, 'cp932', configuration), second + 4);
-  v.setUint32(second + 4 + 104, 0, true);
+  out.set(section, 24);
+  out.set(section, second);
+  if (!fes || !abi.text.nvFesSecondaryUsesDefaults) v.setUint32(second + 104, 0, true);
   return out;
 }
 
+const nativeParts = ({ parts, offsetInParser, size }) => parts ?? [[offsetInParser, size]];
+
 export function packTextConfiguration(binding, config, x = 0, y = 0, output = 0) {
   const native = binding.nativeConfig,
-    bytes = native
-      ? config.subarray(native.offsetInParser, native.offsetInParser + native.size)
-      : config,
-    out = new Uint8Array(binding.packetSize ?? bytes.length + 16),
+    size = native?.size ?? config.length,
+    out = new Uint8Array(binding.packetSize ?? size + 16),
     v = new DataView(out.buffer),
-    at = 4 + bytes.length;
+    at = 4 + size;
   v.setUint32(0, out.length, true);
-  out.set(bytes, 4);
+  if (native) {
+    let cursor = 4;
+    for (const [start, length] of nativeParts(native)) {
+      out.set(config.subarray(start, start + length), cursor);
+      cursor += length;
+    }
+  } else out.set(config, 4);
   v.setInt32(at, x, true);
   v.setInt32(at + 4, y, true);
   v.setUint32(at + 8, output, true);
   return out;
+}
+
+export function unpackTextConfiguration(binding, packet, defaults) {
+  const native = binding.nativeConfig;
+  if (!native) return packet.subarray(4, 4 + binding.configSize);
+  let cursor = 4;
+  for (const [start, length] of nativeParts(native)) {
+    defaults.set(packet.subarray(cursor, cursor + length), start);
+    cursor += length;
+  }
+  return defaults;
 }

@@ -677,10 +677,13 @@ export default {
       'weight',
     ],
     resourceMessages: {
-      first: { cp932: 407, nv: null, utf8: null },
+      first: { cp932: 407, nv: 420, utf8: null },
       clearCategory: false,
       maxOperation: 12,
     },
+    nvResetKeepsView: true,
+    nvResetKeepsColors: true,
+    nvFesSecondaryUsesDefaults: true,
   },
   configuration: {
     blockSizes: [2856, 56, 28, 12],
@@ -1071,6 +1074,20 @@ export default {
         configSize: 184,
         packetSize: 188,
         nativeConfig: { size: 172, offsetInParser: 4 },
+      },
+      nv: {
+        configSize: 408,
+        packetSize: 432,
+        // Surface and main rectangle, main parser, secondary rectangle, secondary parser.
+        nativeConfig: {
+          size: 384,
+          parts: [
+            [0, 24],
+            [28, 172],
+            [208, 16],
+            [228, 172],
+          ],
+        },
       },
     },
   },
