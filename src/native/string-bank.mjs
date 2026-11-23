@@ -22,6 +22,33 @@ function mapped(machine, address) {
   }
 }
 
+function expandStringBytes(source, entries) {
+  const out = [];
+  for (let at = 0; at < source.length && source[at]; ) {
+    if (
+      source[at] === 36 &&
+      source[at + 1] === 115 &&
+      source[at + 2] === 116 &&
+      source[at + 3] === 114
+    ) {
+      // Native parsing is signed decimal/hex with no whitespace skipping.
+      let suffix = '';
+      for (let i = at + 4; i < source.length && source[i] && source[i] < 128; i++)
+        suffix += String.fromCharCode(source[i]);
+      const number = parseNativeIntegerPrefix(suffix);
+      if (number) {
+        if (!entries) throw new Error('Native string expansion requires the caller string bank');
+        const replacement = entries.get(number.value >>> 0);
+        if (replacement) for (const byte of replacement) out.push(byte);
+        at += number.count + 4;
+        continue;
+      }
+    }
+    out.push(source[at++]);
+  }
+  return Uint8Array.from(out);
+}
+
 export class NativeStringBank {
   constructor() {
     this.entries = new Map();
@@ -43,29 +70,7 @@ export class NativeStringBank {
     this.dirty = true;
   }
   expandBytes(source) {
-    const out = [];
-    for (let at = 0; at < source.length && source[at]; ) {
-      if (
-        source[at] === 36 &&
-        source[at + 1] === 115 &&
-        source[at + 2] === 116 &&
-        source[at + 3] === 114
-      ) {
-        // Native parsing is signed decimal/hex with no whitespace skipping.
-        let suffix = '';
-        for (let i = at + 4; i < source.length && source[i] && source[i] < 128; i++)
-          suffix += String.fromCharCode(source[i]);
-        const number = parseNativeIntegerPrefix(suffix);
-        if (number) {
-          const replacement = this.entries.get(number.value >>> 0);
-          if (replacement) for (const byte of replacement) out.push(byte);
-          at += number.count + 4;
-          continue;
-        }
-      }
-      out.push(source[at++]);
-    }
-    return Uint8Array.from(out);
+    return expandStringBytes(source, this.entries);
   }
   expand(text) {
     return decoder.decode(this.expandBytes(encodeCP932(text)));
@@ -95,6 +100,13 @@ export function nativeStringBank(id, args, machine, services = {}) {
   if (args.length !== count)
     throw new Error(`KCS string bank native 0x${id.toString(16)} expects ${count} arguments`);
   const bank = services.strings;
+  if (id === 0x116 && bank !== undefined) {
+    const source = cstring(machine, args[0]),
+      bytes = bank ? bank.expandBytes(source) : expandStringBytes(source);
+    machine.bytes(args[0], bytes.length + 2).set(bytes);
+    machine.store(args[0] + bytes.length, 0, 2);
+    return nativeReply(2);
+  }
   if (!bank) return undefined;
   if (id === 0x114) {
     bank.setBytes(args[0], mapped(machine, args[1]) ? cstring(machine, args[1]) : new Uint8Array());
@@ -110,10 +122,6 @@ export function nativeStringBank(id, args, machine, services = {}) {
     }
     machine.store(args[1], 0, 1);
     return nativeReply(1, 0);
-  } else {
-    const bytes = bank.expandBytes(cstring(machine, args[0]));
-    machine.bytes(args[0], bytes.length + 2).set(bytes);
-    machine.store(args[0] + bytes.length, 0, 2);
   }
   return nativeReply(2);
 }

@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 188       | 57            | 17            | 607     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 192       | 57            | 17            | 603     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -137,6 +137,11 @@ nested file, query the tag, clear contents, and clone the file.
 Main 515–518 create and release a narrow dictionary, keep the first word
 for each exact byte key, and return `0xffffffff` on a miss. Main 519
 selects one space-separated group and preserves grouped expressions.
+Main 21 compares reversed narrow operands without ASCII case differences,
+Main 45 replaces bytes using the live operand buffers, and Main 540 finds
+the selected space-separated token's offset. Main 278 expands numbered
+`$str` references using the existing caller bank. Plain copies still write
+both terminators when the caller has no bank.
 
 Main 633–640 use an owned CP932 name table from the `fes` archive.
 The narrow records cap their fields at 32 bytes, keep authored row order,

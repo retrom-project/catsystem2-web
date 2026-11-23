@@ -262,6 +262,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Draw wrappers 0x47fdd0, 0x47ff60 and 0x480220 send raw removal 255, bitmap query 259 and base image 270',
   },
+  {
+    ids: [21, 45, 278, 540],
+    value:
+      'Own 2.6.1.23 narrow compare 0x48ac50, live replace 0x48b610, own-bank expansion 0x483040 and raw space token offset 0x47a0c0',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -466,7 +471,7 @@ export default {
     directTextNull: 'reject',
     directPathResult: 'success',
   },
-  stringBank: { emptyGetResult: 1 },
+  stringBank: { emptyGetResult: 1, expandUsesExistingBank: true },
   database: { nullExportPolicy: null },
   sound: {
     banks: 32,
@@ -609,6 +614,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [21, 540], fields: { resultWritten: true } },
+        { ids: [45, 278], fields: { resultWritten: false } },
         { ids: [261], fields: { resultWritten: true } },
         { ids: [258, 455], fields: { resultWritten: false } },
         { ids: [696], fields: { resultWritten: true } },

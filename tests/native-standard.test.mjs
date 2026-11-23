@@ -5,6 +5,8 @@ import { Binary } from '../src/binary.mjs';
 import { KCSMachine, floatBits, bitsFloat } from '../src/kcs/vm.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { nativeStandard, parseNativeInteger } from '../src/native/standard.mjs';
+import { NativeRuntime } from '../src/native/runtime.mjs';
+import { kcsProgram } from './helpers.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 
 function machine() {
@@ -200,6 +202,37 @@ test('2.6.1.23 narrow dictionary keeps the first exact key and returns its miss 
   m.writeString('motion (2 + 3) 149913%', 256);
   assert.deepEqual(await call(519, [512, 256, 1]), { control: 1, value: 1 });
   assert.equal(m.string(512), '(2 + 3)');
+});
+
+test('2.6.1.23 expands scene text through the caller bank without creating one on a plain copy', async () => {
+  const runtime = new NativeRuntime({
+      profile: 'grisaia-jp-engine-2.6.1.23',
+      read: async () => kcsProgram([[59]]),
+    }),
+    main = await runtime.spawn('case.kcs'),
+    m = main.machine,
+    call = (id, args) => runtime.native('main', id, args, m, main);
+  m.bytes(256, 40).fill(0xad);
+  m.writeString('猫', 256);
+  assert.deepEqual(await call(278, [256]), { control: 2 });
+  assert.deepEqual(m.bytes(256, 5), Uint8Array.of(0x94, 0x4c, 0, 0, 0xad));
+  assert.equal(runtime.stringBank(main, false), null);
+  m.writeString('A$str3', 256);
+  await assert.rejects(async () => call(278, [256]), /requires the caller string bank/);
+  assert.equal(m.string(256), 'A$str3');
+  assert.equal(runtime.stringBank(main, false), null);
+  m.writeString('猫', 288);
+  assert.deepEqual(await call(276, [3, 288]), { control: 2 });
+  assert.deepEqual(await call(278, [256]), { control: 2 });
+  assert.equal(m.string(256), 'A猫');
+  m.writeString('abc ABC', 256);
+  m.writeString('ABC', 288);
+  m.writeString('犬', 320);
+  assert.deepEqual(await call(540, [256, 1]), { control: 1, value: 4 });
+  assert.deepEqual(await call(540, [256, 2]), { control: 1, value: 0xffffffff });
+  assert.deepEqual(await call(21, [256, 288]), { control: 1, value: 0xffffffe0 });
+  assert.deepEqual(await call(45, [512, 256, 288, 320]), { control: 2 });
+  assert.equal(m.string(512), 'abc 犬');
 });
 
 test('63 command arguments retain original list, arithmetic and string-bank semantics', async () => {

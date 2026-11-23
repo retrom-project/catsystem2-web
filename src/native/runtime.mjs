@@ -275,8 +275,10 @@ export class NativeRuntime {
     }
     if (table === 'main' && id === 0x21b) services.variables = this.variableBank(task, false);
     if (table === 'main' && [0x114, 0x115, 0x116, 0xf3, 0xfd, 0x150, 0xe7].includes(id)) {
+      const abi = nativeABI(this.profile);
       const existingOnly =
-        id === 0x150 && nativeABI(this.profile).scene?.historyCaptureUsesExistingBank;
+        (id === 0x150 && abi.scene?.historyCaptureUsesExistingBank) ||
+        (id === 0x116 && abi.stringBank?.expandUsesExistingBank);
       services.strings = this.stringBank(task, !existingOnly);
     }
     services.sceneData = this.sceneData(task);
