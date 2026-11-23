@@ -52,9 +52,11 @@ While a save is being serialized, checked for space, or committed, the status
 reports `busy` and export is unavailable.
 `exportGameSave()` returns the slot files and their associated `savegen.dat`
 indexes while a slot is present. A save list can contain up to 4096 files and
-64 MiB of file bytes. Embedded hosts persist the returned file list in their
-own save transport. The standalone browser continues to offer `.cs2save`
-checkpoints through its existing controls.
+64 MiB of file bytes. CSS records are validated before the guest loads them.
+Each file can expand to 64 MiB and contain up to 262,144 CSS records. Together
+the files can expand to 256 MiB. Embedded hosts persist the returned file list
+in their own save transport. The standalone browser continues to offer
+`.cs2save` checkpoints through its existing controls.
 
 `scripts/verify-native-save-slots.mjs` compares the JS implementation against independently executed original handlers, CSS and filesystem helpers. The default bounded sequences cover all eleven commands and exchange/copy/delete failure steps in both ABIs. `CATSYSTEM2_EXTENDED=1` enables the larger sample. File metadata, complete ordered entries, global/string writes and file-operation sequencing are compared after every operation. Tokenization, numeric evaluation and bank access are explicit fixture boundaries.
 

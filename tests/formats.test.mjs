@@ -31,6 +31,13 @@ test('zlib validates output size, truncation, and an explicit expansion ceiling'
   await assert.rejects(inflate(compressed.subarray(0, -1), 4096));
   await assert.rejects(inflate(compressed, 4096, 1024), /size/);
 });
+test('a started zlib decode can be canceled before returning bytes', async () => {
+  const compressed = deflateSync(new Uint8Array(131072)),
+    abort = new AbortController(),
+    decoded = inflate(compressed, 131072, 131072, abort.signal);
+  abort.abort();
+  await assert.rejects(decoded, { name: 'AbortError' });
+});
 for (const length of [4096, 131072]) {
   test(`sized zlib stream (${length} bytes) keeps its input snapshot and validates the whole stream`, async () => {
     const bytes = Uint8Array.from({ length }, (_, at) => (at * 71 + 23) & 255);

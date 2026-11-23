@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { deflateSync } from 'node:zlib';
 import { CatSystem2 } from '../src/engine.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeGlobalFile, nativePersistence } from '../src/native/persistence.mjs';
@@ -26,6 +27,17 @@ function nativeSave(value) {
   const file = new NativeGlobalFile(19);
   file.write(1024, Uint8Array.of(value));
   return file;
+}
+
+function cssWithPayload(payload) {
+  const compressed = deflateSync(payload),
+    bytes = new Uint8Array(16 + compressed.length),
+    header = new DataView(bytes.buffer);
+  [0x00535343, compressed.length, payload.length, 19].forEach((value, index) =>
+    header.setUint32(index * 4, value, true),
+  );
+  bytes.set(compressed, 16);
+  return bytes;
 }
 
 for (const profile of [
@@ -273,6 +285,67 @@ test('an authored CSS save remains busy before it commits new slot bytes', async
   } finally {
     serialization.resolve(bytes);
     await pending?.catch(() => {});
+    storage.close();
+    environment.restore();
+  }
+});
+
+test('an oversized CSS payload or too many CSS records never replaces the account view', async () => {
+  await loadNativeZlib();
+  const environment = startupEnvironment(),
+    storage = new NativeFileStorage({ lookup: () => null }, 'account:game');
+  try {
+    const prior = await nativeSave(11).file(),
+      oversized = prior.slice(),
+      tooManyRecords = cssWithPayload(new Uint8Array((262144 + 1) * 8));
+    new DataView(oversized.buffer).setUint32(8, 64 * 1024 * 1024 + 1, true);
+    await storage.open();
+    await storage.write('save0000.dat', prior);
+    await assert.rejects(
+      storage.prepareGameSave([entry('save0000.dat', oversized)]),
+      /expanded byte limit/,
+    );
+    await assert.rejects(
+      storage.prepareGameSave([entry('save0000.dat', tooManyRecords)]),
+      /record limit/,
+    );
+    assert.equal(storage.gameSaveEnabled, false);
+    assert.deepEqual(await storage.readSaved('save0000.dat'), prior);
+  } finally {
+    storage.close();
+    environment.restore();
+  }
+});
+
+test('the same expanded CSS budget applies to selection and export across files', async () => {
+  await loadNativeZlib();
+  const environment = startupEnvironment(),
+    storage = new NativeFileStorage({ lookup: () => null }, 'account:game');
+  try {
+    const prior = await nativeSave(11).file(),
+      payload = new Uint8Array(64 * 1024 * 1024);
+    new DataView(payload.buffer).setUint32(4, payload.length - 8, true);
+    const compressed = cssWithPayload(payload),
+      selection = [
+        entry('save0000.dat', prior),
+        ...Array.from({ length: 4 }, (_, index) => entry(`save000${index + 1}.dat`, compressed)),
+      ];
+    await storage.open();
+    await storage.write('save0000.dat', prior);
+    await assert.rejects(storage.prepareGameSave(selection), /combined expanded byte limit/);
+    assert.equal(storage.gameSaveEnabled, false);
+    assert.deepEqual(await storage.readSaved('save0000.dat'), prior);
+    assert.equal(await storage.readSaved('save0001.dat'), null);
+    await storage.prepareGameSave([selection[0]]);
+    for (const { path, bytes } of selection.slice(1)) assert(await storage.write(path, bytes));
+    assert.throws(() => storage.exportGameSave(), /combined expanded byte limit/);
+    assert(await storage.remove('save0004.dat'));
+    assert.deepEqual(
+      storage.exportGameSave().files.map(({ path }) => path),
+      ['save0000.dat', 'save0001.dat', 'save0002.dat', 'save0003.dat'],
+    );
+    assert.deepEqual(storage.store.get('save0000.dat').data.bytes, prior);
+  } finally {
     storage.close();
     environment.restore();
   }

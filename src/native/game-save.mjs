@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
+import { CHECKPOINT_LIMIT } from '../checkpoint.mjs';
 import { nativeFileTime } from './file-time.mjs';
 import { NativeGlobalFile, nativeSaveSlotName } from './persistence.mjs';
 
 const MAX_SAVE_BYTES = 64 * 1024 * 1024;
 const MAX_SAVE_FILES = 4096;
+// Budget for the JS record, its byte array and an array slot, even when empty.
+const MAX_SAVE_FILE_RECORDS = MAX_SAVE_BYTES / 256;
 
 export function gameSaveFileKind(name) {
   const basename = name.slice(name.lastIndexOf('/') + 1);
@@ -49,14 +52,44 @@ function fileInfo({ createdMs, accessedMs, modifiedMs, attributes }) {
   return { createdMs, accessedMs, modifiedMs, attributes };
 }
 
-async function validCSS(name, bytes) {
+function checkGameSaveBudget(records, signal) {
+  if (records.size > MAX_SAVE_FILES) throw new Error('Native game save has too many files');
+  let fileBytes = 0,
+    expandedBytes = 0;
+  for (const {
+    data: { bytes },
+  } of records.values()) {
+    signal?.throwIfAborted();
+    fileBytes += bytes.length;
+    if (fileBytes > MAX_SAVE_BYTES) throw new Error('Native game save exceeds its file budget');
+    // The same CSS reader checks the stream against this length during validation.
+    const expanded = NativeGlobalFile.declaredFilePayloadLength(bytes);
+    if (expanded > MAX_SAVE_BYTES)
+      throw new Error('Native game save CSS file exceeds its expanded byte limit');
+    expandedBytes += expanded;
+    if (expandedBytes > CHECKPOINT_LIMIT)
+      throw new Error('Native game save exceeds its combined expanded byte limit');
+  }
+}
+
+async function validateCSS(name, bytes, signal) {
   const kind = gameSaveFileKind(name);
   if ((kind !== 'slot' && kind !== 'index') || !bytes.length || bytes.length > MAX_SAVE_BYTES)
-    return false;
+    throw new Error('Invalid native game save CSS file');
+  const count = await NativeGlobalFile.countFileEntries(bytes, {
+    byteLimit: MAX_SAVE_BYTES,
+    recordLimit: MAX_SAVE_FILE_RECORDS,
+    signal,
+  });
+  if (kind === 'slot' && count === 0) throw new Error('Native game save slot has no CSS records');
+}
+
+async function validCSS(name, bytes, signal) {
   try {
-    const count = await NativeGlobalFile.countFileEntries(bytes, MAX_SAVE_BYTES);
-    return kind === 'index' || count > 0;
+    await validateCSS(name, bytes, signal);
+    return true;
   } catch {
+    signal?.throwIfAborted();
     return false;
   }
 }
@@ -83,10 +116,10 @@ export async function selectedGameSave(files, normalize, signal) {
   }
   if (progressFiles(records).size !== records.size)
     throw new Error('Native game save requires a loadable slot and its own index files');
+  checkGameSaveBudget(records, signal);
   for (const [name, record] of records) {
-    const valid = await validCSS(name, record.data.bytes);
     signal?.throwIfAborted();
-    if (!valid) throw new Error('Invalid native game save CSS file');
+    await validateCSS(name, record.data.bytes, signal);
   }
   return records;
 }
@@ -130,7 +163,7 @@ export class NativeGameSaveProgress {
     const valid = new Map();
     for (const [name, record] of records) {
       if (!gameSaveFileKind(name)) continue;
-      if (await validCSS(name, record.data.bytes)) valid.set(name, record);
+      if (await validCSS(name, record.data.bytes, signal)) valid.set(name, record);
       signal?.throwIfAborted();
     }
     signal?.throwIfAborted();
@@ -169,16 +202,10 @@ export class NativeGameSaveProgress {
   export(signal) {
     signal?.throwIfAborted();
     if (!this.#files.size) return null;
-    if (this.#files.size > MAX_SAVE_FILES) throw new Error('Native game save has too many files');
-    let total = 0;
+    checkGameSaveBudget(this.#files, signal);
     const files = [...this.#files]
       .sort(([left], [right]) => (left < right ? -1 : 1))
-      .map(([path, record]) => {
-        const bytes = record.data.bytes;
-        total += bytes.length;
-        if (total > MAX_SAVE_BYTES) throw new Error('Native game save exceeds its file budget');
-        return { path, bytes: bytes.slice(), ...fileInfo(record) };
-      });
+      .map(([path, record]) => ({ path, bytes: record.data.bytes.slice(), ...fileInfo(record) }));
     return { files, revision: String(this.#revision) };
   }
 }

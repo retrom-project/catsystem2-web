@@ -16,20 +16,27 @@ export function nativeSaveSlotName(slot) {
   return `save${value < 0 ? '-' + String(-value).padStart(3, '0') : String(value).padStart(4, '0')}.dat`;
 }
 
-async function readCSS(bytes, limit) {
+function readCSSHeader(bytes) {
   const b = new Binary(bytes, 'CSS saved file');
   if (b.u32(0) !== 0x00535343 /* CSS file signature  */)
     throw new Error('Invalid CSS saved-file signature');
-  const compressed = b.range(16, b.u32(4)),
-    length = b.u32(8),
-    tag = b.u32(12);
-  return { payload: length ? await inflate(compressed, length, limit) : new Uint8Array(), tag };
+  return { compressed: b.range(16, b.u32(4)), length: b.u32(8), tag: b.u32(12) };
 }
 
-function readGlobalFileEntries(bytes, append) {
+async function readCSS(bytes, limit, signal) {
+  const { compressed, length, tag } = readCSSHeader(bytes);
+  signal?.throwIfAborted();
+  return {
+    payload: length ? await inflate(compressed, length, limit, signal) : new Uint8Array(),
+    tag,
+  };
+}
+
+function readGlobalFileEntries(bytes, append, limit = Infinity) {
   const b = new Binary(bytes, 'global-file records');
   let count = 0;
   for (let at = 0; at < bytes.length; count++) {
+    if (count === limit) throw new Error('Native game save CSS file exceeds its record limit');
     const id = b.u32(at),
       size = b.u32(at + 4);
     if (append) append(id, b.range(at + 8, size));
@@ -162,9 +169,12 @@ export class NativeGlobalFile {
     const { payload, tag } = await readCSS(bytes);
     return NativeGlobalFile.fromPayload(payload, tag, undefined, growthBytes);
   }
-  static async countFileEntries(bytes, limit) {
-    const { payload } = await readCSS(bytes, limit);
-    return readGlobalFileEntries(payload);
+  static declaredFilePayloadLength(bytes) {
+    return readCSSHeader(bytes).length;
+  }
+  static async countFileEntries(bytes, { byteLimit, recordLimit, signal }) {
+    const { payload } = await readCSS(bytes, byteLimit, signal);
+    return readGlobalFileEntries(payload, null, recordLimit);
   }
   snapshot() {
     return { tag: this.tag, capacity: this.capacity, records: structuredClone(this.records) };

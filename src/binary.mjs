@@ -84,7 +84,8 @@ function joinInflateChunks(chunks, length) {
   return result;
 }
 
-export async function inflate(bytes, expected, limit = 256 * 1024 * 1024) {
+export async function inflate(bytes, expected, limit = 256 * 1024 * 1024, signal) {
+  signal?.throwIfAborted();
   if (
     expected !== undefined &&
     (!Number.isSafeInteger(expected) || expected < 0 || expected > limit)
@@ -105,6 +106,7 @@ export async function inflate(bytes, expected, limit = 256 * 1024 * 1024) {
   try {
     for (;;) {
       const { done, value } = await reader.read();
+      signal?.throwIfAborted();
       if (done) break;
       const end = length + value.length;
       if (end > (expected ?? limit)) throw new Error('Inflated data exceeds declared size');
@@ -122,6 +124,7 @@ export async function inflate(bytes, expected, limit = 256 * 1024 * 1024) {
   } finally {
     await reader.cancel();
   }
+  signal?.throwIfAborted();
   if (expected !== undefined && length !== expected)
     throw new Error(`Inflated size ${length}, expected ${expected}`);
   return output ?? joinInflateChunks(chunks, length);
