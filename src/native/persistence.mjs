@@ -300,9 +300,11 @@ export function nativePersistence(id, args, machine, services = {}) {
       storage = services.persistence;
     if (id === 0x3de) {
       if (!storage.remove) return undefined;
-      return Promise.resolve(storage.setAttributes?.(name, 0x80))
-        .then(() => storage.remove(name))
-        .then(() => nativeReply(2));
+      const remove = () =>
+        Promise.resolve(storage.setAttributes?.(name, 0x80))
+          .then(() => storage.remove(name))
+          .then(() => nativeReply(2));
+      return storage.gameSaveEnabled ? storage.withGameSaveWrite([name], remove) : remove();
     }
     if (id === 0xf5 || id === 0x407) {
       if (!storage.write) return undefined;
@@ -319,7 +321,7 @@ export function nativePersistence(id, args, machine, services = {}) {
               ? storage.write(name, bytes, options, writer)
               : storage.write(name, bytes, options);
           });
-      const pending = storage.gameSaveEnabled ? storage.withGameSaveWrite(name, write) : write();
+      const pending = storage.gameSaveEnabled ? storage.withGameSaveWrite([name], write) : write();
       return pending.then((ok) => result(Number(Boolean(ok))));
     }
     if (!storage.read || (id === 0xff && !storage.stat)) return undefined;

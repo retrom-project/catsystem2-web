@@ -290,6 +290,71 @@ test('an authored CSS save remains busy before it commits new slot bytes', async
   }
 });
 
+test('FES slot annotation, copy and exchange stay busy from the first read', async () => {
+  await loadNativeZlib();
+  const environment = startupEnvironment(),
+    storage = new NativeFileStorage({ lookup: () => null, read: async () => null }, 'account:game'),
+    profile = 'sdk-4.01-engine-2.6.1.74',
+    slots = new NativeSaveSlots({
+      storage,
+      profile,
+      objects: { objects: new Map([[1, { kind: 34, context: { contextName: '' } }]]) },
+    }),
+    encoder = new TextEncoder(),
+    instance = { runtimeID: 1, argumentBytes: (token) => encoder.encode(token), value: Number };
+  const originalRead = storage.read.bind(storage);
+  try {
+    const first = await nativeSave(11).file(),
+      second = await nativeSave(22).file();
+    await storage.open();
+    await storage.prepareGameSave([entry('save0001.dat', first), entry('save0002.dat', second)]);
+    const original = storage.gameSaveStatus().revision;
+    const write = async (source, fault) => {
+      const waiting = Promise.withResolvers();
+      storage.read = (name) => {
+        storage.read = originalRead;
+        return waiting.promise.then(() => originalRead(name));
+      };
+      const pending = slots.command(instance, source.split(' ')[0], source);
+      try {
+        assert.equal(storage.gameSaveStatus().busy, true);
+        assert.throws(() => storage.exportGameSave(), /being committed/);
+        if (fault) {
+          waiting.reject(fault);
+          await assert.rejects(pending, (error) => error === fault);
+        } else {
+          waiting.resolve();
+          assert.equal(await pending, 0);
+        }
+        assert.equal(storage.gameSaveStatus().busy, undefined);
+      } finally {
+        waiting.resolve();
+        await pending.catch(() => {});
+        storage.read = originalRead;
+      }
+    };
+    await write('saveapend_str 1 1025 annotated');
+    const annotated = await storage.readSaved('save0001.dat');
+    assert.deepEqual(
+      (await slots.load('save0001.dat')).read(1025),
+      encoder.encode('annotated\0\0\0\0'),
+    );
+    assert.notEqual(storage.gameSaveStatus().revision, original);
+    await write('savecopy 1 3');
+    assert.deepEqual(await storage.readSaved('save0003.dat'), annotated);
+    await write('saveexchg 1 2');
+    assert.deepEqual(await storage.readSaved('save0001.dat'), second);
+    assert.deepEqual(await storage.readSaved('save0002.dat'), annotated);
+
+    const captured = storage.exportGameSave();
+    await write('saveexchg 1 2', new Error('Delayed source read failed'));
+    assert.deepEqual(storage.exportGameSave(), captured);
+  } finally {
+    storage.close();
+    environment.restore();
+  }
+});
+
 test('an oversized CSS payload or too many CSS records never replaces the account view', async () => {
   await loadNativeZlib();
   const environment = startupEnvironment(),

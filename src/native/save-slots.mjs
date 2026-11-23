@@ -49,11 +49,17 @@ export class NativeSaveSlots {
   supports(command) {
     return NATIVE_FES_SAVE_COMMANDS.includes(command);
   }
+  #mutate(names, action) {
+    const storage = this.world.storage;
+    return storage.gameSaveEnabled ? storage.withGameSaveWrite(names, action) : action();
+  }
   async remove(name) {
     const storage = this.world.storage;
-    if ((await storage.read(name)) === null) return false;
-    await storage.setAttributes?.(name, 0x80);
-    return storage.remove?.(name) ?? false;
+    return this.#mutate([name], async () => {
+      if ((await storage.read(name)) === null) return false;
+      await storage.setAttributes?.(name, 0x80);
+      return storage.remove?.(name) ?? false;
+    });
   }
   async load(name) {
     const bytes = await this.world.storage.read(name);
@@ -66,7 +72,7 @@ export class NativeSaveSlots {
   }
   async write(name, file, updateModified = true) {
     const storage = this.world.storage;
-    const write = async () => {
+    return this.#mutate([name], async () => {
       const bytes = await file.file(),
         space = await storage.diskSpace?.(),
         info = await storage.stat?.(name);
@@ -74,39 +80,40 @@ export class NativeSaveSlots {
       if (!(await storage.write(name, bytes, { updateModified }))) return false;
       if (!updateModified && info) await storage.setTimes?.(name, { modifiedMs: info.modifiedMs });
       return true;
-    };
-    return storage.gameSaveEnabled ? storage.withGameSaveWrite(name, write) : write();
+    });
   }
   async exchange(first, second, directory) {
-    const storage = this.world.storage,
-      a = await storage.read(first),
-      b = await storage.read(second);
-    if (!a) {
-      if (b) await storage.move?.(second, first);
-      return;
-    }
-    if (!b) {
-      await storage.move?.(first, second);
-      return;
-    }
-    const tempA = nativeSavePath(directory, 'tmp_save_1.tmp'),
-      tempB = nativeSavePath(directory, 'tmp_save_2.tmp');
-    if (
-      !(await storage.copy?.(first, tempA, false)) ||
-      !(await storage.copy?.(second, tempB, false))
-    )
-      return;
-    const ok =
-      (await this.remove(first)) &&
-      (await this.remove(second)) &&
-      (await storage.copy?.(tempA, second, false)) &&
-      (await storage.copy?.(tempB, first, false));
-    if (!ok) {
-      await storage.copy?.(tempA, first, false);
-      await storage.copy?.(tempB, second, false);
-    }
-    await this.remove(tempA);
-    await this.remove(tempB);
+    const storage = this.world.storage;
+    return this.#mutate([first, second], async () => {
+      const a = await storage.read(first),
+        b = await storage.read(second);
+      if (!a) {
+        if (b) await storage.move?.(second, first);
+        return;
+      }
+      if (!b) {
+        await storage.move?.(first, second);
+        return;
+      }
+      const tempA = nativeSavePath(directory, 'tmp_save_1.tmp'),
+        tempB = nativeSavePath(directory, 'tmp_save_2.tmp');
+      if (
+        !(await storage.copy?.(first, tempA, false)) ||
+        !(await storage.copy?.(second, tempB, false))
+      )
+        return;
+      const ok =
+        (await this.remove(first)) &&
+        (await this.remove(second)) &&
+        (await storage.copy?.(tempA, second, false)) &&
+        (await storage.copy?.(tempB, first, false));
+      if (!ok) {
+        await storage.copy?.(tempA, first, false);
+        await storage.copy?.(tempB, second, false);
+      }
+      await this.remove(tempA);
+      await this.remove(tempB);
+    });
   }
   async command(instance, command, source) {
     if (!this.supports(command)) throw new Error(`Unknown native FES save command ${command}`);
@@ -134,14 +141,15 @@ export class NativeSaveSlots {
       const first = name(0),
         second = name(1);
       if (command === 'saveexchg') await this.exchange(first, second, directory);
-      else {
-        const a = await storage.read(first),
-          b = await storage.read(second);
-        if (a) {
-          if (b) await this.remove(second);
-          await storage.copy?.(first, second, false);
-        }
-      }
+      else
+        await this.#mutate([second], async () => {
+          const a = await storage.read(first),
+            b = await storage.read(second);
+          if (a) {
+            if (b) await this.remove(second);
+            await storage.copy?.(first, second, false);
+          }
+        });
     } else if (command === 'saveexist') {
       let at = 1,
         filename = nativeSaveSlotName(number(0));
@@ -168,17 +176,21 @@ export class NativeSaveSlots {
       );
     } else if (command === 'saveget_str' || command === 'saveapend_str') {
       if (tokens.length < 3) return 0;
-      const filename = name(0),
-        file = await this.load(filename);
-      if (!file) return 0;
+      const filename = name(0);
       if (command === 'saveapend_str') {
-        const text = bytes(2),
-          data = new Uint8Array(text.length + 4);
-        data.set(text);
-        file.remove(number(1));
-        file.write(number(1), data);
-        await this.write(filename, file, false);
+        await this.#mutate([filename], async () => {
+          const file = await this.load(filename);
+          if (!file) return;
+          const text = bytes(2),
+            data = new Uint8Array(text.length + 4);
+          data.set(text);
+          file.remove(number(1));
+          file.write(number(1), data);
+          await this.write(filename, file, false);
+        });
       } else {
+        const file = await this.load(filename);
+        if (!file) return 0;
         const data = file.read(number(1));
         if (data && record.context.stringBank) {
           const end = data.indexOf(0);

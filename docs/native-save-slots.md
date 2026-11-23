@@ -48,8 +48,9 @@ written during startup count as new progress. Fresh launches return `null` for
 this property.
 
 `gameSaveStatus()` reports whether the game has committed a loadable slot.
-While a save is being serialized, checked for space, or committed, the status
-reports `busy` and export is unavailable.
+The status reports `busy` from the first read or serialization of a slot
+change until that operation finishes. Hosts can export once the slot and
+index files settle.
 `exportGameSave()` returns the slot files and their associated `savegen.dat`
 indexes while a slot is present. A save list can contain up to 4096 files and
 64 MiB of file bytes. CSS records are validated before the guest loads them.

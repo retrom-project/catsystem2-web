@@ -75,8 +75,11 @@ export class NativeFileStorage {
     if (this.#gameSaveWrites || this.#preparingGameSave) status.busy = true;
     return status;
   }
-  async withGameSaveWrite(name, write) {
-    if (!this.#tracks(path(name))) return write();
+  withGameSaveWrite(names, write) {
+    if (!this.#gameSave || !names.some((name) => this.#tracks(path(name)))) return write();
+    return this.#pendingGameSaveWrite(write);
+  }
+  async #pendingGameSaveWrite(write) {
     this.#gameSaveWrites++;
     try {
       return await write();
@@ -263,35 +266,36 @@ export class NativeFileStorage {
     }
   }
   async copy(from, to, failIfExists = true) {
-    const input = await this.read(from);
-    if (input === null || (failIfExists && (await this.read(to)) !== null)) return false;
-    const key = path(to);
-    if (this.#files(key).get(key)?.attributes & 1) return false;
-    const info = await this.stat(from),
-      now = Date.now();
-    await this.#put(
-      key,
-      { bytes: input.slice() },
-      {
-        createdMs: now,
-        accessedMs: now,
-        modifiedMs: info?.modifiedMs ?? now,
-        attributes: info?.attributes ?? 0x80,
-      },
-    );
-    return true;
+    return this.withGameSaveWrite([to], async () => {
+      const input = await this.read(from);
+      if (input === null || (failIfExists && (await this.read(to)) !== null)) return false;
+      const key = path(to);
+      if (this.#files(key).get(key)?.attributes & 1) return false;
+      const info = await this.stat(from),
+        now = Date.now();
+      await this.#put(
+        key,
+        { bytes: input.slice() },
+        {
+          createdMs: now,
+          accessedMs: now,
+          modifiedMs: info?.modifiedMs ?? now,
+          attributes: info?.attributes ?? 0x80,
+        },
+      );
+      return true;
+    });
   }
   async move(from, to) {
     const a = path(from),
       b = path(to),
       files = this.#files(a);
     if (files !== this.#files(b)) return false;
-    if ((await this.read(b)) !== null) return false;
-    const trackFrom = this.#tracks(a),
-      trackTo = this.#tracks(b);
-    if (!trackFrom && !trackTo) return files.move(a, b);
-    this.#gameSaveWrites++;
-    try {
+    return this.withGameSaveWrite([a, b], async () => {
+      if ((await this.read(b)) !== null) return false;
+      const trackFrom = this.#tracks(a),
+        trackTo = this.#tracks(b);
+      if (!trackFrom && !trackTo) return files.move(a, b);
       if (!(await files.move(a, b))) return false;
       const record = files.get(b),
         valid = trackTo && record && (await this.#gameSave.accepts(b, record.data.bytes));
@@ -300,9 +304,7 @@ export class NativeFileStorage {
       if (trackTo && files.get(b) === record) changes.push([b, valid ? record : null]);
       if (changes.length) this.#gameSave.committed(changes);
       return true;
-    } finally {
-      this.#gameSaveWrites--;
-    }
+    });
   }
   async diskSpace() {
     if (typeof navigator === 'undefined' || !navigator.storage?.estimate) return null;
