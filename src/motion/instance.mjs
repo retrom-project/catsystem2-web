@@ -2,6 +2,7 @@
 import { KCSMachine, nativeReply, floatBits, bitsFloat, formatNative } from '../kcs.mjs';
 import { nativeCatalog } from '../native/catalog.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
+import { nativeMatrix } from '../native/matrix.mjs';
 import { nativeScalarMath } from '../native/scalar-math.mjs';
 import { ParticleRandom } from '../ppi/random.mjs';
 import {
@@ -60,6 +61,7 @@ export class MotionInstance {
       delay = 0,
       flags = 0,
       random = new ParticleRandom(),
+      calculations,
       onDebug = null,
       budget = 5000000 /* instruction budget  */,
     } = {},
@@ -73,6 +75,8 @@ export class MotionInstance {
     this.multiplyMatrix = abi.math?.motionMatrixMultiplySSE ? multiplySSE : multiply;
     this.transformVector = abi.math?.vectorTransformPairwise ? transformFloat32Pairs : transform;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
+    this.currentMatrixFallback = abi.motion?.currentMatrixFallback;
+    this.calculations = calculations;
     this.shared = new Uint8Array(MOTION_ABI.sharedSize);
     this.view = new DataView(this.shared.buffer);
     this.object.set(initialMotionObject());
@@ -173,6 +177,8 @@ export class MotionInstance {
     this.calls.set(id, (this.calls.get(id) || 0) + 1);
     if (this.interpreterMath && id === 7) return word(x87Atan2Word(...args));
     if (this.interpreterMath && id === 11) return word(x87RemainderWord(...args));
+    if (this.currentMatrixFallback && (id === 23 || id === 26))
+      return nativeMatrix(contract.name, args, machine, this.calculations);
     const scalarReply =
       this.interpreterMath &&
       nativeScalarMath(

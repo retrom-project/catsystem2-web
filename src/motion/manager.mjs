@@ -12,6 +12,7 @@ export class MotionManager {
     base = initialMotionObject(),
     speed = 1,
     random = new ParticleRandom(),
+    calculations,
     loadScript = null,
     onDebug = null,
   } = {}) {
@@ -23,6 +24,7 @@ export class MotionManager {
     this.working = base.slice();
     this.speed = f(speed);
     this.random = random;
+    this.calculations = calculations;
     this.loadScript = loadScript;
     this.onDebug = onDebug;
     this.records = new Map();
@@ -37,6 +39,7 @@ export class MotionManager {
       ...options,
       profile: this.profile,
       random: this.random,
+      calculations: this.calculations,
       onDebug: this.onDebug,
     });
     this.records.set(handle, { handle, group, startTick: startTick >>> 0, instance });
@@ -127,6 +130,7 @@ export class MotionManager {
       const instance = new MotionInstance(script, {
         profile: this.profile,
         random: this.random,
+        calculations: this.calculations,
         onDebug: this.onDebug,
       });
       instance.restore(record.instance);

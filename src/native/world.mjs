@@ -146,6 +146,9 @@ export class NativeWorld {
       prepareSceneWorkers,
       sceneWorkers,
     });
+    this.calculations = { matrix: new Uint8Array(64) };
+    if (nativeABI(profile).motion?.currentMatrixFallback)
+      this.motionLibrary = motionLibrary.withCalculations(this.calculations);
     this.transitionalExe?.installWorldRuntime?.(this);
     this.dispatchContext = new NativeDispatchContext();
     this.nativeModule = nativeModuleMetadata(profile, nativeModule);
@@ -384,7 +387,7 @@ export class NativeWorld {
     this.runtime.services.files = new NativeFileAccess(storage, () => this.runtime.handles);
     this.runtime.services.motion = new NativeMotionRegistry({
       handles: this.runtime.handles,
-      library: motionLibrary,
+      library: this.motionLibrary,
     });
     this.runtime.services.world = this;
     for (const id of [5, 7])

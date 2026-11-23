@@ -14,7 +14,8 @@ export function floatBytes(values) {
 export function matrixStorage(machine, address, state) {
   try {
     machine.region(address, 1);
-  } catch {
+  } catch (error) {
+    if (!state) throw error;
     return { read: () => state.matrix.slice(), write: (bytes) => state.matrix.set(bytes) };
   }
   return {

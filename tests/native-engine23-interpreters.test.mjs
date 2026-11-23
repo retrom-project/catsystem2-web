@@ -2,9 +2,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { bitsFloat, floatBits, readKCS } from '../src/kcs.mjs';
+import { MOTION_ABI } from '../src/motion/abi.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 
 const profile = 'grisaia-jp-engine-2.6.1.23',
@@ -168,6 +170,102 @@ test('2.6.1.23 MOT and PTCL integer draws share and restore the integer RNG stat
   assert.deepEqual(restored.real.snapshot(), real);
 });
 
+const matrixAddress = 0x80000000 + MOTION_ABI.matrix;
+const identityWords = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1].map(floatBits);
+const rotationAngles = [0.2, -0.7, 1.1].map(floatBits);
+const rotationWords = [
+  1051828412, 1060011905, 1059384179, 0, 3211687569, 1051276864, 1041996022, 0, 3185568410,
+  3207011861, 1061152139, 0, 0, 0, 0, 1065353216,
+];
+function matrixWords(bytes, offset = 0) {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  return Array.from({ length: 16 }, (_, i) => view.getUint32(offset + i * 4, true));
+}
+
+test('2.6.1.23 MOT writes identity and XYZ rotation only to the addressed matrix', async () => {
+  const calculations = { matrix: new Uint8Array(64).fill(0x45) };
+  for (const address of [0, matrixAddress]) {
+    for (const [id, input, expected] of [
+      [26, new Array(16).fill(0x7fa03119), identityWords],
+      [23, identityWords, rotationWords],
+    ]) {
+      const { instance, machine, run } = await guest(
+        'generic',
+        id,
+        id === 26 ? [address] : [address, ...rotationAngles],
+        { calculations },
+      );
+      input.forEach((word, i) => machine.store(address + i * 4, word));
+      machine.store(address + 64, sentinel);
+      if (address) machine.store(address - 4, sentinel);
+      run(2);
+      assert.equal(instance.active, true);
+      assert.deepEqual(matrixWords(machine.bytes(address, 64)), expected);
+      assert.equal(machine.load(address + 64), sentinel);
+      if (address) assert.equal(machine.load(address - 4), sentinel);
+      assert.deepEqual([...calculations.matrix], new Array(64).fill(0x45));
+    }
+  }
+  const truncated = await guest('generic', 26, [0x80000000 + MOTION_ABI.sharedSize - 4], {
+    calculations,
+  });
+  assert.throws(() => truncated.instance.update(0), /KCS memory .*\+64/);
+  assert.deepEqual([...calculations.matrix], new Array(64).fill(0x45));
+  const unowned = await guest('generic', 26, [0xffffffff]);
+  assert.throws(() => unowned.instance.update(0), /KCS memory ffffffff\+1/);
+});
+
+test('2.6.1.23 Main and restored MOT managers share one current matrix per world', async () => {
+  const address = 0xffffffff;
+  const files = {
+    'current.kcs': kcsProgram([
+      [37, address],
+      ...rotationAngles.map((word) => [37, word]),
+      [43, 23, 16],
+      [59],
+    ]),
+    'mapped.kcs': kcsProgram([
+      [37, matrixAddress],
+      [43, 26, 4],
+      [37, matrixAddress],
+      ...rotationAngles.map((word) => [37, word]),
+      [43, 23, 16],
+      [59],
+    ]),
+  };
+  const original = await dataWorld(profile, files),
+    restored = await dataWorld(profile, files, { initialize: false });
+  const call = (world, id, args) =>
+    world.runtime.native('main', id, args, world.main.machine, world.main);
+  try {
+    assert.deepEqual(call(original, 207, [address]), { control: 2 });
+    const add = async (name) => {
+      const { value: manager } = call(original, 294, []);
+      original.main.machine.writeString(name, 32);
+      const { value: motion } = await call(original, 304, [manager, 32, 0, 0, 0, 0, 0]);
+      assert.equal(motion, 1);
+      return manager;
+    };
+    const current = await add('current');
+    const mapped = await add('mapped');
+    await restored.restore(structuredClone(original.snapshot()));
+    assert.deepEqual(await call(restored, 307, [mapped, 1390, 0]), { control: 1, value: 1 });
+    assert.deepEqual(
+      matrixWords((await restored.runtime.services.motion.get(mapped)).working, MOTION_ABI.matrix),
+      rotationWords,
+    );
+    assert.deepEqual(matrixWords(restored.calculations.matrix), identityWords);
+    assert.deepEqual(call(original, 307, [current, 1390, 0]), { control: 1, value: 1 });
+    assert.deepEqual(matrixWords(original.calculations.matrix), rotationWords);
+    assert.deepEqual(matrixWords(restored.calculations.matrix), identityWords);
+    assert.deepEqual(await call(restored, 307, [current, 1390, 0]), { control: 1, value: 1 });
+    assert.deepEqual(matrixWords(restored.calculations.matrix), rotationWords);
+  } finally {
+    await original.close({ flushFiles: false });
+    await restored.close({ flushFiles: false });
+  }
+});
+
 test('2.6.1.23 PTCL emits raw frame, viewport and per-particle values', async () => {
   for (const table of particles) {
     const current = await guest(table, 1);
@@ -279,10 +377,16 @@ test('2.6.1.23 PTCL v2 alone admits the blend-mode word', async () => {
 });
 
 test('2.6.1.23 MOT and PTCL retain their unresolved guards and exact arities', async () => {
-  for (const args of [[], [64, 1, 2, 3]]) {
-    const unreviewed = await guest('generic', 23, args);
-    assert.throws(() => unreviewed.instance.update(0), /Unrecovered MOT native .*:17/);
-    assert.equal(unreviewed.instance.calls.size, 0);
+  for (const [id, expected] of [
+    [23, 4],
+    [26, 1],
+  ]) {
+    const wrongMatrix = await guest('generic', id);
+    assert.throws(
+      () => wrongMatrix.instance.update(0),
+      new RegExp(`expects ${expected} arguments, got 0`),
+    );
+    assert.equal(wrongMatrix.instance.calls.size, 0);
   }
   const wrongMOT = await guest('generic', 1);
   assert.throws(() => wrongMOT.instance.update(0), /expects 1 arguments, got 0/);

@@ -42,7 +42,6 @@ export function nativeMatrix(operation, args, machine, state) {
   return nativeReply(2);
 }
 export function installNativeMatrices(world) {
-  world.calculations = { matrix: new Uint8Array(64) };
   for (const entry of nativeABI(world.profile).tables.main.entries)
     if (NATIVE_MATRIX_OPERATIONS.includes(entry.name))
       world.runtime.register('main', entry.id, (args, machine) =>

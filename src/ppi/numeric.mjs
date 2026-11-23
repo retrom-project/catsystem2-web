@@ -14,7 +14,7 @@ export function x87AngleConversion(angle, toRadians) {
 
 function x87BinaryNaNWord(left, right) {
   const infinity = 0x7f800000,
-    quietBit = 0x00400000,
+    quietBit = 1 << 22,
     magnitudeLeft = left & 0x7fffffff,
     magnitudeRight = right & 0x7fffffff;
   if (magnitudeLeft > infinity && magnitudeRight > infinity) {

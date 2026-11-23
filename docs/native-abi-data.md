@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 328       | 57            | 17            | 467     | Generic 19 of 45, Particle 32 of 44 and 33 of 51 |
+| 2.6.1.23 | 869        | 328       | 57            | 17            | 467     | Generic 21 of 45, Particle 32 of 44 and 33 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -313,6 +313,12 @@ float32 words in order (output minimum, output maximum, input minimum, input
 maximum, and value), writes a clamped interpolation result, and continues with
 control 1. The JS motion VM uses the shared implementations. Its tests cover
 the finite fade range, both endpoints, signed zero, and the rounding ties.
+
+Generic 23 postmultiplies a 64-byte matrix by X, Y, then Z rotation in radians.
+Generic 26 takes one matrix address and writes identity. Both translate the
+guest address and select the World current matrix on an unmapped address.
+Guest address zero is valid memory. Both return control 2 without writing a
+result. The archived zero-word form of Generic 23 is rejected by the VM.
 
 The close callback uses Main 469 with a CSS handle and a record ID. The engine
 compacts the remaining tagged records after removing the first match. The

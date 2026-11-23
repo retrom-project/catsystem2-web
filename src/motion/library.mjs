@@ -4,12 +4,23 @@ import { MotionManager } from './manager.mjs';
 import { ParticleRandom } from '../ppi/random.mjs';
 
 export class MotionLibrary {
-  constructor(game, { profile, random = new ParticleRandom(), onDebug = null } = {}) {
+  constructor(game, { profile, random = new ParticleRandom(), onDebug = null, calculations } = {}) {
     this.game = game;
     this.profile = profile;
     this.random = random;
     this.onDebug = onDebug;
+    this.calculations = calculations;
     this.scripts = new Map();
+  }
+  withCalculations(calculations) {
+    const bound = new MotionLibrary(this.game, {
+      profile: this.profile,
+      random: this.random,
+      onDebug: this.onDebug,
+      calculations,
+    });
+    bound.scripts = this.scripts;
+    return bound;
   }
   async load(name) {
     const key = name.toLowerCase().replace(/\.kcs$/, '');
@@ -50,6 +61,7 @@ export class MotionLibrary {
       base,
       speed,
       random: this.random,
+      calculations: this.calculations,
       onDebug: this.onDebug,
       loadScript: (name) => this.load(name),
     });

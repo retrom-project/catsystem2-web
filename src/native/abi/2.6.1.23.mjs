@@ -683,7 +683,12 @@ export default {
     roundIntegerResult: 'int64-low-word',
     vectorTransformWFirst: true,
   },
-  motion: { addUsesFormat: true, elapsedUsesX87: true, splineUsesX87: true },
+  motion: {
+    addUsesFormat: true,
+    elapsedUsesX87: true,
+    splineUsesX87: true,
+    currentMatrixFallback: true,
+  },
   particle: { frameScale: 'x87-uint32' },
   movie: { alwaysUseBgmVolume: true },
   scene: {
@@ -976,6 +981,11 @@ export default {
           value: 'Own 2.6.1.23 MOT 0x595470/0x595450 match the Main/Particle x87 angle bodies',
         },
         { ids: [16], value: 'Own 2.6.1.23 Generic 0x595650 writes the signed absolute value word' },
+        {
+          ids: [23, 26],
+          value:
+            'Own 2.6.1.23 MOT 0x595f00 and 0x595de0 share the Main XYZ rotation and identity helpers and the current matrix',
+        },
         { ids: [17, 38, 41], value: 'Own 2.6.1.23 MOT handlers and fixed-base logo motion calls' },
         {
           ids: [39],
