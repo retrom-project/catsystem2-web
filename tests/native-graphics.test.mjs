@@ -108,6 +108,44 @@ test('native plane construction retains an unloaded graph and fails unknown mess
   await assert.rejects(() => object.message([0, 0x700, 0, 0]), /unimplemented engine message/);
 });
 
+test('2.6.1.23 loads a formatted KX2 mesh and resets its owned Plane', async (t) => {
+  const bytes = new Uint8Array(72),
+    view = new DataView(bytes.buffer),
+    vertices = [
+      { x: -2, y: 3, z: 4, color: 0xaa206040 },
+      { x: 6, y: 3, z: 4, color: 0xff102020 },
+      { x: 6, y: 9, z: 4, color: 0x800030c0 },
+    ];
+  bytes.set([75, 88, 50], 0);
+  [-2, 3, 6, 9].forEach((number, i) => view.setFloat32(4 + i * 4, number, true));
+  view.setUint32(20, 1, true);
+  vertices.forEach(({ x, y, z, color }, i) => {
+    const at = 24 + i * 16;
+    [x, y, z].forEach((n, j) => view.setFloat32(at + j * 4, n, true));
+    view.setUint32(at + 12, color, true);
+  });
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    scene = await dataWorld(profile, { 'mesh07.kx2': bytes }),
+    owner = await scene.objects.create({ kind: 2, parent: scene.root }),
+    target = scene.nativeTaskID(owner),
+    plane = scene.graphics.get(owner),
+    { machine } = scene.main,
+    call = (id, args) => scene.runtime.native('main', id, args, machine, scene.main);
+  t.after(() => scene.close());
+  machine.store(512, 7);
+  machine.writeString('mesh%02d[G512].kx2', 128);
+  assert.deepEqual(await call(81, [0, 0xffffffff]), { control: 2 });
+  assert.equal(plane.graph, null);
+  assert.deepEqual(await call(81, [target, 128]), { control: 2 });
+  assert.equal(plane.graph.type, 6);
+  assert.equal(plane.graph.vram, true);
+  assert.deepEqual(plane.graph.triangles, [vertices]);
+  assert.deepEqual(plane.state.rect, [-2, 3, 8, 6]);
+  assert.deepEqual(await call(80, [target]), { control: 2 });
+  assert.deepEqual(plane.graph.triangles, []);
+  assert.deepEqual(plane.state.rect, [0, 0, 0, 0]);
+});
+
 test('plane input switches use active/enabled/source and forward engine events to the receiver', async () => {
   const { world: scene, machine } = world();
   scene.input = new NativeInput();

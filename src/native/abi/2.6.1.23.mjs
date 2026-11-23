@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [80, 81],
+    value:
+      'Own 2.6.1.23 Plane wrappers 0x47ec10 and 0x47ec50 and raw 41/64 receivers 0x46ac21 and 0x46acb3, retaining the mounted KX2 triangle resource',
+  },
+  {
     ids: [
       1, 5, 8, 9, 13, 14, 36, 66, 67, 68, 71, 79, 88, 92, 100, 104, 105, 117, 209, 210, 211, 238,
       240, 244, 245, 246, 247, 250, 254, 256, 260, 262, 276, 277, 359, 360, 393, 400, 447, 448, 449,
@@ -894,7 +899,7 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         { ids: [76, 536], fields: { resultWritten: true } },
-        { ids: [149, 196, 197, 203, 862], fields: { resultWritten: false } },
+        { ids: [80, 81, 149, 196, 197, 203, 862], fields: { resultWritten: false } },
         { ids: [200], fields: { resultWritten: true } },
         { ids: [124, 125, 418, 557], fields: { resultWritten: false } },
         { ids: [320], fields: { resultWritten: false } },

@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 336       | 57            | 17            | 459     | Generic 22 of 45, Particle 38 of 44 and 39 of 51 |
+| 2.6.1.23 | 869        | 338       | 57            | 17            | 457     | Generic 22 of 45, Particle 38 of 44 and 39 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -146,8 +146,10 @@ configure and start a retained Fade through raw 349/350. Main 530/531 use raw
 Fade or Wipe recomputes its start and end from the live task clock.
 
 Main 78 creates a textured Plane through raw message 38 with an eight-word
-rectangle packet. Main 84, 85 and 93 update its position, planar base or
-rotation. The planar base update reads and preserves depth. Main 94 clamps
+rectangle packet. Main 80 resets it through raw 41. Main 81 formats a narrow
+filename and loads the mounted KX2 triangle model through raw 64. Both wrappers
+return control 2 without writing a VM result. Main 84, 85 and 93 update its
+position, planar base or rotation. The planar base update reads and preserves depth. Main 94 clamps
 the signed alpha to 0 through 255 and sends raw message 59 with flag one.
 Main 101 and 344 set scale and a selected transform matrix. Main 343 and
 345 read the authored local bounds. Main 402 sets blend mode, and Main 466
