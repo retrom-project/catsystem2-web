@@ -346,6 +346,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Settings wrappers 0x47d850, 0x47d890 and 0x47d8f0: raw group gain and 88-byte rows selected by narrow filename',
   },
+  {
+    ids: [565, 566, 567],
+    value:
+      'Own 2.6.1.23 recording getters 0x47b6f0/0x47b710 read view words at +0x84/+0x88; 0x47b910 writes a CP932 formatted line and CRLF',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -699,6 +704,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [565, 566], fields: { resultWritten: true } },
+        { ids: [567], fields: { resultWritten: false } },
         { ids: [605, 606, 607], fields: { resultWritten: true } },
         { ids: [347, 348, 602, 603], fields: { resultWritten: false } },
         { ids: [604], fields: { resultWritten: true } },

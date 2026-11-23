@@ -30,7 +30,25 @@ const main = kcsProgram(
   ],
 );
 
-for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+test('23 recording queries expose the view state and do not start capture', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const { main, runtime } = world,
+    call = (id) => runtime.native('main', id, [], main.machine, main);
+  assert.deepEqual(await call(565), { control: 1, value: 0 });
+  assert.deepEqual(await call(566), { control: 1, value: 0 });
+  const state = { recording: 2, counter: 0x80000000, prefix: '録画' };
+  world.screenCapture.restore(state);
+  assert.deepEqual(await call(565), { control: 1, value: 2 });
+  assert.deepEqual(await call(566), { control: 1, value: 0x80000000 });
+  assert.deepEqual(world.screenCapture.snapshot(), state);
+});
+
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+]) {
   test(`0x237 JS file output resumes its original cursor in ${profile}`, async () => {
     const files = new SaveSlotFiles(),
       make = (initialize = false) =>
