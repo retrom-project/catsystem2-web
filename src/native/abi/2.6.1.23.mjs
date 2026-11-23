@@ -282,6 +282,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 CSS string-bank wrappers 0x484060 and 0x484990 look up the current bank or the saved entry before creating a bank',
   },
+  {
+    ids: [111, 112, 114, 115, 118, 362, 364, 365, 366, 367, 368],
+    value:
+      'Own 2.6.1.23 bitmap and packed image wrappers 0x488260–0x489520; sized file data, frame metadata, cropped copies and independent image owners',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -590,6 +595,8 @@ export default {
     macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
   },
   graphics: {
+    formattedBitmapPhysical: true,
+    bitmapBlitUsesSourceSize: true,
     drawEnablePendingPolicy: 'rising-edge',
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: null,
@@ -629,6 +636,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [111, 112, 118, 364, 365, 368], fields: { resultWritten: true } },
+        { ids: [114, 115, 362, 366, 367], fields: { resultWritten: false } },
         { ids: [243, 253], fields: { resultWritten: true } },
         { ids: [570, 571, 572], fields: { resultWritten: false } },
         { ids: [437], fields: { resultWritten: true } },

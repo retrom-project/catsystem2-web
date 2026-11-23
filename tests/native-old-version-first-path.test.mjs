@@ -2407,12 +2407,16 @@ test('63 preload GCALLs own the loaded archive bytes and age the live queue', as
   }
 });
 
-test('63 packed image buffers zero only the mapped metadata record and own the source bytes', async () => {
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} packed image buffers own the source and clear only their metadata record`, () =>
+    verifyPackedImageOwner(profile));
+
+async function verifyPackedImageOwner(profile) {
   const image = hg3(2, 3, new Uint8Array(24).fill(0x7d)),
     { world, audio } = await oldTitleWorld(
       { 'packed.hg3': image, 'unknown.hg3': Uint8Array.of(68, 65, 84, 65) },
       undefined,
-      'rebellions-jp-engine-2.6.1.63',
+      profile,
     );
   try {
     const main = await world.initialize('empty.kcs'),
@@ -2445,9 +2449,13 @@ test('63 packed image buffers zero only the mapped metadata record and own the s
     await world.close();
     await audio.dispose();
   }
-});
+}
 
-test('63 Script bitmaps own their decoded pixels and use the clipped source extent', async (t) => {
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} Script bitmaps own the decoded pixels and use the clipped source extent`, (t) =>
+    verifyBitmapClip(t, profile));
+
+async function verifyBitmapClip(t, profile) {
   const rgba = Uint8Array.of(17, 34, 51, 255, 68, 85, 102, 255),
     backdrop = hg3(
       2,
@@ -2461,7 +2469,7 @@ test('63 Script bitmaps own their decoded pixels and use the clipped source exte
   const { world, audio } = await oldTitleWorld(
     { 'packed.hg3': hg3(2, 1, rgba), 'backdrop.hg3': backdrop, 'layer.hg3': layer },
     undefined,
-    'rebellions-jp-engine-2.6.1.63',
+    profile,
   );
   t.after(async () => {
     try {
@@ -2516,7 +2524,7 @@ test('63 Script bitmaps own their decoded pixels and use the clipped source exte
     composed.subarray(20, 24),
   );
   await call(114, [clone]);
-});
+}
 
 test('63 Flow and warning FES honor the configured Control key only during the skippable wait', async (t) => {
   const packetAddress = 384,
