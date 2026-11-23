@@ -425,6 +425,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Script images 0x4765a0–0x476b1c and 0x477110 read geometry and attributes and apply authored tone, blur, resize and filter',
   },
+  {
+    ids: [625, 728],
+    value:
+      'Own 2.6.1.23 0x4805f0 uses raw Draw 269 to enable the selected animation; 0x476ab0 writes the owned image mask DWORD',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -802,6 +807,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [625, 728], fields: { resultWritten: false } },
         { ids: [717, 724], fields: { resultWritten: true } },
         { ids: [712, 713, 715, 726, 730, 737], fields: { resultWritten: false } },
         { ids: [598, 710, 733], fields: { resultWritten: true } },

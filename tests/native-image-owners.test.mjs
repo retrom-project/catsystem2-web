@@ -87,6 +87,11 @@ test('23 Script resolves a base image and owns its decoded and generated canvase
   );
   assert.deepEqual(draw.entry(key).position, [1, 1]);
   assert.equal(draw.entry(key).alpha, 255);
+  const retained = world.retainedDraw.record(draw, key);
+  assert.deepEqual(await call(625, [drawTarget, 3, 0]), { control: 2 });
+  assert.equal(world.renderSources.get(retained.source).enabled, 0);
+  assert.deepEqual(await call(728, [source, 16]), { control: 2 });
+  assert.equal(resized.state.mask, 16);
   assert.deepEqual(await call(711, [source]), { control: 2 });
   assert.equal(runtime.handles.records.has(source), false);
   assert.equal(imageOwners.get(target).bitmap, targetBitmap);

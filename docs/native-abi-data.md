@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 312       | 57            | 17            | 483     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 314       | 57            | 17            | 481     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -178,6 +178,8 @@ Main 712, 715 and 717 query the image dimensions, offset and base point.
 Main 724 writes the selected attribute's rectangle and color using its
 low 16-bit ID. Main 713, 726, 730 and 737 tone, blur, resize and filter the
 image. An empty image owner writes zero dimensions in Main 712.
+Main 625 sends the selected entry's full animation enable word through raw
+Draw 269. Main 728 writes the bitmap's mask word without rebinding its owner.
 
 Main 450 and 451 use raw FES messages 306 and 307 for label selection and
 the saved object word. Main 630 synchronously dispatches raw 308 with the
