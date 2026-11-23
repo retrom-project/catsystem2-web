@@ -83,6 +83,7 @@ function flatSoundGain(configuration, filename, policy) {
   const voice = configuration.blocks[0],
     data = new DataView(voice.buffer, voice.byteOffset, voice.byteLength),
     { count, headBytes, groupByte } = configuration.voiceLayout,
+    usesMute = nativeABI(configuration.profile).sound.groupGainUsesMute !== false,
     pair = (bytes, at) => nativeDataPair(bytes, at, policy.pairs),
     folded = (bytes) => {
       const result = bytes.slice();
@@ -99,7 +100,7 @@ function flatSoundGain(configuration, filename, policy) {
     },
     same = (a, b) => a.length === b.length && a.every((byte, i) => byte === b[i]);
   // The wrapper always formats into its fixed scratch before the getter's mute gate.
-  if (configuration.voiceMuted()) return 0;
+  if (usesMute && configuration.voiceMuted()) return 0;
   folded(filename);
   const slash = pairedSeparator(filename, policy.pairs);
   let row = slash > 0 ? directoryIndex(configuration, filename.subarray(0, slash)) : -1;
@@ -124,7 +125,7 @@ function flatSoundGain(configuration, filename, policy) {
     bank = key === undefined ? undefined : aliases[key];
   return bank === undefined
     ? 100
-    : configuration.voiceMuted(bank)
+    : usesMute && configuration.voiceMuted(bank)
       ? 0
       : data.getUint32(bank * 4, true);
 }

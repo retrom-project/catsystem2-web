@@ -11,6 +11,32 @@ import {
   configurationQueryMachine,
 } from './fixtures/configuration-query-fixture.mjs';
 
+test('23 narrow Settings queries return raw group gain and words from 88-byte voice rows', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const { main, runtime, configuration } = world,
+    m = main.machine,
+    bytes = configuration.blocks[0],
+    row = configuration.voiceRecordByte(2),
+    view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
+    call = (id, filename) => {
+      m.writeString(filename, 128);
+      return runtime.native('main', id, [128], m, main);
+    };
+  configuration.soundGroups[2] = { id: 19, type: 'VoIcE', min: 1, max: 4 };
+  bytes.set(encodeCP932('speaker'), row + 40);
+  bytes.set(encodeCP932('speech'), row + 56);
+  view.setUint32(row, 0x80000000, true);
+  view.setUint32(row + 36, 0xabcdef01, true);
+  view.setUint32(row + 52, 19, true);
+  view.setUint32(8, 72, true);
+  assert.deepEqual(await call(605, 'unknown-dir/SPEAKER01.ogg'), { control: 1, value: 72 });
+  assert.deepEqual(await call(606, 'speech.int/bare.ogg'), { control: 1, value: 0x80000000 });
+  assert.deepEqual(await call(607, 'SPEAKER01.ogg'), { control: 1, value: 0xabcdef01 });
+  assert.deepEqual(await call(607, 'other.ogg'), { control: 1, value: 0 });
+  assert.deepEqual(await call(605, 'other.ogg'), { control: 1, value: 100 });
+});
+
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],

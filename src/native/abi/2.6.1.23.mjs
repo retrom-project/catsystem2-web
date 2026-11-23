@@ -341,6 +341,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 wrapper 0x47dc00 maps both VM pointers; 0x4ca510 transforms into a temporary before writing the four-word vector',
   },
+  {
+    ids: [605, 606, 607],
+    value:
+      'Own 2.6.1.23 Settings wrappers 0x47d850, 0x47d890 and 0x47d8f0: raw group gain and 88-byte rows selected by narrow filename',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -558,7 +563,7 @@ export default {
     legacyVolumeAliases: { bgm: 0, se: 1, voice: 2 },
     filenamePolicy: {
       maximumBytes: 255,
-      pairs: 'wide',
+      pairs: 'standard',
       caseFold: 'c-locale-ascii',
       lastSeparatorZero: 'retain-name',
       extensionScan: 'raw-backwards',
@@ -577,6 +582,7 @@ export default {
     loopPointEndPolicy: 'allow-unordered',
     loadMessageFormat: 'filename',
     spatialRequiresLoadedBuffer: true,
+    groupGainUsesMute: false,
   },
   language: {
     storage: null,
@@ -693,6 +699,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [605, 606, 607], fields: { resultWritten: true } },
         { ids: [347, 348, 602, 603], fields: { resultWritten: false } },
         { ids: [604], fields: { resultWritten: true } },
         { ids: [40, 47, 48, 49], fields: { resultWritten: true } },
