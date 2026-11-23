@@ -415,6 +415,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 rebuild at 0x477340–0x4777fa takes backlog and scene owners plus two formatted command names and traverses the saved path',
   },
+  {
+    ids: [598, 710, 711, 714, 732, 733, 736],
+    value:
+      'Own 2.6.1.23 image selection 0x489dc0, Script bitmap owners 0x476380–0x477100 and the 60-byte Draw packet through raw 256 at 0x4809e0',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -791,6 +796,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [598, 710, 733], fields: { resultWritten: true } },
+        { ids: [711, 714, 732, 736], fields: { resultWritten: false } },
         { ids: [699], fields: { resultWritten: false } },
         { ids: [852], fields: { resultWritten: true } },
         { ids: [218, 653, 654, 655], fields: { resultWritten: false } },

@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 297       | 57            | 17            | 498     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 304       | 57            | 17            | 491     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -168,6 +168,12 @@ Main 115 and 367 copy clipped regions and Main 362 reads the canvas size.
 Main 365 opens packed data from the `image` archive. Main 368 returns
 36 bytes of frame metadata, Main 364 creates a decoded bitmap, and
 Main 366 releases the original packed buffer.
+Main 598 extracts the base from the first nonempty comma field.
+Main 710 loads selected image data into a Script-owned bitmap, Main 711
+releases it and Main 714 writes its canvas dimensions. Main 733 creates an
+independent four-byte canvas and Main 736 fills its rectangle. Main 732
+updates the selected Draw entry through raw 256 with the image owner and
+the authored transform and opacity.
 
 Main 450 and 451 use raw FES messages 306 and 307 for label selection and
 the saved object word. Main 630 synchronously dispatches raw 308 with the

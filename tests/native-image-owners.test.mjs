@@ -13,6 +13,49 @@ import { memoryGame, kcsProgram, hg3 } from './helpers.mjs';
 import { defaultFESWorld } from './fixtures/default-fes-world.mjs';
 import { installImageOwnerOracle } from './fixtures/image-owner-oracle-world.mjs';
 
+test('23 Script resolves a base image and owns its decoded and generated canvases', async (t) => {
+  const rgba = Uint8Array.of(17, 34, 51, 255, 1, 2, 3, 255),
+    world = await defaultFESWorld('grisaia-jp-engine-2.6.1.23', {
+      'probe.hg3': hg3(2, 1, rgba),
+    });
+  t.after(() => world.close());
+  const { main, runtime, imageOwners, graphics } = world,
+    { machine } = main,
+    call = (id, args) => runtime.native('main', id, args, machine, main);
+  machine.writeString(',,probe,3', 96);
+  assert.deepEqual(await call(598, [96, 144]), { control: 1, value: 1 });
+  assert.equal(machine.string(144), 'probe');
+  const source = (await call(710, [144])).value,
+    sourceBitmap = imageOwners.get(source).bitmap,
+    target = (await call(733, [3, 1])).value,
+    targetBitmap = imageOwners.get(target).bitmap;
+  assert.equal(imageOwners.get(source).owner, main.id);
+  assert.notEqual(sourceBitmap, targetBitmap);
+  assert.deepEqual(await graphics.images.get(sourceBitmap).pixels(), Uint8ClampedArray.from(rgba));
+  assert.deepEqual(await call(714, [source, 176, 180]), { control: 2 });
+  assert.deepEqual([machine.load(176), machine.load(180)], [2, 1]);
+  assert.deepEqual(await call(736, [target, 1, 0, 1, 1, 0xff224466]), { control: 2 });
+  assert.deepEqual(
+    (await graphics.images.get(targetBitmap).pixels()).subarray(4, 8),
+    Uint8ClampedArray.of(34, 68, 102, 255),
+  );
+  const drawID = await world.objects.create({ kind: 15, parent: world.root }),
+    draw = graphics.drawTasks.get(drawID),
+    drawTarget = world.nativeTaskID(drawID),
+    key = (world.nativeTaskID(main.id) | (3 << 16)) >>> 0,
+    one = floatBits(1);
+  await call(256, [drawTarget, 8, 6]);
+  assert.deepEqual(
+    await call(732, [drawTarget, 3, target, one, one, 0, 0, 0, one, one, 511, 1, 0]),
+    { control: 2 },
+  );
+  assert.deepEqual(draw.entry(key).position, [1, 1]);
+  assert.equal(draw.entry(key).alpha, 255);
+  assert.deepEqual(await call(711, [source]), { control: 2 });
+  assert.equal(runtime.handles.records.has(source), false);
+  assert.equal(imageOwners.get(target).bitmap, targetBitmap);
+});
+
 test('63 Script image owners load, query, resize, fill and release their own bitmaps', async (t) => {
   const rgba = Uint8Array.from({ length: 24 }, (_, index) => [17, 34, 51, 255][index % 4]),
     world = await defaultFESWorld('rebellions-jp-engine-2.6.1.63', {
