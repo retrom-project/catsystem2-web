@@ -450,6 +450,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 task parent 0x48a860 and bitmap attribute 0x489c30 write the parent ID or five selected metadata words',
   },
+  {
+    ids: [149],
+    value:
+      'Own 2.6.1.23 0x487420 resolves Root 31 and sends raw Input 118 with the two mapped coordinate destinations',
+  },
 ];
 const particleInterpreterEvidence = [
   {
@@ -872,6 +877,7 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         { ids: [76, 536], fields: { resultWritten: true } },
+        { ids: [149], fields: { resultWritten: false } },
         { ids: [124, 125, 418, 557], fields: { resultWritten: false } },
         { ids: [320], fields: { resultWritten: false } },
         { ids: [265, 266, 267, 268, 269], fields: { resultWritten: true } },

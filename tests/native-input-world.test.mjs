@@ -24,6 +24,30 @@ test('63 Main285 combines all four sources from the caller-owned Input task', (t
 test('2.6.1.23 combines four sources and resets cursor position through the Input task', (t) =>
   verifyInputSources(t, 'grisaia-jp-engine-2.6.1.23', true));
 
+test('2.6.1.23 queries the caller Top cursor in virtual coordinates', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const innerRoot = await world.objects.create({ kind: 1, nativeID: 0 }),
+    inner = await world.spawnScript('case.kcs', { parent: innerRoot }),
+    inside = world.inputFor(inner.id);
+  world.input.pointer(31, 47);
+  inside.pointer(-7, 11);
+  for (const [task, expected] of [
+    [world.main, [31, 47]],
+    [inner, [-7 >>> 0, 11]],
+  ]) {
+    const { machine } = task;
+    machine.bytes(128, 12).fill(0xa5);
+    assert.deepEqual(await world.runtime.native('main', 149, [128, 132], machine, task), {
+      control: 2,
+    });
+    assert.deepEqual(
+      [machine.load(128), machine.load(132), machine.load(136)],
+      [...expected, 0xa5a5a5a5],
+    );
+  }
+});
+
 async function verifyInputSources(t, profile, resetsCursor) {
   const world = await dataWorld(profile, {
     'case.kcs': kcsProgram([[59]]),

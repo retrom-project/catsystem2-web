@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 330       | 57            | 17            | 465     | Generic 22 of 45, Particle 33 of 44 and 34 of 51 |
+| 2.6.1.23 | 869        | 331       | 57            | 17            | 464     | Generic 22 of 45, Particle 33 of 44 and 34 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -192,6 +192,8 @@ Main 76 reads the caller's parent ID. Main 536 searches an owned bitmap
 attribute using the low 16 bits of the selector. A match writes four rectangle
 words and the color, while a null bitmap or missing attribute returns zero
 without writing to the destinations.
+Main 149 resolves the caller's Input through Root 31 and writes its
+virtual cursor coordinates through raw Input 118.
 
 Main 265 opens a formatted movie filename and queries the Input task
 through Root 31. It sends raw Input 136, a handled notification with no
