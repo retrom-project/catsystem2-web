@@ -247,6 +247,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Input gates 0x4878d0 and 0x487930; Root 31 resolves the owner for raw Input 143 and 144',
   },
+  {
+    ids: [155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 168, 284],
+    value:
+      'Own 2.6.1.23 Sound wrappers 0x47dc40–0x47e260: Root 32, filename load, raw 166–176 and 180, and the formatted Sound file probe',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -329,7 +334,8 @@ const mainUnobservedIds = Array.from({ length: mainCount }, (_, id) => id).filte
 const baseMessages = [1, 2, 3].map((id) => toMessage(id));
 const cursorVisibility = 21;
 const soundMessages = [
-  166, 167, 168, 169, 170, 171, 172, 173, 176, 181, 185, 187, 190, 191, 192, 193, 196, 197,
+  166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 180, 181, 185, 187, 190, 191, 192, 193,
+  196, 197,
 ];
 const toSound = (id) => toMessage(id + 13, -13);
 const tables = (count, evidence = [], stubs = {}) => {
@@ -593,6 +599,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [155, 160, 162, 284], fields: { resultWritten: true } },
+        { ids: [156, 157, 158, 159, 161, 163, 164, 168], fields: { resultWritten: false } },
         { ids: [403, 404], fields: { resultWritten: false } },
         { ids: [143], fields: { resultWritten: false } },
         { ids: [315, 316, 387, 388], fields: { resultWritten: true } },

@@ -1300,6 +1300,8 @@ export async function nativeSound(id, args, machine, task, world) {
     const name = world.runtime.services.format(argument(2), machine),
       file = world.game.resolveCategory ? world.game.resolveCategory(name, 'sound') : name;
     if (!file) return reply(allocated ? 0xffffffff : 0);
+    if (id === 0x9b && sound.abi.sound.loadMessageFormat === 'filename')
+      return reply(await send(type === 1 ? 179 : 180, selector, 0, { string: () => file }));
     const packet = new NativeSoundPacket([], sound.abi.sound.mainLoadPacketBytes ?? 288);
     packet.store(allocated ? 4 : 0, selector);
     packet.writeString(file, 12);

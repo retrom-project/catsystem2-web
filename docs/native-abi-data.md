@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 168       | 57            | 17            | 627     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 180       | 57            | 17            | 615     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -153,6 +153,11 @@ skip the loop-point lookup. Ranges are clamped to the 32 banks and exclude the
 upper limit. A full range can reuse the first bank pending release. The
 configuration layout and bounded voice operations are documented with the
 [configuration queries](native-configuration-queries.md#26123-compact-configuration).
+
+Main 155 resolves the formatted Sound path and uses raw 166 or 167 to load
+the selected bank. Main 156–164 release, play, pause, stop, query or control that
+bank. Main 168 sends the authored position words through raw 180, and Main 284
+probes a formatted name in the Sound category.
 
 The .23 FES Sound playback handler sends message 169 with the bank and loop
 count for active eligible playback. An ineligible pending play sends stop

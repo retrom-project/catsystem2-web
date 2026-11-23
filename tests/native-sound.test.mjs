@@ -478,6 +478,34 @@ test('main sound wrappers preserve ignored arguments, packed fades and void cont
   assert.equal(await nativeSound(0x999, [], machine, task, world), undefined);
 });
 
+test('2.6.1.23 Main sound uses a bank word and a filename through its own Sound receiver', async (t) => {
+  const { world, sound, task: receiver, audio } = fixture('grisaia-jp-engine-2.6.1.23'),
+    task = { id: 100 },
+    call = (id, args) => nativeSound(id, args, null, task, world),
+    wire = [];
+  world.nativeTaskID = (id) => id;
+  const message = receiver.message;
+  t.mock.method(receiver, 'message', function (words, context) {
+    wire.push({ words, filename: context.payload?.string?.(0) });
+    return Reflect.apply(message, this, [words, context]);
+  });
+  assert.deepEqual(await call(155, [7, 0xff, 'a_line.wav', 1]), { control: 1, value: 1 });
+  assert.deepEqual(wire[0], { words: [100, 166, 7, 0], filename: 'a_line.wav' });
+  assert.equal(sound.device[7].loaded, true);
+  assert.equal(sound.device[0].loaded, false);
+  assert.deepEqual(await call(157, [7, 1]), { control: 2 });
+  assert.equal(audio.channels.get('native:7').playing, true);
+  assert.deepEqual(await call(160, [7]), { control: 1, value: 1 });
+  assert.deepEqual(await call(161, [7, 81]), { control: 2 });
+  assert.deepEqual(await call(162, [7]), { control: 1, value: 81 });
+  assert.deepEqual(await call(163, [7, 50, 0x10003]), { control: 2 });
+  assert.equal(receiver.controls[7].float(C.volumeRemaining), 3);
+  assert.deepEqual(await call(156, [7]), { control: 2 });
+  assert.equal(sound.device[7].loaded, false);
+  assert.deepEqual(await call(155, [3, 0, 'b_line.wav', 2]), { control: 1, value: 1 });
+  assert.deepEqual(wire.at(-1), { words: [100, 167, 3, 0], filename: 'b_line.wav' });
+});
+
 for (const profile of [gameProfile, sdkProfile])
   test(`${profile} sound opens share only the same owner's successful mounted read in one tick`, async (t) => {
     const file = new BlobFile(
