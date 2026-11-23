@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 332       | 57            | 17            | 463     | Generic 22 of 45, Particle 38 of 44 and 39 of 51 |
+| 2.6.1.23 | 869        | 336       | 57            | 17            | 459     | Generic 22 of 45, Particle 38 of 44 and 39 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -190,6 +190,12 @@ Main 625 sends the selected entry's full animation enable word through raw
 Draw 269. Main 728 writes the bitmap's mask word without rebinding its owner.
 Main 862 sends the four original RECT boundaries through raw Draw 284.
 The receiver marks its own surface dirty and redraws that rectangle immediately.
+Main 196 selects an Area initializer by the receiver's kind. Kind 26
+uses the 56-byte bitmap wipe packet in raw 248. Main 197 starts that
+task through raw 231, Main 200 reads its activity through raw 233,
+and Main 203 finishes an active wipe through raw 235. The legacy
+queries require a written reply because the source wrapper's scratch
+word has no initial value.
 Main 76 reads the caller's parent ID. Main 536 searches an owned bitmap
 attribute using the low 16 bits of the selector. A match writes four rectangle
 words and the color, while a null bitmap or missing attribute returns zero

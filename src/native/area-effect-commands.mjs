@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Area packets retain VM bit patterns and resolve tasks in their caller's Top.
 import { mapABIMessage } from './abi/messages.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { nativeDataArgument } from './data-text.mjs';
@@ -62,10 +63,12 @@ export class NativeAreaEffectCommands {
     memory.store(out, caller);
     try {
       const value = await send(id === 0xc8 ? 259 : 13, 0, undefined, {
-          nativeResult: out,
-          resultMemory: memory,
-        }),
-        kind = Number.isInteger(value) ? value : memory.load(out);
+        nativeResult: out,
+        resultMemory: memory,
+      });
+      if (!Number.isInteger(value) && nativeABI(world.profile).messages.areaQueriesRequireReply)
+        throw new Error('Area effect query did not write its result');
+      const kind = Number.isInteger(value) ? value : memory.load(out);
       if (id === 0xc8) return nativeReply(1, kind);
       if (id === 0xc9 && a[1]) return nativeReply(2);
       const message =

@@ -460,6 +460,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 wrapper 0x480ae0 sends Draw raw 284 with a four-word RECT; 0x427d4e marks dirty and renders that extent',
   },
+  {
+    ids: [196, 197, 200, 203],
+    value:
+      'Own 2.6.1.23 Area wrappers 0x486780, 0x4869e0, 0x486aa0 and 0x486c10 use the legacy kind dispatch, raw 231/233/235, and the 56-byte kind 26 initializer through raw 248',
+  },
 ];
 const particleInterpreterEvidence = [
   {
@@ -818,6 +823,7 @@ export default {
     movieInput: { query: 31, gate: 143 },
     cursorVisibility,
     soundBaseOnly: [22],
+    areaQueriesRequireReply: true,
     scriptForward: [9, 10, cursorVisibility, 64],
     screenEvent: null,
     tilePlaneCommand: null,
@@ -887,7 +893,8 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         { ids: [76, 536], fields: { resultWritten: true } },
-        { ids: [149, 862], fields: { resultWritten: false } },
+        { ids: [149, 196, 197, 203, 862], fields: { resultWritten: false } },
+        { ids: [200], fields: { resultWritten: true } },
         { ids: [124, 125, 418, 557], fields: { resultWritten: false } },
         { ids: [320], fields: { resultWritten: false } },
         { ids: [265, 266, 267, 268, 269], fields: { resultWritten: true } },

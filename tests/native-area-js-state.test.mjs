@@ -6,6 +6,34 @@ import { authoredAreaBitmaps, areaPixelParameters } from './fixtures/area-effect
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { floatBits } from '../src/kcs.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
+
+test('2.6.1.23 area natives start and finish an owned bitmap wipe', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const { machine } = world.main,
+    call = (id, args) => world.runtime.native('main', id, args, machine, world.main),
+    handles = await authoredAreaBitmaps(world),
+    taskID = await world.objects.create({ kind: 26, parent: world.root }),
+    nativeID = world.nativeTaskID(taskID),
+    area = world.areaEffects.tasks.get(taskID),
+    params = areaPixelParameters({ kind: 26, duration: 4 }, handles);
+  assert.equal(params.length, 14);
+  params.forEach((value, index) => machine.store(128 + 4 * index, value));
+  assert.deepEqual(await call(200, [nativeID]), { control: 1, value: 0 });
+  assert.deepEqual(await call(196, [nativeID, 128]), { control: 2 });
+  assert.deepEqual(area.state.params, params);
+  assert.ok(area.state.initialized);
+  await world.graphics.ensureVRAM(world.game.width, world.game.height);
+  assert.deepEqual(await call(197, [nativeID]), { control: 2 });
+  assert.deepEqual(await call(200, [nativeID]), { control: 1, value: 1 });
+  await world.tick();
+  assert.deepEqual(await call(200, [nativeID]), { control: 1, value: 1 });
+  assert.deepEqual(await call(203, [nativeID]), { control: 2 });
+  assert.deepEqual(await call(200, [nativeID]), { control: 1, value: 0 });
+  await assert.rejects(call(200, [0x12345678]), /Area effect query did not write/);
+  assert.deepEqual([...machine.bytes(128, 56)], [...new NativeGraphicsPacket(params).bytes(0, 56)]);
+});
+
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
   test(
     profile + ' JS area resources, empty receivers and opaque query identity survive fresh restore',
