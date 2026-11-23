@@ -125,20 +125,99 @@ const mainEvidence = [
   },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
+const mainReserved = [
+  0, 2, 3, 141, 169, 170, 172, 173, 180, 182, 184, 185, 187, 188, 189, 190, 191, 429, 439, 464, 543,
+  544, 545, 546, 547, 548, 550, 552, 553, 556, 559, 560, 561, 562, 563, 573, 574, 578, 579, 581,
+  626, 627, 642, 643, 644, 652, 656, 660, 661, 670, 671, 672, 673, 686, 687, 769, 770,
+];
+const mainConstantZero = [
+  171, 174, 175, 176, 177, 178, 179, 181, 183, 186, 236, 432, 551, 554, 555, 575, 580,
+];
+
+// Literal GCALL widths in the fixed KCS, MOT and particle archives are
+// observations independent of native admission or argument reads.
+const mainObservedWidths = [
+  {
+    value: [0],
+    ids: [
+      4, 5, 33, 68, 76, 113, 286, 294, 323, 404, 419, 434, 436, 438, 465, 515, 542, 565, 566, 609,
+      610, 696, 741, 789, 845, 846, 847, 852,
+    ],
+  },
+  {
+    value: [1],
+    ids: [
+      1, 6, 9, 10, 17, 25, 32, 47, 50, 51, 54, 57, 62, 63, 67, 71, 80, 83, 109, 111, 114, 118, 125,
+      156, 159, 160, 197, 200, 203, 207, 209, 210, 212, 213, 238, 246, 247, 248, 261, 265, 267, 268,
+      269, 270, 272, 273, 274, 278, 279, 283, 285, 287, 295, 296, 311, 314, 315, 317, 319, 324, 330,
+      331, 340, 341, 342, 365, 366, 389, 390, 393, 420, 437, 440, 445, 448, 452, 453, 454, 461, 516,
+      520, 549, 570, 572, 577, 581, 590, 591, 594, 595, 601, 605, 606, 607, 608, 615, 617, 628, 633,
+      634, 651, 673, 681, 683, 684, 691, 697, 702, 710, 711, 844, 854, 858, 864,
+    ],
+  },
+  {
+    value: [2],
+    ids: [
+      8, 13, 14, 15, 16, 19, 21, 23, 29, 46, 49, 61, 81, 88, 92, 94, 95, 105, 106, 108, 112, 124,
+      149, 157, 161, 196, 211, 243, 245, 252, 253, 258, 262, 266, 275, 276, 277, 280, 281, 282, 284,
+      288, 298, 308, 310, 313, 316, 320, 325, 332, 338, 348, 358, 364, 369, 392, 394, 397, 400, 402,
+      417, 422, 423, 426, 427, 439, 447, 449, 450, 451, 455, 458, 466, 469, 514, 518, 522, 524, 528,
+      531, 534, 540, 545, 546, 547, 548, 551, 554, 555, 557, 567, 568, 571, 573, 580, 586, 598, 611,
+      612, 613, 614, 619, 620, 635, 636, 646, 647, 653, 655, 670, 674, 687, 690, 694, 701, 723, 727,
+      728, 733, 737, 739, 740, 785, 848, 849, 855, 857, 861, 863, 865, 866, 868,
+    ],
+  },
+  {
+    value: [3],
+    ids: [
+      35, 36, 41, 42, 43, 66, 78, 100, 119, 143, 150, 163, 201, 241, 242, 256, 260, 307, 326, 328,
+      329, 343, 344, 346, 362, 363, 368, 372, 373, 387, 424, 425, 435, 441, 459, 517, 519, 539, 543,
+      550, 552, 556, 559, 562, 563, 575, 576, 579, 592, 593, 600, 621, 625, 629, 639, 645, 649, 652,
+      654, 686, 688, 689, 692, 700, 712, 714, 715, 717, 718, 719, 720, 726, 730, 786, 850, 851, 859,
+    ],
+  },
+  {
+    value: [4],
+    ids: [
+      30, 38, 44, 45, 69, 70, 72, 73, 79, 85, 86, 168, 206, 244, 250, 254, 327, 333, 336, 347, 359,
+      385, 386, 388, 418, 527, 541, 544, 630, 640, 699, 713, 787, 790,
+    ],
+  },
+  {
+    value: [5],
+    ids: [
+      84, 87, 101, 218, 240, 318, 345, 433, 530, 560, 561, 596, 597, 604, 642, 643, 671, 672, 685,
+      788, 862,
+    ],
+  },
+  { value: [6], ids: [117, 271, 339, 644, 693, 736, 853, 856] },
+  { value: [7], ids: [104, 304, 399, 536, 578, 698, 724] },
+  { value: [8], ids: [521, 535, 860] },
+  { value: [10], ids: [115, 116, 299, 301, 302, 367, 523, 735] },
+  { value: [12], ids: [398] },
+  { value: [13], ids: [257, 732] },
+];
+const mainCount = 869;
+const mainObservedIds = new Set(mainObservedWidths.flatMap(({ ids }) => ids));
+const mainUnobservedIds = Array.from({ length: mainCount }, (_, id) => id).filter(
+  (id) => !mainObservedIds.has(id),
+);
 const baseMessages = [1, 2, 3].map((id) => toMessage(id));
 const cursorVisibility = 21;
 const soundMessages = [
   166, 167, 168, 169, 170, 171, 172, 173, 176, 181, 185, 187, 190, 191, 192, 193, 196, 197,
 ];
 const toSound = (id) => toMessage(id + 13, -13);
-const tables = (count, evidence = []) => {
+const tables = (count, evidence = [], stubs = {}) => {
+  const stubIds = Object.values(stubs).flat();
   const recovered = evidence.flatMap(({ ids }) => ids).sort((a, b) => a - b),
-    known = new Set(recovered);
+    known = new Set([...recovered, ...stubIds]);
   return {
     count,
     slots: {
       unknown: Array.from({ length: count }, (_, id) => id).filter((id) => !known.has(id)),
       ...(recovered.length ? { recovered } : {}),
+      ...stubs,
     },
     ...(evidence.length ? { evidence } : {}),
   };
@@ -316,9 +395,25 @@ export default {
   },
   tables: {
     main: {
-      ...tables(869, mainEvidence),
+      ...tables(mainCount, mainEvidence, {
+        reserved: mainReserved,
+        'constant-zero': mainConstantZero,
+      }),
+      evidence: [
+        ...mainEvidence,
+        {
+          ids: mainReserved,
+          value: 'Own 2.6.1.23 shared 0x479660 body returns control 2 without reads or output',
+        },
+        {
+          ids: mainConstantZero,
+          value: 'Own 2.6.1.23 shared 0x487160 body writes zero and returns control 1',
+        },
+      ],
+      observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         { ids: [69, 70, 419, 423, 424, 425, 790], fields: { resultWritten: true } },
+        { ids: mainConstantZero, fields: { resultWritten: true } },
         { ids: [420, 421, 422, 458, 459], fields: { resultWritten: false } },
       ],
     },

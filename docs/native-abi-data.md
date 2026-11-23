@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 69        | 0             | 0             | 800     | 3 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 69        | 57            | 17            | 726     | 3 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -32,6 +32,13 @@ SDK74/Game76 auxiliary generic entries retain `recovered` and particle entries
 retain `declared`.
 
 ## 2.6.1.23 startup and title
+
+The fixed `.23` Main table points 57 slots to `0x479660`, which returns control
+2 with the VM result untouched. Another 17 point to `0x487160`, which writes
+zero and returns control 1. Both bodies ignore their operands. Literal GCALLs
+in the fixed script archives establish separate widths for 435 Main slots,
+including 34 of these stubs. A width observation does not bind an unresolved
+handler or impose arity on the ignored operand lists.
 
 The Grisaia base profile selects the exact loose `config/startup.xml` and
 checks its executable resources after applying preferences. Startup then

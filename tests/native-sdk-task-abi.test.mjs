@@ -11,6 +11,57 @@ import { dataWorld } from './fixtures/data-world.mjs';
 const profile = 'sdk-4.01-engine-2.6.1.74';
 const legacy = 'grisaia-jp-engine-2.6.1.23';
 const game = nativeABI('nekopara-vol3-engine-2.6.1.76');
+
+test('legacy GCALL stubs consume authored stack widths and preserve other VM state', async () => {
+  const table = nativeABI(legacy).tables.main.entries,
+    reserved = table.filter((entry) => entry.status === 'reserved'),
+    constantZero = table.filter((entry) => entry.status === 'constant-zero');
+  assert.equal(reserved.length, 57);
+  assert.equal(constantZero.length, 17);
+  const calls = [...reserved, ...constantZero].flatMap((entry) =>
+      (entry.observedArgumentWords.length ? entry.observedArgumentWords : [0, 3]).map((words) => ({
+        entry,
+        words,
+      })),
+    ),
+    sentinel = 0x82345678,
+    resultAt = (index) => 512 + index * 4,
+    markerAt = (index) => 1024 + index * 4,
+    ops = calls.flatMap(({ entry, words }, index) => [
+      [37, sentinel],
+      ...Array.from({ length: words }, (_, word) => [37, 0xffa0b000 + word]),
+      [43, entry.id, words * 4],
+      ...(entry.status === 'constant-zero' ? [[38, resultAt(index)]] : []),
+      [38, markerAt(index)],
+    ]),
+    world = await dataWorld(legacy, { 'stub-matrix.kcs': kcsProgram([...ops, [59]]) });
+  try {
+    const script = await createScript(world, 'stub-matrix'),
+      machine = script.machine,
+      stack = machine.sp;
+    machine.bytes(512, calls.length * 4).fill(0xa5);
+    machine.bytes(1024, calls.length * 4).fill(0x5a);
+    machine.store(1020, 0x3b46d32d);
+    await world.runtime.scheduler.execute(script);
+
+    assert.equal(machine.halted, true);
+    assert.equal(machine.sp, stack);
+    assert.equal(machine.load(1020), 0x3b46d32d);
+    for (const [index, { entry }] of calls.entries()) {
+      const zero = entry.status === 'constant-zero';
+      assert.equal(entry.signature.argumentWords, null);
+      assert.equal(entry.signature.parameters.kind, 'ignored');
+      assert.deepEqual(entry.controlCodes, [zero ? 1 : 2]);
+      assert.equal(entry.signature.resultWritten, zero);
+      assert.equal(machine.load(resultAt(index)), zero ? 0 : 0xa5a5a5a5);
+      assert.equal(machine.load(markerAt(index)), sentinel);
+    }
+    for (const id of [464, 769, 770]) assert.equal(table[id].name, 'reserved.noop');
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+
 const specs = [
   { id: 0x42, label: 'task creation', words: 3, args: [27, 0, 0], evidence: 'task-create' },
   { id: 0x44, label: 'current task identity', words: 0, args: [], evidence: 'task-current' },
@@ -116,7 +167,7 @@ for (const engine of [profile, game.profile, legacy])
         assert.equal(declaration.signature.argumentWords, 4);
         assert.deepEqual(declaration.signature.controlCodes, [2]);
         assert.equal(declaration.signature.resultWritten, false);
-        if (engine !== legacy) assert.deepEqual(declaration.observedArgumentWords, [4]);
+        assert.deepEqual(declaration.observedArgumentWords, [4]);
         if (engine === legacy) assert.match(declaration.evidence, /2\.6\.1\.23.*copy VM bytes/);
         if (engine === profile) assert.match(declaration.evidence, /SDK-2\.6\.1\.74.*VM-byte-copy/);
       }
@@ -169,7 +220,7 @@ for (const engine of [profile, legacy])
       assert.equal(entry.name, NATIVE_SEMANTICS.main[0x46].name);
       assert.equal(entry.signature.argumentWords, 4);
       assert.deepEqual(entry.signature.controlCodes, [1]);
-      if (engine !== legacy) assert.deepEqual(entry.observedArgumentWords, [4]);
+      assert.deepEqual(entry.observedArgumentWords, [4]);
       assert.equal(entry.signature.resultWritten, true);
       assert.match(entry.evidence, /(?:SDK-2\.6\.1\.74-main70|2\.6\.1\.23 Main 70).*deferred/);
     } finally {
