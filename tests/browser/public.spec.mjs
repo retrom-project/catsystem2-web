@@ -63,6 +63,74 @@ test('embedded browser preparation keeps first native text and compression avail
   expect(offlineRequests).toEqual([]);
 });
 
+test('embedded native save selection and writes preserve the newer IndexedDB slots', async ({
+  page,
+}) => {
+  await page.route('**/native-save-shell.html', (route) =>
+    route.fulfill({ contentType: 'text/html', body: '<!doctype html>' }),
+  );
+  await page.goto('/native-save-shell.html');
+  const result = await page.evaluate(async () => {
+    const { NativeFileStorage } = await import('/src/native/storage.mjs'),
+      { NativeGlobalFile } = await import('/src/native/persistence.mjs'),
+      game = { lookup: () => null },
+      namespace = `native-save-${crypto.randomUUID()}`,
+      info = { createdMs: 1, accessedMs: 2, modifiedMs: 3, attributes: 0x80 },
+      readMarker = async (bytes) => (await NativeGlobalFile.fromFile(bytes)).read(7)[0];
+    const encode = async (marker) => {
+      const file = new NativeGlobalFile(7);
+      file.write(7, Uint8Array.of(marker));
+      return file.file();
+    };
+    const versions = await Promise.all([1, 2, 3, 4].map(encode)),
+      slot = 'save5000.dat',
+      base = new NativeFileStorage(game, namespace);
+    await base.open();
+    await base.prepareGameSave(null);
+    const olderCommit = base.write(slot, versions[1]),
+      newerCommit = base.write(slot, versions[2]);
+    const busy = base.gameSaveStatus().busy;
+    await Promise.all([olderCommit, newerCommit]);
+    const physical = await readMarker(base.exportGameSave().files[0].bytes);
+    base.close();
+
+    const selected = new NativeFileStorage(game, namespace);
+    await selected.open();
+    await selected.prepareGameSave([{ path: slot, bytes: versions[0], ...info }]);
+    const loaded = await readMarker(await selected.readSaved(slot));
+    await selected.write(slot, versions[3]);
+    await selected.write('savegen.dat', versions[1]);
+    const selectedExport = selected.exportGameSave();
+    selected.close();
+
+    const reopened = new NativeFileStorage(game, namespace);
+    await reopened.open();
+    await reopened.prepareGameSave(null);
+    try {
+      return {
+        busy,
+        physical,
+        loaded,
+        restoredWrite: await readMarker(selectedExport.files[0].bytes),
+        restoredPaths: selectedExport.files.map(({ path }) => path),
+        fresh: await readMarker(await reopened.readSaved(slot)),
+        freshPaths: reopened.exportGameSave().files.map(({ path }) => path),
+      };
+    } finally {
+      reopened.close();
+    }
+  });
+  expect(result).toEqual({
+    busy: true,
+    physical: 3,
+    loaded: 1,
+    restoredWrite: 4,
+    restoredPaths: ['save5000.dat', 'savegen.dat'],
+    fresh: 3,
+    freshPaths: ['save5000.dat'],
+  });
+});
+
 test('ordinary renderless Plane movies decode through the production Host and retain real pixels across cold restore', async ({
   page,
 }, info) => {

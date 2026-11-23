@@ -2,6 +2,12 @@
 import { SaveStore } from '../saves.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeDataArgument, nativeDataCString, nativeDataFormat } from './data-text.mjs';
+import {
+  gameSaveFileKind,
+  NativeGameSaveProgress,
+  NativeGameSaveView,
+  selectedGameSave,
+} from './game-save.mjs';
 
 const toolbarQuickSaveSlot = 'toolbar-quick-save';
 
@@ -25,6 +31,10 @@ function path(name) {
 // store. Mounted SDK/game inputs remain read-only.
 export class NativeFileStorage {
   #quickSave = null;
+  #gameSave = null;
+  #selectedSave = null;
+  #preparingGameSave = false;
+  #gameSaveWrites = 0;
 
   constructor(game, namespace, database) {
     this.game = game;
@@ -38,6 +48,69 @@ export class NativeFileStorage {
       this.close();
       throw failed.reason;
     }
+  }
+  async prepareGameSave(files, { signal } = {}) {
+    signal?.throwIfAborted();
+    if (this.#preparingGameSave || this.#gameSave)
+      throw new Error('Native game save files are already configured');
+    this.#preparingGameSave = true;
+    try {
+      if (files === null)
+        this.#gameSave = await NativeGameSaveProgress.fromLocal(this.store.records, signal);
+      else {
+        const selected = await selectedGameSave(files, path, signal);
+        signal?.throwIfAborted();
+        this.#selectedSave = new NativeGameSaveView(selected);
+        this.#gameSave = new NativeGameSaveProgress(selected);
+      }
+    } finally {
+      this.#preparingGameSave = false;
+    }
+  }
+  get gameSaveEnabled() {
+    return this.#gameSave !== null;
+  }
+  gameSaveStatus() {
+    const status = this.#gameSave?.status() ?? { progress: false, revision: '0' };
+    if (this.#gameSaveWrites || this.#preparingGameSave) status.busy = true;
+    return status;
+  }
+  exportGameSave({ signal } = {}) {
+    signal?.throwIfAborted();
+    if (this.#gameSaveWrites || this.#preparingGameSave)
+      throw new Error('Native game save files are still being committed');
+    return this.#gameSave?.export(signal) ?? null;
+  }
+  #files(name) {
+    return this.#selectedSave && gameSaveFileKind(name) ? this.#selectedSave : this.store;
+  }
+  #tracks(name) {
+    if (!this.#gameSave) return false;
+    const kind = gameSaveFileKind(name);
+    return kind === 'slot' || kind === 'index';
+  }
+  async #put(name, data, info, companion, ignoreAutomaticTime = false) {
+    const files = this.#files(name);
+    if (!this.#tracks(name)) return files.put(name, data, info, companion);
+    this.#gameSaveWrites++;
+    try {
+      const record = await files.put(name, data, info, companion);
+      const valid = await this.#gameSave.accepts(name, data.bytes);
+      if (files.get(name) === record)
+        this.#gameSave.committed([[name, valid ? record : null]], ignoreAutomaticTime);
+      return record;
+    } finally {
+      this.#gameSaveWrites--;
+    }
+  }
+  *savedEntries() {
+    for (const [name, record] of this.store.records)
+      if (this.#files(name) === this.store) yield [name, record];
+    if (this.#selectedSave) yield* this.#selectedSave.records;
+  }
+  hasSaved(name) {
+    const key = path(name);
+    return !!this.#files(key).get(key);
   }
   platformKey(name) {
     if (typeof name !== 'string' || !/^[a-z][a-z0-9-]*$/.test(name))
@@ -57,13 +130,13 @@ export class NativeFileStorage {
     // Same saved-file / mounted-input namespace as read(), without reading
     // file contents or mistaking a missing timestamp for file absence.
     const key = path(name);
-    return !!this.store.get(key) || !!this.game.lookup(key);
+    return !!this.#files(key).get(key) || !!this.game.lookup(key);
   }
   size(name) {
     // Same saved-first lookup as read/has. A missing timestamp says nothing
     // about existence; null alone represents an absent file.
     const key = path(name),
-      saved = this.store.get(key),
+      saved = this.#files(key).get(key),
       hit = saved ? null : this.game.lookup(key);
     if (!saved && !hit) return null;
     const size = saved ? saved.data.bytes.length : hit.size;
@@ -73,17 +146,18 @@ export class NativeFileStorage {
   }
   async read(name, readHit) {
     const key = path(name),
-      saved = this.store.get(key);
+      saved = this.#files(key).get(key);
     if (saved) return saved.data.bytes.slice();
     return readHit ? this.game.read(key, readHit) : this.game.read(key);
   }
   mountedHit(name) {
     const key = path(name);
     // A saved file wins the same path and is never a preparation source.
-    return this.store.get(key) ? undefined : (this.game.lookup(key) ?? null);
+    return this.#files(key).get(key) ? undefined : (this.game.lookup(key) ?? null);
   }
   async readSaved(name) {
-    const saved = this.store.get(path(name));
+    const key = path(name),
+      saved = this.#files(key).get(key);
     return saved ? saved.data.bytes.slice() : null;
   }
   get toolbarQuickSavePending() {
@@ -126,11 +200,12 @@ export class NativeFileStorage {
   }
   async write(name, bytes, { updateModified = true } = {}, nativeSaveWriter = null) {
     const key = path(name),
-      previous = this.store.get(key),
+      files = this.#files(key),
+      previous = files.get(key),
       now = Date.now();
     const pending = this.#quickSave;
     let companion, revision;
-    if (pending && nativeSaveWriter === pending.writer && updateModified) {
+    if (pending && files === this.store && nativeSaveWriter === pending.writer && updateModified) {
       const match = /(?:^|\/)save(\d+)\.dat$/.exec(key),
         slot = match && Number(match[1]);
       if (!pending.stillAtStoryPoint()) this.#quickSave = null;
@@ -155,7 +230,7 @@ export class NativeFileStorage {
       };
     if (companion) data.quickSaveRevision = revision;
     try {
-      await this.store.put(key, data, info, companion);
+      await this.#put(key, data, info, companion, true);
     } catch (error) {
       if (!companion) throw error;
       pending.failed(error);
@@ -165,19 +240,28 @@ export class NativeFileStorage {
   }
   async remove(name) {
     const key = path(name);
-    const record = this.store.get(key);
+    const files = this.#files(key),
+      record = files.get(key);
     if (!record || record.attributes & 1) return false;
-    await this.store.delete(key);
-    return true;
+    const tracked = this.#tracks(key);
+    if (tracked) this.#gameSaveWrites++;
+    try {
+      await files.delete(key);
+      if (tracked && !files.get(key)) this.#gameSave.committed([[key, null]]);
+      return true;
+    } finally {
+      if (tracked) this.#gameSaveWrites--;
+    }
   }
   async copy(from, to, failIfExists = true) {
     const input = await this.read(from);
     if (input === null || (failIfExists && (await this.read(to)) !== null)) return false;
-    if (this.store.get(path(to))?.attributes & 1) return false;
+    const key = path(to);
+    if (this.#files(key).get(key)?.attributes & 1) return false;
     const info = await this.stat(from),
       now = Date.now();
-    await this.store.put(
-      path(to),
+    await this.#put(
+      key,
       { bytes: input.slice() },
       {
         createdMs: now,
@@ -190,9 +274,26 @@ export class NativeFileStorage {
   }
   async move(from, to) {
     const a = path(from),
-      b = path(to);
+      b = path(to),
+      files = this.#files(a);
+    if (files !== this.#files(b)) return false;
     if ((await this.read(b)) !== null) return false;
-    return this.store.move(a, b);
+    const trackFrom = this.#tracks(a),
+      trackTo = this.#tracks(b);
+    if (!trackFrom && !trackTo) return files.move(a, b);
+    this.#gameSaveWrites++;
+    try {
+      if (!(await files.move(a, b))) return false;
+      const record = files.get(b),
+        valid = trackTo && record && (await this.#gameSave.accepts(b, record.data.bytes));
+      const changes = [];
+      if (trackFrom && !files.get(a)) changes.push([a, null]);
+      if (trackTo && files.get(b) === record) changes.push([b, valid ? record : null]);
+      if (changes.length) this.#gameSave.committed(changes);
+      return true;
+    } finally {
+      this.#gameSaveWrites--;
+    }
   }
   async diskSpace() {
     if (typeof navigator === 'undefined' || !navigator.storage?.estimate) return null;
@@ -204,7 +305,7 @@ export class NativeFileStorage {
   }
   async list() {
     const entries = new Map();
-    for (const [name, record] of this.store.records)
+    for (const [name, record] of this.savedEntries())
       entries.set(name, {
         name,
         size: record.data.bytes.length,
@@ -220,7 +321,7 @@ export class NativeFileStorage {
   }
   async stat(name) {
     const key = path(name),
-      saved = this.store.get(key);
+      saved = this.#files(key).get(key);
     if (saved)
       return {
         createdMs: saved.createdMs,
@@ -232,7 +333,8 @@ export class NativeFileStorage {
     return hit?.file.modifiedMs === undefined ? null : { modifiedMs: hit.file.modifiedMs };
   }
   async setTimes(name, times) {
-    const saved = this.store.get(path(name));
+    const key = path(name),
+      saved = this.#files(key).get(key);
     if (!saved) return false;
     for (const [field, value] of Object.entries(times))
       if (
@@ -240,7 +342,7 @@ export class NativeFileStorage {
         !Number.isSafeInteger(value)
       )
         throw new Error('Invalid native file timestamp');
-    await this.store.put(saved.slot, saved.data, {
+    await this.#put(key, saved.data, {
       createdMs: saved.createdMs,
       accessedMs: saved.accessedMs,
       modifiedMs: saved.modifiedMs,
@@ -250,9 +352,10 @@ export class NativeFileStorage {
     return true;
   }
   async setAttributes(name, attributes) {
-    const saved = this.store.get(path(name));
+    const key = path(name),
+      saved = this.#files(key).get(key);
     if (!saved) return false;
-    await this.store.put(saved.slot, saved.data, {
+    await this.#put(key, saved.data, {
       createdMs: saved.createdMs,
       accessedMs: saved.accessedMs,
       modifiedMs: saved.modifiedMs,

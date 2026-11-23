@@ -376,7 +376,7 @@ const numericOperandRoles = Object.freeze({
       value: '5460803',
       parent: 'BinaryExpression',
       operand: 'b.u32(0)!==0x00535343',
-      scope: ['fromFile'],
+      scope: ['readCSS'],
       meaning: 'CSS signature comparison',
     },
     {

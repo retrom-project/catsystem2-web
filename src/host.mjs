@@ -345,6 +345,7 @@ export class EngineHost {
   async quickSave() {
     const e = this.engine,
       world = e.world;
+    if (e.nativeStorage?.gameSaveEnabled) return this.systemAction(21);
     if (!world) return this.systemAction(21);
     const root = e.activeFES()?.root;
     if (!root) return this.systemAction(21);
@@ -407,6 +408,7 @@ export class EngineHost {
   }
   async quickLoad() {
     const e = this.engine;
+    if (e.nativeStorage?.gameSaveEnabled) return this.systemAction(22);
     if (e.world) {
       const checkpoint = await e.nativeStorage.readToolbarQuickSave(e.saves);
       if (!checkpoint) return this.systemAction(22);

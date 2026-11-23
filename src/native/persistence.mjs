@@ -11,6 +11,34 @@ export function nativeSavePath(directory, filename) {
   return root ? `${root}/${name}` : name;
 }
 
+export function nativeSaveSlotName(slot) {
+  const value = slot | 0;
+  return `save${value < 0 ? '-' + String(-value).padStart(3, '0') : String(value).padStart(4, '0')}.dat`;
+}
+
+async function readCSS(bytes, limit) {
+  const b = new Binary(bytes, 'CSS saved file');
+  if (b.u32(0) !== 0x00535343 /* CSS file signature  */)
+    throw new Error('Invalid CSS saved-file signature');
+  const compressed = b.range(16, b.u32(4)),
+    length = b.u32(8),
+    tag = b.u32(12);
+  return { payload: length ? await inflate(compressed, length, limit) : new Uint8Array(), tag };
+}
+
+function readGlobalFileEntries(bytes, append) {
+  const b = new Binary(bytes, 'global-file records');
+  let count = 0;
+  for (let at = 0; at < bytes.length; count++) {
+    const id = b.u32(at),
+      size = b.u32(at + 4);
+    if (append) append(id, b.range(at + 8, size));
+    else b.requireRange(at + 8, size);
+    at += size + 8;
+  }
+  return count;
+}
+
 const word = (bytes, offset, value) =>
   new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength).setUint32(
     offset,
@@ -107,15 +135,9 @@ export class NativeGlobalFile {
   ) {
     if (!Number.isInteger(capacity) || capacity < bytes.length || capacity > 256 * 1024 * 1024)
       throw new Error('Invalid native global-file capacity');
-    const file = new NativeGlobalFile(tag, growthBytes),
-      b = new Binary(bytes, 'global-file records');
+    const file = new NativeGlobalFile(tag, growthBytes);
     file.capacity = capacity;
-    for (let at = 0; at < bytes.length; ) {
-      const id = b.u32(at),
-        size = b.u32(at + 4);
-      file.records.push({ id, bytes: b.range(at + 8, size).slice() });
-      at += size + 8;
-    }
+    readGlobalFileEntries(bytes, (id, bytes) => file.records.push({ id, bytes: bytes.slice() }));
     return file;
   }
   static fromRaw(bytes, growthBytes = 0x10000) {
@@ -137,14 +159,12 @@ export class NativeGlobalFile {
     return out;
   }
   static async fromFile(bytes, growthBytes = 0x10000) {
-    const b = new Binary(bytes, 'CSS saved file');
-    if (b.u32(0) !== 0x00535343 /* CSS file signature  */)
-      throw new Error('Invalid CSS saved-file signature');
-    const compressed = b.range(16, b.u32(4));
-    if (!b.u32(8))
-      return NativeGlobalFile.fromPayload(new Uint8Array(), b.u32(12), undefined, growthBytes);
-    const payload = await inflate(compressed, b.u32(8));
-    return NativeGlobalFile.fromPayload(payload, b.u32(12), undefined, growthBytes);
+    const { payload, tag } = await readCSS(bytes);
+    return NativeGlobalFile.fromPayload(payload, tag, undefined, growthBytes);
+  }
+  static async countFileEntries(bytes, limit) {
+    const { payload } = await readCSS(bytes, limit);
+    return readGlobalFileEntries(payload);
   }
   snapshot() {
     return { tag: this.tag, capacity: this.capacity, records: structuredClone(this.records) };

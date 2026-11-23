@@ -182,9 +182,10 @@ export class BrowserNativeWindow {
         upload = element('input'),
         refresh = () => {
           list.replaceChildren();
-          const records = [...storage.store.records.values()].sort((a, b) =>
-            String(a.slot).localeCompare(String(b.slot)),
-          );
+          const records = Array.from(
+            storage.savedEntries?.() ?? storage.store.records,
+            ([, record]) => record,
+          ).sort((a, b) => String(a.slot).localeCompare(String(b.slot)));
           if (!records.length) list.append(element('p', 'No save files yet.'));
           for (const record of records) {
             const row = element('div'),
@@ -223,7 +224,8 @@ export class BrowserNativeWindow {
         if (!file) return;
         if (file.size > 128 * 1024 * 1024)
           throw new Error('Imported game file exceeds the storage limit');
-        if (storage.store.get(file.name) && !window.confirm(`Replace ${file.name}?`)) return;
+        const exists = storage.hasSaved?.(file.name) ?? storage.store.get(file.name);
+        if (exists && !window.confirm(`Replace ${file.name}?`)) return;
         await storage.write(file.name, new Uint8Array(await file.arrayBuffer()));
         refresh();
         upload.value = '';

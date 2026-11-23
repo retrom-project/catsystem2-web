@@ -35,6 +35,21 @@ helper execution, adapter differential checks and full system-client tests are
 separate evidence levels; none alone establishes complete save-screen or
 whole-title acceptance.
 
+Embedded hosts can pass `gameSave: null` to `CatSystem2.initialize` to track
+committed native saves. To open a selected version, pass its native file list
+with the original creation, access and modification times and file attributes.
+The core validates the CSS files before starting the guest and opens the
+selected slots in a launch-local view. The normal game Load menu reads that
+view. Its writes remain in that view for the host to synchronize, and local
+account slots stay available to fresh launches.
+
+`gameSaveStatus()` reports whether the game has committed a loadable slot.
+`exportGameSave()` returns the slot files and their associated `savegen.dat`
+indexes while a slot is present. A save list can contain up to 4096 files and
+64 MiB of file bytes. Embedded hosts persist the returned file list in their
+own save transport. The standalone browser continues to offer `.cs2save`
+checkpoints through its existing controls.
+
 `scripts/verify-native-save-slots.mjs` compares the JS implementation against independently executed original handlers, CSS and filesystem helpers. The default bounded sequences cover all eleven commands and exchange/copy/delete failure steps in both ABIs. `CATSYSTEM2_EXTENDED=1` enables the larger sample. File metadata, complete ordered entries, global/string writes and file-operation sequencing are compared after every operation. Tokenization, numeric evaluation and bank access are explicit fixture boundaries.
 
 The existing system-client tests bind a container through `1C3`, execute FES `datasave` and restore variable/string entries through `F7`/`FA`/`FD` in a new World. Public browser acceptance additionally writes CSS and a World checkpoint to IndexedDB, reloads the document, reopens storage and restores both CSS banks and a scene-local checkpoint through normal dispatch. Node cannot cover document replacement or browser transactions. [Differential](../tests/differential/native-save-persistence.test.mjs), [browser acceptance](../tests/browser/public.spec.mjs).

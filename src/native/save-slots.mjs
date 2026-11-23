@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { NativeGlobalFile, nativeSavePath } from './persistence.mjs';
+import { NativeGlobalFile, nativeSavePath, nativeSaveSlotName } from './persistence.mjs';
 import { tokenizeNativeFESSoundConfiguration } from './fes-sound-config.mjs';
 import { nativeFileTime, nativeSystemTime } from './file-time.mjs';
 import { nativeABI } from './abi/index.mjs';
@@ -18,10 +18,6 @@ export const NATIVE_FES_SAVE_COMMANDS = Object.freeze([
   'saveget_date',
 ]);
 const decoder = new TextDecoder('shift_jis');
-const slotName = (slot) => {
-  const value = slot | 0;
-  return `save${value < 0 ? '-' + String(-value).padStart(3, '0') : String(value).padStart(4, '0')}.dat`;
-};
 // The original partition moves the middle pivot first. Its comparator returns
 // zero for both equal and older timestamps, so equal-date ordering is visible.
 function sortSlots(rows, first = 0, last = rows.length - 1) {
@@ -121,7 +117,7 @@ export class NativeSaveSlots {
     const tokens = tokenizeNativeFESSoundConfiguration(source, world.profile).slice(1),
       bytes = (index) => instance.argumentBytes(tokens[index]),
       number = (index) => instance.value(decoder.decode(bytes(index))) | 0,
-      name = (index) => nativeSavePath(directory, slotName(number(index))),
+      name = (index) => nativeSavePath(directory, nativeSaveSlotName(number(index))),
       set = (index, value) => instance.setGlobal(index >>> 0, value >>> 0),
       storage = world.storage;
     if (!tokens.length) return 0;
@@ -145,7 +141,7 @@ export class NativeSaveSlots {
       }
     } else if (command === 'saveexist') {
       let at = 1,
-        filename = slotName(number(0));
+        filename = nativeSaveSlotName(number(0));
       if (number(0) < 0) {
         if (tokens.length < 2) return 0;
         const raw = bytes(1);
@@ -217,7 +213,7 @@ export class NativeSaveSlots {
       if (command === 'sortsave' && slots.length < 2) return 0;
       const rows = [];
       for (const slot of slots) {
-        const info = await storage.stat?.(nativeSavePath(directory, slotName(slot)));
+        const info = await storage.stat?.(nativeSavePath(directory, nativeSaveSlotName(slot)));
         rows.push({
           slot,
           time: info ? (nativeFileTime(info.modifiedMs) ?? 0n) : 0n,

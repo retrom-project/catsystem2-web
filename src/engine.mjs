@@ -132,7 +132,10 @@ export class CatSystem2 {
   get storageNamespace() {
     return this.#storageNamespace;
   }
-  async initialize({ checkpoint } = {}) {
+  async initialize({ checkpoint, gameSave, signal } = {}) {
+    signal?.throwIfAborted();
+    if (checkpoint && gameSave !== undefined)
+      throw new Error('An instant checkpoint and native game save cannot be loaded together');
     let selected, identity;
     if (checkpoint) {
       requireCheckpointRestoreOwner(checkpoint.world, this.transitionalExe);
@@ -186,8 +189,10 @@ export class CatSystem2 {
     if (!this.languages.length) this.languages = [{ code: 'jp', name: 'Japanese' }];
     this.identity = identity ?? (await this.game.fingerprint());
     const storageNamespace = this.#storageNamespace ?? this.identity;
-    this.saves = new SaveStore(storageNamespace);
-    await this.saves.open();
+    if (gameSave === undefined) {
+      this.saves = new SaveStore(storageNamespace);
+      await this.saves.open();
+    }
     this.quickSaveStart = Number(this.adv.value('save', 'quicksave', 'start')) || 5000;
     this.temporarySaveStart = Number(this.adv.value('save', 'autoerase', 'start')) || 7000;
     this.emote = new EmoteRuntime(
@@ -204,6 +209,8 @@ export class CatSystem2 {
     this.nativeDocuments = { startup, gamedef };
     this.nativeStorage = new NativeFileStorage(this.game, storageNamespace);
     await this.nativeStorage.open();
+    if (gameSave !== undefined) await this.nativeStorage.prepareGameSave(gameSave, { signal });
+    signal?.throwIfAborted();
     this.nativeFES = new Map();
     this.world = this.createNativeWorld();
     if (checkpoint) {
@@ -217,6 +224,13 @@ export class CatSystem2 {
     this.bindNativeBanks();
     this.mode = 'running';
     this.onState(this.status());
+  }
+  gameSaveStatus() {
+    return this.nativeStorage?.gameSaveStatus() ?? { progress: false, revision: '0' };
+  }
+  async exportGameSave({ signal } = {}) {
+    signal?.throwIfAborted();
+    return this.nativeStorage?.exportGameSave({ signal }) ?? null;
   }
   createNativeWorld({ audio = this.audio } = {}) {
     const { startup, gamedef } = this.nativeDocuments,
