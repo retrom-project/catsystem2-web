@@ -297,6 +297,31 @@ test('2.6.1.23 memory copy crosses the mapped private and shared VM ranges', asy
   assert.deepEqual(m.shared, Uint8Array.of(0xad, 0x43, 0x53, 0x53, 0xad));
 });
 
+test('2.6.1.23 converts integer percentages and angles with x87 intermediates', async () => {
+  const runtime = new NativeRuntime({
+      profile: 'grisaia-jp-engine-2.6.1.23',
+      read: async () => kcsProgram([[59]]),
+    }),
+    task = await runtime.spawn('case.kcs'),
+    m = task.machine,
+    call = (id, ...args) => runtime.native('main', id, args, m, task);
+  for (const [input, base, expected] of [
+    ['16777217%', 6, '1006633'],
+    ['158%', 16777217, '26508004'],
+    ['149913%', 123, '184393'],
+    ['-12%', 80, '-9'],
+    ['1.5%', 200, '1.5%'],
+  ]) {
+    m.writeString(input, 256);
+    assert.deepEqual(await call(46, 256, base), { control: 2 });
+    assert.equal(m.string(256), expected);
+  }
+  assert.deepEqual(await call(62, 0x7f7fffff), { control: 1, value: 0x7c8efa35 });
+  assert.deepEqual(await call(62, 0x80000000), { control: 1, value: 0x80000000 });
+  assert.deepEqual(await call(63, 0x40490fdb), { control: 1, value: 0x43340000 });
+  assert.deepEqual(await call(63, 1), { control: 1, value: 57 });
+});
+
 test('63 command arguments retain original list, arithmetic and string-bank semantics', async () => {
   const world = await dataWorld('rebellions-jp-engine-2.6.1.63');
   try {

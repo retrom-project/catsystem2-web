@@ -619,13 +619,17 @@ export function nativeStandard(id, args, m, services = {}) {
           new TextDecoder('shift_jis').decode(buffer.subarray(start, end)),
         );
         if (number === null) return done();
-        const base = Math.fround(args[1] >>> 0),
-          text = services.profile ? nativeABI(services.profile).text : undefined,
-          product =
-            text?.percentProduct === 'final-f32'
-              ? number * base
-              : Math.fround(Math.fround(number) * base),
-          scaled = Math.fround(product / 100);
+        const baseWord = args[1] >>> 0,
+          base = Math.fround(baseWord),
+          precision = services.profile && nativeABI(services.profile).text.percentProduct;
+        let product;
+        if (precision === 'x87-integer') {
+          // FILD loads a signed DWORD exactly. Only a negative base goes
+          // through the unsigned conversion addition before FIMUL.
+          product = Math.fround(number * (baseWord >= 0x80000000 ? base : baseWord));
+        } else if (precision === 'final-f32') product = number * base;
+        else product = Math.fround(Math.fround(number) * base);
+        const scaled = Math.fround(product / 100);
         const n =
           Number.isFinite(scaled) && scaled >= -2147483648 && scaled < 2147483648
             ? Math.trunc(scaled)

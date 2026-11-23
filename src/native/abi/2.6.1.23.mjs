@@ -380,6 +380,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 Main 0x485df0 evaluates scalar, comma-list or signed inclusive range arguments in the caller bank and writes a bounded word count',
   },
+  {
+    ids: [46, 62, 63],
+    value:
+      'Own 2.6.1.23 Main 0x48b680 scales signed integer percentages from an unsigned base; 0x48c5c0 and 0x48c5e0 use the native x87 angle constants in inverse order',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -491,6 +496,7 @@ export default {
     pathBytes: 260,
     plainSyntax: 'legacy-narrow',
     formattedComparisonSecondBeforeFirst: true,
+    percentProduct: 'x87-integer',
     configurationLayout: {
       fontBytes: 64,
       keyNameBytes: 32,
@@ -576,7 +582,12 @@ export default {
   },
   globalFile: { growthBytes: 524288 },
   nameTable: { legacyFieldBytes: 32 },
-  math: { lerpUsesX87: true, roundIntegerResult: 'int64-low-word', vectorTransformWFirst: true },
+  math: {
+    anglesUseX87: true,
+    lerpUsesX87: true,
+    roundIntegerResult: 'int64-low-word',
+    vectorTransformWFirst: true,
+  },
   motion: { addUsesFormat: true, elapsedUsesX87: true },
   scene: {
     translations: false,
@@ -738,6 +749,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [46], fields: { resultWritten: false } },
+        { ids: [62, 63], fields: { resultWritten: true } },
         { ids: [568, 858, 859], fields: { resultWritten: false } },
         { ids: [675], fields: { resultWritten: true } },
         { ids: [676], fields: { resultWritten: false } },
