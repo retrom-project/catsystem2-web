@@ -455,6 +455,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 0x487420 resolves Root 31 and sends raw Input 118 with the two mapped coordinate destinations',
   },
+  {
+    ids: [862],
+    value:
+      'Own 2.6.1.23 wrapper 0x480ae0 sends Draw raw 284 with a four-word RECT; 0x427d4e marks dirty and renders that extent',
+  },
 ];
 const particleInterpreterEvidence = [
   {
@@ -877,7 +882,7 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         { ids: [76, 536], fields: { resultWritten: true } },
-        { ids: [149], fields: { resultWritten: false } },
+        { ids: [149, 862], fields: { resultWritten: false } },
         { ids: [124, 125, 418, 557], fields: { resultWritten: false } },
         { ids: [320], fields: { resultWritten: false } },
         { ids: [265, 266, 267, 268, 269], fields: { resultWritten: true } },

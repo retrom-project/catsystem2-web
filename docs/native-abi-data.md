@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 331       | 57            | 17            | 464     | Generic 22 of 45, Particle 33 of 44 and 34 of 51 |
+| 2.6.1.23 | 869        | 332       | 57            | 17            | 463     | Generic 22 of 45, Particle 33 of 44 and 34 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -188,6 +188,8 @@ low 16-bit ID. Main 713, 726, 730 and 737 tone, blur, resize and filter the
 image. An empty image owner writes zero dimensions in Main 712.
 Main 625 sends the selected entry's full animation enable word through raw
 Draw 269. Main 728 writes the bitmap's mask word without rebinding its owner.
+Main 862 sends the four original RECT boundaries through raw Draw 284.
+The receiver marks its own surface dirty and redraws that rectangle immediately.
 Main 76 reads the caller's parent ID. Main 536 searches an owned bitmap
 attribute using the low 16 bits of the selector. A match writes four rectangle
 words and the color, while a null bitmap or missing attribute returns zero

@@ -68,6 +68,33 @@ test('2.6.1.23 Draw owns the returned bitmap and copies an independent base imag
   assert.equal(draw.entry(0), undefined);
 });
 
+test('2.6.1.23 Draw publishes a bounded rectangle without changing the surrounding bitmap', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close({ flushFiles: false }));
+  const { main, graphics } = world,
+    call = (id, args) => world.runtime.native('main', id, args, main.machine, main),
+    drawID = await world.objects.create({ kind: 15, parent: world.root }),
+    nativeID = world.nativeTaskID(drawID),
+    task = graphics.drawTasks.get(drawID);
+  assert.deepEqual(await call(862, [nativeID, 2, 1, 5, 3]), { control: 2 });
+  assert.equal(task.state.dirty, true);
+  await call(256, [nativeID, 8, 6]);
+  await call(260, [nativeID, 10, 20]);
+  const bitmap = graphics.images.get(task.state.renderer.bitmap);
+  await bitmap.fill(0, 0, 8, 6, 0xff123456);
+  await call(862, [nativeID, 2, 1, 5, 3]);
+  const pixels = await bitmap.pixels();
+  for (let y = 0; y < 6; y++)
+    for (let x = 0; x < 8; x++) {
+      const at = ((5 - y) * 8 + x) * 4,
+        inRectangle = x >= 2 && x < 5 && y >= 1 && y < 3;
+      assert.deepEqual(
+        [...pixels.subarray(at, at + 4)],
+        inRectangle ? [0, 0, 0, 0] : [18, 52, 86, 255],
+      );
+    }
+});
+
 test(
   'SDK full World retains decoded image pixels and original ANM control across fresh restoration',
   { skip: !process.env.CATSYSTEM2_SDK_EXE },
