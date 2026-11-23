@@ -18,8 +18,14 @@ import {
   startupEnvironment,
 } from './fixtures/ordinary-startup.mjs';
 
-test('63 Main285 combines all four sources from the caller-owned Input task', async (t) => {
-  const world = await dataWorld('rebellions-jp-engine-2.6.1.63', {
+test('63 Main285 combines all four sources from the caller-owned Input task', (t) =>
+  verifyInputSources(t, 'rebellions-jp-engine-2.6.1.63', false));
+
+test('2.6.1.23 combines four sources and resets cursor position through the Input task', (t) =>
+  verifyInputSources(t, 'grisaia-jp-engine-2.6.1.23', true));
+
+async function verifyInputSources(t, profile, resetsCursor) {
+  const world = await dataWorld(profile, {
     'case.kcs': kcsProgram([[59]]),
   });
   t.after(() => world.close());
@@ -31,7 +37,13 @@ test('63 Main285 combines all four sources from the caller-owned Input task', as
   assert.deepEqual(await call(), { control: 1, value: 30 });
   input.key(12, false, 4, 1);
   assert.deepEqual(await call(), { control: 1, value: 26 });
-});
+  if (resetsCursor) {
+    input.previousX = 5;
+    input.previousY = 8;
+    assert.deepEqual(await runtime.native('main', 286, [], main.machine, main), { control: 2 });
+    assert.deepEqual([input.previousX, input.previousY, input.forceCursor], [-1, -1, true]);
+  }
+}
 
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
   const create = () => {

@@ -306,6 +306,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 wrappers 0x4842e0 and 0x484e70 use raw FES 314 and 315 for the selected 512-word CSS bank',
   },
+  {
+    ids: [285, 286],
+    value:
+      'Own 2.6.1.23 Root 31 Input wrappers 0x4876e0/0x487750; raw 137 ORs four source words and raw 138 resets region activity and cursor position',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -655,6 +660,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [285], fields: { resultWritten: true } },
+        { ids: [286], fields: { resultWritten: false } },
         { ids: [649, 650], fields: { resultWritten: true } },
         { ids: [309, 310, 311, 440], fields: { resultWritten: true } },
         { ids: [312, 313, 314], fields: { resultWritten: false } },
