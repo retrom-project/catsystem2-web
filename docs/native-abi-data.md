@@ -196,6 +196,12 @@ task through raw 231, Main 200 reads its activity through raw 233,
 and Main 203 finishes an active wipe through raw 235. The legacy
 queries require a written reply because the source wrapper's scratch
 word has no initial value.
+The kind 26 receiver allocates a zeroed work bitmap with the smaller width
+and height of the two images. The mask starts at its own origin. Its offsets
+place it in the work bitmap and the borrowed images, and the remaining work
+extent clips its width and height. The initializer copies destination RGB
+into fully transparent source pixels. During the effect it uploads the full
+work bitmap, and completion uploads the destination rectangle.
 Main 76 reads the caller's parent ID. Main 536 searches an owned bitmap
 attribute using the low 16 bits of the selector. A match writes four rectangle
 words and the color, while a null bitmap or missing attribute returns zero

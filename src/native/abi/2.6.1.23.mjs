@@ -854,6 +854,7 @@ export default {
     retimeActiveScreenTransitions: true,
     drawEnablePendingPolicy: 'rising-edge',
     emptyImageSizeWritesZero: true,
+    positionedAreaWipeMask: true,
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: null,
     planeAlphaFlags: 1,

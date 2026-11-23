@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalOperation } from './original-adapter.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { mapABIMessage } from './abi/messages.mjs';
 import { installNativeAreaEffectCommands } from './area-effect-commands.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
@@ -63,6 +64,8 @@ export class NativeAreaEffectTask {
     this.world = owner.world;
     this.record = record;
     this.base = this.world.base(record);
+    this.positionedWipeMask =
+      record.kind === 26 && nativeABI(this.world.profile).graphics.positionedAreaWipeMask === true;
     this.state = {
       initialized: false,
       active: 0,
@@ -381,6 +384,7 @@ export class NativeAreaEffectTask {
     state.params = params ?? [];
     if (!params) return;
     const alpha = kind === 28 || kind === 31,
+      placedMask = alpha || this.positionedWipeMask,
       extended = kind === 30 || kind === 31,
       offset = extended ? 2 : 1,
       source = await this.bitmap(params[offset], context),
@@ -422,19 +426,14 @@ export class NativeAreaEffectTask {
       [dx, dy] = state.destinationOrigin,
       [mx, my] = state.maskOrigin,
       requestedWidth = params[outputIndex + 2] | 0,
-      requestedHeight = params[outputIndex + 3] | 0;
-    state.width = alpha
-      ? requestedWidth
-      : kind === 27 && requestedWidth > 0
-        ? requestedWidth
-        : input.width;
-    state.height = alpha
-      ? requestedHeight
-      : kind === 27 && requestedHeight > 0
-        ? requestedHeight
-        : input.height;
-    state.blendWidth = alpha ? Math.min(stencil.width, state.width - mx) : state.width;
-    state.blendHeight = alpha ? Math.min(stencil.height, state.height - my) : state.height;
+      requestedHeight = params[outputIndex + 3] | 0,
+      commonWidth = this.positionedWipeMask ? Math.min(input.width, target.width) : input.width,
+      commonHeight = this.positionedWipeMask ? Math.min(input.height, target.height) : input.height;
+    state.width = alpha || (kind === 27 && requestedWidth > 0) ? requestedWidth : commonWidth;
+    state.height = alpha || (kind === 27 && requestedHeight > 0) ? requestedHeight : commonHeight;
+    state.blendWidth = placedMask ? Math.min(stencil.width, state.width - mx) : state.width;
+    state.blendHeight = placedMask ? Math.min(stencil.height, state.height - my) : state.height;
+    const minimumBlend = this.positionedWipeMask ? 0 : 1;
     if (
       sx < 0 ||
       sy < 0 ||
@@ -444,23 +443,32 @@ export class NativeAreaEffectTask {
       my < 0 ||
       state.width <= 0 ||
       state.height <= 0 ||
-      state.blendWidth <= 0 ||
-      state.blendHeight <= 0 ||
-      sx + (alpha ? mx + state.blendWidth : state.width) > input.width ||
-      sy + (alpha ? my + state.blendHeight : state.height) > input.height ||
+      state.blendWidth < minimumBlend ||
+      state.blendHeight < minimumBlend ||
+      sx + (placedMask ? mx + state.blendWidth : state.width) > input.width ||
+      sy + (placedMask ? my + state.blendHeight : state.height) > input.height ||
       (target && (dx + state.width > target.width || dy + state.height > target.height)) ||
-      (!alpha &&
+      (!placedMask &&
         stencil &&
         (mx + state.width > stencil.width || my + state.height > stencil.height))
     )
       throw new RangeError('Area effect bitmap rectangle exceeds its borrowed storage');
     if (kind === 30)
       await prepareAreaWipeSource(input, target, state.sourceOrigin, state.destinationOrigin);
-    const work = images.create(state.width, state.height, this.record.id),
-      bitmap = images.get(work),
+    if (this.positionedWipeMask)
+      await prepareAreaWipeSource(input, target, state.sourceOrigin, state.destinationOrigin, [
+        Math.min(input.width - sx, target.width - dx),
+        Math.min(input.height - sy, target.height - dy),
+      ]);
+    state.work = images.create(state.width, state.height, this.record.id);
+    // The positioned wipe allocates a zeroed surface and writes only its masked rectangle.
+    if (this.positionedWipeMask) {
+      state.initialized = true;
+      return;
+    }
+    const bitmap = images.get(state.work),
       pixels = await bitmap.pixels(),
       sourcePixels = await input.pixels();
-    state.work = work;
     for (let y = 0; y < state.height; y++)
       for (let x = 0; x < state.width; x++) {
         const at = physicalPixel(input, sx + x, sy + y),
@@ -499,7 +507,15 @@ export class NativeAreaEffectTask {
       mask = await read(state.mask),
       work = images.get(state.work);
     blendAreaPixels(
-      { ...state, kind: this.record.kind, source, destination, mask, elapsed },
+      {
+        ...state,
+        kind: this.record.kind,
+        source,
+        destination,
+        mask,
+        elapsed,
+        positionedWipeMask: this.positionedWipeMask,
+      },
       await work.pixels(),
     );
     await work.changed();
@@ -543,22 +559,18 @@ export class NativeAreaEffectTask {
     const state = this.state;
     if (!cpuKinds.has(this.record.kind)) return;
     if (!state.active || !state.initialized) return;
-    const elapsed = this.elapsed(),
+    const alpha = this.record.kind === 28 || this.record.kind === 31,
+      elapsed = this.elapsed(),
       end = state.duration + ([30, 31].includes(this.record.kind) ? state.blendDuration : 0);
     if (elapsed >= end) {
-      if (this.record.kind === 28 || this.record.kind === 31) {
-        state.maskOrigin = [0, 0];
-        await this.upload(state.work);
-      } else await this.upload(state.destination, state.destinationOrigin);
+      if (alpha || this.positionedWipeMask) state.maskOrigin = [0, 0];
+      if (alpha) await this.upload(state.work);
+      else await this.upload(state.destination, state.destinationOrigin);
       state.active = 0;
       return;
     }
     await this.calculate(elapsed);
-    await this.upload(
-      state.work,
-      this.record.kind === 28 || this.record.kind === 31 ? state.maskOrigin : [0, 0],
-      this.record.kind === 28 || this.record.kind === 31 ? state.output : null,
-    );
+    await this.upload(state.work, alpha ? state.maskOrigin : [0, 0], alpha ? state.output : null);
   }
   snapshot() {
     return { state: structuredClone(this.state), rainGraph: this.rainGraph?.snapshot() ?? null };

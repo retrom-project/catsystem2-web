@@ -2,7 +2,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { dataWorld } from './fixtures/data-world.mjs';
-import { authoredAreaBitmaps, areaPixelParameters } from './fixtures/area-effect-cases.mjs';
+import {
+  authoredAreaBitmaps,
+  areaPixelParameters,
+  recordAreaUploads,
+} from './fixtures/area-effect-cases.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { floatBits } from '../src/kcs.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
@@ -32,6 +36,75 @@ test('2.6.1.23 area natives start and finish an owned bitmap wipe', async (t) =>
   assert.deepEqual(await call(200, [nativeID]), { control: 1, value: 0 });
   await assert.rejects(call(200, [0x12345678]), /Area effect query did not write/);
   assert.deepEqual([...machine.bytes(128, 56)], [...new NativeGraphicsPacket(params).bytes(0, 56)]);
+});
+
+test('2.6.1.23 positions a separate wipe mask within the common bitmap extent', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const { machine } = world.main,
+    call = (id, args) => world.runtime.native('main', id, args, machine, world.main),
+    images = world.graphics.images,
+    task = await world.objects.create({ kind: 26, parent: world.root }),
+    nativeID = world.nativeTaskID(task),
+    area = world.areaEffects.tasks.get(task),
+    handles = [
+      [6, 4],
+      [4, 3],
+      [3, 3],
+    ].map(([w, h]) => images.create(w, h, world.main.id)),
+    [source, destination, mask] = handles.map((handle) => images.get(handle)),
+    [from, to, stencil] = await Promise.all(
+      [source, destination, mask].map((image) => image.pixels()),
+    ),
+    uploads = recordAreaUploads(world),
+    at = (image, x, y) => ((image.height - y - 1) * image.width + x) * 4;
+  for (let i = 0; i < from.length; i += 4) from.set([40, 100, 200, 255], i);
+  for (let i = 0; i < to.length; i += 4) to.set([180, 60, 80, 200], i);
+  from.set([70, 45, 31, 0], at(source, 2, 1));
+  from.set([1, 2, 3, 0], at(source, 0, 0));
+  from.set([11, 12, 13, 0], at(source, 5, 0));
+  to.set([10, 30, 50, 128], at(destination, 2, 1));
+  stencil[at(mask, 1, 0) + 2] = 128;
+  stencil[at(mask, 0, 1) + 2] = 64;
+  stencil[at(mask, 1, 1) + 2] = 255;
+  const params = areaPixelParameters(
+    { kind: 26, duration: 4, extent: [19, 22], maskOrigin: [2, 1] },
+    handles,
+  );
+  params.forEach((value, i) => machine.store(128 + i * 4, value));
+  assert.deepEqual(await call(196, [nativeID, 128]), { control: 2 });
+  assert.deepEqual([area.state.width, area.state.height], [4, 3]);
+  assert.deepEqual([area.state.blendWidth, area.state.blendHeight], [2, 2]);
+  assert.deepEqual([...from.slice(at(source, 0, 0), at(source, 0, 0) + 4)], [180, 60, 80, 0]);
+  assert.deepEqual([...from.slice(at(source, 5, 0), at(source, 5, 0) + 4)], [11, 12, 13, 0]);
+  assert.deepEqual(await call(197, [nativeID]), { control: 2 });
+  area.record.effectiveFrame = area.state.start + (area.record.pausedFrames ?? 0) + 2;
+  await area.drawTick();
+  assert.deepEqual(uploads, [
+    {
+      width: 4,
+      height: 3,
+      offset: [4, 3],
+      region: [0, 0, 4, 3],
+      pixels: [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 30, 50, 0, 110,
+        80, 140, 227, 0, 0, 0, 0, 0, 0, 0, 0, 75, 90, 170, 241, 179, 60, 80, 200,
+      ],
+    },
+  ]);
+  area.record.effectiveFrame = area.state.start + (area.record.pausedFrames ?? 0) + 4;
+  await area.drawTick();
+  assert.deepEqual(await call(200, [nativeID]), { control: 1, value: 0 });
+  assert.deepEqual(area.state.maskOrigin, [0, 0]);
+  assert.deepEqual(uploads[1], {
+    width: 4,
+    height: 3,
+    offset: [4, 3],
+    region: [0, 0, 4, 3],
+    pixels: Array.from({ length: 12 }, (_, i) =>
+      i === 6 ? [10, 30, 50, 128] : [180, 60, 80, 200],
+    ).flat(),
+  });
 });
 
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {

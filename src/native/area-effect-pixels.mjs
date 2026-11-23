@@ -18,37 +18,33 @@ export function blendAreaPixels(
     blendDuration,
     elapsed,
     fadeIn,
+    positionedWipeMask,
     blendWidth = width,
     blendHeight = height,
   },
   output,
 ) {
   const alpha = kind === 28 || kind === 31,
-    extended = kind === 30 || kind === 31;
+    extended = kind === 30 || kind === 31,
+    placed = alpha || positionedWipeMask,
+    [placeX, placeY] = placed ? maskOrigin : [0, 0],
+    [maskX, maskY] = placed ? [0, 0] : maskOrigin;
   for (let y = 0; y < blendHeight; y++)
     for (let x = 0; x < blendWidth; x++) {
       const input = physicalPixel(
           source,
-          sourceOrigin[0] + x + (alpha ? maskOrigin[0] : 0),
-          sourceOrigin[1] + y + (alpha ? maskOrigin[1] : 0),
+          sourceOrigin[0] + x + placeX,
+          sourceOrigin[1] + y + placeY,
         ),
-        target =
-          ((height - 1 - y - (alpha ? maskOrigin[1] : 0)) * width +
-            x +
-            (alpha ? maskOrigin[0] : 0)) *
-          4,
+        target = ((height - 1 - y - placeY) * width + x + placeX) * 4,
         end =
           destination &&
-          physicalPixel(destination, destinationOrigin[0] + x, destinationOrigin[1] + y),
-        level = mask
-          ? mask.rgba[
-              physicalPixel(
-                mask,
-                x + (alpha ? 0 : maskOrigin[0]),
-                y + (alpha ? 0 : maskOrigin[1]),
-              ) + 2
-            ]
-          : 0;
+          physicalPixel(
+            destination,
+            destinationOrigin[0] + x + placeX,
+            destinationOrigin[1] + y + placeY,
+          ),
+        level = mask ? mask.rgba[physicalPixel(mask, x + maskX, y + maskY) + 2] : 0;
       let weight;
       if (kind === 27)
         weight = Math.min(256, Math.floor((Math.imul(elapsed, 256) >>> 0) / duration));
@@ -80,13 +76,19 @@ export function blendAreaPixels(
             (source.rgba[input + c] * (256 - weight) + destination.rgba[end + c] * weight) >> 8;
     }
 }
-// Wipe3 modifies only the RGB channels of fully transparent borrowed pixels.
-export async function prepareAreaWipeSource(source, destination, sourceOrigin, destinationOrigin) {
+// Only the hidden RGB of fully transparent borrowed pixels is replaced.
+export async function prepareAreaWipeSource(
+  source,
+  destination,
+  sourceOrigin,
+  destinationOrigin,
+  [width, height] = [source.width, source.height],
+) {
   const input = await source.pixels(),
     output = await destination.pixels();
   let changed = false;
-  for (let y = 0; y < source.height; y++)
-    for (let x = 0; x < source.width; x++) {
+  for (let y = 0; y < height; y++)
+    for (let x = 0; x < width; x++) {
       const at = physicalPixel(source, sourceOrigin[0] + x, sourceOrigin[1] + y),
         target = physicalPixel(destination, destinationOrigin[0] + x, destinationOrigin[1] + y);
       if (
