@@ -41,9 +41,15 @@ with the original creation, access and modification times and file attributes.
 The core validates the CSS files before starting the guest and opens the
 selected slots in a launch-local view. The normal game Load menu reads that
 view. Its writes remain in that view for the host to synchronize, and local
-account slots stay available to fresh launches.
+account slots stay available to fresh launches. The read-only
+`importedGameSaveRevision` is the selected view's revision before the guest
+starts. The host uses this value to acknowledge the import so that any saves
+written during startup count as new progress. Fresh launches return `null` for
+this property.
 
 `gameSaveStatus()` reports whether the game has committed a loadable slot.
+While a save is being serialized, checked for space, or committed, the status
+reports `busy` and export is unavailable.
 `exportGameSave()` returns the slot files and their associated `savegen.dat`
 indexes while a slot is present. A save list can contain up to 4096 files and
 64 MiB of file bytes. Embedded hosts persist the returned file list in their

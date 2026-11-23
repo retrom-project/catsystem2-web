@@ -2,7 +2,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { CatSystem2 } from '../src/engine.mjs';
-import { NativeGlobalFile } from '../src/native/persistence.mjs';
+import { NativeHandles } from '../src/native/handles.mjs';
+import { NativeGlobalFile, nativePersistence } from '../src/native/persistence.mjs';
+import { NativeSaveSlots } from '../src/native/save-slots.mjs';
 import { NativeFileStorage } from '../src/native/storage.mjs';
 import { loadNativeZlib } from '../src/native/zlib.mjs';
 import { audioFixture } from './fixtures/audio-context.mjs';
@@ -75,6 +77,7 @@ for (const profile of [
       };
       const original = await launch(null);
       const storage = original.nativeStorage;
+      assert.equal(original.importedGameSaveRevision, null);
       assert.equal(original.saves, undefined);
       assert(storage.has('save9999.dat'));
       await storage.write('preferences.bin', Uint8Array.of(4));
@@ -137,6 +140,143 @@ for (const profile of [
     }
   });
 }
+
+test('the imported revision precedes native save writes on the first game tick', async () => {
+  await loadNativeZlib();
+  const environment = startupEnvironment(),
+    profile = 'sdk-4.01-engine-2.6.1.74';
+  let core;
+  try {
+    const selected = await nativeSave(11).file();
+    const game = await ordinaryStartupGame(profile, {
+      sound: false,
+      files: {
+        'scripts.int': kif([
+          [
+            'main.kcs',
+            kcsProgram(
+              [
+                [37, 128],
+                [43, 0xf7, 4],
+                [38, 64],
+                [37, [0x13, 64]],
+                [37, 256],
+                [43, 0xf5, 8],
+                [38, 68],
+                [59],
+              ],
+              [
+                [128, 'save5000.dat'],
+                [256, 'save5001.dat'],
+              ],
+            ),
+          ],
+        ]),
+      },
+    });
+    core = new CatSystem2({
+      game,
+      nativeProfile: profile,
+      canvas: new StartupCanvas(),
+      audioContext: audioFixture().context,
+    });
+    const createWorld = core.createNativeWorld.bind(core);
+    let imported;
+    core.createNativeWorld = () => {
+      imported = core.gameSaveStatus().revision;
+      return createWorld();
+    };
+    await core.initialize({ gameSave: [entry('save5000.dat', selected)] });
+    assert.equal(core.world.main.machine.load(68), 1);
+    const captured = await core.exportGameSave();
+    assert.deepEqual(
+      captured.files.map(({ path }) => path),
+      ['save5000.dat', 'save5001.dat'],
+    );
+    assert.deepEqual(captured.files[1].bytes, selected);
+    assert.notEqual(captured.revision, imported);
+    assert.equal(core.importedGameSaveRevision, imported);
+  } finally {
+    await core?.dispose();
+    environment.restore();
+  }
+});
+
+test('a slot remains busy through serialization and the storage capacity check', async () => {
+  await loadNativeZlib();
+  const environment = startupEnvironment(),
+    storage = new NativeFileStorage({ lookup: () => null }, 'account:game'),
+    serialization = Promise.withResolvers(),
+    capacityCheck = Promise.withResolvers(),
+    capacity = Promise.withResolvers();
+  let pending, bytes;
+  try {
+    bytes = await nativeSave(12).file();
+    await storage.open();
+    await storage.prepareGameSave([entry('save0000.dat', bytes)]);
+    storage.diskSpace = () => {
+      capacityCheck.resolve();
+      return capacity.promise;
+    };
+    const prior = storage.exportGameSave(),
+      slots = new NativeSaveSlots({ storage });
+    pending = slots.write('save0001.dat', { file: () => serialization.promise });
+    assert.equal(storage.gameSaveStatus().busy, true);
+    assert.throws(() => storage.exportGameSave(), /being committed/);
+
+    serialization.resolve(bytes);
+    await capacityCheck.promise;
+    assert.equal(storage.gameSaveStatus().busy, true);
+    assert.equal(await storage.readSaved('save0001.dat'), null);
+
+    capacity.resolve({ availableBytes: 0 });
+    assert.equal(await pending, false);
+    assert.equal(storage.gameSaveStatus().busy, undefined);
+    assert.deepEqual(storage.exportGameSave(), prior);
+  } finally {
+    serialization.resolve(bytes);
+    capacity.resolve({ availableBytes: 0 });
+    await pending?.catch(() => {});
+    storage.close();
+    environment.restore();
+  }
+});
+
+test('an authored CSS save remains busy before it commits new slot bytes', async () => {
+  await loadNativeZlib();
+  const environment = startupEnvironment(),
+    storage = new NativeFileStorage({ lookup: () => null }, 'account:game'),
+    serialization = Promise.withResolvers();
+  let pending, bytes;
+  try {
+    bytes = await nativeSave(12).file();
+    await storage.open();
+    await storage.prepareGameSave([entry('save0000.dat', bytes)]);
+    const handles = new NativeHandles(),
+      file = handles.add('global-file', { file: () => serialization.promise }),
+      prior = storage.gameSaveStatus().revision;
+    pending = nativePersistence(0xf5, [file, 128], null, {
+      handles,
+      persistence: storage,
+      format: () => 'save0001.dat',
+    });
+    assert.equal(storage.gameSaveStatus().busy, true);
+    assert.throws(() => storage.exportGameSave(), /being committed/);
+    assert.equal(await storage.readSaved('save0001.dat'), null);
+
+    serialization.resolve(bytes);
+    assert.equal((await pending).value, 1);
+    assert.equal(storage.gameSaveStatus().busy, undefined);
+    const captured = storage.exportGameSave();
+    assert.notEqual(captured.revision, prior);
+    assert.deepEqual(captured.files[1].bytes, bytes);
+  } finally {
+    serialization.resolve(bytes);
+    await pending?.catch(() => {});
+    storage.close();
+    environment.restore();
+  }
+});
 
 test('native game save selection is complete, bounded and canceled before it changes the file view', async (t) => {
   await loadNativeZlib();

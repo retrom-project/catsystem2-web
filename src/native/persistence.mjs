@@ -296,19 +296,21 @@ export function nativePersistence(id, args, machine, services = {}) {
     }
     if (id === 0xf5 || id === 0x407) {
       if (!storage.write) return undefined;
-      return file(args[0])
-        .file()
-        .then((bytes) => {
-          const options = { updateModified: id === 0xf5 },
-            writer =
-              options.updateModified &&
-              storage.toolbarQuickSavePending &&
-              services.world?.objects.objects.get(services.owner);
-          return writer
-            ? storage.write(name, bytes, options, writer)
-            : storage.write(name, bytes, options);
-        })
-        .then((ok) => result(Number(Boolean(ok))));
+      const write = () =>
+        file(args[0])
+          .file()
+          .then((bytes) => {
+            const options = { updateModified: id === 0xf5 },
+              writer =
+                options.updateModified &&
+                storage.toolbarQuickSavePending &&
+                services.world?.objects.objects.get(services.owner);
+            return writer
+              ? storage.write(name, bytes, options, writer)
+              : storage.write(name, bytes, options);
+          });
+      const pending = storage.gameSaveEnabled ? storage.withGameSaveWrite(name, write) : write();
+      return pending.then((ok) => result(Number(Boolean(ok))));
     }
     if (!storage.read || (id === 0xff && !storage.stat)) return undefined;
     return Promise.resolve(storage.read(name)).then(async (bytes) => {

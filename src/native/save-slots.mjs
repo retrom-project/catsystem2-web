@@ -65,14 +65,17 @@ export class NativeSaveSlots {
     }
   }
   async write(name, file, updateModified = true) {
-    const storage = this.world.storage,
-      bytes = await file.file(),
-      space = await storage.diskSpace?.(),
-      info = await storage.stat?.(name);
-    if ((space && space.availableBytes < bytes.length) || info?.attributes & 1) return false;
-    if (!(await storage.write(name, bytes, { updateModified }))) return false;
-    if (!updateModified && info) await storage.setTimes?.(name, { modifiedMs: info.modifiedMs });
-    return true;
+    const storage = this.world.storage;
+    const write = async () => {
+      const bytes = await file.file(),
+        space = await storage.diskSpace?.(),
+        info = await storage.stat?.(name);
+      if ((space && space.availableBytes < bytes.length) || info?.attributes & 1) return false;
+      if (!(await storage.write(name, bytes, { updateModified }))) return false;
+      if (!updateModified && info) await storage.setTimes?.(name, { modifiedMs: info.modifiedMs });
+      return true;
+    };
+    return storage.gameSaveEnabled ? storage.withGameSaveWrite(name, write) : write();
   }
   async exchange(first, second, directory) {
     const storage = this.world.storage,

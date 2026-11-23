@@ -75,6 +75,15 @@ export class NativeFileStorage {
     if (this.#gameSaveWrites || this.#preparingGameSave) status.busy = true;
     return status;
   }
+  async withGameSaveWrite(name, write) {
+    if (!this.#tracks(path(name))) return write();
+    this.#gameSaveWrites++;
+    try {
+      return await write();
+    } finally {
+      this.#gameSaveWrites--;
+    }
+  }
   exportGameSave({ signal } = {}) {
     signal?.throwIfAborted();
     if (this.#gameSaveWrites || this.#preparingGameSave)

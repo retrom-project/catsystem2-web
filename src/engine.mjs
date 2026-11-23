@@ -64,6 +64,7 @@ export async function prepareBrowserModules({ signal, prepareSceneWorkers = fals
 
 export class CatSystem2 {
   #storageNamespace;
+  #importedGameSaveRevision = null;
 
   constructor({
     game,
@@ -131,6 +132,9 @@ export class CatSystem2 {
   }
   get storageNamespace() {
     return this.#storageNamespace;
+  }
+  get importedGameSaveRevision() {
+    return this.#importedGameSaveRevision;
   }
   async initialize({ checkpoint, gameSave, signal } = {}) {
     signal?.throwIfAborted();
@@ -211,6 +215,8 @@ export class CatSystem2 {
     await this.nativeStorage.open();
     if (gameSave !== undefined) await this.nativeStorage.prepareGameSave(gameSave, { signal });
     signal?.throwIfAborted();
+    this.#importedGameSaveRevision =
+      gameSave == null ? null : this.nativeStorage.gameSaveStatus().revision;
     this.nativeFES = new Map();
     this.world = this.createNativeWorld();
     if (checkpoint) {
