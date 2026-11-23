@@ -227,6 +227,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 record stack 0x474810–0x474a60: five-word owner, signed reserve, LIFO copy/pop and full-capacity assignment',
   },
+  {
+    ids: [633, 634, 635, 636, 637, 638, 639, 640],
+    value:
+      'Own 2.6.1.23 name-table wrappers 0x478530–0x4788c0, fes lookup and 32-byte narrow records from 0x4f3b00',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -419,6 +424,7 @@ export default {
     extendedQueries: null,
   },
   globalFile: { growthBytes: 524288 },
+  nameTable: { legacyFieldBytes: 32 },
   math: { lerpUsesX87: true, roundIntegerResult: 'int64-low-word' },
   motion: { addUsesFormat: true, elapsedUsesX87: true },
   scene: {
@@ -471,6 +477,7 @@ export default {
   capabilities: {
     effekseerTask: false,
     embeddedJavaScript: false,
+    nameTableAliases: false,
     windowBaseAccelerators: null,
     unicodeOutput: false,
     inputNullText: null,
@@ -571,6 +578,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [633, 635, 636, 637, 638, 639, 640], fields: { resultWritten: true } },
+        { ids: [634], fields: { resultWritten: false } },
         { ids: [863, 865, 866, 867], fields: { resultWritten: true } },
         { ids: [864, 868], fields: { resultWritten: false } },
         { ids: [515, 518, 519], fields: { resultWritten: true } },

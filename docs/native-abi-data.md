@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 152       | 57            | 17            | 643     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 160       | 57            | 17            | 635     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -122,6 +122,10 @@ nested file, query the tag, clear contents, and clone the file.
 Main 515–518 create and release a narrow dictionary, keep the first word
 for each exact byte key, and return `0xffffffff` on a miss. Main 519
 selects one space-separated group and preserves grouped expressions.
+
+Main 633–640 use an owned CP932 name table from the `fes` archive.
+The narrow records cap their fields at 32 bytes, keep authored row order,
+and provide exact-name queries and filename matching and substitution.
 
 Main 863–868 own fixed-length record stacks. A push grows a full stack
 before translating the guest pointer. A valid pop copies the last record.

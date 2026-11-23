@@ -135,13 +135,16 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
     },
   );
 
-test('63 name table uses CP932 fields capped at 32 bytes and keeps authored row order', async () => {
-  const profile = 'rebellions-jp-engine-2.6.1.63',
-    world = await dataWorld(profile, {
-      'names.csv': encodeCP932(
-        `8\t${'x'.repeat(32)}\tignored\r\n7\t猫\t${'a'.repeat(40)}\t${'b'.repeat(40)}\talias\r\n3\t犬\tbg*\t%r\r\n`,
-      ),
-    });
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} name table uses CP932 fields capped at 32 bytes and keeps authored row order`, () =>
+    verifyLegacyNameTable(profile));
+
+async function verifyLegacyNameTable(profile) {
+  const world = await dataWorld(profile, {
+    'names.csv': encodeCP932(
+      `8\t${'x'.repeat(32)}\tignored\r\n7\t猫\t${'a'.repeat(40)}\t${'b'.repeat(40)}\talias\r\n3\t犬\tbg*\t%r\r\n`,
+    ),
+  });
   try {
     const { main } = world,
       m = main.machine,
@@ -162,11 +165,19 @@ test('63 name table uses CP932 fields capped at 32 bytes and keeps authored row 
       assert.deepEqual(await call(638, [handle, 0, index, 1024]), { control: 1, value: 1 });
       assert.equal(m.string(1024), byte.repeat(31));
     }
-    m.bytes(512, 4).set([0xa1, 0x41, 0x42, 0]);
-    m.writeString('A', 1024);
-    assert.deepEqual(await call(49, [512, 1024]), { control: 1, value: 3 });
+    m.writeString('bg002.hg3', 512);
+    assert.deepEqual(await call(639, [handle, 1, 512]), { control: 1, value: 1 });
+    m.writeString('body.hg3', 512);
+    assert.deepEqual(await call(639, [handle, 1, 512]), { control: 1, value: 0 });
+    assert.deepEqual(await call(640, [handle, 1, 512, 1024]), { control: 1, value: 1 });
+    assert.equal(m.string(1024), 'body.hg3');
+    if (profile === 'rebellions-jp-engine-2.6.1.63') {
+      m.bytes(512, 4).set([0xa1, 0x41, 0x42, 0]);
+      m.writeString('A', 1024);
+      assert.deepEqual(await call(49, [512, 1024]), { control: 1, value: 3 });
+    }
     assert.deepEqual(await call(634, [handle]), { control: 2 });
   } finally {
     await world.close({ flushFiles: false });
   }
-});
+}
