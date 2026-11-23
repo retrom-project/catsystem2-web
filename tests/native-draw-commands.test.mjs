@@ -49,7 +49,10 @@ test('2.6.1.23 Draw owns the returned bitmap and copies an independent base imag
   assert.equal(draw.state.dirty, false);
   assert.deepEqual(await call(340, [nativeID]), { control: 2 });
   assert.deepEqual(await call(341, [nativeID]), { control: 2 });
-  assert.deepEqual(draw.state.renderer.items.map(({ key }) => key), [0]);
+  assert.deepEqual(
+    draw.state.renderer.items.map(({ key }) => key),
+    [0],
+  );
   assert.equal(images.get(draw.entry(0).image).dataHandle, copied.dataHandle);
   assert.deepEqual(await call(342, [nativeID]), { control: 2 });
   const bitmap = images.get(draw.state.renderer.bitmap),
