@@ -321,6 +321,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 variable-bank wrappers 0x486360–0x4864f0, trailing percentage handling, byte-count backup and selected 512-word private context',
   },
+  {
+    ids: [16, 17, 18, 19, 20, 22, 23, 24],
+    value:
+      'Own 2.6.1.23 narrow string primitives 0x48aa90–0x48adc5, 0x4b1220 pair classification and descending formatter scratch',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -431,6 +436,7 @@ export default {
     settingsCharacterBytes: 1,
     pathBytes: 260,
     plainSyntax: 'legacy-narrow',
+    formattedComparisonSecondBeforeFirst: true,
     configurationLayout: {
       fontBytes: 64,
       keyNameBytes: 32,
@@ -671,6 +677,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [16, 17, 18, 19, 20, 22, 23, 24], fields: { resultWritten: true } },
         { ids: [212, 609, 610, 659], fields: { resultWritten: false } },
         { ids: [213, 658], fields: { resultWritten: true } },
         { ids: [392], fields: { resultWritten: true } },

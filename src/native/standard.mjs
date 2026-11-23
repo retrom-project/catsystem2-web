@@ -344,8 +344,11 @@ export function nativeStandard(id, args, m, services = {}) {
         a = formattedCString(services, m, args[0]);
         b = formattedCString(services, m, args[1]);
         // The two original formatter destinations are 1,024 bytes apart.
-        // The second call replaces the first string's suffix if it reaches it.
-        if (a?.length >= 1024 && b) {
+        const secondBeforeFirst =
+          services.profile && nativeABI(services.profile).text.formattedComparisonSecondBeforeFirst;
+        if (secondBeforeFirst) {
+          if (a && b?.length >= 1024) a = b.subarray(1024);
+        } else if (a?.length >= 1024 && b) {
           out = new Uint8Array(1024 + b.length);
           out.set(a.subarray(0, 1024));
           out.set(b, 1024);

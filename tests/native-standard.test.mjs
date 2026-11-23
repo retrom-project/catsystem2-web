@@ -108,6 +108,37 @@ test('formatted comparisons see the second formatter overwrite the first scratch
   assert.equal(result(m, 0x14, [64, 2048], literal) | 0, -97);
 });
 
+test('23 native length, append, compare, and truncation use narrow bytes and reversed formatter scratch', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const { main, runtime } = world,
+    m = main.machine,
+    call = async (id, args) => (await runtime.native('main', id, args, m, main)).value;
+  put(m, 64, '猫');
+  put(m, 128, '光B');
+  assert.equal(await call(17, [64]), 2);
+  assert.equal(await call(18, [128]), 3);
+  assert.equal(await call(16, [64, 128]), 64);
+  assert.deepEqual(m.bytes(64, 7), Uint8Array.of(...encodeCP932('猫光B'), 0, 0));
+  assert.equal(await call(23, [64, 4]), 2);
+  assert.deepEqual(m.bytes(64, 5), Uint8Array.of(...encodeCP932('猫'), 0, 0, 66));
+  assert.equal(await call(24, [128, 1]), 2);
+  assert.deepEqual(m.bytes(128, 4), Uint8Array.of(...encodeCP932('光'), 0, 0));
+
+  const first = m.allocate(2048),
+    second = m.allocate(2048),
+    letters = 'a'.repeat(1024);
+  assert.equal(await call(19, [put(m, first, 'A'), put(m, second, 'B')]), 1);
+  assert.equal((await call(20, [first, second])) | 0, -1);
+  assert.equal(await call(22, [put(m, first, 'A'), put(m, second, 'a')]), 0);
+  put(m, first, letters);
+  put(m, second, letters);
+  assert.equal((await call(20, [first, second])) | 0, -97);
+  assert.equal((await call(22, [first, second])) | 0, -97);
+  put(m, second, letters.slice(1));
+  assert.equal(await call(20, [first, second]), 97);
+});
+
 test('an explicit byte formatter preserves UTF8 and invalid CP932 without a text round trip', () => {
   const m = machine(),
     bytes = Uint8Array.from([...new TextEncoder().encode('猫'), 0x81, 0x30, 0xfa, 0x40]);
