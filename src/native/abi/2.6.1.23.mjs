@@ -674,6 +674,7 @@ export default {
   },
   fes: {
     variableBankOffset: 436,
+    frameDecodeResources: true,
     commonHeads: engine23CommonHeads,
     configurationMessage: {
       liveObjects: null,

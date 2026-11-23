@@ -15,7 +15,7 @@ import {
   startupXML,
   startupVersionImage,
 } from './fixtures/ordinary-startup.mjs';
-import { kcsProgram, kif } from './helpers.mjs';
+import { hg3, kcsProgram, kif } from './helpers.mjs';
 
 const profile = 'grisaia-jp-engine-2.6.1.23',
   text = (value) => new TextEncoder().encode(value),
@@ -41,7 +41,8 @@ test('2.6.1.23 selects the loose startup and drives KCS, Draw and FES through a 
         <v_height>${height}</v_height><fps>60</fps></SCREEN>
         <INT><int00><name>kcs</name><int>kcs.int</int><ext>kcs</ext></int00>
         <int01><name>fes</name><int>fes.int</int><ext>fes</ext></int01>
-        <int02><name>config</name><int>config.int</int><ext>xml</ext></int02></INT>`,
+        <int02><name>config</name><int>config.int</int><ext>xml</ext></int02>
+        <int03><name>image</name><int>image.int</int><ext>hg3</ext></int03></INT>`,
       ),
     width = 24,
     height = 28,
@@ -90,7 +91,13 @@ test('2.6.1.23 selects the loose startup and drives KCS, Draw and FES through a 
         [3530, 'screen'],
       ],
     ),
-    game = await gameFiles({
+    buttonImage = hg3(2, 1, Uint8Array.of(17, 34, 51, 255, 68, 85, 102, 255)),
+    metadata = new DataView(buttonImage.buffer);
+  metadata.setInt32(48, 13, true);
+  metadata.setInt32(52, 17, true);
+  metadata.setInt32(56, 82, true);
+  metadata.setInt32(60, 54, true);
+  const game = await gameFiles({
       'module.exe': startupVersionImage('2.6.1.23'),
       'config/startup.xml': startup('owned.kcs', 82, 54),
       'config.int': kif([
@@ -98,8 +105,14 @@ test('2.6.1.23 selects the loose startup and drives KCS, Draw and FES through a 
         ['owned.xml', startupXML(profile, '<video><enabled>17</enabled></video>')],
       ]),
       'kcs.int': kif([['owned.kcs', entry]]),
+      'image.int': kif([['button.hg3', buttonImage]]),
       'fes.int': kif([
-        ['screen.fes', text('#START\nreset_frame\nwait frame 3\n$11=7\nnext IDLE\n#IDLE\n')],
+        [
+          'screen.fes',
+          text(
+            '#DEFINE\nBUTTON btn\n#OBJECT FILE ID.0 ENABLE DISP\nbtn button.hg3 0 1 1\n#START\ndecode\nbtn lock 1\nreset_frame\nwait frame 3\n$11=7\nnext IDLE\n#IDLE\n',
+          ),
+        ],
       ]),
     }),
     environment = startupEnvironment(),
@@ -132,6 +145,9 @@ test('2.6.1.23 selects the loose startup and drives KCS, Draw and FES through a 
     assert.equal(machine.load(clock), 1);
     assert.equal(scene.surface, drawID);
     assert.equal(scene.player.root.commandDelayUntil, -2);
+    const button = scene.player.root.byKey.get('btn');
+    assert.deepEqual(button.lockedPosition, [13, 17]);
+    assert.deepEqual(world.inputFor(fesID).get(button.nativeInputTaskID).bounds, [13, 17, 15, 18]);
     assert.equal(world.runtime.calls.get('main:447'), 1);
     assert.equal(world.runtime.calls.get('main:448'), 1);
     assert.equal(world.soundConfiguration.loaded, false);

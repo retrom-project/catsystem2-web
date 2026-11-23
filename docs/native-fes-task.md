@@ -257,11 +257,12 @@ the dimensions used by its first resource decode. Rendering consumes retained
 task output and does not execute FES logic or object drivers again.
 
 An explicit frame `decode` command queues a resource pass and yields the current
-script with return `-3`. SDK `.74` consumes record 26 and game `.76` consumes
-record 23. Both reconcile display counters, append pending declarations and visit
-their resource drivers before resuming the same logical frame. A following
-`getpos` can then read the offsets of a hidden object
-with a pending `POS2` image, even inside `START`.
+script with return `-3`. SDK `.74` consumes record 26. Game `.76` and `.23`
+consume record 23. The `.23` handler at `5A7C10` queues the record and its
+frame case at `4206F9` reconciles display counters, appends declarations and
+visits resource drivers. A following `getpos` can read a hidden object's `POS2`
+offsets, and a following BUTTON `lock` captures the decoded image origin even
+inside `START`.
 
 A resource entry resolves its current byte key on every pass. An earlier STRING
 entry can therefore visit a newly declared CIMAGE with a NULL entry wrapper.
