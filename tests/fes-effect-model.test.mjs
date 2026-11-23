@@ -20,6 +20,41 @@ import {
 
 const numbers = { evaluate: (text) => Number(text), text: String };
 
+test('2.6.1.23 screen capture prepares once and draws the requested priority range', async (t) => {
+  const world = await makeWorld('grisaia-jp-engine-2.6.1.23');
+  try {
+    const { rendering } = world.screenEffects,
+      native = (id, ...args) =>
+        world.runtime.native('main', id, args, world.main.machine, world.main),
+      drawRange = rendering.drawRange,
+      ranges = [];
+    t.mock.method(rendering, 'drawRange', function (minimum, maximum) {
+      ranges.push([minimum, maximum]);
+      return drawRange.call(this, minimum, maximum);
+    });
+    assert.deepEqual(await native(568, floatBits(-1.25), floatBits(24.5)), { control: 2 });
+    assert.equal(rendering.captures.length, 1);
+    const initial = rendering.captures[0];
+    assert.deepEqual(ranges, [[-1.25, 24.5]]);
+    assert.deepEqual(await native(858, 1), { control: 2 });
+    assert.deepEqual(await native(859, 0, floatBits(8), floatBits(13.5)), { control: 2 });
+    assert.deepEqual(rendering.captures, [initial]);
+    assert.deepEqual(ranges, [
+      [-1.25, 24.5],
+      [8, 13.5],
+    ]);
+    assert.deepEqual(await native(859, 1, floatBits(8), floatBits(13.5)), { control: 2 });
+    assert.equal(ranges.length, 2);
+    assert.equal(world.stageRenderer.surfaces.get(initial).revision, 2);
+
+    world.configuration.fields.general.renderTargetCount = 0;
+    assert.deepEqual(await native(568, floatBits(0), floatBits(1)), { control: 2 });
+    assert.equal(ranges.length, 2, 'A rejected preparation issues no capture');
+  } finally {
+    await world.close();
+  }
+});
+
 test('command defaults, signed duration and unsigned32-to-f32 ranges are explicit', () => {
   assert.deepEqual(fesScreenEffectOptions(31, [], numbers), {
     duration: 30,

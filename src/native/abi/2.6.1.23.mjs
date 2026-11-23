@@ -370,6 +370,11 @@ const mainEvidence = [
     ids: [675, 676],
     value: 'Own 2.6.1.23 dictionary slots 675/676 share the exact handlers of Main 515/516',
   },
+  {
+    ids: [568, 858, 859],
+    value:
+      'Own 2.6.1.23 Main wrappers at 0x479ab0, 0x479c60 and 0x479c80 prepare and capture the caller priority range into a retained target',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -728,6 +733,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [568, 858, 859], fields: { resultWritten: false } },
         { ids: [675], fields: { resultWritten: true } },
         { ids: [676], fields: { resultWritten: false } },
         { ids: [113, 241, 251, 850, 851], fields: { resultWritten: true } },
