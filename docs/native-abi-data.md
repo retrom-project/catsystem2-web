@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 323       | 57            | 17            | 472     | Generic 12 of 45, Particle 25 of 44 and 26 of 51 |
+| 2.6.1.23 | 869        | 324       | 57            | 17            | 471     | Generic 12 of 45, Particle 25 of 44 and 26 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -91,6 +91,8 @@ Main 46 scales signed integer percentages in place. The base word is unsigned
 and the original x87 multiplication reads the integer percentage directly.
 Main 62 and 63 convert angles with the extended x87 exponent before storing
 the float32 result.
+Main 320 updates five-float spline records in place with the original x87
+evaluation order. Fewer than three points leave the guest range untouched.
 Main 609 and 610 copy the bank's capacity in bytes between its live and
 backup allocations. Main 658 and 659 access its selected private context
 with a 512-word bound.

@@ -435,6 +435,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 movie window wrappers 0x483790–0x483bc3 use Root 31 and raw Input 136; 0x47be50 reads the drawing rectangle',
   },
+  {
+    ids: [320],
+    value:
+      'Own 2.6.1.23 spline wrapper 0x4816b0 updates the five-float point records with x87 intermediates and returns control 2',
+  },
 ];
 const particleInterpreterEvidence = [
   {
@@ -671,7 +676,7 @@ export default {
     roundIntegerResult: 'int64-low-word',
     vectorTransformWFirst: true,
   },
-  motion: { addUsesFormat: true, elapsedUsesX87: true },
+  motion: { addUsesFormat: true, elapsedUsesX87: true, splineUsesX87: true },
   particle: { frameScale: 'x87-uint32' },
   movie: { alwaysUseBgmVolume: true },
   scene: {
@@ -842,6 +847,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [320], fields: { resultWritten: false } },
         { ids: [265, 266, 267, 268, 269], fields: { resultWritten: true } },
         { ids: [270, 417, 787, 788], fields: { resultWritten: false } },
         { ids: [625, 728], fields: { resultWritten: false } },
