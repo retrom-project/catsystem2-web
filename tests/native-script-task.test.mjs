@@ -33,9 +33,13 @@ test('standalone Script scheduler drains packets appended during the same frame'
   assert.deepEqual(task.messages, []);
 });
 
-test('63 main Script load binds live shared memory and relays a four-word packet', async () => {
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+  test(`${profile} main Script load binds live shared memory and relays a four-word packet`, () =>
+    verifyScriptLoad(profile));
+
+async function verifyScriptLoad(profile) {
   const world = await dataWorld(
-    'rebellions-jp-engine-2.6.1.63',
+    profile,
     {
       'caller.kcs': kcsProgram([
         [37, 240],
@@ -66,7 +70,7 @@ test('63 main Script load binds live shared memory and relays a four-word packet
   } finally {
     await world.close({ flushFiles: false });
   }
-});
+}
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'grisaia-jp-engine-2.6.1.23'])
   test(`${profile} empty word natives push the fresh GCALL sentinel after restore`, () =>
     verifyEmptyWords(profile));
