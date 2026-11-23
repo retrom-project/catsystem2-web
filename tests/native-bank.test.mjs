@@ -5,6 +5,7 @@ import { Binary } from '../src/binary.mjs';
 import { KCSMachine, nativeReply } from '../src/kcs/vm.mjs';
 import { NativeVariableBank, nativeBank } from '../src/native/bank.mjs';
 import { evaluateNativeExpression as evaluate } from '../src/native/expression.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 const make = () =>
   new KCSMachine({
@@ -95,6 +96,41 @@ test('native D5 removes a trailing percentage marker and passes context through 
   assert.deepEqual(nativeBank(0xd5, [0xffffffff], m, services), nativeReply(1, 0));
   assert.equal(nativeBank(0xd1, [5], m), undefined);
   assert.equal(nativeBank(0xfff, [], m, services), undefined);
+});
+
+test('23 variable natives evaluate the caller bank and preserve the native backup byte count', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
+  t.after(() => world.close());
+  const { main, runtime } = world,
+    m = main.machine,
+    call = (id, args) => runtime.native('main', id, args, m, main);
+  m.writeString('@ + $0%', 128);
+  assert.deepEqual(await call(213, [128]), nativeReply(1, 0));
+  await call(209, [5]);
+  await call(212, [8]);
+  await call(211, [0, 2]);
+  assert.deepEqual(await call(213, [128]), nativeReply(1, 10));
+  assert.deepEqual(await call(213, [0xffffffff]), nativeReply(1, 0));
+  await call(211, [1, 0x123456ab]);
+  await call(609, []);
+  await call(211, [0, 4]);
+  await call(211, [1, 0xaabbcccc]);
+  await call(610, []);
+  assert.deepEqual(await call(210, [0]), nativeReply(1, 2));
+  assert.deepEqual(await call(210, [1]), nativeReply(1, 0xaabbccab));
+
+  const bank = runtime.variableBank(main, false);
+  await call(659, [0, 0x76543210]);
+  assert.deepEqual(await call(658, [0]), nativeReply(1, 0));
+  bank.registerContext('first');
+  await call(659, [511, 0xfedcba98]);
+  await call(659, [512, 0x01020304]);
+  assert.deepEqual(await call(658, [511]), nativeReply(1, 0xfedcba98));
+  assert.deepEqual(await call(658, [512]), nativeReply(1, 0));
+  bank.registerContext('second');
+  assert.deepEqual(await call(658, [511]), nativeReply(1, 0));
+  bank.selectContext('first');
+  assert.deepEqual(await call(658, [511]), nativeReply(1, 0xfedcba98));
 });
 
 test('bank context registration, failed selection and removal preserve original selection rules', () => {

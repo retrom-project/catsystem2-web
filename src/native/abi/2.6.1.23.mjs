@@ -316,6 +316,11 @@ const mainEvidence = [
     value:
       'Own 2.6.1.23 wrapper 0x48b880 formats CP932 and invokes parser 0x4e2150 and plain writer 0x4e25c0',
   },
+  {
+    ids: [212, 213, 609, 610, 658, 659],
+    value:
+      'Own 2.6.1.23 variable-bank wrappers 0x486360–0x4864f0, trailing percentage handling, byte-count backup and selected 512-word private context',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -666,6 +671,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [212, 609, 610, 659], fields: { resultWritten: false } },
+        { ids: [213, 658], fields: { resultWritten: true } },
         { ids: [392], fields: { resultWritten: true } },
         { ids: [285], fields: { resultWritten: true } },
         { ids: [286], fields: { resultWritten: false } },
