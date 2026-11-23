@@ -12,6 +12,9 @@ import {
   x87Atan2Word,
   x87RemainderWord,
   x87TriangleWaveWord,
+  x87AddWords,
+  x87MultiplyWords,
+  x87RotateVectorWords,
   linearInterpolate,
   x87LinearInterpolate,
   roundInteger,
@@ -41,6 +44,20 @@ const particleScalarNames = new Map([
   [20, 'radianToDegree'],
   [21, 'integerAbs'],
 ]);
+// Components read by FMUL directly from a vertex, ordered by vertex index.
+const quadScaleMemoryOperands = [0b101, 0, 0, 0b110];
+
+function updatePTCLQuadWords(machine, address, components, transform) {
+  const stride = PTCL_ABI.vertex.size,
+    accessedBytes = PTCL_ABI.quadSize - stride + components * 4,
+    bytes = machine.bytes(address, accessedBytes),
+    view = new DataView(bytes.buffer, bytes.byteOffset, bytes.length);
+  for (let vertex = 0; vertex < 4; vertex++) {
+    const start = vertex * stride;
+    const words = Array.from({ length: components }, (_, i) => view.getUint32(start + i * 4, true));
+    transform(words, vertex).forEach((word, i) => view.setUint32(start + i * 4, word, true));
+  }
+}
 
 export class ParticleScriptInstance {
   constructor(script, options = {}) {
@@ -74,6 +91,7 @@ export class ParticleScriptInstance {
     this.nativeEntries = abi?.tables[this.table].entries ?? null;
     this.interpreterMath = abi?.math?.interpreterUsesNativeScalarMath ? abi.math : null;
     this.frameScale = abi?.particle?.frameScale;
+    this.quadUsesX87 = abi?.particle?.quadUsesX87;
     this.count = count;
     this.width = f(width);
     this.height = f(height);
@@ -219,6 +237,15 @@ export class ParticleScriptInstance {
       case 22:
       case 23:
       case 24: {
+        if (this.quadUsesX87) {
+          const angle = [args[1]],
+            sine = nativeScalarMath('sin', angle, null, 1).value,
+            cosine = nativeScalarMath('cos', angle, null, 1).value;
+          updatePTCLQuadWords(machine, args[0], 4, (words) =>
+            x87RotateVectorWords(words, id - 22, sine, cosine),
+          );
+          return voidReply();
+        }
         const quad = readPTCLQuad(machine.bytes(args[0], 112));
         for (const vertex of quad) {
           const rotated = rotateVector(
@@ -232,7 +259,27 @@ export class ParticleScriptInstance {
         return voidReply();
       }
       case 25:
+        if (this.quadUsesX87) {
+          const [, dx, dy, dz] = args;
+          updatePTCLQuadWords(machine, args[0], 4, ([x, y, z, w]) => [
+            x87AddWords(x, dx),
+            x87AddWords(dy, y, true),
+            x87AddWords(dz, z, true),
+            x87AddWords(0, w, true),
+          ]);
+          return voidReply();
+        }
+      // Fall through to the shared quad transform on other profiles.
       case 26: {
+        if (this.quadUsesX87) {
+          const scale = args.slice(1);
+          updatePTCLQuadWords(machine, args[0], 3, (words, vertex) =>
+            words.map((word, i) =>
+              x87MultiplyWords(scale[i], word, Boolean(quadScaleMemoryOperands[vertex] & (1 << i))),
+            ),
+          );
+          return voidReply();
+        }
         const quad = readPTCLQuad(machine.bytes(args[0], 112));
         const values = args.slice(1).map(bitsFloat);
         for (const vertex of quad) {

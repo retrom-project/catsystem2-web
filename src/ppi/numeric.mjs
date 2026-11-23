@@ -13,13 +13,15 @@ export function x87AngleConversion(angle, toRadians) {
   return f(roundX87Single(product / (toRadians ? 180 : pi)));
 }
 
-function x87BinaryNaNWord(left, right) {
+function x87BinaryNaNWord(left, right, rightFromMemory = false) {
   const infinity = 0x7f800000,
     magnitudeLeft = left & 0x7fffffff,
     magnitudeRight = right & 0x7fffffff;
   if (magnitudeLeft > infinity && magnitudeRight > infinity) {
-    // Both operands are quieted by FLD. FADDP selects the larger payload,
-    // with a positive sign winning identical payloads.
+    // FLD quiets a signaling NaN. A direct memory operand can still signal,
+    // in which case the quiet register operand wins regardless of payload.
+    if (rightFromMemory && !(right & quietNaNBit)) return (left | quietNaNBit) >>> 0;
+    // With two quiet operands the larger payload wins, then the positive sign.
     const payloadLeft = magnitudeLeft | quietNaNBit,
       payloadRight = magnitudeRight | quietNaNBit;
     const selected =
@@ -133,6 +135,50 @@ export function x87TriangleWaveWord(value, period) {
   if (quarter + quarter > phase) return floatBits(1 - wave);
   if (roundX87Single(3 * quarter) > phase) return floatBits(-wave);
   return floatBits(wave - 1);
+}
+
+function x87ResultWord(value) {
+  return Number.isNaN(value) ? 0xffc00000 : floatBits(roundX87Single(value));
+}
+
+export function x87AddWords(left, right, rightFromMemory) {
+  return (
+    x87BinaryNaNWord(left, right, rightFromMemory) ??
+    x87ResultWord(bitsFloat(left) + bitsFloat(right))
+  );
+}
+
+function x87Product(left, right, rightFromMemory) {
+  const nan = x87BinaryNaNWord(left, right, rightFromMemory);
+  if (nan !== undefined) return bitsFloat(nan);
+  const product = bitsFloat(left) * bitsFloat(right);
+  return Number.isNaN(product) ? bitsFloat(0xffc00000) : roundX87Single(product);
+}
+
+export function x87MultiplyWords(left, right, rightFromMemory) {
+  return floatBits(x87Product(left, right, rightFromMemory));
+}
+
+function x87SumProducts(left, right, subtract) {
+  return (
+    x87BinaryNaNWord(floatBits(left), floatBits(right)) ??
+    x87ResultWord(subtract ? left - right : left + right)
+  );
+}
+
+const quadRotationAxes = [
+  [1, 2],
+  [2, 0],
+  [0, 1],
+];
+export function x87RotateVectorWords(vector, axis, sine, cosine) {
+  const [first, second] = quadRotationAxes[axis],
+    a = vector[first],
+    b = vector[second];
+  const rotated = vector.map((word) => x87BinaryNaNWord(word, word) ?? word);
+  rotated[first] = x87SumProducts(x87Product(cosine, a, axis === 1), x87Product(b, sine), false);
+  rotated[second] = x87SumProducts(x87Product(b, cosine), x87Product(sine, a, true), true);
+  return rotated;
 }
 
 // Native matrices use this sign convention; do not substitute a DOM rotation.

@@ -481,6 +481,11 @@ const particleInterpreterEvidence = [
     value: 'Own 2.6.1.23 Particle 0x48cbb0 shares the integer MT19937 stream with MOT 0x595af0',
   },
   {
+    ids: [22, 23, 24, 25, 26],
+    value:
+      'Own 2.6.1.23 Particle 0x48c620–0x48c8b2 share four x87 vertex rotations, translation and scale in both tables',
+  },
+  {
     ids: [43],
     value: 'Own 2.6.1.23 Particle 0x48cfc0 shares the x87 triangle wave body with MOT 0x595490',
   },
@@ -711,7 +716,7 @@ export default {
     splineUsesX87: true,
     currentMatrixFallback: true,
   },
-  particle: { frameScale: 'x87-uint32' },
+  particle: { frameScale: 'x87-uint32', quadUsesX87: true },
   movie: { alwaysUseBgmVolume: true },
   scene: {
     translations: false,

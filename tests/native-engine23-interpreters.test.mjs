@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { bitsFloat, floatBits, readKCS } from '../src/kcs.mjs';
 import { MOTION_ABI } from '../src/motion/abi.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
+import { PTCL_ABI } from '../src/ppi/abi.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
@@ -378,6 +379,114 @@ test('2.6.1.23 PTCL moves owned positions, quads and registers and enforces cont
     exit.run(4);
     assert.equal(exit.instance.calls.get(32), 2);
   }
+});
+
+test('2.6.1.23 PTCL rotates, translates and scales only the native quad components', async () => {
+  const address = 128,
+    stride = PTCL_ABI.vertex.size,
+    input = [
+      [1, 2, 3, -0].map(floatBits),
+      [3, 4, -5, 2].map(floatBits),
+      [-5, 0, 0.5, 1].map(floatBits),
+      [0, 0, 0, 0].map(floatBits),
+    ];
+  input[1][3] = 0xff802345;
+  for (const table of particles) {
+    for (const [id, args, first, fourthWords] of [
+      [
+        22,
+        [floatBits(Math.PI / 2)],
+        [0x3f800000, 0x40400000, 0xc0000001],
+        [0x80000000, 0xffc02345],
+      ],
+      [
+        23,
+        [floatBits(Math.PI / 2)],
+        [0xc0400000, 0x40000000, 0x3f7ffffe],
+        [0x80000000, 0xffc02345],
+      ],
+      [
+        24,
+        [floatBits(Math.PI / 2)],
+        [0x40000000, 0xbf800001, 0x40400000],
+        [0x80000000, 0xffc02345],
+      ],
+      [25, [4, -2, 1].map(floatBits), [5, 0, 4].map(floatBits), [0, 0xffc02345]],
+      [26, [-2, 3, 4].map(floatBits), [-2, 6, 12].map(floatBits), [0x80000000, 0xff802345]],
+    ]) {
+      const { machine, instance, run } = await guest(table, id, [address, ...args]);
+      machine.store(address - 4, sentinel);
+      machine.store(address + PTCL_ABI.quadSize, sentinel);
+      const tail = [0xaabbccee, 0x7f800238, 0xff801234];
+      input.forEach((row, vertex) =>
+        [...row, ...tail].forEach((word, i) =>
+          machine.store(address + vertex * stride + i * 4, word),
+        ),
+      );
+      run(2);
+      assert.equal(instance.calls.get(id), 1);
+      assert.deepEqual(
+        first.map((_word, i) => machine.load(address + i * 4)),
+        first,
+      );
+      assert.deepEqual(
+        fourthWords.map((_word, i) => machine.load(address + i * stride + 12)),
+        fourthWords,
+      );
+      for (let vertex = 0; vertex < 4; vertex++)
+        assert.deepEqual(
+          tail.map((_word, i) => machine.load(address + vertex * stride + 16 + i * 4)),
+          tail,
+        );
+      assert.equal(machine.load(address - 4), sentinel);
+      assert.equal(machine.load(address + PTCL_ABI.quadSize), sentinel);
+    }
+  }
+  const mixed = await guest('particle-v2', 25, [address, 0x7f801234, 0, 0]);
+  mixed.machine.store(address, 0xffc43210);
+  mixed.run(2);
+  assert.equal(mixed.machine.load(address), 0xffc43210);
+  const signaling = 0xffa43210,
+    largeQuiet = 0xffe43210,
+    smallQuiet = 0x7fc00010;
+  const rotated = await guest('particle-v2', 24, [address, smallQuiet]);
+  rotated.machine.store(address, signaling);
+  rotated.run(2);
+  assert.equal(rotated.machine.load(address), largeQuiet);
+  assert.equal(rotated.machine.load(address + 4), smallQuiet);
+  const translated = await guest('particle-v2', 25, [address, smallQuiet, smallQuiet, smallQuiet]);
+  for (const offset of [0, 4, 8]) translated.machine.store(address + offset, signaling);
+  translated.run(2);
+  assert.deepEqual(
+    [0, 4, 8].map((offset) => translated.machine.load(address + offset)),
+    [largeQuiet, smallQuiet, smallQuiet],
+  );
+  const scaled = await guest('particle-v2', 26, [address, smallQuiet, smallQuiet, smallQuiet]);
+  for (let vertex = 0; vertex < 4; vertex++)
+    for (const offset of [0, 4, 8])
+      scaled.machine.store(address + vertex * stride + offset, signaling);
+  scaled.run(2);
+  assert.deepEqual(
+    Array.from({ length: 4 }, (_, vertex) =>
+      [0, 4, 8].map((offset) => scaled.machine.load(address + vertex * stride + offset)),
+    ),
+    [
+      [smallQuiet, largeQuiet, smallQuiet],
+      [largeQuiet, largeQuiet, largeQuiet],
+      [largeQuiet, largeQuiet, largeQuiet],
+      [largeQuiet, smallQuiet, smallQuiet],
+    ],
+  );
+  const sharedAddress = 0x80000000;
+  const shortest = await guest('particle-v1', 24, [sharedAddress, 0], {
+    shared: new Uint8Array(100).fill(0xa5),
+  });
+  shortest.run(2);
+  const short = await guest('particle-v1', 24, [sharedAddress + 1, 0], {
+    shared: new Uint8Array(100).fill(0xa5),
+  });
+  assert.throws(() => short.instance.update(0), /KCS memory .*\+100/);
+  assert.equal(short.machine.load(sharedAddress), 0xa5a5a5a5);
 });
 
 test('2.6.1.23 PTCL v2 alone admits the blend-mode word', async () => {

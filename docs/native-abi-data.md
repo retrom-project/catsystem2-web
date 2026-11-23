@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 332       | 57            | 17            | 463     | Generic 22 of 45, Particle 33 of 44 and 34 of 51 |
+| 2.6.1.23 | 869        | 332       | 57            | 17            | 463     | Generic 22 of 45, Particle 38 of 44 and 39 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -332,6 +332,14 @@ Generic 42 and Particle 43 in both script tables take the value and period as
 float32 words. They use the same x87 triangle wave with two CRT remainders and
 ordered quarter-period comparisons. The result is a float32 word with control
 1, including negative zero at the half-period boundary.
+
+Both Particle tables rotate four vertices around X, Y, or Z in slots 22–24.
+The calls take a quad address and a float32 angle in radians. Slots 25 and 26
+take the address and three float32 components for translation and scale.
+Rotation uses the original x87 operations on X, Y, Z and W. Translation also
+adds positive zero to W. The scale writes X, Y and Z. Color and texture
+coordinates retain their original bytes in every mode. Each call returns
+control 2 without a result.
 
 The close callback uses Main 469 with a CSS handle and a record ID. The engine
 compacts the remaining tagged records after removing the first match. The
