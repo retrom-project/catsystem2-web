@@ -1624,6 +1624,59 @@ test('2.6.1.23 Script and MOT scalar contracts preserve their word and floating-
   assert.deepEqual(await call(452, [own]), { control: 1, value: 0 });
 });
 
+test('2.6.1.23 Script updates the owned FES context and sends the selected object event', async (t) => {
+  const { world, audio } = await oldTitleWorld(
+    {
+      'entry.fes': bytes(
+        '#DEFINE\nVIEW marker[2]\n#START\nnext WAIT\n#WAIT\n' +
+          '#PING\n$10=91\nbreak\n#marker.PING\n$10=92\nbreak\n',
+      ),
+    },
+    undefined,
+    'grisaia-jp-engine-2.6.1.23',
+  );
+  t.after(async () => {
+    try {
+      await world.close();
+    } finally {
+      await audio.dispose();
+    }
+  });
+  const main = await world.initialize('empty.kcs'),
+    machine = main.machine,
+    call = (id, args) => world.runtime.native('main', id, args, machine, main);
+  await call(209, [64]);
+  const owner = await world.objects.create({ kind: 34, parent: main.id }),
+    fes = world.objects.objects.get(owner).implementation,
+    target = world.nativeTaskID(owner),
+    bank = world.runtime.variableBank(main, false);
+  machine.writeString('entry', 128);
+  await call(447, [target, 128]);
+
+  assert.deepEqual(await call(645, [target, 511, 0x89abcdef]), { control: 2 });
+  assert.deepEqual(await call(645, [target, 512, 23]), { control: 2 });
+  assert.deepEqual(await call(646, [target, 511]), { control: 1, value: 0x89abcdef });
+  assert.deepEqual(await call(646, [target, 512]), { control: 1, value: 0 });
+  assert.equal(fes.player.root.local(511) >>> 0, 0x89abcdef);
+  machine.writeString('PING', 160);
+  machine.writeString('', 192);
+  machine.writeString('marker', 224);
+  assert.deepEqual(await call(630, [target, 160, 192, 0]), { control: 2 });
+  assert.equal(bank.get(10), 91);
+  assert.deepEqual(await call(630, [target, 160, 224, 1]), { control: 2 });
+  assert.equal(bank.get(10), 92);
+
+  machine.writeString('WAIT', 256);
+  assert.deepEqual(await call(450, [target, 256]), { control: 1, value: 1 });
+  assert.equal(fes.player.root.label, 'WAIT');
+  assert.deepEqual(await call(451, [target, 0x87654321]), { control: 2 });
+  assert.equal(fes.player.saveObject, 0x87654321);
+  assert.deepEqual(await call(647, [target, 1]), { control: 2 });
+  assert.equal(fes.sleepValue, 1);
+  assert.deepEqual(await call(647, [target, 0]), { control: 2 });
+  assert.equal(fes.sleepValue, 0);
+});
+
 test('63 startup Plane GCALLs bind and release the owned Input region', async () => {
   const { world, audio } = await oldTitleWorld({}, undefined, 'rebellions-jp-engine-2.6.1.63');
   try {

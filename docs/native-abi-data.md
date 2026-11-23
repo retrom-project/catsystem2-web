@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2              |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | --------------------------------------- |
-| 2.6.1.23 | 869        | 84        | 57            | 17            | 711     | 4 of 45 generic recovered               |
+| 2.6.1.23 | 869        | 90        | 57            | 17            | 705     | 4 of 45 generic recovered               |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered               |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                            |
@@ -70,6 +70,13 @@ The title's pointer handlers use Main 108 to set the Plane's input return
 word. Its wrapper sends raw Plane message 88 with W zero and the full 32-bit
 value in L. The current input dispatch consumes and clears this word. The
 wrapper returns control 2 without writing a VM result.
+
+Main 450 and 451 use raw FES messages 306 and 307 for label selection and
+the saved object word. Main 630 synchronously dispatches raw 308 with the
+formatted event and an optional object reference containing 32 name bytes
+and a signed index. Main 645 and 646 use raw 311 and 312 to write and read the
+target's private 512-word bank. Main 647 changes its sleep value via raw 313.
+Only the label selection and bank read write a VM result.
 
 Main 69 delivers four message words immediately through raw Script message
 159 and reselects the caller's variable context. Main 70 queues the same packet

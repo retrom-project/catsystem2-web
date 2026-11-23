@@ -156,6 +156,20 @@ const mainEvidence = [
     ids: [140, 142, 549],
     value: 'Own 2.6.1.23 shared 0x487a50 returns control 1 and leaves the GCALL sentinel untouched',
   },
+  {
+    ids: [450, 451],
+    value: 'Own 2.6.1.23 FES raw 306 addresses a label; raw 307 retains the save-object DWORD',
+  },
+  {
+    ids: [630],
+    value:
+      'Own 2.6.1.23 Main 0x47adc0 sends raw FES 308 with a formatted event and optional 36-byte object reference',
+  },
+  {
+    ids: [645, 646, 647],
+    value:
+      'Own 2.6.1.23 raw FES 311–313 select the private 512-word bank or change the sleeping state',
+  },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
 const mainReserved = [
@@ -490,11 +504,14 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         {
-          ids: [6, 15, 64, 69, 70, 318, 319, 419, 423, 424, 425, 594, 596, 597, 790],
+          ids: [6, 15, 64, 69, 70, 318, 319, 419, 423, 424, 425, 450, 594, 596, 597, 646, 790],
           fields: { resultWritten: true },
         },
         { ids: mainConstantZero, fields: { resultWritten: true } },
-        { ids: [65, 420, 421, 422, 453, 458, 459, 595, 739], fields: { resultWritten: false } },
+        {
+          ids: [65, 420, 421, 422, 451, 453, 458, 459, 595, 630, 645, 647, 739],
+          fields: { resultWritten: false },
+        },
         {
           ids: [140, 142, 549],
           fields: {
