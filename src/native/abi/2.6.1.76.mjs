@@ -310,6 +310,7 @@ export default {
   },
   fes: {
     commonHeads: FES_COMMON_HEAD_REGISTRATIONS.game,
+    sharedIntegerRandom: true,
     definitionMissIsDiagnostic: true,
     configurationMessage: {
       liveObjects: true,

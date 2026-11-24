@@ -105,7 +105,7 @@ exception because unmigrated EXE code still consumes those streams. Its original
 shared-state tests remain useful oracle evidence, separate from these independently
 seeded comparisons and their public exact golden fixtures.
 
-The fixed 2.6.1.74 SDK also gives FES `rand` and `randtbl` the integer stream
+The fixed 2.6.1.74 SDK and the prepared 2.6.1.76 executable give FES `rand` and `randtbl` the integer stream
 used by Main33. `rand` reads three operands in order and writes the lower
 bound plus one unsigned remainder. `randtbl` reads four operands in order,
 initializes the destination range starting with the third operand, and makes
