@@ -4,6 +4,7 @@ import test from 'node:test';
 import { openImage } from '../src/formats/hg3.mjs';
 import { floatBits, NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
@@ -959,6 +960,86 @@ test('2.6.1.63 KCS narrow desktop calls use the clipboard boundary and blocking 
     acknowledge.resolve(0);
     await world.close();
   }
+});
+
+test('2.6.1.63 KCS loads an ordinary MPEG Plane and borrows its registered movie', async (t) => {
+  const source = Uint8Array.of(0, 0, 1, 0xba, 0x21, 0, 1),
+    world = await dataWorld(profile, {
+      'main-701.kcs': mainProgram(701, 2),
+      'main-702.kcs': mainProgram(702, 1),
+      'movie/試験.mpg': source,
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  world.game.nativeResources = {
+    entries: [{ name: 'movie', directory: 'movie', extension: 'mpg' }],
+  };
+  const plane = await world.objects.create({ kind: 2, parent: world.root, nativeID: 21 }),
+    owner = world.graphics.get(plane),
+    calls = [],
+    rgba = Uint8Array.of(37, 51, 67, 83, 101, 159, 181, 193);
+  let ready = false;
+  world.host.nativeMovie = (name, id) => ({
+    open(filename, input) {
+      assert.equal(filename, name);
+      assert.deepEqual(input.bytes, source);
+      calls.push(['open', filename, id]);
+      return ready;
+    },
+    close: () => calls.push(['close']),
+    configure() {},
+    metadata: () => ({ width: 2, height: 1, duration: 200n, alpha: false }),
+    frameStamp: () => 11,
+    decodedFrame: () => ({ width: 2, height: 1, rgba }),
+  });
+  assert.equal(mapABIMessage(profile, 'planeMovie', 'raw', 43), 41);
+  assert.equal(mapABIMessage(profile, 'planeMovie', 'raw', 87), 84);
+  assert.equal(mapABIMessage(profile, 'planeMovie', 'canonical', 41), 43);
+  assert.equal(mapABIMessage(profile, 'planeMovie', 'canonical', 84), 87);
+  assert.throws(
+    () => mapABIMessage(profile, 'planeMovie', 'canonical', 82),
+    /Unreviewed ABI message/,
+  );
+  const load = (name) => executeMain(world, 701, [21, 256], (m) => m.writeString(name, 256)),
+    borrow = (id, result) => executeMain(world, 702, [id], undefined, result);
+  await executeMain(world, 701, [0, 0xffffffff]);
+  await load('試験');
+  await borrow(21, 0);
+  assert.deepEqual(calls, []);
+  world.graphics.createLogicalDevice();
+  owner.state.vramType = 2;
+  await load('試験');
+  await borrow(21, 0);
+  assert.deepEqual(calls, []);
+  owner.state.vramType = 1;
+  await load('試験');
+  await borrow(21, 0);
+  assert.deepEqual(calls.splice(0), [['open', 'movie/試験.mpg', plane], ['close']]);
+  await assert.rejects(load('unknown.avi'), /Unreviewed media type/);
+
+  ready = true;
+  await load('試験');
+  const graph = owner.graph,
+    { handle } = graph.movie,
+    record = world.movies.get(handle),
+    frame = await world.planeMovies.retainedFrame(graph.movie);
+  assert.equal(record.owner, plane);
+  assert.deepEqual(
+    [graph.type, graph.x, graph.y, graph.z, graph.width, graph.height],
+    [3, 0, 0, 0, 2, 1],
+  );
+  assert.deepEqual(frame.rgba, Uint8ClampedArray.of(37, 51, 67, 255, 101, 159, 181, 255));
+  await borrow(21, handle);
+  await borrow(0, 0);
+  await borrow(0xf1234567, 0);
+  owner.state.vramType = 2;
+  await load('試験');
+  await borrow(21, handle);
+  assert.equal(owner.graph, graph);
+  await world.objects.release(plane);
+  await borrow(21, 0);
+  assert.equal(world.runtime.handles.records.has(handle), false);
+  assert.equal(world.runtime.handles.records.has(record.bitmap), false);
+  assert.deepEqual(calls, [['open', 'movie/試験.mpg', plane], ['close']]);
 });
 
 test('2.6.1.63 KCS rotates, translates and scales the original SSE2 matrix words', async (t) => {
