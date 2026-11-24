@@ -4,6 +4,7 @@ import test from 'node:test';
 import { NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 
 const profile = 'rebellions-jp-engine-2.6.1.63';
@@ -83,4 +84,46 @@ test('2.6.1.63 GCALL still rejects the adjacent unreviewed native slot', async (
       return true;
     },
   );
+});
+
+test('2.6.1.63 FES declares only its original type names and indexes', async () => {
+  const source = new TextEncoder().encode(
+    '#DEFINE\nview validView\nSTRING validString\nPARTICLE validParticle\n' +
+      'CHTABLE3 excess1\nSTRTABLE excess2\nFILELIST excess3\nEFKPLANE excess4\n' +
+      'STRING8 excess5\nLOGSTRING8 excess6\n#START\nnext WAIT\n#WAIT\n',
+  );
+  const world = await dataWorld(profile, { 'types.fes': source });
+  try {
+    const id = await world.objects.create({ kind: 34, parent: world.main.id });
+    const task = world.objects.objects.get(id).implementation;
+    await world.sendEngine(id, world.main.id, 331, 0, world.main.context.variableBank);
+    await task.loadSource('types');
+    const root = task.player.root;
+    assert.deepEqual(
+      [...root.byKey.values()].map(({ baseName, type }) => [baseName, type]),
+      [
+        ['validView', 'VIEW'],
+        ['validString', 'STRING'],
+        ['validParticle', 'PARTICLE'],
+      ],
+    );
+    const memory = world.main.machine;
+    memory.writeString('dynamicString', 128);
+    memory.store(160, 2);
+    await world.sendEngine(id, world.main.id, 338, 128, 20);
+    assert.equal(root.byKey.get('dynamicString[0]').nativeType, 21);
+    assert.equal(root.byKey.get('dynamicString[1]').nativeType, 21);
+
+    memory.writeString('dynamicM2', 128);
+    memory.store(160, 1);
+    await world.sendEngine(id, world.main.id, 338, 128, 32);
+    assert.equal(root.byKey.get('dynamicM2[0]').nativeType, 33);
+    await assert.rejects(
+      () => world.sendEngine(id, world.main.id, 338, 128, 33),
+      /Unknown FES object factory index 33/,
+    );
+    assert.equal(root.byKey.size, 6);
+  } finally {
+    await world.close();
+  }
 });

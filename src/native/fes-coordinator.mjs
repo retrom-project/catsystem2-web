@@ -87,6 +87,7 @@ export class FESCoordinator {
       world,
       instance,
       cache,
+      definitionTypes: nativeABI(world.profile).fes.definitionTypes,
       top: null,
       pendingRecords: [],
     });
@@ -280,7 +281,7 @@ export class FESCoordinator {
         continue;
       }
       const type = canonicalFESDefinitionType(decoder.decode(this.instance.argumentBytes(rawType)));
-      if (type === undefined) {
+      if (type === undefined || (this.definitionTypes && !this.definitionTypes.includes(type))) {
         this.instance.diagnostic(`Unknown FES declaration type ${decoder.decode(rawType)}`);
         continue;
       }
@@ -326,7 +327,7 @@ export class FESCoordinator {
     }
   }
   createObjects(typeIndex, name, count) {
-    const type = FES_OBJECT_DEFINITION_ORDER[typeIndex];
+    const type = (this.definitionTypes ?? FES_OBJECT_DEFINITION_ORDER)[typeIndex];
     if (!type) throw new Error('Unknown FES object factory index ' + typeIndex);
     return this.collection.create(type, name, count);
   }

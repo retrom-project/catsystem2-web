@@ -2427,10 +2427,7 @@ async function verifyTextureAllocation(profile, releasesPages) {
       [652, 3],
     ])
       assert.deepEqual(await call(id, new Array(words).fill(0xffffffff)), { control: 2 });
-    assert.equal(
-      nativeABI(profile).tables.main.entries[544].status,
-      profile === 'grisaia-jp-engine-2.6.1.23' ? 'reserved' : 'unknown',
-    );
+    assert.equal(nativeABI(profile).tables.main.entries[544].status, 'reserved');
   } finally {
     await world.close();
     await audio.dispose();
