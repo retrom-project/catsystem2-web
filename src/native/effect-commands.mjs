@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeReply } from '../kcs/vm.mjs';
 import { bitsFloat } from '../kcs.mjs';
+import { quietFloat32Bits } from '../ppi/numeric.mjs';
 import { nativeDataArgument } from './data-text.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { nativeABI } from './abi/index.mjs';
@@ -86,8 +87,7 @@ export class NativeEffectCommands {
       rendering = world.screenEffects.rendering,
       send = (message, l = 0, payload) =>
         world.sendNativeEngine(a[0], task.id, message, 0, l, payload ? { payload } : {});
-    for (const i of floatArguments ?? [])
-      if ((a[i] & 0x7fffffff) > 0x7f800000) a[i] = (a[i] | 0x00400000) >>> 0;
+    for (const i of floatArguments ?? []) a[i] = quietFloat32Bits(a[i]);
     if (id === 0x35a) await rendering.prepare(a[0]);
     else if (id === 0x35b) await rendering.capture(a[0], bitsFloat(a[1]), bitsFloat(a[2]));
     else if (id === 0x238) {
@@ -125,7 +125,11 @@ export class NativeEffectCommands {
           );
       } else {
         const [message, fields] = initializers.get(id);
-        await send(message, 0, new NativeGraphicsPacket(fields.map((i) => a[i])));
+        await send(
+          message,
+          0,
+          new NativeGraphicsPacket(fields.slice(0, words - 1).map((i) => a[i])),
+        );
       }
     }
     return nativeReply(2);

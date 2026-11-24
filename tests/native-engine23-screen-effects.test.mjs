@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { test } from 'node:test';
 import { KCSMachine, floatBits, readKCS } from '../src/kcs.mjs';
 import { identity } from '../src/motion/matrix.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { screenEffectRawMessage } from '../src/native/screen-effect.mjs';
 import { makeWorld } from './fixtures/fes-effect-model-world.mjs';
-import { ScreenVectorGPU } from './fixtures/screen-effects-fixture.mjs';
+import { authoredScreenFrame, ScreenVectorGPU } from './fixtures/screen-effects-fixture.mjs';
 import { kcsProgram } from './helpers.mjs';
 
 const profile = 'grisaia-jp-engine-2.6.1.23';
@@ -272,6 +273,157 @@ test('fixed 2.6.1.23 WBreak initializes the original shards and draws the padded
     await worldCall(world, 860, args.with(1, 40));
     assert.deepEqual([state.start, state.end, state.lastElapsed, state.active], [234, 274, 2, 17]);
     assert.equal(world.random.real.index, 96);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+
+test('fixed 2.6.1.23 mosaic GCALLs keep the original modes, texture ownership and five-word fade packet', async () => {
+  for (const [main, canonical, raw] of [
+    [853, 516, 447],
+    [854, 517, 448],
+    [856, 519, 450],
+  ]) {
+    assert.equal(screenEffectRawMessage(profile, canonical), raw, String(main));
+    assert.equal(mapABIMessage(profile, 'screen', 'canonical', raw), canonical);
+  }
+  const probes = [
+    [
+      50,
+      0,
+      8,
+      4,
+      2,
+      0,
+      2,
+      0xffffffff,
+      '3db8e196b2cb0c86ef62395c11dcd91968423ea042098cf76af480251014c6cd',
+    ],
+    [
+      50,
+      1,
+      11,
+      6,
+      5,
+      1,
+      5,
+      0xffffffff,
+      'fe0027493b58ff56bc15c8565442dfb56f5bb4e58a46060183b0b8a6914865dd',
+    ],
+    [
+      51,
+      0,
+      8,
+      4,
+      3,
+      0,
+      3,
+      0xa0ffffff,
+      '3db8e196b2cb0c86ef62395c11dcd91968423ea042098cf76af480251014c6cd',
+    ],
+    [
+      51,
+      1,
+      11,
+      5,
+      6,
+      0,
+      6,
+      0x74ffffff,
+      '310ebe7e33e16754a49720d644198659e9f0fafc9cc2fc26b888e57964fd971e',
+    ],
+    [
+      50,
+      0,
+      1,
+      4,
+      0,
+      0,
+      0,
+      0xffffffff,
+      '6848705b762d74deddf1065e314f2e478103201f7bf749574209a6c11df64c4c',
+    ],
+    [
+      50,
+      1,
+      0,
+      4,
+      0,
+      0,
+      0,
+      0xffffffff,
+      '1c0dcca9afffb7337ee73d60e26a483567289e3aa1c0fbafa86b1d80d8b8ceee',
+    ],
+  ];
+  const world = await makeWorld(profile);
+  try {
+    const width = 16,
+      height = 8,
+      stage = world.stageRenderer,
+      gpu = (stage.gpu = new ScreenVectorGPU(width, height)),
+      drawGeometry = gpu.drawGeometry.bind(gpu),
+      rendering = world.screenEffects.rendering;
+    Object.assign(world.graphics.view, { clientWidth: width, clientHeight: height });
+    let drawn;
+    gpu.drawGeometry = (geometry, frame, options) => {
+      drawn = { frame, color: geometry[0].vertices[0].color };
+      return drawGeometry(geometry, frame, options);
+    };
+    for (const [kind, mode, duration, level, sample, slot, key, color, digest] of probes) {
+      assert.equal(rendering.prepare(2), true);
+      for (const [i, capture] of rendering.captures.entries())
+        stage.writeSurface(capture, authoredScreenFrame(width, height, i === 1));
+      const objectID = await world.objects.create({ kind, parent: world.main.id }),
+        target = world.nativeTaskID(objectID),
+        task = world.screenEffects.tasks.get(objectID),
+        init = kind === 50 ? 853 : 856,
+        start = kind === 50 ? 855 : 857,
+        argumentsAt = [target, duration, floatBits(0), floatBits(60000), level, mode],
+        packet = [floatBits(0), floatBits(60000), duration, level, mode];
+      await worldCall(world, init, argumentsAt.with(0, 0));
+      assert.equal(task.state.initialized, false);
+      await worldCall(world, init, argumentsAt);
+      assert.deepEqual(task.state.params, packet);
+      assert.equal(task.state.capability, true);
+      if (kind === 50) {
+        await worldCall(world, 854, [0]);
+        assert.equal(task.state.work[1], undefined);
+        await worldCall(world, 854, [target]);
+        assert.ok(task.state.work[1]);
+      } else {
+        await assert.rejects(
+          worldCall(world, init, [...argumentsAt, 0x12345678]),
+          /expects 6 arguments/,
+        );
+        await world.sendNativeEngine(target, world.main.id, 519, 0, 0, {
+          payload: {
+            bytes(at, size) {
+              assert.equal(at, 0);
+              assert.equal(size, 20);
+              return new Uint8Array(Uint32Array.from(packet).buffer);
+            },
+          },
+        });
+      }
+      assert.deepEqual(rendering.captures, []);
+      task.record.effectiveFrame = 0;
+      await worldCall(world, start, [target, 1]);
+      for (let clock = 0; clock <= sample; clock++) {
+        task.record.effectiveFrame = clock;
+        await task.render();
+      }
+      assert.equal(task.state.lastKey, key);
+      assert.equal(drawn.color, color);
+      assert.equal(drawn.frame, stage.surfaceFrame(task.state.work[slot]));
+      assert.equal(createHash('sha256').update(drawn.frame.rgba).digest('hex'), digest);
+      assert.equal(task.state.active, Number(sample < duration));
+      if (kind === 51) {
+        Object.assign(task.record, { effectiveFrame: 100, pausedFrames: 20 });
+        await worldCall(world, init, argumentsAt.with(1, 23));
+        assert.deepEqual([task.state.start, task.state.end, task.state.active], [80, 103, 1]);
+      }
+      await world.objects.release(objectID);
+    }
   } finally {
     await world.close({ flushFiles: false });
   }

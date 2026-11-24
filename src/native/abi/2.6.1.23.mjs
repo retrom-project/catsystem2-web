@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [853, 854, 856],
+    value:
+      'Own 2.6.1.23 WipeMosaic and FadeMosaic raw 447, 448 and 450 use five-word initializers, private captures and the original mode and timing selectors',
+  },
+  {
     ids: [860],
     value:
       'Own 2.6.1.23 WBreak initializer raw 452 copies seven words and projects the seeded shards using the padded capture extent',
@@ -901,11 +906,11 @@ export default {
         unmapped: 'reject',
         raw: [
           ...[377, 378, 379, 380, 381, 384, 385, 387, 388].map((id) => toMessage(id, -35)),
-          ...[518, 520, 521, 522].map((id) => toMessage(id, -69)),
+          ...[516, 517, 518, 519, 520, 521, 522].map((id) => toMessage(id, -69)),
         ],
         canonical: [
           ...[342, 343, 344, 345, 346, 349, 350, 352, 353].map((id) => toMessage(id, 35)),
-          ...[449, 451, 452, 453].map((id) => toMessage(id, 69)),
+          ...[447, 448, 449, 450, 451, 452, 453].map((id) => toMessage(id, 69)),
         ],
       },
       sound: {
@@ -954,7 +959,7 @@ export default {
     bitmapBlitUsesSourceSize: true,
     sameSizeBitmapCopyClips: true,
     screenCaptureOpaque: true,
-    retimeActiveScreenTransitions: true,
+    screenEffectRetimesOnActiveInit: [38, 39, 50, 51, 52],
     drawEnablePendingPolicy: 'rising-edge',
     emptyImageSizeWritesZero: true,
     positionedAreaWipeKinds: [26, 29, 30],
@@ -966,12 +971,16 @@ export default {
     planeResetReleasesTrackedInput: true,
     screenEffectPreserveStoppedClockKinds: [50, 51, 52],
     screenEffectBreakUsesPaddedCapture: true,
+    screenEffectMosaic: { fadeInitializerWords: 5, retainShortWipe: true },
     screenEffectFloatArguments: {
       521: [2, 3, 4, 6, 7],
       522: [],
       523: [1, 2, 3, 4, 5, 6, 7, 8],
       524: [],
+      853: [2, 3],
+      854: [],
       855: [],
+      856: [2, 3],
       857: [],
       860: [2, 3, 6, 7],
       861: [],
@@ -1010,7 +1019,18 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
-        { ids: [521, 522, 523, 524, 855, 857, 860, 861], fields: { resultWritten: false } },
+        {
+          ids: [521, 522, 523, 524, 853, 854, 855, 857, 860, 861],
+          fields: { resultWritten: false },
+        },
+        {
+          ids: [856],
+          fields: {
+            argumentWords: 6,
+            parameters: NATIVE_SEMANTICS.main[856].signature.parameters.slice(0, 6),
+            resultWritten: false,
+          },
+        },
         { ids: [83, 86, 87], fields: { resultWritten: false } },
         {
           ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],

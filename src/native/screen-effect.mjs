@@ -275,7 +275,8 @@ export class NativeScreenEffectTask {
           context.payload ??
           context.machine ??
           this.world.objects.machine(context.nativeSenderWorldID ?? sender),
-        size = payloadWords.get(message) * 4,
+        fadeWords = nativeABI(this.world.profile).graphics.screenEffectMosaic?.fadeInitializerWords,
+        size = ((kind === 51 && fadeWords) || payloadWords.get(message)) * 4,
         bytes = memory.bytes ? memory.bytes(l, size) : memory.read(l, size),
         view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
         params = Array.from({ length: size / 4 }, (_, i) => view.getUint32(i * 4, true));
@@ -378,8 +379,7 @@ export class NativeScreenEffectTask {
       state.duration = params[2];
       if (
         state.active &&
-        (kind === 38 || kind === 39 || (kind === 52 && this.paddedBreakCapture)) &&
-        nativeABI(this.world.profile).graphics.retimeActiveScreenTransitions
+        nativeABI(this.world.profile).graphics.screenEffectRetimesOnActiveInit?.includes(kind)
       ) {
         state.start = this.clock();
         state.end = (state.start + state.duration) >>> 0;
@@ -420,7 +420,10 @@ export class NativeScreenEffectTask {
         }
         if (!state.duration) throw new RangeError('Screen wipe duration divides by zero');
       } else if (kind === 50) {
-        if (state.duration < 2) {
+        if (
+          state.duration < 2 &&
+          !nativeABI(this.world.profile).graphics.screenEffectMosaic?.retainShortWipe
+        ) {
           state.capability = false;
           return;
         }
