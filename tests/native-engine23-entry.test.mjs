@@ -80,6 +80,52 @@ test('2.6.1.23 GCALL allocation zeroes storage and release compacts later VM add
   assert.throws(() => machine.bytes(base + 3, 1), /KCS memory/);
 });
 
+test('2.6.1.23 GCALL decimal conversion preserves the native result words and byte terminators', async (t) => {
+  const marker = 0x5a7ac0d1,
+    script = kcsProgram(
+      [
+        ...push(marker),
+        ...native(26, 1800),
+        receive(64),
+        ...native(26, 1832),
+        receive(68),
+        ...native(26, 1864),
+        receive(72),
+        ...native(37, 512, 1234567, 0x80000000),
+        ...native(37, 540, 0x80000000, 1),
+        [59],
+      ],
+      [
+        [1800, '\t+1.25D+2suffix'],
+        [1832, '-0.0'],
+        [1864, '1e-45'],
+      ],
+    );
+  const world = await dataWorld(profile, { 'number.kcs': script });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('number.kcs'),
+    machine = task.machine,
+    start = machine.sp;
+  machine.bytes(511, 48).fill(0xa5);
+  assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+  assert.equal(machine.sp, start + 4);
+  assert.equal(machine.pop(), marker);
+  assert.deepEqual(
+    [64, 68, 72].map((offset) => machine.load(offset)),
+    [0x42fa0000, 0x80000000, 1],
+  );
+  const positive = text('+1,234,567\0\0'),
+    minimum = text('-.,/,),,(-,*,(\0\0');
+  assert.deepEqual(machine.bytes(512, positive.length), positive);
+  assert.deepEqual(machine.bytes(540, minimum.length), minimum);
+  assert.deepEqual(
+    [511, 512 + positive.length, 539, 540 + minimum.length].map((offset) =>
+      machine.load(offset, 1),
+    ),
+    [0xa5, 0xa5, 0xa5, 0xa5],
+  );
+});
+
 test('2.6.1.23 selects the loose startup and drives KCS, Draw and FES through a fresh Core', async () => {
   const startup = (entry, width, height) =>
       startupXML(

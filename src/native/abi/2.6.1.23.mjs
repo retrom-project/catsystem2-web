@@ -93,6 +93,11 @@ export const engine23CommonHeads = {
 const legacyTaskWordOperations = [126, 127, 128, 129, 131, 132, 138, 139];
 const mainEvidence = [
   {
+    ids: [26, 37],
+    value:
+      'Own 2.6.1.23 0x48ae30 formats and parses a narrow float32 value, and 0x48b080 writes grouped signed DWORD digits with two trailing zeros.',
+  },
+  {
     ids: [27, 28],
     value:
       'Own 2.6.1.23 wrappers 0x48ae70 and 0x48ae90 allocate zeroed VM blocks and release only the mapped block start, compacting the guest addresses.',
@@ -1339,6 +1344,41 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         { ids: [27, 28], fields: { resultWritten: true } },
+        {
+          ids: [26],
+          fields: {
+            parameters: [
+              {
+                ...NATIVE_SEMANTICS.main[26].signature.parameters[0],
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: { kind: 'format-string', encoding: 'CP932' },
+                },
+              },
+            ],
+            resultWritten: true,
+          },
+        },
+        {
+          ids: [37],
+          fields: {
+            parameters: [
+              {
+                ...NATIVE_SEMANTICS.main[37].signature.parameters[0],
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'out',
+                  target: { kind: 'character', bits: 8, encoding: 'CP932' },
+                },
+              },
+              ...NATIVE_SEMANTICS.main[37].signature.parameters.slice(1),
+            ],
+            resultWritten: false,
+          },
+        },
         {
           ids: [123],
           fields: {

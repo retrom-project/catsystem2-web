@@ -19,11 +19,11 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 480       | 57            | 17            | 315     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 482       | 57            | 17            | 313     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 387       | 80            | 19            | 452     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
-| 2.6.1.76 | 1055       | 920       | 58            | 17            | 60      | 45 / 44 / 51                                     |
+| 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51                                     |
 
 The registry represents 5,509 slots, including 2,344 SDK74/Game76 slots.
 The older registrations retain unknown auxiliary slots and unadmitted stub
@@ -109,6 +109,13 @@ unmapped, local and shared addresses return 0. Releasing a block compacts
 later virtual addresses while keeping their bytes. A stale address can
 therefore resolve to the start of another block.
 Both wrappers return control 1 with a written result.
+
+Main 26 consumes the decimal prefix of the formatted CP932 input and
+returns the float32 word through control 1. Its exponent accepts E or D,
+and the result preserves signed zero. Main 37 writes the grouped signed
+decimal bytes with two trailing NULs and returns control 2. The optional
+plus is used for a positive value and the signed minimum preserves the
+original byte sequence produced by DWORD arithmetic.
 
 Main 405–416 load and query binary gallery resources in the FES category.
 Variants use 20 groups of eight 540-byte records. A missing or wrong-size
