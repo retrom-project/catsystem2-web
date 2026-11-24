@@ -655,3 +655,107 @@ test('2.6.1.63 KCS preserves nested CSS, narrow strings, HG-2 thumbnails and log
     await world.close();
   }
 });
+
+test('2.6.1.63 dictionary aliases and F32/word packing use the same live KCS owner', async () => {
+  const entryWidths = [0, 1, 3, 2, 1, 1, 2, 2, 3];
+  const entries = [
+    [515, 0],
+    [516, 1],
+    [517, 3],
+    [518, 2],
+    [675, 0],
+    [676, 1],
+    [833, 1],
+    [834, 1],
+    ...[885, 894].flatMap((start) => entryWidths.map((width, index) => [start + index, width])),
+  ];
+  const world = await dataWorld(
+    profile,
+    Object.fromEntries(entries.map(([id, width]) => [`main-${id}.kcs`, mainProgram(id, width)])),
+  );
+  const key = (name) => (machine) => machine.writeString(name, 160);
+  const call = (id, args, setup, result) => executeMain(world, id, args, setup, result);
+  const create = async (id, args = []) => {
+    let result;
+    await call(id, args, undefined, (word) => (result = word));
+    assert.notEqual(result, 0);
+    return result;
+  };
+  try {
+    const raw = 0xff812345,
+      quiet = 0xffc12345,
+      heap = world.runtime.imageDataBuffers.process;
+    for (const start of [885, 894]) {
+      const expected = start === 885 ? quiet : raw,
+        first = await create(start),
+        restored = await create(675),
+        source = await create(515);
+      await call(start + 5, [0], undefined, 0);
+      await call(start + 5, [first], undefined, 4);
+      await call(start + 2, [first, 160, 7], key('A'));
+      await call(start + 2, [first, 160, raw], key('A'));
+      await call(start + 3, [first, 160], key('A'), expected);
+      await call(start + 3, [first, 160], key('Absent'), 0);
+      await call(517, [source, 160, raw], key('A'));
+      await call(517, [source, 160, 0x80000000], key('猫'));
+      await call(518, [source, 160], key('A'), raw);
+      await call(start + 5, [source], undefined, 20);
+
+      const pointer = await create(833, [20]);
+      heap.write(pointer, new Uint8Array(20).fill(0xa7));
+      await call(start + 6, [source, pointer]);
+      assert.deepEqual(
+        [...heap.read(pointer, 20)],
+        [
+          2,
+          0,
+          0,
+          0,
+          65,
+          0,
+          0xa7,
+          0xa7,
+          0x45,
+          0x23,
+          (expected >>> 16) & 255,
+          255,
+          0x94,
+          0x4c,
+          0,
+          0xa7,
+          0,
+          0,
+          0,
+          0x80,
+        ],
+      );
+      // Force a signaling NaN in the caller's raw heap to test the importer independently.
+      heap.store(pointer + 8, raw);
+      await call(517, [restored, 160, 5], key('猫'));
+      await call(start + 7, [restored, pointer]);
+      await call(start + 3, [restored, 160], key('A'), expected);
+      await call(start + 3, [restored, 160], key('猫'), 5);
+      const machine = await call(
+        start + 8,
+        [restored, 1, 192],
+        (m) => m.bytes(192, 6).fill(0xa7),
+        1,
+      );
+      assert.deepEqual([...machine.bytes(192, 6)], [0x94, 0x4c, 0, 0xa7, 0xa7, 0xa7]);
+      const miss = await call(start + 8, [restored, -1, 192], (m) => m.bytes(192, 6).fill(0xa7), 0);
+      assert.deepEqual([...miss.bytes(192, 6)], new Array(6).fill(0xa7));
+
+      await call(start + 4, [first]);
+      await call(start + 5, [first], undefined, 4);
+      await call(676, [first]);
+      await call(start + 1, [restored]);
+      await call(516, [source]);
+      await call(834, [pointer]);
+      for (const handle of [first, source, restored])
+        assert.throws(() => world.runtime.handles.get(handle, 'dictionary'), /released/);
+    }
+    assert.equal(heap.allocations.size, 0);
+  } finally {
+    await world.close();
+  }
+});

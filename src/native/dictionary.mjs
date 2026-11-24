@@ -3,6 +3,8 @@
 // stores a count, NUL-terminated keys padded to DWORD alignment, then values.
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { quietFloat32Bits } from '../ppi/numeric.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 const identity = (bytes) => Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 const terminated = (bytes) => {
@@ -15,6 +17,7 @@ const compare = (a, b) => {
   return a.length - b.length;
 };
 const foldAscii = (byte) => (byte >= 0x41 && byte <= 0x5a ? byte + 0x20 : byte);
+const copyWord = (value) => value;
 export class NativeDictionary {
   constructor() {
     this.entries = new Map();
@@ -51,7 +54,7 @@ export class NativeDictionary {
   get size() {
     return 4 + this.ordered().reduce((n, { key }) => n + padded(key.length) + 4, 0);
   }
-  write(bytes) {
+  write(bytes, copyValue = copyWord) {
     if (bytes.length < this.size) throw new Error('Native dictionary output buffer is too short');
     const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
     view.setUint32(0, this.entries.size, true);
@@ -60,12 +63,12 @@ export class NativeDictionary {
       bytes.set(key, at);
       bytes[at + key.length] = 0;
       at += padded(key.length);
-      view.setUint32(at, value, true);
+      view.setUint32(at, copyValue(value), true);
       at += 4;
     }
     return at;
   }
-  importFrom(machine, address) {
+  importFrom(machine, address, copyValue = copyWord) {
     const count = machine.load(address),
       source = [];
     let at = address + 4;
@@ -73,7 +76,7 @@ export class NativeDictionary {
       const key = [];
       for (let value; (value = machine.load(at + key.length, 1)); ) key.push(value);
       at += padded(key.length);
-      source.push([Uint8Array.from(key), machine.load(at)]);
+      source.push([Uint8Array.from(key), copyValue(machine.load(at))]);
       at += 4;
     }
     for (const [key, value] of source) this.set(key, value, { replace: false });
@@ -122,6 +125,7 @@ function nativeLegacyDictionary(id, args, machine, services) {
 }
 export function nativeDictionary(id, args, machine, services = {}) {
   if (id >= 0x203 && id <= 0x206) return nativeLegacyDictionary(id, args, machine, services);
+  const originalID = id;
   if (id >= 0x375 && id <= 0x37d) id += 9;
   if (id < 0x37e || id > 0x386) return undefined;
   const count = [0, 1, 3, 2, 1, 1, 2, 2, 3][id - 0x37e];
@@ -135,6 +139,10 @@ export function nativeDictionary(id, args, machine, services = {}) {
     return nativeReply(2);
   }
   const dictionary = args[0] ? services.handles.get(args[0], 'dictionary') : null;
+  const copyValue =
+    services.profile && nativeABI(services.profile).dictionary?.float32Copies?.includes(originalID)
+      ? quietFloat32Bits
+      : copyWord;
   if (id === 0x380 || id === 0x381) {
     if (!dictionary) return id === 0x381 ? nativeReply(1, 0) : nativeReply(2);
     if (!services.formatBytes && !services.format) return undefined;
@@ -142,7 +150,7 @@ export function nativeDictionary(id, args, machine, services = {}) {
       ? services.formatBytes(args[1], machine)
       : encodeCP932(services.format(args[1], machine));
     if (id === 0x381) return nativeReply(1, dictionary.get(key));
-    dictionary.set(key, args[2]);
+    dictionary.set(key, copyValue(args[2]));
   } else if (id === 0x382) dictionary?.entries.clear();
   else if (id === 0x383) return nativeReply(1, dictionary?.size ?? 0);
   else if (id === 0x384) {
@@ -150,7 +158,7 @@ export function nativeDictionary(id, args, machine, services = {}) {
       if (!services.imageDataBuffers) return undefined;
       return Promise.resolve(services.imageDataBuffers()).then(({ process }) => {
         const bytes = process.read(args[1], dictionary.size);
-        dictionary.write(bytes);
+        dictionary.write(bytes, copyValue);
         process.write(args[1], bytes);
         return nativeReply(2);
       });
@@ -162,6 +170,7 @@ export function nativeDictionary(id, args, machine, services = {}) {
         dictionary.importFrom(
           { load: (at, size = 4) => (size === 1 ? process.read(at, 1)[0] : process.load(at)) },
           args[1],
+          copyValue,
         );
         return nativeReply(2);
       });
