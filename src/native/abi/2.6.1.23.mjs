@@ -103,6 +103,11 @@ const mainEvidence = [
       'Own 2.6.1.23 wrappers 0x48ae70 and 0x48ae90 allocate zeroed VM blocks and release only the mapped block start, compacting the guest addresses.',
   },
   {
+    ids: [289, 290, 291, 292, 293],
+    value:
+      'Own 2.6.1.23 wrappers 0x4829c0, 0x4850c0 and 0x482a30–0x482c46 use an owned array of 40-byte CP932 rows and two DWORD values. The original GCALL confirms creation, release, conditional query results and write order.',
+  },
+  {
     ids: [123],
     value:
       'Own 2.6.1.23 0x487a60 builds a 1128-byte raw94 configuration with one counted CP932 table and an empty second table for the same Task 8 receiver as Main 418.',
@@ -1053,7 +1058,7 @@ export default {
   calendar: { weekdayAlgorithm: 'century-integer' },
   fileIO: { rawModeAndBoundedBuffer: true },
   globalFile: { growthBytes: 524288, optionalTaskRecords: true },
-  nameTable: { legacyFieldBytes: 32 },
+  nameTable: { legacyFieldBytes: 32, fixedPairs: true, pairByteLimit: 64 * 1024 * 1024 },
   math: {
     anglesUseX87: true,
     atan2UsesX87: true,
@@ -1344,6 +1349,48 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         { ids: [27, 28], fields: { resultWritten: true } },
+        {
+          ids: [289],
+          fields: {
+            result: {
+              kind: 'handle',
+              handleKind: 'name-pairs',
+              ownership: 'owned',
+              description: 'Owned array of name-pair rows',
+            },
+            resultWritten: true,
+          },
+        },
+        ...[290, 291, 292, 293].map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) => {
+              if (parameter.name === 'table')
+                return {
+                  ...parameter,
+                  type: {
+                    kind: 'handle',
+                    handleKind: 'name-pairs',
+                    ownership: id === 290 ? 'owned' : 'borrowed',
+                  },
+                };
+              if (parameter.type.kind !== 'pointer') return parameter;
+              return {
+                ...parameter,
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: parameter.type.target.kind === 'format-string' ? 'in' : 'out',
+                  target:
+                    parameter.name === 'name'
+                      ? { ...parameter.type.target, encoding: 'CP932' }
+                      : parameter.type.target,
+                },
+              };
+            }),
+            resultWritten: id < 292 ? false : null,
+          },
+        })),
         {
           ids: [26],
           fields: {

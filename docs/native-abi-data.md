@@ -19,8 +19,8 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 482       | 57            | 17            | 313     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.63 | 938        | 387       | 80            | 19            | 452     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
+| 2.6.1.23 | 869        | 487       | 57            | 17            | 308     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.63 | 938        | 392       | 80            | 19            | 447     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51                                     |
@@ -116,6 +116,18 @@ and the result preserves signed zero. Main 37 writes the grouped signed
 decimal bytes with two trailing NULs and returns control 2. The optional
 plus is used for a positive value and the signed minimum preserves the
 original byte sequence produced by DWORD arithmetic.
+
+Main 289 creates an owned array of 40-byte rows. Each row holds a
+32-byte CP932 name field and two DWORDs. Main 291 writes the first empty
+row and returns control 2. Main 292 finds the first matching name with
+ASCII byte case folding. It writes the first DWORD before the second when
+both destination addresses coincide. Main 293 searches both words and
+writes the stored name with its terminator. Both queries return control 1
+with 0 or 1 when a table is present, and control 2 with no result for a
+null table. Main 290 releases the owned allocation. The Core limits table
+allocations to 64 MiB, checks guest output spans and requires the row scan
+to stay inside the table. Main 834 retains the guard on the untyped
+native-memory release alias.
 
 Main 405–416 load and query binary gallery resources in the FES category.
 Variants use 20 groups of eight 540-byte records. A missing or wrong-size

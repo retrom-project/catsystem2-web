@@ -126,6 +126,121 @@ test('2.6.1.23 GCALL decimal conversion preserves the native result words and by
   );
 });
 
+test('2.6.1.23 uses owned 40-byte name pairs with native query and release results', async (t) => {
+  const marker = 0xa17073bc,
+    owner = loadedWord(64),
+    destination = 0x80000320,
+    program = kcsProgram([
+      ...push(marker),
+      ...native(289, 0x80000006, 2, 1),
+      receive(64),
+      ...native(291, owner, 512, 0x81234567, 0x76543218),
+      ...native(291, owner, 560, 11, 22),
+      ...native(291, owner, 608, 0xfedcba98, 0x80000000),
+      ...native(292, owner, 560, 128, 0x80000310),
+      receive(68),
+      ...native(292, owner, 608, 132, 132),
+      receive(72),
+      ...native(292, owner, 656, 136, 140),
+      receive(76),
+      ...native(293, owner, 11, 22, destination),
+      receive(80),
+      ...native(292, 0, 0, 0, 0),
+      ...native(293, 0, 0, 0, 0),
+      [59],
+    ]),
+    files = {
+      'name-pairs.kcs': program,
+      'name-pairs-free.kcs': kcsProgram([...native(290, owner), [59]]),
+    };
+  const world = await dataWorld(profile, files);
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('name-pairs.kcs'),
+    machine = task.machine,
+    initialStack = machine.sp;
+  machine.writeString('Tea', 512);
+  machine.writeString('TEA', 560);
+  machine.writeString('黒猫', 608);
+  machine.writeString('missing', 656);
+  machine.bytes(destination - 1, 7).fill(0xc5);
+  machine.store(136, marker);
+  machine.store(140, marker);
+  assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+  assert.equal(machine.sp, initialStack + 4);
+  assert.equal(machine.pop(), marker);
+  assert.deepEqual(
+    [68, 72, 76, 80].map((address) => machine.load(address)),
+    [1, 1, 0, 1],
+  );
+  assert.deepEqual(
+    [128, 0x80000310, 132, 136, 140].map((address) => machine.load(address)),
+    [0x81234567, 0x76543218, 0x80000000, marker, marker],
+  );
+  assert.deepEqual(
+    machine.bytes(destination - 1, 7),
+    Uint8Array.of(0xc5, 84, 69, 65, 0, 0xc5, 0xc5),
+  );
+  const handle = machine.load(64),
+    rows = world.runtime.handles.get(handle, 'name-pairs');
+  assert.equal(rows.length, 480);
+  assert.deepEqual(rows.subarray(120), new Uint8Array(360));
+
+  const restored = await dataWorld(profile, files, { initialize: false });
+  t.after(() => restored.close({ flushFiles: false }));
+  await restored.restore(world.snapshot());
+  const savedRows = restored.runtime.handles.get(handle, 'name-pairs');
+  assert.deepEqual(savedRows, rows);
+  assert.notEqual(savedRows, rows);
+  const free = await restored.spawnScript('name-pairs-free.kcs');
+  free.machine.store(64, handle);
+  assert.equal((await restored.runtime.scheduler.execute(free)).status, 'halted');
+  assert.equal(restored.runtime.handles.records.has(handle), false);
+  assert.equal(world.runtime.handles.records.has(handle), true);
+});
+
+test('2.6.1.23 protects full name tables, owner types and over-budget allocations', async (t) => {
+  const owner = loadedWord(64),
+    files = {
+      'filled.kcs': kcsProgram([
+        ...native(289, 1, 1, 1),
+        receive(64),
+        ...native(291, owner, 512, 55, 66),
+        [59],
+      ]),
+      'append-past-end.kcs': kcsProgram([...native(291, owner, 560, 71, 72), [59]]),
+      'wrong-owner.kcs': kcsProgram([...native(290, owner), [59]]),
+      'oversize.kcs': kcsProgram([...native(289, 1677722, 1, 1), [59]]),
+      'raw-free.kcs': kcsProgram([...native(834, owner), [59]]),
+    };
+  const world = await dataWorld(profile, files);
+  t.after(() => world.close({ flushFiles: false }));
+  const filled = await world.spawnScript('filled.kcs');
+  filled.machine.writeString('first', 512);
+  assert.equal((await world.runtime.scheduler.execute(filled)).status, 'halted');
+  const handle = filled.machine.load(64),
+    rows = world.runtime.handles.get(handle, 'name-pairs'),
+    expected = rows.slice();
+  assert.equal(rows.length, 40);
+
+  const wrong = world.runtime.handles.add('other', new Uint8Array(40));
+  for (const [file, handleWord, pattern] of [
+    ['append-past-end.kcs', handle, /end of its allocation/],
+    ['wrong-owner.kcs', wrong, /expected name-pairs/],
+    ['oversize.kcs', 0, /name pair allocation exceeds/],
+    ['raw-free.kcs', handle, UnsupportedKCSNative],
+  ]) {
+    const rejected = await world.spawnScript(file),
+      size = world.runtime.handles.records.size;
+    rejected.machine.store(64, handleWord);
+    rejected.machine.writeString('next', 560);
+    while (rejected.machine.instruction().op === 37) rejected.machine.step();
+    assert.equal(rejected.machine.instruction().op, 43);
+    assert.throws(() => rejected.machine.step(), pattern);
+    assert.equal(world.runtime.handles.records.size, size);
+    assert.deepEqual(rows, expected);
+  }
+});
+
 test('2.6.1.23 selects the loose startup and drives KCS, Draw and FES through a fresh Core', async () => {
   const startup = (entry, width, height) =>
       startupXML(

@@ -176,7 +176,7 @@ function foldNamePair(bytes) {
   return nativeDataKey(bytes).replace(/[A-Z]/g, (letter) => letter.toLowerCase());
 }
 
-function nativeNamePair(id, args, machine, services) {
+function nativeNamePair(id, args, machine, services, byteLimit) {
   const [handle, nameOrFirst, firstOrSecond, secondOrOutput] = args;
   const { handles } = services;
   const nameBytes = 32;
@@ -184,6 +184,8 @@ function nativeNamePair(id, args, machine, services) {
   if (id === 289) {
     const size =
       Math.imul(Math.imul(Math.imul(handle, nameOrFirst), firstOrSecond), rowBytes) >>> 0;
+    if (size > byteLimit)
+      throw new RangeError('Native name pair allocation exceeds its byte limit');
     return nativeReply(1, handles.add('name-pairs', new Uint8Array(size)));
   }
   if (!handle) return nativeReply(2);
@@ -242,6 +244,12 @@ export function installNativeNameTables(world) {
       world.runtime.register('main', id, (args, machine) => {
         if (args.length !== abi.tables.main.entries[id].signature.argumentWords)
           throw new Error(`Native name pair ${id} received an invalid argument width`);
-        return nativeNamePair(id, args, machine, world.runtime.services);
+        return nativeNamePair(
+          id,
+          args,
+          machine,
+          world.runtime.services,
+          abi.nameTable.pairByteLimit ?? Infinity,
+        );
       });
 }
