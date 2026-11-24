@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { floatBits, readKCS } from '../src/kcs.mjs';
+import { encodeCP932, floatBits, readKCS } from '../src/kcs.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
@@ -384,4 +384,48 @@ test('2.6.1.67 task GCALLs use owned VM transfer, clocks and Script exit words',
   await world.tick();
   assert.equal(receiver.status, 'finished');
   assert.deepEqual(packet(144), [sender, ...queued]);
+});
+
+test('2.6.1.67 Script GCALLs use the owned variable bank and context bytes', async (t) => {
+  const name = '接続';
+  const program = kcsProgram([
+    [37, 0x88ea0da3],
+    [37, 4],
+    [43, 209, 4],
+    [37, 3],
+    [37, 0xf812aa00],
+    [43, 211, 8],
+    [37, 3],
+    [43, 210, 4],
+    [38, 80],
+    [37, 4],
+    [43, 210, 4],
+    [38, 84],
+    [37, 0xffffffff],
+    [43, 210, 4],
+    [38, 88],
+    [37, 0xa7a91991],
+    [43, 212, 4],
+    [37, 128],
+    [43, 454, 4],
+    [59],
+  ]);
+  const world = await dataWorld(profile, {
+    'case.kcs': kcsProgram([[59]]),
+    'variable-context.kcs': program,
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('variable-context.kcs', { context: { contextName: name } });
+  const { machine } = task;
+  machine.bytes(127, 7).fill(0x5f);
+  const sp = machine.sp;
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, sp + 4);
+  assert.equal(machine.load(sp), 0x88ea0da3);
+  assert.deepEqual(
+    [80, 84, 88].map((at) => machine.load(at)),
+    [0xf812aa00, 0, 0],
+  );
+  assert.equal(world.runtime.variableBank(task, false).contextValue, 0xa7a91991);
+  assert.deepEqual(machine.bytes(127, 7), Uint8Array.of(0x5f, ...encodeCP932(name), 0, 0x5f));
 });
