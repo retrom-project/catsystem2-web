@@ -40,7 +40,10 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
       target = owners.get(a(5));
     if (source?.bitmap) {
       const words = Array.from({ length: 10 }, (_, i) => a(i));
-      if (id === 0x2df) words.operation = 'clipped-copy';
+      if (id === 0x2df) {
+        words.operation = 'clipped-copy';
+        words.copyPhysicalRows = nativeABI(world.profile).graphics.imageOwnerCopyPhysicalRows;
+      }
       await bitmapTransfer(
         world,
         target.bitmap ? images.get(target.bitmap) : null,

@@ -326,6 +326,62 @@ test('fixed 2.6.1.23 image rotations and reflections update retained pixels and 
   await runRenderGuest(world, [...call(723, [0, 0]), ...call(727, [0, 0xffffffff])]);
 });
 
+test('fixed 2.6.1.23 retained image copy keeps the original physical write order', async (t) => {
+  const world = renderWorld();
+  t.after(() => world.close());
+  world.game.width = world.game.height = 8;
+  const { imageOwners: owners, graphics } = world;
+  const bmp = graphics.images.create(4, 4),
+    bitmap = graphics.images.get(bmp),
+    record = (handle) => owners.add(handle, null, new Array(11).fill(0)),
+    source = record(bmp),
+    shared = record(graphics.images.alias(bmp)),
+    absent = record(0);
+  const data = (alpha) =>
+    Uint8ClampedArray.from({ length: 64 }, (_, i) => (i % 4 === 3 ? alpha : 1 + i));
+  bitmap.state.rgba = data(255);
+  const lowerRow = bitmap.state.rgba.slice(48);
+  await runRenderGuest(world, call(735, [source, 0, 1, 4, 3, shared, 0, 0, 4, 3]));
+  assert.deepEqual(
+    await bitmap.pixels(),
+    Uint8ClampedArray.from([...lowerRow, ...lowerRow, ...lowerRow, ...lowerRow]),
+  );
+
+  const other = graphics.images.create(4, 4),
+    destination = graphics.images.get(other),
+    detached = record(other);
+  bitmap.state.rgba = data(0);
+  destination.state.rgba = data(67);
+  await runRenderGuest(world, call(735, [source, 0, 0, 4, 4, detached, 0, 0, 2, 2]));
+  assert.deepEqual(await destination.pixels(), data(67));
+  await runRenderGuest(world, call(735, [source, 0, 0, 4, 4, source, 0, 0, 2, 2]));
+  assert.deepEqual(await bitmap.pixels(), data(0));
+
+  bitmap.state.rgba = data(101);
+  destination.state.bpp = 2;
+  await runRenderGuest(world, call(735, [source, 0, 0, 4, 4, detached, 0, 0, 4, 4]));
+  assert.deepEqual(
+    await destination.pixels(),
+    data(101).map((channel) => (channel >>> 4) * 17),
+  );
+  destination.state.bpp = 3;
+  await runRenderGuest(world, call(735, [source, 0, 0, 4, 4, detached, 0, 0, 4, 4]));
+  assert.deepEqual(await destination.pixels(), data(255));
+  await runRenderGuest(world, call(735, [source, 0, 0, 4, 4, detached, 0, 0, 2, 2]));
+  assert.deepEqual(await destination.pixels(), data(255));
+
+  bitmap.state.rgba = data(255);
+  await runRenderGuest(world, call(735, [source, 2, 3, 17, 19, absent, -1, 0, 3, 2]));
+  const vram = graphics.images.get(graphics.vramHandle);
+  assert.equal(vram.width, 8);
+  const pixels = await vram.pixels();
+  assert.deepEqual(pixels.slice((3 * 8 + 2) * 4, (3 * 8 + 4) * 4), data(255).slice(0, 8));
+  assert.deepEqual(pixels.slice((4 * 8 + 2) * 4, (4 * 8 + 4) * 4), data(255).slice(16, 24));
+  await runRenderGuest(world, call(735, [source, 2, 3, 4, 4, 0, 0, 0, 4, 4]));
+  assert.deepEqual(await vram.pixels(), pixels);
+  for (const handle of [source, shared, detached, absent]) await owners.release(handle);
+});
+
 test('fixed 2.6.1.23 owned bitmap helpers preserve sizes, offsets and RGBA through the VM', async () => {
   const world = renderWorld(),
     handle = [0x13, 512],

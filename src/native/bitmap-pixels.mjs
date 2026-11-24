@@ -3,6 +3,7 @@ import { originalOwner, originalOperation } from './original-adapter.mjs';
 import { nativeABI } from './abi/index.mjs';
 // Integer bitmap arithmetic follows the reviewed packed-pixel algorithms.
 import { resampleBitmap } from './image.mjs';
+import { flipBitmapRows } from './raster-kernel.mjs';
 const f = Math.fround;
 export async function bitmapColor(bitmap, mode, argument) {
   const s = bitmap.state;
@@ -151,6 +152,7 @@ export async function bitmapTransfer(world, destination, source, args, copy, tas
     ? crop([dx, dy, dx + (args[3] | 0), dy + (args[4] | 0)], destination.state)
     : intersect([dx, dy, dx + width, dy + height], [0, 0, destination.width, destination.height]);
   if (sr[0] >= sr[2] || sr[1] >= sr[3] || dr[0] >= dr[2] || dr[1] >= dr[3]) return;
+  const sameBacking = destination.state === source.state;
   const sameSizeCopy =
     copy &&
     world.profile &&
@@ -162,29 +164,38 @@ export async function bitmapTransfer(world, destination, source, args, copy, tas
     !sameSizeCopy &&
     (sr[2] - sr[0] !== dr[2] - dr[0] || sr[3] - sr[1] !== dr[3] - dr[1])
   ) {
+    const outputBpp = destination.state.bpp;
+    if (args.copyPhysicalRows && (source.state.bpp !== 4 || ![2, 4].includes(outputBpp))) return;
     const sw = sr[2] - sr[0],
       sh = sr[3] - sr[1],
       dw = dr[2] - dr[0],
       dh = dr[3] - dr[1],
-      physical = new Uint8ClampedArray(source.width * source.height * 4),
-      input = await source.pixels();
-    for (let y = 0; y < source.height; y++)
-      physical.set(
-        input.subarray(
-          (source.height - 1 - y) * source.width * 4,
-          (source.height - y) * source.width * 4,
-        ),
-        y * source.width * 4,
-      );
-    const scaled = resampleBitmap(physical, source.width, source.height, dw, dh, {
-        width: sw,
-        height: sh,
-        x: sr[0],
-        y: sr[1],
-      }),
-      logical = new Uint8ClampedArray(scaled.length);
-    for (let y = 0; y < dh; y++)
-      logical.set(scaled.subarray(y * dw * 4, (y + 1) * dw * 4), (dh - 1 - y) * dw * 4);
+      physical = flipBitmapRows(await source.pixels(), source.width, source.height);
+    const region = {
+      width: sw,
+      height: sh,
+      x: sr[0],
+      y: sr[1],
+    };
+    if (args.copyPhysicalRows) {
+      // An empty source sample preserves the destination. Aliased layers reuse
+      // the physical input buffer so the next sample sees earlier writes.
+      const output = sameBacking
+        ? physical
+        : flipBitmapRows(await destination.pixels(), destination.width, destination.height);
+      resampleBitmap(physical, source.width, source.height, dw, dh, region, {
+        pixels: output,
+        width: destination.width,
+        x: dr[0],
+        y: dr[1],
+        bpp: outputBpp,
+      });
+      destination.state.rgba = flipBitmapRows(output, destination.width, destination.height);
+      destination.state.source = null;
+      return destination.changed();
+    }
+    const scaled = resampleBitmap(physical, source.width, source.height, dw, dh, region),
+      logical = flipBitmapRows(scaled, dw, dh);
     return destination.blit(
       { width: dw, height: dh, pixels: async () => logical },
       { dx: dr[0], dy: destination.height - dr[1] - dh, width: dw, height: dh, copy: true },
@@ -196,6 +207,24 @@ export async function bitmapTransfer(world, destination, source, args, copy, tas
   sy = sr[1];
   dx = dr[0];
   dy = dr[1];
+  if (args.copyPhysicalRows) {
+    const pixels = await destination.pixels(),
+      input = sameBacking ? pixels : await source.pixels(),
+      fromBpp = source.state.bpp,
+      toBpp = destination.state.bpp;
+    for (let row = 0; row < height; row++) {
+      const from = ((source.height - 1 - sy - row) * source.width + sx) * 4,
+        to = ((destination.height - 1 - dy - row) * destination.width + dx) * 4;
+      if (sameBacking) pixels.copyWithin(to, from, from + width * 4);
+      else pixels.set(input.subarray(from, from + width * 4), to);
+      if (toBpp === 3 || fromBpp === 3)
+        for (let at = to + 3; at < to + width * 4; at += 4) pixels[at] = 255;
+      if (toBpp === 2)
+        for (let at = to; at < to + width * 4; at++) pixels[at] = (pixels[at] >>> 4) * 17;
+    }
+    destination.state.source = null;
+    return destination.changed();
+  }
   return destination.blit(source, {
     sx,
     sy: source.height - sy - height,

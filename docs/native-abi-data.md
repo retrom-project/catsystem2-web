@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 412       | 57            | 17            | 383     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.23 | 869        | 413       | 57            | 17            | 382     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 187       | 80            | 19            | 652     | Generic 8 of 45, Particle 6 of 44 and 6 of 51    |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -180,6 +180,13 @@ or 270 degrees and resets the bitmap clipping rectangle. Main 727 mirrors
 the layers vertically for zero and horizontally for any nonzero word while
 retaining the clipping rectangle. Both rebuild the retained owner geometry
 and leave the result word unwritten.
+
+Main 735 clips the source and destination rectangles independently. An
+equal-sized copy updates aliased rows from the bottom upwards. A scaled
+copy samples the live backing of an alias and preserves a destination
+pixel when every contributing alpha byte is zero. The scaled paths handle
+32-bit input to 32-bit or packed 16-bit output. An empty destination owner
+selects the VRAM transfer.
 
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word

@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [735],
+    value:
+      'Own 2.6.1.23 0x476E20 clips two retained rectangles and writes packed destination rows in physical order. An empty destination owner routes the source rectangle to VRAM.',
+  },
+  {
     ids: [723, 727],
     value:
       'Own 2.6.1.23 0x476930 and 0x476A90 rewrite retained bitmap layers through the packed rotation and reflection helpers. The owner rebuilds its image and marks the retained layer updated.',
@@ -1042,6 +1047,7 @@ export default {
     formattedBitmapPhysical: true,
     bitmapBlitUsesSourceSize: true,
     sameSizeBitmapCopyClips: true,
+    imageOwnerCopyPhysicalRows: true,
     screenCaptureOpaque: true,
     screenEffectRetimesOnActiveInit: [38, 39, 50, 51, 52],
     drawEnablePendingPolicy: 'rising-edge',
@@ -1104,6 +1110,19 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        {
+          ids: [735],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[735].signature.parameters.map((parameter, index) =>
+              index === 0 || index === 5
+                ? {
+                    ...parameter,
+                    type: { kind: 'handle', handleKind: 'image-owner', ownership: 'borrowed' },
+                  }
+                : parameter,
+            ),
+          },
+        },
         {
           ids: [723, 727],
           fields: {

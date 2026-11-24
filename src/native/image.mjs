@@ -447,13 +447,25 @@ export function blendBitmapPixel(destination, at, source, src, opacity = 255) {
   }
 }
 
-export function resampleBitmap(source, width, height, nextWidth, nextHeight, region = null) {
+export function resampleBitmap(
+  source,
+  width,
+  height,
+  nextWidth,
+  nextHeight,
+  region = null,
+  target = null,
+) {
   size(width, height);
   size(nextWidth, nextHeight);
-  if (!region && width === nextWidth && height === nextHeight) return new Uint8ClampedArray(source);
+  if (!region && !target && width === nextWidth && height === nextHeight)
+    return new Uint8ClampedArray(source);
   const regionWidth = region?.width ?? width,
     regionHeight = region?.height ?? height;
-  const output = new Uint8ClampedArray(nextWidth * nextHeight * 4);
+  const output = target?.pixels ?? new Uint8ClampedArray(nextWidth * nextHeight * 4),
+    outputWidth = target?.width ?? nextWidth,
+    outputOffset = target ? target.y * outputWidth + target.x : 0,
+    packed = target?.bpp === 2;
   if (regionWidth > 4 * nextWidth || regionHeight > 4 * nextHeight) {
     const rx = f(f(regionWidth) / f(nextWidth)),
       ry = f(f(regionHeight) / f(nextHeight)),
@@ -471,7 +483,10 @@ export function resampleBitmap(source, width, height, nextWidth, nextHeight, reg
               sum += source[((sy + j) * width + sx + i) * 4 + c];
               count++;
             }
-          output[(y * nextWidth + x) * 4 + c] = Math.floor(sum / count);
+          const channel = Math.floor(sum / count);
+          output[(outputOffset + y * outputWidth + x) * 4 + c] = packed
+            ? (channel >>> 4) * 17
+            : channel;
         }
       }
     return output;
@@ -498,8 +513,8 @@ export function resampleBitmap(source, width, height, nextWidth, nextHeight, reg
         Math.imul(ty, 32768 - tx) >> 15,
         Math.imul(tx, ty) >> 15,
       ];
-      for (let channel = 0; channel < 4; channel++)
-        output[(y * nextWidth + x) * 4 + channel] =
+      for (let channel = 0; channel < 4; channel++) {
+        const value =
           channel === 3 && source[a + 3] + source[b + 3] + source[c + 3] + source[d + 3] === 1020
             ? 255
             : (weights[0] * source[a + channel] +
@@ -507,6 +522,10 @@ export function resampleBitmap(source, width, height, nextWidth, nextHeight, reg
                 weights[2] * source[c + channel] +
                 weights[3] * source[d + channel]) >>>
               15;
+        output[(outputOffset + y * outputWidth + x) * 4 + channel] = packed
+          ? (value >>> 4) * 17
+          : value;
+      }
     }
   return output;
 }
