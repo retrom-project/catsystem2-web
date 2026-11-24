@@ -115,7 +115,7 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
   }
   const particle = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-    27, 28, 30, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43,
+    27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
   ];
   for (const [table, ids] of [
     ['particle-v1', particle],
@@ -126,6 +126,16 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
       ids,
     );
     assert.equal(base[table].entries[3].signature.resultWritten, true);
+    const texture = base[table].entries[29].signature;
+    assert.equal(texture.argumentWords, 4);
+    assert.deepEqual(
+      texture.parameters.map(({ type }) => type.kind),
+      ['float', 'ignored', 'float', 'ignored'],
+    );
+    assert.deepEqual(texture.controlCodes, [2]);
+    assert.equal(texture.resultWritten, false);
+    assert.equal(base[table].entries[37].signature.argumentWords, 6);
+    assert.equal(base[table].entries[37].signature.resultWritten, true);
     assert.equal(base[table].entries[32].signature.resultWritten, false);
     assert.deepEqual(base[table].entries[32].signature.controlCodes, [4]);
     for (const id of [22, 23, 24, 25, 26]) {

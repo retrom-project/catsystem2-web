@@ -690,6 +690,16 @@ const mainEvidence = [
 ];
 const particleInterpreterEvidence = [
   {
+    ids: [29],
+    value:
+      'Own 2.6.1.23 PTCL tables point to 0x48C9D0. The two diagonal float32 words write the eight UV coordinates of the selected quad, with x87 PC24 division.',
+  },
+  {
+    ids: [37],
+    value:
+      'Own 2.6.1.23 PTCL tables point to 0x48CC80. The six float32 words enter the x87 distance helper at 0x4CA540 and produce one result word.',
+  },
+  {
     ids: [18],
     value:
       'Own 2.6.1.23 Particle v1 and v2 slot 18 alias Main 61 at 0x48C590. The initialized SSE2 CRT writes one float32 result word.',
@@ -730,6 +740,17 @@ const particleInterpreterEvidence = [
 ];
 const particleInterpreterSignatures = [
   {
+    ids: [29],
+    fields: {
+      parameters: NATIVE_SEMANTICS['particle-v1'][29].signature.parameters.map((parameter, i) => ({
+        ...parameter,
+        description: i % 2 ? 'Unused input word' : 'Float32 diagonal texture coordinate',
+        type: i % 2 ? { kind: 'ignored' } : { kind: 'float', bits: 32 },
+      })),
+      resultWritten: false,
+    },
+  },
+  {
     ids: [38],
     fields: {
       parameters: NATIVE_SEMANTICS['particle-v1'][38].signature.parameters.map((parameter) =>
@@ -744,8 +765,8 @@ const particleInterpreterSignatures = [
   },
   {
     ids: [
-      1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 33, 34, 36, 40, 41,
-      42, 43,
+      1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 33, 34, 36, 37, 40,
+      41, 42, 43,
     ],
     fields: { resultWritten: true },
   },
@@ -994,6 +1015,8 @@ export default {
     scriptVersionFallback: 'particle-v1',
     frameScale: 'x87-uint32',
     quadUsesX87: true,
+    textureCoordinatesUseX87: true,
+    distanceUsesX87: true,
     projectionBoundsUseX87: true,
     attachmentPositionRequiresOwner: true,
     taskMessageStart: 285,

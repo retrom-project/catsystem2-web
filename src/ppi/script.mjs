@@ -5,6 +5,7 @@ import { nativeScalarMath } from '../native/scalar-math.mjs';
 import { PTCL_ABI, initialParticle, readPTCLQuad, writePTCLQuad } from './abi.mjs';
 import { particleNativeContract } from './contracts.mjs';
 import { ParticleRandom } from './random.mjs';
+import { roundX87Single } from './x87.mjs';
 import {
   calcFrame,
   degreeToRadian,
@@ -96,6 +97,7 @@ export class ParticleScriptInstance {
     this.interpreterMath = this.math?.interpreterUsesNativeScalarMath ? this.math : null;
     this.frameScale = abi?.particle?.frameScale;
     this.quadUsesX87 = abi?.particle?.quadUsesX87;
+    this.textureCoordinatesUseX87 = abi?.particle?.textureCoordinatesUseX87;
     this.distanceUsesX87 = abi?.particle?.distanceUsesX87;
     this.projectionBoundsUseX87 = abi?.particle?.projectionBoundsUseX87;
     this.projectionBoundsUseSSE = abi?.particle?.projectionBoundsUseSSE;
@@ -308,9 +310,10 @@ export class ParticleScriptInstance {
         vectorOut(this.positions.subarray(base, base + 3));
         return voidReply();
       case 29: {
-        // Native 2.6.1.76 reads raw float words despite SDK's long declaration.
+        // The native slot reads two diagonal values as raw float32 words.
         const lo = f(bitsFloat(args[0]) - 0.5),
-          hi = f(bitsFloat(args[2]) - 0.5);
+          hi = f(bitsFloat(args[2]) - 0.5),
+          divideResult = this.textureCoordinatesUseX87 ? roundX87Single : f;
         const values = [
           [lo, lo],
           [hi, lo],
@@ -319,8 +322,8 @@ export class ParticleScriptInstance {
         ];
         const b = new DataView(this.quads.buffer);
         for (let i = 0; i < 4; i++) {
-          b.setFloat32(quadOffset + i * 28 + 20, f(values[i][0] / this.width), true);
-          b.setFloat32(quadOffset + i * 28 + 24, f(values[i][1] / this.height), true);
+          b.setFloat32(quadOffset + i * 28 + 20, divideResult(values[i][0] / this.width), true);
+          b.setFloat32(quadOffset + i * 28 + 24, divideResult(values[i][1] / this.height), true);
         }
         return voidReply();
       }

@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 454       | 57            | 17            | 341     | Generic 25 of 45, Particle 41 of 44 and 43 of 51 |
+| 2.6.1.23 | 869        | 454       | 57            | 17            | 341     | Generic 25 of 45, Particle 43 of 44 and 45 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -123,6 +123,14 @@ empty attachment or detached graphics device produces three zero words.
 All three VM destinations are checked before writing. An active renderer
 with an unresolved graph remains protected because the original stale
 registration can reuse overwritten scratch coordinates after a prior query.
+
+PTCL slots 29 and 37 share the same handlers across v1 and v2. Slot 29 reads
+the first and third words as float32, subtracts a half texel, and divides by
+the current texture dimensions. All eight writes belong to the selected
+quad. Slot 37 reads two three-word vectors and writes the distance result.
+The Core uses the physical x86 PC24 arithmetic for both calls. The optional
+desktop diagnostic in slot 0 stays guarded while the authorized original
+debugger output path is outside the browser coverage.
 
 The fixed executable assigns the PTCL v2 table only to header version
 `0x20000` and selects v1 for other versions. The acceptance collector uses

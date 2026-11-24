@@ -682,6 +682,57 @@ test('2.6.1.23 PTCL v2 alone admits the blend-mode word', async () => {
   assert.equal(original.instance.calls.size, 0);
 });
 
+test('2.6.1.23 both Particle tables write only the current quad UV words and publish x87 distance', async () => {
+  for (const table of particles) {
+    const maybeUnused = [0xd2ddef88, 0xdba829fa],
+      samples = [
+        {
+          args: [floatBits(2.5), maybeUnused[0], floatBits(5.5), maybeUnused[1]],
+          width: 8,
+          height: 16,
+          words: [1 / 4, 1 / 8, 5 / 8, 1 / 8, 1 / 4, 5 / 16, 5 / 8, 5 / 16].map(floatBits),
+        },
+        {
+          args: [0x3bf6238d, 0, 0xc36c4d47, 0],
+          width: bitsFloat(0x7e1cb111),
+          height: bitsFloat(0x5d19b73c),
+          first: 0x8066fdbe,
+        },
+      ];
+    for (const { args, width, height, words, first } of samples) {
+      const { instance, run } = await guest(table, 29, args, { width, height });
+      const quad = new Uint32Array(instance.quads.buffer);
+      quad.fill(sentinel);
+      run(2);
+      const uv = [...quad].filter((_, i) => i % 7 >= 5);
+      if (words) assert.deepEqual(uv, words);
+      else assert.equal(uv[0], first);
+      assert([...quad].filter((_, i) => i % 7 < 5).every((word) => word === sentinel));
+    }
+    for (const [args, expected] of [
+      [[0, 0, 0, ...[3, 4, 12].map(floatBits)], 0x41500000],
+      [[0x4b189680, 0xc0000000, 0, 0xc0400000, 0x41400000, 0x4b189680], 0x4b57cab9],
+      [[0xff801234, 0, 0, 0, 0, 0], 0xffc01234],
+    ]) {
+      const { run } = await guest(table, 37, args);
+      run(1, expected);
+    }
+    for (const [id, argumentWords] of [
+      [29, 4],
+      [37, 6],
+    ]) {
+      const wrong = await guest(table, id, new Array(argumentWords - 1).fill(0));
+      assert.throws(
+        () => wrong.instance.update(0),
+        new RegExp(`requires ${argumentWords} arguments`),
+      );
+      assert.equal(wrong.instance.calls.size, 0);
+    }
+    const debug = await guest(table, 0, [64]);
+    assert.throws(() => debug.instance.update(0), /Unreviewed PTCL native .*\/0/);
+  }
+});
+
 test('2.6.1.23 PTCL v2 reads its live Plane position through the particle task', async (t) => {
   const output = [64, 68, 72],
     code = kcsProgram([...output.map((at) => [37, at]), [43, 49, 12], [59]]);
