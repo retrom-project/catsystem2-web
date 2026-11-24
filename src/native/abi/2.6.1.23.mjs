@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [83, 86, 87],
+    value:
+      'Own 2.6.1.23 Plane raw 63 releases the graph and its tracked input, while raw 57 and 58 return the selected base and position vectors into VM outputs',
+  },
+  {
     ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],
     value:
       'Own 2.6.1.23 kind-48 STRING receiver 0x426cf0, raw 407–411, 413–417 and 419, with the 188-byte CP932 configuration',
@@ -936,6 +941,8 @@ export default {
     texturedBoundsQuery: null,
     planeAlphaFlags: 1,
     coordinateModeRequiresGraph: true,
+    planePoseQueriesRequireReply: true,
+    planeResetReleasesTrackedInput: true,
   },
   gallery: { listVariantWidth: 64 },
   startup: {
@@ -970,6 +977,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [83, 86, 87], fields: { resultWritten: false } },
         {
           ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],
           fields: { resultWritten: false },

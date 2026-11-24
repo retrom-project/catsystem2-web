@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 374       | 57            | 17            | 421     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.23 | 869        | 377       | 57            | 17            | 418     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 110       | 80            | 19            | 729     | Generic 8 of 45, Particle 6 of 44 and 6 of 51    |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -61,6 +61,13 @@ a result. Raw load with a null pointer retains the bank. Register update
 quietens signaling NaNs during its float32 copy. Alpha is signed below 255
 and becomes 256 at or above 255. Attachment zero selects the detached
 state.
+
+Main 83 uses Plane raw 63 to release the graph and its tracked input
+registration. Main 86 and 87 send raw 57 and 58 to query the selected
+geometry or texture pose and write two or three float words. The query
+leaves guest memory unchanged when the target ID is zero. A nonzero
+target must supply initialized pose words before the Core writes the VM
+outputs.
 
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word

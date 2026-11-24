@@ -517,9 +517,10 @@ export class NativeGraphicTask {
     this.world = graphics.world;
     this.record = record;
     this.base = this.world.base(record);
-    this.coordinateModeRequiresGraph = Boolean(
-      this.world.profile && nativeABI(this.world.profile).graphics.coordinateModeRequiresGraph,
-    );
+    const abi = this.world.profile && nativeABI(this.world.profile).graphics;
+    this.coordinateModeRequiresGraph = Boolean(abi?.coordinateModeRequiresGraph);
+    this.planePoseQueriesRequireReply = Boolean(abi?.planePoseQueriesRequireReply);
+    this.planeResetReleasesTrackedInput = Boolean(abi?.planeResetReleasesTrackedInput);
     // Initial BasePlane and SimplePlane state.
     this.state = {
       receiver: -1,
@@ -664,6 +665,15 @@ export class NativeGraphicTask {
     this.state.rect = [0, 0, 0, 0];
     this.state.drawType = 0;
     this.sync();
+  }
+  async unregisterInput() {
+    if (this.state.receiver !== -1) {
+      if (!this.input?.unregister) throw new Error('Native plane input removal is unavailable');
+      await this.input.unregister(this.record.id);
+      this.state.receiver = -1;
+      this.state.changed = 1;
+    }
+    this.state.inputTracksGraph = false;
   }
   makeGraph(shape) {
     const style = Object.fromEntries(
@@ -1085,7 +1095,7 @@ export class NativeGraphicTask {
         if (this.graph) put(l, vector(MOTION_ABI.base));
         return 0;
       case 62:
-        put(l, vector(MOTION_ABI.pos));
+        if (this.graph || !this.planePoseQueriesRequireReply) put(l, vector(MOTION_ABI.pos));
         return 0;
       case 63:
         if (this.graph) {
@@ -1112,6 +1122,8 @@ export class NativeGraphicTask {
       case 68:
         this.unregisterGraph();
         this.unload();
+        if (this.planeResetReleasesTrackedInput && this.state.inputTracksGraph)
+          await this.unregisterInput();
         return 0;
       case 74:
         return ((this.state.blocked ? 0x80000000 : 0) | this.state.phase) >>> 0;
@@ -1198,13 +1210,7 @@ export class NativeGraphicTask {
         return tracksGraph ? undefined : 1;
       }
       case 90:
-        if (this.state.receiver !== -1) {
-          if (!this.input?.unregister) throw new Error('Native plane input removal is unavailable');
-          await this.input.unregister(this.record.id);
-          this.state.receiver = -1;
-          this.state.changed = 1;
-        }
-        this.state.inputTracksGraph = false;
+        await this.unregisterInput();
         return 0;
       case 94:
         this.state.changed = l;
@@ -1541,18 +1547,22 @@ export const NATIVE_GRAPHICS_IDS = Object.freeze([
 
 export async function nativeGraphics(id, args, machine, task, world) {
   if (!NATIVE_GRAPHICS_IDS.includes(id)) return undefined;
+  const abi = world.profile && nativeABI(world.profile),
+    requirePose = abi?.graphics.planePoseQueriesRequireReply;
   const count =
-    id === 0x21d
-      ? 4
-      : id === 0x21e
-        ? 0
-        : id === 0x159
-          ? 5
-          : id === 0x157 || id === 0x158
-            ? 3
-            : id === 0x192
-              ? 2
-              : null;
+    requirePose && [0x53, 0x56, 0x57].includes(id)
+      ? abi.tables.main.entries[id].signature.argumentWords
+      : id === 0x21d
+        ? 4
+        : id === 0x21e
+          ? 0
+          : id === 0x159
+            ? 5
+            : id === 0x157 || id === 0x158
+              ? 3
+              : id === 0x192
+                ? 2
+                : null;
   if (count !== null && args.length !== count)
     throw new Error(`Native graphics 0x${id.toString(16)} expects ${count} arguments`);
   const graphics = world.graphics,
@@ -1630,17 +1640,20 @@ export async function nativeGraphics(id, args, machine, task, world) {
       await send(49, args[3], 0, p, 1);
       return done();
     }
-    case 0x56: {
-      const p = packet();
-      await send(61, args[3], 0, p);
-      machine.store(args[1], p.load(0));
-      machine.store(args[2], p.load(4));
-      return done();
-    }
+    case 0x56:
     case 0x57: {
-      const p = packet();
-      await send(62, args[4], 0, p);
-      for (let i = 0; i < 3; i++) machine.store(args[1 + i], p.load(i * 4));
+      const base = id === 0x56,
+        coordinates = base ? 2 : 3,
+        indices = Array.from({ length: coordinates }, (_, index) => index),
+        p = requirePose ? new NativeGraphicsPacket([], { unwritten: indices }) : packet();
+      await send(base ? 61 : 62, args[coordinates + 1], 0, p, Number(Boolean(requirePose)));
+      if (requirePose) {
+        for (const index of indices) {
+          nativeEngineWord(p.load(index * 4), 'Native Plane pose query');
+          machine.bytes(args[index + 1], 4);
+        }
+      }
+      for (const index of indices) machine.store(args[index + 1], p.load(index * 4));
       return done();
     }
     case 0x58: {
