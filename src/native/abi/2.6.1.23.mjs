@@ -93,6 +93,11 @@ export const engine23CommonHeads = {
 const legacyTaskWordOperations = [126, 127, 128, 129, 131, 132, 138, 139];
 const mainEvidence = [
   {
+    ids: [123],
+    value:
+      'Own 2.6.1.23 0x487a60 builds a 1128-byte raw94 configuration with one counted CP932 table and an empty second table for the same Task 8 receiver as Main 418.',
+  },
+  {
     ids: legacyTaskWordOperations,
     value:
       'Own 2.6.1.23 wrappers 0x487d80–0x488110 send raw 98–101, 103–105 and 111 to the kind 8 receiver at 0x41bc80. State, rows and the optional query owner were compared.',
@@ -933,6 +938,7 @@ export default {
     legacyConfigurationBytes: 1128,
     legacyClearPublishes: true,
     legacyTaskWordOperations,
+    legacyInitializerBitmapBpp: 4,
     settingsCharacterBytes: 1,
     pathBytes: 260,
     clipboardUsesCP932: true,
@@ -1327,6 +1333,30 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        {
+          ids: [123],
+          fields: {
+            parameters: [
+              { kind: 'object-id', objectKind: 'legacy-text' },
+              {
+                kind: 'pointer',
+                addressSpace: 'vm',
+                direction: 'in',
+                target: { kind: 'record', name: '96-byte legacy text definition' },
+              },
+              {
+                kind: 'pointer',
+                addressSpace: 'vm',
+                direction: 'in',
+                target: { kind: 'character', bits: 8, encoding: 'CP932' },
+              },
+            ].map((type, index) => ({
+              ...NATIVE_SEMANTICS.main[123].signature.parameters[index],
+              type,
+            })),
+            resultWritten: false,
+          },
+        },
         ...legacyTaskWordOperations.map((id) => ({
           ids: [id],
           fields: {

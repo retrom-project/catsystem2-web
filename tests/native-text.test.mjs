@@ -46,7 +46,7 @@ test('2.6.1.23 legacy Text controls preserve receiver words, rows and query owne
     target = world.nativeTaskID(textID),
     guard = 0x3bc6ea17;
   t.after(() => world.close({ flushFiles: false }));
-  async function invoke(id, args, expected, error) {
+  async function invoke(id, args, expected, error, initialize = () => {}) {
     const script = await readKCS(
       kcsProgram([[37, guard], ...args.map((word) => [37, word]), [43, id, args.length * 4], [59]]),
     );
@@ -54,6 +54,7 @@ test('2.6.1.23 legacy Text controls preserve receiver words, rows and query owne
     const machine = (task.machine = new KCSMachine(script, {
       native: (id, args, caller) => world.runtime.scheduler.native(task, id, args, caller),
     }));
+    initialize(machine);
     const floor = machine.sp;
     const run = world.runtime.scheduler.execute(task);
     if (error) await assert.rejects(run, error);
@@ -97,6 +98,44 @@ test('2.6.1.23 legacy Text controls preserve receiver words, rows and query owne
   await invoke(126, [target, 18], undefined, /expects 3 argument words/);
   await invoke(131, [0xb87ca1a1, 27]);
   assert.equal(text.w(183), 18);
+
+  const def = 192,
+    first = 400,
+    record = world.legacyText.tasks.get(textID);
+  function configure(profile, rowLimit, bpp, error) {
+    return invoke(123, [target, def, first], undefined, error, (machine) => {
+      machine.bytes(def, 96).fill(0);
+      for (const [index, word] of [
+        [2, 8],
+        [3, 6],
+        [4, bpp],
+        [6, 16],
+        [15, rowLimit],
+      ]) {
+        machine.store(def + index * 4, word);
+      }
+      machine.bytes(first, profile.length + 1).set([...profile, 0]);
+    });
+  }
+  const fullProfile = [...Array(254).fill(65), 0x82, 0xa0, 0xa1];
+  await configure(fullProfile, 8, 4);
+  const saved = record.bitmap,
+    pixels = world.graphics.images.get(saved);
+  assert.deepEqual([pixels.width, pixels.height, pixels.state.bpp], [8, 6, 4]);
+  assert((await pixels.pixels()).every((v) => !v));
+  assert.equal(text.w(201), 256);
+  assert.equal(text.w(330), 0);
+  assert.deepEqual([...text.profile(201, 202)], [65, 0x82a0, 0xffa1]);
+  await configure([], 0, 2);
+  await configure([], 8, 2, /Unreviewed bitmap format/);
+  await configure([...fullProfile, 70], 8, 4, /exceeds 256 units/);
+  assert.equal(record.bitmap, saved);
+  assert.equal(text.w(201), 256);
+  await configure([], 2, 4);
+  assert.equal(text.w(201), 0);
+  assert.equal(text.w(192), 2);
+  assert.notEqual(record.bitmap, saved);
+  assert.throws(() => world.graphics.images.get(saved), /released native bitmap handle/);
 });
 
 const glyphs = {

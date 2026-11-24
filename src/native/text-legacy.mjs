@@ -44,6 +44,7 @@ export class NativeLegacyTextRuntime {
     this.clearPublishes = text?.legacyClearPublishes;
     this.characterPairs = text?.characterLengthPairs;
     this.wordOperations = text?.legacyTaskWordOperations ?? [];
+    this.initializerBitmapBpp = text?.legacyInitializerBitmapBpp;
   }
   async create(record) {
     const task = new NativeLegacyTextTask(this, record);
@@ -53,7 +54,9 @@ export class NativeLegacyTextRuntime {
   }
   async apply(id, args, machine, task) {
     machine = vmMemory(machine);
-    const checkedOwner = this.wordOperations.includes(id);
+    const checkedInitializer = id === 0x7b && this.initializerBitmapBpp !== undefined,
+      checkedOwner = checkedInitializer || this.wordOperations.includes(id);
+    let absentOwner = false;
     if (checkedOwner) {
       const signature = nativeABI(this.world.profile).tables.main.entries[id].signature;
       if (args.length !== signature.argumentWords)
@@ -62,11 +65,11 @@ export class NativeLegacyTextRuntime {
         );
       const owner = this.world.resolveTaskID(args[0], task.id),
         record = this.world.objects.objects.get(owner);
-      if (!record || (args[0] === 0 && record.kind === 1)) {
+      absentOwner = !record || (args[0] === 0 && record.kind === 1);
+      if (absentOwner) {
         if (id === 0x81) throw new Error('Legacy text query has no initialized 32-bit output word');
-        return nativeReply(2);
-      }
-      if (record.kind !== 8) throw new Error('Native legacy text requires a kind 8 task');
+        if (!checkedInitializer) return nativeReply(2);
+      } else if (record.kind !== 8) throw new Error('Native legacy text requires a kind 8 task');
     }
     const arg = (i) => nativeDataArgument(args, machine, i),
       target = arg(0),
@@ -102,10 +105,20 @@ export class NativeLegacyTextRuntime {
           false,
           this.characterPairs,
         ).map((c) => (c >= 128 && c <= 255 ? c | 0xff00 : c));
-        if (units.length > 255)
-          throw new RangeError('Legacy text line-break profile exceeds 255 units');
+        const maximum = checkedInitializer ? 256 : 255;
+        if (units.length > maximum)
+          throw new RangeError(`Legacy text line-break profile exceeds ${maximum} units`);
         v.setUint32(at, units.length, true);
         units.forEach((c, i) => v.setUint16(at + 4 + i * 2, c, true));
+      }
+      if (absentOwner) return nativeReply(2);
+      if (checkedInitializer && v.getUint32(60, true)) {
+        if (v.getUint32(16, true) !== this.initializerBitmapBpp)
+          throw new RangeError('Unreviewed bitmap format for the legacy text initializer');
+        const width = v.getInt32(8, true),
+          height = v.getInt32(12, true);
+        if (width < 0 || height < 0 || width * height > 64 * 1024 * 1024)
+          throw new RangeError('Invalid bitmap dimensions for the legacy text initializer');
       }
       await send(101, 0, 0, bytes);
       return nativeReply(2);
