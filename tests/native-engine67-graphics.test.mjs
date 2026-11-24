@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { floatBits } from '../src/kcs.mjs';
 import { MOTION_ABI, motionVector, setMotionVector } from '../src/motion/abi.mjs';
+import { NULL_NATIVE_TEXTURE } from '../src/native/texture-layout.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 
@@ -261,4 +262,51 @@ test('2.6.1.67 plane GCALLs apply blend selectors and update their retained disp
   assert.notEqual(plane.graph, loaded);
   assert.equal(plane.graph.vram, false);
   assert.deepEqual(plane.state.rect, [0, 0, 0, 0]);
+});
+
+test('2.6.1.67 texture GCALLs release intersecting pages and allocate missing pages', async (t) => {
+  const world = await dataWorld(
+    profile,
+    {
+      'outside.kcs': planeProgram([
+        [541, [-1, 0, 1, 1]],
+        [541, [2, 0, 0, 1]],
+      ]),
+      'release.kcs': planeProgram([
+        [541, [2, 0, 1, 1]],
+        [541, [2, 0, 1, 1]],
+      ]),
+      'allocate.kcs': planeProgram([[542, []]]),
+    },
+    { initialize: false },
+  );
+  t.after(() => world.close({ flushFiles: false }));
+  const texture = world.configuration.fields.texture;
+  texture.size.set([2, 2]);
+  texture.grid.set([2, 1]);
+  texture.areas[0].set([0, 0, 2, 1]);
+  texture.bppY.set([0, 1]);
+  await world.initialize('case.kcs');
+  await world.graphics.fill(0, 0, 4, 2, 0xff343638);
+  const left = await world.graphics.meshTexture(0),
+    right = await world.graphics.meshTexture(1);
+  const run = async (name) => {
+    const task = await world.spawnScript(name, { parent: world.main.id, initialExecute: false }),
+      floor = task.machine.sp;
+    await world.runtime.scheduler.execute(task);
+    assert.equal(task.machine.sp, floor + 4);
+    assert.equal(task.machine.load(floor), 0x72394ca1);
+  };
+  await run('outside.kcs');
+  assert.equal(await world.graphics.meshTexture(0), left);
+  assert.equal(await world.graphics.meshTexture(1), right);
+  await run('release.kcs');
+  assert.equal(await world.graphics.meshTexture(0), left);
+  assert.equal(await world.graphics.meshTexture(1), NULL_NATIVE_TEXTURE);
+  await run('allocate.kcs');
+  const cleared = await world.graphics.meshTexture(1);
+  assert.equal(await world.graphics.meshTexture(0), left);
+  assert.notEqual(cleared, right);
+  assert.deepEqual([...cleared.rgba], Array(16).fill(0));
+  assert.deepEqual([...left.rgba.subarray(0, 4)], [52, 54, 56, 255]);
 });
