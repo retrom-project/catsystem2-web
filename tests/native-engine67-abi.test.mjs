@@ -357,6 +357,31 @@ function assertScalarOutput(machine) {
   );
 }
 
+const triangleCases = [
+  [[0, 0], 0xffc00000],
+  [[0x3f800000, 0xff831234], 0x7fc31234],
+  [[2, 16].map(floatBits), 0x3f000000],
+  [[4, 16].map(floatBits), 0x3f800000],
+  [[6, 16].map(floatBits), 0x3f000000],
+  [[8, 16].map(floatBits), 0x80000000],
+  [[12, 16].map(floatBits), 0xbf800000],
+  [[-12, -16].map(floatBits), 0xbf800000],
+];
+
+test('2.6.1.67 Main triangle wave selects the original signed x87 quarter', async (t) => {
+  const instructions = triangleCases.flatMap(([args], index) => [
+      ...args.map((word) => [37, word]),
+      [43, 321, 8],
+      [38, 64 + index * 4],
+    ]),
+    world = await dataWorld(profile, { 'case.kcs': kcsProgram([...instructions, [59]]) });
+  t.after(() => world.close({ flushFiles: false }));
+  assert.deepEqual(
+    triangleCases.map((_, index) => world.main.machine.load(64 + index * 4)),
+    triangleCases.map(([, expected]) => expected),
+  );
+});
+
 test('2.6.1.67 Main scalar GCALLs write the original x87 and integer words', async (t) => {
   const world = await dataWorld(profile, { 'case.kcs': kcsProgram(scalarProgram(0)) });
   t.after(() => world.close({ flushFiles: false }));
@@ -486,8 +511,32 @@ for (const version of [1, 2]) {
     assert.equal(m.pop(), marker);
     assert.equal(m.sp, sp);
     assert.deepEqual(instance.update(10), { active: false, executed: 0 });
-    const guarded = await particle([...particleCall(37, [1, 2, 3, 4, 5, 6]), [59]]);
-    assert.throws(() => guarded.update(9), /Unreviewed PTCL native .*\/37/);
+    const guarded = await particle([...particleCall(29, [1, 2, 3, 4]), [59]]);
+    assert.throws(() => guarded.update(9), /Unreviewed PTCL native .*\/29/);
+  });
+
+  test(`2.6.1.67 ${table} distance and triangle wave retain the native x87 words`, async () => {
+    const distances = [
+      [[3, 4, 12, 0, 0, 0].map(floatBits), 0x41500000],
+      [[3.125, 8.25, 13.875, 2, 11, 1].map(floatBits), 0x41536a0f],
+      [[4e-23, 4e-23, 4e-23, 0, 0, 0].map(floatBits), 0x1a9cc471],
+      [[4e19, 3, 8, 12, 43, 39].map(floatBits), 0x7f800000],
+      [[0, 0x7f800001, 0, 0, 0xffc12121, 0], 0xffc12121],
+      [[0x7f800000, 0, 0, 0x7f800000, 0, 0], 0xffc00000],
+    ];
+    const cases = [
+      ...distances.map(([args, result]) => ({ slot: 37, args, result })),
+      ...triangleCases.map(([args, result]) => ({ slot: 43, args, result })),
+    ];
+    const instance = await particle([
+      ...cases.flatMap(({ slot, args }, index) => particleCall(slot, args, 64 + index * 4)),
+      [59],
+    ]);
+    instance.update(0);
+    assert.deepEqual(
+      cases.map((_, index) => instance.machine.load(64 + index * 4)),
+      cases.map(({ result }) => result),
+    );
   });
 
   test(`2.6.1.67 ${table} CalcFrame preserves signed input and rounds the unsigned rate at x87 precision`, async () => {

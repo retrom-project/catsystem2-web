@@ -174,6 +174,21 @@ export function x87MultiplyWords(left, right, rightFromMemory) {
   return floatBits(x87Product(left, right, rightFromMemory));
 }
 
+export function x87DistanceWord(words) {
+  const delta = words
+    .slice(0, 3)
+    .map((word, index) =>
+      x87Float32Arithmetic('subtract', quietFloat32Bits(word), quietFloat32Bits(words[index + 3])),
+    );
+  const xyNaN = x87BinaryNaNWord(delta[0], delta[1]) ?? 0;
+  const nan = x87BinaryNaNWord(xyNaN, delta[2]);
+  if (nan !== undefined) return nan;
+  const [x, y, z] = delta.map(bitsFloat);
+  const r = roundX87Single;
+  const xy = r(r(x * x) + r(y * y));
+  return floatBits(Math.sqrt(f(r(xy + r(z * z)))));
+}
+
 function x87SumProducts(left, right, subtract) {
   return (
     x87BinaryNaNWord(floatBits(left), floatBits(right)) ??

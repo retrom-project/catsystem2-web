@@ -14,6 +14,7 @@ import {
   x87TriangleWaveWord,
   x87AddWords,
   x87MultiplyWords,
+  x87DistanceWord,
   x87RotateVectorWords,
   linearInterpolate,
   x87LinearInterpolate,
@@ -94,6 +95,7 @@ export class ParticleScriptInstance {
     this.interpreterMath = abi?.math?.interpreterUsesNativeScalarMath ? abi.math : null;
     this.frameScale = abi?.particle?.frameScale;
     this.quadUsesX87 = abi?.particle?.quadUsesX87;
+    this.distanceUsesX87 = abi?.particle?.distanceUsesX87;
     this.projectionBoundsUseX87 = abi?.particle?.projectionBoundsUseX87;
     this.projectionBoundsUseSSE = abi?.particle?.projectionBoundsUseSSE;
     this.attachmentPositionRequiresOwner = abi?.particle?.attachmentPositionRequiresOwner;
@@ -340,6 +342,7 @@ export class ParticleScriptInstance {
       case 36:
         return scalar(this.now);
       case 37: {
+        if (this.distanceUsesX87) return scalar(x87DistanceWord(args));
         const [x1, y1, z1, x2, y2, z2] = floats();
         const dx = f(x1 - x2),
           dy = f(y1 - y2),
