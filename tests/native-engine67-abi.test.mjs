@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { encodeCP932, floatBits, readKCS } from '../src/kcs.mjs';
+import { bitsFloat, encodeCP932, floatBits, readKCS } from '../src/kcs.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
@@ -1344,4 +1344,59 @@ test('2.6.1.67 KCS voice queries use the CP932 directory, name prefix and owned 
   await check([73, 0, 0, 100, 0]);
   words.setUint32(muteWord * 4, 1, true);
   await check([0, 0, 0, 0, 0]);
+});
+
+test('2.6.1.67 KCS geometry uses live DWORD overlap and the original float accumulation', async (t) => {
+  const matrix = 0x80000020,
+    command = (id, ...words) => [...words.map((word) => [37, word]), [43, id, words.length * 4]],
+    world = await dataWorld(profile, {
+      'geometry.kcs': kcsProgram([
+        [37, 0x3a1f8aa1],
+        ...command(351, 132, 128),
+        ...command(353, 260, 256),
+        ...command(354, 324, 320),
+        ...command(355, 384),
+        [38, 560],
+        ...command(356, 416),
+        [38, 564],
+        ...command(356, 448),
+        [38, 568],
+        ...command(357, 480, 492),
+        ...command(358, 512, matrix),
+        ...command(358, matrix, matrix),
+        [59],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('geometry.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    }),
+    m = task.machine,
+    stack = m.sp,
+    put = (address, words) => words.forEach((word, i) => m.store(address + i * 4, floatBits(word))),
+    read = (address, count) =>
+      Array.from({ length: count }, (_, i) => bitsFloat(m.load(address + i * 4)));
+  put(
+    128,
+    Array.from({ length: 20 }, (_, i) => i + 1),
+  );
+  put(256, [1, 2, 3, 4, 5]);
+  put(320, [1, 2, 3, 4, 5]);
+  put(384, [3, 0, 0, 4]);
+  put(416, [8192, 0, 2, 2]);
+  put(448, [2 ** -75, 2 ** -75, 2 ** -75, 2 ** -75]);
+  put(480, [1, 2, 3, 4]);
+  put(512, [1, 1, 1, 1, 123]);
+  put(matrix, [1, 1, 1, 1, 33554432, 0, 0, 0, 1, 0, 0, 0, -33554432, 0, 0, 0]);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(m.sp, stack + 4);
+  assert.equal(m.load(stack), 0x3a1f8aa1);
+  assert.deepEqual(read(128, 20), [...Array(17).fill(1), 18, 19, 20]);
+  assert.deepEqual(read(256, 5), [1, 3, 6, 10, 15]);
+  assert.deepEqual(read(320, 5), [1, 1, 2, 2, 3]);
+  assert.deepEqual([m.load(560), m.load(564), m.load(568)], [floatBits(5), floatBits(67108864), 2]);
+  assert.deepEqual(read(480, 4), [4, 8, 12, 16]);
+  assert.deepEqual(read(512, 5), [0, 1, 1, 1, 123]);
+  assert.deepEqual(read(matrix, 8), [0, 1, 1, 1, 33554432, 0, 0, 0]);
 });
