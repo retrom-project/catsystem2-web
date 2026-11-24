@@ -6,7 +6,12 @@ import { installNativeAreaEffectCommands } from './area-effect-commands.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { NativeBitmap } from './image.mjs';
 import { flipBitmapRows } from './raster-kernel.mjs';
-import { blendAreaPixels, physicalPixel, prepareAreaWipeSource } from './area-effect-pixels.mjs';
+import {
+  blendAreaPixels,
+  physicalPixel,
+  prepareAreaWipeSource,
+  prepareLegacyAreaColors,
+} from './area-effect-pixels.mjs';
 import { truncateFloat32 } from '../ppi/numeric.mjs';
 import { roundX87Single } from '../ppi/x87.mjs';
 import { bitsFloat, floatBits } from '../kcs.mjs';
@@ -67,6 +72,9 @@ export class NativeAreaEffectTask {
     this.base = this.world.base(record);
     const graphics = nativeABI(this.world.profile).graphics;
     this.rasterX87 = record.kind === 18 && graphics.areaRasterX87 === true;
+    this.defaultSpeed = graphics.areaDefaultSpeed;
+    this.legacyAreaColors =
+      graphics.areaLegacyColors === true && [26, 27, 30].includes(record.kind);
     this.positionedWipeMask = graphics.positionedAreaWipeKinds?.includes(record.kind) === true;
     this.clippedWipeUpload = this.positionedWipeMask && record.kind !== 26;
     const rasterParams = [0, 0, 0, 0, this.rasterX87 ? floatBits(1) : 0];
@@ -476,7 +484,16 @@ export class NativeAreaEffectTask {
         (mx + state.width > stencil.width || my + state.height > stencil.height))
     )
       throw new RangeError('Area effect bitmap rectangle exceeds its borrowed storage');
-    if (kind === 30 || (kind === 26 && this.positionedWipeMask))
+    if (this.legacyAreaColors)
+      await prepareLegacyAreaColors(
+        input,
+        target,
+        state.sourceOrigin,
+        state.destinationOrigin,
+        kind === 27 ? [state.width, state.height] : [input.width, input.height],
+        kind === 27,
+      );
+    else if (kind === 30 || (kind === 26 && this.positionedWipeMask))
       await prepareAreaWipeSource(
         input,
         target,
@@ -515,7 +532,7 @@ export class NativeAreaEffectTask {
         this.world.configuration.blocks[2].byteOffset,
         4,
       ).getUint32(0, true),
-      speed = speeds[index] ?? fallback;
+      speed = speeds[index] ?? fallback ?? this.defaultSpeed;
     if (speed === undefined) throw new RangeError('Area effect speed is outside the engine table');
     return speed;
   }

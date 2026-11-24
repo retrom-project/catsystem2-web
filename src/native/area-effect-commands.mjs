@@ -33,12 +33,19 @@ export class NativeAreaEffectCommands {
     if (!spec) return undefined;
     const a = Array.from({ length: spec.words }, (_, i) => nativeDataArgument(args, machine, i)),
       world = this.world,
+      abi = nativeABI(world.profile),
       send = (message, l = 0, payload, context = {}) =>
         world.sendNativeEngine(a[0], task.id, message, 0, l, {
           flags: 0,
           ...(payload ? { payload } : {}),
           ...context,
         });
+    if (abi.messages.areaLifecycleKinds && id !== 0xc9) {
+      const record = world.objects.objects.get(world.resolveTaskID(a[0], task.id));
+      if (record && !abi.messages.areaLifecycleKinds.includes(record.kind))
+        throw new Error(`Unreviewed Area effect recipient kind ${record.kind}`);
+      if (id === 0xc4 && [1, 12].includes(record?.kind)) return nativeReply(2);
+    }
     if (id === 0xc7) {
       const packet = new NativeGraphicsPacket();
       packet.bytes(0, 64).set(machine.bytes(a[1], 64));
@@ -57,8 +64,7 @@ export class NativeAreaEffectCommands {
       await send(id === 0xc5 ? 257 : id === 0xc6 ? 258 : 261);
       return nativeReply(2);
     }
-    const abi = nativeABI(world.profile),
-      memory = world.runtime.imageDataBuffers.process,
+    const memory = world.runtime.imageDataBuffers.process,
       out = memory.allocate(4),
       caller = id === 0xc4 ? out : world.engineMessages.callerAddress(task.id);
     memory.store(out, caller);
@@ -84,8 +90,11 @@ export class NativeAreaEffectCommands {
       const address = id === 0xc9 ? a[2] : a[1];
       // Initializers borrow translated VM storage. Unlike C7, they do not
       // make a private matrix copy, including receivers with empty branches.
-      if (address === 0xffffffff) await send(message, 0, undefined, { nativeNullPayload: true });
-      else {
+      if (address === 0xffffffff) {
+        if (id === 0xc4 && abi.messages.areaLifecycleKinds)
+          throw new RangeError('Area effect initializer has no translated packet');
+        await send(message, 0, undefined, { nativeNullPayload: true });
+      } else {
         // The old live update translates the pointer even when the receiver ignores it.
         if (id !== 0xc9 || !abi.graphics.areaRasterX87) machine.bytes(address, 1);
         await send(message, address, machine);

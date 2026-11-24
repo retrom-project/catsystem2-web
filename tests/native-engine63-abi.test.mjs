@@ -9,6 +9,7 @@ import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
+import { areaPixelParameters } from './fixtures/area-effect-cases.mjs';
 import { controlFiles } from './fixtures/control-files.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { defaultFESWorld, drawPixels, loadDefaultFES } from './fixtures/default-fes-world.mjs';
@@ -960,6 +961,130 @@ test('2.6.1.63 KCS narrow desktop calls use the clipboard boundary and blocking 
     acknowledge.resolve(0);
     await world.close();
   }
+});
+
+test('2.6.1.63 KCS drives the original Raster and positioned wipe lifecycle', async (t) => {
+  const commands = [
+      [196, 2],
+      [197, 1],
+      [198, 1],
+      [200, 1],
+      [203, 1],
+    ],
+    world = await dataWorld(
+      profile,
+      Object.fromEntries(commands.map(([id, words]) => [`main-${id}.kcs`, mainProgram(id, words)])),
+    );
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    plane = await world.objects.create({ kind: 2, parent }),
+    raster = await world.objects.create({ kind: 18, parent }),
+    rain = await world.objects.create({ kind: 19, parent }),
+    model = world.graphics.get(plane),
+    native = (id) => world.nativeTaskID(id),
+    guest = 160,
+    initialize = (id, params) =>
+      executeMain(world, 196, [native(id), guest], (machine) => {
+        params.forEach((word, i) => machine.store(guest + i * 4, word));
+      }),
+    action = (operation, id, result) =>
+      executeMain(world, operation, [native(id)], undefined, result);
+  for (const [canonical, raw] of [
+    [257, 245],
+    [258, 246],
+    [259, 247],
+    [261, 249],
+    [263, 251],
+    [274, 262],
+  ]) {
+    assert.equal(mapABIMessage(profile, 'area', 'raw', canonical), raw);
+    assert.equal(mapABIMessage(profile, 'area', 'canonical', raw), canonical);
+  }
+  await assert.rejects(initialize(rain, []), /Unreviewed Area effect recipient kind 19/);
+  await assert.rejects(executeMain(world, 200, [0xf82a93a1]), /did not write/);
+  await assert.rejects(
+    executeMain(world, 196, [native(raster), 0xffffffff]),
+    /no translated packet/,
+  );
+  await executeMain(world, 196, [native(world.root), 0xffffffff]);
+
+  await world.sendEngine(plane, parent, 41, 0, 0, {
+    payload: new NativeGraphicsPacket([...[0, 0, 0, 24, 18, 0, 0].map(floatBits), 0xffffffff]),
+  });
+  await initialize(raster, [native(plane), 0x80000002, ...[3.25, 8.5, 14].map(floatBits)]);
+  await action(200, raster, 0);
+  await action(197, raster);
+  await action(200, raster, 1);
+  assert.equal(model.graph.vertexEffectID, raster);
+  await action(203, raster);
+  await action(200, raster, 1);
+  await action(198, raster);
+  await action(200, raster, 0);
+  assert.equal(model.graph.vertexEffectID, undefined);
+
+  const uploads = [];
+  world.graphics.output = async (bitmap, offset, region) => {
+    uploads.push({ size: [bitmap.width, bitmap.height], offset, region });
+  };
+  const bitmaps = [
+    [8, 6],
+    [6, 5],
+    [3, 3],
+  ].map(([w, h]) => world.graphics.images.create(w, h, parent));
+  const source = world.graphics.images.get(bitmaps[0]),
+    target = world.graphics.images.get(bitmaps[1]),
+    sourcePixels = await source.pixels(),
+    targetPixels = await target.pixels(),
+    lastColumn = (5 * source.width + 7) * 4,
+    nextPhysicalRow = (3 * target.width + 1) * 4;
+  sourcePixels.fill(255);
+  targetPixels.set([131, 149, 173, 211], nextPhysicalRow);
+  await target.changed();
+  const speed = world.configuration.blocks[2];
+  new DataView(speed.buffer, speed.byteOffset, 4).setUint32(0, 9, true);
+  for (const kind of [26, 29, 30]) {
+    const id = await world.objects.create({ kind, parent }),
+      receiver = world.areaEffects.tasks.get(id);
+    sourcePixels.set([7, 11, 13, 0], lastColumn);
+    await source.changed();
+    await initialize(id, areaPixelParameters({ kind, maskOrigin: [1, 1] }, bitmaps));
+    assert.deepEqual(
+      [...sourcePixels.subarray(lastColumn, lastColumn + 4)],
+      kind === 29 ? [7, 11, 13, 0] : [131, 149, 173, 0],
+    );
+    const work = receiver.state.work;
+    assert.deepEqual([receiver.state.width, receiver.state.height], [6, 5]);
+    assert.deepEqual([receiver.state.blendWidth, receiver.state.blendHeight], [3, 3]);
+    await action(197, id);
+    assert.equal(receiver.state.speed, 1);
+    await world.tick();
+    assert.deepEqual(uploads.splice(0), [
+      {
+        size: [6, 5],
+        offset: [4, 3],
+        region: kind === 26 ? [0, 0, 6, 5] : [1, 1, 4, 4],
+      },
+    ]);
+    await action(203, id);
+    await action(200, id, 0);
+    assert.deepEqual(uploads.splice(0), [
+      {
+        size: [6, 5],
+        offset: kind === 26 ? [4, 3] : [5, 4],
+        region: [0, 0, 6, 5],
+      },
+    ]);
+    await world.objects.release(id);
+    assert.equal(world.runtime.handles.records.has(work), false);
+    assert.ok(bitmaps.every((handle) => world.runtime.handles.records.has(handle)));
+  }
+  sourcePixels[3] = 0;
+  await source.changed();
+  const wipe = await world.objects.create({ kind: 26, parent });
+  await assert.rejects(
+    initialize(wipe, areaPixelParameters({ kind: 26 }, bitmaps)),
+    /RGB preparation exceeds its borrowed bitmap/,
+  );
 });
 
 test('2.6.1.63 KCS reads optional task records without changing the CSS or neutral recipients', async (t) => {

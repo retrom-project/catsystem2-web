@@ -107,3 +107,55 @@ export async function prepareAreaWipeSource(
     await source.changed();
   }
 }
+
+// The old receivers walk physical DWORD scanlines from each bitmap's origin.
+export async function prepareLegacyAreaColors(
+  source,
+  target,
+  [sx, sy],
+  [dx, dy],
+  [width, height],
+  fade,
+) {
+  const input = await source.pixels(),
+    output = await target.pixels(),
+    firstSource = sy * source.width + sx,
+    firstTarget = dy * target.width + dx,
+    lastSource = firstSource + (height - 1) * source.width + width - 1;
+  const pixelOffset = (image, index) =>
+    physicalPixel(image, index % image.width, Math.floor(index / image.width));
+  const invalid = () => new RangeError('Area effect RGB preparation exceeds its borrowed bitmap');
+  if (lastSource >= input.length / 4) throw invalid();
+  for (let y = 0; y < height; y++) {
+    const from = firstSource + y * source.width,
+      to = firstTarget + y * target.width;
+    for (let x = 0; x < width; x++)
+      if (to + x >= output.length / 4 && (fade || !input[pixelOffset(source, from + x) + 3]))
+        throw invalid();
+  }
+  let sourceChanged = false,
+    targetChanged = false;
+  for (let y = 0; y < height; y++) {
+    const from = firstSource + y * source.width,
+      to = firstTarget + y * target.width;
+    for (let x = 0; x < width; x++) {
+      const a = pixelOffset(source, from + x),
+        b = pixelOffset(target, to + x);
+      if (!input[a + 3]) {
+        input.set(output.subarray(b, b + 3), a);
+        sourceChanged = true;
+      } else if (fade && !output[b + 3]) {
+        output.set(input.subarray(a, a + 3), b);
+        targetChanged = true;
+      }
+    }
+  }
+  if (sourceChanged) {
+    source.state.source = null;
+    await source.changed();
+  }
+  if (targetChanged) {
+    target.state.source = null;
+    await target.changed();
+  }
+}
