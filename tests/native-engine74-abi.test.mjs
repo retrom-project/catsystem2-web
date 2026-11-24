@@ -211,6 +211,38 @@ test('fixed SDK name pairs append and query original bytes through the owned fou
   assert.equal(world.runtime.handles.records.has(id), true);
 });
 
+test('fixed SDK Main662 writes the original x87 yaw, pitch and roll matrix in place', async (t) => {
+  const fixtures = [
+    [
+      129,
+      [0, 0x80000000, 0],
+      '3f800000 00000000 00000000 00000000 00000000 3f800000 00000000 00000000 00000000 00000000 3f800000 00000000 00000000 00000000 00000000 3f800000',
+    ],
+    [
+      0x80000103,
+      [0x3f99999a, 0xbf266666, 0x3f66a7f0],
+      'be5e71b0 3f1fc442 bf402402 00000000 bf225e4c 3efd0bae 3f1832ea 00000000 3f3df27a 3f1aed80 3e93b1f6 00000000 00000000 00000000 00000000 3f800000',
+    ],
+  ];
+  const world = await dataWorld(
+    profile,
+    Object.fromEntries(
+      fixtures.map(([at, angles], i) => [`matrix-${i}.kcs`, program(662, [at, ...angles])]),
+    ),
+  );
+  t.after(() => world.close({ flushFiles: false }));
+  for (const [i, [at, , expected]] of fixtures.entries()) {
+    const m = await runGuest(world, `matrix-${i}.kcs`, (vm) => {
+      vm.bytes(at - 4, 72).fill(0x1e);
+    });
+    assert.deepEqual(
+      Array.from({ length: 16 }, (_, word) => m.load(at + word * 4)),
+      expected.split(' ').map((word) => Number.parseInt(word, 16)),
+    );
+    assert.deepEqual([m.load(at - 4), m.load(at + 64)], [0x1e1e1e1e, 0x1e1e1e1e]);
+  }
+});
+
 test('fixed 2.6.1.74 Main9 post, language confirmation, and ordinary Script shutdown', async (t) => {
   for (const [selector, accepted, translated] of [
     [1, false, false],
