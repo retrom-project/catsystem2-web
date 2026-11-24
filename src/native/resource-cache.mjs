@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Preloaded resources belong to the file server.
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABI } from './abi/index.mjs';
+import { nativeDataMapped } from './data-text.mjs';
 
 export const NATIVE_RESOURCE_CACHE_IDS = Object.freeze([0x1b2, 0x1b3, 0x1b4, 0x1b5, 0x1b6]);
 const key = (filename) => filename.toLowerCase();
@@ -184,7 +186,12 @@ export function nativeResourceCache(id, args, machine, services) {
   else {
     // The original formatter succeeds for empty strings too. An unknown
     // category clears its path output; it does not substitute an image name.
-    const category = services.format(args[1], machine),
+    const defaultCategory =
+        services.profile && nativeABI(services.profile).preload?.defaultCategory,
+      category =
+        defaultCategory && !nativeDataMapped(machine, args[1])
+          ? defaultCategory
+          : services.format(args[1], machine),
       name = services.format(args[0], machine),
       filename = services.resourceFilename(name, category) ?? '';
     operation = cache.queue(filename, args[2], 3);

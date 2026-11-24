@@ -228,3 +228,78 @@ test('2.6.1.23 Script preloads an authored category and ages it through the shar
   assert.deepEqual(await call(438), { control: 2 });
   assert.equal(resourceCache.entries[0].lifetime, 1);
 });
+
+test('2.6.1.67 preload GCALLs resolve a missing category to image and retain signed progress', async (t) => {
+  const source = Uint8Array.of(8, 19, 100),
+    reads = [],
+    resourceCache = new NativeResourceCache({
+      read: async (name) => {
+        reads.push(name);
+        return name === 'image/背景.hg3' ? source : null;
+      },
+    }),
+    script = (calls) =>
+      kcsProgram(
+        [
+          [37, 0xa3147021],
+          ...calls.flatMap(([id, args, output]) => [
+            ...args.map((arg) => [37, arg]),
+            [43, id, args.length * 4],
+            ...(output === undefined ? [] : [[38, output]]),
+          ]),
+          [59],
+        ],
+        [
+          [320, '背景.hg3'],
+          [384, ''],
+        ],
+      ),
+    files = {
+      prepare: script([
+        [434, []],
+        [435, [320, 0xffffffff, 2]],
+        [435, [320, 384, 7]],
+        [436, []],
+      ]),
+      progress: script([
+        [437, [0x7fffffff], 68],
+        [438, []],
+        [437, [0x7fffffff], 72],
+        [437, [0xffffffff], 76],
+      ]),
+      clear: script([[434, []]]),
+    },
+    runtime = new NativeRuntime({
+      profile: 'bokutomo-engine-2.6.1.67',
+      read: async (name) => files[name],
+      services: {
+        resourceCache,
+        resourceFilename: (name, category) => (category === 'image' ? category + '/' + name : null),
+      },
+    }),
+    execute = async (name) => {
+      const task = await runtime.spawn(name),
+        floor = task.machine.sp;
+      await runtime.scheduler.execute(task);
+      assert.equal(task.machine.sp, floor + 4);
+      assert.equal(task.machine.load(floor), 0xa3147021);
+      return task.machine;
+    };
+  t.after(() => resourceCache.close());
+  await execute('prepare');
+  await resourceCache.settle();
+  assert.deepEqual(reads, ['image/背景.hg3', '']);
+  assert.deepEqual(await resourceCache.read('image/背景.hg3'), source);
+  assert.deepEqual(reads, ['image/背景.hg3', '']);
+  const progress = await execute('progress');
+  assert.deepEqual(
+    [68, 72, 76].map((at) => progress.load(at)),
+    [1, 0, 1],
+  );
+  assert.deepEqual(
+    resourceCache.entries.map(({ lifetime }) => lifetime),
+    [1, 6],
+  );
+  await execute('clear');
+  assert.deepEqual(resourceCache.entries, []);
+});
