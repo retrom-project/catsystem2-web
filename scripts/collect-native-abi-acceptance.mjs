@@ -144,7 +144,7 @@ function callShape(kind, call) {
   ]);
 }
 
-function scriptDelta(works, scripts) {
+function scriptDelta(works, scripts, receipts) {
   const [baseline] = works;
   const firstScripts = new Set(baseline.scripts),
     firstContexts = new Set(baseline.contexts),
@@ -157,16 +157,30 @@ function scriptDelta(works, scripts) {
         }),
       );
   const firstShapes = workShapes(baseline);
-  return works.slice(1).map((work) => ({
-    work: work.id,
-    sharedScripts: work.scripts.filter((key) => firstScripts.has(key)).length,
-    newScripts: work.scripts.filter((key) => !firstScripts.has(key)),
-    absentBaselineScripts: baseline.scripts.filter((key) => !work.scripts.includes(key)),
-    newContexts: work.contexts.filter((key) => !firstContexts.has(key)),
-    newCallShapes: entriesSorted(
-      [...workShapes(work)].filter((shape) => !firstShapes.has(shape)),
-    ).map((shape) => JSON.parse(shape)),
-  }));
+  return works.slice(1).map((work) => {
+    const newScripts = work.scripts.filter((key) => !firstScripts.has(key)),
+      productReceipts = new Map();
+    for (const [id, receipt] of receipts) {
+      if (receipt.kind !== 'product' || receipt.contentIdentity !== work.contentIdentity) continue;
+      for (const sha256 of receipt.scripts ?? []) {
+        if (!productReceipts.has(sha256)) productReceipts.set(sha256, []);
+        productReceipts.get(sha256).push(id);
+      }
+    }
+    return {
+      work: work.id,
+      sharedScripts: work.scripts.filter((key) => firstScripts.has(key)).length,
+      newScripts,
+      newScriptsWithProductReceipts: newScripts
+        .filter((sha256) => productReceipts.has(sha256))
+        .map((sha256) => ({ sha256, receipts: productReceipts.get(sha256) })),
+      absentBaselineScripts: baseline.scripts.filter((key) => !work.scripts.includes(key)),
+      newContexts: work.contexts.filter((key) => !firstContexts.has(key)),
+      newCallShapes: entriesSorted(
+        [...workShapes(work)].filter((shape) => !firstShapes.has(shape)),
+      ).map((shape) => JSON.parse(shape)),
+    };
+  });
 }
 
 async function collectScripts(workInputs, executableSha256, facts) {
@@ -255,6 +269,7 @@ async function collectReceipts(inputs, build, works) {
     executableSha256,
     contentIdentity,
     coreRevision,
+    scripts,
   } of inputs) {
     if (
       !id ||
@@ -265,18 +280,24 @@ async function collectReceipts(inputs, build, works) {
       throw new Error('Every receipt must identify its kind and exact executable');
     if (kind !== 'original' && !validRevision(coreRevision))
       throw new Error(`Receipt ${id} requires an exact core revision`);
-    if (
-      kind === 'product' &&
-      (!validSHA(contentIdentity) ||
-        !works.some((work) => work.contentIdentity === contentIdentity))
-    )
+    const contentWorks = works.filter((work) => work.contentIdentity === contentIdentity);
+    if (kind === 'product' && (!validSHA(contentIdentity) || !contentWorks.length))
       throw new Error(`Product receipt ${id} requires an included content identity`);
+    if (
+      scripts !== undefined &&
+      (kind !== 'product' ||
+        !Array.isArray(scripts) ||
+        new Set(scripts).size !== scripts.length ||
+        scripts.some((sha256) => !contentWorks.some((work) => work.scripts.includes(sha256))))
+    )
+      throw new Error(`Receipt ${id} requires script SHA-256 values from its product content`);
     await checkedBytes(path, sha256);
     receipts.set(id, {
       kind,
       sha256,
       ...(coreRevision ? { coreRevision } : {}),
       ...(contentIdentity ? { contentIdentity } : {}),
+      ...(scripts ? { scripts } : {}),
     });
   }
   return receipts;
@@ -416,7 +437,7 @@ export async function collectNativeABIAcceptance(input) {
     alternateDiffs,
     works,
     scripts,
-    scriptDelta: scriptDelta(works, scripts),
+    scriptDelta: scriptDelta(works, scripts, receipts),
     ...collectRows(image, abi, scripts, reviews, receipts),
     secondaryABI,
     secondary,
