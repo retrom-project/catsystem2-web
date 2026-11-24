@@ -862,7 +862,7 @@ export class NativeGraphicTask {
             Array.from({ length: 3 }, (_, i) => load(l + i * 4)),
             new TextDecoder('shift_jis').decode(Uint8Array.from(name)),
           );
-        this.unload();
+        if (!this.world.planeMovies.legacy || source) this.unload();
         if (source)
           this.makeGraph({
             type: id - 40,

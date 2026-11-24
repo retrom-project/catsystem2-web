@@ -5,34 +5,14 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 import { quietFloat32Bits } from '../ppi/numeric.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
-import { nativeDataArgument, nativeDataFormat, nativeDataPair } from './data-text.mjs';
-import { nativeCategoryFilename } from './resource-file.mjs';
+import { nativeDataArgument, nativeDataFormat } from './data-text.mjs';
+import { nativeCategoryFilename, nativeNarrowCategoryPath } from './resource-file.mjs';
 const modelCommands = new Map([
   [0x51, 2],
   [0x15a, 3],
   [0x18e, 12],
   [0x18f, 7],
 ]);
-function legacyKx3Filename(name, entries, categoryCount) {
-  for (let at = 0; at < name.length; at++) {
-    if (nativeDataPair(name, at)) at++;
-    else if (at && (name[at] === 0x2f || name[at] === 0x5c)) {
-      const path = new Uint8Array(name.length + 1);
-      path.set(name);
-      return path;
-    }
-  }
-  const mount = entries?.slice(0, categoryCount).find(({ name }) => name.toLowerCase() === 'kx3');
-  if (!mount) return null;
-  const prefix = encodeCP932(mount.directory ? mount.directory + '/' : ''),
-    separator = Math.max(name.lastIndexOf(0x2f), name.lastIndexOf(0x5c)),
-    suffix = encodeCP932(name.lastIndexOf(0x2e) > separator ? '' : '.' + mount.extension),
-    result = new Uint8Array(prefix.length + name.length + suffix.length + 1);
-  result.set(prefix);
-  result.set(name, prefix.length);
-  result.set(suffix, prefix.length + name.length);
-  return result;
-}
 export class NativePlaneModelCommands {
   constructor(world) {
     this.world = world;
@@ -64,11 +44,7 @@ export class NativePlaneModelCommands {
       if (legacyKx3) {
         if (!name || name.length >= 256)
           throw new RangeError('Native KX3 format exceeds its CP932 pathname buffer');
-        const filename = legacyKx3Filename(
-          name,
-          world.game.nativeResources?.entries,
-          this.kx3CategoryCount,
-        );
+        const filename = nativeNarrowCategoryPath(world.game, name, 'kx3', this.kx3CategoryCount);
         if (filename) this.filename = filename;
       } else if (name)
         this.filename = nativeCategoryFilename(

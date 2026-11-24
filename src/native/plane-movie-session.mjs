@@ -62,6 +62,7 @@ async function sourceInfo(filename, bytes) {
 export class NativePlaneMovies {
   constructor(world) {
     this.world = world;
+    this.legacy = nativeABI(world.profile).graphics.planeMovieLegacy === true;
     this.loads = new Map();
     this.frames = new Map();
     world.runtime.handles.registerType(type, {
@@ -113,10 +114,16 @@ export class NativePlaneMovies {
   }
   async load(plane, mode, _position, filename) {
     const owner = plane.record.id;
+    if (this.legacy) {
+      if (plane.state.vramType !== 1 || !plane.graphics.device.attachment) return null;
+      if (extension(filename) !== 'mpg')
+        throw new Error('Unreviewed media type for the legacy Plane movie renderer');
+    }
     await this.release(plane);
     if (this.closed || this.world.disposalRequested || plane.nativeClosed)
       throw new Error('Plane movie owner is closing');
-    if (plane.state.vramType !== 1 || (!mode && this.movies.disabled())) return null;
+    if (!this.legacy && (plane.state.vramType !== 1 || (!mode && this.movies.disabled())))
+      return null;
     if (
       extension(filename) === 'wmv' &&
       !nativeABI(this.world.profile).capabilities.windowsMediaReader
@@ -198,6 +205,10 @@ export class NativePlaneMovies {
           await this.updateFrame(handle, adapter);
           this.check(token);
         } else await this.movies.releaseSession(handle);
+      }
+      if (this.legacy && !record.prepared) {
+        await this.releaseHandle(handle);
+        return null;
       }
       return { handle, mode, width: record.width, height: record.height };
     } catch (error) {

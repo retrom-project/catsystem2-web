@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [701, 702],
+    value:
+      'Own 2.6.1.23 wrappers 0x47EB70 and 0x47FC30 route Plane raw 40 and 82. The hardware mode-one renderer installs a prepared movie model with zero XYZ, and its lookup returns the original owner registration.',
+  },
+  {
     ids: [10],
     value:
       'Own 2.6.1.23 0x47B480 formats and normalizes CP932 bytes, then opens the caller window clipboard and transfers CF_TEXT.',
@@ -1076,6 +1081,11 @@ export default {
         raw: [257, 258, 259, 261, 263, 264, 273, 274].map((id) => toMessage(id, -26)),
         canonical: [231, 232, 233, 235, 237, 238, 247, 248].map((id) => toMessage(id, 26)),
       },
+      planeMovie: {
+        unmapped: 'reject',
+        raw: [toMessage(43, -3), toMessage(87, -5)],
+        canonical: [toMessage(40, 3), toMessage(82, 5)],
+      },
       sound: {
         unmapped: 'reject',
         canonical: [
@@ -1143,6 +1153,7 @@ export default {
     planeResetReleasesTrackedInput: true,
     planeTrailUsesScalarWords: true,
     planeKx3UsesLegacyReceiver: true,
+    planeMovieLegacy: true,
     tilePlaneRequiresEmptyOwner: true,
     screenEffectPreserveStoppedClockKinds: [50, 51, 52],
     screenEffectBreakUsesPaddedCapture: true,
@@ -1201,6 +1212,8 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         { ids: [109], fields: { resultWritten: true } },
+        { ids: [701], fields: { resultWritten: false } },
+        { ids: [702], fields: { resultWritten: true } },
         {
           ids: [346],
           fields: {

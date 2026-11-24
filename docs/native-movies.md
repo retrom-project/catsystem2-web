@@ -70,6 +70,18 @@ movie controls; the Plane owns their destruction. They never acquire the
 fullscreen movie's input, cursor or renderer gate. Explicit original owners
 continue through the original wrappers, projection and physical oracles.
 
+The fixed 2.6.1.23 PE uses raw messages 40 and 82 for Main 701 and 702.
+The old CP932 category resolver supplies a pathname of at most 260 bytes
+including its terminator. SimplePlane loads in VRAM mode 1 with an attached
+graphics device. A prepared MPEG source publishes the borrowed movie handle
+and graph together. An unavailable source or a declined decoder preserves an
+existing nonmovie graph. The original hardware branch uses its registered
+DirectShow decoder. The Web branch uses the mounted MPEG bytes and the normal
+browser decoder service, including its existing prepared media path. Other
+extensions, live recipients beyond the verified Top, Plane and BasePlane,
+and unresolved live pathname buffers remain protected. The unloaded, Top
+and BasePlane lookups return zero.
+
 A missing source, disabled standard movie, incompatible VRAM mode or unavailable
 SDK Windows Media reader leaves no borrower. The effect loader does not use
 the standard movie disable gate. Once a source has opened, a decoder/graph

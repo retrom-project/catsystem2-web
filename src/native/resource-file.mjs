@@ -1,9 +1,33 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalView } from './original-adapter.mjs';
+import { encodeCP932 } from '../kcs/strings.mjs';
+import { nativeDataPair } from './data-text.mjs';
 // Mounted-file resolution shared by JS decoders and the transitional IFile host.
 export function nativeCategoryFilename(game, name, category) {
   if (game.nativeResources) return game.nativeResources.resolve(name, category);
   return /[\\/]/.test(name) ? name : `@cat/${category}/${name}`;
+}
+export function nativeNarrowCategoryPath(game, name, category, count) {
+  for (let at = 0; at < name.length; at++) {
+    if (nativeDataPair(name, at)) at++;
+    else if (at && (name[at] === 0x2f || name[at] === 0x5c)) {
+      const path = new Uint8Array(name.length + 1);
+      path.set(name);
+      return path;
+    }
+  }
+  const mount = game.nativeResources?.entries
+    ?.slice(0, count)
+    .find(({ name }) => name.toLowerCase() === category);
+  if (!mount) return null;
+  const prefix = encodeCP932(mount.directory ? mount.directory + '/' : ''),
+    separator = Math.max(name.lastIndexOf(0x2f), name.lastIndexOf(0x5c)),
+    suffix = encodeCP932(name.lastIndexOf(0x2e) > separator ? '' : '.' + mount.extension),
+    path = new Uint8Array(prefix.length + name.length + suffix.length + 1);
+  path.set(prefix);
+  path.set(name, prefix.length);
+  path.set(suffix, prefix.length + name.length);
+  return path;
 }
 export async function readNativeResource(
   world,

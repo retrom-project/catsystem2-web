@@ -4,7 +4,8 @@ import { originalOwner, originalFeature } from './original-adapter.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { NativePlaneMovies } from './plane-movie-session.mjs';
 import { formatNativeAt, encodeCP932 } from '../kcs.mjs';
-import { nativeCategoryFilename } from './resource-file.mjs';
+import { nativeABI } from './abi/index.mjs';
+import { nativeCategoryFilename, nativeNarrowCategoryPath } from './resource-file.mjs';
 const PLANE_COMMANDS = new Map([
   [0x2bd, { words: 2, control: 2, message: 43, load: true }],
   [0x2be, { words: 1, control: 1, message: 87 }],
@@ -13,10 +14,16 @@ const PLANE_COMMANDS = new Map([
 ]);
 async function ordinaryPlaneMovie(world, id, args, machine, task) {
   const spec = PLANE_COMMANDS.get(id),
-    target = (args[0] ?? machine.nativeArgument(0)) >>> 0;
+    target = (args[0] ?? machine.nativeArgument(0)) >>> 0,
+    abi = nativeABI(world.profile),
+    legacy = abi.graphics.planeMovieLegacy === true;
   // Both loaders skip formatting and I/O for a zero target; queries initialize
   // their own local output to zero even if the target writes no result.
   if (spec.load && !target) return nativeReply(2);
+  const owner = legacy ? world.resolveTaskID(target, task.id) : null,
+    kind = owner === null ? null : world.objects.objects.get(owner)?.kind;
+  if (legacy && owner !== null && ![1, 2, 6].includes(kind))
+    throw new Error('Native Plane movie requires a Top, Plane or BasePlane recipient');
   let output = 0;
   if (!spec.load) {
     await world.sendNativeEngine(target, task.id, spec.message, 0, 0, {
@@ -34,16 +41,25 @@ async function ordinaryPlaneMovie(world, id, args, machine, task) {
       machine,
     ),
     end = raw.indexOf(0),
-    filename = nativeCategoryFilename(
+    name = end < 0 ? raw : raw.subarray(0, end),
+    category = spec.message === 44 ? 'veff' : 'movie';
+  let bytes;
+  if (legacy) {
+    bytes = nativeNarrowCategoryPath(world.game, name, category, abi.resources.categoryCount);
+    if (!bytes && kind === 2)
+      throw new Error('Plane movie category did not initialize its filename');
+    if (bytes?.length > abi.text.pathBytes)
+      throw new RangeError('Plane movie filename exceeds its CP932 path buffer');
+  } else {
+    const filename = nativeCategoryFilename(
       world.game,
-      new TextDecoder('shift_jis').decode(end < 0 ? raw : raw.subarray(0, end)),
-      spec.message === 44 ? 'veff' : 'movie',
+      new TextDecoder('shift_jis').decode(name),
+      category,
     );
-  // The category resolver can change the narrow path; preserve the native
-  // packet's zero-initialized XYZ and exactly one terminated filename.
-  const encoded = encodeCP932(filename ?? '');
-  const packet = new Uint8Array(12 + encoded.length + 1);
-  packet.set(encoded, 12);
+    bytes = encodeCP932((filename ?? '') + '\0');
+  }
+  const packet = new Uint8Array(12 + (bytes?.length ?? 1));
+  if (bytes) packet.set(bytes, 12);
   const view = new DataView(packet.buffer);
   await world.sendNativeEngine(target, task.id, spec.message, 0, 0, {
     flags: 0,
