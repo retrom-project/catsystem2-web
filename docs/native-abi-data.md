@@ -19,11 +19,11 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 468       | 57            | 17            | 327     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.63 | 938        | 379       | 80            | 19            | 460     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
+| 2.6.1.23 | 869        | 469       | 57            | 17            | 326     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.63 | 938        | 383       | 80            | 19            | 456     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
-| 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                                     |
+| 2.6.1.76 | 1055       | 920       | 58            | 17            | 60      | 45 / 44 / 51                                     |
 
 The registry represents 5,509 slots, including 2,344 SDK74/Game76 slots.
 The older registrations retain unknown auxiliary slots and unadmitted stub
@@ -61,6 +61,18 @@ PC64 can differ by one float32 ULP on subnormal results. Both Particle
 power entries follow the same initialized SSE2 CRT selection as Main 61.
 Main 52 remains guarded. The existing Generic 3 and Particle 8 tangent
 coverage has a known numerical difference for very large finite angles.
+
+Main 120 reads a destination bitmap, a list of 12-byte bitmap handle and
+signed XY records, an unsigned record count, and a signed RECT. It clips
+the rectangle to physical bitmap rows, clears that region to opaque black,
+then composites each clipped source in list order. RGB24 copies into RGB24
+and ARGB8888. ARGB4444 blends into ARGB4444 and ARGB8888 using the source
+alpha. ARGB8888 to ARGB8888 uses the wrapper's zero opacity. One-byte bitmap
+paths leave the raster untouched. The four remaining packed conversions
+reach bytes outside the original pixel span or opacity table. Rightward
+overlap on one RGB24 backing varies with the native CPU copy mode.
+The Core guards these shapes before clearing. A null destination bypasses
+pointer reads. The wrapper returns control 2 with the result untouched.
 
 Main 121 scales a borrowed bitmap and Main 713 walks owned layer and animation
 bitmaps. Both take four words in bitmap or image, red, green, blue order. They

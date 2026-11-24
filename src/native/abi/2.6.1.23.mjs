@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [120],
+    value:
+      'Own 2.6.1.23 wrapper 0x488d50 reads a signed RECT and an array of 12-byte bitmap records, clears the clipped target and selects physical pixel kernels.',
+  },
+  {
     ids: [121, 713],
     value:
       'Own 2.6.1.23 wrappers 0x488f70 and 0x476610 check neutral factors before dereferencing the owner; the shared 0x4d9590 kernel scales the three physical color bytes.',
@@ -1227,6 +1232,7 @@ export default {
   graphics: {
     bitmapResizeUsesLegacyCells: true,
     bitmapToneSkipsNeutralOwner: true,
+    bitmapCompositeUsesLegacyRows: true,
     formattedBitmapPhysical: true,
     bitmapBlitUsesSourceSize: true,
     sameSizeBitmapCopyClips: true,
@@ -1314,6 +1320,30 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        {
+          ids: [120],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[120].signature.parameters.map((parameter) => {
+              if (parameter.name === 'destination')
+                return {
+                  ...parameter,
+                  type: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' },
+                };
+              if (parameter.type.kind !== 'pointer') return parameter;
+              const name = parameter.name === 'rectangle' ? 'RECT' : 'bitmap-handle and XY records';
+              return {
+                ...parameter,
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: { kind: 'record', name },
+                },
+              };
+            }),
+            resultWritten: false,
+          },
+        },
         ...[121, 122, 705].map((id) => ({
           ids: [id],
           fields: {

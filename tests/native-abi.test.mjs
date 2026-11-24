@@ -47,10 +47,10 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 468);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 469);
   assert.equal(base.main.entries.filter(({ status }) => status === 'reserved').length, 57);
   assert.equal(base.main.entries.filter(({ status }) => status === 'constant-zero').length, 17);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 327);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 326);
   assert.equal(base.main.entries.filter((entry) => entry.observedArgumentWords.length).length, 435);
   assert.deepEqual(base.main.entries[464].observedArgumentWords, []);
   assert.deepEqual(base.main.entries[543].observedArgumentWords, [3]);
@@ -60,6 +60,15 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
   assert.equal(base.main.entries[82].signature.argumentWords, 2);
   assert.deepEqual(base.main.entries[82].controlCodes, [2]);
   assert.equal(base.main.entries[82].signature.resultWritten, false);
+  const composite = base.main.entries[120];
+  assert.equal(composite.name, 'bitmap.composite');
+  assert.equal(composite.signature.argumentWords, 4);
+  assert.deepEqual(composite.controlCodes, [2]);
+  assert.equal(composite.signature.resultWritten, false);
+  assert.deepEqual(
+    [1, 3].map((index) => composite.signature.parameters[index].type.direction),
+    ['in', 'in'],
+  );
   for (const [id, owner] of [
     [121, 'bitmap'],
     [713, 'image-owner'],

@@ -10,6 +10,85 @@ import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 
+test('2.6.1.23 bitmap composite clips physical rows and validates packed layers before writes', async (t) => {
+  const guard = 0x735b40cd,
+    list = 196,
+    rectangle = 604,
+    program = kcsProgram([
+      [37, guard],
+      ...[64, 68, 72, 76].map((address) => [37, [0x13, address]]),
+      [43, 120, 16],
+      [59],
+    ]);
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23', { 'composite.kcs': program });
+  t.after(() => world.close({ flushFiles: false }));
+  const images = world.graphics.images;
+  function make(width, height, bpp, rgba) {
+    const handle = images.create(width, height, world.main.id);
+    Object.assign(images.get(handle).state, { bpp, rgba: Uint8ClampedArray.from(rgba) });
+    return handle;
+  }
+  async function composite(owner, records, error) {
+    const task = await world.spawnScript('composite.kcs'),
+      machine = task.machine,
+      start = machine.sp;
+    try {
+      [owner, list, records.length / 3, rectangle].forEach((word, i) =>
+        machine.store(64 + 4 * i, word),
+      );
+      records.forEach((word, i) => machine.store(list + 4 * i, word));
+      [1, 0, 4, 2].forEach((word, i) => machine.store(rectangle + 4 * i, word));
+      const before = machine.bytes(list, rectangle - list + 16).slice();
+      const result = world.runtime.scheduler.execute(task);
+      if (error) await assert.rejects(result, error);
+      else {
+        assert.equal((await result).status, 'halted');
+        assert.equal(machine.sp, start + 4);
+        assert.equal(machine.pop(), guard);
+      }
+      assert.deepEqual(machine.bytes(list, before.length), before);
+    } finally {
+      await world.objects.release(task.id);
+    }
+  }
+
+  const outside = [17, 33, 77, 51],
+    black = [0, 0, 0, 255],
+    startingPixels = Array.from({ length: 8 }, () => outside).flat(),
+    destination = make(4, 2, 4, startingPixels),
+    rgb = make(2, 2, 3, [11, 22, 33, 255, 44, 55, 66, 255, 77, 88, 99, 255, 101, 111, 121, 255]),
+    packed = make(1, 1, 2, [170, 85, 255, 136]),
+    opaque = make(1, 1, 4, [1, 2, 3, 255]),
+    records = [rgb, 0, 0, 0, 120, 200, packed, 2, 0, opaque, 3, 1],
+    expected = [
+      ...outside,
+      44,
+      55,
+      66,
+      255,
+      ...black,
+      ...black,
+      ...outside,
+      101,
+      111,
+      121,
+      255,
+      90,
+      45,
+      136,
+      255,
+      ...black,
+    ];
+  await composite(destination, records);
+  assert.deepEqual([...(await images.get(destination).pixels())], expected);
+  await composite(destination, [rgb, 1, 1, 0xedfa3568, 1, 0], /released native bitmap handle/);
+  assert.deepEqual([...(await images.get(destination).pixels())], expected);
+
+  const rgbDestination = make(4, 2, 3, startingPixels);
+  await composite(rgbDestination, [opaque, 3, 1], /packed bitmap composite conversion/);
+  assert.deepEqual([...(await images.get(rgbDestination).pixels())], startingPixels);
+});
+
 for (const profile of ['grisaia-jp-engine-2.6.1.23', 'rebellions-jp-engine-2.6.1.63'])
   test(`${profile} captures an opaque owned bitmap and round-trips a clipped CSS thumbnail`, async (t) => {
     const world = await dataWorld(profile);
