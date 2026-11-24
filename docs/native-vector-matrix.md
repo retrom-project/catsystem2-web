@@ -53,9 +53,10 @@ The old facades and exhaustive original-only verifier remain under `oracle/` and
 `scripts/verify-native-{matrices,geometry}.mjs` for CPU evidence. Their agreement with
 the original code is separate from the independent JS differential lane.
 
-The fixed SDK 4.01 Main662 translates a caller VM destination and writes a
+Main662 in the fixed SDK 4.01 and the prepared 2.6.1.76 executable translates
+a caller VM destination and writes a
 full 64-byte matrix from three float32 yaw, pitch, and roll words. Its D3DX
-dispatch selects the original scalar function. The original fixture uses
+dispatch in both builds selects the original scalar function. The fixtures use
 x87 precision 24 and compares all 16 words across local and shared VM
 regions, including unaligned destinations. The ordinary VM executes the
 same operation with control 2 and preserves the adjacent words.
