@@ -520,6 +520,8 @@ export function nativeStandard(id, args, m, services = {}) {
       // The wrapper clears its destination before reading the source. Aliases
       // must observe that byte; missing tokens do not clear a second byte.
       m.store(args[0], 0, 1);
+      const text = services.profile ? nativeABI(services.profile).text : undefined;
+      if (text?.spaceGroupUnmappedSourceIsEmpty && !nativeDataMapped(m, args[1])) return value(0);
       const source = cstring(m, args[1]),
         scratch = new Uint8Array(source.length * 2 + 8),
         memory = {
@@ -531,7 +533,6 @@ export function nativeStandard(id, args, m, services = {}) {
           },
           bytes: (at, size) => scratch.subarray(at, at + size),
         };
-      const text = services.profile ? nativeABI(services.profile).text : undefined;
       split(memory, 0, source, new Set([32]), true, !text?.plainParenthesisTokens);
       let at = 0,
         index = 0;

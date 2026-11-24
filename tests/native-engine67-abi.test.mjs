@@ -955,3 +955,38 @@ test('2.6.1.67 narrow string GCALLs preserve native byte aliases and character b
     [1, 0, 3, 3, 2, 4, 0],
   );
 });
+
+test('2.6.1.67 Main519 selects a space token through its live CP932 group scanner', async () => {
+  const { runtime, task, machine } = await run([
+    ...[
+      [320, 256, 1, 80],
+      [352, 256, 0xffffffff, 84],
+      [384, 384, 0, 88],
+      [416, 0xffffffff, 0, 92],
+    ].flatMap(([destination, source, index, output]) => [
+      [37, destination],
+      [37, source],
+      [37, index],
+      [43, 519, 12],
+      [38, output],
+    ]),
+    [59],
+  ]);
+  machine.bytes(320, 112).fill(0xa5);
+  machine.writeString('a(b (:中 d)) 尾', 256);
+  machine.writeString('alias', 384);
+  const stack = machine.sp;
+  await runtime.scheduler.execute(task);
+  assert.equal(machine.sp, stack);
+  assert.deepEqual(
+    machine.bytes(320, 14),
+    Uint8Array.of(...encodeCP932('(b (:中 d))'), 0, 0, 0xa5),
+  );
+  assert.deepEqual(
+    [80, 84, 88, 92].map((at) => machine.load(at)),
+    [1, 0, 0, 0],
+  );
+  assert.deepEqual(machine.bytes(352, 3), Uint8Array.of(0, 0xa5, 0xa5));
+  assert.deepEqual(machine.bytes(384, 3), Uint8Array.of(0, 0x6c, 0x69));
+  assert.deepEqual(machine.bytes(416, 3), Uint8Array.of(0, 0xa5, 0xa5));
+});
