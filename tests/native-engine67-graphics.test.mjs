@@ -184,6 +184,87 @@ test('2.6.1.67 KCS mosaic commands preserve private captures, fade packet and or
   }
 });
 
+test('2.6.1.67 KCS WBreak projects the full logical capture and preserves unsigned frame steps', async (t) => {
+  const world = await makeWorld(profile);
+  t.after(() => world.close({ flushFiles: false }));
+  const width = 13,
+    height = 7,
+    stage = world.stageRenderer,
+    gpu = (stage.gpu = new ScreenVectorGPU(width, height)),
+    drawGeometry = gpu.drawGeometry.bind(gpu),
+    frames = [];
+  gpu.drawGeometry = (geometry, frame, options) => {
+    frames.push(frame);
+    return drawGeometry(geometry, frame, options);
+  };
+  Object.assign(world.graphics.view, {
+    clientWidth: width,
+    clientHeight: height,
+    drawingRectangle: [1, 2, 11, 6],
+  });
+  world.random.real.seed(4357);
+  const id = await world.objects.create({ kind: 52, parent: world.main.id }),
+    nativeID = world.nativeTaskID(id),
+    effect = world.screenEffects.tasks.get(id),
+    { record, state } = effect,
+    bounds = [floatBits(18.5), floatBits(90.75)],
+    speeds = [floatBits(3.5), floatBits(-9.125)],
+    args = [nativeID, 51, ...bounds, 5, 4, ...speeds],
+    pixelAt = (width * height - 1) * 4,
+    pixels = authoredScreenFrame(width, height, false);
+  for (const raw of [482, 483, 484]) {
+    assert.equal(mapABIMessage(profile, 'screen', 'raw', raw + 39), raw);
+    assert.equal(mapABIMessage(profile, 'screen', 'canonical', raw), raw + 39);
+  }
+  assert.throws(() => mapABIMessage(profile, 'screen', 'canonical', 485), /Unreviewed ABI message/);
+  await screenGuest(world, [860, args.with(0, 0).with(4, 0)], [861, [0, 19]]);
+  assert.equal(state.initialized, false);
+  await screenGuest(world, [860, args]);
+  assert.deepEqual(state.params, [...bounds, 51, 5, 4, ...speeds]);
+  assert.deepEqual(state.geometry.projectionSize, [width, height]);
+  assert.equal(state.geometry.shards.length, 12);
+  assert.equal(world.random.real.index, 48);
+  const first = state.geometry.shards[0];
+  assert.deepEqual(first.velocity.map(floatBits), [0xbf9e8a4f, 0xbf1e8a4d, 0, 0]);
+  assert.deepEqual(first.omega.map(floatBits), [0xbcaacd5a, 0x3d12aa2e, 0x3cf4f678]);
+  stage.writeSurface(world.screenEffects.rendering.captures[0], pixels);
+  Object.assign(record, { effectiveFrame: 222, pausedFrames: 17 });
+  await screenGuest(world, [861, [nativeID, 17]]);
+  await effect.render();
+  record.effectiveFrame = 224;
+  await effect.render();
+  assert.deepEqual([state.start, state.end, state.lastElapsed, state.active], [205, 256, 2, 17]);
+  assert.deepEqual(
+    state.current[0].vertices.map(({ x, y, z, w, color, u, v }) => [
+      floatBits(x),
+      floatBits(y),
+      floatBits(z),
+      floatBits(w),
+      color,
+      floatBits(u),
+      floatBits(v),
+    ]),
+    [
+      [0xc038e744, 0xbfeaf8a8, 0x3effffa7, 0x3a831844, 0xf5ffffff, 0, 0],
+      [0x400602bc, 0xbfc46b70, 0x3f000030, 0x3a830c46, 0xf5ffffff, 0x3ec4ec4f, 0],
+      [0xc048c8e8, 0x4009e27c, 0x3efffffc, 0x3a8312b2, 0xf5ffffff, 0, 0x3f124925],
+    ],
+  );
+  const latest = frames.at(-1);
+  assert.deepEqual([latest.width, latest.height], [width, height]);
+  assert.deepEqual([...latest.rgba.slice(pixelAt)], [...pixels.slice(pixelAt)]);
+  record.effectiveFrame = 529;
+  await screenGuest(world, [860, args.with(1, 40)]);
+  assert.deepEqual([state.start, state.end, state.lastElapsed, state.active], [512, 552, 2, 17]);
+  assert.equal(world.random.real.index, 96);
+  await effect.render();
+  assert.ok(Math.abs(state.current[0].vertices[0].x) > 1e8);
+  await world.sendNativeEngine(nativeID, world.main.id, 523);
+  assert.equal(state.finishFlag, 1);
+  await screenGuest(world, [861, [nativeID, 0]]);
+  assert.deepEqual([state.start, state.end, state.active], [512, 552, 0]);
+});
+
 test('2.6.1.67 KCS loads a CP932 formatted bitmap with physical layered offsets', async (t) => {
   const background = Uint8ClampedArray.of(34, 56, 78, 255),
     foreground = Uint8ClampedArray.of(14, 210, 83, 255),

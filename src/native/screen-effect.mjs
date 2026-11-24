@@ -170,6 +170,12 @@ export class NativeScreenEffectTask {
   get paddedBreakCapture() {
     return nativeABI(this.world.profile).graphics.screenEffectBreakUsesPaddedCapture;
   }
+  get logicalBreakCapture() {
+    return nativeABI(this.world.profile).graphics.screenEffectBreakUsesLogicalCapture;
+  }
+  get breakUsesFullScreen() {
+    return this.paddedBreakCapture || this.logicalBreakCapture;
+  }
   clock() {
     return ((this.record.effectiveFrame ?? 0) - (this.record.pausedFrames ?? 0)) >>> 0;
   }
@@ -239,12 +245,14 @@ export class NativeScreenEffectTask {
     };
   }
   breakGeometryOptions(width, height) {
-    if (!this.paddedBreakCapture) return this.geometryOptions();
+    if (!this.breakUsesFullScreen) return this.geometryOptions();
+    const padded = this.paddedBreakCapture;
     return {
       drawingRectangle: [0, 0, width, height],
-      textureWidth: screenTextureSize(width),
-      textureHeight: screenTextureSize(height),
-      randomFloatUsesX87: nativeABI(this.world.profile).math.randomFloatUsesX87,
+      textureWidth: padded ? screenTextureSize(width) : width,
+      textureHeight: padded ? screenTextureSize(height) : height,
+      randomFloatUsesX87:
+        this.logicalBreakCapture || nativeABI(this.world.profile).math.randomFloatUsesX87,
     };
   }
   async message(words, context = {}) {
@@ -436,7 +444,7 @@ export class NativeScreenEffectTask {
         state.cache = this.cacheRows(state.work[0], state.duration, params[3], true);
       } else if (kind === 52) {
         state.geometry = { shards };
-        if (this.paddedBreakCapture)
+        if (this.breakUsesFullScreen)
           state.geometry.projectionSize = [breakOptions.textureWidth, breakOptions.textureHeight];
         state.current = shards.map((shard) => ({
           vertices: shard.source.map((v) => ({ ...v, z: 0.5, w: 1 })),
@@ -662,7 +670,13 @@ export class NativeScreenEffectTask {
         [projectionWidth, projectionHeight] = state.geometry?.projectionSize ?? [width, height],
         capture = padded ? this.paddedBreakSurface(r.captures[0]) : r.captures[0];
       if (state.active && state.initialized)
-        state.current = breakFrame(state, this.clock(), projectionWidth, projectionHeight, padded);
+        state.current = breakFrame(
+          state,
+          this.clock(),
+          projectionWidth,
+          projectionHeight,
+          this.breakUsesFullScreen,
+        );
       r.drawSurface(capture, state.current, { drawType: 1 });
     } else if (kind === 57) this.drawSurface(r.captures[0], 255, state.current);
     else if (kind === 58 && state.current) {

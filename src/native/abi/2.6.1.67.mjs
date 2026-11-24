@@ -426,11 +426,11 @@ export default {
         unmapped: 'reject',
         raw: [
           { min: 377, max: 388, offset: -11 },
-          { min: 516, max: 520, offset: -39 },
+          { min: 516, max: 523, offset: -39 },
         ],
         canonical: [
           { min: 366, max: 377, offset: 11 },
-          { min: 477, max: 481, offset: 39 },
+          { min: 477, max: 484, offset: 39 },
         ],
       },
       area: {
@@ -972,8 +972,9 @@ export default {
     drawDirtyUsesRawWord: true,
     emptyImageSizeWritesZero: true,
     imageFilterRequiresLayers: true,
-    screenEffectRetimesOnActiveInit: [38, 39, 50, 51],
-    screenEffectPreserveStoppedClockKinds: [38, 39, 50, 51],
+    screenEffectRetimesOnActiveInit: [38, 39, 50, 51, 52],
+    screenEffectPreserveStoppedClockKinds: [38, 39, 50, 51, 52],
+    screenEffectBreakUsesLogicalCapture: true,
     screenEffectMosaic: { fadeInitializerWords: 6, retainShortWipe: true },
     screenEffectFloatArguments: {
       521: [2, 3, 4, 6, 7],
@@ -991,6 +992,8 @@ export default {
       855: [],
       856: [2, 3],
       857: [],
+      860: [2, 3, 6, 7],
+      861: [],
       905: [2, 3],
     },
     planeAlphaFlags: 1,
@@ -1045,9 +1048,9 @@ export default {
           779, 780, 781, 782, 783, 784, 786, 787, 788, 791, 792, 793, 794, 795, 796, 797, 798, 799,
           800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817,
           818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 836, 837, 838,
-          839, 840, 841, 842, 843, 845, 846, 847, 860, 861, 869, 871, 873, 874, 875, 877, 878, 879,
-          880, 881, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899,
-          900, 901, 902, 903,
+          839, 840, 841, 842, 843, 845, 846, 847, 869, 871, 873, 874, 875, 877, 878, 879, 880, 881,
+          884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901,
+          902, 903,
         ],
         recovered: [
           1, 4, 5, 6, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 35, 36, 37,
@@ -1070,13 +1073,18 @@ export default {
           647, 649, 650, 651, 653, 654, 655, 658, 659, 694, 696, 697, 698, 699, 700, 710, 711, 712,
           713, 714, 715, 717, 718, 719, 720, 723, 724, 726, 727, 728, 730, 731, 732, 733, 736, 737,
           739, 740, 741, 785, 789, 790, 833, 834, 835, 844, 848, 849, 850, 851, 852, 853, 854, 855,
-          856, 857, 858, 859, 862, 863, 864, 865, 866, 867, 868, 870, 872, 876, 882, 883, 904, 905,
-          934, 935, 936, 937,
+          856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868, 870, 872, 876, 882, 883,
+          904, 905, 934, 935, 936, 937,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: [860, 861],
+          value:
+            'Own 2.6.1.67 WBreak receiver 0x4770a0 copies a seven-DWORD packet on raw482, accepts the raw active DWORD on 483 and records the finish latch on 484. The geometry at 0x4763f0 covers the full screen, and the supported unpadded capture uses its logical dimensions. The original seeded shards use the x87 float stream. Callback 0x475fa0 uses unsigned deltas after active reinitialization. Stop preserves the clocks. Both KCS wrappers return 2 without a result write.',
+        },
         {
           ids: [853, 854, 855],
           value:
@@ -1892,6 +1900,72 @@ export default {
         },
       ],
       signatures: [
+        {
+          ids: [860],
+          fields: {
+            resultWritten: false,
+            parameters: [
+              {
+                description: 'WBreak task ID',
+                name: 'task',
+                type: { kind: 'object-id', objectKind: 'WBreak' },
+              },
+              {
+                description: 'u32 task clock duration',
+                name: 'duration',
+                type: { kind: 'integer', bits: 32, signed: false },
+              },
+              {
+                description: 'f32 minimum draw priority',
+                name: 'minimum',
+                type: { kind: 'float', bits: 32 },
+              },
+              {
+                description: 'f32 maximum draw priority',
+                name: 'maximum',
+                type: { kind: 'float', bits: 32 },
+              },
+              {
+                description: 'i32 shard width in pixels',
+                name: 'gridWidth',
+                type: { kind: 'integer', bits: 32, signed: true },
+              },
+              {
+                description: 'i32 shard height in pixels',
+                name: 'gridHeight',
+                type: { kind: 'integer', bits: 32, signed: true },
+              },
+              {
+                description: 'f32 radial speed',
+                name: 'radialSpeed',
+                type: { kind: 'float', bits: 32 },
+              },
+              {
+                description: 'f32 angular speed',
+                name: 'angularSpeed',
+                type: { kind: 'float', bits: 32 },
+              },
+            ],
+          },
+        },
+        {
+          ids: [861],
+          fields: {
+            resultWritten: false,
+            parameters: [
+              {
+                description: 'WBreak task ID',
+                name: 'task',
+                type: { kind: 'object-id', objectKind: 'WBreak' },
+              },
+              {
+                description: 'Complete active DWORD',
+                name: 'active',
+                type: { kind: 'bits', bits: 32 },
+              },
+            ],
+          },
+        },
         {
           ids: [853],
           fields: {
