@@ -218,6 +218,7 @@ function assertUnknownDiagnostic(error, runtime, id, args, task) {
 }
 
 test('unknown admission precedes registered handlers and service preparation', async () => {
+  const guardedID = 1008;
   const runtime = new NativeRuntime({
     profile: sdkProfile,
     read: async () => compiled([[59]], [[64, 'known semantic']]),
@@ -235,13 +236,13 @@ test('unknown admission precedes registered handlers and service preparation', a
       return true;
     },
   });
-  runtime.register('main', 109, () => {
+  runtime.register('main', guardedID, () => {
     handled++;
     return nativeReply(2);
   });
-  assert.equal(runtime.tables.get('main')[109].status, 'unknown');
+  assert.equal(runtime.tables.get('main')[guardedID].status, 'unknown');
   try {
-    runtime.native('main', 109, [7, 1], task.machine, task, runtime.scheduler);
+    runtime.native('main', guardedID, [7, 1], task.machine, task, runtime.scheduler);
   } catch (failure) {
     error = failure;
   }
@@ -249,7 +250,7 @@ test('unknown admission precedes registered handlers and service preparation', a
     { rejected: error?.name, preparation, handled },
     { rejected: 'UnsupportedKCSNative', preparation: 0, handled: 0 },
   );
-  assertUnknownDiagnostic(error, runtime, 109, [7, 1], task);
+  assertUnknownDiagnostic(error, runtime, guardedID, [7, 1], task);
   assert.equal(runtime.tables.get('main')[1].status, 'recovered');
   assert.equal(nativeABI(sdkProfile).tables.main.entries[1].signature.review, 'needs-review');
   assert.deepEqual(runtime.native('main', 1, [64], task.machine, task, runtime.scheduler), {
