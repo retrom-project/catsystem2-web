@@ -549,7 +549,7 @@ export class NativeGraphicTask {
     };
     this.bindState(this.state);
     this.pointer = 0;
-    this.trail = new NativePlaneTrail(this);
+    this.trail = new NativePlaneTrail(this, abi?.planeTrailUsesScalarWords);
   }
   get graphKey() {
     return [2, 6].includes(this.record.kind)
@@ -943,7 +943,7 @@ export class NativeGraphicTask {
         this.trail.configure(w ? Array.from({ length: 13 }, (_, i) => load(l + i * 4)) : null);
         return 0;
       case 80:
-        this.trail.shift(bytes(l, 128));
+        this.trail.pushSample(bytes(l, 128));
         return 0;
       case 47:
         this.state.renderPaused = !l;

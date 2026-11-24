@@ -2,7 +2,8 @@
 // File-backed triangles and retained Plane history are renderer-owned JS data.
 import { MOTION_ABI, motionVector, setMotionVector } from '../motion/abi.mjs';
 import { multiply, rotation } from '../motion/matrix.mjs';
-import { linearInterpolate } from '../ppi/numeric.mjs';
+import { linearInterpolate, x87AddWords } from '../ppi/numeric.mjs';
+import { bitsFloat, floatBits } from '../kcs/vm.mjs';
 const f = Math.fround;
 export function decodePlaneKX2(bytes) {
   if (bytes.length < 24) throw new RangeError('Truncated KX2 header');
@@ -31,23 +32,26 @@ export function decodePlaneKX2(bytes) {
     vram: true,
   };
 }
-function sample(graph) {
+function sample(graph, scalarWords) {
   const bytes = new Uint8Array(128),
     view = new DataView(bytes.buffer);
   for (const [at, offset] of [
     [12, MOTION_ABI.base],
     [28, MOTION_ABI.pos],
     [44, MOTION_ABI.scale],
-  ])
+  ]) {
     motionVector(graph.kx2, offset).forEach((n, i) => view.setFloat32(at + i * 4, n, true));
+    if (scalarWords) view.setFloat32(at + 12, 1, true);
+  }
   bytes.set(graph.kx2.subarray(MOTION_ABI.matrix, MOTION_ABI.matrix + 64), 60);
   view.setUint32(8, new DataView(graph.kx2.buffer).getUint32(MOTION_ABI.display, true), true);
   view.setUint32(124, new DataView(graph.kx2.buffer).getUint32(MOTION_ABI.color, true), true);
   return bytes;
 }
 export class NativePlaneTrail {
-  constructor(task) {
+  constructor(task, scalarWords) {
     this.task = task;
+    this.scalarWords = scalarWords;
   }
   get state() {
     return this.task.state.trail;
@@ -57,19 +61,23 @@ export class NativePlaneTrail {
     this.task.state.trail = null;
   }
   configure(words) {
-    this.close();
     const task = this.task,
       source = task.graph;
-    if (!words || !source) return;
+    if (!words || !source || (this.scalarWords && !task.graphics.device.attachment)) {
+      this.close();
+      return;
+    }
     const mode = words[11] >>> 0,
       stride = mode === 1 ? 2 : mode >= 2 && mode <= 5 ? 1 : words[1] | 0,
-      length = Math.imul(words[0], stride);
-    if (length < 0 || length > 65535)
+      count = words[0] | 0,
+      length = this.scalarWords ? count * stride : Math.imul(count, stride);
+    if ((this.scalarWords && (count < 0 || stride < 0)) || length < 0 || length > 65535)
       throw new RangeError('Plane trail history exceeds its native ID range');
-    const head = sample(source),
+    this.close();
+    const head = sample(source, this.scalarWords),
       history = [head],
       graphs = [],
-      delta = words.slice(7, 11).map((word) => new Float32Array(Uint32Array.of(word).buffer)[0]);
+      delta = words.slice(7, 11).map((word) => bitsFloat(word ?? 0));
     for (let i = 1; i <= length; i++) {
       const bytes = head.slice(),
         view = new DataView(bytes.buffer),
@@ -137,11 +145,24 @@ export class NativePlaneTrail {
         view = new DataView(current.buffer),
         from = new DataView(previous.buffer);
       current.set(previous.subarray(8), 8);
-      for (let j = 0; j < 4; j++)
-        view.setFloat32(28 + j * 4, f(from.getFloat32(28 + j * 4, true) + state.delta[j]), true);
+      for (let j = 0; j < 4; j++) {
+        const at = 28 + j * 4;
+        if (this.scalarWords) {
+          const position = from.getUint32(at, true),
+            delta = floatBits(state.delta[j]);
+          view.setUint32(
+            at,
+            j === 0 ? x87AddWords(delta, position, true) : x87AddWords(position, delta, true),
+            true,
+          );
+        } else view.setFloat32(at, f(from.getFloat32(at, true) + state.delta[j]), true);
+      }
     }
     state.history[0].set(bytes.subarray(8), 8);
-    this.updateGraphs();
+    return true;
+  }
+  pushSample(bytes) {
+    if (this.shift(bytes) && !this.scalarWords) this.updateGraphs();
   }
   tick() {
     if (
@@ -150,8 +171,9 @@ export class NativePlaneTrail {
       this.task.state.shown &&
       !this.task.state.renderPaused &&
       new DataView(this.task.graph.kx2.buffer).getInt32(MOTION_ABI.display, true)
-    )
-      this.shift(sample(this.task.graph));
+    ) {
+      if (this.shift(sample(this.task.graph, this.scalarWords))) this.updateGraphs();
+    }
   }
   updateGraphs() {
     const state = this.state;

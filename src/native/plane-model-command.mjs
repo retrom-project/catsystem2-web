@@ -2,6 +2,8 @@
 // JS wrappers publish canonical Plane packets, preserving scalar bit patterns.
 import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { quietFloat32Bits } from '../ppi/numeric.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { nativeDataArgument, nativeDataFormat } from './data-text.mjs';
 import { nativeCategoryFilename } from './resource-file.mjs';
@@ -15,6 +17,8 @@ export class NativePlaneModelCommands {
   constructor(world) {
     this.world = world;
     this.filename = '';
+    this.trailUsesScalarWords =
+      world.profile && nativeABI(world.profile).graphics.planeTrailUsesScalarWords;
   }
   async apply(id, args, machine, task) {
     const world = this.world,
@@ -42,22 +46,15 @@ export class NativePlaneModelCommands {
     } else if (id === 0x18e) {
       message = 79;
       w = Number(Boolean(a[1]));
-      if (w)
-        packet = new NativeGraphicsPacket([
-          a[1],
-          a[2],
-          a[6],
-          a[7],
-          a[8],
-          a[9],
-          0,
-          a[3],
-          a[4],
-          a[5],
-          0,
-          a[10],
-          a[11],
-        ]);
+      if (w) {
+        if (this.trailUsesScalarWords)
+          for (const index of [3, 4, 5, 7, 8, 9]) a[index] = quietFloat32Bits(a[index]);
+        const scratch = this.trailUsesScalarWords ? undefined : 0;
+        packet = new NativeGraphicsPacket(
+          [a[1], a[2], a[6], a[7], a[8], a[9], scratch, a[3], a[4], a[5], scratch, a[10], a[11]],
+          { unwritten: this.trailUsesScalarWords ? [6, 10] : [] },
+        );
+      }
     } else {
       message = 80;
       packet = new NativeGraphicsPacket(new Array(32).fill(0));
@@ -66,8 +63,12 @@ export class NativePlaneModelCommands {
         [2, 28, 12],
         [3, 44, 12],
         [4, 60, 64],
-      ])
+      ]) {
         packet.bytes(at, size).set(machine.bytes(a[index], size));
+        if (this.trailUsesScalarWords && size === 12)
+          for (let offset = at; offset < at + size; offset += 4)
+            packet.store(offset, quietFloat32Bits(packet.load(offset)));
+      }
       packet.store(124, a[5]);
       packet.store(8, a[6]);
     }

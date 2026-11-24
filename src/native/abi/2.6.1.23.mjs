@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [398, 399],
+    value:
+      'Own 2.6.1.23 Main 0x47F6D0 and 0x47F770 use Plane raw 74 and 75. Their retained history has 128-byte entries and explicit samples defer drawing.',
+  },
+  {
     ids: [204, 205, 206],
     value:
       'Own 2.6.1.23 0x4865D0, 0x486620 and 0x486670 apply scalar PC24 rotation, translation or scale to a mapped or current matrix.',
@@ -1091,6 +1096,7 @@ export default {
     coordinateModeRequiresGraph: true,
     planePoseQueriesRequireReply: true,
     planeResetReleasesTrackedInput: true,
+    planeTrailUsesScalarWords: true,
     screenEffectPreserveStoppedClockKinds: [50, 51, 52],
     screenEffectBreakUsesPaddedCapture: true,
     screenEffectMosaic: { fadeInitializerWords: 5, retainShortWipe: true },
@@ -1142,6 +1148,24 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        {
+          ids: [399],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[399].signature.parameters.map((parameter, index) =>
+              index >= 1 && index <= 4
+                ? {
+                    ...parameter,
+                    type: {
+                      kind: 'pointer',
+                      addressSpace: 'vm',
+                      direction: 'in',
+                      target: { kind: 'record', name: index === 4 ? 'matrix4' : 'vector3' },
+                    },
+                  }
+                : parameter,
+            ),
+          },
+        },
         ...[204, 205, 206].map((id) => ({
           ids: [id],
           fields: {
