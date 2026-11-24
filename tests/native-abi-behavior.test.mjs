@@ -295,7 +295,7 @@ test('ABI message data retains every original control, screen and area boundary 
 test('the .63 and .67 cursor announcements have individually registered receivers', () => {
   for (const [profile, scriptForward] of [
     ['rebellions-jp-engine-2.6.1.63', [9, 10, 22]],
-    ['bokutomo-engine-2.6.1.67', [22]],
+    ['bokutomo-engine-2.6.1.67', [4, 9, 10, 18, 19, 20, 21, 22, 64, 65, 446]],
   ]) {
     for (const direction of ['canonical', 'raw']) {
       assert.equal(mapABIMessage(profile, 'sound', direction, 22), 22);
