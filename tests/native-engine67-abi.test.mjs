@@ -1035,3 +1035,49 @@ test('2.6.1.67 KCS guest allocation and copying retain byte ranges and forward M
   assert.deepEqual(m.bytes(416, 13), Uint8Array.of(0, 0, 1, 2, 3, 3, 5, 6, 7, 7, 9, 10, 11));
   assert.deepEqual(m.bytes(448, 12), Uint8Array.of(0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
 });
+
+test('2.6.1.67 KCS argument expressions return a bounded list and raw space offsets', async () => {
+  const call = (id, words, at) => [
+    ...words.map((word) => [37, word]),
+    [43, id, words.length * 4],
+    [38, at],
+  ];
+  const {
+    runtime,
+    task,
+    machine: m,
+  } = await run([
+    ...call(539, [256, 512, 2], 80),
+    ...call(539, [288, 544, 3], 84),
+    ...call(539, [320, 576, 1], 88),
+    ...call(539, [320, 580, 0xffffffff], 92),
+    ...call(539, [0xffffffff, 608, 1], 96),
+    ...[0, 1, 2, 3, 4, 0xffffffff].flatMap((index, i) => call(540, [352, index], 100 + i * 4)),
+    [59],
+  ]);
+  runtime.variableBank(task).initialize(4);
+  m.writeString('[1+2,0x10,9]', 256);
+  m.writeString('[3-6]', 288);
+  m.writeString('1-3*4', 320);
+  m.writeString('猫\t犬  A ', 352);
+  m.bytes(512, 104).fill(0xa5);
+  const stack = m.sp;
+  await runtime.scheduler.execute(task);
+  assert.equal(m.sp, stack);
+  assert.deepEqual(
+    Array.from({ length: 11 }, (_, i) => m.load(80 + i * 4)),
+    [2, 3, 1, 0, 0, 0, 7, 9, 0xffffffff, 0xffffffff, 0xffffffff],
+  );
+  assert.deepEqual(
+    [512, 516, 520].map((at) => m.load(at)),
+    [3, 16, 0xa5a5a5a5],
+  );
+  assert.deepEqual(
+    [544, 548, 552, 556].map((at) => m.load(at)),
+    [3, 4, 5, 0xa5a5a5a5],
+  );
+  assert.deepEqual(
+    [576, 580, 608].map((at) => m.load(at)),
+    [0xfffffff5, 0xa5a5a5a5, 0xa5a5a5a5],
+  );
+});
