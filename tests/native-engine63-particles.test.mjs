@@ -143,3 +143,65 @@ test('2.6.1.63 Particle v1 still refuses an unreviewed same-image alias', async 
   assert.deepEqual([...ptcl.visibility], [1, 1]);
   assert.equal(ptcl.calls.size, 0);
 });
+
+test('2.6.1.63 Particle v2 returns the original x87 atan2 and interpolation words', async () => {
+  const ptcl = await particle(
+    2,
+    [
+      ...call(12, [0x80000000, 0x80000000]),
+      [38, 16],
+      ...call(12, [0x7f800000, 0xff800000]),
+      [38, 20],
+      ...call(12, [0x7f800001, 0xffc22222]),
+      [38, 24],
+      ...call(41, [3, 13, 0, 10, 7].map(floatBits)),
+      [38, 28],
+      ...call(41, [0x80000000, floatBits(7), floatBits(-7), floatBits(12), 0x7fc13579]),
+      [38, 32],
+    ],
+    { count: 1 },
+  );
+  ptcl.update(1);
+  assert.deepEqual(
+    [16, 20, 24, 28, 32].map((at) => ptcl.machine.load(at)),
+    [floatBits(-Math.PI), 0xffc00000, 0xffc22222, floatBits(10), 0x7fc13579],
+  );
+});
+
+test('2.6.1.63 Particle v2 attachment query preserves the raw coordinate words and guest bounds', async () => {
+  const position = [8.75, -0, -24];
+  const instructions = call(49, [128, 132, 136]);
+  const attachPlane = 405;
+  const attachment = (id) => {
+    assert.equal(id, attachPlane);
+    return { pos: position };
+  };
+  const run = async (options, words) => {
+    const ptcl = await particle(2, instructions, { count: 1, ...options });
+    ptcl.machine.store(124, 0xa6789abc);
+    ptcl.machine.store(140, 0x74edcba9);
+    assert.doesNotThrow(() => ptcl.update(2));
+    assert.deepEqual(
+      [124, 128, 132, 136, 140].map((index) => ptcl.machine.load(index)),
+      [0xa6789abc, ...words, 0x74edcba9],
+    );
+  };
+  await run({ attachPlane: -1, attachment }, [0, 0, 0]);
+  await run({ attachPlane, attachmentDevicePresent: () => false, attachment }, [0, 0, 0]);
+  await run(
+    { attachPlane, attachmentDevicePresent: () => true, attachment },
+    position.map(floatBits),
+  );
+  const missing = await particle(2, instructions, { count: 1, attachPlane });
+  missing.machine.store(128, 0xa998c033);
+  assert.throws(() => missing.update(2), /requires a live attachment graph/);
+  assert.equal(missing.machine.load(128), 0xa998c033);
+  const badGuest = await particle(2, call(49, [128, 132, 0x7ffffffc]), {
+    count: 1,
+    attachment,
+    attachPlane,
+  });
+  badGuest.machine.store(128, 0x8ecdbad5);
+  assert.throws(() => badGuest.update(2), /KCS memory 7ffffffc\+4/);
+  assert.equal(badGuest.machine.load(128), 0x8ecdbad5);
+});

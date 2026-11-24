@@ -92,7 +92,8 @@ export class ParticleScriptInstance {
     this.table = script.scriptVersion === 0x20000 ? 'particle-v2' : 'particle-v1';
     const abi = profile === undefined ? null : nativeABI(profile);
     this.nativeEntries = abi?.tables[this.table].entries ?? null;
-    this.interpreterMath = abi?.math?.interpreterUsesNativeScalarMath ? abi.math : null;
+    this.math = abi?.math;
+    this.interpreterMath = this.math?.interpreterUsesNativeScalarMath ? this.math : null;
     this.frameScale = abi?.particle?.frameScale;
     this.quadUsesX87 = abi?.particle?.quadUsesX87;
     this.distanceUsesX87 = abi?.particle?.distanceUsesX87;
@@ -198,7 +199,7 @@ export class ParticleScriptInstance {
     };
     const base = this.now * 4,
       quadOffset = this.now * 112;
-    if (this.interpreterMath && id === 12) return scalar(x87Atan2Word(...args));
+    if (this.math?.atan2UsesX87 && id === 12) return scalar(x87Atan2Word(...args));
     if (this.interpreterMath && id === 16) return scalar(x87RemainderWord(...args));
     if (this.interpreterMath?.triangleWaveUsesX87 && id === 43)
       return scalar(x87TriangleWaveWord(...args));
@@ -381,9 +382,7 @@ export class ParticleScriptInstance {
         return scalar(this.count - 1);
       case 41:
         return real(
-          (this.interpreterMath?.lerpUsesX87 ? x87LinearInterpolate : linearInterpolate)(
-            ...floats(),
-          ),
+          (this.math?.lerpUsesX87 ? x87LinearInterpolate : linearInterpolate)(...floats()),
         );
       case 42:
         return scalar(roundInteger(bitsFloat(args[0]), this.interpreterMath?.roundIntegerResult));

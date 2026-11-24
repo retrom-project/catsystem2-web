@@ -144,6 +144,7 @@ export default {
   math: {
     roundIntegerResult: 'int64-low-word',
     anglesUseX87: true,
+    atan2UsesX87: true,
     lerpUsesX87: true,
     vectorTransformPairwise: true,
     motionMatrixMultiplySSE: true,
@@ -155,7 +156,10 @@ export default {
     skipBypassesDelay: false,
   },
   movie: { alwaysUseBgmVolume: true },
-  particle: { deferGraphAttachment: true },
+  particle: {
+    deferGraphAttachment: true,
+    attachmentPositionRequiresOwner: true,
+  },
   nameTable: { legacyFieldBytes: 32 },
   stringBank: { emptyGetResult: 1 },
   database: { nullExportPolicy: 'reject-unwritten', nullImportPolicy: 'reject-unwritten' },
@@ -1656,14 +1660,24 @@ export default {
       count: 51,
       slots: {
         unknown: [
-          0, 3, 4, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 20, 29, 32, 33, 37, 41, 42, 43, 44, 45, 46,
-          47, 48, 49,
+          0, 3, 4, 8, 9, 10, 11, 13, 14, 15, 17, 18, 20, 29, 32, 33, 37, 42, 43, 44, 45, 46, 47, 48,
         ],
         recovered: [
-          1, 2, 5, 6, 7, 16, 19, 21, 22, 23, 24, 25, 26, 27, 28, 30, 31, 34, 35, 36, 38, 39, 40, 50,
+          1, 2, 5, 6, 7, 12, 16, 19, 21, 22, 23, 24, 25, 26, 27, 28, 30, 31, 34, 35, 36, 38, 39, 40,
+          41, 49, 50,
         ],
       },
       evidence: [
+        {
+          ids: [12, 41],
+          value:
+            'Own 2.6.1.63 Particle atan2 and interpolation are physical aliases of Main 397 and 318. The original x87 wrappers read two and five F32 words respectively and return the computed result word.',
+        },
+        {
+          ids: [49],
+          value:
+            'Own 2.6.1.63 Particle attachment query starts with a zero vector and resolves the live position model through the render owner. The wrapper translates three output addresses, writes the position in order, and returns control 2.',
+        },
         {
           ids: [21, 39, 40],
           value:
@@ -1680,6 +1694,8 @@ export default {
         },
       ],
       signatures: [
+        { ids: [12, 41], fields: { resultWritten: true } },
+        { ids: [49], fields: { resultWritten: false } },
         { ids: [21, 40], fields: { resultWritten: true } },
         { ids: [39], fields: { resultWritten: false } },
         { ids: [7, 16], fields: { resultWritten: true } },
