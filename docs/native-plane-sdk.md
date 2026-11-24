@@ -42,3 +42,13 @@ task registry fixture and sampled renderer boundaries. Ordinary production
 KCS tests use Plane and BasePlane objects, the native variable and result
 buffers, and the Input owner through the World. See
 [the VM tests](../tests/native-engine74-plane.test.mjs).
+
+## Prepared 2.6.1.76 Plane button receivers
+
+The prepared executable uses raw 72, 73 and 74 for Main 96–98. Its own
+BasePlane registration sends raw 126 to Input with the model bounds. Its
+button states use the same separate texture transform and linked hint as
+the fixed SDK. Raw 68 drops Input when the Plane tracks its Graph. Raw 77
+stores and hides the hint by sending raw 47. Raw 78 stores its enable word.
+The original wrapper, Plane and BasePlane were exercised separately with
+sampled renderer and explicit Input recipient boundaries.
