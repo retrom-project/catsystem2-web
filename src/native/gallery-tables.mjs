@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeDataArgument, nativeDataFormat, nativeDataMapped } from './data-text.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 export const NATIVE_GALLERY_TABLE_IDS = Object.freeze(
   Array.from({ length: 12 }, (_, index) => 0x195 + index),
@@ -88,6 +89,7 @@ export function nativeGalleryTable(id, args, machine, services = {}) {
     load = id === 0x195 || id === 0x19c;
   if (!load && !argument(0)) return id === 0x196 || id === 0x19d ? done() : word(0);
   if (!services.handles) return undefined;
+  const legacy = services.profile && nativeABI(services.profile).gallery?.legacyTableReads;
   if (load) {
     if (!services.read || !services.formatBytes) return undefined;
     const name = nativeDataFormat(args, machine, services, 0);
@@ -97,6 +99,11 @@ export function nativeGalleryTable(id, args, machine, services = {}) {
         first = await services.read(filename, 'fes');
       if (!first?.length && id === 0x19c) return word(0);
       const bytes = (await services.read(filename, 'fes')) ?? new Uint8Array();
+      if (legacy && id === 0x19c) {
+        const data = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        if (data.byteLength < 4 || data.getInt32(0, true) > Math.floor((data.byteLength - 4) / 128))
+          throw new RangeError('Native gallery names table crosses its source allocation');
+      }
       return word(
         services.handles.add(
           'gallery-table',
@@ -107,14 +114,16 @@ export function nativeGalleryTable(id, args, machine, services = {}) {
   }
   const handle = argument(0),
     table = services.handles.get(handle, 'gallery-table'),
-    variants = id <= 0x19b;
-  if (table.kind !== (variants ? 'variants' : 'names'))
+    variants = id <= 0x19b,
+    close = id === 0x196 || id === 0x19d,
+    count = id === 0x197 || id === 0x19e;
+  if (!(legacy && (close || count)) && table.kind !== (variants ? 'variants' : 'names'))
     throw new Error('Native gallery table has a different binary layout');
-  if (id === 0x196 || id === 0x19d) {
+  if (close) {
     services.handles.release(handle, 'gallery-table');
     return done();
   }
-  if (id === 0x197 || id === 0x19e) return word(table.count);
+  if (count) return word(table.count);
   if (id === 0x198) return word(table.fileCount(argument(1)));
   if (id === 0x199 || id === 0x19a)
     return word(table.choices(argument(1), argument(2), id === 0x19a));
@@ -127,7 +136,10 @@ export function nativeGalleryTable(id, args, machine, services = {}) {
   }
   const bytes = table.field(argument(1), argument(2));
   if (!bytes) return word(0);
-  if (id === 0x1a0 && nativeDataMapped(machine, argument(3)))
-    machine.writeStringBytes(bytes, argument(3));
+  if (id === 0x1a0) {
+    const destination = argument(3);
+    if (legacy || nativeDataMapped(machine, destination))
+      machine.writeStringBytes(bytes, destination);
+  }
   return word(1);
 }

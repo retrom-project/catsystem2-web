@@ -19,9 +19,9 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 440       | 57            | 17            | 355     | Generic 25 of 45, Particle 41 of 44 and 43 of 51 |
+| 2.6.1.23 | 869        | 452       | 57            | 17            | 343     | Generic 25 of 45, Particle 41 of 44 and 43 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
-| 2.6.1.67 | 938        | 449       | 80            | 19            | 390     | Generic 33 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                                     |
 
@@ -61,6 +61,17 @@ PC64 can differ by one float32 ULP on subnormal results. Both Particle
 power entries follow the same initialized SSE2 CRT selection as Main 61.
 Main 52 remains guarded. The existing Generic 3 and Particle 8 tangent
 coverage has a known numerical difference for very large finite angles.
+
+Main 405–416 load and query binary gallery resources in the FES category.
+Variants use 20 groups of eight 540-byte records. A missing or wrong-size
+resource creates a variants handle with zero groups. Names use a signed row
+count and four 32-byte fields per row. A missing names resource returns zero.
+The count and close pairs share the original bodies and accept either layout;
+variant and name field queries require their respective layout. Variant
+references merge two choice masks and write two trailing NUL bytes. Name
+lookups write one NUL byte. A reference with an unmapped destination returns
+zero. A valid name with an unmapped destination is refused before writing,
+since the original would write through a null pointer.
 
 Main 10 formats CP932 bytes and expands backslash-n before opening the caller's
 clipboard. The browser host publishes text under its normal permission and user

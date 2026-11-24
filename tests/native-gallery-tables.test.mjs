@@ -2,8 +2,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { nativeGalleryTable } from '../src/native/gallery-tables.mjs';
-import { galleryTableFiles } from './fixtures/gallery-table-fixture.mjs';
+import { galleryNameFile, galleryTableFiles } from './fixtures/gallery-table-fixture.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { kcsProgram } from './helpers.mjs';
 
 test('null gallery tables retain their defined controls without inventing an engine service', async () => {
   for (let id = 0x196; id <= 0x19f; id++) {
@@ -62,3 +63,79 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
       await fresh?.close({ flushFiles: false });
     }
   });
+
+test('2.6.1.23 reads and closes both binary gallery layouts through their original GCALL slots', async (t) => {
+  const type = 'gallery-table',
+    profile = 'grisaia-jp-engine-2.6.1.23',
+    files = galleryTableFiles(),
+    namesSlot = [0x13, 64],
+    variantsSlot = [0x13, 68],
+    results = 720,
+    variantOut = 320,
+    nameOut = 512,
+    guard = 0x5b82a493,
+    call = (id, ...args) => [...args.map((arg) => [37, arg]), [43, id, args.length * 4]],
+    rows = [
+      [407, [variantsSlot], 3],
+      [414, [variantsSlot], 3],
+      [408, [variantsSlot, 4], 1],
+      [409, [variantsSlot, 0, 0], 3],
+      [410, [variantsSlot, 0, 0], 2],
+      [411, [variantsSlot, 0, 0, 0, 0, variantOut], 1],
+      [414, [namesSlot], 3],
+      [407, [namesSlot], 3],
+      [415, [namesSlot, 0, 0], 0],
+      [415, [namesSlot, 2, 3], 1],
+      [416, [namesSlot, 2, 3, nameOut], 1],
+    ];
+  const world = await dataWorld(profile, {
+    ...Object.fromEntries(files),
+    '台%帳': files.get('variants2'),
+    truncated: galleryNameFile(0).slice(0, 17),
+    'case.kcs': kcsProgram(
+      [
+        [37, guard],
+        ...call(405, 128),
+        [38, variantsSlot],
+        ...call(412, 200),
+        [38, namesSlot],
+        ...rows.flatMap(([id, args], i) => [...call(id, ...args), [38, [0x13, results + i * 4]]]),
+        [59],
+      ],
+      [
+        [128, '台%%帳'],
+        [200, 'names1'],
+        [variantOut, '............last'],
+        [nameOut, '............last'],
+      ],
+    ),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = world.main,
+    machine = task.machine,
+    native = (id, args) => world.runtime.native('main', id, args, machine, task),
+    variants = machine.load(68),
+    names = machine.load(64);
+  assert.deepEqual(
+    rows.map((_, i) => machine.load(results + i * 4)),
+    rows.map(([, , expected]) => expected),
+  );
+  assert.equal(machine.load(machine.sp - 4), guard);
+  assert.equal(machine.string(variantOut), 'img0_0,0,A,C');
+  assert.deepEqual([...machine.bytes(variantOut + 12, 3)], [0, 0, 115]);
+  assert.equal(machine.string(nameOut), 'r2c3日本');
+  assert.deepEqual([...machine.bytes(nameOut + 8, 2)], [0, 46]);
+  assert.equal(world.runtime.handles.get(variants, type).kind, 'variants');
+  assert.equal(world.runtime.handles.get(names, type).kind, 'names');
+  assert.throws(() => native(408, [names, 0]), /different binary layout/);
+  assert.deepEqual(await native(411, [variants, 0, 0, 0, 0, 0xffffffff]), { control: 1, value: 0 });
+  assert.throws(() => native(416, [names, 2, 3, 0xffffffff]), /KCS memory/);
+  machine.writeString('truncated', 200);
+  const count = world.runtime.handles.records.size;
+  await assert.rejects(native(412, [200]), /names table crosses its source allocation/);
+  assert.equal(world.runtime.handles.records.size, count);
+  assert.deepEqual(await native(406, [names]), { control: 2 });
+  assert.deepEqual(await native(413, [variants]), { control: 2 });
+  assert.throws(() => native(407, [names]), /released/);
+  assert.throws(() => native(414, [variants]), /released/);
+});

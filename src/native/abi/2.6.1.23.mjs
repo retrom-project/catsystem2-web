@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416],
+    value:
+      'Own 2.6.1.23 gallery wrappers 0x47C3D0–0x47C853 load the FES variants or names resource, and share close and count bodies across both typed layouts.',
+  },
+  {
     ids: [7],
     value:
       'Own 2.6.1.23 Main 0x48C460 aliases both Particle slot 4 entries and writes the owning task DWORD at +0x48.',
@@ -1200,7 +1205,7 @@ export default {
     legacyPlaneRegistration: true,
     planeSourceUsesRawWord: true,
   },
-  gallery: { listVariantWidth: 64 },
+  gallery: { listVariantWidth: 64, legacyTableReads: true },
   startup: {
     loosePath: 'config/startup.xml',
     resourceCheck: 'after-preferences',
@@ -1233,6 +1238,43 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...Array.from({ length: 12 }, (_, i) => {
+          const id = 405 + i,
+            signature = NATIVE_SEMANTICS.main[id].signature;
+          return {
+            ids: [id],
+            fields: {
+              parameters: signature.parameters.map((parameter) => {
+                const { type } = parameter;
+                if (type.kind === 'handle') {
+                  const ownership = id === 406 || id === 413 ? 'unknown' : 'borrowed';
+                  return {
+                    ...parameter,
+                    type: { ...type, handleKind: 'gallery-table', ownership },
+                  };
+                }
+                if (type.kind !== 'pointer') return parameter;
+                const output = parameter.name === 'destination';
+                return {
+                  ...parameter,
+                  type: {
+                    kind: 'pointer',
+                    addressSpace: 'vm',
+                    direction: output ? 'out' : 'in',
+                    target: output
+                      ? { kind: 'character', bits: 8, encoding: 'CP932' }
+                      : { kind: 'format-string', encoding: 'CP932' },
+                  },
+                };
+              }),
+              result:
+                signature.result.kind === 'handle'
+                  ? { ...signature.result, handleKind: 'gallery-table' }
+                  : signature.result,
+              resultWritten: id !== 406 && id !== 413,
+            },
+          };
+        }),
         { ids: [7, 53, 55, 56, 58, 59, 60, 61, 321], fields: { resultWritten: true } },
         { ids: [109], fields: { resultWritten: true } },
         { ids: [701], fields: { resultWritten: false } },
