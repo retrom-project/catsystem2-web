@@ -7,6 +7,7 @@ import {
   radianToDegree,
   x87AngleConversion,
   x87Atan2Word,
+  x87RemainderWord,
 } from '../ppi/numeric.mjs';
 const f = Math.fround;
 const unary = {
@@ -133,6 +134,10 @@ export function installNativeScalarMath(world) {
   const abi = nativeABI(world.profile);
   for (const entry of abi.tables.main.entries) {
     if (!names.has(entry.name?.replace(/^math\./, ''))) continue;
+    if (abi.math?.remainderUsesX87 && entry.name === 'math.fmod') {
+      world.runtime.register('main', entry.id, (args) => nativeReply(1, x87RemainderWord(...args)));
+      continue;
+    }
     world.runtime.register('main', entry.id, (args, machine) =>
       nativeScalarMath(
         entry.name,
