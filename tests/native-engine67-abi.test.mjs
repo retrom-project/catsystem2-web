@@ -1273,3 +1273,75 @@ test('2.6.1.67 KCS Plane restore relays the VRAM selector and formats both notif
     { message: 86, w: 0, l: 0, bytes: new Uint8Array(256) },
   ]);
 });
+
+test('2.6.1.67 KCS voice queries use the CP932 directory, name prefix and owned bank words', async (t) => {
+  const names = [
+      'VOICES.int/line.wav',
+      '表ACTOR_01.wav',
+      'other/actor_01.wav',
+      'not_found.wav',
+      'alternate.int/line.wav',
+    ],
+    ids = [844, 606, 607, 605],
+    input = (index) => 256 + index * 64,
+    result = (inputIndex, idIndex) => 640 + (inputIndex * ids.length + idIndex) * 4,
+    world = await dataWorld(profile, {
+      'voice.kcs': kcsProgram([
+        ...names.flatMap((_, inputIndex) =>
+          ids.flatMap((id, idIndex) => [
+            [37, input(inputIndex)],
+            [43, id, 4],
+            [38, result(inputIndex, idIndex)],
+          ]),
+        ),
+        [59],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const config = world.configuration,
+    block = config.blocks[0],
+    words = new DataView(block.buffer, block.byteOffset, block.byteLength),
+    { groupByte, archiveByte, muteWord } = config.voiceLayout;
+  config.soundGroups = [
+    { id: 28, type: 'voice' },
+    { id: 29, type: 'se' },
+  ];
+  words.setUint32(4, 52, true);
+  words.setUint32(8, 73, true);
+  const setRow = (index, archive, head, [play, master, group]) => {
+    const start = config.voiceRecordByte(index);
+    words.setUint32(start, play, true);
+    words.setUint32(start + 36, master, true);
+    words.setUint32(start + groupByte, group, true);
+    block.set(encodeCP932(head), start + 40);
+    block.set(encodeCP932(archive), start + archiveByte);
+  };
+  setRow(1, 'voices', '表actor', [7, 83, 28]);
+  setRow(3, 'alternate', 'actor', [0, 45, 29]);
+  const check = async (gains) => {
+    const task = await world.spawnScript('voice.kcs', {
+        parent: world.main.id,
+        initialExecute: false,
+      }),
+      machine = task.machine;
+    names.forEach((name, index) => machine.writeString(name, input(index)));
+    await world.runtime.scheduler.execute(task);
+    assert.deepEqual(
+      names.map((_, inputIndex) =>
+        ids.map((_, idIndex) => machine.load(result(inputIndex, idIndex))),
+      ),
+      [
+        [1, 7, 83, gains[0]],
+        [1, 7, 83, gains[1]],
+        [0xffffffff, 0, 0, gains[2]],
+        [0xffffffff, 0, 0, gains[3]],
+        [3, 0, 45, gains[4]],
+      ],
+    );
+  };
+  await check([73, 52, 52, 100, 52]);
+  words.setUint32((muteWord + 2) * 4, 1, true);
+  await check([73, 0, 0, 100, 0]);
+  words.setUint32(muteWord * 4, 1, true);
+  await check([0, 0, 0, 0, 0]);
+});
