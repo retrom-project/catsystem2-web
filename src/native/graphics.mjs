@@ -1141,6 +1141,11 @@ export class NativeGraphicTask {
         return 0;
       case 77:
         this.state.imageIndex = l | 0;
+        if (
+          this.world.profile &&
+          nativeABI(this.world.profile).graphics.planeImageSelectorHidesTarget
+        )
+          await this.world.sendNativeEngine(l, this.record.id, 47, 0, 0);
         return 0;
       case 78:
         this.state.frameStep = l;

@@ -204,3 +204,61 @@ test('2.6.1.67 graph queries report F32 dimensions and bounds only from SimplePl
   await assert.rejects(world.runtime.scheduler.execute(baseBounds), /bounds reply was unwritten/);
   assert.deepEqual(values(baseBounds), Array(6).fill(marker));
 });
+
+test('2.6.1.67 plane GCALLs apply blend selectors and update their retained display state', async (t) => {
+  const receiver = [0x13, 84],
+    world = await dataWorld(profile, {
+      'setup.kcs': planeProgram([
+        [78, [target, floatBits(8), floatBits(6)]],
+        [78, [receiver, floatBits(3), floatBits(4)]],
+        [103, [target, 0xa9873210]],
+        [402, [0, 5]],
+      ]),
+      'bind.kcs': planeProgram([[102, [target, receiver]]]),
+      'release.kcs': planeProgram([[80, [target]]]),
+      ...Object.fromEntries(
+        [0, 1, 2, 3, 4, 5, 6, -1].map((mode) => [
+          `blend-${mode}.kcs`,
+          planeProgram([[402, [target, mode]]]),
+        ]),
+      ),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    id = await world.objects.create({ kind: 2, parent }),
+    receivingID = await world.objects.create({ kind: 2, parent }),
+    plane = world.graphics.get(id),
+    receivingPlane = world.graphics.get(receivingID);
+  const run = async (name) => {
+    const task = await world.spawnScript(name, { parent, initialExecute: false }),
+      floor = task.machine.sp;
+    task.machine.store(80, world.nativeTaskID(id));
+    task.machine.store(84, world.nativeTaskID(receivingID));
+    await world.runtime.scheduler.execute(task);
+    assert.equal(task.machine.sp, floor + 4);
+  };
+  await run('setup.kcs');
+  assert.equal(plane.state.frameStep, 0xa9873210);
+  assert.equal(receivingPlane.state.shown, true);
+  await run('bind.kcs');
+  assert.equal(plane.state.imageIndex, world.nativeTaskID(receivingID));
+  assert.equal(receivingPlane.state.shown, false);
+  for (const [mode, expected] of [
+    [1, 1],
+    [2, 2],
+    [3, 3],
+    [4, 4],
+    [5, 5],
+    [6, 0],
+    [0, 0],
+    [-1, 0],
+  ]) {
+    await run(`blend-${mode}.kcs`);
+    assert.equal(plane.graph.style.blendMode, expected);
+  }
+  const loaded = plane.graph;
+  await run('release.kcs');
+  assert.notEqual(plane.graph, loaded);
+  assert.equal(plane.graph.vram, false);
+  assert.deepEqual(plane.state.rect, [0, 0, 0, 0]);
+});
