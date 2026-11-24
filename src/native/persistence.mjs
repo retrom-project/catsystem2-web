@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { Binary, inflate } from '../binary.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
-import { nativeABIBehavior } from './abi/index.mjs';
+import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import { nativeDeflate } from './zlib.mjs';
 import { nativeFileTime, nativeSystemTime } from './file-time.mjs';
 
@@ -328,7 +328,12 @@ export function nativePersistence(id, args, machine, services = {}) {
     return Promise.resolve(storage.read(name)).then(async (bytes) => {
       if (bytes === null) return result(0);
       if (id === 0xff) {
-        if (bytes.length < 16 || new Binary(bytes).u32(0) !== 0x00535343 /* CSS file signature  */)
+        const minimum =
+          (services.profile && nativeABI(services.profile).globalFile.timestampMinimumBytes) || 16;
+        if (
+          bytes.length < minimum ||
+          new Binary(bytes).u32(0) !== 0x00535343 /* CSS file signature  */
+        )
           return result(0);
         const info = await storage.stat(name);
         if (!info) return result(0);

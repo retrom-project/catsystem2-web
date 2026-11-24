@@ -183,3 +183,200 @@ test('disk save services preserve names and timestamp policy, reopen native CSS 
   assert.deepEqual(await nativePersistence(0xf7, [0], m, services), nativeReply(1, 0));
   assert.equal(nativePersistence(0xf7, [0], m, { handles }), undefined);
 });
+
+test('2.6.1.67 KCS CSS containers clone, nest, clear and copy records with the original length rules', async () => {
+  const source = [0x13, 80],
+    outer = [0x13, 84],
+    clone = [0x13, 88],
+    nested = [0x13, 92];
+  const call = (id, args, at) => [
+    ...args.map((value) => [37, value]),
+    [43, id, args.length * 4],
+    [38, at],
+  ];
+  const runtime = new NativeRuntime({
+    profile: 'bokutomo-engine-2.6.1.67',
+    read: async () =>
+      kcsProgram([
+        ...call(238, [0x81234567], 80),
+        ...call(238, [0x11122233], 84),
+        ...call(244, [source, 7, 4, 320], 96),
+        ...call(389, [0], 100),
+        ...call(390, [0], 104),
+        ...call(242, [outer, 9, source], 108),
+        ...call(242, [outer, 10, 0], 112),
+        ...call(390, [source], 88),
+        ...call(389, [source], 116),
+        ...call(248, [source], 120),
+        ...call(248, [clone], 124),
+        ...call(252, [outer, 9], 92),
+        ...call(252, [outer, 10], 128),
+        ...call(254, [source, 7, 352, 8], 132),
+        ...call(254, [clone, 7, 352, 2], 136),
+        ...call(254, [nested, 7, 368, 16], 140),
+        ...call(254, [nested, 7, 0xffffffff, 8], 144),
+        [59],
+      ]),
+  });
+  const task = await runtime.spawn('css-containers.kcs'),
+    m = task.machine,
+    stack = m.sp;
+  m.bytes(320, 4).set([0x93, 0x45, 0xda, 0xf0]);
+  m.bytes(352, 32).fill(0xa5);
+  await runtime.scheduler.execute(task);
+  assert.equal(m.sp, stack);
+  assert.equal(new Set([80, 84, 88, 92].map((at) => m.load(at))).size, 4);
+  assert.deepEqual(
+    Array.from({ length: 13 }, (_, i) => m.load(96 + i * 4)),
+    [1, 0, 0, 1, 0, 1, 0x81234567, 0x81234567, 0, 0, 2, 4, 0],
+  );
+  assert.deepEqual(m.bytes(352, 4), Uint8Array.of(0x93, 0x45, 0xa5, 0xa5));
+  assert.deepEqual(m.bytes(368, 5), Uint8Array.of(0x93, 0x45, 0xda, 0xf0, 0xa5));
+  const get = (at) => runtime.handles.get(m.load(at), 'global-file');
+  assert.deepEqual(get(80).snapshot(), { tag: 0x81234567, capacity: 0x80000, records: [] });
+  assert.deepEqual(get(88).snapshot(), get(92).snapshot());
+  assert.deepEqual(
+    get(84).read(9),
+    Uint8Array.of(
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      8,
+      0,
+      12,
+      0,
+      0,
+      0,
+      0x67,
+      0x45,
+      0x23,
+      0x81,
+      7,
+      0,
+      0,
+      0,
+      4,
+      0,
+      0,
+      0,
+      0x93,
+      0x45,
+      0xda,
+      0xf0,
+    ),
+  );
+});
+
+test('2.6.1.67 KCS CSS restores the target Script variable range and the caller string bank', async () => {
+  const container = [0x13, 80],
+    receiver = [0x13, 84];
+  const call = (id, args, at) => [
+    ...args.map((value) => [37, value]),
+    [43, id, args.length * 4],
+    [38, at],
+  ];
+  const runtime = new NativeRuntime({
+    profile: 'bokutomo-engine-2.6.1.67',
+    read: async (name) =>
+      name === 'writer.kcs'
+        ? kcsProgram([
+            ...call(238, [901], 80),
+            ...call(243, [container, 9], 88),
+            ...call(240, [container, 8, receiver, 1, 2], 92),
+            [59],
+          ])
+        : kcsProgram([
+            ...call(243, [container, 7], 88),
+            ...call(253, [container, 7], 92),
+            ...call(250, [container, 8, 0, 2], 96),
+            ...call(250, [container, 7, receiver, 2], 100),
+            ...call(250, [container, 8, receiver, 2], 104),
+            ...call(253, [container, 9], 108),
+            [59],
+          ]),
+  });
+  const writer = await runtime.spawn('writer.kcs'),
+    reader = await runtime.spawn('reader.kcs'),
+    bank = runtime.variableBank(writer),
+    vars = runtime.variableBank(reader),
+    strings = runtime.stringBank(writer);
+  bank.initialize(3);
+  bank.words.set([2, 0x91234567, 42]);
+  vars.initialize(3);
+  vars.words.fill(0x12345678);
+  strings.set(0x82345678, '猫');
+  writer.machine.store(84, writer.id);
+  await runtime.scheduler.execute(writer);
+  assert.deepEqual([writer.machine.load(88), writer.machine.load(92)], [1, 1]);
+  const id = writer.machine.load(80),
+    file = runtime.handles.get(id, 'global-file');
+  assert.deepEqual(
+    file.read(9),
+    Uint8Array.of(1, 0, 0, 0, 0x78, 0x56, 0x34, 0x82, 0x94, 0x4c, 0, ...Array(8).fill(0)),
+  );
+  reader.machine.store(80, id);
+  reader.machine.store(84, reader.id);
+  const stack = reader.machine.sp;
+  await runtime.scheduler.execute(reader);
+  assert.equal(reader.machine.sp, stack);
+  assert.deepEqual(
+    Array.from({ length: 6 }, (_, i) => reader.machine.load(88 + i * 4)),
+    [0, 0, 0, 0, 1, 1],
+  );
+  assert.equal(file.read(7), null);
+  assert.deepEqual([...vars.words], [0x12345678, 0x12345678, 0x91234567]);
+  assert.equal(vars.dirty, true);
+  assert.equal(runtime.stringBank(reader, false).get(0x82345678), '猫');
+  assert.equal(runtime.stringBank(reader, false).dirty, true);
+});
+
+test('2.6.1.67 KCS CSS timestamp recognizes the magic alone and leaves failed outputs intact', async () => {
+  const calls = [],
+    runtime = new NativeRuntime({
+      profile: 'bokutomo-engine-2.6.1.67',
+      services: {
+        localOffsetMinutes: () => 120,
+        persistence: {
+          read: (path) => {
+            calls.push(['read', path]);
+            return Uint8Array.of(path.endsWith('0.dat') ? 0x43 : 0xff, 0x53, 0x53, 0);
+          },
+          stat: (path) => {
+            calls.push(['stat', path]);
+            return { modifiedMs: Date.UTC(2019, 11, 31, 23, 45, 56) };
+          },
+        },
+      },
+      read: async () =>
+        kcsProgram([
+          ...[0, 1].flatMap((slot) => [
+            [37, 256 + slot * 32],
+            ...Array.from({ length: 5 }, (_, i) => [37, 320 + slot * 32 + i * 4]),
+            [43, 255, 24],
+            [38, 80 + slot * 4],
+          ]),
+          [59],
+        ]),
+    });
+  const task = await runtime.spawn('css-time.kcs', { context: { contextName: 'save' } }),
+    m = task.machine,
+    stack = m.sp;
+  m.writeString('save0000.dat', 256);
+  m.writeString('save0001.dat', 288);
+  m.bytes(320, 56).fill(0xa5);
+  await runtime.scheduler.execute(task);
+  assert.equal(m.sp, stack);
+  assert.deepEqual(
+    [m.load(80), m.load(84), ...Array.from({ length: 5 }, (_, i) => m.load(320 + i * 4))],
+    [1, 0, 2020, 1, 1, 1, 45],
+  );
+  assert.deepEqual(m.bytes(352, 24), new Uint8Array(24).fill(0xa5));
+  assert.deepEqual(calls, [
+    ['read', 'save/save0000.dat'],
+    ['stat', 'save/save0000.dat'],
+    ['read', 'save/save0001.dat'],
+  ]);
+});
