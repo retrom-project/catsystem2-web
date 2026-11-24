@@ -524,9 +524,11 @@ export class NativeGraphicTask {
       abi = profile?.graphics;
     this.coordinateModeRequiresGraph = Boolean(abi?.coordinateModeRequiresGraph);
     this.planePoseQueriesRequireReply = Boolean(abi?.planePoseQueriesRequireReply);
-    this.planePoseUsesRawWords = Boolean(abi?.planePoseUsesRawWords);
+    this.planePoseUsesRawWords = abi?.planePoseUsesRawWords;
     this.planeInheritanceUsesRenderer = Boolean(abi?.planeInheritanceUsesRenderer);
     this.planeResetReleasesTrackedInput = Boolean(abi?.planeResetReleasesTrackedInput);
+    this.planeEmptyGraphRequiresMode1 = Boolean(abi?.planeEmptyGraphRequiresMode1);
+    this.planeAlphaRequiresGraph = Boolean(abi?.planeAlphaRequiresGraph);
     this.planeKx3UsesLegacyReceiver = Boolean(abi?.planeKx3UsesLegacyReceiver);
     this.tilePlaneRequiresEmptyOwner = Boolean(abi?.tilePlaneRequiresEmptyOwner);
     this.legacyPlaneRegistration = Boolean(profile?.input?.legacyPlaneRegistration);
@@ -906,6 +908,15 @@ export class NativeGraphicTask {
         );
         return 0;
       case 45:
+        if (this.planeEmptyGraphRequiresMode1) {
+          if (!this.graphics.device.attachment) return 0;
+          this.unregisterGraph();
+          if (this.state.vramType !== 1) {
+            this.graph = null;
+            this.sync();
+            return 0;
+          }
+        }
         this.makeGraph({
           type: 5,
           registrationEnabled: false,
@@ -1143,17 +1154,26 @@ export class NativeGraphicTask {
         return 0;
       case 61:
       case 62: {
+        if (this.planePoseUsesRawWords === 'unchanged' && !this.graphics.device.attachment)
+          return 0;
         const offset = id === 61 ? MOTION_ABI.base : MOTION_ABI.pos;
         if (this.graph && this.planePoseUsesRawWords) {
           const source = transformState(),
             view = new DataView(source.buffer, source.byteOffset, source.byteLength);
-          for (let at = 0; at < 12; at += 4)
-            store(l + at, quietFloat32Bits(view.getUint32(offset + at, true)));
+          for (let at = 0; at < 12; at += 4) {
+            const word = view.getUint32(offset + at, true);
+            store(
+              l + at,
+              this.planePoseUsesRawWords === 'unchanged' ? word : quietFloat32Bits(word),
+            );
+          }
         } else if (this.graph || (id === 62 && !this.planePoseQueriesRequireReply))
           put(l, vector(offset));
         return 0;
       }
       case 63:
+        if (this.planeAlphaRequiresGraph && (!this.graph || !this.graphics.device.attachment))
+          return 0;
         if (this.graph) {
           const view = new DataView(this.graph.kx2.buffer),
             previous = view.getUint32(MOTION_ABI.color, true),
