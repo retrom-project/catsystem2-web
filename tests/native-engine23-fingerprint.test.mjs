@@ -2,12 +2,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { NativeRuntime } from '../src/native/runtime.mjs';
-import { readKCS } from '../src/kcs.mjs';
+import { readKCS, floatBits } from '../src/kcs.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { NativeWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
+import { MotionInstance } from '../src/motion/instance.mjs';
+import { ParticleScriptInstance } from '../src/ppi/script.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 
@@ -284,5 +286,81 @@ test('fixed 2.6.1.23 bitmap queries reject unmapped outputs and image ownership 
   assert.deepEqual(
     [world.graphics.images.get(bitmap).width, world.graphics.images.get(bitmap).height],
     [1, 1],
+  );
+});
+
+test('fixed 2.6.1.23 Main, Motion and both Particle tables share the original integer stream', async () => {
+  const random = new ParticleRandom(4357);
+  assert.equal(await result([[43, 33, 0]], { services: { random } }), 0xaae64ac3);
+  const motion = new MotionInstance(await readKCS(kcsProgram([[43, 39, 0], [59]])), {
+    profile,
+    random,
+  });
+  motion.run();
+  assert.equal(motion.machine.pop(), 0x5e7c47da);
+  for (const [version, expected] of [
+    [0x10000, 0xb98e8121],
+    [0x20000, 0xb010f327],
+  ]) {
+    const p = await randomParticle(version, random, [[43, 33, 0]]);
+    p.update(0);
+    assert.equal(p.machine.pop(), expected);
+  }
+  assert.equal(random.integer.index, 4);
+  assert.equal(random.real.index, 624);
+});
+
+async function randomParticle(scriptVersion, random, code) {
+  const bytes = kcsProgram([...code, [59]]);
+  new DataView(bytes.buffer).setUint16(8, scriptVersion >>> 16, true);
+  const script = await readKCS(bytes);
+  return new ParticleScriptInstance(script, {
+    profile,
+    random,
+    count: 1,
+    width: 8,
+    height: 8,
+    screenWidth: 64,
+    screenHeight: 48,
+  });
+}
+
+test('fixed 2.6.1.23 real GCALLs apply x87 high-word rounding without consuming the integer stream', async () => {
+  const random = new ParticleRandom(4357);
+  random.real.nextUint32();
+  const before = random.snapshot();
+  const expected = 0x3f27383a;
+  const restore = () => {
+    random.restore(before);
+    random.real.index = 192;
+  };
+  restore();
+  assert.equal(await result([[43, 34, 0]], { services: { random } }), expected);
+  restore();
+  const motion = new MotionInstance(await readKCS(kcsProgram([[43, 40, 0], [59]])), {
+    profile,
+    random,
+  });
+  motion.run();
+  assert.equal(motion.machine.pop(), expected);
+  for (const version of [0x10000, 0x20000]) {
+    restore();
+    const p = await randomParticle(version, random, [[43, 34, 0]]);
+    p.update(0);
+    assert.equal(p.machine.pop(), expected);
+    assert.equal(random.real.index, 193);
+    const wrongWidth = await randomParticle(version, random, [
+      [37, sentinel],
+      [43, 34, 4],
+    ]);
+    assert.throws(() => wrongWidth.update(0), /requires 0 arguments/);
+    assert.equal(random.real.index, 193);
+  }
+  assert.deepEqual(random.integer.snapshot(), before.integer);
+  restore();
+  assert.equal(
+    floatBits(random.frand()),
+    0x3f27383b,
+    'default random conversion preserves its original result',
   );
 });

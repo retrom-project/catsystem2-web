@@ -334,7 +334,7 @@ export class MotionInstance {
       case 39:
         return word(this.random.rand());
       case 40:
-        return real(this.random.frand());
+        return real(this.random.frand(this.math?.randomFloatUsesX87));
       case 41:
         return real(
           (this.interpreterMath?.lerpUsesX87 ? x87LinearInterpolate : linearInterpolate)(

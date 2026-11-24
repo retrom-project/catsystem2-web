@@ -424,7 +424,11 @@ export function nativeStandard(id, args, m, services = {}) {
     case 0x22:
       requireArguments(0);
       if (!services.random) return undefined;
-      return value(id === 0x21 ? services.random.rand() : floatBits(services.random.frand()));
+      return value(
+        id === 0x21
+          ? services.random.rand()
+          : floatBits(services.random.frand(services.math?.randomFloatUsesX87)),
+      );
     case 0x23:
       requireArguments(3);
       m.bytes(args[0], args[2]).set(m.bytes(args[1], args[2]));

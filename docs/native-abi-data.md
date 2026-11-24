@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 353       | 57            | 17            | 442     | Generic 22 of 45, Particle 38 of 44 and 39 of 51 |
+| 2.6.1.23 | 869        | 355       | 57            | 17            | 440     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -58,6 +58,12 @@ invalid first digit produces zero. Main 786 calculates a weekday using the
 original signed integer century formula, including the signed remainder for
 dates whose intermediate sum is negative. All three write the result and
 return control 1.
+
+Main 33 and 34 share the integer and real MT19937 streams with Generic 39
+and 40 and Particle 33 and 34. Both Particle tables use the same entry addresses.
+Each call consumes one word from the selected stream and writes one result.
+The real conversion adds 2³² to negative signed inputs at x87 precision
+24 before scaling. The addition can change the low bit of the final float.
 
 The Grisaia base profile selects the exact loose `config/startup.xml` and
 checks its executable resources after applying preferences. Startup then

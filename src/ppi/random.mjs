@@ -96,8 +96,12 @@ export class ParticleRandom {
   rand() {
     return this.integer.nextUint32();
   }
-  frand() {
-    return Math.fround(this.real.nextUint32() / 4294967295);
+  frand(roundUnsignedWithX87 = false) {
+    const word = this.real.nextUint32();
+    // The legacy FILD of a negative signed DWORD adds 2^32 at PC=24
+    // before scaling. Positive signed inputs avoid that intermediate rounding.
+    const numerator = roundUnsignedWithX87 && word >= 0x80000000 ? Math.fround(word) : word;
+    return Math.fround(numerator / 4294967295);
   }
   snapshot() {
     return { integer: this.integer.snapshot(), real: this.real.snapshot() };

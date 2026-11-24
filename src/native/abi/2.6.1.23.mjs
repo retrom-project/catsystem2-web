@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [33, 34],
+    value:
+      'Own 2.6.1.23 Main 0x48cbb0/0x48cbd0 share the Particle integer and real MT19937 streams and always write the result',
+  },
+  {
     ids: [119, 363],
     value:
       'Own 2.6.1.23 0x488cf0 and 0x489020 write bitmap size and offset pairs to mapped VM outputs',
@@ -529,8 +534,9 @@ const particleInterpreterEvidence = [
       'Own 2.6.1.23 scalar bodies match their MOT peers; 19/20/41/42 also share the Main pointers',
   },
   {
-    ids: [33],
-    value: 'Own 2.6.1.23 Particle 0x48cbb0 shares the integer MT19937 stream with MOT 0x595af0',
+    ids: [33, 34],
+    value:
+      'Own 2.6.1.23 Particle 0x48cbb0/0x48cbd0 share the integer and real MT19937 streams with MOT 0x595af0/0x595ad0',
   },
   {
     ids: [22, 23, 24, 25, 26],
@@ -545,7 +551,8 @@ const particleInterpreterEvidence = [
 const particleInterpreterSignatures = [
   {
     ids: [
-      1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 33, 36, 40, 41, 42, 43,
+      1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 33, 34, 36, 40, 41, 42,
+      43,
     ],
     fields: { resultWritten: true },
   },
@@ -762,6 +769,7 @@ export default {
   math: {
     anglesUseX87: true,
     atan2UsesX87: true,
+    randomFloatUsesX87: true,
     interpreterUsesNativeScalarMath: true,
     lerpUsesX87: true,
     triangleWaveUsesX87: true,
@@ -946,7 +954,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
-        { ids: [4, 372, 373, 718, 719, 720, 786], fields: { resultWritten: true } },
+        { ids: [4, 33, 34, 372, 373, 718, 719, 720, 786], fields: { resultWritten: true } },
         { ids: [119, 363, 369], fields: { resultWritten: false } },
         {
           ids: [25],
@@ -1099,8 +1107,9 @@ export default {
         },
         { ids: [17, 38, 41], value: 'Own 2.6.1.23 MOT handlers and fixed-base logo motion calls' },
         {
-          ids: [39],
-          value: 'Own 2.6.1.23 MOT 0x595af0 draws from the shared integer MT19937 stream',
+          ids: [39, 40],
+          value:
+            'Own 2.6.1.23 MOT 0x595af0/0x595ad0 draw from the shared integer and real MT19937 streams',
         },
         {
           ids: [42],
@@ -1110,7 +1119,7 @@ export default {
       ]),
       signatures: [
         {
-          ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 39, 41, 42],
+          ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 39, 40, 41, 42],
           fields: { resultWritten: true },
         },
       ],

@@ -325,7 +325,7 @@ export class ParticleScriptInstance {
       case 33:
         return scalar(this.random.rand());
       case 34:
-        return real(this.random.frand());
+        return real(this.random.frand(this.interpreterMath?.randomFloatUsesX87));
       case 35:
         for (let i = 0; i < 32; i++) putFloat(args[0] + i * 4, this.registers[i]);
         return voidReply();
