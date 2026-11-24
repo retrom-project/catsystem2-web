@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [681],
+    value:
+      'Own 2.6.1.23 0x489F40 formats the CP932 resource name, resolves the image category, and uses 0x4C64B0 to load and release a temporary owner without writing a result.',
+  },
+  {
     ids: [514],
     value:
       'Own 2.6.1.23 0x482830 formats CP932 and resolves the MOT category filename. 0x5966d0 copies the manager base bank to working and compares the resulting name against its retained record basenames.',
@@ -1094,6 +1099,23 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        {
+          ids: [681],
+          fields: {
+            parameters: [
+              {
+                name: 'filename',
+                description: 'NUL-terminated image filename format',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: { kind: 'format-string', encoding: 'CP932' },
+                },
+              },
+            ],
+          },
+        },
         {
           ids: [514],
           fields: {

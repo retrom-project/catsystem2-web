@@ -11,7 +11,7 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
-import { kcsProgram, memoryGame } from './helpers.mjs';
+import { hg3, kcsProgram, memoryGame } from './helpers.mjs';
 
 const profile = 'grisaia-jp-engine-2.6.1.23';
 const caller = 'sdk-call.kcs';
@@ -247,6 +247,43 @@ test('fixed 2.6.1.23 MOT filename GCALL resolves the formatted narrow name and r
     assert.equal(manager.records.size, 4);
   } finally {
     await world.close();
+  }
+});
+
+test('fixed 2.6.1.23 image warmup caches decoded pixels and releases temporary owners', async (t) => {
+  const pixels = Uint8ClampedArray.of(51, 17, 3, 255, 202, 176, 128, 0);
+  const world = renderWorld({ '薄-2.hg3': hg3(2, 1, pixels) });
+  t.after(() => world.close());
+  world.game.resolveCategory = (name, category) => {
+    assert.equal(category, 'image');
+    return name.includes('.') ? name : name + '.hg3';
+  };
+  const reads = [];
+  const read = world.game.read.bind(world.game);
+  world.game.read = (file) => {
+    reads.push(file);
+    return read(file);
+  };
+  const images = world.graphics.images;
+  for (const [name, readFiles] of [
+    ['薄-%d[G768]', ['薄-2.hg3']],
+    ['薄-2', ['薄-2.hg3']],
+    ['missing', ['薄-2.hg3', 'missing.hg3']],
+  ]) {
+    const task = await runRenderGuest(world, call(681, [256]), ({ machine }) => {
+      machine.writeString(name, 256);
+      machine.store(768, 2);
+      machine.store(772, sentinel);
+    });
+    assert.equal(task.machine.load(772), sentinel);
+    assert.deepEqual(reads, readFiles);
+    assert.deepEqual([...images.assets.keys()], ['薄-2:0']);
+    assert.deepEqual(images.assets.get('薄-2:0').rgba, pixels);
+    assert.ok(
+      [...world.runtime.handles.records.values()].every(
+        ({ type }) => type !== 'bitmap' && type !== 'bitmap-data',
+      ),
+    );
   }
 });
 

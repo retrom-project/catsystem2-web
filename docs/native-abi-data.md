@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 409       | 57            | 17            | 386     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.23 | 869        | 410       | 57            | 17            | 385     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 187       | 80            | 19            | 652     | Generic 8 of 45, Particle 6 of 44 and 6 of 51    |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -170,6 +170,10 @@ FES `getconf iswindow` reads the startup flag for windowed mode
 availability. `getconf screen` reads the independently stored current
 display setting. The browser can fit the rendered canvas into the
 viewport in windowed mode, including when fullscreen is currently active.
+
+Main 681 resolves a formatted CP932 image filename and warms the
+decoded image cache. It releases the temporary bitmap owner and leaves
+the GCALL result word unwritten. A missing image leaves the cache unchanged.
 
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word
