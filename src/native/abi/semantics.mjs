@@ -16715,6 +16715,39 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    467: {
+      name: 'plane.loadDividedMesh',
+      family: 'plane',
+      signature: {
+        argumentWords: 3,
+        controlCodes: [2],
+        parameters: [
+          {
+            name: 'target',
+            description: 'nativeID target',
+            type: { kind: 'object-id', objectKind: 'plane' },
+          },
+          {
+            name: 'records',
+            description: '64-byte divided mesh records',
+            type: {
+              kind: 'pointer',
+              addressSpace: 'vm',
+              direction: 'in',
+              target: { kind: 'unknown' },
+            },
+          },
+          {
+            name: 'count',
+            description: 'i32 number of input records',
+            type: { kind: 'integer', signed: true, bits: 32 },
+          },
+        ],
+        result: { kind: 'void' },
+        resultWritten: false,
+        review: 'reviewed',
+      },
+    },
     468: {
       name: 'bitmap.rotateRightAngle',
       family: 'bitmap',
