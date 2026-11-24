@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [723, 727],
+    value:
+      'Own 2.6.1.23 0x476930 and 0x476A90 rewrite retained bitmap layers through the packed rotation and reflection helpers. The owner rebuilds its image and marks the retained layer updated.',
+  },
+  {
     ids: [681],
     value:
       'Own 2.6.1.23 0x489F40 formats the CP932 resource name, resolves the image category, and uses 0x4C64B0 to load and release a temporary owner without writing a result.',
@@ -1099,6 +1104,24 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        {
+          ids: [723, 727],
+          fields: {
+            resultWritten: false,
+            parameters: [
+              {
+                name: 'image',
+                description: 'Borrowed image owner',
+                type: { kind: 'handle', handleKind: 'image-owner', ownership: 'borrowed' },
+              },
+              {
+                name: 'mode',
+                description: 'Rotation angle or reflection axis',
+                type: { kind: 'integer', bits: 32, signed: true },
+              },
+            ],
+          },
+        },
         {
           ids: [681],
           fields: {

@@ -287,6 +287,45 @@ test('fixed 2.6.1.23 image warmup caches decoded pixels and releases temporary o
   }
 });
 
+test('fixed 2.6.1.23 image rotations and reflections update retained pixels and geometry', async (t) => {
+  const world = renderWorld();
+  t.after(() => world.close());
+  const { imageOwners: owners, graphics } = world;
+  const pixels = (indices) =>
+    Uint8ClampedArray.from(indices.flatMap((i) => [i * 9, i * 13, i * 27, 255 - i * 17]));
+  for (const [native, mode, order, size, canvas, offsets, base, clip] of [
+    [723, 0, [1, 2, 3, 4, 5, 6], [2, 3], [9, 12], [2, -4], [5, -3], [1, 1, 2, 3]],
+    [723, 90, [2, 4, 6, 1, 3, 5], [3, 2], [12, 9], [13, 2], [15, 5], [0, 0, 3, 2]],
+    [723, 180, [6, 5, 4, 3, 2, 1], [2, 3], [9, 12], [5, 13], [4, 15], [0, 0, 2, 3]],
+    [723, 270, [5, 3, 1, 6, 4, 2], [3, 2], [12, 9], [-4, 5], [-3, 4], [0, 0, 3, 2]],
+    [727, 0, [5, 6, 3, 4, 1, 2], [2, 3], [9, 12], [2, 13], [5, 15], [1, 1, 2, 3]],
+    [727, -1, [2, 1, 4, 3, 6, 5], [2, 3], [9, 12], [5, -4], [4, -3], [1, 1, 2, 3]],
+  ]) {
+    const bitmap = graphics.images.create(2, 3);
+    const { state } = graphics.images.get(bitmap);
+    Object.assign(state, {
+      canvasWidth: 9,
+      canvasHeight: 12,
+      offsetX: 2,
+      offsetY: -4,
+      baseX: 5,
+      baseY: -3,
+      clip: [1, 1, 2, 3],
+      rgba: pixels([1, 2, 3, 4, 5, 6]),
+    });
+    const owner = owners.add(bitmap, null, new Array(11).fill(0));
+    const record = owners.get(owner);
+    record.layers = [{ bitmap, animation: null }];
+    await runRenderGuest(world, call(native, [owner, mode]));
+    assert.deepEqual(await graphics.images.get(bitmap).pixels(), pixels(order));
+    assert.deepEqual(state.clip, clip);
+    assert.equal(record.bitmap, bitmap);
+    assert.deepEqual(record.info.slice(0, 10), [...size, ...canvas, ...offsets, ...base, 4, 1]);
+    await owners.release(owner);
+  }
+  await runRenderGuest(world, [...call(723, [0, 0]), ...call(727, [0, 0xffffffff])]);
+});
+
 test('fixed 2.6.1.23 owned bitmap helpers preserve sizes, offsets and RGBA through the VM', async () => {
   const world = renderWorld(),
     handle = [0x13, 512],
