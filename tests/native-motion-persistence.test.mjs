@@ -53,6 +53,7 @@ for (const profile of [
   'nekopara-vol3-engine-2.6.1.76',
   'sdk-4.01-engine-2.6.1.74',
   'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
 ])
   test(`${profile} CTS motion envelopes restore an independent authored animation after source disposal`, async () => {
     const before = fixture(profile),

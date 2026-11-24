@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
+import { openImage } from '../src/formats/hg3.mjs';
+import { floatBits, NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
+import { controlFiles } from './fixtures/control-files.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { defaultFESWorld, drawPixels, loadDefaultFES } from './fixtures/default-fes-world.mjs';
 import { kcsProgram } from './helpers.mjs';
@@ -27,12 +30,14 @@ async function executeMain(world, id, argv, setup = () => {}, result) {
   try {
     const machine = task.machine;
     argv.forEach((word, index) => machine.store(80 + index * 4, word));
-    setup(machine);
+    setup(machine, task);
     await world.runtime.scheduler.execute(task);
     assert.equal(machine.halted, true);
     assert.equal(machine.sp, machine.floor + (result === undefined ? 4 : 8));
-    if (result !== undefined) assert.equal(machine.pop(), result);
+    if (typeof result === 'function') result(machine.pop());
+    else if (result !== undefined) assert.equal(machine.pop(), result);
     assert.equal(machine.pop(), 0x82345678);
+    return machine;
   } finally {
     await world.objects.release(task.id);
   }
@@ -131,6 +136,59 @@ test('2.6.1.63 Main 6 returns the original DWORD through GCALL', async () => {
   assert.equal(machine.sp, machine.floor);
 });
 
+test('2.6.1.63 KCS shortens live CP932 bytes at its original write boundary', async () => {
+  const cases = [
+    [23, 3, 2, [0xfa, 0x40, 0, 0, 0x43, 0]],
+    [23, 2, 0, [0, 0, 0x41, 0x42, 0x43, 0]],
+    [23, 4, 3, [0xfa, 0x40, 0x41, 0, 0, 0]],
+    [24, 1, 2, [0xfa, 0x40, 0, 0, 0x43, 0]],
+    [24, 2, 3, [0xfa, 0x40, 0x41, 0, 0, 0]],
+    [24, 0xffffffff, 5, [0xfa, 0x40, 0x41, 0x42, 0x43, 0]],
+  ];
+  const instructions = cases.flatMap(([id, limit], index) => [
+    [37, 256 + index * 8],
+    [37, limit],
+    [43, id, 8],
+    [38, 512 + index * 4],
+  ]);
+  const { runtime, task, machine } = await run([...instructions, [59]]);
+  cases.forEach((_, index) =>
+    machine.bytes(256 + index * 8, 8).set([0xfa, 0x40, 0x41, 0x42, 0x43, 0, 0xa7, 0xa7]),
+  );
+  await runtime.scheduler.execute(task);
+  for (const [index, [, , kept, bytes]] of cases.entries()) {
+    assert.equal(machine.load(512 + index * 4), kept);
+    assert.deepEqual([...machine.bytes(256 + index * 8, 6)], bytes);
+    assert.equal(machine.load(256 + index * 8 + 6, 1), kept === 5 ? 0 : 0xa7);
+    assert.equal(machine.load(256 + index * 8 + 7, 1), 0xa7);
+  }
+});
+
+test('2.6.1.63 KCS transfers only the selected live Script memory span', async () => {
+  const world = await dataWorld(profile, {
+    'target.kcs': kcsProgram([[59]]),
+    'main-72.kcs': mainProgram(72, 4),
+    'main-73.kcs': mainProgram(73, 4),
+    'main-76.kcs': mainProgram(76, 0),
+  });
+  try {
+    const peer = await world.spawnScript('target.kcs', {
+        parent: world.main.id,
+        initialExecute: false,
+      }),
+      id = world.nativeTaskID(peer.id),
+      source = Uint8Array.of(0x41, 0xf2, 0x29, 0x80);
+    peer.machine.bytes(254, 8).fill(0x95);
+    await executeMain(world, 73, [id, 256, 4, 384], (machine) => machine.bytes(384, 4).set(source));
+    assert.deepEqual([...peer.machine.bytes(254, 8)], [0x95, 0x95, ...source, 0x95, 0x95]);
+    const copied = await executeMain(world, 72, [id, 256, 4, 512]);
+    assert.deepEqual(copied.bytes(512, 4), source);
+    await executeMain(world, 76, [], undefined, world.nativeTaskID(world.main.id));
+  } finally {
+    await world.close();
+  }
+});
+
 test('2.6.1.63 FES declares only its original type names and indexes', async () => {
   const source = new TextEncoder().encode(
     '#DEFINE\nview validView\nSTRING validString\nPARTICLE validParticle\n' +
@@ -168,6 +226,64 @@ test('2.6.1.63 FES declares only its original type names and indexes', async () 
       /Unknown FES object factory index 33/,
     );
     assert.equal(root.byKey.size, 6);
+  } finally {
+    await world.close();
+  }
+});
+
+test('2.6.1.63 KCS resolves authored FES labels and binds the full save-object word', async () => {
+  const world = await dataWorld(profile, {
+    'labels.fes': new TextEncoder().encode('#START\nnext WAIT\n#WAIT\n#FOUND\n'),
+    'main-450.kcs': mainProgram(450, 2),
+    'main-451.kcs': mainProgram(451, 2),
+  });
+  try {
+    const id = await world.objects.create({ kind: 34, parent: world.main.id }),
+      task = world.objects.objects.get(id).implementation,
+      target = world.nativeTaskID(id),
+      jump = (text, found) =>
+        executeMain(world, 450, [target, 128], (machine) => machine.writeString(text, 128), found);
+    await world.sendEngine(id, world.main.id, 331, 0, world.main.context.variableBank);
+    await task.loadSource('labels');
+    const before = task.player.root.label;
+    await jump('ABSENT', 0);
+    assert.equal(task.player.root.label, before);
+    await jump('FOUND', 1);
+    assert.equal(task.player.root.label, 'FOUND');
+    await executeMain(world, 451, [target, 0xf1310050]);
+    assert.equal(task.player.saveObject, 0xf1310050);
+  } finally {
+    await world.close();
+  }
+});
+
+test('2.6.1.63 control calls retain sender-keyed Draw entries and a full task user DWORD', async () => {
+  const world = await defaultFESWorld(profile, { 'main-694.kcs': mainProgram(694, 2) });
+  try {
+    const owner = world.main.id,
+      id = await world.objects.create({ kind: 15, parent: owner }),
+      target = world.nativeTaskID(id),
+      draw = world.graphics.drawTasks.get(id),
+      call = (id, argv) => world.runtime.native('main', id, argv, world.main.machine, world.main);
+    await executeMain(world, 694, [target, 0xff76013d]);
+    assert.equal(world.objects.objects.get(id).userValue, 0xff76013d);
+
+    await world.sendEngine(id, owner, 279, 16, 12);
+    await world.sendEngine(id, owner, 283);
+    const image = world.graphics.images.create(2, 2, owner),
+      one = floatBits(1),
+      key = (world.nativeTaskID(owner) | (6 << 16)) >>> 0;
+    await call(257, [target, 6, image, one, one, 0, 0, 0, one, one, 255, 1, 0]);
+    assert.equal(draw.entry(key).visible, true);
+    assert.deepEqual(await call(263, [target, 6, 0]), { control: 2 });
+    assert.equal(draw.entry(key).visible, false);
+    assert.deepEqual(await call(263, [target, 6, 2]), { control: 2 });
+    assert.equal(draw.entry(key).visible, true);
+    draw.state.renderer.dirtyRects.length = 0;
+    assert.deepEqual(await call(464, [target, 7]), { control: 2 });
+    assert.equal(draw.state.renderer.dirtyRects.length, 0);
+    assert.deepEqual(await call(464, [target, 6]), { control: 2 });
+    assert.ok(draw.state.renderer.dirtyRects.length > 0);
   } finally {
     await world.close();
   }
@@ -331,6 +447,210 @@ test('2.6.1.63 KCS stores its FES private bank as one original CSS record', asyn
     assert.equal(bytes.length, 2048);
     assert.equal(view.getUint32(0, true), 0xfedcba98);
     assert.equal(view.getUint32(2044, true), 0x01234567);
+  } finally {
+    await world.close();
+  }
+});
+
+test('2.6.1.63 FES pos reads a trailing integer after the original current word', async () => {
+  const source = new TextEncoder().encode(
+    '#DEFINE\nBUTTON sample\n#OBJECT POS SIZE\nsample 0,0 2,2\n' +
+      '#START\nsample pos @+90 @1\nnext WAIT\n#WAIT\nbreak\n',
+  );
+  const world = await defaultFESWorld(profile, { 'screen.fes': source });
+  try {
+    const { task, instance } = await loadDefaultFES(world);
+    await task.tick();
+    const sample = instance.byKey.get('sample');
+    assert.deepEqual([sample.x, sample.y], [90, 1]);
+    instance.nativeContext.current = 53;
+    for (const [operand, value] of [
+      ['@', 53],
+      ['@+90', 143],
+      ['@12', 12],
+      ['@ 1', 1],
+      ['@0x12', 18],
+    ])
+      assert.equal(instance.operandValue(new TextEncoder().encode(operand)), value);
+    assert.throws(() => instance.operandValue(new TextEncoder().encode('1 2')), /Unexpected/);
+  } finally {
+    await world.close();
+  }
+});
+
+test('2.6.1.63 FES SCROLL sends its original packet and owns its actual children', async () => {
+  const { 'scroll.hg2': skin } = await controlFiles(new Uint8Array());
+  const source = new TextEncoder().encode(
+    '#DEFINE\nSCROLL sample\n#OBJECT FILE POS VRAM PRI PRI_P TYPE DISP ENABLE\n' +
+      'sample scroll 4,4 0,0 102 1003 0 1 1\n' +
+      '#START\nsample page 0 100 20\nsample pos 10 1\nnext WAIT\n#WAIT\nbreak\n' +
+      '#sample.SCRL_P\n$7=@\nbreak\n',
+  );
+  const world = await defaultFESWorld(profile, { 'scroll.hg2': skin, 'screen.fes': source });
+  const outgoing = [];
+  const dispatch = world.sendNativeEngine.bind(world);
+  world.sendNativeEngine = (target, sender, message, w, l, context) => {
+    if (message >= 341 && message <= 346)
+      outgoing.push({
+        target,
+        sender,
+        message,
+        w,
+        l,
+        flags: context.flags,
+        bytes: context.payload?.data.slice(),
+      });
+    return dispatch(target, sender, message, w, l, context);
+  };
+  try {
+    const { id, task, instance, surface } = await loadDefaultFES(world);
+    await task.tick();
+    const object = instance.byKey.get('sample'),
+      control = world.objects.objects.get(object.nativeTaskID).implementation,
+      target = world.nativeTaskID(control.record.id),
+      state = control.model.state;
+    assert.ok(
+      outgoing.every(
+        ({ target: actual, sender, flags }) => actual === target && sender === id && flags === 1,
+      ),
+    );
+    const packet = outgoing.find(({ message }) => message === 341).bytes,
+      packetView = new DataView(packet.buffer),
+      words = (view, offsets) => offsets.map((offset) => view.getInt32(offset, true));
+    assert.equal(packet.length, 292);
+    assert.deepEqual(words(packetView, [0, 4, 268, 272, 276, 280, 284, 288]), [
+      0,
+      world.nativeTaskID(surface),
+      0,
+      0,
+      4,
+      4,
+      122,
+      1003,
+    ]);
+    assert.equal(
+      new TextDecoder().decode(packet.subarray(8, packet.indexOf(0, 8))),
+      '@cat/image/scroll',
+    );
+    const pending = outgoing.slice(outgoing.findIndex(({ message }) => message === 344));
+    assert.deepEqual(
+      pending.slice(0, 5).map(({ message }) => message),
+      [344, 345, 342, 343, 346],
+    );
+    assert.deepEqual(words(new DataView(pending[0].bytes.buffer), [0, 4, 8]), [0, 100, 20]);
+    assert.deepEqual([pending[1].w, pending[1].l], [0, 10]);
+    assert.deepEqual(
+      [state.direction, state.minimum, state.maximum, state.pageSize, state.value],
+      [0, 0, 100, 20, 10],
+    );
+    assert.equal(control.record.parent, id);
+    assert.equal(control.resource.planes.length, 5);
+    assert.equal(Object.keys(control.resource.areas).length, 5);
+    assert.ok((await drawPixels(world, surface)).some((byte) => byte !== 0));
+
+    const send = (message, w, l, context = {}) => dispatch(target, id, message, w, l, context);
+    assert.equal(await send(342, 0, 0), NATIVE_UNWRITTEN_WORD);
+    assert.equal(state.shown, false);
+    assert.ok(
+      Object.values(control.resource.areas).every((area) => !world.inputFor(id).get(area).enabled),
+    );
+    assert.equal(await send(343, 0, 0x80002000), NATIVE_UNWRITTEN_WORD);
+    assert.ok(
+      Object.values(control.resource.areas).every(
+        (area) => world.inputFor(id).get(area).enabled === 0x80002000,
+      ),
+    );
+    const unreviewed = {};
+    assert.equal(await send(355, 0, 0, unreviewed), NATIVE_UNWRITTEN_WORD);
+    assert.equal(unreviewed.nativeUnhandled, true);
+    assert.equal(state.enabled, true);
+    await assert.rejects(
+      world.objects.create({ kind: 41, parent: id }),
+      /controlResources kind 41/,
+    );
+  } finally {
+    await world.close();
+  }
+});
+
+test('2.6.1.63 KCS preserves nested CSS, narrow strings, HG-2 thumbnails and log records', async () => {
+  const world = await defaultFESWorld(
+    profile,
+    Object.fromEntries(
+      [
+        [241, 3],
+        [242, 3],
+        [243, 2],
+        [252, 2],
+        [253, 2],
+        [850, 3],
+        [851, 3],
+        [852, 0],
+      ].map(([id, width]) => [`main-${id}.kcs`, mainProgram(id, width)]),
+    ),
+  );
+  try {
+    world.configuration.setField('scene.staticLog', 0x7fedcba9);
+    await executeMain(world, 852, [], undefined, 0x7fedcba9);
+    const handles = world.runtime.handles,
+      file = new NativeGlobalFile(9),
+      nested = new NativeGlobalFile(11),
+      handle = handles.add('global-file', file),
+      inner = handles.add('global-file', nested);
+    nested.write(5, Uint8Array.of(0xf1, 0x60));
+    await executeMain(world, 242, [handle, 12, 0], undefined, 0);
+    await executeMain(world, 242, [handle, 12, inner], undefined, 1);
+    assert.deepEqual(file.read(12), nested.raw());
+    await executeMain(world, 252, [handle, 12], undefined, (result) => {
+      const copy = handles.get(result, 'global-file');
+      assert.notEqual(copy, nested);
+      assert.deepEqual(copy.read(5), nested.read(5));
+    });
+    await executeMain(
+      world,
+      243,
+      [handle, 13],
+      (_machine, task) => {
+        world.runtime.stringBank(task).set(4, '本文');
+      },
+      1,
+    );
+    let restored;
+    await executeMain(
+      world,
+      253,
+      [handle, 13],
+      (_machine, task) => {
+        restored = world.runtime.stringBank(task);
+        restored.set(4, '別');
+      },
+      1,
+    );
+    assert.equal(restored.get(4), '本文');
+
+    const image = world.graphics.images.create(2, 2, world.main.id);
+    await world.graphics.images.get(image).fill(0, 0, 2, 2, 0xffa02030);
+    await executeMain(world, 241, [handle, 14, image], undefined, 1);
+    const hg = await openImage(file.read(14)),
+      frame = hg.frame(0);
+    await hg.decode(frame);
+    assert.deepEqual([...frame.rgba.slice(0, 4)], [0xa0, 0x20, 0x30, 0xff]);
+
+    const sourceLog = world.displayLogs.create(world.main.id),
+      targetLog = world.displayLogs.create(world.main.id),
+      model = world.displayLogs.get(sourceLog);
+    model.blockBase = 9;
+    model.rowBase = 13;
+    model.blocks.push([0, 1, 2, 3, 4, 5, 0xbad0]);
+    await executeMain(world, 850, [handle, 15, sourceLog], undefined, 1);
+    const binary = file.read(15),
+      view = new DataView(binary.buffer, binary.byteOffset);
+    assert.equal(view.getUint32(8, true) - view.getUint32(4, true), 28);
+    await executeMain(world, 851, [handle, 15, targetLog], undefined, 1);
+    const target = world.displayLogs.get(targetLog);
+    assert.deepEqual(target.blocks[0], [0, 1, 2, 3, 4, 5, 0xffffffff]);
+    assert.equal(target.blockBase, 9);
+    assert.equal(target.rowBase, 13);
   } finally {
     await world.close();
   }

@@ -60,7 +60,7 @@ export class JSControlTask {
     this.config = null;
     this.model = new ControlTaskModel(record.kind, (...args) => this.service(...args), undefined, {
       legacySlider: this.legacySlider,
-      rawControlFlags: this.legacyScroll2 || this.legacySlider,
+      rawControlFlags: this.legacyScroll || this.legacyScroll2 || this.legacySlider,
     });
     this.drawFields = new Array(15).fill(0);
     this.drawFields[9] = this.drawFields[10] = floatBits(1);
@@ -82,6 +82,9 @@ export class JSControlTask {
   }
   get legacyScroll2() {
     return this.kind === 41 && this.behavior.scroll2Protocol === 'legacy';
+  }
+  get legacyScroll() {
+    return this.kind === 40 && this.behavior.scrollProtocol === 'legacy';
   }
   get input() {
     const input = this.world.inputFor(this.record.id);
@@ -734,6 +737,11 @@ export class JSControlTask {
   async message(words, context = {}) {
     const [sender, id, w, l] = words;
     let message = id;
+    if (this.legacyScroll) {
+      if (id >= 353) return this.base.message(words, context);
+      if ((id >= 341 && id <= 346) || id === 61 || id === 62)
+        message = canonicalMessage(this.world.profile, this.kind, id);
+    }
     if (this.legacyScroll2) {
       if (id >= 366) return this.base.message(words, context);
       if ((id >= 357 && id <= 365) || id === 61 || id === 62)
@@ -857,7 +865,7 @@ export class JSControlTask {
     this.image = null;
     this.model = new ControlTaskModel(this.kind, (...args) => this.service(...args), saved.model, {
       legacySlider: this.legacySlider,
-      rawControlFlags: this.legacyScroll2 || this.legacySlider,
+      rawControlFlags: this.legacyScroll || this.legacyScroll2 || this.legacySlider,
     });
   }
   async unload(destroyChildren) {

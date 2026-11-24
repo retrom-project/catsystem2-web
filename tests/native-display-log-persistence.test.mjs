@@ -213,7 +213,7 @@ for (const [profile, fixture] of [
     },
   );
 
-test('2.6.1.67 log GCALLs store six-word CP932 blocks and rebuild through the saved Scene cursor', async (t) => {
+async function verifySixWordLogs(t, profile) {
   const log = [0x13, 80],
     target = [0x13, 84],
     cursor = [0x13, 88],
@@ -239,7 +239,7 @@ test('2.6.1.67 log GCALLs store six-word CP932 blocks and rebuild through the sa
           [512, 'paragraph'],
         ],
       ),
-    world = await dataWorld('bokutomo-engine-2.6.1.67', {
+    world = await dataWorld(profile, {
       'story.cst': scene([
         [
           [33, '役＠声'],
@@ -345,4 +345,8 @@ test('2.6.1.67 log GCALLs store six-word CP932 blocks and rebuild through the sa
     copy.rows.map((row) => new TextDecoder('shift_jis').decode(row.first)),
     ['声', '原版本文'],
   );
-});
+}
+
+for (const profile of ['bokutomo-engine-2.6.1.67', 'rebellions-jp-engine-2.6.1.63'])
+  test(`${profile} log GCALLs store six-word CP932 blocks and rebuild through the saved Scene cursor`, (t) =>
+    verifySixWordLogs(t, profile));

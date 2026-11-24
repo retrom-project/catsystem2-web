@@ -401,8 +401,9 @@ export class ControlTaskModel {
       // 354 toggles areas as well as planes. 355 may change them again later.
       s.enabled = s.shown;
       if (!s.shown) s.repeatPart = null;
-      await this.emit('shown', null, { flag: s.shown });
-      await this.emit('enabled', null, { flag: s.shown });
+      const flag = this.rawControlFlags ? value >>> 0 : s.shown;
+      await this.emit('shown', null, { flag });
+      await this.emit('enabled', null, { flag });
       return;
     }
     if (s.loaded)

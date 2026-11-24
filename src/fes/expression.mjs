@@ -299,11 +299,11 @@ function operandTokens(bytes, context) {
         }
       } else while (asciiDigit(bytes[at])) value = (Math.imul(value, 10) + bytes[at++] - 48) | 0;
       if (bytes[at] === 46) throw new Error('Unproved FES operand floating-literal domain');
-      tokens.push({ kind: 'number', value });
+      tokens.push({ kind: 'number', value, integerLiteral: true });
       continue;
     }
     if (byte === 64) {
-      tokens.push({ kind: 'number', value: (context.system?.('@') ?? 0) | 0 });
+      tokens.push({ kind: 'number', value: (context.system?.('@') ?? 0) | 0, current: true });
       at++;
       continue;
     }
@@ -340,6 +340,13 @@ function operandTokens(bytes, context) {
 export function evaluateOperand(bytes, context) {
   const tokens = operandTokens(bytes, context);
   if (!tokens.length) return 0;
+  if (
+    tokens.length === 2 &&
+    tokens[0].current &&
+    tokens[1]?.integerLiteral &&
+    context.trailingIntegerAfterCurrent
+  )
+    return tokens[1].value;
   const text = Array.from(bytes, (byte) => String.fromCharCode(byte)).join('');
   return evaluateTokens(tokens, text, context, 0, true);
 }

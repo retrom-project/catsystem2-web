@@ -256,7 +256,7 @@ for (const [version, profile, soundTypeMessage, otherType] of versions) {
         assert.equal(nativeABI(profile).tables.main.entries[856].signature.argumentWords, 7);
         const beforeControl = world.objects.objects.size;
         await assert.rejects(
-          world.objects.create({ kind: 40, parent: main.id }),
+          world.objects.create({ kind: version === '2.6.1.63' ? 41 : 40, parent: main.id }),
           /Unreviewed.*controlResources/,
         );
         assert.equal(world.objects.objects.size, beforeControl);

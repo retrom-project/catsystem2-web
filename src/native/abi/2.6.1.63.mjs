@@ -143,6 +143,7 @@ export default {
     fontPreferenceLimit: null,
   },
   globalFile: { growthBytes: 524288 },
+  displayLog: { blockRecordWords: 6 },
   math: {
     roundIntegerResult: 'int64-low-word',
     anglesUseX87: true,
@@ -163,7 +164,7 @@ export default {
     attachmentPositionRequiresOwner: true,
   },
   nameTable: { legacyFieldBytes: 32 },
-  stringBank: { emptyGetResult: 1 },
+  stringBank: { emptyGetResult: 1, cssOwnerLookupOnly: true },
   database: { nullExportPolicy: 'reject-unwritten', nullImportPolicy: 'reject-unwritten' },
   resources: { categoryCount: 64 },
   sound: {
@@ -436,8 +437,16 @@ export default {
       },
       control: {
         unmapped: 'reject',
-        raw: [],
-        canonical: [],
+        raw: [
+          { min: 353, max: 358, offset: -12, kinds: [40] },
+          ...[6, 9, 10].map((id) => ({ min: id, max: id, offset: 0, kinds: [40] })),
+          { min: 64, max: 65, offset: -3, kinds: [40] },
+        ],
+        canonical: [
+          { min: 341, max: 346, offset: 12, kinds: [40] },
+          ...[6, 9, 10].map((id) => ({ min: id, max: id, offset: 0, kinds: [40] })),
+          { min: 61, max: 62, offset: 3, kinds: [40] },
+        ],
       },
       sound: {
         unmapped: 'reject',
@@ -842,7 +851,8 @@ export default {
       keyEncoding: null,
     },
     macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
-    controlResources: null,
+    trailingIntegerAfterCurrent: true,
+    controlResources: { kinds: [40], scrollProtocol: 'legacy' },
   },
   graphics: {
     formattedBitmapPhysical: true,
@@ -851,6 +861,9 @@ export default {
     planeAlphaFlags: 1,
     drawEnablePendingPolicy: 'rising-edge',
     bitmapBlitUsesSourceSize: true,
+    screenCaptureOpaque: true,
+    sameSizeBitmapCopyClips: true,
+    savedImageExpandsRGB24: true,
     resizeRGB24: true,
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: null,
@@ -883,57 +896,56 @@ export default {
       count: 938,
       slots: {
         unknown: [
-          7, 10, 11, 12, 18, 20, 22, 23, 24, 26, 27, 28, 31, 33, 34, 37, 39, 40, 48, 52, 53, 55, 56,
-          58, 59, 60, 61, 64, 65, 72, 73, 74, 75, 76, 77, 80, 81, 82, 83, 86, 87, 89, 90, 91, 95,
-          96, 97, 98, 99, 102, 103, 106, 107, 109, 110, 113, 116, 119, 120, 121, 122, 126, 127, 128,
-          129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 144, 145, 146, 147, 148, 149, 150,
-          151, 152, 153, 154, 165, 166, 167, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202,
-          203, 204, 205, 206, 208, 214, 215, 216, 217, 219, 220, 221, 222, 223, 224, 225, 226, 227,
-          228, 229, 230, 231, 232, 233, 234, 235, 237, 239, 241, 242, 243, 249, 251, 252, 253, 255,
-          261, 263, 264, 279, 280, 281, 282, 283, 286, 287, 288, 289, 290, 291, 292, 293, 305, 306,
-          309, 312, 321, 322, 334, 335, 337, 340, 346, 349, 350, 351, 352, 353, 354, 355, 356, 357,
-          360, 361, 363, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383,
-          384, 387, 388, 391, 394, 395, 396, 398, 399, 401, 405, 406, 407, 408, 409, 410, 411, 412,
-          413, 414, 415, 416, 428, 430, 431, 433, 441, 442, 443, 444, 445, 446, 450, 451, 456, 457,
-          460, 461, 462, 463, 464, 467, 468, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480,
+          7, 10, 11, 12, 18, 20, 22, 26, 27, 28, 31, 33, 34, 37, 39, 40, 48, 52, 53, 55, 56, 58, 59,
+          60, 61, 64, 65, 74, 75, 77, 80, 81, 82, 83, 86, 87, 89, 90, 91, 95, 96, 97, 98, 99, 102,
+          103, 106, 107, 109, 110, 119, 120, 121, 122, 126, 127, 128, 129, 130, 131, 132, 133, 134,
+          135, 136, 137, 138, 139, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 165, 166,
+          167, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 208, 214,
+          215, 216, 217, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233,
+          234, 235, 237, 239, 249, 255, 261, 264, 279, 280, 281, 282, 283, 286, 287, 288, 289, 290,
+          291, 292, 293, 305, 306, 309, 312, 321, 322, 334, 335, 337, 340, 346, 349, 350, 351, 352,
+          353, 354, 355, 356, 357, 360, 361, 363, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378,
+          379, 380, 381, 382, 383, 384, 391, 394, 395, 396, 398, 399, 401, 405, 406, 407, 408, 409,
+          410, 411, 412, 413, 414, 415, 416, 428, 430, 431, 433, 441, 442, 443, 444, 445, 446, 456,
+          457, 460, 461, 462, 463, 467, 468, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480,
           481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498,
           499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 521, 522,
           523, 524, 525, 526, 529, 532, 533, 536, 537, 538, 541, 558, 564, 569, 570, 576, 577, 582,
           583, 584, 585, 587, 588, 589, 599, 600, 601, 602, 603, 608, 609, 610, 611, 612, 613, 614,
           615, 616, 617, 618, 619, 620, 621, 622, 623, 624, 628, 629, 631, 632, 641, 648, 650, 651,
           655, 657, 658, 659, 662, 663, 664, 665, 666, 667, 668, 669, 675, 676, 677, 678, 679, 680,
-          681, 682, 688, 689, 690, 691, 692, 694, 695, 699, 701, 702, 703, 704, 705, 706, 707, 708,
-          709, 716, 718, 719, 720, 721, 722, 725, 729, 734, 735, 738, 740, 742, 743, 744, 745, 746,
-          747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764,
-          765, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782,
-          783, 784, 786, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805,
-          806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823,
-          824, 825, 826, 827, 828, 829, 830, 831, 832, 837, 838, 839, 840, 841, 842, 843, 845, 846,
-          847, 850, 851, 852, 853, 854, 855, 856, 857, 860, 861, 862, 871, 874, 875, 877, 878, 879,
-          880, 881, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899,
-          900, 901, 902, 904, 905,
+          681, 682, 688, 689, 690, 691, 692, 695, 701, 702, 703, 704, 705, 706, 707, 708, 709, 716,
+          718, 719, 720, 721, 722, 725, 729, 734, 735, 738, 740, 742, 743, 744, 745, 746, 747, 748,
+          749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766,
+          767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784,
+          786, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807,
+          808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825,
+          826, 827, 828, 829, 830, 831, 832, 837, 838, 839, 840, 841, 842, 843, 845, 846, 847, 853,
+          854, 855, 856, 857, 860, 861, 862, 871, 874, 875, 877, 878, 879, 880, 881, 884, 885, 886,
+          887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 904, 905,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
         recovered: [
-          1, 4, 5, 6, 8, 9, 13, 14, 15, 16, 17, 19, 21, 25, 29, 30, 32, 35, 36, 38, 41, 42, 43, 44,
-          45, 46, 47, 49, 50, 51, 54, 57, 62, 63, 66, 67, 68, 69, 70, 71, 78, 79, 84, 85, 88, 92,
-          93, 94, 100, 101, 104, 105, 108, 111, 112, 114, 115, 117, 118, 123, 124, 125, 140, 142,
-          143, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 168, 207, 209, 210, 211, 212, 213,
-          218, 238, 240, 244, 245, 246, 247, 248, 250, 254, 256, 257, 258, 259, 260, 262, 265, 266,
-          267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 284, 285, 294, 295, 296, 297,
-          298, 299, 300, 301, 302, 303, 304, 307, 308, 310, 311, 313, 314, 315, 316, 317, 318, 319,
-          320, 323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 336, 338, 339, 341, 342, 343,
-          344, 345, 347, 348, 358, 359, 362, 364, 365, 366, 367, 368, 385, 386, 389, 390, 392, 393,
-          397, 400, 402, 403, 404, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 434, 435,
-          436, 437, 438, 440, 447, 448, 449, 452, 453, 454, 455, 458, 459, 465, 466, 469, 515, 516,
+          1, 4, 5, 6, 8, 9, 13, 14, 15, 16, 17, 19, 21, 23, 24, 25, 29, 30, 32, 35, 36, 38, 41, 42,
+          43, 44, 45, 46, 47, 49, 50, 51, 54, 57, 62, 63, 66, 67, 68, 69, 70, 71, 72, 73, 76, 78,
+          79, 84, 85, 88, 92, 93, 94, 100, 101, 104, 105, 108, 111, 112, 113, 114, 115, 116, 117,
+          118, 123, 124, 125, 140, 142, 143, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 168,
+          207, 209, 210, 211, 212, 213, 218, 238, 240, 241, 242, 243, 244, 245, 246, 247, 248, 250,
+          251, 252, 253, 254, 256, 257, 258, 259, 260, 262, 263, 265, 266, 267, 268, 269, 270, 271,
+          272, 273, 274, 275, 276, 277, 278, 284, 285, 294, 295, 296, 297, 298, 299, 300, 301, 302,
+          303, 304, 307, 308, 310, 311, 313, 314, 315, 316, 317, 318, 319, 320, 323, 324, 325, 326,
+          327, 328, 329, 330, 331, 332, 333, 336, 338, 339, 341, 342, 343, 344, 345, 347, 348, 358,
+          359, 362, 364, 365, 366, 367, 368, 385, 386, 387, 388, 389, 390, 392, 393, 397, 400, 402,
+          403, 404, 417, 418, 419, 420, 421, 422, 423, 424, 425, 426, 427, 434, 435, 436, 437, 438,
+          440, 447, 448, 449, 450, 451, 452, 453, 454, 455, 458, 459, 464, 465, 466, 469, 515, 516,
           517, 518, 519, 520, 527, 528, 530, 531, 534, 535, 539, 540, 542, 549, 557, 565, 566, 567,
           568, 571, 572, 586, 590, 591, 592, 593, 594, 595, 596, 597, 598, 604, 605, 606, 607, 625,
           630, 633, 634, 635, 636, 637, 638, 639, 640, 645, 646, 647, 649, 653, 654, 674, 683, 684,
-          685, 693, 696, 697, 698, 700, 710, 711, 712, 713, 714, 715, 717, 723, 724, 726, 727, 728,
-          730, 731, 732, 733, 736, 737, 739, 741, 785, 787, 788, 789, 790, 833, 834, 835, 836, 844,
-          848, 849, 858, 859, 863, 864, 865, 866, 867, 868, 869, 870, 872, 873, 876, 882, 883, 903,
-          934, 935, 936, 937,
+          685, 693, 694, 696, 697, 698, 699, 700, 710, 711, 712, 713, 714, 715, 717, 723, 724, 726,
+          727, 728, 730, 731, 732, 733, 736, 737, 739, 741, 785, 787, 788, 789, 790, 833, 834, 835,
+          836, 844, 848, 849, 850, 851, 852, 858, 859, 863, 864, 865, 866, 867, 868, 869, 870, 872,
+          873, 876, 882, 883, 903, 934, 935, 936, 937,
         ],
       },
       evidence: [
@@ -958,9 +970,33 @@ export default {
             'Own Main6 copies the sole operand directly to the result DWORD and returns control 1.',
         },
         {
+          ids: [23, 24],
+          value:
+            'Own Main23 and Main24 scan the live narrow string with the wide CP932 pair decoder. Main23 keeps character ends strictly below the byte limit. Main24 caps the character count. Both store two NUL bytes at the boundary and return the retained byte count.',
+        },
+        {
           ids: [9],
           value:
             '2.6.1.63 own Main9 posts close confirmation or the raw 0x433 direct close. Both accepted paths hide the view and enqueue 0x410 for Script shutdown and cleanup.',
+        },
+        {
+          ids: [72, 73, 76],
+          value:
+            'Own Script raw168 returns the target interpreter. Main72 and Main73 translate both guest byte spans and copy in opposite directions without a result write. Main76 follows the caller parent and writes its native task ID.',
+        },
+        {
+          ids: [113, 116],
+          value:
+            'Own Main113 captures the active view into a caller-owned four-byte bitmap with opaque alpha and returns its handle, or zero. Main116 clips the source and destination rectangles and chooses copy or resample by their requested dimensions.',
+        },
+        {
+          ids: [263, 464],
+          value:
+            'Own kind15 Draw raw275 changes the sender-keyed entry visibility. Raw288 refreshes the same key. Both form the 16-bit entry index over the native sender ID and return control 2.',
+        },
+        {
+          ids: [694],
+          value: 'Own Main694 sends raw29 to store the full Base task user DWORD.',
         },
         {
           ids: [123, 418],
@@ -973,6 +1009,11 @@ export default {
             'Own kind8 raw99 appends expanded CP932 bytes and rasterizes immediately outside timed display mode. Raw100 clears the owned bitmap and republishes when output is enabled. Raw117 stores the secondary color DWORD. The wrappers preserve the result cell and return control 2.',
         },
         {
+          ids: [450, 451],
+          value:
+            'Own FES raw323 selects an existing CP932 label and returns the result or zero. Raw324 writes the complete FES save-object word without a result write.',
+        },
+        {
           ids: [647],
           value:
             'Own Main647 sends raw330 with the raw sleep DWORD. The receiver compares and stores this word, traverses recorded FES display resources on a change, and redraws on wake. The wrapper preserves the result and returns control 2.',
@@ -981,6 +1022,31 @@ export default {
           ids: [649],
           value:
             'Own Main649 queries raw331 and copies the selected FES private bank through the same receiver. A null file or zero bank size returns zero. The successful 2048-byte transfer writes the requested CSS record and returns one.',
+        },
+        {
+          ids: [241, 242, 243, 251, 252, 253],
+          value:
+            'Own CSS wrappers select the HG-2 bitmap encoder, raw nested CSS, or the caller string bank. Bitmap restore expands RGB24 to four bytes and registers its owner. The string-bank writer requires the existing owner and the reader initializes it only after finding the requested record. Nested read creates an independent container.',
+        },
+        {
+          ids: [387, 388],
+          value:
+            'Own Main387 writes the buffer and capacity words from the motion checkpoint structure. Main388 makes an independent copy of the CSS bytes and restores a supplied MOT manager with the caller frame, or returns a detached checkpoint.',
+        },
+        {
+          ids: [850, 851],
+          value:
+            'Own display-log CSS wrappers use the four section offsets and two base counters. Each stored block has six DWORDs, with a separate encoding for text and voice bytes.',
+        },
+        {
+          ids: [852],
+          value:
+            'Own 0x4a2c30 writes the original GAME/log/static DWORD at configuration owner +0x6ba0 through the published view at +0x210, with zero arguments and control 1.',
+        },
+        {
+          ids: [699],
+          value:
+            'Own 0x4a19e0 rebuilds the narrow display log through the saved scene path from its two handles and two formatted command names. It clears the old owner, appends only elapsed blocks and returns control 2.',
         },
         {
           ids: [271, 272, 273, 274, 275, 693],
@@ -1488,6 +1554,7 @@ export default {
         },
       ],
       signatures: [
+        { ids: [699], fields: { resultWritten: false } },
         {
           ids: [140, 142, 549],
           fields: {
@@ -1497,8 +1564,13 @@ export default {
             resultWritten: false,
           },
         },
-        { ids: [6, 649], fields: { resultWritten: true } },
-        { ids: [9], fields: { resultWritten: false } },
+        {
+          ids: [
+            6, 23, 24, 76, 113, 241, 242, 243, 251, 252, 253, 387, 388, 450, 649, 850, 851, 852,
+          ],
+          fields: { resultWritten: true },
+        },
+        { ids: [9, 72, 73, 263, 451, 464, 694], fields: { resultWritten: false } },
         { ids: [271, 274, 693], fields: { resultWritten: true } },
         { ids: [272, 273, 275], fields: { resultWritten: false } },
         { ids: [265, 266, 267, 268, 269], fields: { resultWritten: true } },
@@ -1516,7 +1588,7 @@ export default {
         { ids: [168, 358], fields: { resultWritten: false } },
         { ids: [284], fields: { resultWritten: true } },
         { ids: [111, 118], fields: { resultWritten: true } },
-        { ids: [115], fields: { resultWritten: false } },
+        { ids: [115, 116], fields: { resultWritten: false } },
         { ids: [937], fields: { resultWritten: false } },
         { ids: [257, 259, 731, 732], fields: { resultWritten: false } },
         { ids: [625, 713, 723, 727, 728, 737], fields: { resultWritten: false } },
@@ -1859,8 +1931,6 @@ export default {
       'No native capability value is inferred from a modern ABI or an unvisited old API; reject when that behavior is requested.',
     'capabilities.systemEntropy':
       'No native capability value is inferred from a modern ABI or an unvisited old API; reject when that behavior is requested.',
-    'fes.controlResources':
-      'Control skin/resource policy is unreviewed; require own evidence when a control task is actually constructed.',
   },
   layouts: {
     motionCheckpoint: {

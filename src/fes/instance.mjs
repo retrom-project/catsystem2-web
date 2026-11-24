@@ -218,6 +218,10 @@ export class FESInstance {
     const profile = this.runtime?.world?.profile;
     return profile && nativeABI(profile).fes.discardLiteralAssignmentWrites;
   }
+  get trailingIntegerAfterCurrent() {
+    const profile = this.runtime?.world?.profile;
+    return profile && nativeABI(profile).fes.trailingIntegerAfterCurrent;
+  }
   global(n) {
     if (!Number.isInteger(n) || n < 0) throw new Error(`Invalid FES global index ${n}`);
     return this.player.globals[n] || 0;

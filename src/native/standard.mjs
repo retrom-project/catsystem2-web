@@ -362,17 +362,21 @@ export function nativeStandard(id, args, m, services = {}) {
     case 0x17:
     case 0x18: {
       requireArguments(2);
-      a = cstring(m, args[0]);
-      let at = 0,
-        characters = 0;
-      while (at < a.length) {
-        const width = doubleByte(a, at) ? 2 : 1;
-        if (id === 0x17 ? at + width >= args[1] >>> 0 : characters >= args[1] >>> 0) break;
+      const [bytes, start] = m.region(args[0], 1),
+        limit = args[1] >>> 0,
+        pairs = services.profile
+          ? nativeABI(services.profile).text.characterLengthPairs
+          : undefined;
+      let at = start;
+      for (let characters = 0; at < bytes.length && bytes[at]; characters++) {
+        if (id === 0x18 && characters >= limit) break;
+        const width = nativeDataPair(bytes, at, pairs) ? 2 : 1;
+        if (id === 0x17 && at - start + width >= limit) break;
         at += width;
-        characters++;
       }
-      write(m, args[0], a.subarray(0, at));
-      return value(at);
+      const kept = at - start;
+      m.bytes(args[0] + kept, 2).fill(0);
+      return value(kept);
     }
     case 0x19:
     case 0x1a: {

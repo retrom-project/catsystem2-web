@@ -169,19 +169,19 @@ export class FESControlDriver {
       throw new Error('FES control requires an initialized Draw World surface');
     return id;
   }
-  usesLegacyScroll2(object) {
-    return (
-      object.nativeType === 14 &&
-      controlTaskBehavior(this.world.profile).scroll2Protocol === 'legacy'
-    );
+  usesLegacyScroll(object) {
+    const type = object.nativeType;
+    if (type !== 13 && type !== 14) return false;
+    const { scrollProtocol, scroll2Protocol } = controlTaskBehavior(this.world.profile);
+    return (type === 13 ? scrollProtocol : scroll2Protocol) === 'legacy';
   }
   send(instance, object, message, w = 0, l = 0, payload = null) {
     const context = payload ? { payload, flags: 1 } : { flags: 1 };
-    if (this.usesLegacyScroll2(object))
+    if (this.usesLegacyScroll(object))
       return this.world.sendNativeEngine(
         this.world.nativeTaskID(object.nativeTaskID),
         instance.runtimeID,
-        mapABIMessage(this.world.profile, 'control', 'raw', message, 41),
+        mapABIMessage(this.world.profile, 'control', 'raw', message, object.nativeType + 27),
         w,
         l,
         context,
@@ -240,15 +240,19 @@ export class FESControlDriver {
     }
     const config = fesControlLoadPacket(object, this.draw(instance), plane);
     config.file = nativeCategoryFilename(this.world.game, object.file, 'image') ?? '';
-    if (this.usesLegacyScroll2(object)) {
+    if (this.usesLegacyScroll(object)) {
       const filename = encodeCP932(config.file);
       const packet = new NativeGraphicsPacket(new Array(73).fill(0));
-      packet.store(0, this.world.nativeTaskID(config.drawID));
-      packet.data.set(filename.subarray(0, 259), 4);
-      [config.priority, ...config.rect, config.planeX, config.planeY].forEach((word, index) =>
-        packet.store(264 + index * 4, word),
-      );
-      await this.send(instance, object, 368, 0, 0, packet);
+      const scroll = object.nativeType === 13;
+      const drawOffset = scroll ? 4 : 0;
+      packet.store(drawOffset, this.world.nativeTaskID(config.drawID));
+      packet.data.set(filename.subarray(0, 259), drawOffset + 4);
+      const fields = scroll
+        ? [config.vramX, config.vramY, config.x, config.y, config.priority, config.planePriority]
+        : [config.priority, ...config.rect, config.planeX, config.planeY];
+      if (scroll) packet.store(0, config.type);
+      fields.forEach((word, index) => packet.store(drawOffset + 264 + index * 4, word));
+      await this.send(instance, object, scroll ? 353 : 368, 0, 0, packet);
     } else await task.load(config);
     if (object.nativeType !== 13)
       object.direction =
