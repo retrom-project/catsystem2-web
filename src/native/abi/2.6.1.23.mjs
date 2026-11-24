@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [433],
+    value:
+      'Own 2.6.1.23 0x47F890 routes Plane raw 42. With a live mode-1 device and an unregistered parent it creates row-major child planes. The empty parent has no defined bounds.',
+  },
+  {
     ids: [398, 399],
     value:
       'Own 2.6.1.23 Main 0x47F6D0 and 0x47F770 use Plane raw 74 and 75. Their retained history has 128-byte entries and explicit samples defer drawing.',
@@ -1054,7 +1059,7 @@ export default {
     areaQueriesRequireReply: true,
     scriptForward: [9, 10, cursorVisibility, 64],
     screenEvent: 18,
-    tilePlaneCommand: null,
+    tilePlaneCommand: 42,
     windowClosePreparation: false,
     windowCloseConfirmation: { caption: '終了', template: '%s を終了してよろしいですか？' },
   },
@@ -1097,6 +1102,7 @@ export default {
     planePoseQueriesRequireReply: true,
     planeResetReleasesTrackedInput: true,
     planeTrailUsesScalarWords: true,
+    tilePlaneRequiresEmptyOwner: true,
     screenEffectPreserveStoppedClockKinds: [50, 51, 52],
     screenEffectBreakUsesPaddedCapture: true,
     screenEffectMosaic: { fadeInitializerWords: 5, retainShortWipe: true },
@@ -1565,7 +1571,6 @@ export default {
       'capabilities.hapMovieAnsiDriverPath',
       'capabilities.windowsMediaReader',
       'capabilities.systemEntropy',
-      'messages.tilePlaneCommand',
       'floatingPoint.x87ControlWord',
       'floatingPoint.mxcsr',
       'fes.configurationMessage.liveObjects',

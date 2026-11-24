@@ -14,13 +14,22 @@ export const NATIVE_TILE_PLANE_COMMAND = Object.freeze({
     address: 0x512cc0,
     rawMessage: nativeABI('sdk-4.01-engine-2.6.1.74').messages.tilePlaneCommand,
   }),
+  legacy: Object.freeze({
+    address: 0x47f890,
+    rawMessage: nativeABI('grisaia-jp-engine-2.6.1.23').messages.tilePlaneCommand,
+  }),
 });
 
 export class NativeTilePlaneCommand {
   constructor(engine, world) {
     Object.assign(this, { engine, world, process: engine.process });
     const spec = NATIVE_TILE_PLANE_COMMAND,
-      layout = engine.profile.startsWith('sdk-') ? spec.sdk : spec.game,
+      layout =
+        engine.profile === 'grisaia-jp-engine-2.6.1.23'
+          ? spec.legacy
+          : engine.profile.startsWith('sdk-')
+            ? spec.sdk
+            : spec.game,
       p = this.process,
       transport = p.trap(
         'KCS tiled plane task transport',

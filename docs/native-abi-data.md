@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 419       | 57            | 17            | 376     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
+| 2.6.1.23 | 869        | 420       | 57            | 17            | 375     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 398       | 80            | 19            | 441     | Generic 14 of 45, Particle 12 of 44 and 12 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -95,6 +95,17 @@ geometry or texture pose and write two or three float words. The query
 leaves guest memory unchanged when the target ID is zero. A nonzero
 target must supply initialized pose words before the Core writes the VM
 outputs.
+
+Main 398 and 399 configure and write the 128-byte retained Plane
+history through raw 74 and 75. The receiver retains the selected stride and
+applies explicit samples on the next draw.
+
+Main 433 sends raw 42. With a live mode-1 device it reserves an empty
+parent graph and creates its child planes in row-major order. An already
+registered parent keeps its existing graph and children. The native empty
+parent's bounds lookup leaves its output coordinates unwritten. Native and
+FES size or input registration requests that need those coordinates fail
+before exposing an output. Child graphics retain their measured dimensions.
 
 Main 521–524 use raw 343–346 on screen effects 35 and 36. The matrix
 initializer copies 64 mapped bytes and six operands into an 88-byte

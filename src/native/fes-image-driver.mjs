@@ -370,6 +370,14 @@ export class FESImages {
     }
   }
   plane(instance, object, draw) {
+    let parent, parentBounds;
+    if (object.parentPlaneID) {
+      const id = this.world.resolveTaskID(object.parentPlaneID, instance.runtimeID);
+      parent = id === null ? null : this.world.graphics.get(id);
+      if (!parent?.graph)
+        throw new Error(`FES parent plane ${object.parentPlaneID} has no live graph`);
+      parentBounds = parent.planeBounds();
+    }
     const out = this.workspace(object).plane;
     Object.assign(out, {
       x: 0,
@@ -380,27 +388,23 @@ export class FESImages {
       inputY: 0,
       found: false,
     });
-    if (object.parentPlaneID) {
-      const id = this.world.resolveTaskID(object.parentPlaneID, instance.runtimeID),
-        plane = id === null ? null : this.world.graphics.get(id);
-      if (!plane?.graph)
-        throw new Error(`FES parent plane ${object.parentPlaneID} has no live graph`);
+    if (parent) {
       // Parent-plane raw message queries are kept synchronous here through the
       // already-authoritative JS graph fields; no task/PE identifier is reused.
       const texture = new DataView(
-        plane.graph.textureTransform.buffer,
-        plane.graph.textureTransform.byteOffset,
-        plane.graph.textureTransform.byteLength,
+        parent.graph.textureTransform.buffer,
+        parent.graph.textureTransform.byteOffset,
+        parent.graph.textureTransform.byteLength,
       );
       const geometry = new DataView(
-        plane.graph.kx2.buffer,
-        plane.graph.kx2.byteOffset,
-        plane.graph.kx2.byteLength,
+        parent.graph.kx2.buffer,
+        parent.graph.kx2.byteOffset,
+        parent.graph.kx2.byteLength,
       );
       out.x = truncateFloat32(texture.getFloat32(MOTION_ABI.pos, true));
       out.y = truncateFloat32(texture.getFloat32(MOTION_ABI.pos + 4, true));
-      out.width = truncateFloat32(plane.state.rect[2]);
-      out.height = truncateFloat32(plane.state.rect[3]);
+      out.width = truncateFloat32(parentBounds[2]);
+      out.height = truncateFloat32(parentBounds[3]);
       out.inputX =
         (truncateFloat32(geometry.getFloat32(MOTION_ABI.pos, true)) -
           truncateFloat32(geometry.getFloat32(MOTION_ABI.base, true))) |

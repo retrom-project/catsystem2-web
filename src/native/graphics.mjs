@@ -521,6 +521,7 @@ export class NativeGraphicTask {
     this.coordinateModeRequiresGraph = Boolean(abi?.coordinateModeRequiresGraph);
     this.planePoseQueriesRequireReply = Boolean(abi?.planePoseQueriesRequireReply);
     this.planeResetReleasesTrackedInput = Boolean(abi?.planeResetReleasesTrackedInput);
+    this.tilePlaneRequiresEmptyOwner = Boolean(abi?.tilePlaneRequiresEmptyOwner);
     // Initial BasePlane and SimplePlane state.
     this.state = {
       receiver: -1,
@@ -596,6 +597,11 @@ export class NativeGraphicTask {
   }
   get input() {
     return this.world.inputFor?.(this.record.id);
+  }
+  planeBounds() {
+    if (this.tilePlaneRequiresEmptyOwner && this.graph?.type === 5 && this.state.drawType === 8)
+      throw new Error('Native tiled parent geometry bounds are undefined');
+    return this.state.rect;
   }
   ownsTexturedBounds(graph = this.graph) {
     return this.graphics.ownsTexturedBounds(this, graph);
@@ -716,6 +722,12 @@ export class NativeGraphicTask {
   }
   async message(words, context = {}) {
     const [sender, id, w, l] = words;
+    if (
+      id === 46 &&
+      this.tilePlaneRequiresEmptyOwner &&
+      (this.state.vramType !== 1 || !this.graphics.device.attachment || this.graph)
+    )
+      return 0;
     if ([3, 41, 42, 45, 46, 68, 69, 70, 83].includes(id)) {
       await originalView(this.world, 'movieRelease', this);
       await this.world.planeMovies.release(this);
@@ -880,7 +892,9 @@ export class NativeGraphicTask {
       case 46: {
         if (this.state.vramType !== 1)
           throw new Error('Tiled planes require the reviewed ordinary mode1 backend');
-        const a = Array.from({ length: 10 }, (_, i) => load(l + i * 4)),
+        const a = Array.from({ length: 10 }, (_, i) =>
+            this.tilePlaneRequiresEmptyOwner && i >= 5 && i <= 7 ? undefined : load(l + i * 4),
+          ),
           geometry = floats(l, 5),
           columns = nativeEngineWord(a[8], 'Tile column count') | 0,
           rows = nativeEngineWord(a[9], 'Tile row count') | 0;
@@ -901,7 +915,7 @@ export class NativeGraphicTask {
             const id = await this.world.objects.create({
                 kind: 2,
                 parent: this.record.id,
-                name: 'TilePlane',
+                name: this.tilePlaneRequiresEmptyOwner ? 'ptn plane' : 'TilePlane',
               }),
               child = this.graphics.get(id);
             await child.message([this.record.nativeID, 41, 0, 0], {
@@ -917,7 +931,7 @@ export class NativeGraphicTask {
               ]),
             });
           }
-        this.state.drawType = 9;
+        this.state.drawType = this.tilePlaneRequiresEmptyOwner ? 8 : 9;
         return 0;
       }
       case 69:
@@ -1066,7 +1080,8 @@ export class NativeGraphicTask {
       case 86:
         return 0; // Explicit original simple-plane empty branches.
       case 72: {
-        const position = vector(MOTION_ABI.pos),
+        const rect = this.planeBounds(),
+          position = vector(MOTION_ABI.pos),
           base = vector(MOTION_ABI.base),
           left = Math.fround(position[0] - base[0]),
           top = Math.fround(position[1] - base[1]);
@@ -1075,8 +1090,8 @@ export class NativeGraphicTask {
           payload: new NativeGraphicsPacket([
             Math.trunc(left),
             Math.trunc(top),
-            Math.trunc(Math.fround(this.state.rect[2] + left)),
-            Math.trunc(Math.fround(this.state.rect[3] + top)),
+            Math.trunc(Math.fround(rect[2] + left)),
+            Math.trunc(Math.fround(rect[3] + top)),
             Math.trunc(base[2]),
             l,
           ]),
@@ -1127,18 +1142,18 @@ export class NativeGraphicTask {
         return 0;
       case 74:
         return ((this.state.blocked ? 0x80000000 : 0) | this.state.phase) >>> 0;
-      case 75:
-        put(w, [this.state.rect[2]]);
-        put(l, [this.state.rect[3]]);
+      case 75: {
+        const [, , width, height] = this.planeBounds();
+        put(w, [width]);
+        put(l, [height]);
         return 0;
-      case 76:
-        put(w, [this.state.rect[0], this.state.rect[1], 0]);
-        put(l, [
-          this.state.rect[0] + this.state.rect[2],
-          this.state.rect[1] + this.state.rect[3],
-          0,
-        ]);
+      }
+      case 76: {
+        const [left, top, width, height] = this.planeBounds();
+        put(w, [left, top, 0]);
+        put(l, [left + width, top + height, 0]);
         return 0;
+      }
       case 77:
         this.state.imageIndex = l | 0;
         if (
@@ -1185,13 +1200,14 @@ export class NativeGraphicTask {
           this.record.kind === 2 || (context.graphInputRegistration && this.record.kind !== 6);
         if (this.record.kind === 2 && !this.graph?.kx2)
           throw new Error('Native plane input geometry is unreviewed');
-        if (tracksGraph) this.state.inputTracksGraph = true;
-        if (this.state.receiver !== -1) return tracksGraph ? undefined : 0;
+        if (this.state.receiver !== -1) {
+          if (tracksGraph) this.state.inputTracksGraph = true;
+          return tracksGraph ? undefined : 0;
+        }
+        const graphFields = tracksGraph ? this.graphInputFields(l) : null;
         if (!this.input?.register)
           throw new Error('Native plane input registration is unavailable');
-        const fields = tracksGraph
-          ? this.graphInputFields(l)
-          : Array.from({ length: 6 }, (_, i) => load(l + i * 4));
+        const fields = graphFields ?? Array.from({ length: 6 }, (_, i) => load(l + i * 4));
         const bounds = fields.slice(0, 4).map((v) => v | 0);
         const full =
           bounds[0] <= 0 &&
@@ -1210,6 +1226,7 @@ export class NativeGraphicTask {
         });
         this.state.bindArea = retainedBounds;
         this.state.bindFlags = fields[5];
+        if (tracksGraph) this.state.inputTracksGraph = true;
         this.state.receiver = sender;
         this.state.changed = 1;
         return tracksGraph ? undefined : 1;
@@ -1299,7 +1316,7 @@ export class NativeGraphicTask {
       { bounds, priority } = nativePlaneInputGeometry(
         vector(MOTION_ABI.base),
         vector(MOTION_ABI.pos),
-        this.state.rect.slice(2, 4),
+        this.planeBounds().slice(2, 4),
       );
     return [...bounds, priority, flags];
   }

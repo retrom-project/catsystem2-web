@@ -73,6 +73,7 @@ export class NativePlaneTrail {
       length = this.scalarWords ? count * stride : Math.imul(count, stride);
     if ((this.scalarWords && (count < 0 || stride < 0)) || length < 0 || length > 65535)
       throw new RangeError('Plane trail history exceeds its native ID range');
+    if (mode >= 1 && mode <= 5 && length) task.planeBounds();
     this.close();
     const head = sample(source, this.scalarWords),
       history = [head],
@@ -115,7 +116,7 @@ export class NativePlaneTrail {
     const state = this.state,
       task = this.task,
       axis = state.mode === 4 ? 1 : 0,
-      dimension = task.state.rect[axis + 2],
+      dimension = task.planeBounds()[axis + 2],
       integer = Math.trunc(dimension),
       strip = integer % 2 ? 1 : 2,
       half = Math.trunc(integer / 2) - (strip === 2 ? 1 : 0),
@@ -232,7 +233,7 @@ export class NativePlaneTrail {
           angle = f(f(Math.atan2(delta[1], delta[0])) - (state.mode >= 4 ? f(Math.PI / 2) : 0)),
           matrix = Array.from({ length: 16 }, (_, j) => view.getFloat32(60 + j * 4, true)),
           transformed = multiply(matrix, rotation('z', angle)),
-          width = this.task.state.rect[2],
+          width = this.task.planeBounds()[2],
           squared = f(f(f(delta[0] * delta[0]) + f(delta[1] * delta[1])) + f(delta[2] * delta[2])),
           distance = f(Math.sqrt(squared)),
           length = state.mode === 2 ? f(distance * 0.5) : distance;

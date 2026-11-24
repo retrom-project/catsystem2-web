@@ -2,7 +2,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { KCSMachine, floatBits, readKCS } from '../src/kcs.mjs';
-import { MOTION_ABI, setMotionVector } from '../src/motion/abi.mjs';
+import { MOTION_ABI, motionVector, setMotionVector } from '../src/motion/abi.mjs';
+import { FESImages } from '../src/native/fes-image-driver.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
@@ -203,6 +204,90 @@ test('fixed 2.6.1.23 Plane history configures and shifts before the next draw', 
       history.graphs.map(({ kx2 }) => kx2),
       previous,
     );
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+
+test('fixed 2.6.1.23 tiled Plane keeps registered owners and declines undefined parent bounds', async () => {
+  const world = await dataWorld(profile);
+  try {
+    const id = await world.objects.create({ kind: 2, parent: world.root }),
+      owner = world.graphics.get(id),
+      target = world.nativeTaskID(id),
+      memory = Array(3).fill(canary),
+      width = 7.625,
+      height = 3.8125,
+      grid = [floatBits(width), floatBits(height), 2, 3],
+      send = (message, w, l, payload) =>
+        world.sendNativeEngine(target, world.main.id, message, w, l, payload ? { payload } : {});
+    await call(world, 433, [0, ...grid], memory);
+    await call(world, 433, [0xffffffff, ...grid], memory);
+    await call(world, 433, [target, ...grid], memory);
+    assert.equal(owner.graph, null);
+
+    world.graphics.createLogicalDevice();
+    await send(84, 0, 2);
+    await call(world, 433, [target, ...grid], memory);
+    assert.equal(owner.graph, null);
+    await send(84, 0, 1);
+    await send(41, 0, 0, new NativeGraphicsPacket([0, 0, 0, ...grid.slice(0, 2), 32, 1, 0]));
+    const populated = owner.graph;
+    await call(world, 433, [target, ...grid], memory);
+    assert.equal(owner.graph, populated);
+    assert.deepEqual(world.objects.children(owner.record), []);
+    await call(world, 83, [target], memory);
+
+    await call(world, 433, [target, ...grid], memory);
+    const tiled = owner.graph,
+      children = world.objects.children(owner.record);
+    assert.equal(tiled.type, 5);
+    assert.equal(owner.state.drawType, 8);
+    assert.equal(children.length, 6);
+    assert.deepEqual(owner.state.shapeWords, [0, 0, 0, ...grid.slice(0, 2), ...Array(3), 2, 3]);
+    for (const [index, child] of children.entries()) {
+      assert.equal(child.kind, 2);
+      assert.equal(child.name, 'ptn plane');
+      assert.equal(child.parent, id);
+      const plane = world.graphics.get(child.id),
+        expected = [(index % 2) * width, Math.floor(index / 2) * height, 0];
+      assert.equal(plane.graph.type, 1);
+      assert.deepEqual([plane.graph.width, plane.graph.height], [width, height]);
+      assert.deepEqual(plane.state.parentOffset, expected);
+      assert.deepEqual(motionVector(plane.graph.kx2, MOTION_ABI.base), [
+        0 - expected[0],
+        0 - expected[1],
+        5000,
+      ]);
+    }
+    await call(world, 433, [target, floatBits(1), floatBits(2), 1, 1], memory);
+    assert.equal(owner.graph, tiled);
+    assert.deepEqual(world.objects.children(owner.record), children);
+
+    const fault = /Native tiled parent geometry bounds are undefined/;
+    await call(world, 343, [target, 128, 132], memory, fault);
+    await call(world, 345, [target, 128, 132, 136, 140], memory, fault);
+    await assert.rejects(send(89, world.nativeTaskID(world.main.id), 0x74), fault);
+    assert.equal(owner.state.inputTracksGraph, false);
+    assert.equal(owner.input.get(id), null);
+    const images = new FESImages(world, { cacheFor() {}, lookup() {} }),
+      request = { parentPlaneID: target };
+    assert.throws(() => images.plane({ runtimeID: world.main.id }, request), fault);
+    assert.equal(images.scratch.has(request), false);
+
+    const child = children[1];
+    await call(
+      world,
+      343,
+      [child.nativeID, 128, 132],
+      [floatBits(width), floatBits(height), canary],
+    );
+    assert.equal(
+      images.plane({ runtimeID: world.main.id }, { parentPlaneID: child.nativeID }).width,
+      7,
+    );
+    await world.objects.release(id);
+    assert(children.every((child) => !world.objects.objects.has(child.id)));
   } finally {
     await world.close({ flushFiles: false });
   }
