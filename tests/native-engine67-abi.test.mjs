@@ -265,3 +265,60 @@ test('2.6.1.67 Script receives exact live input packets and keeps unhandled base
   }
   assert.equal(task.status, 'finished');
 });
+
+test('2.6.1.67 Plane input GCALLs update the active region, latch and receiver', async (t) => {
+  const plane1 = [0x13, 80];
+  const plane2 = [0x13, 84];
+  const receiver = [0x13, 88];
+  const calls = [
+    [79, [plane1, floatBits(4), floatBits(3), 0xffffffff]],
+    [79, [plane2, floatBits(4), floatBits(3), 0xffffffff]],
+    [104, [plane1, 0, 0, 4, 3, 23, 0]],
+    [104, [plane2, 0, 0, 4, 3, 23, 0]],
+    [105, [plane1, 1]],
+    [105, [plane2, 1]],
+    [106, [plane2, 1]],
+    [106, [plane1, 0x80000021]],
+    [108, [plane1, 0x81200305]],
+    [110, [plane1, receiver]],
+  ];
+  const program = kcsProgram([
+    [37, 0xf217d9e3],
+    ...calls.flatMap(([id, args]) => [
+      ...args.map((word) => [37, word]),
+      [43, id, args.length * 4],
+    ]),
+    [59],
+  ]);
+  const world = await dataWorld(profile, {
+    'case.kcs': kcsProgram([[59]]),
+    'plane-input.kcs': program,
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id;
+  const caller = await world.objects.create({ kind: 12, parent });
+  const script = world.objects.objects.get(caller).implementation;
+  const first = await world.objects.create({ kind: 2, parent: caller });
+  const second = await world.objects.create({ kind: 2, parent: caller });
+  const destination = await world.objects.create({ kind: 12, parent });
+  await script.loadScript('plane-input.kcs');
+  const { task } = script;
+  const { machine } = task;
+  const floor = machine.sp;
+  for (const [position, id] of [
+    [80, first],
+    [84, second],
+    [88, destination],
+  ])
+    machine.store(position, world.nativeTaskID(id));
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), 0xf217d9e3);
+  assert.equal(world.input.get(first).active, 0x80000021);
+  assert.equal(world.input.get(second).active, 0);
+  assert.equal(world.objects.objects.get(first).implementation.state.changed, 0x81200305);
+  assert.equal(
+    world.objects.objects.get(first).implementation.state.receiver,
+    world.nativeTaskID(destination),
+  );
+});
