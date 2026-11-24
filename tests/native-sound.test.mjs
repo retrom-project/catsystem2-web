@@ -731,6 +731,7 @@ test('2.6.1.67 Sound GCALLs use compact load packets and control the actual Root
         ],
       ),
     xyz = [7, ...[1.25, 2.5, 4.5].map(floatBits)],
+    velocity = [7, ...[-1.5, 2.25, -3.5].map(floatBits)],
     range = [7, floatBits(8.25), floatBits(72.5)],
     world = await dataWorld(profile, {
       'あ_line.wav': Uint8Array.of(1, 2, 3),
@@ -742,6 +743,7 @@ test('2.6.1.67 Sound GCALLs use compact load packets and control the actual Root
         [284, [0, 320], 96],
       ]),
       'sound-play.kcs': program([
+        [349, [7], 92],
         [161, [7, 65]],
         [162, [7], 80],
         [164, [7, -34]],
@@ -750,10 +752,14 @@ test('2.6.1.67 Sound GCALLs use compact load packets and control the actual Root
         [160, [7], 88],
         [163, [7, 83, 19]],
         [166, [7, -88, 28]],
+        [349, [7], 96],
+        [349, [0xffffffff], 100],
       ]),
       'sound-spatial.kcs': program([
         [167, range],
         [168, xyz],
+        [347, velocity],
+        [348, [7, floatBits(0.5)]],
       ]),
       'sound-pause.kcs': program([
         [158, [7]],
@@ -777,6 +783,7 @@ test('2.6.1.67 Sound GCALLs use compact load packets and control the actual Root
     device = sound.device[7],
     control = receiver.controls[7],
     packets = [],
+    spatialMessages = [],
     dispatch = receiver.message.bind(receiver),
     execute = async (name) => {
       const task = await world.spawnScript(name, { parent: world.main.id, initialExecute: false }),
@@ -789,10 +796,13 @@ test('2.6.1.67 Sound GCALLs use compact load packets and control the actual Root
   receiver.message = (words, context) => {
     if (words[1] === 174 || words[1] === 175)
       packets.push([words[1], words[2], context.payload.data.length, context.payload.load(272)]);
+    if (words[1] >= 190 && words[1] <= 192) spatialMessages.push(words[1]);
     return dispatch(words, context);
   };
   await execute('sound-spatial.kcs');
   assert.deepEqual(device.nativeSpatial.position, [0, 0, 0]);
+  assert.deepEqual(device.nativeSpatial.velocity, [0, 0, 0]);
+  assert.equal(device.nativeSpatial.dopplerFactor, 1);
   assert.notEqual(device.nativeSpatial.maximumDistance, 72.5);
   const loaded = await execute('sound-load.kcs');
   assert.deepEqual(
@@ -811,8 +821,8 @@ test('2.6.1.67 Sound GCALLs use compact load packets and control the actual Root
   assert.equal(audio.channels.size, 0);
   const playing = await execute('sound-play.kcs');
   assert.deepEqual(
-    [80, 84, 88].map((at) => playing.load(at)),
-    [65, 0xffffffde, 1],
+    [80, 84, 88, 92, 96, 100].map((at) => playing.load(at)),
+    [65, 0xffffffde, 1, 0, 1, 0],
   );
   assert.equal(device.loopCount, 4);
   assert.equal(control.word(C.flags) & 3, 3);
@@ -823,6 +833,9 @@ test('2.6.1.67 Sound GCALLs use compact load packets and control the actual Root
   await execute('sound-spatial.kcs');
   assert.equal(device.nativeSpatial.maximumDistance, 72.5);
   assert.deepEqual(device.nativeSpatial.position, [1.25, 2.5, 4.5]);
+  assert.deepEqual(device.nativeSpatial.velocity, [-1.5, 2.25, -3.5]);
+  assert.equal(device.nativeSpatial.dopplerFactor, 0.5);
+  assert.deepEqual(spatialMessages, [190, 191, 192, 192, 192, 190, 191]);
   const paused = await execute('sound-pause.kcs');
   assert.deepEqual(
     [80, 84].map((at) => paused.load(at)),
