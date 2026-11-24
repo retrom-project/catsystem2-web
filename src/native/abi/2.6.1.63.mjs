@@ -1635,21 +1635,40 @@ export default {
       count: 44,
       slots: {
         unknown: [
-          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-          25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
+          0, 3, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 29, 32, 33, 37, 39, 40, 41,
+          42, 43,
         ],
+        recovered: [1, 2, 5, 6, 7, 22, 23, 24, 25, 26, 27, 28, 30, 31, 34, 35, 36, 38],
       },
+      evidence: [
+        {
+          ids: [1, 2, 5, 6, 7, 22, 23, 24, 25, 26, 27, 28, 30, 31, 34, 35, 36, 38],
+          value:
+            'Own 2.6.1.63 Particle v1 and v2 pointers resolve to the same bodies in this image and both loading branches bind the same particle owner. Fixed v1 calls exercise their frame, numeric, quad, position, register and projection packets.',
+        },
+      ],
+      signatures: [
+        { ids: [1, 2, 6, 7, 34, 36], fields: { resultWritten: true } },
+        { ids: [5, 22, 23, 24, 25, 26, 27, 28, 30, 31, 35, 38], fields: { resultWritten: false } },
+      ],
     },
     'particle-v2': {
       count: 51,
       slots: {
         unknown: [
-          0, 3, 4, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 20, 21, 29, 32, 33, 37, 39, 40, 41, 42, 43,
-          44, 45, 46, 47, 48, 49,
+          0, 3, 4, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 20, 29, 32, 33, 37, 41, 42, 43, 44, 45, 46,
+          47, 48, 49,
         ],
-        recovered: [1, 2, 5, 6, 7, 16, 19, 22, 23, 24, 25, 26, 27, 28, 30, 31, 34, 35, 36, 38, 50],
+        recovered: [
+          1, 2, 5, 6, 7, 16, 19, 21, 22, 23, 24, 25, 26, 27, 28, 30, 31, 34, 35, 36, 38, 39, 40, 50,
+        ],
       },
       evidence: [
+        {
+          ids: [21, 39, 40],
+          value:
+            'Own 2.6.1.63 Particle v2 integer absolute value preserves the most negative word. Visibility writes one raw DWORD at an unsigned in-range index. The highest index is the particle count minus one.',
+        },
         {
           ids: [7, 16, 22, 23, 24, 38],
           value:
@@ -1661,6 +1680,8 @@ export default {
         },
       ],
       signatures: [
+        { ids: [21, 40], fields: { resultWritten: true } },
+        { ids: [39], fields: { resultWritten: false } },
         { ids: [7, 16], fields: { resultWritten: true } },
         { ids: [22, 23, 24, 38], fields: { resultWritten: false } },
         {
