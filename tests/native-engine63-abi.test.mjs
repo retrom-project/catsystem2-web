@@ -852,3 +852,108 @@ test('2.6.1.63 KCS narrow desktop calls use the clipboard boundary and blocking 
     await world.close();
   }
 });
+
+test('2.6.1.63 KCS reads and merges the original owned bitmap fields', async () => {
+  const world = await dataWorld(profile, {
+    'main-119.kcs': mainProgram(119, 3),
+    'main-536.kcs': mainProgram(536, 7),
+    'main-537.kcs': mainProgram(537, 2),
+  });
+  try {
+    const { images } = world.graphics,
+      source = images.create(13, 7, world.main.id),
+      target = images.create(2, 3, world.main.id),
+      attribute = { id: 7, rect: [10, -20, 30, -40], color: 0xff800123 };
+    images.get(source).state.attributes = [attribute];
+    images.get(target).state.attributes = [
+      { id: 7, rect: [1, 2, 3, 4], color: 0x70 },
+      { id: 4, rect: [5, 6, 7, 8], color: 0x71 },
+    ];
+    const size = await executeMain(world, 119, [source, 176, 180]);
+    assert.deepEqual([size.load(176), size.load(180)], [13, 7]);
+    const alias = await executeMain(world, 119, [source, 176, 176]);
+    assert.equal(alias.load(176), 7);
+    const empty = await executeMain(world, 119, [0, 176, 180], (m) => m.bytes(176, 8).fill(0xa7));
+    assert.deepEqual([empty.load(176), empty.load(180)], [0, 0]);
+
+    await executeMain(world, 537, [target, source], undefined, 1);
+    assert.deepEqual(
+      images.get(target).state.attributes.map(({ id }) => id),
+      [4, 7],
+    );
+    assert.notStrictEqual(images.get(target).state.attributes[1], attribute);
+    const read = (id, expected) =>
+      executeMain(
+        world,
+        536,
+        [target, id, 160, 164, 168, 172, 176],
+        (m) => m.bytes(160, 24).fill(0xa7),
+        expected,
+      );
+    const found = await read(0x10007, 1);
+    assert.deepEqual(
+      [160, 164, 168, 172, 176, 180].map((at) => found.load(at)),
+      [10, -20 >>> 0, 30, -40 >>> 0, 0xff800123, 0xa7a7a7a7],
+    );
+    const absent = await read(8, 0);
+    assert.deepEqual([...absent.bytes(160, 24)], new Array(24).fill(0xa7));
+    await executeMain(world, 537, [target, 0], undefined, 0);
+  } finally {
+    await world.close();
+  }
+});
+
+test('2.6.1.63 KCS routes cursor, Top and exit words through the true local owners', async () => {
+  const world = await dataWorld(profile, {
+    'main-149.kcs': mainProgram(149, 2),
+    'main-150.kcs': mainProgram(150, 3),
+    'main-286.kcs': mainProgram(286, 0),
+    'main-577.kcs': mainProgram(577, 1),
+    'main-651.kcs': mainProgram(651, 1),
+  });
+  try {
+    const { input } = world,
+      main = world.objects.objects.get(world.main.id),
+      top = world.objects.objects.get(world.root);
+    input.pointer(-17, 35);
+    const measured = await executeMain(world, 149, [168, 176], (m) => m.store(172, 0x73));
+    assert.deepEqual(
+      [measured.load(168) | 0, measured.load(172), measured.load(176)],
+      [-17, 0x73, 35],
+    );
+    const region = input.register({ owner: world.main.id, bounds: [0, 0, 10, 20] });
+    region.active = 0xa72;
+    input.previousX = 4;
+    input.previousY = 5;
+    input.forceCursor = false;
+    await executeMain(world, 286, []);
+    assert.deepEqual(
+      [region.active, input.previousX, input.previousY, input.forceCursor],
+      [0, -1, -1, true],
+    );
+
+    const warpPolicy = world.configuration.blocks[2];
+    new DataView(warpPolicy.buffer, warpPolicy.byteOffset, warpPolicy.byteLength).setUint32(
+      12,
+      1,
+      true,
+    );
+    input.foreground = true;
+    await executeMain(world, 150, [0x81230009, 0xfedc0007, 0x12345678]);
+    assert.deepEqual([input.warp.x, input.warp.y, input.warp.remaining], [9, 7, 0x12345678]);
+    const retained = { ...input.warp };
+    await executeMain(world, 150, [0xffff, 0xffff, 1]);
+    assert.deepEqual(input.warp, retained);
+    input.foreground = false;
+    await executeMain(world, 150, [8, 6, 2]);
+    assert.deepEqual(input.warp, retained);
+
+    await executeMain(world, 577, [0xfefe8100]);
+    assert.equal(top.implementation.field, 0xfefe8100);
+    main.exitCode = 47;
+    await executeMain(world, 651, [main.nativeID]);
+    assert.equal(main.exitCode, -1);
+  } finally {
+    await world.close();
+  }
+});

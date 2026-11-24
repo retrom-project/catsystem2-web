@@ -6,6 +6,7 @@ import { kcsProgram } from './helpers.mjs';
 
 const expectedMasks = {
   'grisaia-jp-engine-2.6.1.23': [0, 0, 16, 1, 40, 12, 0, 0],
+  'rebellions-jp-engine-2.6.1.63': [0, 0, 16, 1, 40, 12, 0, 0],
   'sdk-4.01-engine-2.6.1.74': [0, 0, 40, 12, 16, 1, 0, 0],
   'nekopara-vol3-engine-2.6.1.76': [0, 0, 40, 12, 16, 1, 0, 0],
 };
