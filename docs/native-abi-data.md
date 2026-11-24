@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 426       | 57            | 17            | 369     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
+| 2.6.1.23 | 869        | 428       | 57            | 17            | 367     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 398       | 80            | 19            | 441     | Generic 14 of 45, Particle 12 of 44 and 12 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -50,6 +50,16 @@ the same y, x operand order and x87 CRT
 result as Generic 7 and Particle 12. Main 64 and Generic 16 take the signed
 integer absolute value. Main 318 uses x87 interpolation and Main 319 writes
 the low word of the integer64 after half-step rounding.
+
+Main 10 formats CP932 bytes and expands backslash-n before opening the caller's
+clipboard. The browser host publishes text under its normal permission and user
+activation rules. Clipboard denial leaves the VM result untouched. Main 441
+publishes the full recording DWORDs and a prefix of at most 31 CP932 bytes.
+The original copies longer prefixes into the adjacent view resource, so those
+inputs are rejected before the recording state changes. Main 565 and 566 read
+the retained flags and counter. A frame increases the counter when the view
+obtains a bitmap, before the virtual BMP write. The filename retains the signed
+counter spelling and the counter wraps as a DWORD.
 
 The Main 271–275, 426–427 and 693 wrappers use the original kind 16
 receiver's raw messages 285–292. Load receives a 656-byte packet with

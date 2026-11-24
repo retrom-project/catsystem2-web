@@ -34,6 +34,7 @@ export function encodeCaptureBMP(width, height, rgba) {
 export class NativeScreenCapture {
   constructor(world) {
     this.world = world;
+    this.recordingRequiresFrame = nativeABI(world.profile).graphics.recordingRequiresFrame === true;
     this.state = { recording: 0, counter: 0, prefix: '' };
     this.busy = false;
   }
@@ -68,8 +69,7 @@ export class NativeScreenCapture {
     bitmap.changed();
     return nativeReply(1, handle);
   }
-  async writeBitmap(filename) {
-    const frame = this.frame();
+  async writeBitmap(filename, frame = this.frame()) {
     if (!frame) return false;
     if (!this.world.storage?.write) throw new Error('Screen capture storage is unavailable');
     return this.world.storage.write(
@@ -92,6 +92,8 @@ export class NativeScreenCapture {
     if (this.busy) throw new Error('Frame recording cannot be reentered');
     this.busy = true;
     try {
+      const frame = this.recordingRequiresFrame ? this.frame() : undefined;
+      if (frame === null) return;
       const counter = this.state.counter | 0,
         digits = String(Math.abs(counter)).padStart(counter < 0 ? 9 : 10, '0'),
         filename =
@@ -99,8 +101,9 @@ export class NativeScreenCapture {
             '\\',
             '/',
           );
-      await this.writeBitmap(filename);
-      this.state.counter = (this.state.counter + 1) >>> 0;
+      if (this.recordingRequiresFrame) this.state.counter = (counter + 1) >>> 0;
+      await this.writeBitmap(filename, frame);
+      if (!this.recordingRequiresFrame) this.state.counter = (this.state.counter + 1) >>> 0;
     } finally {
       this.busy = false;
     }

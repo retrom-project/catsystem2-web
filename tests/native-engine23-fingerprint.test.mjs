@@ -11,6 +11,7 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
+import { AuthoredClipboard } from './fixtures/unicode-output-services.mjs';
 import { hg3, kcsProgram, memoryGame } from './helpers.mjs';
 
 const profile = 'grisaia-jp-engine-2.6.1.23';
@@ -182,6 +183,83 @@ async function runRenderGuest(world, source, setup) {
   assert.equal(task.machine.pop(), sentinel);
   return task;
 }
+
+test('fixed 2.6.1.23 KCS clipboard preserves CP932 formatting and the host denial path', async (t) => {
+  const world = renderWorld(),
+    clipboard = new AuthoredClipboard();
+  t.after(() => world.close({ flushFiles: false }));
+  world.runtime.services.nativeClipboard = clipboard;
+  for (const [input, expected] of [
+    ['日本語\\n%d[G192]', '日本語\r\n-41'],
+    ['ソnZ', '\ufffd\r\nZ'],
+    ['', ''],
+  ]) {
+    const { machine } = await runRenderGuest(world, call(10, [256]), ({ machine }) => {
+      machine.store(192, -41);
+      machine.writeString(input, 256);
+    });
+    assert.equal(machine.string(256), input);
+    assert.equal(clipboard.contents, expected);
+    assert.deepEqual(clipboard.events, [
+      ['open', world.window.handle],
+      ['empty'],
+      ['write', expected],
+      ['close'],
+    ]);
+    clipboard.events.length = 0;
+  }
+  clipboard.available = false;
+  await runRenderGuest(world, call(10, [0]));
+  assert.deepEqual(clipboard.events, [['open', world.window.handle]]);
+  clipboard.events.length = 0;
+  await assert.rejects(runRenderGuest(world, call(10, [0xffffffff])), /KCS memory/);
+  assert.deepEqual(clipboard.events, []);
+});
+
+test('fixed 2.6.1.23 KCS recording keeps a bounded CP932 prefix and reserves only captured frames', async (t) => {
+  const world = renderWorld(),
+    capture = world.screenCapture,
+    written = [];
+  t.after(() => world.close({ flushFiles: false }));
+  const prefix = '記録',
+    set = (name, enabled, counter) =>
+      runRenderGuest(
+        world,
+        [
+          ...call(441, [enabled, 256, counter]),
+          ...call(565, []),
+          storeResult(512),
+          ...call(566, []),
+          storeResult(516),
+        ],
+        ({ machine }) => machine.writeString(name, 256),
+      );
+  const task = await set(prefix, 0x80000000, 0xffffffff);
+  assert.deepEqual([task.machine.load(512), task.machine.load(516)], [0x80000000, 0xffffffff]);
+  capture.frame = () => null;
+  await capture.afterPresent();
+  assert.equal(capture.state.counter, 0xffffffff);
+  const rgba = Uint8Array.of(0x17, 0x29, 0x3b, 0x4d, 0x51, 0x62, 0x73, 0x84);
+  capture.frame = () => ({ width: 2, height: 1, rgba });
+  world.storage.write = async (name, bytes) => {
+    assert.equal(capture.state.counter, 0, 'the view increments before virtual file I/O');
+    written.push([name, bytes]);
+    return false;
+  };
+  await capture.afterPresent();
+  assert.equal(capture.state.counter, 0);
+  const [[name, bytes]] = written,
+    header = new DataView(bytes.buffer);
+  assert.equal(name, '記録/記録_-000000001.bmp');
+  assert.equal(header.getUint16(28, true), 32);
+  assert.deepEqual(bytes.slice(54), Uint8Array.of(0x3b, 0x29, 0x17, 0x4d, 0x73, 0x62, 0x51, 0x84));
+  await set('字'.repeat(15) + 'Z', 0, 17);
+  const stable = capture.snapshot();
+  await assert.rejects(set('字'.repeat(16), 1, 203), /prefix exceeds/);
+  assert.deepEqual(capture.snapshot(), stable);
+  await capture.afterPresent();
+  assert.equal(written.length, 1);
+});
 
 test('fixed 2.6.1.23 MOT filename GCALL resolves the formatted narrow name and resets working state', async () => {
   const motion = kcsProgram([[59]]);

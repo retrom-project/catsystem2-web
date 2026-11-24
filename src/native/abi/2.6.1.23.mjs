@@ -92,6 +92,16 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [10],
+    value:
+      'Own 2.6.1.23 0x47B480 formats and normalizes CP932 bytes, then opens the caller window clipboard and transfers CF_TEXT.',
+  },
+  {
+    ids: [441],
+    value:
+      'Own 2.6.1.23 0x47B6B0 and 0x4C6ED0 write the recording DWORDs and narrow prefix. Frame recording advances only when the view obtains the bitmap.',
+  },
+  {
     ids: [201],
     value:
       'Own 2.6.1.23 0x486AF0 queries raw 12, then sends Raster raw 238 or Hydro raw 247 for selector zero. Raster changes exactly three float words while retaining its attached graph and phase.',
@@ -822,6 +832,8 @@ export default {
     legacyClearPublishes: true,
     settingsCharacterBytes: 1,
     pathBytes: 260,
+    clipboardUsesCP932: true,
+    recordingPrefix: { units: 'bytes', limit: 32 },
     plainSyntax: 'legacy-narrow',
     formattedComparisonSecondBeforeFirst: true,
     percentProduct: 'x87-integer',
@@ -1117,6 +1129,7 @@ export default {
     sameSizeBitmapCopyClips: true,
     imageOwnerCopyPhysicalRows: true,
     screenCaptureOpaque: true,
+    recordingRequiresFrame: true,
     screenEffectRetimesOnActiveInit: [38, 39, 50, 51, 52],
     drawEnablePendingPolicy: 'rising-edge',
     emptyImageSizeWritesZero: true,
@@ -1348,6 +1361,28 @@ export default {
         },
         { ids: [577, 651, 694], fields: { resultWritten: false } },
         { ids: [99, 106, 110, 150, 394], fields: { resultWritten: false } },
+        ...[
+          [10, 0],
+          [441, 1],
+        ].map(([id, index]) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, i) =>
+              i === index
+                ? {
+                    ...parameter,
+                    type: {
+                      kind: 'pointer',
+                      addressSpace: 'vm',
+                      direction: 'in',
+                      target: { kind: 'format-string', encoding: 'CP932' },
+                    },
+                  }
+                : parameter,
+            ),
+            resultWritten: false,
+          },
+        })),
         { ids: [445, 845, 846, 847], fields: { resultWritten: false } },
         {
           ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],
