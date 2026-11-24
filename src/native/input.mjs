@@ -619,9 +619,9 @@ export class NativeInput {
         if (this.configuration && !readWord(this.configuration.blocks[2], 3)) break;
         return this.message(138, w, l, context);
       case 138: {
-        const nativeBounds =
-          this.configuration && nativeABI(this.configuration.profile).input?.cursorWarpNativeBounds;
-        if (!this.foreground && !nativeBounds) break;
+        const policy = this.configuration && nativeABI(this.configuration.profile).input,
+          nativeBounds = policy?.cursorWarpNativeBounds;
+        if (!this.foreground && (!nativeBounds || policy.cursorWarpRequiresForeground)) break;
         const coordinates = [l & 65535, l >>> 16],
           convert = this.services.virtualToScreen,
           projected = convert?.(...coordinates);

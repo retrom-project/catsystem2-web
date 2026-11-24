@@ -525,7 +525,9 @@ export class NativeGraphicTask {
     this.planeKx3UsesLegacyReceiver = Boolean(abi?.planeKx3UsesLegacyReceiver);
     this.tilePlaneRequiresEmptyOwner = Boolean(abi?.tilePlaneRequiresEmptyOwner);
     this.legacyPlaneRegistration = Boolean(profile?.input?.legacyPlaneRegistration);
-    this.planeSourceUsesRawWord = Boolean(profile?.input?.planeSourceUsesRawWord);
+    this.planeSourceViaInput = Boolean(
+      profile?.input?.planeSourceViaInput || profile?.input?.planeSourceUsesRawWord,
+    );
     // Initial BasePlane and SimplePlane state.
     this.state = {
       receiver: -1,
@@ -1266,7 +1268,7 @@ export class NativeGraphicTask {
         return 0;
       }
       case 95:
-        if (this.planeSourceUsesRawWord) {
+        if (this.planeSourceViaInput) {
           const world = this.world,
             root = world.objects.objects.get(world.resolveTaskID(0, this.record.id));
           if (root?.kind !== 1) return;
@@ -1597,7 +1599,8 @@ export async function nativeGraphics(id, args, machine, task, world) {
   if (!NATIVE_GRAPHICS_IDS.includes(id)) return undefined;
   const abi = world.profile && nativeABI(world.profile),
     requirePose = abi?.graphics.planePoseQueriesRequireReply,
-    rawPlaneSource = id === 0x6d && abi?.input?.planeSourceUsesRawWord;
+    planeSourceViaInput =
+      id === 0x6d && (abi?.input?.planeSourceViaInput || abi?.input?.planeSourceUsesRawWord);
   const count =
     requirePose && [0x53, 0x56, 0x57].includes(id)
       ? abi.tables.main.entries[id].signature.argumentWords
@@ -1629,7 +1632,7 @@ export async function nativeGraphics(id, args, machine, task, world) {
     id !== 0x69 &&
     id !== 0x6a &&
     id !== 0x6c &&
-    !rawPlaneSource &&
+    !planeSourceViaInput &&
     id !== 0x350 &&
     id !== 0x351
   )
@@ -1789,7 +1792,7 @@ export async function nativeGraphics(id, args, machine, task, world) {
       await send(93, 0, args[1]);
       return done();
     case 0x6d:
-      if (rawPlaneSource) {
+      if (planeSourceViaInput) {
         const target = world.objects.objects.get(world.resolveTaskID(args[0], task.id));
         if (target && ![2, 6].includes(target.kind))
           throw new Error('Native Plane input source requires a verified receiver');
