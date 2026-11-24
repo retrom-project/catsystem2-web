@@ -961,6 +961,51 @@ test('2.6.1.63 KCS narrow desktop calls use the clipboard boundary and blocking 
   }
 });
 
+test('2.6.1.63 KCS rotates, translates and scales the original SSE2 matrix words', async (t) => {
+  const world = await dataWorld(profile, {
+    'main-204.kcs': mainProgram(204, 4),
+    'main-205.kcs': mainProgram(205, 4),
+    'main-206.kcs': mainProgram(206, 4),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const matrix = [
+    1.125, 0.25, 0.5, 0, -0.125, 0.5, -0.25, 0, 0.5, 0.625, 1.875, 0, 17.25, -8.125, -3, 1,
+  ].map(floatBits);
+  const angles = [0x3fa80000, 0xbeb6c8b4, 0x3db851de],
+    marker = 0x713e8a2e,
+    destination = 160,
+    prepare = (m) => {
+      m.store(destination - 4, marker);
+      matrix.forEach((word, i) => m.store(destination + i * 4, word));
+      m.store(destination + 64, marker + 2);
+    },
+    output = (m) => matrix.map((_, i) => m.load(destination + i * 4));
+  const rotated = await executeMain(world, 204, [destination, ...angles], prepare);
+  assert.deepEqual(
+    output(rotated),
+    [
+      0x3f757ca0, 0xbeab60b3, 0x3f3d4167, 0, 0xbe977cd2, 0x3eb03e1f, 0x3eb2e6fd, 0, 0x3e73ddfc,
+      0xbfd1b66f, 0x3f984625, 0, 0x4198305f, 0x4022e479, 0xc0033162, 0x3f800000,
+    ],
+  );
+  assert.equal(rotated.load(destination - 4), marker);
+  assert.equal(rotated.load(destination + 64), marker + 2);
+  const current = new DataView(world.calculations.matrix.buffer);
+  matrix.forEach((word, i) => current.setUint32(i * 4, word, true));
+  await executeMain(world, 205, [0xffffffff, ...angles]);
+  assert.deepEqual(
+    matrix.map((_, i) => current.getUint32(i * 4, true)).slice(12),
+    [0x41948000, 0xc107b646, 0xc03a3d71, 0x3f800000],
+  );
+  const scaled = await executeMain(world, 206, [destination, 1, 0x80000001, 3], prepare);
+  assert.deepEqual(
+    output(scaled),
+    [1, 0, 2, 0, 0, 0, 0x80000001, 0, 0, 0x80000001, 6, 0, 0x11, 8, 0x80000009, 0x3f800000],
+  );
+  assert.equal(scaled.load(destination - 4), marker);
+  assert.equal(scaled.load(destination + 64), marker + 2);
+});
+
 test('2.6.1.63 Main201 updates a running Raster without replacing its graph or phase', async (t) => {
   const world = await dataWorld(profile, { 'main-201.kcs': mainProgram(201, 3) });
   t.after(() => world.close({ flushFiles: false }));

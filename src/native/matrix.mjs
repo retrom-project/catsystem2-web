@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply, bitsFloat } from '../kcs/vm.mjs';
-import { identity, translation, scaling } from '../motion/matrix.mjs';
+import { identity, multiplySSE, translation, scaling } from '../motion/matrix.mjs';
 import { yawPitchRollX87 } from '../motion/native-rotation.mjs';
 import { multiplyNativeMatrix } from './calculation-math.mjs';
 import { matrixStorage, floats, floatBytes } from './calculation-memory.mjs';
@@ -27,7 +27,7 @@ function rotation(axis, word) {
   if (axis === 2) [m[0], m[1], m[4], m[5]] = [c, s, -s, c];
   return m;
 }
-export function nativeMatrix(operation, args, machine, state) {
+export function nativeMatrix(operation, args, machine, state, multiply = multiplyNativeMatrix) {
   const count = operation === 'matrix.identity' ? 1 : 4;
   if (args.length !== count) throw new Error(`${operation} expects ${count} arguments`);
   if (operation === 'matrix.setYawPitchRoll') {
@@ -39,9 +39,9 @@ export function nativeMatrix(operation, args, machine, state) {
   let m = floats(storage.read());
   if (operation === 'matrix.identity') m = identity();
   else if (operation === 'matrix.rotateXYZ')
-    for (let i = 0; i < 3; i++) m = multiplyNativeMatrix(m, rotation(i, args[i + 1]));
+    for (let i = 0; i < 3; i++) m = multiply(m, rotation(i, args[i + 1]));
   else
-    m = multiplyNativeMatrix(
+    m = multiply(
       m,
       (operation === 'matrix.translate' ? translation : scaling)(...args.slice(1).map(bitsFloat)),
     );
@@ -49,9 +49,11 @@ export function nativeMatrix(operation, args, machine, state) {
   return nativeReply(2);
 }
 export function installNativeMatrices(world) {
-  for (const entry of nativeABI(world.profile).tables.main.entries)
+  const abi = nativeABI(world.profile),
+    multiply = abi.math?.mainMatrixMultiplySSE ? multiplySSE : multiplyNativeMatrix;
+  for (const entry of abi.tables.main.entries)
     if (NATIVE_MATRIX_OPERATIONS.includes(entry.name))
       world.runtime.register('main', entry.id, (args, machine) =>
-        nativeMatrix(entry.name, args, machine, world.calculations),
+        nativeMatrix(entry.name, args, machine, world.calculations, multiply),
       );
 }
