@@ -220,8 +220,7 @@ for (const [version, profile, soundTypeMessage, otherType] of versions) {
         await assert.rejects(world.window.command(40096), /Unreviewed.*windowReturnTitle/);
         assert.deepEqual(world.window.snapshot(), windowState);
         const historySave = () => world.runtime.native('main', 385, [0, 0, 0, 0], machine, main);
-        if (version === '2.6.1.63') assert.deepEqual(historySave(), { control: 1, value: 0 });
-        else assert.throws(historySave, /Unsupported|unrecovered/i);
+        assert.deepEqual(historySave(), { control: 1, value: 0 });
         assert.throws(
           () => world.runtime.native('main', 856, [0, 0, 0, 0, 0, 0, 0], machine, main),
           /Unsupported|unrecovered/i,
@@ -332,7 +331,7 @@ test('old ABI Runtime binds only present slots and preserves unknown dispatch', 
     const machine = { pc: 16, debug: null },
       task = { id: 1, name: 'owned-runtime-control' };
     const unknown = [[856, 7]];
-    if (version === '2.6.1.67') unknown.push([385, 4]);
+    if (version === '2.6.1.67') unknown.push([836, 3]);
     for (const [id, words] of unknown) {
       assert.equal(runtime.register('main', id, callback), true);
       assert.throws(
@@ -1020,7 +1019,7 @@ test('67 first-title entry GCALLs preserve VM zero and real task identity', asyn
     assert.equal(await world.sendEngine(id, world.main.id, 9), 0);
     assert.deepEqual(record.implementation.snapshot(), beforeStrictMessage);
     assert.equal(attempted.cpu, 0);
-    for (const nativeID of [385, 856])
+    for (const nativeID of [836, 856])
       assert.equal(nativeABI(title67Profile).tables.main.entries[nativeID].status, 'unknown');
     assert.equal(
       nativeABI('rebellions-jp-engine-2.6.1.63').tables.main.entries[629].status,
