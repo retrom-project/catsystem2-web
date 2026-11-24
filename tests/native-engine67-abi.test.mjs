@@ -673,7 +673,81 @@ for (const version of [1, 2]) {
     }
   });
 
-  if (version === 2)
+  if (version === 2) {
+    test('2.6.1.67 particle-v2 copies the entire quad bank and returns the raw attachment handle', async () => {
+      const marker = 0xe6f13918,
+        handle = 0x82345678,
+        count = 3,
+        length = count * 112,
+        front = Uint8Array.from({ length }, (_, index) => (index * 37) & 255),
+        backup = Uint8Array.from({ length }, (_, index) => (index * 13 + 7) & 255);
+      for (const [slot, args, expected] of [
+        [44, [], backup],
+        [45, [0x80000001, 99], front],
+      ]) {
+        const instance = await particle(
+          [[37, marker], ...particleCall(slot, args), ...particleCall(46, [], 64), [59]],
+          { count, attachPlane: handle },
+        );
+        instance.quads.set(front);
+        instance.backupQuads.set(backup);
+        instance.update(0);
+        assert.deepEqual(instance.quads, expected);
+        assert.deepEqual(instance.backupQuads, expected);
+        assert.equal(instance.machine.load(64), handle);
+        assert.equal(instance.machine.pop(), marker);
+        assert.equal(instance.calls.get(slot), count);
+      }
+    });
+
+    test('2.6.1.67 particle-v2 reads a live attachment base and position with native writes', async () => {
+      const marker = 0xe6f13918,
+        coordinates = { base: [0x3fa40000, 0x80000000], pos: [0xc1970000, 0x42078400, 0x421f8000] },
+        words = [...coordinates.base, ...coordinates.pos, coordinates.pos[2]],
+        addresses = [64, 68, 72, 0x80000050, 84, 88],
+        fixture = (options) =>
+          particle(
+            [
+              [37, marker],
+              ...particleCall(48, addresses.slice(0, 2)),
+              ...particleCall(49, addresses.slice(2, 5)),
+              ...particleCall(49, [88, 88, 88]),
+              [59],
+            ],
+            options,
+          );
+      for (const [attachPlane, device] of [
+        [101, true],
+        [-1, true],
+        [101, false],
+      ]) {
+        let touched = 0;
+        const instance = await fixture({
+          attachPlane,
+          attachmentDevicePresent: () => device,
+          attachment: (id) => {
+            assert.equal(id, 101);
+            touched++;
+            return { base: coordinates.base.map(bitsFloat), pos: coordinates.pos.map(bitsFloat) };
+          },
+        });
+        instance.machine.store(92, marker);
+        instance.update(0);
+        const live = device && attachPlane !== -1;
+        assert.deepEqual(
+          addresses.map((at) => instance.machine.load(at)),
+          live ? words : Array(6).fill(0),
+        );
+        assert.equal(instance.machine.load(92), marker);
+        assert.equal(instance.machine.pop(), marker);
+        assert.equal(touched, live ? 3 : 0);
+      }
+      const stale = await fixture({ attachPlane: 101, attachmentDevicePresent: () => true });
+      stale.machine.store(64, marker);
+      assert.throws(() => stale.update(0), /Particle position requires a live attachment graph/);
+      assert.equal(stale.machine.load(64), marker);
+    });
+
     test('2.6.1.67 particle-v2 validates the complete blend-mode DWORD', async () => {
       for (const mode of [0, 1, 2, 3, 4, 5, 6, 0x80000000, 0xffffffff]) {
         const marker = 0xeadbac34,
@@ -684,6 +758,7 @@ for (const version of [1, 2]) {
         assert.equal(instance.machine.pop(), marker);
       }
     });
+  }
 }
 
 test('2.6.1.67 KCS, Motion and both Particle versions share two ordered native random streams', async (t) => {

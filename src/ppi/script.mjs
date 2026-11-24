@@ -182,8 +182,8 @@ export class ParticleScriptInstance {
     if (this.nativeEntries && entry?.status !== 'declared' && entry?.status !== 'recovered')
       throw new Error(`Unreviewed PTCL native ${this.profile}/${this.table}/${id}`);
     const contract = entry ?? particleNativeContract(this.script.scriptVersion, id),
-      argumentWords = entry?.signature.argumentWords ?? contract.parameters.length;
-    if (args.length !== argumentWords)
+      argumentWords = entry ? entry.signature.argumentWords : contract.parameters.length;
+    if (argumentWords !== null && args.length !== argumentWords)
       throw new Error(
         `PTCL ${contract.name} requires ${argumentWords} arguments, received ${args.length}`,
       );
@@ -400,17 +400,16 @@ export class ParticleScriptInstance {
       case 47:
         return scalar(this.currentAttachment()?.disp || 0);
       case 48:
-        vectorOut(this.currentAttachment()?.base?.slice(0, 2) || [0, 0]);
-        return voidReply();
       case 49: {
+        const field = id === 48 ? 'base' : 'pos';
         let position;
         if (this.attachmentPositionRequiresOwner) {
           if (this.attachPlane !== -1 && this.attachmentDevicePresent?.() !== false) {
-            position = this.currentAttachment()?.pos;
+            position = this.currentAttachment()?.[field];
             if (!position) throw new Error('Particle position requires a live attachment graph');
           }
           args.forEach((address) => machine.region(address, 4));
-        } else position = this.currentAttachment()?.pos;
+        } else position = this.currentAttachment()?.[field];
         vectorOut(position || [0, 0, 0]);
         return voidReply();
       }

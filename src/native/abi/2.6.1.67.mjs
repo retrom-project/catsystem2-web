@@ -210,6 +210,7 @@ export default {
     distanceUsesX87: true,
     projectionBoundsUseX87: true,
     projectionBoundsUseSSE: true,
+    attachmentPositionRequiresOwner: true,
   },
   motion: {
     currentMatrixFallback: true,
@@ -3280,8 +3281,8 @@ export default {
     'particle-v2': {
       count: 51,
       slots: {
-        unknown: [0, 18, 29, 44, 45, 46, 47, 48, 49],
-        recovered: [...particleRecoveredSlots, 50],
+        unknown: [0, 18, 29, 47],
+        recovered: [...particleRecoveredSlots, 44, 45, 46, 48, 49, 50],
       },
       evidence: [
         { ids: [33, 34], value: randomEvidence },
@@ -3293,6 +3294,20 @@ export default {
         ...particleGeometryEvidence,
         { ids: [37], value: particleDistanceEvidence },
         { ids: [43], value: triangleEvidence },
+        {
+          ids: [44, 45],
+          value:
+            'Own v2 wrappers pass the particle count times 112 to the full-array copy in opposite directions. Neither reads a guest argument or writes a result word.',
+        },
+        {
+          ids: [46],
+          value: 'Own v2 wrapper returns the attachment graph DWORD unchanged under control 1.',
+        },
+        {
+          ids: [48, 49],
+          value:
+            'Own v2 wrappers resolve the renderer group and active model, write its base XY or position XYZ in pointer order, and return control 2. Device detachment writes zero. A registered graph without a live model has undefined original scratch and requires a live owner.',
+        },
         {
           ids: [50],
           value:
@@ -3316,6 +3331,27 @@ export default {
       ],
       signatures: [
         { ids: [3, 37, 43], fields: { resultWritten: true } },
+        {
+          ids: [44, 45],
+          fields: {
+            argumentWords: null,
+            parameters: { kind: 'ignored', description: 'The wrapper reads no input words.' },
+          },
+        },
+        { ids: [46], fields: { resultWritten: true } },
+        ...[48, 49].map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS['particle-v2'][id].signature.parameters.map(
+              (parameter) => ({
+                ...parameter,
+                type: { ...parameter.type, addressSpace: 'vm', direction: 'out' },
+              }),
+            ),
+            result: { description: 'void', kind: 'void' },
+            resultWritten: false,
+          },
+        })),
         { ids: [33, 34], fields: { resultWritten: true } },
         { ids: [16], fields: { resultWritten: true } },
         particleStateSignatures,
