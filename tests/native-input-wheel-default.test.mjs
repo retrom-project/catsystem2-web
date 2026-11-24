@@ -109,6 +109,7 @@ function observe(world, task, query) {
 
 for (const [name, profile, query] of [
   ['2.6.1.63', 'rebellions-jp-engine-2.6.1.63', 32],
+  ['2.6.1.67', 'bokutomo-engine-2.6.1.67', 32],
   ['Game', 'nekopara-vol3-engine-2.6.1.76', 34],
   ['SDK', 'sdk-4.01-engine-2.6.1.74', 32],
 ]) {

@@ -1421,3 +1421,31 @@ test('2.6.1.67 KCS reads the startup static log word during restore', async (t) 
   );
   assert.equal(await read(), 3);
 });
+
+test('2.6.1.67 KCS Input reads the selected region activity word', async (t) => {
+  const world = await dataWorld(profile, {
+    'active.kcs': kcsProgram([[37, [0x13, 84]], [43, 107, 4], [38, 128], [59]]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const owner = await world.objects.create({ kind: 2, parent: world.main.id }),
+    target = world.nativeTaskID(owner),
+    region = await world.input.register({ owner, receiver: world.main.id }),
+    task = await world.spawnScript('active.kcs', { parent: world.main.id, initialExecute: false });
+  region.active = 0x80234567;
+  task.machine.store(84, target);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(task.machine.load(128), 0x80234567);
+  assert.equal(region.active, 0x80234567);
+  world.input.unregister(owner);
+  const missing = await world.spawnScript('active.kcs', {
+    parent: world.main.id,
+    initialExecute: false,
+  });
+  missing.machine.store(84, target);
+  missing.machine.store(128, 0xa5a5a5a5);
+  await assert.rejects(
+    () => world.runtime.scheduler.execute(missing),
+    /no initialized 32-bit output word/,
+  );
+  assert.equal(missing.machine.load(128), 0xa5a5a5a5);
+});
