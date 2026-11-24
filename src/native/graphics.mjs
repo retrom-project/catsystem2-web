@@ -1595,10 +1595,14 @@ export async function nativeGraphics(id, args, machine, task, world) {
       await send(81, 0, args[1]);
       return done();
     case 0x157: {
-      const p = packet();
-      await send(75, 0, 4, p);
-      machine.store(args[1], p.load(0));
-      machine.store(args[2], p.load(4));
+      const output = new NativeGraphicsPacket([], {
+        unwritten: abi?.graphics.graphQueriesTrackResponse ? [0, 1] : [],
+      });
+      await send(75, 0, 4, output);
+      const width = output.load(0),
+        height = output.load(4);
+      if (width !== undefined) machine.store(args[1], width);
+      if (height !== undefined) machine.store(args[2], height);
       return done();
     }
     case 0x158:
@@ -1611,9 +1615,13 @@ export async function nativeGraphics(id, args, machine, task, world) {
       );
       return done();
     case 0x159: {
-      const p = packet();
-      await send(76, 0, 16, p);
-      for (const [i, at] of [0, 4, 16, 20].entries()) machine.store(args[i + 1], p.load(at));
+      const output = new NativeGraphicsPacket([], {
+        unwritten: abi?.graphics.graphQueriesTrackResponse ? [0, 1, 4, 5] : [],
+      });
+      await send(76, 0, 16, output);
+      const corners = [0, 4, 16, 20].map((at) => output.load(at));
+      if (corners.includes(undefined)) throw new Error('Native graph bounds reply was unwritten');
+      corners.forEach((value, index) => machine.store(args[index + 1], value));
       return done();
     }
     case 0x4e:

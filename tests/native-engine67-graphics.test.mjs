@@ -123,3 +123,84 @@ test('2.6.1.67 plane GCALLs set coordinates on a loaded graph and expand divided
   await run('mode-after.kcs');
   assert.equal(plane.graph.style.coordMode, 128);
 });
+
+test('2.6.1.67 graph matrix GCALL copies all 16 words to the selected transform', async (t) => {
+  const matrix = Array.from({ length: 16 }, (_, index) => floatBits(index / 4 - 3)),
+    texture = matrix.slice().reverse(),
+    world = await dataWorld(profile, {
+      'matrices.kcs': planeProgram([
+        [344, [0, 0, 0]],
+        [78, [target, floatBits(8), floatBits(6)]],
+        [344, [target, [0x23, 120], 0]],
+        [344, [target, [0x23, 184], 7]],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    id = await world.objects.create({ kind: 2, parent }),
+    task = await world.spawnScript('matrices.kcs', { parent, initialExecute: false }),
+    { machine } = task,
+    floor = machine.sp;
+  machine.store(80, world.nativeTaskID(id));
+  [...matrix, ...texture].forEach((value, index) => machine.store(120 + index * 4, value));
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), 0x72394ca1);
+  const { graph } = world.graphics.get(id),
+    words = (object) =>
+      Array.from({ length: 16 }, (_, index) =>
+        new DataView(object.buffer).getUint32(MOTION_ABI.matrix + index * 4, true),
+      );
+  assert.equal(graph.matrixExplicit, true);
+  assert.equal(graph.textureMatrixExplicit, true);
+  assert.deepEqual(words(graph.kx2), matrix);
+  assert.deepEqual(words(graph.textureTransform), texture);
+});
+
+test('2.6.1.67 graph queries report F32 dimensions and bounds only from SimplePlane', async (t) => {
+  const base = [0x13, 84],
+    size = [
+      [0x23, 120],
+      [0x23, 124],
+    ],
+    bounds = [
+      [0x23, 128],
+      [0x23, 132],
+      [0x23, 136],
+      [0x23, 140],
+    ],
+    world = await dataWorld(profile, {
+      'geometry.kcs': planeProgram([
+        [343, [0, ...size]],
+        [343, [base, ...size]],
+        [345, [0, ...bounds]],
+        [78, [target, floatBits(8.5), floatBits(6.25)]],
+        [343, [target, ...size]],
+        [345, [target, ...bounds]],
+      ]),
+      'base-size.kcs': planeProgram([[343, [base, ...size]]]),
+      'base-bounds.kcs': planeProgram([[345, [base, ...bounds]]]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    targetID = world.nativeTaskID(await world.objects.create({ kind: 2, parent })),
+    baseID = world.nativeTaskID(await world.objects.create({ kind: 6, parent }));
+  const marker = 0x12345678;
+  const create = async (name) => {
+    const task = await world.spawnScript(name, { parent, initialExecute: false });
+    task.machine.store(80, targetID);
+    task.machine.store(84, baseID);
+    for (let at = 120; at < 144; at += 4) task.machine.store(at, marker);
+    return task;
+  };
+  const values = (task) => Array.from({ length: 6 }, (_, i) => task.machine.load(120 + i * 4));
+  const program = await create('geometry.kcs');
+  await world.runtime.scheduler.execute(program);
+  assert.deepEqual(values(program), [8.5, 6.25, 0, 0, 8.5, 6.25].map(floatBits));
+  const baseSize = await create('base-size.kcs');
+  await world.runtime.scheduler.execute(baseSize);
+  assert.deepEqual(values(baseSize), Array(6).fill(marker));
+  const baseBounds = await create('base-bounds.kcs');
+  await assert.rejects(world.runtime.scheduler.execute(baseBounds), /bounds reply was unwritten/);
+  assert.deepEqual(values(baseBounds), Array(6).fill(marker));
+});
