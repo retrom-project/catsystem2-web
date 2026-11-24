@@ -90,7 +90,13 @@ export const engine23CommonHeads = {
   reviewedBindings: ['engine23-common-wait-frame-reference'],
 };
 
+const legacyTaskWordOperations = [126, 127, 128, 129, 131, 132, 138, 139];
 const mainEvidence = [
+  {
+    ids: legacyTaskWordOperations,
+    value:
+      'Own 2.6.1.23 wrappers 0x487d80–0x488110 send raw 98–101, 103–105 and 111 to the kind 8 receiver at 0x41bc80. State, rows and the optional query owner were compared.',
+  },
   {
     ids: [120],
     value:
@@ -926,6 +932,7 @@ export default {
   text: {
     legacyConfigurationBytes: 1128,
     legacyClearPublishes: true,
+    legacyTaskWordOperations,
     settingsCharacterBytes: 1,
     pathBytes: 260,
     clipboardUsesCP932: true,
@@ -1320,6 +1327,17 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...legacyTaskWordOperations.map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) =>
+              index === 0
+                ? { ...parameter, type: { kind: 'object-id', objectKind: 'legacy-text' } }
+                : parameter,
+            ),
+            resultWritten: id === 129,
+          },
+        })),
         {
           ids: [120],
           fields: {

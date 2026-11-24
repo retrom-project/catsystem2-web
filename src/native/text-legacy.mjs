@@ -7,6 +7,7 @@ import { LegacyTextState } from './legacy-text-state.mjs';
 import { rasterTextGlyph, compositeTextGlyph } from './text-raster.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
 import { nativeABI } from './abi/index.mjs';
+import { nativeEngineWord } from './engine-message.mjs';
 export const NATIVE_LEGACY_TEXT_IDS = Object.freeze([
   ...Array.from({ length: 17 }, (_, i) => 0x7b + i),
   0x187,
@@ -42,6 +43,7 @@ export class NativeLegacyTextRuntime {
     this.configurationBytes = text?.legacyConfigurationBytes ?? 1116;
     this.clearPublishes = text?.legacyClearPublishes;
     this.characterPairs = text?.characterLengthPairs;
+    this.wordOperations = text?.legacyTaskWordOperations ?? [];
   }
   async create(record) {
     const task = new NativeLegacyTextTask(this, record);
@@ -51,6 +53,21 @@ export class NativeLegacyTextRuntime {
   }
   async apply(id, args, machine, task) {
     machine = vmMemory(machine);
+    const checkedOwner = this.wordOperations.includes(id);
+    if (checkedOwner) {
+      const signature = nativeABI(this.world.profile).tables.main.entries[id].signature;
+      if (args.length !== signature.argumentWords)
+        throw new Error(
+          `Native legacy text ${id} expects ${signature.argumentWords} argument words`,
+        );
+      const owner = this.world.resolveTaskID(args[0], task.id),
+        record = this.world.objects.objects.get(owner);
+      if (!record || (args[0] === 0 && record.kind === 1)) {
+        if (id === 0x81) throw new Error('Legacy text query has no initialized 32-bit output word');
+        return nativeReply(2);
+      }
+      if (record.kind !== 8) throw new Error('Native legacy text requires a kind 8 task');
+    }
     const arg = (i) => nativeDataArgument(args, machine, i),
       target = arg(0),
       send = (message, w = 0, l = 0, bytes = null) =>
@@ -151,6 +168,8 @@ export class NativeLegacyTextRuntime {
         pair ? arg(1) : 0,
         [0x7d, 0x81, 0x82, 0x84].includes(id) ? 0 : arg(pair ? 2 : 1),
       );
+    if (id === 0x81 && checkedOwner)
+      return nativeReply(1, nativeEngineWord(result, 'Legacy text query'));
     return nativeReply(
       id === 0x81 ? 1 : 2,
       id === 0x81 ? (result ?? NATIVE_RESULT_SENTINEL) : undefined,

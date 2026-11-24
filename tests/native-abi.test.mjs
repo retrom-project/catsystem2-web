@@ -47,10 +47,10 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 469);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 477);
   assert.equal(base.main.entries.filter(({ status }) => status === 'reserved').length, 57);
   assert.equal(base.main.entries.filter(({ status }) => status === 'constant-zero').length, 17);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 326);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 318);
   assert.equal(base.main.entries.filter((entry) => entry.observedArgumentWords.length).length, 435);
   assert.deepEqual(base.main.entries[464].observedArgumentWords, []);
   assert.deepEqual(base.main.entries[543].observedArgumentWords, [3]);
@@ -60,6 +60,23 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
   assert.equal(base.main.entries[82].signature.argumentWords, 2);
   assert.deepEqual(base.main.entries[82].controlCodes, [2]);
   assert.equal(base.main.entries[82].signature.resultWritten, false);
+  for (const [id, words] of [
+    [126, 3],
+    [127, 2],
+    [128, 2],
+    [129, 1],
+    [131, 2],
+    [132, 1],
+    [138, 3],
+    [139, 2],
+  ]) {
+    const { status, signature } = base.main.entries[id];
+    assert.equal(status, 'recovered');
+    assert.equal(signature.argumentWords, words);
+    assert.equal(signature.parameters[0].type.objectKind, 'legacy-text');
+    assert.deepEqual(signature.controlCodes, [id === 129 ? 1 : 2]);
+    assert.equal(signature.resultWritten, id === 129);
+  }
   const composite = base.main.entries[120];
   assert.equal(composite.name, 'bitmap.composite');
   assert.equal(composite.signature.argumentWords, 4);

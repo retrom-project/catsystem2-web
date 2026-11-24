@@ -37,6 +37,67 @@ import { encodeHG2 } from '../src/formats/hg2.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { KCSMachine, readKCS } from '../src/kcs.mjs';
 import { memoryGame, u32, translation, kcsProgram } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
+
+test('2.6.1.23 legacy Text controls preserve receiver words, rows and query ownership', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23'),
+    textID = await world.objects.create({ kind: 8, parent: world.root }),
+    text = world.legacyText.tasks.get(textID).text,
+    target = world.nativeTaskID(textID),
+    guard = 0x3bc6ea17;
+  t.after(() => world.close({ flushFiles: false }));
+  async function invoke(id, args, expected, error) {
+    const script = await readKCS(
+      kcsProgram([[37, guard], ...args.map((word) => [37, word]), [43, id, args.length * 4], [59]]),
+    );
+    const task = { ...world.main, io: null };
+    const machine = (task.machine = new KCSMachine(script, {
+      native: (id, args, caller) => world.runtime.scheduler.native(task, id, args, caller),
+    }));
+    const floor = machine.sp;
+    const run = world.runtime.scheduler.execute(task);
+    if (error) await assert.rejects(run, error);
+    else {
+      assert.equal((await run).status, 'halted');
+      assert.equal(machine.sp, floor + (expected === undefined ? 4 : 8));
+      if (expected !== undefined) assert.equal(machine.pop(), expected);
+      assert.equal(machine.pop(), guard);
+    }
+  }
+
+  text.w(461, 7);
+  await invoke(126, [target, 0x80000000, 17]);
+  await invoke(127, [target, 4]);
+  await invoke(128, [target, 0x80000001]);
+  await invoke(131, [target, 18]);
+  await invoke(138, [target, 20, 29]);
+  assert.deepEqual(
+    [194, 195, 461, 186, 197, 183, 459, 460].map((i) => text.w(i) >>> 0),
+    [0x80000000, 17, 0, 4, 0x80000001, 18, 20, 29],
+  );
+  text.rows.push(Int32Array.from([65, -1, 8, 30, 16, 18, 0, 0, 0, 0]));
+  text.w(184, 12);
+  await invoke(139, [target, 1]);
+  assert.equal(text.w(196), 1);
+  assert.equal(text.rows[0][3], 12);
+  text.w(192, 2);
+  await invoke(132, [target]);
+  await invoke(132, [target]);
+  assert.deepEqual(
+    text.rows.map((row) => row[0]),
+    [65, 65535],
+  );
+  text.w(463, 0x80000000);
+  await invoke(129, [target], 0);
+  text.w(463, 0);
+  await invoke(129, [target], 1);
+  await invoke(129, [0], undefined, /has no initialized 32-bit output word/);
+  const other = world.nativeTaskID(await world.objects.create({ kind: 2, parent: world.root }));
+  await invoke(126, [other, 9, 17], undefined, /requires a kind 8 task/);
+  await invoke(126, [target, 18], undefined, /expects 3 argument words/);
+  await invoke(131, [0xb87ca1a1, 27]);
+  assert.equal(text.w(183), 18);
+});
 
 const glyphs = {
   measure: (_font, text) => ({

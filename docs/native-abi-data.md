@@ -19,8 +19,8 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 469       | 57            | 17            | 326     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.63 | 938        | 383       | 80            | 19            | 456     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
+| 2.6.1.23 | 869        | 477       | 57            | 17            | 318     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.63 | 938        | 385       | 80            | 19            | 454     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 920       | 58            | 17            | 60      | 45 / 44 / 51                                     |
@@ -81,6 +81,17 @@ return control 2 without writing the result. A null owner or three factors of
 four-byte pixel with unsigned DWORD multiplication, division by 100, and
 saturation to 255. The kernel preserves alpha, row padding and metadata.
 Repeated references to a layer bitmap apply the operation repeatedly.
+
+The original kind 8 text receiver handles Main 126–129, 131, 132, 138
+and 139. Main 126 sets both scheduling words and resets its cursor.
+Main 127, 128 and 131 update line spacing, layout and font size. Main 132
+appends the 40-byte pause cell when its row table has space. Main 138
+writes the two cursor coordinates, and Main 139 adjusts the retained row
+positions in vertical modes 1 and 2. Missing owners leave these setters
+inert. Main 129 publishes availability as 0 or 1. When the original
+route does not initialize this reply, its wrapper pushes the caller's
+native pointer. The Core guards that form and requires the live kind 8
+owner for the query.
 
 Main 405–416 load and query binary gallery resources in the FES category.
 Variants use 20 groups of eight 540-byte records. A missing or wrong-size
