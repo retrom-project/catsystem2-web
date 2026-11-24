@@ -476,3 +476,54 @@ test('2.6.1.67 configuration GCALLs project two output words without changing in
   );
   assert.deepEqual(wordsAt(112, 116, 120, 124), [1, 1, 0, 0]);
 });
+
+test('2.6.1.67 narrow GCALLs append bytes and write the original result words', async (t) => {
+  const calls = [
+    [15, [128, 160], 80],
+    [16, [128, 192], 84],
+    [17, [128], 88],
+    [19, [224, 256], 92],
+    [21, [288, 320], 96],
+    [25, [352], 100],
+    [25, [384], 104],
+  ];
+  const program = kcsProgram(
+    [
+      [37, 0xf1910080],
+      ...calls.flatMap(([id, args, result]) => [
+        ...args.map((word) => [37, word]),
+        [43, id, args.length * 4],
+        [38, result],
+      ]),
+      [59],
+    ],
+    [
+      [128, '猫'],
+      [160, '/log/'],
+      [192, '100%%'],
+      [224, 'A'],
+      [256, 'B'],
+      [288, 'NaMe'],
+      [320, 'NAME'],
+      [352, '-0x2ag'],
+      [384, '5tail'],
+    ],
+  );
+  const world = await dataWorld(profile, { 'narrow-strings.kcs': program });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('narrow-strings.kcs');
+  const { machine } = task;
+  const floor = machine.sp;
+  machine.bytes(139, 5).fill(0x5a);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), 0xf1910080);
+  assert.deepEqual(
+    [80, 84, 88, 92, 96, 100, 104].map((at) => machine.load(at)),
+    [128, 128, 11, 1, 0, 0xffffffd6, 5],
+  );
+  assert.deepEqual(
+    machine.bytes(128, 14),
+    Uint8Array.of(...encodeCP932('猫/log/100%'), 0, 0, 0x5a),
+  );
+});
