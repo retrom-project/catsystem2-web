@@ -104,7 +104,8 @@ target must supply initialized pose words before the Core writes the VM
 outputs.
 
 Main 95 registers input through Plane raw 83 using the owned pose,
-configured virtual dimensions and signed rectangle coordinates. A repeat
+configured virtual dimensions and signed rectangle coordinates. A live
+device and registered graph are required to obtain this geometry. A repeat
 retains the installed region and updates the receiver's last flags.
 Main 109 retains the full raw Input source word through Plane or BasePlane
 raw 89 and Input raw 129. A route miss writes zero. A route without a

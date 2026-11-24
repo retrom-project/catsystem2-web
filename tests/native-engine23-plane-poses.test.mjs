@@ -391,6 +391,8 @@ test('fixed 2.6.1.23 Plane input preserves installed geometry and the raw source
       replacement = 0x00004455;
     await call(world, 95, [0, flags], memory);
     await call(world, 95, [0x1234abc, flags], memory);
+    await call(world, 95, [target, flags], memory, /requires a live graphics device/);
+    world.graphics.createLogicalDevice();
     await call(world, 95, [target, flags], memory, /input geometry is unreviewed/);
     world.graphics.view.configure({ virtualWidth: 64, virtualHeight: 48 });
     await world.sendNativeEngine(target, world.main.id, 41, 0, 0, {
