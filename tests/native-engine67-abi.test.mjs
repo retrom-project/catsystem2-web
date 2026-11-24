@@ -322,3 +322,66 @@ test('2.6.1.67 Plane input GCALLs update the active region, latch and receiver',
     world.nativeTaskID(destination),
   );
 });
+
+test('2.6.1.67 task GCALLs use owned VM transfer, clocks and Script exit words', async (t) => {
+  const remote = [0x13, 80];
+  const words = [0xfeedcace, 0x10203040, 0x8a2ea583];
+  const queued = [0x77733166, 0xe72a63fe, 0x19c68229];
+  const calls = [
+    [4, [], 112],
+    [5, [], 116],
+    [76, [], 120],
+    [69, [remote, ...words], 124],
+    [70, [remote, ...queued], 128],
+    [73, [remote, 176, 5, 180]],
+    [72, [remote, 176, 5, 192]],
+    [453, [0xf131bd90]],
+  ];
+  const callerProgram = kcsProgram([
+    [37, 0xff1112ad],
+    ...calls.flatMap(([id, args, result]) => [
+      ...args.map((word) => [37, word]),
+      [43, id, args.length * 4],
+      ...(result === undefined ? [] : [[38, result]]),
+    ]),
+    [59],
+  ]);
+  const world = await dataWorld(profile, {
+    'case.kcs': kcsProgram([[59]]),
+    'transfer.kcs': callerProgram,
+    'receiver.kcs': kcsProgram([[37, 128], [43, 71, 4], [37, 144], [43, 71, 4], [59]]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id;
+  const caller = await world.spawnScript('transfer.kcs', { parent, initialExecute: false });
+  const receiver = await world.spawnScript('receiver.kcs', { parent, initialExecute: true });
+  const record = world.objects.objects.get(caller.id);
+  const { machine } = caller;
+  const payload = Uint8Array.of(0x81, 0x23, 0, 0xf1, 0xff);
+  const floor = machine.sp;
+  world.runtime.services.clock = () => 0x100000012;
+  record.effectiveFrame = 0xfffffff4;
+  record.pausedFrames = 7;
+  machine.store(80, world.nativeTaskID(receiver.id));
+  machine.bytes(180, payload.length).set(payload);
+  machine.bytes(191, 7).fill(0x5f);
+  receiver.machine.bytes(175, 7).fill(0x4f);
+  await world.runtime.scheduler.execute(caller);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), 0xff1112ad);
+  assert.deepEqual(
+    [112, 116, 120, 124, 128].map((at) => machine.load(at)),
+    [0x12, 0xffffffed, world.nativeTaskID(parent), 1, 1],
+  );
+  assert.deepEqual(machine.bytes(191, 7), Uint8Array.of(0x5f, ...payload, 0x5f));
+  assert.deepEqual(receiver.machine.bytes(175, 7), Uint8Array.of(0x4f, ...payload, 0x4f));
+  const sender = world.nativeTaskID(caller.id);
+  const packet = (at) =>
+    Array.from({ length: 4 }, (_, word) => receiver.machine.load(at + word * 4));
+  assert.deepEqual(packet(128), [sender, ...words]);
+  assert.deepEqual(receiver.messages, [[sender, ...queued]]);
+  assert.equal(record.exitCode, 0xf131bd90 | 0);
+  await world.tick();
+  assert.equal(receiver.status, 'finished');
+  assert.deepEqual(packet(144), [sender, ...queued]);
+});
