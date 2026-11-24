@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 399       | 57            | 17            | 396     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.23 | 869        | 404       | 57            | 17            | 391     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 187       | 80            | 19            | 652     | Generic 8 of 45, Particle 6 of 44 and 6 of 51    |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -115,6 +115,15 @@ memory. Main 577 sends raw 37 to the caller's Top and sets its field.
 Main 651 and 694 send raw 23 and 28 to the selected Base task and set
 its exit or user word. Target zero routes to Top, whose receiver leaves
 the Base fields untouched. Calls preserve the VM result word.
+
+Main 99, 106, 110 and 394 use Plane raw 84, 87, 90 and 91. They remove
+the region, activate it with the supplied DWORD, set the receiver word
+or install a private hit-mask copy. The mask uses the native bitmap
+row order, canvas offsets and packed alpha. Alpha-free 24-bit pixels
+leave the mask clear. Main 150 routes through the caller's Top and
+passes unsigned 16-bit coordinates to Input raw 130. The move keeps
+its original interval. A disabled preference or an out-of-bounds
+point leaves the pending move in place.
 
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word

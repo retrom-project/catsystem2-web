@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalOwner, originalFeature } from './original-adapter.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeEngineWord } from './engine-message.mjs';
 
@@ -34,6 +35,8 @@ export function installNativeInputCommands(world) {
         return nativeReply(2);
       }
       if (id === 0x18a && !originalOwner(world)) {
+        if (args[1] && nativeABI(world.profile).input?.bitmapMaskNativeRows)
+          world.graphics.images.get(args[1]);
         await world.sendNativeEngine(args[0], task.id, 97, 0, args[1], { flags: 0 });
         return nativeReply(2);
       }

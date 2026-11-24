@@ -92,6 +92,16 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [99, 106, 110, 394],
+    value:
+      'Own 2.6.1.23 Plane raw 84, 87, 90 and 91 release the input region, select its active word, set its receiver or install an owned copy of the bitmap mask.',
+  },
+  {
+    ids: [150],
+    value:
+      'Own 2.6.1.23 0x4874a0 resolves Top raw 31 and sends raw Input 130 with two unsigned halves and the unchanged interval. The Input owner applies its setting and coordinate range.',
+  },
+  {
     ids: [454, 577, 651, 694],
     value:
       'Own 2.6.1.23 FES context copy 0x47b8b0 and task wrappers 0x47ba40, 0x48a8c0 and 0x48a8f0 preserve control 2. Top raw 37 and Base raw 23 and 28 write the selected task fields.',
@@ -1006,6 +1016,7 @@ export default {
       861: [],
     },
   },
+  input: { bitmapMaskNativeRows: true, cursorWarpNativeBounds: true },
   gallery: { listVariantWidth: 64 },
   startup: {
     loosePath: 'config/startup.xml',
@@ -1073,6 +1084,7 @@ export default {
           },
         },
         { ids: [577, 651, 694], fields: { resultWritten: false } },
+        { ids: [99, 106, 110, 150, 394], fields: { resultWritten: false } },
         {
           ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],
           fields: { resultWritten: false },

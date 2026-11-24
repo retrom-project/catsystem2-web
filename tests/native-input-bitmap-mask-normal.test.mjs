@@ -4,7 +4,11 @@ import assert from 'node:assert/strict';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 
-const profiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
+const expectedMasks = {
+  'grisaia-jp-engine-2.6.1.23': [0, 0, 16, 1, 40, 12, 0, 0],
+  'sdk-4.01-engine-2.6.1.74': [0, 0, 40, 12, 16, 1, 0, 0],
+  'nekopara-vol3-engine-2.6.1.76': [0, 0, 40, 12, 16, 1, 0, 0],
+};
 const sentinel = 0x1234abcd;
 const program = (id, words) =>
   kcsProgram([
@@ -20,7 +24,6 @@ const files = {
   'bind.kcs': program(104, 7),
   'mask.kcs': program(0x18a, 2),
 };
-const expectedBytes = [0, 0, 40, 12, 16, 1, 0, 0];
 
 async function caller(world, file, args) {
   const id = await world.objects.create({ kind: 12, parent: world.main.id, name: 'mask caller' }),
@@ -90,7 +93,7 @@ function observe(world, planeID) {
   return { packets, calls, deliveries };
 }
 
-for (const profile of profiles)
+for (const [profile, expectedBytes] of Object.entries(expectedMasks))
   test(`${profile} normal main18A copies a typed bitmap alias mask through real GCALL`, async () => {
     const world = await dataWorld(profile, files);
     let fresh, input, freshInput, planeID;
@@ -136,7 +139,7 @@ for (const profile of profiles)
       assert.equal(alias.dataHandle, dataHandle);
       assert.strictEqual(alias.state, source.state);
       const masked = await caller(world, 'mask.kcs', [target, aliasHandle]);
-      // Independent canvas bit positions: y1 x3/5/10/11, y2 x4/8.
+      // The older owner samples its native bitmap rows in storage order.
       assert.deepEqual([...region.alpha.bytes], expectedBytes);
       assert.deepEqual([region.alpha.width, region.alpha.height], [13, 4]);
       assert.notStrictEqual(region.alpha.bytes.buffer, pixels.buffer);

@@ -1266,10 +1266,11 @@ export class NativeGraphicTask {
           region.alpha = null;
           return 0;
         }
+        const nativeRows = nativeABI(this.world.profile).input?.bitmapMaskNativeRows;
         region.alpha = context.nativePointer
           ? await this.input.services.alphaMask(l, context)
-          : await nativeInputBitmapMask(this.graphics.images.get(l));
-        this.input.changed = true;
+          : await nativeInputBitmapMask(this.graphics.images.get(l), nativeRows);
+        if (!nativeRows) this.input.changed = true;
         return 0;
       }
       case 100: {

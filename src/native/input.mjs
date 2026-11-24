@@ -28,21 +28,27 @@ export const NATIVE_INPUT_IDS = Object.freeze([
 
 // Hit testing samples the canvas rectangle through the bitmap color getter.
 // Sampling accounts for the origin offset and 24-bit colors without alpha.
-export async function nativeInputBitmapMask(bitmap) {
+export async function nativeInputBitmapMask(bitmap, nativeRows = false) {
   const state = bitmap.state,
     width = state.canvasWidth || bitmap.width,
     height = state.canvasHeight || bitmap.height,
     stride = Math.ceil(width / 8),
     bytes = new Uint8Array(stride * height);
-  if (![3, 4].includes(state.bpp))
+  if (![3, 4].includes(state.bpp) && !(nativeRows && state.bpp === 2))
     throw new Error(`Native input bitmap mask has no host pixel codec for bpp ${state.bpp}`);
-  if (state.bpp === 4) {
-    const rgba = await bitmap.pixels();
+  if (state.bpp !== 3) {
+    const rgba = await bitmap.pixels(),
+      alphaMask = state.bpp === 2 ? 0xf0 : 0xff;
     for (let y = 0; y < height; y++)
       for (let x = 0; x < width; x++) {
         const px = (x - state.offsetX) >>> 0,
-          py = (y - state.offsetY) >>> 0;
-        if (px < bitmap.width && py < bitmap.height && rgba[(py * bitmap.width + px) * 4 + 3])
+          py = (y - state.offsetY) >>> 0,
+          row = nativeRows ? bitmap.height - py - 1 : py;
+        if (
+          px < bitmap.width &&
+          py < bitmap.height &&
+          rgba[(row * bitmap.width + px) * 4 + 3] & alphaMask
+        )
           bytes[y * stride + (x >>> 3)] |= 1 << (x & 7);
       }
   }
@@ -607,9 +613,14 @@ export class NativeInput {
         if (this.configuration && !readWord(this.configuration.blocks[2], 3)) break;
         return this.message(138, w, l, context);
       case 138: {
-        if (!this.foreground) break;
-        const point = this.services.virtualToScreen?.(l & 65535, l >>> 16) ?? [l & 65535, l >>> 16];
-        if (!point) break;
+        const nativeBounds =
+          this.configuration && nativeABI(this.configuration.profile).input?.cursorWarpNativeBounds;
+        if (!this.foreground && !nativeBounds) break;
+        const coordinates = [l & 65535, l >>> 16],
+          convert = this.services.virtualToScreen,
+          projected = convert?.(...coordinates);
+        if (nativeBounds && convert && !projected) break;
+        const point = projected ?? coordinates;
         await this.cancelDrag();
         this.warp = { x: point[0] | 0, y: point[1] | 0, remaining: w >>> 0, started: this.frame };
         break;
