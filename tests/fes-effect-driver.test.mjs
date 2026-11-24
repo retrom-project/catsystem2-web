@@ -239,7 +239,7 @@ for (const profile of profiles) {
         await h.api.advance(1);
         const task = world.areaEffects.tasks.get(effect.taskId);
         assert.equal(task.record.parent, h.ownerID);
-        assert.equal(world.graphics.drawTasks.get(h.surface).state.enabled, false);
+        assert.equal(world.graphics.drawTasks.get(h.surface).state.enabled, 0);
         if (type === 7) {
           const snapshot = world.graphics.images.get(effect.ownedBitmaps[0]);
           assert.equal(snapshot.width, 4);
@@ -259,7 +259,7 @@ for (const profile of profiles) {
         );
         await h.api.advance(10);
         assert.equal(h.api.collection.lookup('area', 0), null);
-        assert.equal(world.graphics.drawTasks.get(h.surface).state.enabled, true);
+        assert.equal(world.graphics.drawTasks.get(h.surface).state.enabled, 1);
         assert.equal(world.objects.objects.get(effect.taskId).destroyRequested, true);
         await h.api.advance(11);
         assert.equal(world.areaEffects.tasks.has(effect.taskId), false);
