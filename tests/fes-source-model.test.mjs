@@ -63,7 +63,11 @@ test('macro replacement matches both original literal emission strategies and do
   assert.equal(text(replaceFESMacros('NAME NAME2', new Map([['NAME', '']]))), ' NAME2');
 });
 
-for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+for (const profile of [
+  'rebellions-jp-engine-2.6.1.63',
+  'grisaia-jp-engine-2.6.1.23',
+  'bokutomo-engine-2.6.1.67',
+])
   test(`${profile} reconstructs macro string and character literals`, () => {
     const literalPolicy = {
         string: nativeABIBehavior(profile, 'fes.macroLiterals.string'),

@@ -4,6 +4,7 @@ import test from 'node:test';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 
 const profile = 'bokutomo-engine-2.6.1.67',
@@ -139,4 +140,25 @@ next IDLE
     [100, 104, 108, 112, 116].map((address) => loaded.load(address)),
     [0, 0, 19, 1, word],
   );
+});
+
+test('2.6.1.67 authored FES macros preserve CP932 pairs and reconstruct raw character literals', async (t) => {
+  const world = await defaultFESWorld(profile, {
+    'screen.fes': encodeCP932(`#MACRO
+WORD 猫
+#DEFINE
+STRING message
+#OBJECT SIZE POS PRI DISP
+message 80,24 4,4 60001 1
+#START
+message str WORD ソ 'a'
+next IDLE
+#IDLE
+`),
+  });
+  t.after(() => world.close());
+  const { task, instance } = await loadDefaultFES(world);
+  await task.tick();
+  const text = instance.collection.lookup('message', 0);
+  assert.deepEqual(text.nativeTextState.source, encodeCP932("猫 ソ ''a''"));
 });
