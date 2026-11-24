@@ -6,6 +6,10 @@ const f = Math.fround;
 const pi = f(Math.PI);
 const quietNaNBit = 1 << 22;
 
+export function quietFloat32Bits(word) {
+  return ((word & 0x7fffffff) > 0x7f800000 ? word | quietNaNBit : word) >>> 0;
+}
+
 export const degreeToRadian = (degrees) => f(f(f(degrees) * pi) / 180);
 export const radianToDegree = (radians) => f(f(f(radians) * 180) / pi);
 export function x87AngleConversion(angle, toRadians) {

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // PTCL and PPI banks share the JS engine-side task and render contract.
 import { Particles } from '../particles.mjs';
+import { quietFloat32Bits } from '../ppi/numeric.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { NativeParticleProjection } from './particle-projection.mjs';
@@ -20,7 +21,7 @@ function registers(bytes, quietNaN = false) {
   if (quietNaN) {
     const words = new Uint32Array(buffer);
     for (let index = 0; index < words.length; index++)
-      if ((words[index] & 0x7fffffff) > 0x7f800000) words[index] |= 0x00400000;
+      words[index] = quietFloat32Bits(words[index]);
   }
   return new Float32Array(buffer);
 }
