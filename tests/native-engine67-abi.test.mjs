@@ -503,6 +503,42 @@ for (const version of [1, 2]) {
     });
 }
 
+test('2.6.1.67 KCS, Motion and both Particle versions share two ordered native random streams', async (t) => {
+  const program = (id, real) => kcsProgram([[43, id, 0], [38, 64], [43, real, 0], [38, 68], [59]]),
+    world = await dataWorld(profile, { 'random.kcs': program(33, 34) });
+  t.after(() => world.close({ flushFiles: false }));
+  const random = world.random;
+  random.integer.seed(4357);
+  random.real.seed(0x7654ab5e);
+  const output = (machine) => [machine.load(64), machine.load(68)],
+    rng = await world.spawnScript('random.kcs', { parent: world.main.id, initialExecute: false });
+  await world.runtime.scheduler.execute(rng);
+  assert.deepEqual(output(rng.machine), [0xaae64ac3, 0x3e5cc951]);
+  const motion = new MotionInstance(await readKCS(program(39, 40)), { profile, random });
+  motion.update(1);
+  assert.deepEqual(output(motion.machine), [0x5e7c47da, 0x3dd06f44]);
+  for (const [version, expected] of [
+    [1, [0xb98e8121, 0x3ec2dcd6]],
+    [2, [0xb010f327, 0x3f08e2a5]],
+  ]) {
+    const bytes = program(33, 34);
+    new DataView(bytes.buffer, bytes.byteOffset).setUint16(8, version, true);
+    const particle = new ParticleScriptInstance(await readKCS(bytes), {
+      profile,
+      random,
+      count: 1,
+      width: 1,
+      height: 1,
+      screenWidth: 1280,
+      screenHeight: 720,
+    });
+    particle.update(1);
+    assert.deepEqual(output(particle.machine), expected);
+  }
+  assert.equal(random.integer.index, 4);
+  assert.equal(random.real.index, 4);
+});
+
 test('2.6.1.67 copies an opaque word and yields for one guest frame', async () => {
   const { runtime, task, machine } = await run([
     [37, 0xf31c5ba9],
