@@ -201,3 +201,33 @@ to use zero or nonzero values.
 In 2.6.1.63, Main 256, 260 and 262 use the owned Draw factory and raw
 messages 267, 271 and 274 to initialize its renderer, set signed offsets and
 write the enabled word. Each GCALL returns control 2 without a result word.
+
+## SDK 4.01 retained bitmap update, count, layer and rectangle
+
+| Main | Wrapper  | Raw Draw | Arguments                                                                                      | Control | Native result                             |
+| ---- | -------- | -------- | ---------------------------------------------------------------------------------------------- | ------- | ----------------------------------------- |
+| 259  | 0x51CFE0 | 277      | target, key, bitmap, x, y, base x, base y, rotation, scale x, scale y, alpha, visibility, mode | 2       | Unwritten                                 |
+| 264  | 0x51CBA0 | 283      | target                                                                                         | 2       | The receiver's count or the initial zero  |
+| 462  | 0x51CBE0 | 293      | target, key                                                                                    | 1       | Stored layer or the initial all-ones word |
+| 463  | 0x51CFA0 | 294      | target, key, layer                                                                             | 2       | Unwritten                                 |
+| 862  | 0x51CA20 | 305      | target, left, top, right, bottom                                                               | 2       | Unwritten                                 |
+
+The SDK's Draw receiver inserts a missing bitmap entry and replaces the image
+reference of an existing sender-keyed entry. The complete short update packet
+preserves the transform DWORDs and clamps alpha as unsigned. The Draw entry
+owns a reference to the bitmap backing. A missing renderer or a zero backing
+leaves the entry untouched. The layer setter and getter share the same key
+and operate on the full DWORD. The wrapper for the layer query initializes
+its result to all ones before routing, including when the task or key is absent.
+
+Main264 counts retained entries and copies the native scratch. Control 2
+continues without pushing that scratch word to the guest KCS stack. The prepared
+2.6.1.76 build uses the same count helper shape with its own raw message 288.
+A live SDK Draw without a renderer cannot execute its count or layer methods.
+The ordinary host rejects that receiver state before using its storage.
+
+The rectangle uses four signed endpoints and recomposites its clipped bounds
+immediately. It marks the task dirty even before a renderer exists. Short
+original CPU cases execute the owned Draw and bitmap constructors, sender
+wrappers, entry map and pixel compositor. World cases exercise the same
+ownership, integer endpoints and visible pixel bounds through the KCS opcode.

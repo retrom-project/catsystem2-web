@@ -9193,7 +9193,7 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     264: {
-      name: 'draw.clear',
+      name: 'draw.countEntries',
       family: 'draw',
       signature: {
         argumentWords: 1,
@@ -9213,7 +9213,7 @@ export const NATIVE_SEMANTICS = freeze({
           description: 'void',
           kind: 'void',
         },
-        resultWritten: false,
+        resultWritten: true,
         review: 'declared',
       },
     },

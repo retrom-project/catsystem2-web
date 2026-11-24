@@ -31,6 +31,12 @@ export class NativeDrawTask {
   async message(words, context = {}) {
     const { payload } = context;
     const [sender, message, w, l] = words;
+    if (
+      !this.state.renderer &&
+      [288, 298, 299].includes(message) &&
+      nativeABI(this.world.profile).graphics.drawCountAndLayerRequireRenderer
+    )
+      throw new Error('The Draw count and layer messages require an initialized renderer');
     const store = (address, value) =>
       payload
         ? payload.store(address, value)

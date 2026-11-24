@@ -11,13 +11,16 @@ import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
 import { kcsProgram } from './helpers.mjs';
 
 const sdk = nativeABI(sdkRegistration.profile),
-  game = nativeABI(gameRegistration.profile);
+  game = nativeABI(gameRegistration.profile),
+  earlierDrawProfile = 'bokutomo-engine-2.6.1.67';
 
 test('shared semantics do not name or enable explicitly unknown profile slots', () => {
-  assert.equal(NATIVE_SEMANTICS.main[0x108].name, 'draw.clear');
-  assert.equal(sdk.tables.main.entries[0x108].name, null);
-  assert.equal(sdk.tables.main.entries[0x108].status, 'unknown');
-  assert.equal(game.tables.main.entries[0x108].name, 'draw.clear');
+  const earlierDraw = nativeABI(earlierDrawProfile).tables.main.entries[0x108];
+  assert.equal(NATIVE_SEMANTICS.main[0x108].name, 'draw.countEntries');
+  assert.equal(earlierDraw.name, null);
+  assert.equal(earlierDraw.status, 'unknown');
+  assert.equal(sdk.tables.main.entries[0x108].name, 'draw.countEntries');
+  assert.equal(game.tables.main.entries[0x108].name, 'draw.countEntries');
   assert.equal(Object.hasOwn(NATIVE_SEMANTICS.main, 0x52), false);
   assert.deepEqual(sdk.tables.main.entries[0x52].controlCodes, []);
   assert.deepEqual(game.tables.main.entries[0x52].controlCodes, [2]);
@@ -267,8 +270,8 @@ for (const registration of [sdkRegistration, gameRegistration]) {
   });
 }
 
-test('SDK unknown main264 blocks its installed drawing handler without side effects', async () => {
-  const world = await dataWorld(sdkRegistration.profile, { 'case.kcs': kcsProgram([[59]]) });
+test('older unknown Main264 blocks its installed drawing handler without side effects', async () => {
+  const world = await dataWorld(earlierDrawProfile, { 'case.kcs': kcsProgram([[59]]) });
   try {
     const task = world.main,
       runtime = world.runtime,
@@ -293,10 +296,10 @@ test('SDK unknown main264 blocks its installed drawing handler without side effe
         assert.ok(error instanceof UnsupportedKCSNative);
         assert.equal(
           error.message,
-          `Unsupported ${sdkRegistration.profile}/main native 0x108 in ${task.name} at 0x${task.machine.pc.toString(16)}`,
+          `Unsupported ${earlierDrawProfile}/main native 0x108 in ${task.name} at 0x${task.machine.pc.toString(16)}`,
         );
         assert.deepEqual(error.details, {
-          profile: sdkRegistration.profile,
+          profile: earlierDrawProfile,
           table: 'main',
           id: 264,
           task: task.id,
@@ -460,9 +463,8 @@ test('registered drawing family inherits reviewed arity and output contracts wit
     });
     assert.equal(entries[69].signature.resultWritten, true);
   }
-  for (const id of [259, 94, 264]) {
-    assert.equal(sdk.tables.main.entries[id].status, 'unknown');
-    assert.equal(sdk.tables.main.entries[id].name, null);
+  for (const id of [259, 94, 264, 462, 463, 862]) {
+    assert.equal(sdk.tables.main.entries[id].status, 'recovered');
     assert.equal(game.tables.main.entries[id].status, 'recovered');
   }
 });
