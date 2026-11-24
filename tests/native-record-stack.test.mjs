@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { NativeRecordStack, nativeRecordStack } from '../src/native/record-stack.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { kcsProgram } from './helpers.mjs';
 import {
   recordStackSpecifications,
   recordStackOperations,
@@ -112,6 +113,79 @@ test('zero-byte records and null stacks preserve original control behavior', () 
   assert.equal(nativeRecordStack(0x35e, [], f.machine, services), undefined);
   assert.equal(nativeRecordStack(0x35f, [1, 1], f.machine, {}), undefined);
   assert.throws(() => nativeRecordStack(0x35f, [1], f.machine, services), /expects 2 arguments/);
+});
+
+test('2.6.1.67 record-stack GCALLs copy full capacity and preserve the LIFO cursor', async (t) => {
+  const source = [0x13, 64],
+    copy = [0x13, 68],
+    call = (id, args) => [...args.map((arg) => [37, arg]), [43, id, args.length * 4]],
+    operation = [
+      [865, [source, [0x23, 256]], 1],
+      [865, [source, 0xffffffff], 0],
+      [865, [source, [0x23, 260]], 1],
+      [867, [source], 2],
+      [866, [source, [0x23, 320]], 1],
+      [868, [copy, source]],
+      [868, [copy, 0]],
+      [867, [copy], 1],
+      [866, [copy, [0x23, 336]], 1],
+      [866, [copy, [0x23, 352]], 0],
+      [867, [source], 1],
+      [867, [0], 0],
+    ],
+    world = await dataWorld('bokutomo-engine-2.6.1.67', {
+      'records.kcs': kcsProgram([
+        ...call(863, [3, 1]),
+        [38, 64],
+        ...call(863, [2, 2]),
+        [38, 68],
+        ...operation.flatMap(([id, args, expected], index) => [
+          ...call(id, args),
+          ...(expected === undefined ? [] : [[38, 512 + index * 4]]),
+        ]),
+        [59],
+      ]),
+      'release-records.kcs': kcsProgram([
+        ...call(864, [copy]),
+        ...call(864, [source]),
+        ...call(864, [0]),
+        [59],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    task = await world.spawnScript('records.kcs', { parent, initialExecute: false }),
+    { machine } = task,
+    floor = machine.sp,
+    first = [0x91, 0, 0x37],
+    second = [0x72, 0x3b, 0x56];
+  machine.bytes(256, 3).set(first);
+  machine.bytes(260, 3).set(second);
+  machine.bytes(320, 36).fill(0xbc);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor);
+  operation.forEach(([, , expected], index) => {
+    if (expected !== undefined) assert.equal(machine.load(512 + index * 4), expected);
+  });
+  assert.deepEqual([...machine.bytes(320, 4)], [...second, 0xbc]);
+  assert.deepEqual([...machine.bytes(336, 4)], [...first, 0xbc]);
+  assert.deepEqual([...machine.bytes(352, 4)], Array(4).fill(0xbc));
+  const release = await world.spawnScript('release-records.kcs', { parent, initialExecute: false }),
+    original = machine.load(64),
+    copied = machine.load(68),
+    state = world.runtime.handles.get(copied, 'record-stack').snapshot();
+  assert.deepEqual(state, {
+    recordSize: 3,
+    count: 0,
+    increment: 1,
+    capacity: 2,
+    data: Uint8Array.from([...first, ...second]),
+  });
+  release.machine.store(64, original);
+  release.machine.store(68, copied);
+  await world.runtime.scheduler.execute(release);
+  assert.throws(() => world.runtime.handles.get(copied, 'record-stack'), /released/);
+  assert.throws(() => world.runtime.handles.get(original, 'record-stack'), /released/);
 });
 
 for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])

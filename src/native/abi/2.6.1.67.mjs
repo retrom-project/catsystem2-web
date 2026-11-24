@@ -1019,9 +1019,9 @@ export default {
           801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818,
           819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 836, 837, 838, 839,
           840, 841, 842, 843, 844, 845, 846, 847, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859,
-          860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 871, 873, 874, 875, 876, 877, 878, 879,
-          880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897,
-          898, 899, 900, 901, 902, 903, 904, 905, 934, 935, 936, 937,
+          860, 861, 862, 869, 871, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885,
+          886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903,
+          904, 905, 934, 935, 936, 937,
         ],
         recovered: [
           1, 4, 5, 6, 8, 13, 14, 15, 16, 17, 19, 21, 25, 36, 41, 57, 62, 63, 64, 65, 66, 67, 68, 69,
@@ -1031,12 +1031,28 @@ export default {
           340, 341, 342, 343, 344, 345, 359, 393, 400, 402, 419, 420, 421, 422, 423, 424, 425, 447,
           448, 449, 450, 451, 452, 453, 454, 455, 458, 459, 465, 466, 467, 469, 515, 516, 517, 518,
           541, 542, 549, 586, 590, 591, 592, 593, 594, 595, 596, 597, 605, 608, 630, 645, 646, 647,
-          649, 650, 739, 740, 741, 789, 790, 833, 834, 835, 848, 849, 870, 872,
+          649, 650, 739, 740, 741, 789, 790, 833, 834, 835, 848, 849, 863, 864, 865, 866, 867, 868,
+          870, 872,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: [863, 864],
+          value:
+            'Own 2.6.1.67 Main863 constructs the five-DWORD stack header with record size, zero count, increment, capacity and owned allocation, then returns the handle. Main864 frees the allocation and header and accepts a zero handle without a write.',
+        },
+        {
+          ids: [865, 866, 867],
+          value:
+            'Own 2.6.1.67 fixed-record stack push at 0x4a2800 grows by its increment before translating the guest source. Pop at 0x4a28b0 copies exactly one record after decrementing the signed nonzero count. Both return one on success and zero on absent mappings. Main867 writes the current count or zero.',
+        },
+        {
+          ids: [868],
+          value:
+            'Own 2.6.1.67 Main868 reallocates for mismatched size, increment or capacity, copies capacity times record size, and copies the count. Either zero handle skips copying. Control 2 leaves the GCALL result untouched.',
+        },
         {
           ids: [515, 516],
           value:
@@ -1312,6 +1328,8 @@ export default {
         },
       ],
       signatures: [
+        { ids: [863, 865, 866, 867], fields: { resultWritten: true } },
+        { ids: [864, 868], fields: { resultWritten: false } },
         { ids: [515, 518], fields: { resultWritten: true } },
         { ids: [516, 517], fields: { resultWritten: false } },
         { ids: [322, 323, 325, 326, 327, 338, 608], fields: { resultWritten: true } },
