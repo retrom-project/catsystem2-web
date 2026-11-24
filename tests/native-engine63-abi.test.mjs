@@ -963,6 +963,37 @@ test('2.6.1.63 KCS narrow desktop calls use the clipboard boundary and blocking 
   }
 });
 
+test('2.6.1.63 KCS queries retained MOT filenames and copies its live working bank', async (t) => {
+  const motion = kcsProgram([[59]]),
+    world = await dataWorld(profile, {
+      'main-514.kcs': mainProgram(514, 2),
+      'pbase.kcs': motion,
+      'ヂ.kcs': motion,
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const category = { name: 'mot', directory: '', extension: 'kcs' },
+    registry = world.runtime.services.motion,
+    handle = registry.create(world.main.id),
+    manager = registry.get(handle),
+    guest = 256;
+  world.motionLibrary.game.nativeResources = { entries: [category] };
+  const query = (name, value) =>
+    executeMain(world, 514, [handle, guest], (m) => m.writeString(name, guest), value);
+  await query('pBase', 0);
+  for (const name of ['pBase', 'ヂ']) manager.add(await world.motionLibrary.load(name));
+  manager.base.forEach((_, i) => (manager.base[i] = (19 + i * 17) & 255));
+  manager.working.fill(0xa1);
+  await query('PBASE.KCS', 1);
+  assert.deepEqual(manager.working, manager.base);
+  await query('ア', 1);
+  await query('folder/pBase.kcs', 0);
+  await query('pBase.mot', 0);
+  category.directory = 'mot';
+  await query('pBase', 0);
+  await executeMain(world, 514, [0, 0xffffffff], undefined, 0);
+  assert.equal(manager.records.size, 2);
+});
+
 test('2.6.1.63 KCS drives the original Raster and positioned wipe lifecycle', async (t) => {
   const commands = [
       [196, 2],
