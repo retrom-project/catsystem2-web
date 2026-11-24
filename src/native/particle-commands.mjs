@@ -2,6 +2,7 @@
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { quietFloat32Bits } from '../ppi/numeric.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { nativeDataArgument, nativeDataFormat } from './data-text.mjs';
 import { nativeCategoryFilename } from './resource-file.mjs';
@@ -60,6 +61,8 @@ export class NativeParticleCommands {
       packet.store(260, a[3]);
       packet.store(264, a[4]);
       packet.bytes(268, 128).set(machine.bytes(a[5], 128));
+      if (nativeABI(world.profile).particle?.loadQuietsFloatWords)
+        for (let at = 264; at < 396; at += 4) packet.store(at, quietFloat32Bits(packet.load(at)));
       context.payload = packet;
     } else if (id === 0x113) {
       // The register control borrows the live translation only after a target

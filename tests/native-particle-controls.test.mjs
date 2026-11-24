@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { PPIRegistry } from '../src/ppi/plugin-identity.mjs';
-import { authoredPPI } from './fixtures/ppi-js-fixture.mjs';
+import { authoredPPI, authoredPPIRegistry } from './fixtures/ppi-js-fixture.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -83,6 +83,113 @@ test('2.6.1.63 loads, updates and stops a live script Particle bank', async () =
   } finally {
     await world.close();
   }
+});
+
+test('2.6.1.67 KCS Particle load and controls use their original raw World messages', async (t) => {
+  const profile = 'bokutomo-engine-2.6.1.67',
+    target = [0x13, 512],
+    plugin = [0x13, 516],
+    marker = 0xa5a5a5a5,
+    call = (id, args, output) => [
+      ...args.map((word) => [37, word]),
+      [43, id, args.length * 4],
+      ...(output === undefined ? [] : [[38, output]]),
+    ],
+    body = kcsProgram(
+      [
+        [37, marker],
+        ...call(271, [target, 2048, 2080, 2, floatBits(12.25), 1024], 520),
+        ...call(693, [plugin, 2112, 2080, 2, floatBits(12.25), 1024], 524),
+        ...call(274, [target], 528),
+        ...call(274, [0x6010aa], 532),
+        ...call(427, [target, 0x81234567]),
+        ...call(426, [target, 0xffffffff]),
+        ...call(272, [target]),
+        ...call(272, [plugin]),
+        ...call(274, [target], 536),
+        ...call(275, [target, 1152]),
+        ...call(273, [target]),
+        ...call(274, [target], 540),
+        [59],
+      ],
+      [
+        [2048, '雪'],
+        [2080, ''],
+        [2112, 'ptclpi/emitter.ppi'],
+      ],
+    ),
+    world = await dataWorld(profile, {
+      'ptcl/雪.kcs': kcsProgram([[59]]),
+      'ptclpi/emitter.ppi': nativeParticleFixture(),
+      'particle.kcs': body,
+    });
+  t.after(() => world.close());
+  world.graphics.createLogicalDevice();
+  world.particles.host.registry = authoredPPIRegistry(['emitter']);
+  const first = await world.objects.create({ kind: 16, parent: world.root }),
+    second = await world.objects.create({ kind: 16, parent: world.root }),
+    task = await world.spawnScript('particle.kcs', { parent: world.root, initialExecute: false }),
+    m = task.machine,
+    words = Array.from({ length: 32 }, (_, index) => floatBits(index * 0.5 - 9)),
+    receipts = [],
+    dispatch = world.sendNativeEngine.bind(world);
+  for (const [address, id] of [
+    [512, first],
+    [516, second],
+  ])
+    m.store(address, world.nativeTaskID(id));
+  words[1] = 0xff812345;
+  for (let i = 0; i < 32; i++) {
+    m.store(1024 + i * 4, words[i]);
+    m.store(1152 + i * 4, words[31 - i]);
+  }
+  world.sendNativeEngine = (target, sender, id, w, l, context) => {
+    if (sender === task.id)
+      receipts.push({
+        id,
+        target,
+        w,
+        l,
+        flags: context.flags,
+        packet: id === 303 ? context.payload.data.slice() : null,
+      });
+    return dispatch(target, sender, id, w, l, context);
+  };
+  const sp = m.sp;
+  await world.runtime.scheduler.execute(task);
+  assert.equal(m.pop(), marker);
+  assert.equal(m.sp, sp);
+  assert.deepEqual(
+    Array.from({ length: 6 }, (_, i) => m.load(520 + i * 4)),
+    [1, 1, 0, 0, 1, 0],
+  );
+  assert.deepEqual(
+    receipts.map(({ id }) => id),
+    [303, 303, 307, 307, 310, 309, 304, 304, 307, 308, 305, 307],
+  );
+  assert.ok(receipts.every(({ w, flags }) => w === 0 && flags === 0));
+  for (const [index, { packet }] of receipts.slice(0, 2).entries()) {
+    const view = new DataView(packet.buffer);
+    assert.equal(packet.length, 656);
+    assert.equal(view.getUint32(0, true), index);
+    assert.equal(view.getUint32(260, true), 2);
+    assert.equal(view.getUint32(264, true), floatBits(12.25));
+    assert.equal(view.getUint32(272, true), 0xffc12345);
+    assert.equal(view.getUint32(396, true), 0);
+  }
+  const particle = world.particles.get(first),
+    other = world.particles.get(second);
+  assert.equal(particle.bank.program, 'ptcl/雪.kcs');
+  assert.equal(particle.state.alpha, -1);
+  assert.equal(particle.state.attachment >>> 0, 0x81234567);
+  assert.equal(particle.bank.attachment, null);
+  assert.equal(particle.bank.instance.active, false);
+  assert.equal(other.bank.program, 'ptclpi/emitter.ppi');
+  assert.equal(other.bank.instance.state.inits, 1);
+  words[1] = 0xffc12345;
+  assert.deepEqual([...new Uint32Array(particle.bank.registers.buffer)], words.reverse());
+  await world.tick();
+  assert.equal(other.bank.instance.module.shared.execs, 1);
 });
 
 for (const [profile, variable, receiver, offset] of [
