@@ -142,6 +142,63 @@ test('2.6.1.67 KCS owns CP932 image layers, their bitmap metadata and pixel edit
   assert.equal(world.runtime.handles.records.has(target), false);
 });
 
+test('2.6.1.67 KCS Draw keeps a generated image owner through replacement and release', async (t) => {
+  const receiver = [0x13, 80],
+    owner = [0x13, 84],
+    call = (id, args) => [...args.map((word) => [37, word]), [43, id, args.length * 4]],
+    bind = (id, x, y, alpha) =>
+      call(id, [receiver, 3, owner, ...[x, y, 0, 0, 0, 1, 1].map(floatBits), alpha, 1, 0]),
+    world = await dataWorld('bokutomo-engine-2.6.1.67', {
+      'draw.kcs': kcsProgram([
+        [37, 0xd73a4719],
+        ...call(256, [receiver, 8, 6]),
+        ...call(260, [receiver, 0, 0]),
+        ...call(733, [1, 1]),
+        [38, 84],
+        ...call(736, [owner, 0, 0, 1, 1, 0xff3173b2]),
+        ...bind(731, 1.25, 2.5, 512),
+        ...bind(732, 3.75, 4.5, 127),
+        ...call(711, [owner]),
+        [59],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    id = await world.objects.create({ kind: 15, parent }),
+    task = await world.spawnScript('draw.kcs', { parent, initialExecute: false }),
+    m = task.machine,
+    floor = m.sp,
+    draw = world.graphics.drawTasks.get(id),
+    key = (world.nativeTaskID(task.id) | (3 << 16)) >>> 0,
+    witness = [],
+    receive = draw.message.bind(draw);
+  draw.message = async (words, context) => {
+    const result = await receive(words, context);
+    if (words[1] === 280 || words[1] === 282) {
+      const item = draw.entry(key);
+      witness.push([words[1], words[2], item.position, item.alpha, item.image]);
+    }
+    return result;
+  };
+  m.store(80, world.nativeTaskID(id));
+  await world.runtime.scheduler.execute(task);
+  assert.equal(m.sp, floor + 4);
+  assert.equal(m.load(floor), 0xd73a4719);
+  assert.equal(world.runtime.handles.records.has(m.load(84)), false);
+  assert.deepEqual(
+    witness.map((row) => row.slice(0, 4)),
+    [
+      [280, 3, [1.25, 2.5], 255],
+      [282, 3, [3.75, 4.5], 127],
+    ],
+  );
+  assert.equal(draw.state.renderer.items.length, 1);
+  assert.deepEqual(
+    await world.graphics.images.get(draw.entry(key).image).pixels(),
+    Uint8ClampedArray.of(49, 115, 178, 255),
+  );
+});
+
 test('23 Script resolves a base image and owns its decoded and generated canvases', async (t) => {
   const rgba = Uint8Array.of(17, 34, 51, 255, 1, 2, 3, 255),
     world = await defaultFESWorld('grisaia-jp-engine-2.6.1.23', {
