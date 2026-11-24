@@ -77,6 +77,10 @@ The query runs without a texture or graph attachment. PTCL v2 slot 49
 remains guarded because a stale graph registration can reuse overwritten
 scratch coordinates after a prior query.
 
+The fixed executable assigns the PTCL v2 table only to header version
+`0x20000` and selects v1 for other versions. The acceptance collector uses
+that dispatch rule for the registration's original executable digest.
+
 The original tuned x87 and SSE2 arithmetic can round intermediate matrix
 and viewport values differently. Core uses the selectable scalar path
 with D3DX CPU optimizations disabled. The observed native CPU paths

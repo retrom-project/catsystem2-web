@@ -780,6 +780,7 @@ export default {
   id: 'cs2-2.6.1.23',
   profile: 'grisaia-jp-engine-2.6.1.23',
   engineVersion: '2.6.1.23',
+  executableSha256: '9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67',
   xmlEncoding: 'Shift_JIS',
   text: {
     legacyConfigurationBytes: 1128,
@@ -906,6 +907,7 @@ export default {
     orderedScalarRotations: true,
   },
   particle: {
+    scriptVersionFallback: 'particle-v1',
     frameScale: 'x87-uint32',
     quadUsesX87: true,
     projectionBoundsUseX87: true,

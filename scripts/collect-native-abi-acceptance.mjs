@@ -33,6 +33,8 @@ async function readSurvey({ survey, surveySha256, executableSha256 }) {
 }
 
 function exactTables(image, abi) {
+  if (abi.executableSha256 && image.sha256 !== abi.executableSha256)
+    throw new Error(`The executable SHA-256 differs from the registered build ${abi.profile}`);
   if (image.status !== 'candidate' || image.engineVersion !== abi.engineVersion)
     throw new Error('The exact executable survey must expose the declared build tables');
   const names = image.tables.map(({ name }) => name);
@@ -107,11 +109,12 @@ function kcsCalls(script, facts) {
   });
 }
 
-function describeScript(script, facts) {
+function describeScript(script, facts, particleFallback) {
   if (script.kind === 'kcs')
     return {
       kind: script.kind,
-      table: script.table,
+      table:
+        script.table === 'particle-unknown' ? (particleFallback ?? script.table) : script.table,
       scriptVersion: script.scriptVersion,
       calls: kcsCalls(script, facts.get(script.sha256)),
     };
@@ -183,7 +186,7 @@ function scriptDelta(works, scripts, receipts) {
   });
 }
 
-async function collectScripts(workInputs, executableSha256, facts) {
+async function collectScripts(workInputs, executableSha256, facts, particleFallback) {
   if (!Array.isArray(workInputs) || !workInputs.length)
     throw new Error('At least one exact-build work is required');
   const scripts = {},
@@ -239,7 +242,7 @@ async function collectScripts(workInputs, executableSha256, facts) {
             undecodedCommandLines: member.commandErrors.map(({ line }) => line),
           });
         const content = (scripts[member.sha256] ??= { contexts: {} }),
-          context = describeScript(member, facts),
+          context = describeScript(member, facts, particleFallback),
           key = digest(JSON.stringify(context)),
           view = (content.contexts[key] ??= { ...context, sources: [] });
         view.sources.push({ work: work.id, logicalPath, name: member.name, role });
@@ -422,7 +425,12 @@ export async function collectNativeABIAcceptance(input) {
   exactTables(image, abi);
   const alternateDiffs = await listAlternateDiffs(alternates, image);
   const facts = await loadCallShapes(callShapeEvidence),
-    { scripts, works } = await collectScripts(workInputs, image.sha256, facts);
+    { scripts, works } = await collectScripts(
+      workInputs,
+      image.sha256,
+      facts,
+      abi.executableSha256 ? abi.particle?.scriptVersionFallback : undefined,
+    );
   const receipts = await collectReceipts(receiptInputs, build, works);
   for (const review of secondary) assertReviewReceipts(review, receipts, ['original']);
   const secondaryABI = Object.fromEntries(Object.entries(abi).filter(([key]) => key !== 'tables'));

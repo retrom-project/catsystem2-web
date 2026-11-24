@@ -42,6 +42,11 @@ member SHA-256, decoded command and undecoded command line. Resolve dynamic
 IDs, arguments, required objects and execution paths through the original
 handler and the real VM.
 
+When a registration records its original executable SHA-256, the collector
+requires that digest before applying its script-version fallback. A content
+member with a nonstandard particle header remains unresolved without
+matching table-selection evidence.
+
 Compare the exact-build works by script SHA-256 and call shape. Shared content
 counts once while each work and archive reference remains listed. Review the
 added scripts, changes to include contexts and new call shapes for each
