@@ -611,11 +611,13 @@ export function installNativeScripts(world) {
     });
     return nativeReply(args[2] ? 4 : 2);
   });
-  for (const [id, message, count] of [
+  const notifications = nativeABI(world.profile).messages.scriptNotifications;
+  for (const [id, canonicalMessage, count] of [
     [0x23a, 442, 1],
     [0x23b, 445, 2],
     [0x23c, 444, 1],
-  ])
+  ]) {
+    const message = notifications?.[id] ?? canonicalMessage;
     world.runtime.register('main', id, async (args, _machine, task) => {
       if (args.length !== count)
         throw new Error(`KCS task message ${message} expects ${count} arguments`);
@@ -634,4 +636,5 @@ export function installNativeScripts(world) {
       await world.sendNativeEngine(args[0], task.id, message, 0, value);
       return nativeReply(2);
     });
+  }
 }

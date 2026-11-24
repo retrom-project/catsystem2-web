@@ -802,3 +802,62 @@ test('2.6.1.67 Input GCALLs target the owned Root input, gate keys and restore a
   assert.equal(world.input.cursorEnabled, 0x92345678);
   assert.deepEqual([...world.input.enabled], Array(80).fill(1));
 });
+
+test('2.6.1.67 task notification GCALLs deliver exact raw packets in the caller namespace', async (t) => {
+  const world = await dataWorld(profile, {
+    'send.kcs': kcsProgram([
+      [37, 0xa9173e32],
+      [37, 0],
+      [43, 572, 4],
+      [37, [0x13, 84]],
+      [43, 570, 4],
+      [37, [0x13, 84]],
+      [37, [0x13, 88]],
+      [43, 571, 8],
+      [37, [0x13, 84]],
+      [37, 0],
+      [43, 571, 8],
+      [37, 0xffffffef],
+      [43, 572, 4],
+      [37, 0xfe86085d],
+      [43, 577, 4],
+      [59],
+    ]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('send.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    }),
+    trace = [],
+    send = world.sendNativeEngine.bind(world);
+  world.sendNativeEngine = async (...args) => {
+    const result = await send(...args);
+    trace.push({ args: args.slice(0, 5), result });
+    return result;
+  };
+  const { machine } = task,
+    floor = machine.sp,
+    target = world.nativeTaskID(world.main.id),
+    pointer = world.runtime.imageDataBuffers.process.allocate(4);
+  world.runtime.imageDataBuffers.process.store(pointer, 0x888c0fea);
+  machine.store(84, target);
+  machine.store(88, pointer);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), 0xa9173e32);
+  assert.deepEqual(
+    trace.map(({ args }) => args),
+    [
+      [0, task.id, 426, 0, 0],
+      [target, task.id, 424, 0, 0],
+      [target, task.id, 427, 0, 0x888c0fea],
+      [target, task.id, 427, 0, 0],
+      [0xffffffef, task.id, 426, 0, 0],
+      [0, task.id, 38, 0, 0xfe86085d],
+    ],
+  );
+  assert.ok(trace.every(({ result }) => result === NATIVE_UNWRITTEN_WORD));
+  assert.equal(world.objects.objects.get(world.root).implementation.field, 0xfe86085d);
+  world.runtime.imageDataBuffers.process.free(pointer);
+});
