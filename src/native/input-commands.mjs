@@ -13,9 +13,15 @@ export const NATIVE_INPUT_COMMAND_CONTRACTS = Object.freeze(
   ].map(([id, words, control]) => Object.freeze({ id, words, control })),
 );
 export function installNativeInputCommands(world) {
-  for (const { id } of NATIVE_INPUT_COMMAND_CONTRACTS)
+  for (const { id, words } of NATIVE_INPUT_COMMAND_CONTRACTS)
     world.runtime.register('main', id, async (args, machine, task) => {
       if ((id === 0x6b || id === 0x3a9) && !originalOwner(world)) {
+        if (
+          id === 0x6b &&
+          nativeABI(world.profile).input?.activeQueryUsesRawWord &&
+          args.length !== words
+        )
+          throw new Error(`Native Input 0x6b expects ${words} argument word`);
         const input = nativeEngineWord(
           await world.sendNativeEngine(
             0,

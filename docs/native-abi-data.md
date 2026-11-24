@@ -19,10 +19,10 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 462       | 57            | 17            | 333     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.63 | 938        | 344       | 80            | 19            | 495     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
+| 2.6.1.23 | 869        | 466       | 57            | 17            | 329     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.63 | 938        | 370       | 80            | 19            | 469     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
-| 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
+| 2.6.1.74 | 1009       | 850       | 82            | 19            | 58      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                                     |
 
 The registry represents 5,509 slots, including 2,344 SDK74/Game76 slots.
@@ -177,6 +177,15 @@ leaves guest memory unchanged when the target ID is zero. A nonzero
 target must supply initialized pose words before the Core writes the VM
 outputs.
 
+Main 74 reads the complete Base flags through raw 12 and returns
+`0xffffffff` if the route misses. A routed Top or retiring task can
+leave the original caller pointer in the result slot and remains protected.
+Main 75 reads the caller's registry in signed key order and counts entries
+whose direct branch belongs to that caller. A key may identify a descendant
+through an owned branch. An index past the available entries returns
+`0xffffffff`. Main 77 reads membership in the current Top's registry,
+including reserved keys with no live value.
+
 Main 95 registers input through Plane raw 83 using the owned pose,
 configured virtual dimensions and signed rectangle coordinates. A live
 device and registered graph are required to obtain this geometry. A repeat
@@ -194,6 +203,9 @@ The registered Input owner selects the hover and press rows on pointer
 events and selects the hover or idle row on button release. The blocked
 bit suppresses pointer transitions. A selected state 3 suppresses both
 pointer and keyboard forwarding through the Plane's key receiver.
+Main 107 uses the caller's Top and reads the selected Input region's full
+activity DWORD. A missing region leaves the original scratch unchanged
+and is refused before a value reaches the guest.
 Main 109 retains the full raw Input source word through Plane or BasePlane
 raw 89 and Input raw 129. A route miss writes zero. A route without a
 verified source reply fails before exposing an output.

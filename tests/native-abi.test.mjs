@@ -47,15 +47,22 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 462);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 466);
   assert.equal(base.main.entries.filter(({ status }) => status === 'reserved').length, 57);
   assert.equal(base.main.entries.filter(({ status }) => status === 'constant-zero').length, 17);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 333);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 329);
   assert.equal(base.main.entries.filter((entry) => entry.observedArgumentWords.length).length, 435);
   assert.deepEqual(base.main.entries[464].observedArgumentWords, []);
   assert.deepEqual(base.main.entries[543].observedArgumentWords, [3]);
   assert.deepEqual(base.main.entries[575].observedArgumentWords, [3]);
   assert.equal(base.main.entries[108].signature.resultWritten, false);
+  for (const id of [74, 75, 77, 107]) {
+    const { status, signature } = base.main.entries[id];
+    assert.equal(status, 'recovered');
+    assert.equal(signature.argumentWords, 1);
+    assert.deepEqual(signature.controlCodes, [1]);
+    assert.equal(signature.resultWritten, true);
+  }
   for (const [id, width, control] of [
     [96, 3, 2],
     [97, 2, 2],

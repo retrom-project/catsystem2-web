@@ -257,6 +257,16 @@ const mainEvidence = [
       'Own 2.6.1.23 Plane raw 57 returns the selected model priority. Raw 49 stores three parent offsets and applies the original selected parent base and position when the renderer is attached. Raw 50 clears inheritance without changing the retained pose or offsets.',
   },
   {
+    ids: [74, 75, 77],
+    value:
+      'Own 2.6.1.23 Main 0x48a710, 0x48a760 and 0x48a880 read Base raw 12 flags, count signed registry keys with a directly owned branch, and query membership through Top raw 30.',
+  },
+  {
+    ids: [107],
+    value:
+      'Own 2.6.1.23 Main 0x48a280 selects Input through Top raw 31, then sends the region key through Input raw 126 to read its full activity word. An absent region leaves the original output scratch unchanged.',
+  },
+  {
     ids: [96, 97, 98],
     value:
       'Own 2.6.1.23 Plane raw 67 copies the four 12-byte button states and registers Input only once. Raw 68 selects the low halfword and sets the independent blocked bit. Raw 69 writes both parts of the button state.',
@@ -1249,10 +1259,15 @@ export default {
     },
   },
   input: {
+    activeQueryUsesRawWord: true,
     bitmapMaskNativeRows: true,
     cursorWarpNativeBounds: true,
     legacyPlaneRegistration: true,
     planeSourceUsesRawWord: true,
+  },
+  task: {
+    childQueryUsesRouteEntries: true,
+    kindQueryRejectsRetiringOwner: true,
   },
   gallery: { listVariantWidth: 64, legacyTableReads: true },
   startup: {
@@ -1480,7 +1495,7 @@ export default {
           },
         },
         { ids: [83, 86, 87], fields: { resultWritten: false } },
-        { ids: [89, 98], fields: { resultWritten: true } },
+        { ids: [74, 75, 77, 89, 98, 107], fields: { resultWritten: true } },
         { ids: [90, 91, 102, 103], fields: { resultWritten: false } },
         { ids: [29, 30, 31, 683, 685], fields: { resultWritten: true } },
         { ids: [32, 684], fields: { resultWritten: false } },

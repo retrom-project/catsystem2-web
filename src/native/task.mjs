@@ -3,6 +3,7 @@ import { originalOwner, originalFeature } from './original-adapter.mjs';
 // Main native task and message operations.
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 
 const result = (value) => nativeReply(1, value >>> 0);
@@ -82,11 +83,14 @@ export function nativeTask(id, args, machine, task, services) {
       check(id === 0x4c ? 0 : 1);
       if (!(objects?.objects instanceof Map)) return undefined;
       const records = objects.objects,
-        own = records.get(task.id);
+        own = records.get(task.id),
+        abi = world && nativeABI(world.profile).task;
       if (!own) throw new Error(`Native task ${task.id} is absent`);
       if (id === 0x4a) {
         const record = records.get(resolve(args[0]));
         if (!record) return result(-1);
+        if (abi?.kindQueryRejectsRetiringOwner && record.destroyRequested && !originalOwner(world))
+          throw new Error('Native task kind requires a written reply from its retiring owner');
         if (world && (record.implementation?.pointer || record.kind === 1)) {
           const context = {};
           return then(world.sendNativeEngine(args[0], task.id, 13, 0, 0, context), (value) => {
@@ -107,9 +111,15 @@ export function nativeTask(id, args, machine, task, services) {
       }
       if (id === 0x4b) {
         if (world) {
-          const keys = [...world.engineMessages.registry(own).keys()]
-            .sort((a, b) => (a | 0) - (b | 0))
-            .filter((key) => world.engineMessages.lookupPointer(own, key)?.parent === task.id);
+          const registry = world.engineMessages.registry(own),
+            keys = [...registry.keys()]
+              .sort((a, b) => (a | 0) - (b | 0))
+              .filter((key) => {
+                const child = abi?.childQueryUsesRouteEntries
+                  ? records.get(registry.get(key))
+                  : world.engineMessages.lookupPointer(own, key);
+                return child?.parent === task.id;
+              });
           return result(keys[args[0] >>> 0] ?? -1);
         }
         const children = [...records.values()]

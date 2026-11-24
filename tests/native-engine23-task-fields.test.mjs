@@ -110,3 +110,62 @@ test('fixed 2.6.1.23 routes Top and Base fields in the caller namespace', async 
   assert.equal(innerPlaneRecord.userValue, 0x80001234);
   assert.equal(outerPlaneRecord.userValue, 0xffffffff);
 });
+
+test('fixed 2.6.1.23 task queries use signed route keys and full Base and Input words', async (t) => {
+  const world = await dataWorld(profile);
+  t.after(() => world.close({ flushFiles: false }));
+  const caller = world.main,
+    first = 0xdf20be12,
+    descendant = 0xe4decaa1,
+    last = 101,
+    front = await world.objects.create({ kind: 2, parent: caller.id, nativeID: first }),
+    tail = await world.objects.create({ kind: 2, parent: caller.id, nativeID: last }),
+    nested = await world.objects.create({ kind: 2, parent: front, nativeID: descendant }),
+    records = world.objects.objects,
+    root = records.get(world.root),
+    frontRecord = records.get(front),
+    query = async (id, word, owner = caller) => (await run(world, owner, id, [word], 1)).result;
+  assert.equal(world.resolveTaskID(descendant, caller.id), nested);
+  assert.equal(world.nativeTaskID(tail), last);
+  records.get(caller.id).nativeTaskRoutes.set(66, null);
+  root.nativeTaskRoutes.set(73, null);
+  for (const [index, key] of [first, descendant, last, 0xffffffff].entries())
+    assert.equal(await query(75, index), key);
+  assert.equal(await query(75, 0xffffffff), 0xffffffff);
+  for (const word of [0, 2, 0x10023, 0x81300000, 0xffffffff]) {
+    frontRecord.flags = word;
+    assert.equal(await query(74, first), word);
+  }
+  assert.equal(await query(74, 66), 0xffffffff);
+  assert.equal(await query(74, 73), 0xffffffff);
+  assert.equal(await query(74, 0xeddc0f73), 0xffffffff);
+  await assert.rejects(() => query(74, 0), /Root query caller pointer/);
+  frontRecord.destroyRequested = true;
+  await assert.rejects(() => query(74, first), /retiring owner/);
+  assert.equal(await query(75, 0), first);
+  assert.equal(await query(77, first), 1);
+  frontRecord.destroyRequested = false;
+  for (const word of [first, descendant, last, 73]) assert.equal(await query(77, word), 1);
+  for (const word of [0, 0xa78f80cd]) assert.equal(await query(77, word), 0);
+  const otherTop = await world.objects.create({ kind: 1, nativeID: 0 }),
+    otherCaller = await world.spawnScript('case.kcs', { parent: otherTop }),
+    other = await world.objects.create({ kind: 2, parent: otherCaller.id, nativeID: first }),
+    input = world.inputFor(caller.id),
+    otherInput = world.inputFor(otherCaller.id);
+  records.get(other).flags = 0x72810;
+  assert.equal(await query(74, first, otherCaller), 0x72810);
+  assert.equal(await query(77, 73, otherCaller), 0);
+  assert.equal(await query(75, 0, otherCaller), first);
+  const region = input.register({ owner: front }),
+    otherRegion = otherInput.register({ owner: other });
+  otherRegion.active = 0x7eac994a;
+  for (const word of [0, 1, 0x80000000, 0x381abcdd, 0xffffffff]) {
+    region.active = word;
+    assert.equal(await query(107, first), word);
+    assert.equal(await query(107, first, otherCaller), 0x7eac994a);
+  }
+  for (const word of [0, world.nativeTaskID(caller.id), 0xa32fbb2c])
+    await assert.rejects(() => query(107, word), /no initialized 32-bit output word/);
+  for (const id of [74, 75, 77, 107])
+    await assert.rejects(() => run(world, caller, id, [], 1), /expects 1 argument/);
+});
