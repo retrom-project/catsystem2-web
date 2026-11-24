@@ -90,6 +90,19 @@ test('2.6.1.67 GCALL still rejects the adjacent unreviewed native slot', async (
 });
 
 const scalarCases = [
+  { ids: [50, 1, 6], args: [0x3f000000], result: 0x3ef57744 },
+  { ids: [50, 1, 6], args: [0x80000000], result: 0x80000000 },
+  { ids: [50, 1, 6], args: [0xff852038], result: 0xffc52038 },
+  { ids: [51, 2, 7], args: [0x3f000000], result: 0x3f60a940 },
+  { ids: [51, 2, 7], args: [0x7f800000], result: 0xffc00000 },
+  { ids: [52, 3, 8], args: [0x3f000000], result: 0x3f0bda7b },
+  { ids: [52, 3, 8], args: [0x80000000], result: 0x80000000 },
+  { ids: [53, 4, 9], args: [0x3f000000], result: 0x3f060a92 },
+  { ids: [53, 4, 9], args: [0x40000000], result: 0xffc00000 },
+  { ids: [54, 5, 10], args: [0x3f000000], result: 0x3f860a92 },
+  { ids: [54, 5, 10], args: [0xbf800000], result: 0x40490fdb },
+  { ids: [55, 6, 11], args: [0x3f000000], result: 0x3eed6338 },
+  { ids: [55, 6, 11], args: [0xff800000], result: 0xbfc90fdb },
   { ids: [57, 9, 14], args: [0x80000000], result: 0 },
   { ids: [57, 9, 14], args: [0xff812345], result: 0x7fc12345 },
   { ids: [62, 14, 19], args: [floatBits(180)], result: 0x40490fdb },
