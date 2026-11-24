@@ -162,3 +162,51 @@ next IDLE
   const text = instance.collection.lookup('message', 0);
   assert.deepEqual(text.nativeTextState.source, encodeCP932("猫 ソ ''a''"));
 });
+
+test('2.6.1.67 named FES word GCALLs format CP932 dictionary keys and keep receiver failures visible', async (t) => {
+  const world = await dataWorld(profile, {
+    'named.fes': encodeCP932('#DEFINE\n#START\nnext HOLD\n#HOLD\n'),
+    'named.kcs': nativeProgram(
+      [
+        [447, [fes, 128]],
+        [448, [fes]],
+        [882, [fes, 160, 0xc73222f0]],
+        [883, [fes, 160], 100],
+        [883, [fes, 192], 104],
+        [882, [fes, 160, 0x86521eed]],
+        [883, [fes, 160], 108],
+        [882, [fes, 0xffffffff, 4]],
+        [883, [fes, 0xffffffff], 112],
+      ],
+      [
+        [128, 'named'],
+        [160, '表示状態'],
+        [192, '存在しない名前'],
+      ],
+    ),
+    'missing-owner.kcs': nativeProgram([[883, [0xfffffff0, 128], 100]], [[128, '表示状態']]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const owner = world.main.id,
+    fesID = await world.objects.create({ kind: 34, parent: owner }),
+    task = await world.spawnScript('named.kcs', { parent: owner, initialExecute: false }),
+    { machine } = task,
+    floor = machine.sp;
+  world.runtime.variableBank(world.main).initialize(64);
+  machine.store(80, world.nativeTaskID(fesID));
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), 0x862afb3d);
+  assert.deepEqual(
+    [100, 104, 108, 112].map((at) => machine.load(at)),
+    [0xc73222f0, 0, 0x86521eed, 0],
+  );
+  const receiver = world.objects.objects.get(fesID).implementation;
+  assert.equal(receiver.nativeDictionary.get(encodeCP932('表示状態')), 0x86521eed);
+  assert.equal(receiver.nativeDictionary.get(new Uint8Array()), 0);
+  const missing = await world.spawnScript('missing-owner.kcs', {
+    parent: owner,
+    initialExecute: false,
+  });
+  await assert.rejects(() => world.runtime.scheduler.execute(missing), /unwritten output pointer/);
+});

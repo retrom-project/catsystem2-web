@@ -3,6 +3,8 @@ import { nativeReply } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { scriptContextBytes } from './script-task.mjs';
+import { nativeABI } from './abi/index.mjs';
+import { nativeDataMapped } from './data-text.mjs';
 
 export const NATIVE_FES_IDS = Object.freeze([
   0x1bf, 0x1c0, 0x1c1, 0x1c2, 0x1c3, 0x1c4, 0x1c5, 0x1c6, 0x276, 0x277, 0x278, 0x285, 0x286, 0x287,
@@ -137,6 +139,11 @@ export function nativeFES(id, args, machine, task, world) {
       value(result === NATIVE_UNWRITTEN_WORD ? -1 : result),
     );
   if (id === 0x372 || id === 0x373) {
+    if (
+      nativeABI(world.profile).fes.namedWordFormatSkipsUnmapped &&
+      !nativeDataMapped(machine, args[1])
+    )
+      return id === 0x372 ? done() : value(0);
     const name = world.runtime.services.formatBytes?.(args[1], machine) ?? encodeCP932(format(1));
     if (name.length > 255) throw new Error('Native FES word name exceeds its 256-byte stack field');
     const packet = stringsPacket([name]);

@@ -773,6 +773,7 @@ export default {
   },
   fes: {
     variableBankOffset: 1800,
+    namedWordFormatSkipsUnmapped: true,
     commonHeads: {
       shared: [
         '_redirect',
@@ -970,8 +971,8 @@ export default {
           810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827,
           828, 829, 830, 831, 832, 836, 837, 838, 839, 840, 841, 842, 843, 844, 845, 846, 847, 852,
           853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 869, 871, 873, 874, 875, 877, 878, 879,
-          880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897,
-          898, 899, 900, 901, 902, 903, 904, 905, 935, 936, 937,
+          880, 881, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899,
+          900, 901, 902, 903, 904, 905, 935, 936, 937,
         ],
         recovered: [
           1, 4, 5, 6, 8, 13, 14, 15, 16, 17, 19, 21, 25, 36, 41, 50, 51, 52, 53, 54, 55, 57, 62, 63,
@@ -987,12 +988,17 @@ export default {
           458, 459, 465, 466, 467, 469, 515, 516, 517, 518, 541, 542, 549, 570, 571, 572, 577, 586,
           590, 591, 592, 593, 594, 595, 596, 597, 605, 608, 630, 633, 634, 635, 636, 637, 638, 639,
           640, 645, 646, 647, 649, 650, 696, 697, 698, 699, 700, 739, 740, 741, 785, 789, 790, 833,
-          834, 835, 848, 849, 850, 851, 863, 864, 865, 866, 867, 868, 870, 872, 876, 934,
+          834, 835, 848, 849, 850, 851, 863, 864, 865, 866, 867, 868, 870, 872, 876, 882, 883, 934,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: [882, 883],
+          value:
+            'Own 2.6.1.67 Main882 and Main883 format a 256-byte CP932 key and deliver FES raw 341 and 340 to the owned dictionary at 0x4cb220/0x4ca9f0. Missing key or unmapped key input returns zero for Main883, while a missing receiver result is rejected. Main882 has control 2 with no result; Main883 writes through control 1.',
+        },
         {
           ids: [285, 286],
           value:
@@ -1488,6 +1494,8 @@ export default {
         },
       ],
       signatures: [
+        { ids: [882], fields: { resultWritten: false } },
+        { ids: [883], fields: { resultWritten: true } },
         { ids: [285], fields: { resultWritten: true } },
         { ids: [286], fields: { resultWritten: false } },
         { ids: [50, 51, 52, 53, 54, 55], fields: { resultWritten: true } },
