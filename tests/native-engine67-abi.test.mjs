@@ -429,3 +429,50 @@ test('2.6.1.67 Script GCALLs use the owned variable bank and context bytes', asy
   assert.equal(world.runtime.variableBank(task, false).contextValue, 0xa7a91991);
   assert.deepEqual(machine.bytes(127, 7), Uint8Array.of(0x5f, ...encodeCP932(name), 0, 0x5f));
 });
+
+test('2.6.1.67 configuration GCALLs project two output words without changing invalid ranges', async (t) => {
+  const calls = [
+    [790, [0, 1, 80, 84], 112],
+    [790, [0x80000000, 1, 88, 92], 116],
+    [790, [0, 8, 96, 100], 120],
+    [790, [1, 0xffffffff, 96, 100], 124],
+    [739, [104, 108]],
+  ];
+  const world = await dataWorld(profile, {
+    'configuration.kcs': kcsProgram([
+      [37, 0x51a71a7b],
+      ...calls.flatMap(([id, args, result]) => [
+        ...args.map((word) => [37, word]),
+        [43, id, args.length * 4],
+        ...(result === undefined ? [] : [[38, result]]),
+      ]),
+      [59],
+    ]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('configuration.kcs');
+  const { machine } = task;
+  const floor = machine.sp;
+  world.configuration.variableRanges.local.set([11, 29], 2);
+  world.configuration.variableRanges.global.set([517, 43], 2);
+  world.graphics.view.configure({
+    virtualWidth: 800,
+    virtualHeight: 600,
+    clientWidth: 1600,
+    clientHeight: 900,
+    deviceOffset: [20.75, -11.25],
+    deviceScale: 1.5,
+    windowShift: [3, -2],
+  });
+  machine.bytes(96, 8).fill(0x5f);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), 0x51a71a7b);
+  const wordsAt = (...addresses) => addresses.map((at) => machine.load(at));
+  assert.deepEqual(wordsAt(80, 84, 88, 92, 96, 100), [11, 29, 517, 43, 0x5f5f5f5f, 0x5f5f5f5f]);
+  assert.deepEqual(
+    wordsAt(104, 108).map((word) => word | 0),
+    [4, -3],
+  );
+  assert.deepEqual(wordsAt(112, 116, 120, 124), [1, 1, 0, 0]);
+});
