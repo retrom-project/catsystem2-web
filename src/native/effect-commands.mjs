@@ -3,6 +3,7 @@ import { nativeReply } from '../kcs/vm.mjs';
 import { bitsFloat } from '../kcs.mjs';
 import { nativeDataArgument } from './data-text.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 export const NATIVE_EFFECT_COMMAND_CONTRACTS = Object.freeze(
   [
@@ -75,11 +76,18 @@ export class NativeEffectCommands {
   async apply(id, args, machine, task) {
     const spec = byID.get(id);
     if (!spec) return undefined;
-    const a = Array.from({ length: spec.words }, (_, i) => nativeDataArgument(args, machine, i)),
-      world = this.world,
+    const world = this.world,
+      abi = world.profile && nativeABI(world.profile),
+      floatArguments = abi?.graphics.screenEffectFloatArguments?.[id],
+      words = floatArguments ? abi.tables.main.entries[id].signature.argumentWords : spec.words;
+    if (floatArguments && args.length !== words)
+      throw new Error(`Screen effect native ${id} expects ${words} arguments`);
+    const a = Array.from({ length: words }, (_, i) => nativeDataArgument(args, machine, i)),
       rendering = world.screenEffects.rendering,
       send = (message, l = 0, payload) =>
         world.sendNativeEngine(a[0], task.id, message, 0, l, payload ? { payload } : {});
+    for (const i of floatArguments ?? [])
+      if ((a[i] & 0x7fffffff) > 0x7f800000) a[i] = (a[i] | 0x00400000) >>> 0;
     if (id === 0x35a) await rendering.prepare(a[0]);
     else if (id === 0x35b) await rendering.capture(a[0], bitsFloat(a[1]), bitsFloat(a[2]));
     else if (id === 0x238) {

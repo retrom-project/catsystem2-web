@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 377       | 57            | 17            | 418     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.23 | 869        | 381       | 57            | 17            | 414     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 110       | 80            | 19            | 729     | Generic 8 of 45, Particle 6 of 44 and 6 of 51    |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -68,6 +68,13 @@ geometry or texture pose and write two or three float words. The query
 leaves guest memory unchanged when the target ID is zero. A nonzero
 target must supply initialized pose words before the Core writes the VM
 outputs.
+
+Main 521–524 use raw 343–346 on screen effects 35 and 36. The matrix
+initializer copies 64 mapped bytes and six operands into an 88-byte
+packet. The rectangle initializer sends nine words and scales its
+rectangle using the current and configured view dimensions. The start
+wrappers pass the full active word. With no capture capability, the
+receiver leaves the effect state unchanged.
 
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word

@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [521, 522, 523, 524],
+    value:
+      'Own 2.6.1.23 kind-35/36 screen effects use raw 343–346 with the 88-byte matrix and 36-byte rectangle initializer packets',
+  },
+  {
     ids: [83, 86, 87],
     value:
       'Own 2.6.1.23 Plane raw 63 releases the graph and its tracked input, while raw 57 and 58 return the selected base and position vectors into VM outputs',
@@ -884,8 +889,8 @@ export default {
       control: { unmapped: 'reject', raw: [], canonical: [] },
       screen: {
         unmapped: 'reject',
-        raw: [342, 349, 350, 352, 353].map((id) => toMessage(id, 35)),
-        canonical: [377, 384, 385, 387, 388].map((id) => toMessage(id, -35)),
+        raw: [377, 378, 379, 380, 381, 384, 385, 387, 388].map((id) => toMessage(id, -35)),
+        canonical: [342, 343, 344, 345, 346, 349, 350, 352, 353].map((id) => toMessage(id, 35)),
       },
       sound: {
         unmapped: 'reject',
@@ -943,6 +948,12 @@ export default {
     coordinateModeRequiresGraph: true,
     planePoseQueriesRequireReply: true,
     planeResetReleasesTrackedInput: true,
+    screenEffectFloatArguments: {
+      521: [2, 3, 4, 6, 7],
+      522: [],
+      523: [1, 2, 3, 4, 5, 6, 7, 8],
+      524: [],
+    },
   },
   gallery: { listVariantWidth: 64 },
   startup: {
@@ -977,6 +988,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [521, 522, 523, 524], fields: { resultWritten: false } },
         { ids: [83, 86, 87], fields: { resultWritten: false } },
         {
           ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],
