@@ -55,6 +55,90 @@ function cst(blocks, packed = true) {
   return file;
 }
 
+test('2.6.1.67 CST GCALLs return count sentinels, current file markers and bounded CP932 strings', async (t) => {
+  const text = encodeCP932('最初の本文'),
+    handle = [0x13, 64],
+    owned = [0x23, 256],
+    missing = [0x23, 320],
+    destination = [0x23, 512],
+    rows = [
+      [322, [owned], 1],
+      [322, [missing], 0],
+      [326, [0, 0, 0], 0],
+      [326, [handle, 0, 0], -1],
+      [608, [handle], -1],
+      [325, [handle, owned], 1],
+      [325, [handle, missing], 0],
+      [326, [handle, -1, 0], 2],
+      [326, [handle, 0, -1], 3],
+      [326, [handle, 0, 0], 0xf0],
+      [326, [handle, 0, 1], 0xf1],
+      [326, [handle, 1, 0], 0x20],
+      [326, [handle, 2, 0], -1],
+      [327, [handle, destination, 1, 0], text.length],
+      [327, [handle, [0x23, 768], 9, 9], 0],
+      [338, [handle, [0x23, 640]], 42],
+      [608, [handle], 2],
+    ],
+    world = await dataWorld('bokutomo-engine-2.6.1.67', {
+      'scene-reader.kcs': kcsProgram(
+        [
+          [43, 323, 0],
+          [38, 64],
+          ...rows.flatMap(([id, args], index) => [
+            ...args.map((word) => [37, word]),
+            [43, id, args.length * 4],
+            [38, 1024 + index * 4],
+          ]),
+          [59],
+        ],
+        [
+          [256, 'owned.cst'],
+          [320, 'missing.cst'],
+        ],
+      ),
+      'release-scene.kcs': kcsProgram([[37, handle], [43, 324, 4], [59]]),
+      'owned.cst': cst([
+        [
+          [0xf0, '本文'],
+          [0xf1, '0x2a'],
+          [0x20, '始まり'],
+        ],
+        [
+          [0x20, '最初の本文'],
+          [0x21, '語り手'],
+        ],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    task = await world.spawnScript('scene-reader.kcs', { parent, initialExecute: false }),
+    { machine } = task,
+    floor = machine.sp,
+    reads = [],
+    read = world.game.read;
+  world.game.read = function (name, ...args) {
+    reads.push(name);
+    return Reflect.apply(read, this, [name, ...args]);
+  };
+  for (const at of [512, 640, 768]) machine.bytes(at, 64).fill(0xba);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor);
+  assert.deepEqual(
+    rows.map((_, index) => machine.load(1024 + index * 4)),
+    rows.map(([, , value]) => value >>> 0),
+  );
+  assert.deepEqual(machine.bytes(512, text.length + 2), Uint8Array.of(...text, 0, 0xba));
+  assert.equal(machine.string(640), '本文');
+  assert.deepEqual(machine.bytes(768, 64), new Uint8Array(64).fill(0xba));
+  assert.deepEqual(reads, ['owned.cst', 'missing.cst', 'owned.cst', 'missing.cst']);
+  const scene = machine.load(64),
+    release = await world.spawnScript('release-scene.kcs', { parent, initialExecute: false });
+  release.machine.store(64, scene);
+  await world.runtime.scheduler.execute(release);
+  assert.throws(() => world.runtime.handles.get(scene, 'scene-data'), /released/);
+});
+
 test('63 direct CST reads file markers and restores independent CP932 path history', async () => {
   const profile = 'rebellions-jp-engine-2.6.1.63',
     world = await dataWorld(profile, {
