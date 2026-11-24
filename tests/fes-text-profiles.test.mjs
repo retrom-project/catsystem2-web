@@ -15,8 +15,8 @@ const utf8 = (text) => new TextEncoder().encode(text),
 
 test('unreviewed STRING layouts report the profile and object type', () => {
   const profile = 'bokutomo-engine-2.6.1.67';
-  assert.throws(() => new NativeFESTextLayout({ profile, type: 21 }), {
-    message: `Unrecovered FES text layout object type 21 for ${profile}`,
+  assert.throws(() => new NativeFESTextLayout({ profile, type: 37 }), {
+    message: `Unrecovered FES text layout object type 37 for ${profile}`,
   });
 });
 
@@ -79,10 +79,10 @@ break
   }
 });
 
-test('ABI 2.6.1.63 FES STRING sends the 200-byte configuration and draws retained CP932 text', async () => {
-  const profile = 'rebellions-jp-engine-2.6.1.63',
-    source = encodeCP932('折り返し'),
-    body = encodeCP932(`#DEFINE
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'bokutomo-engine-2.6.1.67'])
+  test(`${profile}: FES STRING sends the 200-byte configuration and draws retained CP932 text`, async () => {
+    const source = encodeCP932('折り返し'),
+      body = encodeCP932(`#DEFINE
 STRING text
 #OBJECT SIZE POS PRI DISP
 text 48,24 4,4 60001 1
@@ -103,39 +103,56 @@ next IDLE
 text reset
 break
 `),
-    world = await defaultFESWorld(profile, { 'screen.fes': body });
-  let fresh;
+      world = await defaultFESWorld(profile, { 'screen.fes': body });
+    let fresh;
+    try {
+      const { task, instance } = await loadDefaultFES(world);
+      await task.tick();
+      await task.tick();
+      const text = instance.collection.lookup('text', 0),
+        child = world.objects.objects.get(text.nativeTaskID),
+        writer = await child.implementation.writer(),
+        packet = new DataView(child.implementation.text.config.buffer);
+      assert.equal(child.kind, 48);
+      assert.equal(child.parent, instance.runtimeID);
+      assert.equal(packet.byteLength, 200);
+      assert.deepEqual(
+        [0, 4, 8, 12, 16, 28, 104, 108, 180, 196].map((at) => packet.getUint32(at, true)),
+        [200, 1, 48, 24, 0xff804020, 8, 0, 1, 6, 1],
+      );
+      assert.deepEqual(writer.parser.source, source);
+      assert.ok(writer.frame().rgba.some((value) => value !== 0));
+      await task.player.notify('RESET');
+      await task.syncObjects();
+      const reset = new DataView(child.implementation.text.config.buffer);
+      assert.deepEqual(
+        [4, 8, 12, 16, 28, 180, 196].map((at) => reset.getUint32(at, true)),
+        [1, 48, 24, 0xff804020, 24, 6, 1],
+      );
+      fresh = await defaultFESWorld(profile, {}, { initialize: false });
+      await fresh.restore(world.snapshot());
+      const restored = fresh.objects.objects.get(child.id);
+      assert.deepEqual(restored.implementation.text.config, child.implementation.text.config);
+      assert.deepEqual((await restored.implementation.writer()).parser.source, source);
+    } finally {
+      await fresh?.close();
+      await world.close();
+    }
+  });
+
+test('ABI 2.6.1.67 writes the empty CP932 writer pointer to its query output', async () => {
+  const world = await defaultFESWorld('bokutomo-engine-2.6.1.67');
   try {
-    const { task, instance } = await loadDefaultFES(world);
-    await task.tick();
-    await task.tick();
-    const text = instance.collection.lookup('text', 0),
-      child = world.objects.objects.get(text.nativeTaskID),
-      writer = await child.implementation.writer(),
-      packet = new DataView(child.implementation.text.config.buffer);
-    assert.equal(child.kind, 48);
-    assert.equal(child.parent, instance.runtimeID);
-    assert.equal(packet.byteLength, 200);
-    assert.deepEqual(
-      [0, 4, 8, 12, 16, 28, 104, 108, 180, 196].map((at) => packet.getUint32(at, true)),
-      [200, 1, 48, 24, 0xff804020, 8, 0, 1, 6, 1],
-    );
-    assert.deepEqual(writer.parser.source, source);
-    assert.ok(writer.frame().rgba.some((value) => value !== 0));
-    await task.player.notify('RESET');
-    await task.syncObjects();
-    const reset = new DataView(child.implementation.text.config.buffer);
-    assert.deepEqual(
-      [4, 8, 12, 16, 28, 180, 196].map((at) => reset.getUint32(at, true)),
-      [1, 48, 24, 0xff804020, 24, 6, 1],
-    );
-    fresh = await defaultFESWorld(profile, {}, { initialize: false });
-    await fresh.restore(world.snapshot());
-    const restored = fresh.objects.objects.get(child.id);
-    assert.deepEqual(restored.implementation.text.config, child.implementation.text.config);
-    assert.deepEqual((await restored.implementation.writer()).parser.source, source);
+    const owner = world.main.id,
+      child = await world.objects.create({ kind: 48, parent: owner }),
+      task = world.objects.objects.get(child).implementation,
+      output = new Map([[4, 0xdeadbeef]]);
+    await task.message([owner, 467, 0, 4], {
+      payload: { store: (at, word) => output.set(at, word) },
+    });
+    assert.deepEqual([...output], [[4, 0]]);
+    await task.message([owner, 467, 0, 0]);
   } finally {
-    await fresh?.close();
     await world.close();
   }
 });

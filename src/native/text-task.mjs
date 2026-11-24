@@ -173,11 +173,9 @@ export class NativeTextTask {
       return runtime.fromHost(() => this.message(words, { ...context, fromHost: false }));
     }
     const [sender, message, w, l] = words,
-      operation = message - this.firstMessage;
-    if (
-      operation < 0 ||
-      operation > nativeABI(this.world.profile).text.resourceMessages.maxOperation
-    ) {
+      operation = message - this.firstMessage,
+      resourceMessages = nativeABI(this.world.profile).text.resourceMessages;
+    if (operation < 0 || operation > resourceMessages.maxOperation) {
       if (message === 47 && !this.text.output) return 0;
       return this.plane.message(words, context);
     }
@@ -244,6 +242,13 @@ export class NativeTextTask {
     if (operation === 5 || operation === 17) {
       if (!writer) throw new Error('Native text remaining query requires an initialized writer');
       return writer.remaining(operation === 5 ? -1 : this.text.pageLimit);
+    }
+    if (operation === 18) {
+      if (pointer && (writer || resourceMessages.emptyEngineQueryWritesZero)) {
+        if (!memory) throw new Error('Native text engine query requires sender memory');
+        memory.store(l, writer?.enginePointer() ?? 0);
+      }
+      return 0;
     }
     if (!writer) return 0;
     switch (operation) {
@@ -324,12 +329,6 @@ export class NativeTextTask {
       case 16:
         if (!memory) throw new Error('Native text profile requires sender memory');
         await writer.profileEncoded(w, this.readBytes(memory, l));
-        return 0;
-      case 18:
-        if (pointer) {
-          if (!memory) throw new Error('Native text engine query requires sender memory');
-          memory.store(l, writer.enginePointer());
-        }
         return 0;
       case 19:
         await writer.resourceMessage(19, w, 0);
