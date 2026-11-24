@@ -110,6 +110,12 @@ for (const [profile, variable] of [
         { machine: m } = f,
         h = f.images.create(2, 2, 1),
         call = (id, args) => f.operations.apply(id, args, m, { id: 1 });
+      const fillOriginal = async (color) => {
+        const bitmap = f.images.get(h);
+        assert.equal(await bitmap.fill(0, 0, 2, 2, color), true);
+        // The direct oracle fixture publishes its materialized bitmap explicitly.
+        await f.memory.changed(bitmap.dataHandle);
+      };
       try {
         await call(0x174, [h, 5, 4]);
         await call(0x175, [h, -1, 2]);
@@ -137,7 +143,7 @@ for (const [profile, variable] of [
           'zero canvas dimensions fall back to native image dimensions',
         );
         await call(0x174, [h, 5, 4]);
-        await f.images.get(h).fill(0, 0, 2, 2, 0x80224466);
+        await fillOriginal(0x80224466);
         if (profile.startsWith('nekopara-')) {
           assert.equal((await call(0x402, [h, -1, 2])).value, 0x80224466);
           assert.equal((await call(0x402, [h, 100, 100])).value, 0);
@@ -157,7 +163,7 @@ for (const [profile, variable] of [
         assert.equal((await call(0x179, [h])).value, 1);
         const target = f.images.create(2, 2, 1);
         await call(0x175, [h, 0, 0]);
-        await f.images.get(h).fill(0, 0, 2, 2, 0xff123456);
+        await fillOriginal(0xff123456);
         await call(0x171, [h, 0xffffffff]);
         await call(0x16f, [target, 0, 0, 2, 2, h, 0, 0, 2, 2]);
         assert.deepEqual(
