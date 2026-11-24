@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 342       | 57            | 17            | 453     | Generic 22 of 45, Particle 38 of 44 and 39 of 51 |
+| 2.6.1.23 | 869        | 345       | 57            | 17            | 450     | Generic 22 of 45, Particle 38 of 44 and 39 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -50,6 +50,14 @@ the same y, x operand order and x87 CRT
 result as Generic 7 and Particle 12. Main 64 and Generic 16 take the signed
 integer absolute value. Main 318 uses x87 interpolation and Main 319 writes
 the low word of the integer64 after half-step rounding.
+
+Main 4 writes the current millisecond timer DWORD, including its rollover.
+Main 25 formats a CP932 string from guest memory and parses its signed decimal
+or hexadecimal prefix into a DWORD. A decimal point after the digits or an
+invalid first digit produces zero. Main 786 calculates a weekday using the
+original signed integer century formula, including the signed remainder for
+dates whose intermediate sum is negative. All three write the result and
+return control 1.
 
 The Grisaia base profile selects the exact loose `config/startup.xml` and
 checks its executable resources after applying preferences. Startup then

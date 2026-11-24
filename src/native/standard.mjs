@@ -253,7 +253,7 @@ function indexOfLiveCString(machine, source, needle) {
 // Services are synchronous host operations. A host that needs asynchronous I/O
 // must suspend/retry the GCALL before invoking this dispatcher.
 export function nativeStandard(id, args, m, services = {}) {
-  const calendar = nativeCalendar(id, args);
+  const calendar = nativeCalendar(id, args, services.profile);
   if (calendar !== undefined) return calendar;
   const requireArguments = (count) => {
     if (args.length !== count)
