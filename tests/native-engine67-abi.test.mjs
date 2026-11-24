@@ -177,6 +177,46 @@ test('2.6.1.67 copies an opaque word and yields for one guest frame', async () =
   assert.equal(machine.load(floor + 4), 0xe6a8b101);
 });
 
+test('2.6.1.67 Script load GCALL binds shared memory and only suspends for immediate execution', async (t) => {
+  const child = [0x13, 80],
+    parentProgram = (runNow) =>
+      kcsProgram(
+        [[37, child], [37, 160], [37, runNow], [43, 143, 12], [37, 0xa134bd12], [38, 96], [59]],
+        [[160, 'child.kcs']],
+      ),
+    world = await dataWorld(profile, {
+      'deferred.kcs': parentProgram(0),
+      'immediate.kcs': parentProgram(1),
+      'child.kcs': kcsProgram([[37, 0x9123456a], [38, 96], [59]]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  for (const [name, immediate] of [
+    ['deferred.kcs', false],
+    ['immediate.kcs', true],
+  ]) {
+    const caller = await world.spawnScript(name, { parent: world.main.id, initialExecute: false }),
+      id = await world.objects.create({ kind: 12, parent: caller.id }),
+      marker = 0x8721d6aa;
+    caller.machine.store(80, world.nativeTaskID(id));
+    caller.machine.store(96, marker);
+    caller.machine.store(0x80000030, 0xc33b9100);
+    const floor = caller.machine.sp;
+    await world.runtime.scheduler.execute(caller);
+    assert.equal(caller.machine.sp, floor);
+    const target = world.runtime.scheduler.tasks.get(id);
+    assert.equal(target.name, 'child.kcs');
+    assert.equal(target.machine.load(0x80000030), 0xc33b9100);
+    assert.equal(target.machine.halted, immediate);
+    assert.equal(target.machine.load(96), immediate ? 0x9123456a : 0);
+    assert.equal(caller.machine.load(96), immediate ? marker : 0xa134bd12);
+    assert.equal(caller.status, immediate ? 'yielded' : 'finished');
+    if (immediate) {
+      await world.runtime.tick();
+      assert.equal(caller.machine.load(96), 0xa134bd12);
+    }
+  }
+});
+
 test('2.6.1.67 existing MOT triangle GCALL follows the four ordered x87 quarters', async () => {
   const args = [
     [0, 0],
