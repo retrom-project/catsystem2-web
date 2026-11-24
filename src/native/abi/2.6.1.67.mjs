@@ -432,8 +432,16 @@ export default {
       },
       control: {
         unmapped: 'reject',
-        raw: [],
-        canonical: [],
+        raw: [
+          { min: 368, max: 376, offset: -11, kinds: [41] },
+          ...[6, 9, 10].map((id) => ({ min: id, max: id, offset: 0, kinds: [41] })),
+          { min: 64, max: 65, offset: -3, kinds: [41] },
+        ],
+        canonical: [
+          { min: 357, max: 365, offset: 11, kinds: [41] },
+          ...[6, 9, 10].map((id) => ({ min: id, max: id, offset: 0, kinds: [41] })),
+          { min: 61, max: 62, offset: 3, kinds: [41] },
+        ],
       },
       screen: {
         unmapped: 'reject',
@@ -971,7 +979,7 @@ export default {
       keyEncoding: null,
     },
     macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
-    controlResources: null,
+    controlResources: { kinds: [41], scroll2Skin: 'state-direct', scroll2Protocol: 'legacy' },
   },
   scene: {
     translations: false,
@@ -3287,8 +3295,6 @@ export default {
       'No native capability value is inferred from a modern ABI or an unvisited old API; reject when that behavior is requested.',
     'capabilities.systemEntropy':
       'No native capability value is inferred from a modern ABI or an unvisited old API; reject when that behavior is requested.',
-    'fes.controlResources':
-      'Control skin/resource policy is unreviewed; require own evidence when a control task is actually constructed.',
   },
   layouts: {
     motionCheckpoint: {

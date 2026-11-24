@@ -60,6 +60,7 @@ export class JSControlTask {
     this.config = null;
     this.model = new ControlTaskModel(record.kind, (...args) => this.service(...args), undefined, {
       legacySlider: this.legacySlider,
+      rawControlFlags: this.legacyScroll2 || this.legacySlider,
     });
     this.drawFields = new Array(15).fill(0);
     this.drawFields[9] = this.drawFields[10] = floatBits(1);
@@ -78,6 +79,9 @@ export class JSControlTask {
   }
   get legacySlider() {
     return this.kind === 42 && this.behavior.sliderProtocol === 'legacy';
+  }
+  get legacyScroll2() {
+    return this.kind === 41 && this.behavior.scroll2Protocol === 'legacy';
   }
   get input() {
     const input = this.world.inputFor(this.record.id);
@@ -656,8 +660,11 @@ export class JSControlTask {
         throw new Error('Unconsumed control event has no actual sender World ID');
       case 'enabled': {
         const { areas } = this.resource;
-        for (const id of this.legacySlider ? [areas.thumb, areas.track] : Object.values(areas))
-          if (id !== undefined) await this.send(id, 92, 0, Number(p.flag));
+        const ids =
+          this.legacyScroll2 || this.legacySlider
+            ? [areas.thumb, areas.track]
+            : Object.values(areas);
+        for (const id of ids) if (id !== undefined) await this.send(id, 92, 0, Number(p.flag));
         return;
       }
       case 'shown':
@@ -725,7 +732,13 @@ export class JSControlTask {
     return null;
   }
   async message(words, context = {}) {
-    const [sender, message, w, l] = words;
+    const [sender, id, w, l] = words;
+    let message = id;
+    if (this.legacyScroll2) {
+      if (id >= 366) return this.base.message(words, context);
+      if ((id >= 357 && id <= 365) || id === 61 || id === 62)
+        message = canonicalMessage(this.world.profile, this.kind, id);
+    }
     context.nativeUnhandled = false;
     const state = this.model.state;
     const senderWorld =
@@ -844,6 +857,7 @@ export class JSControlTask {
     this.image = null;
     this.model = new ControlTaskModel(this.kind, (...args) => this.service(...args), saved.model, {
       legacySlider: this.legacySlider,
+      rawControlFlags: this.legacyScroll2 || this.legacySlider,
     });
   }
   async unload(destroyChildren) {

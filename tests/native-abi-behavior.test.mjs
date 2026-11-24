@@ -431,11 +431,16 @@ test('finite old ABI normal requirements reject missing data and do not invent u
     assert.deepEqual(validateABI(structuredClone(abi)), abi);
     for (const path of [
       'language.storage',
-      'fes.controlResources',
       'plugins.requiredRenderer',
       'graphics.texturedBoundsQuery',
     ])
       assert.throws(() => nativeABIBehavior(profile, path), /Unreviewed ABI behavior/);
+    if (abi.engineVersion === '2.6.1.63')
+      assert.throws(
+        () => nativeABIBehavior(profile, 'fes.controlResources'),
+        /Unreviewed ABI behavior/,
+      );
+    else assert.deepEqual(nativeABIBehavior(profile, 'fes.controlResources').kinds, [41]);
     for (const mutate of [
       (data) => {
         delete data.startup.applicationServices;

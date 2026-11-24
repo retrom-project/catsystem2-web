@@ -18,6 +18,8 @@ import {
 } from '../src/native/fes-control-model.mjs';
 import { fesMotionState, applyFESMotionState } from '../src/native/fes-motion-model.mjs';
 import { MOTION_ABI } from '../src/motion/abi.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
 
 const originals = JSON.parse(
   await readFile(new URL('./fixtures/control-original-golden.json', import.meta.url)),
@@ -373,5 +375,131 @@ test('missing control FILE is a handled load failure; retry and semantic deletio
     );
   } finally {
     await world.close();
+  }
+});
+
+test('2.6.1.67 SCROLL2 FES emits the native packet and owns the raw Input and Draw protocol', async (t) => {
+  const profile = 'bokutomo-engine-2.6.1.67',
+    world = await driverWorld(profile);
+  t.after(() => world.close());
+  const { id, api, surface, draw } = await setup(world),
+    object = await defineControl(api, 14),
+    outgoing = [],
+    dispatch = world.sendNativeEngine.bind(world);
+  world.sendNativeEngine = (target, sender, message, w, l, context) => {
+    if (sender === id)
+      outgoing.push({
+        target,
+        message,
+        w,
+        l,
+        flags: context.flags,
+        bytes: context.payload?.data.slice(),
+      });
+    return dispatch(target, sender, message, w, l, context);
+  };
+  setFESControlPage(object, 0, 10, 2);
+  setFESControlValue(object, 3, 0x80002000);
+  setFESControlSkin(object, 1, 0x80002000);
+  object.alpha = 129;
+  object.alphaPending = true;
+  await api.sync();
+
+  assert.deepEqual(
+    outgoing.map(({ message }) => message),
+    [357, 361, 359, 360, 363, 358, 362, 364, 364, 364, 364, 365],
+  );
+  const nativeID = world.nativeTaskID(object.nativeTaskID);
+  assert.ok(outgoing.every(({ target, flags }) => target === nativeID && flags === 1));
+  const load = outgoing[0].bytes,
+    loadView = new DataView(load.buffer),
+    signedWord = (view, at) => view.getInt32(at, true);
+  assert.equal(load.length, 292);
+  assert.equal(loadView.getUint32(0, true), world.nativeTaskID(surface));
+  const mountedName = new TextEncoder().encode('@cat/image/controls\0');
+  assert.deepEqual(load.slice(4, 4 + mountedName.length), mountedName);
+  assert.deepEqual(
+    Array.from({ length: 7 }, (_, word) => signedWord(loadView, 264 + word * 4)),
+    [101, 104, 12, 116, 76, 0, 0],
+  );
+  const range = new DataView(outgoing[2].bytes.buffer);
+  assert.deepEqual(
+    [0, 4, 8].map((offset) => signedWord(range, offset)),
+    [0, 10, 2],
+  );
+  assert.equal(outgoing[3].w >>> 0, 0x80002000);
+  assert.equal(outgoing[3].l, 3);
+
+  const task = api.controls.validate(api.instance, object),
+    state = task.model.state;
+  assert.deepEqual([state.direction, state.value, state.pixel, state.alpha], [1, 3, 18, 129]);
+  assert.deepEqual(
+    api.events.filter(({ event }) => event === 'SCRL_P').map(({ value }) => value),
+    [3],
+  );
+  assert.deepEqual(state.skinTable, [0, 0x80002000 | 0, 2, 3]);
+  assert.equal(task.resource.current, task.resource.composites[0]);
+  const children = task.resource.areas,
+    input = world.inputFor(object.nativeTaskID),
+    sends = [],
+    childSend = task.send.bind(task);
+  task.send = (target, message, w, l, ...rest) => {
+    if (message === 92 || message === 287) sends.push([target, message, l]);
+    return childSend(target, message, w, l, ...rest);
+  };
+  const raw = (message, w = 0, l = 0, context) => dispatch(nativeID, id, message, w, l, context);
+  assert.equal(await raw(358, 0, 0x80002000), NATIVE_UNWRITTEN_WORD);
+  assert.deepEqual(sends.splice(0), [
+    [children.thumb, 92, 0x80002000],
+    [children.track, 92, 0x80002000],
+  ]);
+  assert.equal(await raw(362, 0, 0x81234567), NATIVE_UNWRITTEN_WORD);
+  assert.deepEqual(sends.splice(0), [[surface, 287, 0x81234567]]);
+  assert.equal(await raw(361), 1);
+  const thumb = world.nativeTaskID(children.thumb);
+  assert.equal(await raw(61, thumb, 0x80000000), NATIVE_UNWRITTEN_WORD);
+  assert.equal(state.state, 2);
+  assert.equal(task.resource.current, task.resource.composites[2]);
+  assert.equal(api.events.at(-1).event, 'FOCUS');
+  for (const [value, clipped, pixel] of [
+    [-15, 0, 0],
+    [10, 8, 48],
+    [11, 8, 48],
+  ]) {
+    assert.equal(await raw(360, 1, value), NATIVE_UNWRITTEN_WORD);
+    assert.deepEqual(
+      [state.value, state.pixel, api.events.at(-1).value],
+      [clipped, pixel, clipped],
+    );
+  }
+  await raw(360, 0, 3);
+  const [left, top, right, bottom] = input.get(children.thumb).bounds,
+    x = (left + right) >> 1,
+    y = (top + bottom) >> 1;
+  input.pointer(x, y, 1);
+  await world.tick();
+  input.key(0, true, 2, 1);
+  await world.tick();
+  assert.equal(state.dragging, true);
+  input.pointer(x, y + 12, 1);
+  await world.tick();
+  assert.equal(state.value, 5);
+  input.key(0, false, 2, 1);
+  await world.tick();
+  assert.deepEqual([state.dragging, state.pixel, state.value], [false, 30, 5]);
+
+  const items = (await capture(world, task, draw)).items;
+  assert.ok(items.some(({ bitmap }) => bitmap.pixels.some((v, i) => i % 4 === 3 && v)));
+  const before = task.snapshot(),
+    context = {};
+  assert.equal(await raw(366, 0, 1, context), NATIVE_UNWRITTEN_WORD);
+  assert.equal(context.nativeUnhandled, true);
+  assert.deepEqual(task.snapshot(), before);
+  for (const kind of [40, 42]) {
+    assert.throws(() => mapABIMessage(profile, 'control', 'canonical', 357, kind), /Unreviewed/);
+    await assert.rejects(
+      world.objects.create({ kind, parent: id }),
+      /Unreviewed.*controlResources/,
+    );
   }
 });

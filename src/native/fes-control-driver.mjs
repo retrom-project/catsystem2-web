@@ -9,7 +9,9 @@ import {
   setFESControlRect,
   setFESControlValue,
 } from './fes-control-model.mjs';
-import { JSControlTask } from './control-task-js.mjs';
+import { JSControlTask, controlTaskBehavior } from './control-task-js.mjs';
+import { mapABIMessage } from './abi/messages.mjs';
+import { encodeCP932 } from '../kcs/strings.mjs';
 import { projectControlPointValue, projectControlThumbRect } from './control-task-model.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { nativeImageMetadata } from './image-buffer-info.mjs';
@@ -167,15 +169,24 @@ export class FESControlDriver {
       throw new Error('FES control requires an initialized Draw World surface');
     return id;
   }
-  send(instance, object, message, w = 0, l = 0, payload = null) {
-    return this.world.sendEngine(
-      object.nativeTaskID,
-      instance.runtimeID,
-      message,
-      w,
-      l,
-      payload ? { payload, flags: 1 } : { flags: 1 },
+  usesLegacyScroll2(object) {
+    return (
+      object.nativeType === 14 &&
+      controlTaskBehavior(this.world.profile).scroll2Protocol === 'legacy'
     );
+  }
+  send(instance, object, message, w = 0, l = 0, payload = null) {
+    const context = payload ? { payload, flags: 1 } : { flags: 1 };
+    if (this.usesLegacyScroll2(object))
+      return this.world.sendNativeEngine(
+        this.world.nativeTaskID(object.nativeTaskID),
+        instance.runtimeID,
+        mapABIMessage(this.world.profile, 'control', 'raw', message, 41),
+        w,
+        l,
+        context,
+      );
+    return this.world.sendEngine(object.nativeTaskID, instance.runtimeID, message, w, l, context);
   }
   packet(object, values) {
     const packet = this.workspace(object).packet;
@@ -228,10 +239,17 @@ export class FESControlDriver {
       if (target?.nativeType === 4) plane = target;
     }
     const config = fesControlLoadPacket(object, this.draw(instance), plane);
-    // Typed load consumes the existing low task's real HG2/HG3/Draw/Input
-    // service; it never constructs or materializes a PE record/filename packet.
     config.file = nativeCategoryFilename(this.world.game, object.file, 'image') ?? '';
-    await task.load(config);
+    if (this.usesLegacyScroll2(object)) {
+      const filename = encodeCP932(config.file);
+      const packet = new NativeGraphicsPacket(new Array(73).fill(0));
+      packet.store(0, this.world.nativeTaskID(config.drawID));
+      packet.data.set(filename.subarray(0, 259), 4);
+      [config.priority, ...config.rect, config.planeX, config.planeY].forEach((word, index) =>
+        packet.store(264 + index * 4, word),
+      );
+      await this.send(instance, object, 368, 0, 0, packet);
+    } else await task.load(config);
     if (object.nativeType !== 13)
       object.direction =
         nativeEngineWord(
