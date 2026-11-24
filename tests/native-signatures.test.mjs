@@ -9,8 +9,8 @@ const sdk = nativeABI('sdk-4.01-engine-2.6.1.74'),
   game = nativeABI('nekopara-vol3-engine-2.6.1.76');
 const main = (abi, id) => abi.tables.main.entries[id].signature;
 
-test('the eight reviewed lexical aliases normalize types without changing write knowledge', () => {
-  for (const id of [6, 27, 28, 30, 31, 38, 39, 49]) {
+test('reviewed lexical aliases normalize types and preserve the SDK heap evidence', () => {
+  for (const id of [6, 30, 31, 38, 39, 49]) {
     const differences = nativeSignatureDifferences(main(sdk, id), main(game, id));
     assert.ok(
       differences.every((field) => field === 'resultWritten'),
@@ -20,7 +20,15 @@ test('the eight reviewed lexical aliases normalize types without changing write 
   assert.deepEqual(main(sdk, 6).result, { kind: 'bits', bits: 32, description: 'u32' });
   assert.equal(main(game, 6).result.kind, 'bits');
   assert.equal(main(sdk, 27).result.addressSpace, 'vm');
+  assert.deepEqual(nativeSignatureDifferences(main(sdk, 27), main(game, 27)), [
+    'result',
+    'resultWritten',
+  ]);
   assert.equal(main(game, 28).parameters[0].type.addressSpace, 'vm');
+  assert.deepEqual(nativeSignatureDifferences(main(sdk, 28), main(game, 28)), [
+    'parameters',
+    'resultWritten',
+  ]);
 });
 
 test('byte-count and byte-offset results retain units rather than becoming element counts', () => {
