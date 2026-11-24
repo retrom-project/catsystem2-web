@@ -477,6 +477,51 @@ test('2.6.1.67 configuration GCALLs project two output words without changing in
   assert.deepEqual(wordsAt(112, 116, 120, 124), [1, 1, 0, 0]);
 });
 
+test('2.6.1.67 fullscreen GCALLs read the setting and preserve unused coordinate output', async (t) => {
+  const program = kcsProgram([
+    [37, 0x781a2bcd],
+    [43, 741, 0],
+    [38, 80],
+    [37, 84],
+    [37, 88],
+    [43, 740, 8],
+    [59],
+  ]);
+  const world = await dataWorld(profile, { 'fullscreen.kcs': program });
+  t.after(() => world.close({ flushFiles: false }));
+  const screen = world.configuration.screen;
+  screen.fullHeight = 720;
+  screen.virtualHeight = 600;
+  screen.multiWindowPosition = 0x81234567;
+  world.graphics.view.configure({
+    virtualWidth: 800,
+    virtualHeight: 600,
+    clientWidth: 800,
+    clientHeight: 600,
+    deviceOffset: [10, -20],
+    deviceScale: 1,
+    windowShift: [2, 3],
+    drawingRectangle: [0, 0, 800, 560],
+  });
+  for (const [fullscreen, mode, expected] of [
+    [0, 0, [0, -12, 557]],
+    [1, 1, [0x81234567, -12, 737]],
+    [1, 2, [0x81234567, 0, 600]],
+    [1, 3, [0x81234567, 0, 405]],
+  ]) {
+    screen.fullscreen = fullscreen;
+    screen.fullPosition = mode;
+    const task = await world.spawnScript('fullscreen.kcs');
+    const { machine } = task;
+    const floor = machine.sp;
+    machine.store(88, 405);
+    await world.runtime.scheduler.execute(task);
+    assert.equal(machine.sp, floor + 4);
+    assert.equal(machine.load(floor), 0x781a2bcd);
+    assert.deepEqual([machine.load(80), machine.load(84) | 0, machine.load(88) | 0], expected);
+  }
+});
+
 test('2.6.1.67 narrow GCALLs append bytes and write the original result words', async (t) => {
   const calls = [
     [15, [128, 160], 80],
