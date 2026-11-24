@@ -222,7 +222,7 @@ for (const [version, profile, soundTypeMessage, otherType] of versions) {
         const historySave = () => world.runtime.native('main', 385, [0, 0, 0, 0], machine, main);
         assert.deepEqual(historySave(), { control: 1, value: 0 });
         assert.throws(
-          () => world.runtime.native('main', 856, [0, 0, 0, 0, 0, 0, 0], machine, main),
+          () => world.runtime.native('main', 599, [0, 0, 0, 0, 0, 0], machine, main),
           /Unsupported|unrecovered/i,
         );
         assert.equal(world.runtime.handlers.has('main:988'), false);
@@ -330,8 +330,13 @@ test('old ABI Runtime binds only present slots and preserves unknown dispatch', 
     assert.equal(runtime.handlers.get('main:359'), callback);
     const machine = { pc: 16, debug: null },
       task = { id: 1, name: 'owned-runtime-control' };
-    const unknown = [[856, 7]];
-    if (version === '2.6.1.67') unknown.push([836, 3]);
+    const unknown =
+      version === '2.6.1.67'
+        ? [
+            [599, 6],
+            [836, 3],
+          ]
+        : [[856, 7]];
     for (const [id, words] of unknown) {
       assert.equal(runtime.register('main', id, callback), true);
       assert.throws(
@@ -1019,7 +1024,7 @@ test('67 first-title entry GCALLs preserve VM zero and real task identity', asyn
     assert.equal(await world.sendEngine(id, world.main.id, 9), 0);
     assert.deepEqual(record.implementation.snapshot(), beforeStrictMessage);
     assert.equal(attempted.cpu, 0);
-    for (const nativeID of [836, 856])
+    for (const nativeID of [599, 836])
       assert.equal(nativeABI(title67Profile).tables.main.entries[nativeID].status, 'unknown');
     assert.equal(
       nativeABI('rebellions-jp-engine-2.6.1.63').tables.main.entries[629].status,
@@ -3908,7 +3913,7 @@ async function verifyCloseBoundaries(profile, emptyStringResult) {
     await assert.rejects(() => world.runtime.scheduler.execute(empty), /unwritten|uninitialized/);
     assert.equal(empty.machine.load(64), 0xa5a5a5a5);
     assert.deepEqual(world.runtime.handles.snapshot(), before);
-    for (const id of [856, 871])
+    for (const id of [profile === title67Profile ? 599 : 856, 871])
       assert.equal(nativeABI(profile).tables.main.entries[id].status, 'unknown');
     const unreviewed = profile === title67Profile ? [836, 869, 873] : [239];
     for (const id of unreviewed)
