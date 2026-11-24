@@ -874,3 +874,35 @@ test('2.6.1.67 task notification GCALLs deliver exact raw packets in the caller 
   assert.equal(world.objects.objects.get(world.root).implementation.field, 0xfe86085d);
   world.runtime.imageDataBuffers.process.free(pointer);
 });
+
+test('2.6.1.67 Input GCALLs collect four physical sources and clear region activity', async (t) => {
+  const world = await dataWorld(profile, {
+    'input-query.kcs': kcsProgram([
+      [37, 0xaefec213],
+      [37, 12],
+      [43, 285, 4],
+      [38, 80],
+      [43, 286, 0],
+      [59],
+    ]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const { input } = world,
+    region = input.register({ owner: world.main.id, bounds: [5, 10, 40, 45] }),
+    task = await world.spawnScript('input-query.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    }),
+    floor = task.machine.sp;
+  [2, 16, 128, 4096].forEach((source, device) => input.key(12, true, source, device));
+  input.get(region.owner).active = 0x312;
+  input.previousX = 17;
+  input.previousY = 38;
+  input.forceCursor = false;
+  await world.runtime.scheduler.execute(task);
+  assert.equal(task.machine.load(80), 0x1092);
+  assert.equal(task.machine.sp, floor + 4);
+  assert.equal(task.machine.load(floor), 0xaefec213);
+  assert.equal(region.active, 0);
+  assert.deepEqual([input.previousX, input.previousY, input.forceCursor], [-1, -1, true]);
+});
