@@ -12,6 +12,9 @@ receivers. Logical World message IDs share the base offset defined in the ABI.
 |     89 |          59 | Return the model base depth as a float word.                                                         |
 |     91 |          52 | Stop inheriting the parent pose.                                                                     |
 |     94 |          61 | Clamp signed alpha to 0–255 and combine it with the current Graph RGB.                               |
+|     96 |          70 | Copy four button states and attach the Input region to the model geometry.                           |
+|     97 |          71 | Select the texture pose by the low halfword and update the independent blocked bit.                  |
+|     98 |          72 | Return the active phase with bit 31 set when blocked.                                                |
 |     99 |          88 | Clear the registered Input receiver.                                                                 |
 |    102 |          75 | Store the frame selector and send raw 45 to the selected target.                                     |
 |    103 |          76 | Store the complete frame attribute word.                                                             |
@@ -25,6 +28,14 @@ Aliased pointers receive successive components. The original empty-Graph and
 alpha paths require an available renderer owner. A Plane without a Graph
 leaves its alpha state unset. The Input query uses raw 134, which converts
 source 16 to 2 and copies all other values. It returns zero on a routing miss.
+
+The button initializer copies 48 VM bytes and retains any existing Input
+registration. It derives a new rectangle from the model pose and virtual
+viewport. A selection changes the texture pose while retaining its depth.
+Hover and key events use the same four states. The linked hint uses the
+Input rectangle and its own rendered size. An absent model can leave
+registration geometry unwritten, so World requires an attached model when
+creating a region. A nonzero button-state target must reply with a word.
 
 The original wrappers and both receiver types were exercised with a live
 task registry fixture and sampled renderer boundaries. Ordinary production

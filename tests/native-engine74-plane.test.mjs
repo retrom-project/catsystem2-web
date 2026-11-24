@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { floatBits } from '../src/kcs.mjs';
-import { MOTION_ABI } from '../src/motion/abi.mjs';
+import { MOTION_ABI, motionVector, setMotionVector } from '../src/motion/abi.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
@@ -19,6 +19,9 @@ const calls = [
   [89, 1],
   [91, 1],
   [94, 2],
+  [96, 3],
+  [97, 2],
+  [98, 1],
   [99, 1],
   [102, 2],
   [103, 2],
@@ -36,7 +39,7 @@ async function planeWorld(t) {
         [37, canary],
         ...Array.from({ length: count }, (_, i) => [37, [0x13, argumentAddress(i)]]),
         [43, id, count * 4],
-        ...([89, 109].includes(id) ? [[38, resultPosition]] : []),
+        ...([89, 98, 109].includes(id) ? [[38, resultPosition]] : []),
         [59],
       ]),
     ]),
@@ -48,7 +51,7 @@ async function planeWorld(t) {
     const id = await world.objects.create({ kind, parent: world.root });
     return { id, target: world.nativeTaskID(id), owner: world.graphics.get(id) };
   };
-  const call = async (id, args, error) => {
+  const call = async (id, args, error, prepare) => {
     const task = await world.spawnScript(file(id), {
       parent: world.main.id,
       initialExecute: false,
@@ -56,6 +59,7 @@ async function planeWorld(t) {
     const { machine } = task;
     for (const at of [...coordinates, resultPosition]) machine.store(at, canary);
     args.forEach((word, i) => machine.store(argumentAddress(i), word));
+    prepare?.(machine);
     const floor = machine.sp;
     const executed = world.runtime.scheduler.execute(task);
     if (error) await assert.rejects(executed, error);
@@ -207,4 +211,102 @@ test('fixed SDK BasePlane owners preserve the source conversion, receiver and se
   await call(99, [base.target]);
   assert.equal(base.owner.input.get(base.id), null);
   assert.equal(base.owner.state.receiver, -1);
+});
+
+test('fixed SDK Plane buttons copy owned rows and select the texture pose through real KCS and Input', async (t) => {
+  const { world, plane, call, device } = await planeWorld(t);
+  const { id, target, owner } = await plane();
+  const hint = await plane();
+  owner.makeGraph({ type: 1, width: 26, height: 84 });
+  hint.owner.makeGraph({ type: 2, width: 110.75, height: 18.875 });
+  world.graphics.view.configure({ virtualWidth: 1280, virtualHeight: 720, clientWidth: 1024 });
+  setMotionVector(owner.graph.kx2, MOTION_ABI.base, [0, 0, -15.75]);
+  setMotionVector(owner.graph.kx2, MOTION_ABI.pos, [992, 4, 9]);
+  setMotionVector(owner.graph.textureTransform, MOTION_ABI.pos, [170, 200, -25.5]);
+  const geometry = () => motionVector(owner.graph.kx2, MOTION_ABI.pos);
+  const texture = () => motionVector(owner.graph.textureTransform, MOTION_ABI.pos);
+  const rows = [1, -31, 9, 1, 7, 33, 1, 9, 11, 1, 888, -13];
+  const load = (address, flags, values = rows) =>
+    call(96, [target, flags, address], undefined, (machine) =>
+      values.forEach((word, i) => machine.store(address + i * 4, word >>> 0)),
+    );
+  const read = async (phase) => assert.equal((await call(98, [target])).result, phase);
+  const select = async (selection) =>
+    assert.equal((await call(97, [target, selection])).result, canary);
+
+  await call(102, [target, hint.target]);
+  assert.equal(hint.owner.state.shown, false);
+  await load(0x80000041, 0x88112273);
+  const input = owner.input.get(id);
+  assert.deepEqual(input.bounds, [992, 4, 1018, 88]);
+  assert.equal(input.priority | 0, -15);
+  assert.equal(owner.state.inputTracksGraph, true);
+  assert.deepEqual(
+    owner.state.button,
+    rows.map((word) => word >>> 0),
+  );
+  assert.deepEqual(texture(), [-31, 9, -25.5]);
+  assert.deepEqual(geometry(), [992, 4, 9]);
+  await read(0);
+
+  await select(0x80000001);
+  assert.equal(hint.owner.state.shown, true);
+  assert.deepEqual(motionVector(hint.owner.graph.kx2, MOTION_ABI.pos), [914, 88, 0]);
+  await read(0x80000001);
+  assert.deepEqual(texture(), [7, 33, -25.5]);
+  await select(3);
+  assert.equal(hint.owner.state.shown, false);
+  await select(0x888e32a0);
+  await read(0x80000003);
+  assert.deepEqual(texture(), [888, -13, -25.5]);
+
+  await call(103, [target, 0]);
+  await load(65, 0x912343fe);
+  assert.equal(owner.state.buttonFlags, 0x912343fe);
+  assert.equal(owner.input.get(id), input);
+  assert.deepEqual(input.bounds, [992, 4, 1018, 88]);
+  await select(0);
+  owner.input.pointer(1003, 22);
+  await owner.input.hover();
+  await read(1);
+  assert.equal(hint.owner.state.shown, false);
+  await owner.input.route(7, true, 2);
+  await read(2);
+  await owner.input.route(7, false, 2);
+  await read(1);
+  assert.deepEqual(texture(), [7, 33, -25.5]);
+  assert.deepEqual(geometry(), [992, 4, 9]);
+  await select(0x80000001);
+  await owner.input.route(7, true, 2);
+  await read(0x80000001);
+  device.retire();
+  await select(2);
+  await read(2);
+  assert.deepEqual(texture(), [7, 33, -25.5]);
+});
+
+test('fixed SDK Plane button registration honors full virtual hit rectangles and native input boundaries', async (t) => {
+  const { world, plane, call } = await planeWorld(t);
+  const { id, target, owner } = await plane();
+  const rows = [0, -31, 9, 0, 7, 33, 0, 0, 0, 1, 888, -13];
+  await call(96, [0, 0x88112273, 0xffffffff]);
+  await call(97, [0, 0xffffffff]);
+  assert.equal((await call(98, [0])).result, 0);
+  await call(98, [0x82113417], /initialized 32-bit output word/);
+  await call(96, [target, 0x88112273, 0xffffffff], /KCS memory/);
+  await call(96, [target, 0, 65], /requires live model geometry/);
+  assert.equal(owner.input.get(id), null);
+  assert.equal((await call(98, [target])).result, 0);
+  world.graphics.view.configure({ virtualWidth: 640, virtualHeight: 480 });
+  owner.makeGraph({ type: 2, width: 642, height: 482 });
+  setMotionVector(owner.graph.kx2, MOTION_ABI.base, [5.25, 7.25, -117.75]);
+  setMotionVector(owner.graph.kx2, MOTION_ABI.pos, [4, 5.75, 3.75]);
+  await call(96, [target, 0, 65], undefined, (machine) =>
+    rows.forEach((word, i) => machine.store(65 + i * 4, word >>> 0)),
+  );
+  assert.deepEqual(owner.input.get(id).bounds, [-100000, -100000, 100000, 100000]);
+  await call(97, [target, 0x80000002]);
+  assert.equal((await call(98, [target])).result, 0x80000000);
+  await call(83, [target]);
+  assert.equal(owner.input.get(id), null);
 });
