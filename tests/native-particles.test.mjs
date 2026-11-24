@@ -46,6 +46,7 @@ function setup() {
     }),
     stage = { width: 8, height: 8, frame: 0, emitters: {} },
     world = {
+      profile: 'nekopara-vol3-engine-2.6.1.76',
       frame: 0,
       objects,
       images: { frame: async () => ({ width: 8, height: 8, rgba: new Uint8Array(256).fill(255) }) },
