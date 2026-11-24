@@ -5,6 +5,7 @@ import { openImage } from '../src/formats/hg3.mjs';
 import { floatBits, NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
+import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
 import { controlFiles } from './fixtures/control-files.mjs';
@@ -958,6 +959,68 @@ test('2.6.1.63 KCS narrow desktop calls use the clipboard boundary and blocking 
     acknowledge.resolve(0);
     await world.close();
   }
+});
+
+test('2.6.1.63 Main201 updates a running Raster without replacing its graph or phase', async (t) => {
+  const world = await dataWorld(profile, { 'main-201.kcs': mainProgram(201, 3) });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    plane = await world.objects.create({ kind: 2, parent }),
+    raster = await world.objects.create({ kind: 18, parent }),
+    hydro = await world.objects.create({ kind: 25, parent }),
+    foreign = await world.objects.create({ kind: 6, parent }),
+    graph = world.nativeTaskID(plane),
+    area = world.areaEffects.tasks.get(raster),
+    initial = [graph, 0x80000002, floatBits(3.25), floatBits(8.5), floatBits(14)];
+  await world.sendEngine(plane, parent, 41, 0, 0, {
+    payload: new NativeGraphicsPacket([...[0, 0, 0, 24, 18, 0, 0].map(floatBits), 0xffffffff]),
+  });
+  await world.sendEngine(raster, parent, 263, 0, 0, {
+    payload: new NativeGraphicsPacket(initial),
+  });
+  await world.sendEngine(raster, parent, 257);
+  await world.tick();
+  const renderGraph = world.graphics.tasks.get(plane).graph,
+    before = area.snapshot(),
+    pointer = 160,
+    words = [0x1875abe2, 1, floatBits(7.125), floatBits(3.75), floatBits(35.625)],
+    update = (owner, selector, address, packet) =>
+      executeMain(world, 201, [world.nativeTaskID(owner), selector, address], (machine) => {
+        packet?.forEach((word, i) => machine.store(address + i * 4, word));
+      });
+  assert.equal(renderGraph.vertexEffectID, raster);
+  const caller = await update(raster, 0, pointer, words);
+  assert.deepEqual(
+    words.map((_, i) => caller.load(pointer + i * 4)),
+    words,
+  );
+  assert.deepEqual(area.state.params, [...initial.slice(0, 2), ...words.slice(2)]);
+  assert.deepEqual(
+    [
+      area.state.geometry.graph,
+      area.state.geometry.mode,
+      area.state.geometry.converted,
+      area.state.geometry.amplitude,
+    ],
+    [graph, 2, true, 7.125],
+  );
+  for (const field of ['start', 'lastClock', 'rasterElapsed', 'active'])
+    assert.equal(area.state[field], before.state[field]);
+  assert.equal(renderGraph.vertexEffectID, raster);
+  const updated = area.snapshot();
+  await update(raster, 0x80002000, 0xffffffff);
+  await update(hydro, 0, 0x7eeeeeb2);
+  await update(foreign, 0, 0xffffffff);
+  assert.deepEqual(area.snapshot(), updated);
+  await assert.rejects(
+    executeMain(world, 201, [0x6eeeabce, 0, 0xffffffff]),
+    /Area effect query did not write/,
+  );
+  await assert.rejects(
+    update(raster, 0, 0xffffffff),
+    /Area geometry initializer has no translated packet/,
+  );
+  assert.deepEqual(area.snapshot(), updated);
 });
 
 test('2.6.1.63 KCS reads and merges the original owned bitmap fields', async () => {
