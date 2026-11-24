@@ -759,3 +759,46 @@ test('2.6.1.67 Draw GCALLs copy, clear and force the owned pixel surface', async
     [0, 0, 0, 0],
   );
 });
+
+test('2.6.1.67 Input GCALLs target the owned Root input, gate keys and restore all DWORDs', async (t) => {
+  const world = await dataWorld(profile, {
+    'input-disable.kcs': kcsProgram([
+      [37, 0xa2683243],
+      [37, 0],
+      [43, 401, 4],
+      [37, 2],
+      [37, 0],
+      [43, 403, 8],
+      [37, 79],
+      [37, 0x82345678],
+      [43, 403, 8],
+      [59],
+    ]),
+    'input-reset.kcs': kcsProgram([
+      [37, 0xa2683243],
+      [43, 404, 0],
+      [37, 0x92345678],
+      [43, 401, 4],
+      [59],
+    ]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const run = async (name) => {
+    const task = await world.spawnScript(name, { parent: world.main.id, initialExecute: false }),
+      floor = task.machine.sp;
+    await world.runtime.scheduler.execute(task);
+    assert.equal(task.machine.sp, floor + 4);
+    assert.equal(task.machine.load(floor), 0xa2683243);
+  };
+  await run('input-disable.kcs');
+  assert.equal(world.input.cursorEnabled, 0);
+  assert.equal(world.input.enabled[79], 0x82345678);
+  world.input.key(2, true, 1);
+  await world.input.tick(1);
+  assert.equal(world.input.held[8], 0);
+  await run('input-reset.kcs');
+  await world.input.tick(2);
+  assert.equal(world.input.held[8], 1);
+  assert.equal(world.input.cursorEnabled, 0x92345678);
+  assert.deepEqual([...world.input.enabled], Array(80).fill(1));
+});
