@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [576, 689],
+    value:
+      'Own 2.6.1.23 wrappers 0x484DE0 and 0x484EF0 read an existing CSS record before raw 389 and 398. Return words are verified for the absent 3D owner and neutral Top and Script recipients.',
+  },
+  {
     ids: [701, 702],
     value:
       'Own 2.6.1.23 wrappers 0x47EB70 and 0x47FC30 route Plane raw 40 and 82. The hardware mode-one renderer installs a prepared movie model with zero XYZ, and its lookup returns the original owner registration.',
@@ -938,7 +943,7 @@ export default {
   },
   calendar: { weekdayAlgorithm: 'century-integer' },
   fileIO: { rawModeAndBoundedBuffer: true },
-  globalFile: { growthBytes: 524288 },
+  globalFile: { growthBytes: 524288, optionalTaskRecords: true },
   nameTable: { legacyFieldBytes: 32 },
   math: {
     anglesUseX87: true,
@@ -1100,7 +1105,7 @@ export default {
         raw: [166, 168, 169, 170, 171, 172, 173, 176, 187, 192, 196, 197].map(toSound),
       },
     },
-    root: { start: 29, captionWide: false, soundReset: 181 },
+    root: { start: 29, captionWide: false, soundReset: 181, declinedTaskKinds: [43] },
     movieInput: { query: 31, gate: 143 },
     cursorVisibility,
     soundBaseOnly: [22],

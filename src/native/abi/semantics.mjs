@@ -20170,6 +20170,48 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    576: {
+      name: 'globalFile.readOptionalTaskRecord',
+      family: 'globalFile',
+      signature: {
+        argumentWords: 3,
+        controlCodes: [1],
+        parameters: [
+          {
+            description: 'handle globalFile',
+            name: 'globalFile',
+            type: {
+              handleKind: 'global-file',
+              kind: 'handle',
+              ownership: 'borrowed',
+            },
+          },
+          {
+            description: 'u32 record',
+            name: 'record',
+            type: {
+              bits: 32,
+              kind: 'integer',
+              signed: false,
+            },
+          },
+          {
+            description: 'nativeID task',
+            name: 'task',
+            type: {
+              kind: 'object-id',
+              objectKind: 'task',
+            },
+          },
+        ],
+        result: {
+          description: 'bool',
+          kind: 'boolean',
+        },
+        resultWritten: true,
+        review: 'declared',
+      },
+    },
     577: {
       name: 'task.setTopValue',
       family: 'task',
@@ -23379,6 +23421,48 @@ export const NATIVE_SEMANTICS = freeze({
           kind: 'boolean',
         },
         resultWritten: null,
+        review: 'declared',
+      },
+    },
+    689: {
+      name: 'globalFile.readOptionalTaskTree',
+      family: 'globalFile',
+      signature: {
+        argumentWords: 3,
+        controlCodes: [1],
+        parameters: [
+          {
+            description: 'handle globalFile',
+            name: 'globalFile',
+            type: {
+              handleKind: 'global-file',
+              kind: 'handle',
+              ownership: 'borrowed',
+            },
+          },
+          {
+            description: 'u32 record',
+            name: 'record',
+            type: {
+              bits: 32,
+              kind: 'integer',
+              signed: false,
+            },
+          },
+          {
+            description: 'nativeID task',
+            name: 'task',
+            type: {
+              kind: 'object-id',
+              objectKind: 'task',
+            },
+          },
+        ],
+        result: {
+          description: 'bool',
+          kind: 'boolean',
+        },
+        resultWritten: true,
         review: 'declared',
       },
     },

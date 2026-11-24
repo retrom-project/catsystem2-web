@@ -8,6 +8,7 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 const start = [
     [43, 0x44, 0],
@@ -38,6 +39,29 @@ const start = [
     ],
   ),
   word = (value) => ({ control: 1, value });
+
+test('fixed 2.6.1.23 task creation preserves the unwritten word for kind 43 with an absent parent', async (t) => {
+  const authored = kcsProgram(
+      [[37, 43], [37, 0x1bad002d], [37, 256], [43, 66, 12], [38, 64], [59]],
+      [[256, '3D View']],
+    ),
+    world = await dataWorld('grisaia-jp-engine-2.6.1.23', { 'create.kcs': authored });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('create.kcs', { initialExecute: false }),
+    previous = [...world.objects.objects.keys()],
+    routes = world.engineMessages.registry(world.objects.objects.get(world.root)),
+    call = (kind, target) =>
+      world.runtime.native('main', 66, [kind, target, 256], task.machine, task);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(task.machine.load(64), NATIVE_RESULT_SENTINEL);
+  assert.deepEqual([...world.objects.objects.keys()], previous);
+  assert.deepEqual(world.engineMessages.registry(world.objects.objects.get(world.root)), routes);
+  for (const owner of [world.root, task.id])
+    await assert.rejects(call(43, world.nativeTaskID(owner)), /declined kind 43/);
+  await assert.rejects(call(149, 0x1bad002d), /has not been implemented/);
+  assert.deepEqual([...world.objects.objects.keys()], previous);
+  assert.deepEqual(world.engineMessages.registry(world.objects.objects.get(world.root)), routes);
+});
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],

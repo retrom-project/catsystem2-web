@@ -2,11 +2,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { Binary } from '../src/binary.mjs';
-import { KCSMachine, nativeReply } from '../src/kcs/vm.mjs';
+import { KCSMachine, nativeReply, NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeVariableBank } from '../src/native/bank.mjs';
 import { NativeStringBank } from '../src/native/string-bank.mjs';
-import { NativeRuntime } from '../src/native/runtime.mjs';
+import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
 import {
   NativeGlobalFile,
   createGlobalEntries,
@@ -15,6 +15,7 @@ import {
   importStringBank,
 } from '../src/native/persistence.mjs';
 import { kcsProgram } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 const machine = () =>
   new KCSMachine({
@@ -92,6 +93,61 @@ test('2.6.1.23 CSS stores the existing caller string bank and creates one only f
   assert.equal(restored.dirty, true);
   restored.set(0x82123456, '犬');
   assert.equal(bank.get(0x82123456), '猫');
+});
+
+test('fixed 2.6.1.23 imports optional task records in the reviewed CSS ownership domain', async (t) => {
+  const guest = kcsProgram([
+      [37, 0x685d2e9a],
+      [37, [0x13, 104]],
+      [37, [0x13, 108]],
+      [37, [0x13, 112]],
+      [43, 576, 12],
+      [37, [0x13, 104]],
+      [37, [0x13, 108]],
+      [37, [0x13, 112]],
+      [43, 689, 12],
+      [59],
+    ]),
+    world = await dataWorld('grisaia-jp-engine-2.6.1.23', { 'record.kcs': guest });
+  t.after(() => world.close({ flushFiles: false }));
+  const file = new NativeGlobalFile(),
+    handle = world.runtime.handles.add('global-file', file),
+    plane = await world.objects.create({ kind: 2, parent: world.root, nativeID: 77 }),
+    word = (value) => ({ control: 1, value }),
+    run = async (css, record, owner) => {
+      const task = await world.spawnScript('record.kcs', { initialExecute: false }),
+        machine = task.machine,
+        floor = machine.sp;
+      [css, record, owner].forEach((value, i) => machine.store(104 + i * 4, value));
+      await world.runtime.scheduler.execute(task);
+      assert.equal(machine.sp, floor + 12);
+      assert.equal(machine.load(floor), 0x685d2e9a);
+      assert.deepEqual(
+        [104, 108, 112].map((at) => machine.load(at)),
+        [css, record, owner],
+      );
+      return [machine.load(floor + 4), machine.load(floor + 8)];
+    },
+    call = (id, args) => world.runtime.native('main', id, args, world.main.machine, world.main),
+    validTree = new Uint8Array(28);
+  new DataView(validTree.buffer).setUint32(4, 12, true);
+  new DataView(validTree.buffer).setUint32(20, 4, true);
+  validTree.set([23, 60, 76, 214], 24);
+  assert.deepEqual(await run(0, 13, 77), [0, 0]);
+  assert.deepEqual(await run(handle, 13, 77), [0, 0]);
+  file.write(13, validTree);
+  file.write(13, Uint8Array.of(37));
+  file.write(11, Uint8Array.of(73));
+  const before = file.snapshot();
+  for (const owner of [0, world.nativeTaskID(world.main.id), NATIVE_RESULT_SENTINEL])
+    assert.deepEqual(await run(handle, 13, owner), [1, 1]);
+  await assert.rejects(run(handle, 13, world.nativeTaskID(plane)), /unreviewed CSS task recipient/);
+  assert.deepEqual(await call(576, [handle, 11, 0]), word(1));
+  assert.throws(() => call(689, [handle, 11, 0]), /Malformed CSS task tree/);
+  assert.throws(() => call(576, [handle, 0, 0]), /unwritten CSS record zero/);
+  assert.throws(() => call(689, [handle, 0, 0]), /unwritten CSS record zero/);
+  assert.throws(() => call(688, [handle, 13, 0]), UnsupportedKCSNative);
+  assert.deepEqual(file.snapshot(), before);
 });
 
 test('global-file clear retains its tag and restores initial capacity while clones own independent payloads', () => {

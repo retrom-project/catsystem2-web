@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 430       | 57            | 17            | 365     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
+| 2.6.1.23 | 869        | 432       | 57            | 17            | 363     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 398       | 80            | 19            | 441     | Generic 14 of 45, Particle 12 of 44 and 12 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -135,6 +135,18 @@ missing source or declined decoder leaves the existing nonmovie graph in
 place. Main 702 returns the owned movie handle or a zero result for a route
 miss or an owner without a movie. See [ordinary Plane movie ownership](native-movies.md#ordinary-plane-movie-ownership)
 for the decoder and device limits.
+
+The fixed factory declines task kind 43. With an unrouted parent, Main 66
+retains the interpreter's unwritten result word `0xCCCCCCCC`. A live
+parent enters the original null-object registration branch and remains
+protected. Main 576 and 689 read a CSS record before querying the optional
+task. A null CSS handle or missing record returns zero. For an unrouted
+recipient or a neutral Top or Script, a present record returns one and
+leaves the CSS and tasks unchanged. Main 689 accepts the verified packed
+tree layout with relative child and sibling offsets and requires a whole
+record. Other live recipients and malformed trees remain protected.
+Main 688 stays guarded because a missing reply can cause the native serializer
+to interpret the GCALL argument area as a tree.
 
 Main 433 sends raw 42. With a live mode-1 device it reserves an empty
 parent graph and creates its child planes in row-major order. An already

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { originalOperation, originalView } from './original-adapter.mjs';
+import { originalOperation, originalOwner, originalView } from './original-adapter.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 
@@ -51,9 +51,10 @@ export class NativeEngineMessages {
   constructor(world) {
     if (!(world?.objects?.objects instanceof Map))
       throw new Error('Native engine messages require their profiled task world');
-    const { start, captionWide, soundReset } = nativeABI(world.profile).messages.root;
+    const root = nativeABI(world.profile).messages.root,
+      { start, captionWide, soundReset, declinedTaskKinds } = root;
     this.world = world;
-    this.layout = Object.freeze({ rootStart: start, captionWide, soundReset });
+    this.layout = Object.freeze({ rootStart: start, captionWide, soundReset, declinedTaskKinds });
   }
   get records() {
     return this.world.objects.objects;
@@ -616,8 +617,16 @@ export class NativeEngineMessages {
   }
   async registerTask(top, packet, context, output) {
     const name = readString(this.memory(packet.senderWorldID, context), packet[4], false),
-      id = await this.world.objects.create({
-        kind: packet[3],
+      kind = packet[3];
+    if (this.layout.declinedTaskKinds?.includes(kind) && !originalOwner(this.world)) {
+      if (this.lookup(top, packet[0]))
+        throw new Error(`Native task factory declined kind ${kind} for a live parent`);
+      output.value = 0;
+      context.nativeCreatedTask = null;
+      return 0;
+    }
+    const id = await this.world.objects.create({
+        kind,
         name,
         creator: packet.senderWorldID,
         detached: true,

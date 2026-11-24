@@ -241,6 +241,27 @@ export function importStringBank(bank, bytes) {
   bank.dirty = true;
 }
 
+function validateTaskTree(bytes) {
+  // In a packed node, the payload precedes its children and the next sibling.
+  const data = new Binary(bytes, 'CSS task tree'),
+    pending = [[0, bytes.length]];
+  const malformed = () => new Error('Malformed CSS task tree');
+  while (pending.length) {
+    const [at, limit] = pending.pop();
+    if (limit - at < 12) throw malformed();
+    const sibling = data.u32(at),
+      child = data.u32(at + 4),
+      payloadEnd = at + 12 + data.u32(at + 8),
+      nodeEnd = sibling ? at + sibling : limit;
+    if (payloadEnd > nodeEnd || nodeEnd > limit) throw malformed();
+    if (child) {
+      if (at + child !== payloadEnd || payloadEnd === nodeEnd) throw malformed();
+      pending.push([payloadEnd, nodeEnd]);
+    } else if (payloadEnd !== nodeEnd) throw malformed();
+    if (sibling) pending.push([nodeEnd, limit]);
+  }
+}
+
 const counts = new Map([
   [0xee, 1],
   [0xf0, 5],
@@ -259,11 +280,19 @@ const counts = new Map([
   [0x1d5, 2],
   [0x185, 1],
   [0x186, 1],
+  [576, 3],
+  [689, 3],
   [0x3de, 1],
   [0x407, 2],
 ]);
 export function nativePersistence(id, args, machine, services = {}) {
   if (!counts.has(id)) return undefined;
+  const optionalRecord = id === 576 || id === 689;
+  if (
+    optionalRecord &&
+    !(services.profile && nativeABI(services.profile).globalFile.optionalTaskRecords)
+  )
+    return undefined;
   if (args.length !== counts.get(id))
     throw new Error(
       `KCS persistence native 0x${id.toString(16)} expects ${counts.get(id)} arguments`,
@@ -356,6 +385,22 @@ export function nativePersistence(id, args, machine, services = {}) {
   }
   if (!args[0]) return result(0);
   const container = file(args[0]);
+  if (optionalRecord) {
+    const [, entry, target] = args,
+      record = container.read(entry);
+    if (record === null) {
+      if (!entry) throw new Error('Unreviewed lookup of unwritten CSS record zero');
+      return result(0);
+    }
+    const world = services.world;
+    if (!world) throw new Error('Native CSS task records require a task routing context');
+    const owner = world.resolveTaskID(target, services.owner);
+    if (owner !== null && ![1, 12].includes(world.objects.objects.get(owner)?.kind))
+      throw new Error('Native CSS read reached an unreviewed CSS task recipient');
+    // These routes leave the CSS and task state unchanged in the fixed PE.
+    if (id === 689) validateTaskTree(record);
+    return result(1);
+  }
   if (id === 0xf4) {
     if (!mapped(machine, args[3])) return result(0);
     container.write(args[1], machine.bytes(args[3], args[2]));
