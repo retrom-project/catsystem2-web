@@ -1187,3 +1187,42 @@ test('2.6.1.67 KCS formatted string calls preserve CP932 widths and live truncat
   assert.deepEqual(m.bytes(576, 6), Uint8Array.of(...encodeCP932('one'), 0, 0, 0xa5));
   assert.deepEqual(m.bytes(720, 6), Uint8Array.of(...encodeCP932('one'), 0, 0, 0xa5));
 });
+
+test('2.6.1.67 KCS common Base commands reset the exit word and pause the designated task', async (t) => {
+  const command = (id, words) => [...words.map((word) => [37, word]), [43, id, words.length * 4]],
+    target = [0x13, 80],
+    world = await dataWorld(profile, {
+      'hold.kcs': kcsProgram([
+        [37, 0x9753bf24],
+        ...command(651, [target]),
+        ...command(694, [target, 0x80234567]),
+        ...command(694, [999999, 0x100]),
+        [59],
+      ]),
+      'resume.kcs': kcsProgram([...command(694, [target, 0]), [59]]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const pausedID = await world.objects.create({ kind: 2, parent: world.main.id }),
+    paused = world.objects.objects.get(pausedID),
+    untouched = world.objects.objects.get(
+      await world.objects.create({ kind: 2, parent: world.main.id }),
+    );
+  paused.exitCode = 85;
+  untouched.exitCode = 15;
+  const run = async (script) => {
+    const task = await world.spawnScript(script, { parent: world.main.id, initialExecute: false });
+    task.machine.store(80, world.nativeTaskID(pausedID));
+    const stack = task.machine.sp;
+    await world.runtime.scheduler.execute(task);
+    return { task, stack };
+  };
+  const { task, stack } = await run('hold.kcs');
+  assert.equal(task.machine.sp, stack + 4);
+  assert.equal(task.machine.load(stack), 0x9753bf24);
+  assert.equal(paused.exitCode, -1);
+  assert.equal(paused.userValue, 0x80234567);
+  assert.equal(untouched.exitCode, 15);
+  assert.equal(untouched.userValue, 0);
+  await run('resume.kcs');
+  assert.equal(paused.userValue, 0);
+});
