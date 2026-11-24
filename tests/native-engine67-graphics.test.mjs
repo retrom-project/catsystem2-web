@@ -917,6 +917,95 @@ test('2.6.1.67 graph queries report F32 dimensions and bounds only from SimplePl
   assert.deepEqual(values(baseBounds), Array(6).fill(marker));
 });
 
+test('2.6.1.67 Plane poses copy selected F32 words and reset drops graph-tracked input', async (t) => {
+  const x = [0x23, 120],
+    y = [0x23, 124],
+    z = [0x23, 128],
+    marker = 0xbe67d3a1;
+  const world = await dataWorld(profile, {
+    'shape.kcs': planeProgram([[78, [target, floatBits(37), floatBits(29)]]]),
+    'poses.kcs': planeProgram([
+      [86, [target, x, y, 0]],
+      [87, [target, [0x23, 132], [0x23, 136], [0x23, 140], 0x80000000]],
+    ]),
+    'alternate-poses.kcs': planeProgram([
+      [86, [target, x, y, 1]],
+      [87, [target, [0x23, 132], [0x23, 136], [0x23, 140], 0]],
+    ]),
+    'null-poses.kcs': planeProgram([
+      [86, [0, 0xffffffff, y, 0]],
+      [87, [0, x, y, z, 0]],
+      [83, [0]],
+    ]),
+    'missing-graph.kcs': planeProgram([[87, [target, x, y, z, 0]]]),
+    'invalid-address.kcs': planeProgram([[87, [target, x, 0xffffffff, z, 0]]]),
+    'alias.kcs': planeProgram([[87, [target, x, x, x, 0]]]),
+    'reset.kcs': planeProgram([[83, [target]]]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    id = await world.objects.create({ kind: 2, parent }),
+    nativeID = world.nativeTaskID(id),
+    plane = world.graphics.get(id);
+  const untouched = Array(6).fill(marker);
+  const execute = async (name, expected, error) => {
+    const task = await world.spawnScript(name, { parent, initialExecute: false }),
+      machine = task.machine,
+      floor = machine.sp;
+    machine.store(80, nativeID);
+    for (let index = 0; index < untouched.length; index++) machine.store(120 + index * 4, marker);
+    const result = world.runtime.scheduler.execute(task);
+    if (error) await assert.rejects(result, error);
+    else {
+      assert.equal((await result).status, 'halted');
+      assert.equal(machine.sp, floor + 4);
+      assert.equal(machine.load(floor), 0x72394ca1);
+    }
+    assert.deepEqual(
+      untouched.map((_, index) => machine.load(120 + index * 4)),
+      expected,
+    );
+  };
+
+  await execute('null-poses.kcs', untouched);
+  await execute('missing-graph.kcs', untouched, /initialized 32-bit output word/);
+  await execute('shape.kcs', untouched);
+  const base = [12.75, -16.25, 13],
+    position = [30.5, 16.25, -3.25],
+    textureBase = [-0, 0.75, 33],
+    texturePosition = [5, 21, 44];
+  setMotionVector(plane.graph.kx2, MOTION_ABI.base, base);
+  setMotionVector(plane.graph.kx2, MOTION_ABI.pos, position);
+  setMotionVector(plane.graph.textureTransform, MOTION_ABI.base, textureBase);
+  setMotionVector(plane.graph.textureTransform, MOTION_ABI.pos, texturePosition);
+  await execute('poses.kcs', [
+    ...base.slice(0, 2).map(floatBits),
+    marker,
+    ...texturePosition.map(floatBits),
+  ]);
+  await execute('alternate-poses.kcs', [
+    ...textureBase.slice(0, 2).map(floatBits),
+    marker,
+    ...position.map(floatBits),
+  ]);
+  await execute('alias.kcs', [floatBits(position[2]), ...untouched.slice(1)]);
+  await execute('invalid-address.kcs', untouched, /KCS memory ffffffff/);
+
+  await world.sendNativeEngine(nativeID, parent, 89, 0, 0x74);
+  assert.ok(plane.input.get(id));
+  assert.equal(plane.state.inputTracksGraph, true);
+  await execute('null-poses.kcs', untouched);
+  assert.ok(plane.graph);
+  assert.ok(plane.input.get(id));
+  await execute('reset.kcs', untouched);
+  assert.equal(plane.graph, null);
+  assert.deepEqual(plane.state.rect, [0, 0, 0, 0]);
+  assert.equal(plane.state.inputTracksGraph, false);
+  assert.equal(plane.input.get(id), null);
+  assert.equal(world.graphics.stage.planes[plane.stageKey], undefined);
+  await execute('missing-graph.kcs', untouched, /initialized 32-bit output word/);
+});
+
 test('2.6.1.67 plane GCALLs apply blend selectors and update their retained display state', async (t) => {
   const receiver = [0x13, 84],
     world = await dataWorld(profile, {
