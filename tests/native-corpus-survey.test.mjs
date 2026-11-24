@@ -103,3 +103,32 @@ test('container failures retain a reason even when decompression has no message'
     await rm(directory, { recursive: true, force: true });
   }
 });
+
+test('archive inventory binds byte-identical FES callers to each include context', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'cs2-corpus-includes-'));
+  try {
+    const bytes = (text) => new TextEncoder().encode(text),
+      menu = bytes('#INCLUDE\nshared.h\n#START\nACTION 1\n'),
+      reports = [];
+    for (const [index, command] of ['wait', 'next'].entries()) {
+      const path = join(directory, `combined-${index}.int`);
+      const archive = kif([
+        ['menu.fes', menu],
+        ['shared.h', bytes(`#MACRO\nACTION ${command}\n`)],
+      ]);
+      await writeFile(path, archive);
+      await assert.rejects(
+        surveyContainer({ path, sha256: '0'.repeat(64) }),
+        /Archive SHA-256 mismatch/,
+      );
+      const report = await surveyContainer({ path, logicalPath: 'fes.int' });
+      assert.equal(report.entries[0].callShapes[0].command, command);
+      assert.equal(report.entries[0].callShapes[0].argumentTokens, 1);
+      reports.push(report.entries[0]);
+    }
+    assert.equal(reports[0].sha256, reports[1].sha256);
+    assert.notEqual(reports[0].includes['shared.h'], reports[1].includes['shared.h']);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});

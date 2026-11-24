@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 // Decode containers and instructions without running a script or native handler.
+import { createHash } from 'node:crypto';
 import { readFile, stat, writeFile } from 'node:fs/promises';
 import { basename, extname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { KIFArchive } from '../src/files.mjs';
+import { BlobFile, KIFArchive } from '../src/files.mjs';
 import { readKCS, KCSMachine } from '../src/kcs.mjs';
 import { readFES, readScene } from '../src/formats/scene.mjs';
 import { parseProgram } from '../src/fes/program.mjs';
@@ -12,7 +13,9 @@ import { replaceFESMacros } from '../src/fes/source.mjs';
 import { NodeFile } from './node-files.mjs';
 import { commandBody } from './fes-audit.mjs';
 import { cstCommandBody } from '../src/cst-syntax.mjs';
-import { fesByteView } from '../src/fes/tokens.mjs';
+import { fesByteView, fesViewBytes, tokenizeFESByteLine } from '../src/fes/tokens.mjs';
+
+const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
 export async function inspectKCS(bytes, container) {
   const script = await readKCS(bytes),
@@ -29,6 +32,7 @@ export async function inspectKCS(bytes, container) {
         pc,
         id: constantID ? id.value : null,
         idMode: id.mode,
+        countMode: count.mode,
         argumentWords: constantCount && count.value % 4 === 0 ? count.value / 4 : null,
       });
     }
@@ -80,19 +84,32 @@ export function inspectFES({ bytes, text, prepared }, include) {
     } else objects.push({ type: declaration.type, name: declaration.name });
   }
   const commands = [],
-    objectCommands = [];
-  for (const source of Object.values(program.blocks).flat()) {
-    const line = commandBody(replaceFESMacros(source, macros));
-    if (!line || /^(?:(?:\+\+|--))?[$\\]/.test(line)) continue;
-    const [head, verb] = line.split(/\s+/);
-    const object = objects.find(
-      (definition) => head === definition.name || head.startsWith(`${definition.name}[`),
-    );
-    if (object || head === '@')
-      objectCommands.push({ type: object?.type ?? 'current-object', command: verb ?? null });
-    else commands.push(head);
+    objectCommands = [],
+    callShapes = [];
+  for (const [block, sources] of Object.entries(program.blocks)) {
+    for (const [position, source] of sources.entries()) {
+      const line = commandBody(replaceFESMacros(source, macros));
+      if (!line || /^(?:(?:\+\+|--))?[$\\]/.test(line)) continue;
+      const [head, verb] = line.split(/\s+/);
+      const object = objects.find(
+        (definition) => head === definition.name || head.startsWith(`${definition.name}[`),
+      );
+      const type = object?.type ?? (head === '@' ? 'current-object' : null),
+        [objectToken, ...tokens] = tokenizeFESByteLine(fesViewBytes(line), { quoted: true });
+      if (type) objectCommands.push({ type, command: verb ?? null });
+      else commands.push(head);
+      callShapes.push({
+        block,
+        position,
+        type,
+        command: type ? (verb ?? null) : head,
+        argumentTokens:
+          objectToken === undefined ? null : Math.max(0, tokens.length - Number(Boolean(type))),
+      });
+    }
   }
   return {
+    callShapes,
     commands,
     objectCommands,
     objects,
@@ -137,9 +154,17 @@ export async function inspectCST(bytes) {
 export async function surveyContainer(input) {
   const info = await stat(input.path),
     row = { ...input, bytes: info.size, entries: [], status: 'parsed' };
+  let file = new NodeFile(input.path, info.size);
+  if (input.sha256) {
+    const bytes = await readFile(input.path);
+    if (sha256(bytes) !== input.sha256)
+      throw new Error(`Archive SHA-256 mismatch for ${input.path}`);
+    row.bytes = bytes.length;
+    file = new BlobFile(new Blob([bytes]));
+  }
   let archive;
   try {
-    archive = await KIFArchive.open(new NodeFile(input.path, info.size), input.path);
+    archive = await KIFArchive.open(file, input.logicalPath ?? input.path);
   } catch (error) {
     return {
       ...row,
@@ -149,15 +174,16 @@ export async function surveyContainer(input) {
   }
   row.memberCount = archive.entries.length;
   const texts = new Map();
-  for (const member of archive.entries.filter(
-    (entry) => extname(entry.name).toLowerCase() === '.fes',
+  for (const member of archive.entries.filter((entry) =>
+    ['.fes', '.h'].includes(extname(entry.name).toLowerCase()),
   )) {
     try {
-      texts.set(member.name.toLowerCase(), await readFES(await archive.read(member)));
+      const bytes = await archive.read(member);
+      texts.set(member.name.toLowerCase(), { sha256: sha256(bytes), source: await readFES(bytes) });
     } catch (error) {
       row.entries.push({
         name: member.name,
-        kind: 'fes',
+        kind: extname(member.name).toLowerCase().slice(1),
         status: 'needs-review',
         reason: error.message || `Decoder failed without a message (${error.name})`,
       });
@@ -168,20 +194,38 @@ export async function surveyContainer(input) {
     if (!['kcs', 'fes', 'cst', 'psb', 'psz'].includes(kind)) continue;
     if (row.entries.some((entry) => entry.name === member.name)) continue;
     try {
-      const bytes = await archive.read(member);
-      let parsed;
-      if (kind === 'kcs') parsed = await inspectKCS(bytes, input.path);
-      else if (kind === 'fes')
-        parsed = inspectFES(texts.get(member.name.toLowerCase()), (name) =>
-          texts.get(name.toLowerCase()),
+      const fes = texts.get(member.name.toLowerCase());
+      let parsed, memberSHA256;
+      if (kind === 'fes') {
+        const includes = new Map();
+        parsed = inspectFES(fes.source, (name) => {
+          const key = name.toLowerCase(),
+            included = texts.get(key);
+          includes.set(key, included?.sha256 ?? null);
+          return included?.source;
+        });
+        parsed.includes = Object.fromEntries(
+          [...includes.entries()].sort(([a], [b]) => a.localeCompare(b)),
         );
-      else if (kind === 'cst') parsed = await inspectCST(bytes);
-      else
-        parsed = {
-          header: Buffer.from(bytes.subarray(0, 32)).toString('hex'),
-          review: 'needs-review',
-        };
-      row.entries.push({ name: member.name, kind, status: 'parsed', ...parsed });
+        memberSHA256 = fes.sha256;
+      } else {
+        const bytes = await archive.read(member);
+        memberSHA256 = sha256(bytes);
+        if (kind === 'kcs') parsed = await inspectKCS(bytes, input.logicalPath ?? input.path);
+        else if (kind === 'cst') parsed = await inspectCST(bytes);
+        else
+          parsed = {
+            header: Buffer.from(bytes.subarray(0, 32)).toString('hex'),
+            review: 'needs-review',
+          };
+      }
+      row.entries.push({
+        name: member.name,
+        kind,
+        status: 'parsed',
+        sha256: memberSHA256,
+        ...parsed,
+      });
     } catch (error) {
       row.entries.push({
         name: member.name,
