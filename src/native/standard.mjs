@@ -506,10 +506,13 @@ export function nativeStandard(id, args, m, services = {}) {
       write(m, args[0], a.subarray(0, length));
       return value(length);
     }
-    case 0x28:
+    case 0x28: {
       requireArguments(1);
+      const text = services.profile && nativeABI(services.profile).text;
+      if (text?.doubleByteUnmappedSourceIsFalse && !nativeDataMapped(m, args[0])) return value(0);
       a = cstring(m, args[0]);
       return value(Number(doubleByte(a, 0)));
+    }
     case 0x29:
     case 0x2b: {
       requireArguments(3);

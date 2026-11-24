@@ -1129,3 +1129,61 @@ test('2.6.1.67 KCS variable owner evaluates, backs up bytes, and addresses its s
   assert.equal(bank.context('active').words[511], 0xfedcba98);
   assert.equal(bank.context('active').words[0], 0);
 });
+
+test('2.6.1.67 KCS formatted string calls preserve CP932 widths and live truncation', async () => {
+  const call = (id, words, at) => [
+    ...words.map((word) => [37, word]),
+    [43, id, words.length * 4],
+    ...(at === undefined ? [] : [[38, at]]),
+  ];
+  const {
+    runtime,
+    task,
+    machine: m,
+  } = await run([
+    ...call(18, [256], 80),
+    ...call(20, [896, 1024], 84),
+    ...call(22, [416, 448], 88),
+    ...call(23, [288, 2], 92),
+    ...call(24, [320, 2], 96),
+    ...call(26, [352], 100),
+    ...call(37, [624, 1234567, 1]),
+    ...call(37, [656, -999, 1]),
+    ...call(38, [513, 512, 544, 7], 104),
+    ...call(38, [576, 608, 688, 12], 108),
+    ...call(39, [720, 608, 752, 12], 112),
+    ...call(40, [256], 116),
+    ...call(40, [784], 120),
+    ...call(40, [0xffffffff], 124),
+    [59],
+  ]);
+  m.bytes(512, 293).fill(0xa5);
+  m.writeString('猫a', 256);
+  m.writeString('猫a', 288);
+  m.writeString('猫ab', 320);
+  m.writeString('-12.5D-1rest', 352);
+  m.writeString('aBc', 416);
+  m.writeString('ABC', 448);
+  m.writeString('abcd', 512);
+  m.writeString('', 544);
+  m.writeString('one\ttwo', 608);
+  m.writeString('\\t', 688);
+  m.writeString('\\\t', 752);
+  m.writeStringBytes(Uint8Array.of(0x81, 0x7f), 784);
+  m.writeString('C', 896);
+  m.writeString('A'.repeat(1024) + 'D', 1024);
+  const stack = m.sp;
+  await runtime.scheduler.execute(task);
+  assert.equal(m.sp, stack);
+  assert.deepEqual(
+    Array.from({ length: 12 }, (_, i) => m.load(80 + i * 4)),
+    [3, 3, 0, 0, 3, floatBits(-1.25), 5, 3, 3, 1, 0, 0],
+  );
+  assert.deepEqual(m.bytes(288, 4), Uint8Array.of(0, 0, 97, 0));
+  assert.deepEqual(m.bytes(320, 5), Uint8Array.of(...encodeCP932('猫a'), 0, 0));
+  assert.deepEqual(m.bytes(624, 13), Uint8Array.of(...encodeCP932('+1,234,567'), 0, 0, 0xa5));
+  assert.deepEqual(m.bytes(656, 7), Uint8Array.of(...encodeCP932('-999'), 0, 0, 0xa5));
+  assert.deepEqual(m.bytes(512, 9), Uint8Array.of(...encodeCP932('aaaaaa'), 0, 0, 0xa5));
+  assert.deepEqual(m.bytes(576, 6), Uint8Array.of(...encodeCP932('one'), 0, 0, 0xa5));
+  assert.deepEqual(m.bytes(720, 6), Uint8Array.of(...encodeCP932('one'), 0, 0, 0xa5));
+});
