@@ -392,14 +392,14 @@ export class NativeFileAccess {
     this.storage = storage;
     this.handles = handles;
   }
-  async open(name, mode) {
+  async open(name, mode, { defaultReadOnly = false } = {}) {
     // Native 0x1D scans for the first lowercase r/w; '+' and 'a' do not
-    // implement CRT fopen modes. No r/w means existing read/write access.
+    // implement CRT fopen modes. The ABI selects the access for other modes.
     const first =
         mode instanceof Uint8Array
           ? String.fromCharCode(mode.find((byte) => byte === 114 || byte === 119) ?? 0)
           : /[rw]/.exec(mode)?.[0],
-      writable = first !== 'r',
+      writable = first === 'w' || (!defaultReadOnly && first !== 'r'),
       readable = first !== 'w';
     const bytes = first === 'w' ? new Uint8Array() : await this.storage.read(name);
     if (bytes === null) return 0;
@@ -466,8 +466,8 @@ export class NativeFileAccess {
 export function nativeFiles(id, args, machine, services = {}) {
   const { files, profile } = services;
   if (!(files instanceof NativeFileAccess) || id < 0x1d || id > 0x20) return undefined;
-  const oldFileIO = profile && nativeABI(profile).fileIO?.rawModeAndBoundedBuffer;
-  if (!oldFileIO && id !== 0x1d && id !== 0x20) return undefined;
+  const behavior = profile && nativeABI(profile).fileIO;
+  if (!behavior?.rawModeAndBoundedBuffer && id !== 0x1d && id !== 0x20) return undefined;
   const count = [2, 4, 4, 1][id - 0x1d];
   if (args.length !== count)
     throw new Error(`KCS file native 0x${id.toString(16)} expects ${count} arguments`);
@@ -486,11 +486,13 @@ export function nativeFiles(id, args, machine, services = {}) {
   }
   if (!services.format) return undefined;
   const name = services.format(args[0], machine),
-    mode = oldFileIO
+    mode = behavior?.rawModeAndBoundedBuffer
       ? nativeDataFormat(args, machine, services, 1)
       : services.format(args[1], machine);
   if (mode === null) return nativeReply(1, 0);
-  return files.open(name, mode).then((handle) => nativeReply(1, handle));
+  return files
+    .open(name, mode, { defaultReadOnly: behavior?.defaultReadOnly })
+    .then((handle) => nativeReply(1, handle));
 }
 
 export function installNativeFormattedFileOutput(world) {

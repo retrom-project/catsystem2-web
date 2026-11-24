@@ -57,6 +57,95 @@ test('fixed SDK debug GCALL keeps original CP932 bounds and literal percent outp
   assert.equal(nativeABI(profile).tables.main.entries[1].signature.resultWritten, false);
 });
 
+test('fixed SDK file GCALLs use the byte mode and complete reads before advancing their cursor', async (t) => {
+  const input = Uint8Array.of(25, 16, 255, 236, 14);
+  const storage = new Map([['sample.bin', input]]);
+  const stored = [];
+  const handle = [0x13, 64];
+  const transfer = (id, address, elementBytes, elements, result) =>
+    callNative(id, [address, elementBytes, elements, handle], result);
+  const fileProgram = (operations) =>
+    kcsProgram([
+      [37, marker],
+      ...callNative(29, [128, 256], 64),
+      ...operations.flat(),
+      ...callNative(32, [handle]),
+      [59],
+    ]);
+  const world = await dataWorld(
+    profile,
+    {
+      'read.kcs': fileProgram([
+        transfer(30, 320, 2, 2, 68),
+        transfer(30, 0xffffffff, 1, 1, 72),
+        transfer(30, 0x80000510, 0x80000001, 2, 76),
+        transfer(30, 324, 1, 4, 80),
+        transfer(31, 320, 1, 4, 84),
+      ]),
+      'write.kcs': fileProgram([
+        transfer(31, 320, 2, 3, 68),
+        transfer(31, 0x80000510, 0x80000001, 2, 72),
+        transfer(30, 320, 1, 4, 76),
+        callNative(30, [320, 1, 8, 0], 80),
+        callNative(31, [320, 1, 8, 0], 84),
+      ]),
+    },
+    {
+      storage: {
+        read: async (name) => storage.get(name)?.slice() ?? null,
+        write: async (name, bytes) => {
+          stored.push(name);
+          storage.set(name, bytes.slice());
+          return true;
+        },
+      },
+    },
+  );
+  t.after(() => world.close({ flushFiles: false }));
+  const canary = Uint8Array.from({ length: 8 }, (_, i) => 180 + i);
+  const setup = (machine, name, mode) => {
+    machine.writeString(name, 128);
+    machine.writeStringBytes(Uint8Array.from(mode), 256);
+    machine.bytes(320, 8).set(canary);
+    machine.bytes(0x80000510, 8).set(canary);
+  };
+  for (const mode of [[114], [97], [114, 119], [0x81, 0x72]]) {
+    const machine = await runGuest(world, 'read.kcs', (machine) =>
+      setup(machine, 'sample.bin', mode),
+    );
+    assert.deepEqual(
+      [68, 72, 76, 80, 84].map((address) => machine.load(address)),
+      [4, 0, 1, 0, 0],
+    );
+    assert.deepEqual([...machine.bytes(320, 8)], [...input.slice(0, 4), ...canary.slice(4)]);
+    assert.deepEqual([...machine.bytes(0x80000510, 8)], [14, ...canary.slice(1)]);
+  }
+  assert.deepEqual(stored, []);
+  for (const mode of [
+    [119, 114],
+    [0x81, 0x77],
+  ]) {
+    const machine = await runGuest(world, 'write.kcs', (machine) =>
+      setup(machine, 'output.bin', mode),
+    );
+    assert.deepEqual(
+      [68, 72, 76, 80, 84].map((address) => machine.load(address)),
+      [6, 2, 0, 0, 0],
+    );
+    assert.deepEqual(machine.bytes(320, 8), canary);
+    assert.deepEqual(
+      storage.get('output.bin'),
+      Uint8Array.of(...canary.slice(0, 6), ...canary.slice(0, 2)),
+    );
+  }
+  assert.deepEqual(stored, ['output.bin', 'output.bin']);
+  const table = nativeABI(profile).tables.main.entries;
+  for (const id of [30, 31]) {
+    assert.equal(table[id].signature.review, 'reviewed');
+    assert.equal(table[id].signature.result.unit, 'byte-count');
+  }
+});
+
 test('fixed 2.6.1.74 Main9 post, language confirmation, and ordinary Script shutdown', async (t) => {
   for (const [selector, accepted, translated] of [
     [1, false, false],

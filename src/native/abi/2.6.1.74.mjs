@@ -416,6 +416,7 @@ export default {
     evidence: 'ordinary Direct3D9 initialization; docs/ppi-compatibility.md',
   },
   input: { planeSourceViaInput: true },
+  fileIO: { rawModeAndBoundedBuffer: true, defaultReadOnly: true },
   messages: {
     screenEvent: 21,
     windowDirectClose: 0x433,
@@ -1131,9 +1132,7 @@ export default {
               unit: 'byte-count',
             },
             resultWritten: true,
-            review: 'needs-review',
-            reviewReason:
-              'SDK body confirms semantic, argument width and control; independent normal execution still requires live original file manager.',
+            review: 'reviewed',
           },
         },
         {
@@ -1344,6 +1343,11 @@ export default {
         },
       ],
       evidence: [
+        {
+          ids: [29, 30, 31, 32],
+          value:
+            'Own 2.6.1.74 file wrappers, kcFileServer and the regular IFile mode, read, write and release receivers. See docs/native-standard-review.md.',
+        },
         {
           ids: [1],
           value:
@@ -1592,11 +1596,6 @@ export default {
           value: 'reviewed-SDK-2.6.1.74-main447-full-wrapper; see docs/native-fes-task.md',
         },
         {
-          ids: [1, 30, 31],
-          value:
-            'reviewed-SDK-2.6.1.74-table-and-wrapper-body; normal host/allocator execution pending; see docs/native-standard-review.md',
-        },
-        {
           ids: [9],
           value:
             'reviewed-SDK-2.6.1.74-Main9-own-window-post-confirmation-and-filtered-close-sequence; see docs/native-standard-review.md',
@@ -1668,10 +1667,10 @@ export default {
         },
         {
           ids: [
-            29, 32, 219, 220, 221, 222, 225, 226, 229, 230, 231, 232, 233, 234, 235, 239, 240, 242,
-            243, 245, 247, 248, 249, 250, 252, 253, 254, 255, 276, 277, 278, 322, 323, 324, 325,
-            326, 327, 330, 331, 334, 335, 336, 337, 338, 385, 386, 419, 420, 421, 422, 423, 424,
-            425, 458, 459, 608, 609, 610, 978, 979, 980, 981, 982, 990, 993,
+            219, 220, 221, 222, 225, 226, 229, 230, 231, 232, 233, 234, 235, 239, 240, 242, 243,
+            245, 247, 248, 249, 250, 252, 253, 254, 255, 276, 277, 278, 322, 323, 324, 325, 326,
+            327, 330, 331, 334, 335, 336, 337, 338, 385, 386, 419, 420, 421, 422, 423, 424, 425,
+            458, 459, 608, 609, 610, 978, 979, 980, 981, 982, 990, 993,
           ],
           value:
             'reviewed-SDK-2.6.1.74-main-table-wrapper-body-and-normal-JS-dispatch; docs/native-domain4-review.md',

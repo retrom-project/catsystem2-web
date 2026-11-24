@@ -21,8 +21,8 @@ contains the names/signatures; these EXE targets remain documentation/test evide
 | `B`    | `clock.localDate`                    | 7     | 2       | `51B9E0`         | original time fields and VM alias order |
 | `1B`   | `memory.allocate`                    | 1     | 1       | `5232D0`         | original heap and VM address mapping    |
 | `1C`   | `memory.free`                        | 1     | 1       | `5230A0`         | original heap and VM compaction         |
-| `1E`   | `file.read`                          | 4     | 1       | `523050`         | body confirmed; normal fixture pending  |
-| `1F`   | `file.write`                         | 4     | 1       | `5230C0`         | body confirmed; normal fixture pending  |
+| `1E`   | `file.read`                          | 4     | 1       | `523050`         | original IFile receiver and KCS World   |
+| `1F`   | `file.write`                         | 4     | 1       | `5230C0`         | original IFile receiver and KCS World   |
 | `21`   | `random.integer`                     | 0     | 1       | `523360`         | independent GCALL                       |
 | `22`   | `random.float`                       | 0     | 1       | `523030`         | independent GCALL                       |
 | `23`   | `memory.copy`                        | 3     | 2       | `5232F0`         | independent GCALL                       |
@@ -56,8 +56,14 @@ the original literal output. The browser sends that byte-bounded text to its
 existing diagnostics. A CRT conversion with no guest variadic operands stays
 literal there. The GCALL uses control 2 without writing the result.
 
-The remaining file read and write signatures have independent receiver review
-scope.
+The SDK file opener scans the formatted CP932 mode bytes in order. The first
+lowercase r or w chooses read or write access even when it is a trail byte.
+The default opens an existing file for reading. Main30 and Main31 translate
+the caller's VM address and use the low DWORD of the element-size product.
+The regular IFile returns a byte count, including partial reads at EOF.
+The GCALL writes the count under control 1 and translates the receiver's
+failure to zero. The browser uses its normal per-game file scope for these
+operations and validates the destination before advancing the read cursor.
 
 On the fixed SDK build, Main9 posts WM_CLOSE for a nonzero selector and 0x433
 for zero. Its application callback uses the language table to translate the
