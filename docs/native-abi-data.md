@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 414       | 57            | 17            | 381     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
+| 2.6.1.23 | 869        | 417       | 57            | 17            | 378     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 398       | 80            | 19            | 441     | Generic 14 of 45, Particle 12 of 44 and 12 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -69,6 +69,8 @@ Generic 44 derives two axes from the reference matrix and applies three
 rotations in order. Each operation validates the mapped span and writes
 the complete matrix. Generic 43 and 44 preserve overlapping source and
 destination spans, including unaligned local or shared memory.
+Main 204–206 apply XYZ rotation, translation and scale. They use the
+current matrix from the caller's World when the address does not map.
 
 PTCL v1 and v2 slot 38 point to the same receiver. It computes four
 bounds from the viewport, live priority and near plane and writes the

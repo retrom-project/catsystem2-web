@@ -635,6 +635,56 @@ test('2.6.1.23 Main writes the local YPR matrix without reading the previous own
   assert.equal(machine.load(128, 1), 0x76);
 });
 
+test('2.6.1.23 Main applies matrix operations to the mapped or current record', async (t) => {
+  const world = await dataWorld(profile, {}, { initialize: false });
+  t.after(() => world.close({ flushFiles: false }));
+  const current = world.calculations.matrix,
+    source = [
+      1.125, 0.25, 0.5, 0, -0.125, 0.5, -0.25, 0, 0.5, 0.625, 1.875, 0, 17.25, -8.125, -3, 1,
+    ].map(floatBits),
+    operands = [-1.125, 0.25, 13.4375].map(floatBits);
+  const cases = [
+    [
+      204,
+      0xffffffff,
+      [
+        0x3e8ba3f7, 0x3f98928c, 0xbe937476, 0, 0xbe233b79, 0xbe51cb7c, 0xbf02b86e, 0, 0xbf9323ac,
+        0x3fd70684, 0x3de7e78f, 0, 0x4183ced3, 0x411ee3d5, 0x3fca7e98, 0x3f800000,
+      ],
+    ],
+    [205, 0, [...source.slice(0, 12), 0x41810000, 0xc0fc0000, 0x41270000, 0x3f800000]],
+    [
+      206,
+      67,
+      [
+        0xbfa20000, 0x3d800000, 0x40d70000, 0, 0x3e100000, 0x3e000000, 0xc0570000, 0, 0xbf100000,
+        0x3e200000, 0x41c99000, 0, 0xc19b4000, 0xc0020000, 0xc2214000, 0x3f800000,
+      ],
+    ],
+  ];
+  for (const [id, address, expected] of cases) {
+    const args = [address, ...operands],
+      script = await readKCS(
+        kcsProgram([[37, sentinel], ...args.map((word) => [37, word]), [43, id, 16], [59]]),
+      ),
+      task = world.runtime.scheduler.add(script, { name: 'matrix.kcs', abi: 'main' }),
+      { machine } = task,
+      output = address === 0xffffffff ? current : machine.bytes(address, 64),
+      values = new DataView(output.buffer, output.byteOffset, output.byteLength);
+    current.fill(0x24);
+    source.forEach((value, i) => values.setUint32(i * 4, value, true));
+    await world.runtime.tick();
+    assert.equal(task.status, 'finished');
+    assert.equal(machine.sp, machine.floor + 4);
+    assert.equal(machine.load(machine.floor), sentinel);
+    assert.deepEqual(
+      expected.map((_, i) => values.getUint32(i * 4, true)),
+      expected,
+    );
+    if (address !== 0xffffffff) assert.deepEqual(current, new Uint8Array(64).fill(0x24));
+  }
+});
+
 test('2.6.1.23 PTCL writes the four viewport words in order in both tables', async () => {
   const local = 64,
     shared = 0x80000100,

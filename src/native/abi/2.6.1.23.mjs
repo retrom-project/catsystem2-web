@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [204, 205, 206],
+    value:
+      'Own 2.6.1.23 0x4865D0, 0x486620 and 0x486670 apply scalar PC24 rotation, translation or scale to a mapped or current matrix.',
+  },
+  {
     ids: [662],
     value:
       'Own 2.6.1.23 0x486740 writes the entire guest matrix through the original scalar YPR quaternion path and returns control 2.',
@@ -1137,6 +1142,24 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...[204, 205, 206].map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) =>
+              index === 0
+                ? {
+                    ...parameter,
+                    type: {
+                      kind: 'pointer',
+                      addressSpace: 'vm',
+                      direction: 'inout',
+                      target: { kind: 'record', name: 'matrix4' },
+                    },
+                  }
+                : parameter,
+            ),
+          },
+        })),
         {
           ids: [735],
           fields: {
