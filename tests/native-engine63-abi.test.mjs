@@ -962,6 +962,69 @@ test('2.6.1.63 KCS narrow desktop calls use the clipboard boundary and blocking 
   }
 });
 
+test('2.6.1.63 KCS reads optional task records without changing the CSS or neutral recipients', async (t) => {
+  const world = await dataWorld(profile, {
+    'main-238.kcs': mainProgram(238, 1),
+    'main-244.kcs': mainProgram(244, 4),
+    'main-576.kcs': mainProgram(576, 3),
+    'main-689.kcs': mainProgram(689, 3),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  let css;
+  await executeMain(world, 238, [37], undefined, (value) => (css = value));
+  const record = world.runtime.handles.get(css, 'global-file'),
+    top = world.nativeTaskID(world.root),
+    script = world.nativeTaskID(world.main.id),
+    absent = 0xcccccccc,
+    plane = await world.objects.create({ kind: 2, parent: world.root }),
+    unsupported = world.nativeTaskID(plane),
+    guest = 256,
+    plain = Uint8Array.of(0x82, 0xa0, 0x63, 0xff),
+    tree = new Uint8Array(28),
+    view = new DataView(tree.buffer);
+  view.setUint32(4, 12, true);
+  view.setUint32(20, 4, true);
+  tree.set(plain, 24);
+  const write = (id, bytes) =>
+    executeMain(
+      world,
+      244,
+      [css, id, bytes.length, guest],
+      (m) => m.bytes(guest, bytes.length).set(bytes),
+      1,
+    );
+  for (const [id, key] of [
+    [576, 13],
+    [689, 4096],
+  ]) {
+    await executeMain(world, id, [0, key, unsupported], undefined, 0);
+    await executeMain(world, id, [css, key, unsupported], undefined, 0);
+    await assert.rejects(executeMain(world, id, [css, 0, top]), /unwritten CSS record zero/);
+  }
+  await write(13, plain);
+  await write(4096, tree);
+  await write(0, tree);
+  const before = record.snapshot();
+  for (const [id, key] of [
+    [576, 13],
+    [689, 4096],
+  ]) {
+    for (const target of [top, script, absent]) {
+      await executeMain(world, id, [css, key, target], undefined, 1);
+      await executeMain(world, id, [css, 0, target], undefined, 1);
+      await executeMain(world, id, [css, 0x729301aa, target], undefined, 0);
+    }
+    await assert.rejects(
+      executeMain(world, id, [css, key, unsupported]),
+      /unreviewed CSS task recipient/,
+    );
+  }
+  assert.deepEqual(record.snapshot(), before);
+  await write(4097, plain);
+  await assert.rejects(executeMain(world, 689, [css, 4097, script]), /Malformed CSS task tree/);
+  assert.equal(nativeABI(profile).tables.main.entries[688].status, 'unknown');
+});
+
 test('2.6.1.63 KCS loads an ordinary MPEG Plane and borrows its registered movie', async (t) => {
   const source = Uint8Array.of(0, 0, 1, 0xba, 0x21, 0, 1),
     world = await dataWorld(profile, {
