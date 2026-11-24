@@ -131,6 +131,19 @@ commands. The close branch uses the fixed CP932 prompt and configured
 title. Decline leaves the task tree open. Main 445 formats its CP932
 operand and opens a modal with the fixed `system error` caption.
 
+FES type 15 owns a kind 42 Slider. The original FES update at
+`0x472140` sends raw 328–334 to the kind 42 receiver at `0x455d40`.
+The 292-byte load packet holds the Draw ID, a 260-byte CP932
+filename, priority, rectangle and two Plane offsets. The receiver
+loads HG2/HG3 frame 0 and creates separate kind 6 track and thumb
+areas. A track click sets the value and notifies the FES owner.
+Thumb press enters drag and selects frame 3. Focus forwards the
+original DWORD and selects frame 0 or 2 outside a drag. Enable
+forwards the same DWORD to both areas and retains the current
+skin. The verified window settings use the direction query, range,
+value, alpha, enable and show messages. Kind 40 SCROLL, kind 41
+SCROLL2 and Slider skin-table mutation remain guarded on this build.
+
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word
 and three trailing words for VRAM coordinates and output. Main 611–615

@@ -11,10 +11,142 @@ import { controlFiles } from './fixtures/control-files.mjs';
 import { nativeM2Files, nativeM2Program } from './fixtures/native-m2-fixture.mjs';
 import { hg3, kcsProgram } from './helpers.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { append } from './fixtures/fes-log-model.mjs';
 
 const bytes = (value) => new TextEncoder().encode(value),
   pixel = Uint8Array.from([22, 33, 44, 255, 55, 66, 77, 255, 88, 99, 111, 255, 122, 133, 144, 255]);
+
+test('2.6.1.23 authored Slider owns its low task, decoded skin, click and drag', async () => {
+  const profile = 'grisaia-jp-engine-2.6.1.23';
+  const source = [
+    '#DEFINE',
+    'PLANE pl',
+    'SLIDER slider',
+    '#OBJECT SIZE VRAM PRI DISP',
+    'pl 128,96 0,0 400 1',
+    '#OBJECT FILE PL POS2 PRI DISP ENABLE',
+    'slider controls pl area:7 1000 1 1',
+    '#START',
+    'slider page 0 10',
+    'slider pos 3',
+    'next WAIT',
+    '#WAIT',
+    '#slider.SCRL_P',
+    '\\5=\\5+1',
+    '#slider.FOCUS',
+    '\\6=\\6+1',
+    '#slider.UNFOCUS',
+    '\\6=0',
+    '#MISSING',
+    'slider load absent',
+    'break',
+    '#RELOAD',
+    'slider load controls',
+    'break',
+  ].join('\n');
+  const assets = await controlFiles(new Uint8Array(), source);
+  delete assets['engine.exe'];
+  const world = await defaultFESWorld(profile, assets);
+  try {
+    const { task, instance, draw, surface } = await loadDefaultFES(world);
+    await task.tick();
+    assert.equal(instance.label, 'WAIT');
+    const { nativeTaskID: id } = instance.byKey.get('slider');
+    const slider = world.objects.objects.get(id).implementation;
+    const { track, thumb } = slider.resource.areas;
+    const input = world.inputFor(id);
+    assert.equal(slider.kind, 42);
+    assert.deepEqual(slider.config.rect, Int32Array.of(16, 12, 88, 24));
+    assert.deepEqual(input.get(track).bounds, [16, 12, 88, 24]);
+    assert.deepEqual(input.get(thumb).bounds, [35, 12, 43, 20]);
+    assert.deepEqual([slider.model.state.value, slider.model.state.pixel], [3, 19]);
+
+    for (const kind of [40, 41])
+      await assert.rejects(
+        world.objects.create({ kind, parent: world.main.id }),
+        /Unreviewed .*controlResources/,
+      );
+    for (const [raw, canonical] of [
+      [5, 6],
+      [8, 9],
+      [9, 10],
+      [60, 64],
+      [328, 359],
+      [329, 360],
+      [330, 361],
+      [331, 362],
+      [332, 363],
+      [333, 364],
+      [334, 365],
+    ]) {
+      assert.equal(mapABIMessage(profile, 'control', 'raw', raw, 42), canonical);
+      assert.equal(mapABIMessage(profile, 'control', 'canonical', canonical, 42), raw);
+    }
+    assert.equal(await world.sendEngine(id, world.main.id, 364), 0);
+    await assert.rejects(world.sendEngine(id, world.main.id, 366), /Unreviewed ABI message/);
+
+    const retained = () =>
+      draw.state.renderer.items.find((item) => (item.key & 65535) === world.nativeTaskID(id));
+    const normal = retained().image;
+    const sendFocus = () => world.sendEngine(id, thumb, 64, world.nativeTaskID(thumb), 0x81234567);
+    await sendFocus();
+    await sendFocus();
+    assert.equal(instance.local(6), 2);
+    const hover = retained().image;
+    assert.notEqual(hover, normal);
+    assert.equal(await world.sendEngine(id, world.main.id, 361, 0, 0), NATIVE_UNWRITTEN_WORD);
+    assert.equal(input.get(track).enabled, 0);
+    assert.equal(retained().image, hover);
+    await world.sendEngine(id, world.main.id, 361, 0, 1);
+    assert.ok(input.get(track).enabled);
+    assert.equal(retained().image, hover);
+    const hoverPixels = await drawPixels(world, surface);
+    const at = (12 * 128 + 35) * 4;
+    assert.deepEqual([...hoverPixels.subarray(at, at + 4)], [70, 180, 60, 255]);
+
+    input.pointer(74, 16, 1);
+    await world.tick();
+    input.key(0, true, 2, 1);
+    await world.tick();
+    assert.equal(slider.model.state.dragging, false);
+    assert.equal(instance.local(5), 1);
+    assert.deepEqual([slider.model.state.value, slider.model.state.pixel], [8, 51]);
+    input.key(0, false, 2, 1);
+    await world.tick();
+    input.pointer(70, 16, 1);
+    await world.tick();
+    input.key(0, true, 2, 1);
+    await world.tick();
+    assert.equal(slider.model.state.dragging, true);
+    assert.deepEqual(input.get(thumb).bounds, [0, 0, 0, 0]);
+    assert.equal(world.graphics.images.get(retained().image).state.width, 8);
+    input.pointer(87, 16, 1);
+    await world.tick();
+    assert.equal(slider.model.state.value, 10);
+    assert.equal(instance.local(5), 2);
+    input.key(0, false, 2, 1);
+    await world.tick();
+    assert.equal(slider.model.state.dragging, false);
+    assert.deepEqual(input.get(thumb).bounds, [80, 12, 88, 20]);
+    assert.equal(instance.local(5), 2);
+
+    await task.player.notify('MISSING');
+    await task.syncObjects();
+    await world.tick();
+    assert.equal(slider.model.state.loaded, false);
+    assert.equal(retained(), undefined);
+    assert.ok([track, thumb].every((id) => !input.get(id)));
+    await task.player.notify('RELOAD');
+    await task.syncObjects();
+    assert.equal(slider.model.state.loaded, true);
+    assert.ok(retained());
+    assert.ok(!world.nativeEngine);
+  } finally {
+    await world.close();
+  }
+});
 
 test('Game FES definition misses retain diagnostics without an unsupported command', async () => {
   const source = `#DEFINE

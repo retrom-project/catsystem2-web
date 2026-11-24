@@ -628,6 +628,12 @@ const particleInterpreterSignatures = [
   },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
+const sliderInput = [
+  [5, 6],
+  [8, 9],
+  [9, 10],
+  [60, 64],
+];
 const mainReserved = [
   0, 2, 3, 141, 169, 170, 172, 173, 180, 182, 184, 185, 187, 188, 189, 190, 191, 429, 439, 464, 543,
   544, 545, 546, 547, 548, 550, 552, 553, 556, 559, 560, 561, 562, 563, 573, 574, 578, 579, 581,
@@ -941,7 +947,23 @@ export default {
         raw: [...baseMessages, ...[23, 24, 29].map((id) => toMessage(id, -1))],
         canonical: [...baseMessages, ...[22, 23, 28].map((id) => toMessage(id, 1))],
       },
-      control: { unmapped: 'reject', raw: [], canonical: [] },
+      control: {
+        unmapped: 'reject',
+        raw: [
+          { min: 328, max: 334, offset: 31, kinds: [42] },
+          ...sliderInput.map(([raw, canonical]) => ({
+            ...toMessage(raw, canonical - raw),
+            kinds: [42],
+          })),
+        ],
+        canonical: [
+          { min: 359, max: 365, offset: -31, kinds: [42] },
+          ...sliderInput.map(([raw, canonical]) => ({
+            ...toMessage(canonical, raw - canonical),
+            kinds: [42],
+          })),
+        ],
+      },
       screen: {
         unmapped: 'reject',
         raw: [
@@ -987,6 +1009,7 @@ export default {
   fes: {
     variableBankOffset: 436,
     frameDecodeResources: true,
+    controlResources: { kinds: [42], sliderProtocol: 'legacy' },
     commonHeads: engine23CommonHeads,
     configurationMessage: {
       liveObjects: null,

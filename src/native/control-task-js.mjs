@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Real JS World control tasks. The interaction model owns numbers/timing; this
 // adapter owns resource pixels, retained entries, actual areas and VRAM planes.
-import { ControlTaskModel } from './control-task-model.mjs';
+import { ControlTaskModel, rectangleControlDirection } from './control-task-model.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { nativeImageMetadata } from './image-buffer-info.mjs';
 import { bitmapTransfer } from './bitmap-pixels.mjs';
@@ -9,6 +9,7 @@ import { openImage } from '../formats/hg3.mjs';
 import { floatBits } from '../kcs.mjs';
 import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from './engine-message.mjs';
 import { nativeABIBehavior } from './abi/index.mjs';
+import { canonicalMessage } from './control-task.mjs';
 
 export function controlTaskBehavior(profile) {
   return nativeABIBehavior(profile, 'fes.controlResources');
@@ -42,10 +43,14 @@ function resourceState() {
 
 export class JSControlTask {
   constructor(world, record, behavior) {
-    if (!['state-direct'].includes(behavior?.scroll2Skin))
-      throw new Error('A verified SCROLL2 skin selector policy is required');
     if (![40, 41, 42].includes(record.kind))
       throw new Error(`Unsupported control task ${record.kind}`);
+    if (behavior.kinds && !behavior.kinds.includes(record.kind))
+      throw new Error(
+        `Unreviewed ABI behavior ${world.profile}/fes.controlResources kind ${record.kind}`,
+      );
+    if (record.kind === 41 && behavior.scroll2Skin !== 'state-direct')
+      throw new Error('A verified SCROLL2 skin selector policy is required');
     this.world = world;
     this.record = record;
     this.behavior = behavior;
@@ -53,7 +58,9 @@ export class JSControlTask {
     this.base = world.base(record);
     this.resource = resourceState();
     this.config = null;
-    this.model = new ControlTaskModel(record.kind, (...args) => this.service(...args));
+    this.model = new ControlTaskModel(record.kind, (...args) => this.service(...args), undefined, {
+      legacySlider: this.legacySlider,
+    });
     this.drawFields = new Array(15).fill(0);
     this.drawFields[9] = this.drawFields[10] = floatBits(1);
     this.drawFields[11] = 255;
@@ -68,6 +75,9 @@ export class JSControlTask {
   }
   get kind() {
     return this.record.kind;
+  }
+  get legacySlider() {
+    return this.kind === 42 && this.behavior.sliderProtocol === 'legacy';
   }
   get input() {
     const input = this.world.inputFor(this.record.id);
@@ -235,7 +245,8 @@ export class JSControlTask {
     )
       throw new TypeError('Control load requires complete typed geometry and priorities');
     const oldAreas = this.resource.areas;
-    await this.unload(this.kind === 40);
+    const recreateAreas = this.kind === 40 || this.legacySlider;
+    await this.unload(recreateAreas);
     this.config = structuredClone(config);
     this.draw;
     this.model.state.loaded = false;
@@ -243,13 +254,13 @@ export class JSControlTask {
     if (!bytes?.length) return false;
     this.resource.bytes = bytes.slice();
     this.image = null;
-    if (this.kind !== 40) this.resource.areas = oldAreas;
+    if (!recreateAreas) this.resource.areas = oldAreas;
     try {
       if (this.kind === 40) await this.loadScroll();
       else await this.loadRectangle();
       return true;
     } catch (error) {
-      await this.unload(this.kind === 40);
+      await this.unload(recreateAreas);
       this.model.state.loaded = false;
       throw error;
     }
@@ -392,7 +403,11 @@ export class JSControlTask {
     const header = metadata(this.resource.bytes, 0);
     if (!header) throw new Error('Rectangle control frame0 metadata is unavailable');
     this.resource.metadata = [header];
-    const vertical = ((c.rect[2] - c.rect[0]) | 0) < ((c.rect[3] - c.rect[1]) | 0);
+    const vertical = rectangleControlDirection(
+      (c.rect[2] - c.rect[0]) | 0,
+      (c.rect[3] - c.rect[1]) | 0,
+      this.legacySlider,
+    );
     let minimumThumb = 0;
     if (this.kind === 41) {
       for (let state = 0; state < 4; state++)
@@ -639,10 +654,12 @@ export class JSControlTask {
       case 'unconsumed':
         if (this.eventSender !== undefined) return this.send(this.eventSender, 94, 0, 1, null, 1);
         throw new Error('Unconsumed control event has no actual sender World ID');
-      case 'enabled':
-        for (const id of Object.values(this.resource.areas))
-          await this.send(id, 92, 0, Number(p.flag));
+      case 'enabled': {
+        const { areas } = this.resource;
+        for (const id of this.legacySlider ? [areas.thumb, areas.track] : Object.values(areas))
+          if (id !== undefined) await this.send(id, 92, 0, Number(p.flag));
         return;
+      }
       case 'shown':
         if (this.kind === 40) {
           for (const id of this.resource.planes)
@@ -714,6 +731,8 @@ export class JSControlTask {
     const senderWorld =
       context.nativeSenderWorldID ?? this.world.resolveTaskID(sender, this.record.id);
     const model = this.model;
+    if (this.legacySlider && message >= 359 && message <= 367)
+      canonicalMessage(this.world.profile, this.kind, message);
     const loadID = this.kind === 40 ? 353 : this.kind === 41 ? 368 : 359;
     if (message === loadID) {
       await this.load(this.loadPacket(senderWorld, l, context));
@@ -771,7 +790,12 @@ export class JSControlTask {
       if (state.dragging) await model.move(signedWords(this.memory(senderWorld, context), l, 2));
       return NATIVE_UNWRITTEN_WORD;
     }
-    if (message === 9 || message === 10 || message === 64 || message === 65) {
+    if (
+      message === 9 ||
+      message === 10 ||
+      message === 64 ||
+      (message === 65 && !this.legacySlider)
+    ) {
       const previous = this.eventSender;
       this.eventSender = senderWorld;
       try {
@@ -779,7 +803,8 @@ export class JSControlTask {
         else {
           const part = this.part(w);
           if (!part) await model.unconsumed(null);
-          else if (message === 64) await model.focus(part, l, await this.pointer());
+          else if (message === 64)
+            await model.focus(part, l, this.legacySlider ? undefined : await this.pointer());
           else {
             const source = nativeEngineWord(await this.send(this.resource.areas[part], 95));
             if (message === 9)
@@ -817,7 +842,9 @@ export class JSControlTask {
     this.config = saved.config;
     this.resource = saved.resource;
     this.image = null;
-    this.model = new ControlTaskModel(this.kind, (...args) => this.service(...args), saved.model);
+    this.model = new ControlTaskModel(this.kind, (...args) => this.service(...args), saved.model, {
+      legacySlider: this.legacySlider,
+    });
   }
   async unload(destroyChildren) {
     if (this.config) {

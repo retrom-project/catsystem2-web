@@ -43,6 +43,9 @@ function extent(state) {
 function axis(state) {
   return state.kind === 40 ? Number(state.direction === 0) : state.direction;
 }
+export function rectangleControlDirection(width, height, legacySlider) {
+  return legacySlider ? Number(width >>> 0 < height >>> 0) : Number(width < height);
+}
 function origin(state, dimension) {
   return dimension ? state.top : state.left;
 }
@@ -242,13 +245,14 @@ export class ControlTaskModel {
   // service(operation, borrowedPacket, state) must consume packet fields before
   // awaiting/re-entering the same operation. Each operation has its own packet.
   // Snapshot the state and the adapter's resource/child IDs separately.
-  constructor(kind, service, state = createControlTaskState(kind)) {
+  constructor(kind, service, state = createControlTaskState(kind), { legacySlider = false } = {}) {
     if (kind !== 40 && kind !== 41 && kind !== 42)
       throw new RangeError(`Unsupported control task kind ${kind}`);
     if (state.kind !== kind) throw new TypeError('Control snapshot task kind mismatch');
     if (typeof service !== 'function') throw new TypeError('A control child service is required');
     this.state = state;
     this.service = service;
+    this.legacySlider = legacySlider;
     this.packets = new Map(
       packetNames.map((name) => [
         name,
@@ -328,7 +332,7 @@ export class ControlTaskModel {
       s.bottom = rect[3] | 0;
       const width = (s.right - s.left) | 0,
         height = (s.bottom - s.top) | 0;
-      s.direction = Number(width < height);
+      s.direction = rectangleControlDirection(width, height, this.legacySlider);
       s.trackLength = abs32(s.direction ? height : width);
       s.minimumThumb = geometry.minimumThumb | 0;
       if (s.kind === 42) {
@@ -381,8 +385,8 @@ export class ControlTaskModel {
   async setEnabled(value) {
     const s = this.state;
     s.enabled = (value | 0) !== 0;
-    if (s.kind === 42) await this.skin('thumb', s.enabled ? 0 : 1);
-    await this.emit('enabled', null, { flag: s.enabled });
+    if (s.kind === 42 && !this.legacySlider) await this.skin('thumb', s.enabled ? 0 : 1);
+    await this.emit('enabled', null, { flag: this.legacySlider ? value >>> 0 : s.enabled });
   }
   async setShown(value) {
     const s = this.state;
@@ -395,7 +399,8 @@ export class ControlTaskModel {
       await this.emit('enabled', null, { flag: s.shown });
       return;
     }
-    if (s.loaded) await this.emit('shown', null, { flag: s.shown });
+    if (s.loaded)
+      await this.emit('shown', null, { flag: this.legacySlider ? value >>> 0 : s.shown });
   }
   async setAlpha(value) {
     this.state.alpha = value | 0;
@@ -458,7 +463,7 @@ export class ControlTaskModel {
       }
       await this.emit('render', null, updateBounds);
       await this.emit('notify', null, notify27);
-      if (s.kind !== 42) return true;
+      if (s.kind !== 42 || this.legacySlider) return true;
     }
     if (s.kind !== 42 && s.pixelMinimum >= s.pixelMaximum) return true;
     if (s.kind !== 40) await this.skin('thumb', 3);
@@ -488,7 +493,8 @@ export class ControlTaskModel {
     if (!(source & 2) || !knownPart(s, part, true)) return this.unconsumed(part);
     if (s.kind === 40 && (await this.skin(part, 0))) await this.emit('release');
     if (button !== 0) return this.unconsumed(part);
-    const endsDrag = part === 'thumb' || (s.kind === 42 && part === 'track' && s.dragging);
+    const endsDrag =
+      part === 'thumb' || (s.kind === 42 && !this.legacySlider && part === 'track' && s.dragging);
     if (endsDrag) {
       if (s.kind !== 40) {
         await this.skin('thumb', 0);
@@ -512,7 +518,8 @@ export class ControlTaskModel {
     const focused = (value | 0) !== 0;
     if (s.kind === 40 || (part === 'thumb' && !s.dragging)) await this.skin(part, focused ? 2 : 0);
     if (s.kind === 40 && !focused) s.repeatPart = null;
-    if (s.kind === 42) {
+    if (this.legacySlider) await this.emit('focus', part, { flag: value >>> 0, message: 28 });
+    else if (s.kind === 42) {
       const x = pointer[0] | 0,
         y = pointer[1] | 0,
         inside = x >= s.left && x < s.right && y >= s.top && y < s.bottom;
