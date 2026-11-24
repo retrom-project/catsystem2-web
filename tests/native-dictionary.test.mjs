@@ -6,6 +6,7 @@ import { KCSMachine } from '../src/kcs/vm.mjs';
 import { NativeRuntime } from '../src/native/runtime.mjs';
 import { NativeDictionary, nativeDictionary } from '../src/native/dictionary.mjs';
 import { nativeHeapData } from '../src/native/heap-data.mjs';
+import { kcsProgram } from './helpers.mjs';
 
 const profile = 'nekopara-vol3-engine-2.6.1.76';
 const machine = () =>
@@ -105,6 +106,68 @@ test('63 command dictionaries use the original raw keys and return controls', as
   assert.deepEqual(invoke(restored, 516, [handle]), { control: 2 });
   assert.throws(() => invoke(restored, 518, [handle, 32]), /released/);
   assert.deepEqual(invoke(runtime, 518, [handle, 32]), { control: 1, value: 5 });
+});
+
+test('2.6.1.67 command dictionary GCALLs keep the first exact byte key across a fresh VM', async () => {
+  const profile = 'bokutomo-engine-2.6.1.67',
+    handle = [0x13, 64],
+    first = [0x23, 256],
+    folded = [0x23, 320],
+    raw = [0x23, 384],
+    call = (id, args) => [...args.map((arg) => [37, arg]), [43, id, args.length * 4]],
+    create = kcsProgram([
+      ...call(515, []),
+      [38, 64],
+      ...call(517, [0, 0xffffffff, 99]),
+      ...call(517, [handle, first, 6]),
+      ...call(517, [handle, first, 7]),
+      ...call(517, [handle, folded, 8]),
+      ...call(517, [handle, raw, 0xc0123456]),
+      [59],
+    ]),
+    query = kcsProgram([
+      ...call(518, [handle, first]),
+      ...call(518, [handle, folded]),
+      ...call(518, [handle, raw]),
+      ...call(518, [handle, [0x23, 448]]),
+      ...call(518, [0, 0xffffffff]),
+      ...call(516, [handle]),
+      ...call(516, [0]),
+      [59],
+    ]);
+  const programs = new Map([
+      ['dictionary-create.kcs', create],
+      ['dictionary-query.kcs', query],
+    ]),
+    read = async (name) => programs.get(name) ?? null,
+    runtime = new NativeRuntime({ profile, read }),
+    initial = await runtime.spawn('dictionary-create.kcs');
+  const writeKeys = (machine) => {
+    machine.writeString('$Str8', 256);
+    machine.writeString('$str8', 320);
+    machine.bytes(384, 3).set([0x81, 0xff, 0]);
+    machine.writeString('8', 448);
+  };
+  writeKeys(initial.machine);
+  const start = initial.machine.sp;
+  await runtime.scheduler.execute(initial);
+  assert.equal(initial.machine.sp, start);
+  const owned = initial.machine.load(64),
+    fresh = new NativeRuntime({ profile, read });
+  await fresh.restore(structuredClone(runtime.snapshot()));
+  const after = await fresh.spawn('dictionary-query.kcs'),
+    floor = after.machine.sp,
+    expected = [6, 8, 0xc0123456, 0xffffffff, 0xffffffff];
+  after.machine.store(64, owned);
+  writeKeys(after.machine);
+  await fresh.scheduler.execute(after);
+  assert.equal(after.machine.sp, floor + 4 * expected.length);
+  assert.deepEqual(
+    expected.map((_, index) => after.machine.load(floor + index * 4)),
+    expected,
+  );
+  assert.throws(() => fresh.handles.get(owned, 'dictionary'), /released/);
+  assert.equal(runtime.handles.get(owned, 'dictionary').entries.size, 3);
 });
 
 test('both dictionary families serialize into raw native heap memory and import it after fresh restore', async () => {
