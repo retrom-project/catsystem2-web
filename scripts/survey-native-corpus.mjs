@@ -125,12 +125,17 @@ export function inspectFES({ bytes, text, prepared }, include) {
 export async function inspectCST(bytes) {
   const scene = await readScene(bytes),
     commands = [],
+    commandSites = [],
     commandErrors = [];
   for (const [index, record] of scene.lines.entries()) {
     if (record.kind !== 0x30) continue;
     try {
       const line = cstCommandBody(record.text);
-      if (line && !/^[\d#(]/.test(line)) commands.push(line.split(/\s+/)[0]);
+      if (line && !/^[\d#(]/.test(line)) {
+        const command = line.split(/\s+/)[0];
+        commands.push(command);
+        commandSites.push({ line: index + 1, command });
+      }
     } catch (error) {
       commandErrors.push({
         line: index + 1,
@@ -142,6 +147,7 @@ export async function inspectCST(bytes) {
   return {
     lines: scene.lines.length,
     commands,
+    commandSites,
     commandErrors,
     pluginReferences: scene.lines.flatMap((line, index) =>
       line.kind === 0x30 && /particle3|\.ppi|openjtalk/i.test(line.text)

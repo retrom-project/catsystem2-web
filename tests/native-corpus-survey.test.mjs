@@ -86,6 +86,10 @@ test('CST end-of-line grouping retains other decoded command sites', async () =>
   );
   assert.equal(report.lines, 3);
   assert.deepEqual(report.commands, ['wait', 'rdraw']);
+  assert.deepEqual(report.commandSites, [
+    { line: 1, command: 'wait' },
+    { line: 3, command: 'rdraw' },
+  ]);
   assert.deepEqual(report.commandErrors, []);
 });
 

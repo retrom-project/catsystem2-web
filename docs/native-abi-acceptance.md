@@ -37,15 +37,22 @@ GCALL scripts are grouped by the bytes of the decoded archive member and by
 their table. FES scripts with identical member bytes can produce different
 calls when include bytes differ. Retain the include digests and the block,
 command, static object type and argument-token count for each context. A count
-describes the observed syntax. Resolve dynamic IDs, arguments, required objects
-and execution paths through the original handler and the real VM.
+describes the observed syntax. Include `scene.int` to inventory CST scenes by
+member SHA-256, decoded command and undecoded command line. Resolve dynamic
+IDs, arguments, required objects and execution paths through the original
+handler and the real VM.
 
 Compare the exact-build works by script SHA-256 and call shape. Shared content
 counts once while each work and archive reference remains listed. Review the
 added scripts, changes to include contexts and new call shapes for each
 additional work. A bundled copy of a script from the same executable can share
-the existing native ABI evidence. Verify product-visible effects for the added
-content and keep that product receipt tied to its full content identity.
+the existing native ABI evidence. Link product-visible changes in new scenes
+to a short product receipt with its full content identity.
+
+Across executable digests, the table diff supplies candidates. Reuse a shared
+implementation or prior test only after original wrapper and consumer evidence
+and a VM receipt establish the same behavior for the proposed scope. A wrapped
+executable with unavailable tables remains an independent, unverified build.
 
 ## Review each function family
 

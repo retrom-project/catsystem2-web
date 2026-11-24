@@ -115,6 +115,13 @@ function describeScript(script, facts) {
       scriptVersion: script.scriptVersion,
       calls: kcsCalls(script, facts.get(script.sha256)),
     };
+  if (script.kind === 'cst')
+    return {
+      kind: script.kind,
+      lines: script.lines,
+      calls: script.commandSites,
+      commandErrors: script.commandErrors.map(({ line, reason }) => ({ line, reason })),
+    };
   return {
     kind: script.kind,
     includes: script.includes,
@@ -126,6 +133,7 @@ function describeScript(script, facts) {
 
 function callShape(kind, call) {
   if (kind === 'fes') return JSON.stringify(['fes', call.type, call.command, call.argumentTokens]);
+  if (kind === 'cst') return JSON.stringify(['cst', call.command]);
   return JSON.stringify([
     'kcs',
     call.table,
@@ -200,7 +208,7 @@ async function collectScripts(workInputs, executableSha256, facts) {
       });
       if (report.status !== 'parsed') unresolved.push({ logicalPath, reason: report.reason });
       for (const member of report.entries) {
-        if (!['kcs', 'fes'].includes(member.kind)) continue;
+        if (!['kcs', 'fes', 'cst'].includes(member.kind)) continue;
         if (member.status !== 'parsed') {
           unresolved.push({ logicalPath, name: member.name, reason: member.reason });
           continue;
@@ -210,6 +218,12 @@ async function collectScripts(workInputs, executableSha256, facts) {
           .map(([name]) => name);
         if (missing.length)
           unresolved.push({ logicalPath, name: member.name, missingIncludes: missing });
+        if (member.commandErrors?.length)
+          unresolved.push({
+            logicalPath,
+            name: member.name,
+            undecodedCommandLines: member.commandErrors.map(({ line }) => line),
+          });
         const content = (scripts[member.sha256] ??= { contexts: {} }),
           context = describeScript(member, facts),
           key = digest(JSON.stringify(context)),
