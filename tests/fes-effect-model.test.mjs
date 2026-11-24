@@ -227,7 +227,7 @@ for (const profile of profiles) {
           0,
           'area has no eager init',
         );
-        assert.equal(world.graphics.drawTasks.get(drawId).state.enabled, false);
+        assert.equal(world.graphics.drawTasks.get(drawId).state.enabled, 0);
         assert.deepEqual(h.events.find((event) => event[0] === 'snapshot')?.slice(1) ?? null, crop);
         const old = type === 7 ? e.ownedBitmaps[0] : e.ownedBitmaps[1];
         const stencil = type === 8 ? e.ownedBitmaps[0] : 0;
@@ -298,7 +298,7 @@ for (const profile of profiles) {
         assert.equal(task.state.active, 0, 'area idle uses force-finish258');
         await h.model.visit(e, 4);
         assert.equal(e.deleted, true);
-        assert.equal(world.graphics.drawTasks.get(drawId).state.enabled, true);
+        assert.equal(world.graphics.drawTasks.get(drawId).state.enabled, 1);
         const owned = [...e.ownedBitmaps],
           pending = h.model.snapshot();
         assert.equal(
