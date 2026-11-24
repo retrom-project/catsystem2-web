@@ -49,6 +49,7 @@ export class NativeImageCommands {
       const target = images.get(h),
         source = images.get(a(1));
       if (target.state !== source.state) {
+        target.commitCanvas();
         const attrs = new Map((target.state.attributes ?? []).map((v) => [v.id, v]));
         for (const attr of source.state.attributes ?? []) attrs.set(attr.id, structuredClone(attr));
         target.state.attributes = [...attrs.values()].sort((a, b) => a.id - b.id);
