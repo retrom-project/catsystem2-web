@@ -756,7 +756,10 @@ export default {
       soundReset: 189,
     },
     soundBaseOnly: [22],
-    scriptForward: [22],
+    // Own Script input paths map raw 61/62/428 to the canonical hover,
+    // input-state and system-message packets. Raw 30/31 use Base only.
+    scriptForward: [4, 9, 10, 18, 19, 20, 21, 22, 64, 65, 446],
+    scriptBaseOnly: [30, 31],
     screenEvent: null,
     tilePlaneCommand: null,
   },

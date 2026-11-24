@@ -5,6 +5,7 @@ import { floatBits, readKCS } from '../src/kcs.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
@@ -203,4 +204,64 @@ test('2.6.1.67 existing MOT triangle GCALL follows the four ordered x87 quarters
     args.map((_, index) => motion.machine.load(floor + index * 4)),
     args.map(([, result]) => result),
   );
+});
+
+const scriptInputPackets = [
+  [4, 0xffff0001, 0xb11e, 0xc77e, NATIVE_UNWRITTEN_WORD],
+  [9, 0xffff0003, 0xb11e, 0xc77e, 0],
+  [10, 0xffff0004, 0xb11e, 0xc77e, 0],
+  [18, 0xffff0016, 0, 0, NATIVE_UNWRITTEN_WORD],
+  [22, 0xffff0014, 0, 0xc77e, 1],
+  [64, 0xffff0005, 0xb11e, 0xc77e, NATIVE_UNWRITTEN_WORD],
+  [65, 0xffff0017, 0xb11e, 0xc77e, 1],
+  [446, 0xffff0015, 0, 0xc77e, NATIVE_UNWRITTEN_WORD],
+];
+
+test('2.6.1.67 Script receives exact live input packets and keeps unhandled base messages out', async (t) => {
+  const queued = [19, 20, 21];
+  const program = kcsProgram([
+    ...[...scriptInputPackets, ...queued].flatMap((_, index) => [
+      [37, 512 + index * 16],
+      [43, 71, 4],
+    ]),
+    [59],
+  ]);
+  const world = await dataWorld(profile, { 'case.kcs': program });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = world.main;
+  const sender = await world.objects.create({ kind: 2, parent: task.id });
+  const source = world.nativeTaskID(sender);
+  for (const raw of [30, 31]) {
+    const reply = await world.engineMessages.dispatch(task.id, sender, raw, 0xb11e, 0xc77e);
+    assert.equal(reply.handled, false);
+    assert.equal(reply.result, NATIVE_UNWRITTEN_WORD);
+    assert.equal(task.machine.waiting?.address, 512);
+  }
+  for (const [index, [id, code, w, l, result]] of scriptInputPackets.entries()) {
+    const start = 512 + index * 16;
+    const reply = await world.engineMessages.dispatch(task.id, sender, id, 0xb11e, 0xc77e);
+    assert.equal(reply.handled, true);
+    assert.equal(reply.result, result);
+    assert.deepEqual(
+      Array.from({ length: 4 }, (_, word) => task.machine.load(start + word * 4)),
+      [id === 18 ? 0xffffffff : source, code, w, l],
+    );
+  }
+  for (const id of queued) {
+    const reply = await world.engineMessages.dispatch(task.id, sender, id, 0xb11e, 0xc77e);
+    assert.deepEqual(reply, { routed: true, handled: true, result: 1 });
+  }
+  const expected = queued.map((_, index) => [source, 0xffff0011 + index, 0, 0]);
+  assert.deepEqual(task.messages, expected);
+  assert.equal(task.machine.waiting?.address, 512 + scriptInputPackets.length * 16);
+  await world.tick();
+  assert.deepEqual(task.messages, []);
+  for (const [index, packet] of expected.entries()) {
+    const start = 512 + (scriptInputPackets.length + index) * 16;
+    assert.deepEqual(
+      Array.from({ length: 4 }, (_, word) => task.machine.load(start + word * 4)),
+      packet,
+    );
+  }
+  assert.equal(task.status, 'finished');
 });

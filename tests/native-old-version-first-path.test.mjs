@@ -1023,10 +1023,7 @@ test('67 first-title entry GCALLs preserve VM zero and real task identity', asyn
     assert.ok(childWorldIDs.every((childID) => !world.objects.objects.has(childID)));
 
     const beforeStrictMessage = structuredClone(record.implementation.snapshot());
-    await assert.rejects(
-      world.sendEngine(id, world.main.id, 9),
-      /Unreviewed.*messages.scriptBaseOnly/,
-    );
+    assert.equal(await world.sendEngine(id, world.main.id, 9), 0);
     assert.deepEqual(record.implementation.snapshot(), beforeStrictMessage);
     assert.equal(attempted.cpu, 0);
     for (const nativeID of [385, 856])
@@ -1433,6 +1430,8 @@ async function verifyCursorVisibility(t, profile, cursorMessage = 22) {
     );
     if (profile === 'rebellions-jp-engine-2.6.1.63')
       assert.deepEqual(await extra, { routed: true, handled: true, result: 1 });
+    else if (profile === title67Profile)
+      assert.deepEqual(await extra, { routed: true, handled: true, result: 0 });
     else await assert.rejects(extra, /Unreviewed ABI behavior .*\/messages\.scriptBaseOnly/);
   } finally {
     world.sound.audio = audio;
