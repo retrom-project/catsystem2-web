@@ -1361,10 +1361,13 @@ export class FESCoordinator {
     }
     return 0;
   }
-  async maskOutputs(sleeping) {
-    const { instance, world } = this;
+  async maskOutputs(sleeping, { resourcesOnly = false } = {}) {
+    const { instance, world } = this,
+      entries = resourcesOnly ? this.resources.entries : instance.objects;
     instance.player.nativeInput.state.sleeping = !!sleeping;
-    for (const object of instance.objects) {
+    for (const entry of entries) {
+      const object = resourcesOnly ? this.collection.lookup(entry.nameBytes, entry.index) : entry;
+      if (!object) continue;
       if (this.images.supports(object) && object.imageResource?.binding) {
         const binding = object.imageResource.binding;
         await world.sendEngine(
@@ -1374,8 +1377,10 @@ export class FESCoordinator {
           object.renderID,
           Number(object.disp && !sleeping),
         );
-      } else if (this.controls.supports(object)) await this.controls.update(instance, object);
-      else if (
+      } else if (this.controls.supports(object)) {
+        if (resourcesOnly) await this.controls.setSleepVisibility(instance, object, sleeping);
+        else await this.controls.update(instance, object);
+      } else if (
         [3, 4, 21, 29, 33, 36, 37].includes(object.nativeType) &&
         object.nativeTaskID != null
       )
@@ -1394,20 +1399,28 @@ export class FESCoordinator {
           0,
           Number(object.enable && !sleeping),
         );
+      if (resourcesOnly && sleeping && [7, 8].includes(object.nativeType)) {
+        const effect = this.effects.state(object);
+        if (effect?.taskId) await this.effects.send(effect.taskId, 258);
+      }
     }
     await instance.player.nativeInput.sync();
   }
   async setSleeping(value, context = {}) {
     const sleeping = Boolean(value),
       { instance } = this;
-    if (instance.player.nativeInput.state.sleeping === sleeping) return;
-    await instance.player.notify(sleeping ? '_FES_SLEEP_' : '_FES_WAKE_');
-    await this.resources.traverse({ executorEntry: context.executorEntry });
-    if (sleeping)
-      for (const effect of this.effects.model.entries.values())
-        if ([7, 8].includes(effect.type) && effect.taskId)
-          await this.effects.send(effect.taskId, 258);
-    await this.maskOutputs(sleeping);
+    if (nativeABI(this.world.profile).fes.legacySleepMask) {
+      await this.maskOutputs(sleeping, { resourcesOnly: true });
+    } else {
+      if (instance.player.nativeInput.state.sleeping === sleeping) return;
+      await instance.player.notify(sleeping ? '_FES_SLEEP_' : '_FES_WAKE_');
+      await this.resources.traverse({ executorEntry: context.executorEntry });
+      if (sleeping)
+        for (const effect of this.effects.model.entries.values())
+          if ([7, 8].includes(effect.type) && effect.taskId)
+            await this.effects.send(effect.taskId, 258);
+      await this.maskOutputs(sleeping);
+    }
     if (!sleeping && this.world.graphics.drawTasks.get(instance.player.surface)?.state.renderer)
       await this.world.sendEngine(instance.player.surface, instance.runtimeID, 292);
   }

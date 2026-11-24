@@ -258,6 +258,15 @@ export class FESControlDriver {
         ) | 0;
     object.filePending = false; // The original consumes after load/query.
   }
+  async setSleepVisibility(instance, object, sleeping) {
+    if (object.nativeTaskID == null) return;
+    const type = object.nativeType,
+      enabled = Number(object.enable && !sleeping),
+      shown = Number(object.disp && !sleeping);
+    await this.send(instance, object, type === 13 ? 355 : type === 14 ? 369 : 361, 0, enabled);
+    await this.send(instance, object, type === 13 ? 354 : type === 14 ? 373 : 360, 0, shown);
+    object.controlSleepMask = sleeping;
+  }
   async update(instance, object, { restoring = false } = {}) {
     this.state(object);
     if (restoring) return object.nativeTaskID == null ? undefined : this.validate(instance, object);
