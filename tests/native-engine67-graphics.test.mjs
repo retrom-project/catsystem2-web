@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { floatBits } from '../src/kcs.mjs';
+import { encodeCP932, floatBits } from '../src/kcs.mjs';
 import { openImage } from '../src/formats/hg3.mjs';
 import { MOTION_ABI, motionVector, setMotionVector } from '../src/motion/abi.mjs';
 import { NULL_NATIVE_TEXTURE } from '../src/native/texture-layout.mjs';
@@ -10,6 +10,53 @@ import { hg3, kcsProgram } from './helpers.mjs';
 
 const profile = 'bokutomo-engine-2.6.1.67',
   target = [0x13, 80];
+
+test('2.6.1.67 KCS reads live capture counters and writes a CP932 line at the original file position', async (t) => {
+  const files = new Map([
+      ['line.log', Uint8Array.of(0x61, 0x62, 0x63, 0)],
+      ['locked.log', Uint8Array.of(0xaa)],
+    ]),
+    world = await dataWorld(
+      profile,
+      {
+        'recording.kcs': kcsProgram([
+          [43, 565, 0],
+          [38, 128],
+          [43, 566, 0],
+          [38, 132],
+          [37, 256],
+          [37, 320],
+          [43, 567, 8],
+          [37, 384],
+          [37, 320],
+          [43, 567, 8],
+          [59],
+        ]),
+      },
+      {
+        storage: {
+          read: async (name) => files.get(name) ?? null,
+          stat: async (name) => ({ attributes: Number(name === 'locked.log') }),
+          write: async (name, bytes) => files.set(name, bytes.slice()),
+        },
+      },
+    );
+  t.after(() => world.close({ flushFiles: false }));
+  world.screenCapture.restore({ recording: 3, counter: 0xfffffffe, prefix: 'owned' });
+  const task = await world.spawnScript('recording.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    }),
+    m = task.machine;
+  m.writeString('line.log', 256);
+  m.writeString('行%d[G512]', 320);
+  m.writeString('locked.log', 384);
+  m.store(512, 7);
+  await world.runtime.scheduler.execute(task);
+  assert.deepEqual([m.load(128), m.load(132)], [3, 0xfffffffe]);
+  assert.deepEqual(files.get('line.log'), encodeCP932('abc行7\r\n'));
+  assert.deepEqual(files.get('locked.log'), Uint8Array.of(0xaa));
+});
 
 test('2.6.1.67 KCS capture produces an opaque owned bitmap and copies it through the CSS thumbnail', async (t) => {
   const capture = [0x13, 80],
