@@ -759,3 +759,96 @@ test('2.6.1.63 dictionary aliases and F32/word packing use the same live KCS own
     await world.close();
   }
 });
+
+test('2.6.1.63 scalar calls use the original integer RNG, weekday and signed words', async () => {
+  const world = await dataWorld(profile, {
+    'main-33.kcs': mainProgram(33, 0),
+    'main-786.kcs': mainProgram(786, 3),
+    'main-874.kcs': mainProgram(874, 2),
+    'main-875.kcs': mainProgram(875, 3),
+  });
+  try {
+    world.random.integer.seed(0x1234abcd);
+    const realStream = world.random.real.snapshot();
+    const initial = [3804888993, 3299738303, 2206553905, 1412884278, 3143776126, 1571473921];
+    for (const expected of initial) await executeMain(world, 33, [], undefined, expected);
+    assert.deepEqual(world.random.real.snapshot(), realStream);
+    for (const [args, expected] of [
+      [[2024, 2, 29], 4],
+      [[2024, -3, 40], 2],
+      [[-2147483648, 1, 1], 0xfffffffc],
+      [[2147483647, 2147483647, 0], 0xfffffffd],
+    ])
+      await executeMain(world, 786, args, undefined, expected);
+    await executeMain(world, 874, [0xabcd8000, 0xcdefffff], undefined, 0xffff8000);
+    const memory = await executeMain(world, 875, [0xffff8000, 160, 168], (machine) => {
+      machine.store(164, 0xa7a7a7a7);
+    });
+    assert.deepEqual(
+      [memory.load(160), memory.load(164), memory.load(168)],
+      [0xffff8000, 0xa7a7a7a7, 0xffffffff],
+    );
+    const alias = await executeMain(world, 875, [0x00018000, 160, 160]);
+    assert.equal(alias.load(160), 1);
+  } finally {
+    await world.close();
+  }
+});
+
+test('2.6.1.63 KCS narrow desktop calls use the clipboard boundary and blocking message box', async () => {
+  const world = await dataWorld(profile, {
+    'main-10.kcs': mainProgram(10, 1),
+    'main-445.kcs': mainProgram(445, 1),
+  });
+  const calls = [];
+  let opens = true;
+  world.runtime.services.nativeClipboard = {
+    open(owner) {
+      calls.push(['open', owner]);
+      return opens;
+    },
+    empty() {
+      calls.push(['empty']);
+      return true;
+    },
+    write(text) {
+      calls.push(['write', text]);
+      return true;
+    },
+    close() {
+      calls.push(['close']);
+      return true;
+    },
+  };
+  const shown = Promise.withResolvers();
+  const acknowledge = Promise.withResolvers();
+  world.host.nativeWindowAction = (action) => {
+    shown.resolve(action);
+    return acknowledge.promise;
+  };
+  const messageAt = (text) => (machine) => machine.writeString(text, 160);
+  try {
+    await executeMain(world, 10, [160], messageAt('猫\\n犬'));
+    assert.deepEqual(calls.splice(0), [['open', 1], ['empty'], ['write', '猫\r\n犬'], ['close']]);
+    opens = false;
+    await executeMain(world, 10, [160], messageAt('本文'));
+    assert.deepEqual(calls.splice(0), [['open', 1]]);
+    const pending = executeMain(world, 445, [160], messageAt('原版の本文'));
+    const request = await Promise.race([
+      shown.promise,
+      pending.then(() => {
+        throw new Error('KCS returned before showing its message box');
+      }),
+    ]);
+    assert.deepEqual(request, {
+      type: 'script-message-box',
+      caption: 'system error',
+      message: '原版の本文',
+    });
+    acknowledge.resolve(1);
+    await pending;
+  } finally {
+    acknowledge.resolve(0);
+    await world.close();
+  }
+});
