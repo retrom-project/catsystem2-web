@@ -374,6 +374,120 @@ for (const [table, version, column] of [
   });
 }
 
+for (const version of [1, 2]) {
+  const table = `particle-v${version}`,
+    particleCall = (id, args = [], output) => [
+      ...args.map((word) => [37, word]),
+      [43, id, args.length * 4],
+      ...(output === undefined ? [] : [[38, output]]),
+    ],
+    particle = async (instructions, overrides = {}) => {
+      const bytes = kcsProgram(instructions);
+      new DataView(bytes.buffer, bytes.byteOffset).setUint16(8, version, true);
+      return new ParticleScriptInstance(await readKCS(bytes), {
+        profile,
+        count: 1,
+        width: 16,
+        height: 16,
+        screenWidth: 0x81234567,
+        screenHeight: 0xf8253146,
+        fps: 144,
+        shared: new Uint8Array(512),
+        ...overrides,
+      });
+    };
+  test(`2.6.1.67 ${table} fixed state, viewport, quad, register and visibility native wrappers`, async () => {
+    const marker = 0xa5a5a5a5,
+      position = [0x80000000, 0x7fc12345, 0x3fc00000],
+      registers = Array.from({ length: 32 }, (_, index) => 0x3f800000 + index),
+      quad = Array.from({ length: 28 }, (_, index) => 0x81001200 + index);
+    registers.splice(0, 5, 0x80000000, 0xffc9a090, 0x7fc13579, 0x7f800000, 1);
+    const instance = await particle(
+        [
+          [37, marker],
+          ...particleCall(1, [], 64),
+          ...particleCall(2, [], 68),
+          ...particleCall(4, [], 72),
+          ...particleCall(5, [76, 80]),
+          ...particleCall(5, [84, 84]),
+          ...particleCall(27, position),
+          ...particleCall(28, [88, 92, 96]),
+          ...particleCall(28, [100, 100, 100]),
+          ...particleCall(31, [320]),
+          ...particleCall(30, [0x80000020]),
+          ...particleCall(35, [512]),
+          ...particleCall(36, [], 104),
+          ...particleCall(39, [0, 0x81234567]),
+          ...particleCall(39, [1, 0x12345678]),
+          ...particleCall(39, [0xffffffff, 0x77777777]),
+          ...particleCall(40, [], 108),
+          [59],
+        ],
+        { registers: new Float32Array(Uint32Array.from(registers).buffer) },
+      ),
+      m = instance.machine,
+      words = (address, count) =>
+        Array.from({ length: count }, (_, index) => m.load((address + index * 4) >>> 0));
+    quad.forEach((value, index) => m.store(320 + index * 4, value));
+    m.store(0x80000090, marker);
+    m.store(640, marker);
+    assert.equal(instance.table, table);
+    const sp = m.sp;
+    assert.equal(instance.update(0xf7654321).active, true);
+    assert.deepEqual(
+      words(64, 6),
+      [0xf7654321, 0xffffffff, 144, 0x81234567, 0xf8253146, 0xf8253146],
+    );
+    assert.deepEqual(words(88, 6), [...position, position[2], 0, 0]);
+    assert.deepEqual(Array.from(new Uint32Array(instance.positions.buffer)), [...position, 0]);
+    assert.deepEqual(words(0x80000020, 29), [...quad, marker]);
+    assert.deepEqual(words(512, 33), [...registers, marker]);
+    assert.equal(instance.visibility[0] >>> 0, 0x81234567);
+    assert.equal(m.pop(), marker);
+    assert.equal(m.sp, sp);
+    instance.update(0x80000000);
+    assert.deepEqual(words(64, 2), [0x80000000, 0xf7654321]);
+  });
+
+  test(`2.6.1.67 ${table} exit halts each guest without a result and retains the particle loop order`, async () => {
+    const marker = 0xa5a5a5a5,
+      instance = await particle(
+        [
+          ...particleCall(36, [], 64),
+          ...particleCall(40, [], 68),
+          [37, marker],
+          ...particleCall(32),
+          [37, 7],
+          [38, 72],
+          [59],
+        ],
+        { count: 4 },
+      ),
+      m = instance.machine;
+    const sp = m.sp;
+    assert.equal(instance.update(9).active, false);
+    assert.deepEqual([m.load(64), m.load(68), m.load(72)], [3, 3, 0]);
+    assert.equal(instance.calls.get(32), 4);
+    assert.equal(m.pop(), marker);
+    assert.equal(m.sp, sp);
+    assert.deepEqual(instance.update(10), { active: false, executed: 0 });
+    const guarded = await particle([...particleCall(3, [10]), [59]]);
+    assert.throws(() => guarded.update(9), /Unreviewed PTCL native .*\/3/);
+  });
+
+  if (version === 2)
+    test('2.6.1.67 particle-v2 validates the complete blend-mode DWORD', async () => {
+      for (const mode of [0, 1, 2, 3, 4, 5, 6, 0x80000000, 0xffffffff]) {
+        const marker = 0xeadbac34,
+          instance = await particle([[37, marker], ...particleCall(50, [mode]), [59]]);
+        instance.blendMode = 4;
+        instance.update(0);
+        assert.equal(instance.blendMode, mode >= 1 && mode <= 5 ? mode : 0);
+        assert.equal(instance.machine.pop(), marker);
+      }
+    });
+}
+
 test('2.6.1.67 copies an opaque word and yields for one guest frame', async () => {
   const { runtime, task, machine } = await run([
     [37, 0xf31c5ba9],

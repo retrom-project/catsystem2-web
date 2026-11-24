@@ -13,6 +13,35 @@ const mainConstantZero = [
   171, 174, 175, 176, 177, 178, 179, 181, 183, 186, 236, 432, 551, 554, 555, 575, 580, 909, 925,
 ];
 const mainUnwritten = [140, 142, 549];
+const particleStateSlots = [1, 2, 4, 5, 27, 28, 30, 31, 32, 35, 36, 39, 40];
+const particleRecoveredSlots = [
+  ...particleStateSlots,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  17,
+  19,
+  20,
+  21,
+  41,
+  42,
+].sort((a, b) => a - b);
+const particleStateEvidence = {
+  ids: particleStateSlots,
+  value:
+    'Own 2.6.1.67 Particle tables share these complete wrappers for frame history, viewport, current position and quad, registers, exit, visibility and count. Position copies three x87 singles and clears W, quad copies four 28-byte vertices, registers write 32 single words, exit clears active with control 4, and visibility stores a full DWORD after an unsigned index check.',
+};
+const particleStateSignatures = {
+  ids: [1, 2, 4, 36, 40],
+  fields: { resultWritten: true },
+};
 
 export default {
   id: 'cs2-2.6.1.67',
@@ -3146,13 +3175,11 @@ export default {
     'particle-v1': {
       count: 44,
       slots: {
-        unknown: [
-          0, 1, 2, 3, 4, 5, 16, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
-          38, 39, 40, 43,
-        ],
-        recovered: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 20, 21, 41, 42],
+        unknown: [0, 3, 16, 18, 22, 23, 24, 25, 26, 29, 33, 34, 37, 38, 43],
+        recovered: particleRecoveredSlots,
       },
       evidence: [
+        particleStateEvidence,
         {
           ids: [12, 13, 15, 17],
           value:
@@ -3170,6 +3197,7 @@ export default {
         },
       ],
       signatures: [
+        particleStateSignatures,
         { ids: [12, 13, 15, 17], fields: { resultWritten: true } },
         { ids: [6, 7, 8, 9, 10, 11], fields: { resultWritten: true } },
         { ids: [14, 19, 20, 21, 41, 42], fields: { resultWritten: true } },
@@ -3178,13 +3206,16 @@ export default {
     'particle-v2': {
       count: 51,
       slots: {
-        unknown: [
-          0, 1, 2, 3, 4, 5, 16, 18, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
-          38, 39, 40, 43, 44, 45, 46, 47, 48, 49, 50,
-        ],
-        recovered: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 20, 21, 41, 42],
+        unknown: [0, 3, 16, 18, 22, 23, 24, 25, 26, 29, 33, 34, 37, 38, 43, 44, 45, 46, 47, 48, 49],
+        recovered: [...particleRecoveredSlots, 50],
       },
       evidence: [
+        particleStateEvidence,
+        {
+          ids: [50],
+          value:
+            'Own 2.6.1.67 Particle v2 wrapper at 0x4999b0 stores modes 1 through 5 and maps every other DWORD to zero. Control 2 leaves the result untouched.',
+        },
         {
           ids: [12, 13, 15, 17],
           value:
@@ -3202,6 +3233,7 @@ export default {
         },
       ],
       signatures: [
+        particleStateSignatures,
         { ids: [12, 13, 15, 17], fields: { resultWritten: true } },
         { ids: [6, 7, 8, 9, 10, 11], fields: { resultWritten: true } },
         { ids: [14, 19, 20, 21, 41, 42], fields: { resultWritten: true } },
