@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { decodeMotionRecords } from '../src/motion/checkpoint.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 
@@ -154,4 +155,77 @@ test('2.6.1.67 motion GCALLs transfer complete base and working register blocks'
   check(await execute('get-working.kcs'), 0xad2ed000);
   await execute('commit.kcs');
   check(await execute('get-base.kcs'), 0xad2ed000);
+});
+
+test('2.6.1.67 motion checkpoints read a live adjacent frame and restore compact CSS entries', async (t) => {
+  const file = [0x13, 88],
+    world = await dataWorld(profile, {
+      'create-checkpoint.kcs': motionProgram([
+        [315, [managerWord], 84],
+        [315, [0], 96],
+      ]),
+      'save-checkpoint.kcs': motionProgram([
+        [316, [motionWord, 132], 96],
+        [387, [file, 41, motionWord], 100],
+        [387, [file, 42, 0], 104],
+      ]),
+      'load-checkpoint.kcs': motionProgram([
+        [388, [file, 42, managerWord, 200], 96],
+        [388, [file, 41, managerWord, 200], 100],
+        [317, [motionWord]],
+        [317, [0]],
+      ]),
+      'walk.kcs': kcsProgram([[59]]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const registry = world.runtime.services.motion,
+    src = registry.create(world.main.id),
+    dst = registry.create(world.main.id),
+    manager = registry.get(src),
+    script = await manager.loadScript('walk'),
+    registerWords = Uint8Array.of(0x34, 0x12, 0xc0, 0x7f),
+    extra = Uint8Array.of(1, 9, 7);
+  manager.add(script, { registerWords, extra, group: 9, delay: 3, startTick: 100 });
+  const nativeFile = await world.runtime.native('main', 238, [88], world.main.machine, world.main);
+  const execute = async (name, manager, checkpoint = 0) => {
+    const task = await world.spawnScript(name, { parent: world.main.id, initialExecute: false }),
+      { machine } = task,
+      floor = machine.sp;
+    machine.store(80, manager);
+    machine.store(84, checkpoint);
+    machine.store(88, nativeFile.value);
+    machine.store(floor + 8, 125);
+    await world.runtime.scheduler.execute(task);
+    assert.equal(machine.sp, floor + 4);
+    assert.equal(machine.load(floor), 0xa0263136);
+    return machine;
+  };
+  const created = await execute('create-checkpoint.kcs', src),
+    checkpoint = created.load(84),
+    original = world.runtime.handles.get(checkpoint, 'motion-checkpoint').bytes,
+    view = new DataView(original.buffer);
+  assert.equal(created.load(96), 0);
+  assert.deepEqual(
+    [0, 4, 8, 44, 48, 1072, 1076, 1080].map((at) => view.getUint32(at, true)),
+    [1087, 1, 1079, 9, 0x7fc01234, 3, 25, 3],
+  );
+  assert.deepEqual([...original.subarray(1084)], [...extra]);
+  const saved = await execute('save-checkpoint.kcs', src, checkpoint);
+  assert.deepEqual(
+    [96, 100, 104].map((at) => saved.load(at)),
+    [1, 1, 0],
+  );
+  const packet = world.runtime.handles.get(nativeFile.value, 'global-file').read(41),
+    [record] = decodeMotionRecords(packet, profile);
+  assert.equal(record.name, 'walk.kcs');
+  assert.equal(record.elapsed, 32);
+  const loaded = await execute('load-checkpoint.kcs', dst, checkpoint);
+  assert.equal(loaded.load(96), 0);
+  const fresh = registry.get(dst),
+    [motion] = fresh.records.values();
+  assert.equal(motion.startTick, 168);
+  assert.equal(motion.group, 9);
+  assert.equal(motion.instance.delay, 3);
+  assert.equal(world.runtime.handles.get(loaded.load(100), 'motion-checkpoint').owner, dst);
+  assert.throws(() => world.runtime.handles.get(checkpoint, 'motion-checkpoint'), /released/);
 });
