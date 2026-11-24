@@ -35,6 +35,39 @@ const payload = (bytes) => {
     write: (at, b) => bytes.set(b, at),
   };
 };
+async function copyLegacyGlyphAtlas(bitmap) {
+  const { bpp, canvasWidth, canvasHeight, offsetX, offsetY } = bitmap.state,
+    width = canvasWidth || bitmap.width,
+    height = canvasHeight || bitmap.height;
+  if (
+    ![1, 2, 3, 4].includes(bpp) ||
+    ![width, height].every(Number.isSafeInteger) ||
+    width < 1 ||
+    height < 1 ||
+    width * height > 64 * 1024 * 1024
+  )
+    throw new RangeError('Unsupported legacy glyph atlas geometry or format');
+  const rgba = new Uint8ClampedArray(width * height * 4),
+    x = offsetX | 0,
+    y = offsetY | 0,
+    left = Math.max(0, x),
+    bottom = Math.max(0, y),
+    columns = Math.min(width - left, bitmap.width + Math.min(0, x)),
+    rows = Math.min(height - bottom, bitmap.height + Math.min(0, y));
+  if (bpp !== 1 && columns > 0 && rows > 0) {
+    bitmap.commitCanvas();
+    const source = await bitmap.pixels();
+    for (let row = 0; row < rows; row++) {
+      const from = (bitmap.height - 1 - row) * bitmap.width * 4,
+        to = ((height - 1 - bottom - row) * width + left) * 4,
+        end = to + columns * 4;
+      rgba.set(source.subarray(from, from + columns * 4), to);
+      if (bpp === 2) for (let i = to; i < end; i++) rgba[i] = (rgba[i] >>> 4) * 17;
+      if (bpp === 3) for (let i = to + 3; i < end; i += 4) rgba[i] = 255;
+    }
+  }
+  return { width, height, bpp: 4, rgba };
+}
 export class NativeLegacyTextRuntime {
   constructor(world) {
     this.world = world;
@@ -45,6 +78,7 @@ export class NativeLegacyTextRuntime {
     this.characterPairs = text?.characterLengthPairs;
     this.wordOperations = text?.legacyTaskWordOperations ?? [];
     this.initializerBitmapBpp = text?.legacyInitializerBitmapBpp;
+    this.glyphAtlas = text?.legacyGlyphAtlas;
   }
   async create(record) {
     const task = new NativeLegacyTextTask(this, record);
@@ -55,7 +89,8 @@ export class NativeLegacyTextRuntime {
   async apply(id, args, machine, task) {
     machine = vmMemory(machine);
     const checkedInitializer = id === 0x7b && this.initializerBitmapBpp !== undefined,
-      checkedOwner = checkedInitializer || this.wordOperations.includes(id);
+      checkedGlyph = this.glyphAtlas && (id === 0x88 || id === 0x89),
+      checkedOwner = checkedInitializer || checkedGlyph || this.wordOperations.includes(id);
     let absentOwner = false;
     if (checkedOwner) {
       const signature = nativeABI(this.world.profile).tables.main.entries[id].signature;
@@ -63,6 +98,7 @@ export class NativeLegacyTextRuntime {
         throw new Error(
           `Native legacy text ${id} expects ${signature.argumentWords} argument words`,
         );
+      if (checkedGlyph && id === 0x88 && !args[1]) return nativeReply(2);
       const owner = this.world.resolveTaskID(args[0], task.id),
         record = this.world.objects.objects.get(owner);
       absentOwner = !record || (args[0] === 0 && record.kind === 1);
@@ -294,8 +330,9 @@ export class NativeLegacyTextTask {
         image,
         sourceRect: rect ? { x: rect[0], y: rect[1], width: rect[2], height: rect[3] } : null,
         padding: 2,
+        legacyImageAtlas: this.owner.glyphAtlas,
       });
-      compositeTextGlyph(pixels, shape, r[2], r[3]);
+      compositeTextGlyph(pixels, shape, r[2], r[3], this.owner.glyphAtlas && Boolean(image));
       r[9] = 1;
     }
     bitmap.state.rgba = pixels.rgba;
@@ -397,18 +434,26 @@ export class NativeLegacyTextTask {
         await this.restart();
         return 0;
       case 116:
-        if (l) {
+        if (this.owner.glyphAtlas) {
+          if (!t.configured)
+            throw new Error('Legacy glyph atlas requires an initialized kind 8 task');
+          this.imageFont = await copyLegacyGlyphAtlas(this.world.graphics.images.get(l));
+        } else if (l) {
           this.imageFont = structuredClone(this.world.graphics.images.get(l).state);
         } else this.imageFont = null;
         return 0;
       case 117:
+        if (this.owner.glyphAtlas && !t.configured)
+          throw new Error('Legacy glyph record requires an initialized kind 8 task');
         if (m) {
           const bytes = m.bytes(l, 20),
-            v = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-          this.glyphMap.set(
-            v.getUint16(0, true),
-            Array.from({ length: 4 }, (_, i) => v.getInt32(4 + i * 4, true)),
-          );
+            v = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
+            character = v.getUint16(0, true);
+          if (!this.owner.glyphAtlas || !this.glyphMap.has(character))
+            this.glyphMap.set(
+              character,
+              Array.from({ length: 4 }, (_, i) => v.getInt32(4 + i * 4, true)),
+            );
         }
         return 0;
       case 118:

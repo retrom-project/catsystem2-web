@@ -40,7 +40,7 @@ import { memoryGame, u32, translation, kcsProgram } from './helpers.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 
 test('2.6.1.23 legacy Text controls preserve receiver words, rows and query ownership', async (t) => {
-  const world = await dataWorld('grisaia-jp-engine-2.6.1.23'),
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23', {}, { glyphs }),
     textID = await world.objects.create({ kind: 8, parent: world.root }),
     text = world.legacyText.tasks.get(textID).text,
     target = world.nativeTaskID(textID),
@@ -98,20 +98,16 @@ test('2.6.1.23 legacy Text controls preserve receiver words, rows and query owne
   await invoke(126, [target, 18], undefined, /expects 3 argument words/);
   await invoke(131, [0xb87ca1a1, 27]);
   assert.equal(text.w(183), 18);
+  await invoke(136, [other, 0]);
+  await invoke(137, [target, 65, 1, 2, 3, 4], undefined, /requires an initialized kind 8 task/);
 
   const def = 192,
     first = 400,
     record = world.legacyText.tasks.get(textID);
-  function configure(profile, rowLimit, bpp, error) {
-    return invoke(123, [target, def, first], undefined, error, (machine) => {
+  function configure(profile, rowLimit, bpp, error, extra = [], receiver = target) {
+    return invoke(123, [receiver, def, first], undefined, error, (machine) => {
       machine.bytes(def, 96).fill(0);
-      for (const [index, word] of [
-        [2, 8],
-        [3, 6],
-        [4, bpp],
-        [6, 16],
-        [15, rowLimit],
-      ]) {
+      for (const [index, word] of [[2, 8], [3, 6], [4, bpp], [6, 16], [15, rowLimit], ...extra]) {
         machine.store(def + index * 4, word);
       }
       machine.bytes(first, profile.length + 1).set([...profile, 0]);
@@ -136,6 +132,80 @@ test('2.6.1.23 legacy Text controls preserve receiver words, rows and query owne
   assert.equal(text.w(192), 2);
   assert.notEqual(record.bitmap, saved);
   assert.throws(() => world.graphics.images.get(saved), /released native bitmap handle/);
+
+  const atlasHandle = world.graphics.images.create(2, 2, world.main.id),
+    atlas = world.graphics.images.get(atlasHandle),
+    source = Uint8ClampedArray.from([
+      11, 12, 13, 0, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44,
+    ]);
+  Object.assign(atlas.state, {
+    bpp: 3,
+    canvasWidth: 4,
+    canvasHeight: 3,
+    offsetX: 1,
+    offsetY: 1,
+    rgba: source,
+  });
+  await invoke(136, [target, atlasHandle]);
+  await invoke(137, [target, 0x12340041, 1, 2, -3, 4]);
+  await invoke(137, [target, 0xabcd0041, 9, 8, 7, 6]);
+  await invoke(136, [target, 0]);
+  assert.deepEqual([...record.glyphMap], [[65, [1, 2, -3, 4]]]);
+  assert.deepEqual(
+    [record.imageFont.width, record.imageFont.height, record.imageFont.bpp],
+    [4, 3, 4],
+  );
+  const expected = new Uint8ClampedArray(48);
+  expected.set([11, 12, 13, 255, 21, 22, 23, 255], 4);
+  expected.set([31, 32, 33, 255, 41, 42, 43, 255], 20);
+  assert.deepEqual(record.imageFont.rgba, expected);
+  source.fill(0);
+  await world.graphics.images.release(atlasHandle);
+  await invoke(136, [target, atlasHandle], undefined, /released native bitmap handle/);
+  assert.deepEqual(record.imageFont.rgba, expected);
+
+  const paintOwner = await world.objects.create({ kind: 8, parent: world.root }),
+    paintTarget = world.nativeTaskID(paintOwner),
+    packedHandle = world.graphics.images.create(5, 4, world.main.id),
+    packed = world.graphics.images.get(packedHandle),
+    packedPixels = new Uint8ClampedArray(5 * 4 * 4);
+  for (let row = 0; row < 4; row++)
+    for (let column = 0; column < 5; column++) {
+      const offset = (row * 12 + column * 2) * 13 + 97,
+        lo = offset & 255,
+        hi = (offset + 13) & 255;
+      packedPixels.set(
+        [(hi & 15) * 17, (lo >>> 4) * 17, (lo & 15) * 17, (hi >>> 4) * 17],
+        ((3 - row) * 5 + column) * 4,
+      );
+    }
+  Object.assign(packed.state, { bpp: 2, rgba: packedPixels });
+  await configure(
+    [],
+    8,
+    4,
+    undefined,
+    [
+      [2, 32],
+      [3, 26],
+      [6, 11],
+      [7, 1],
+      [16, 0xffa5ed61],
+      [18, 2],
+      [20, 4],
+      [22, 1],
+      [23, 3],
+    ],
+    paintTarget,
+  );
+  await invoke(136, [paintTarget, packedHandle]);
+  await invoke(137, [paintTarget, 65, 1, 1, 3, 3]);
+  await invoke(124, [paintTarget, first], undefined, undefined, (m) => m.writeString('A', first));
+  const painted = world.legacyText.tasks.get(paintOwner).bitmap;
+  const digest = createHash('sha256')
+    .update(await world.graphics.images.get(painted).pixels())
+    .digest('hex');
+  assert.equal(digest, '7817dcc9b6c71b7a12ec8fcae273b0870658bd2d5f06845cbb6bdecb903b0ce7');
 });
 
 const glyphs = {

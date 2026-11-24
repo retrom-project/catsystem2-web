@@ -521,23 +521,38 @@ export function resampleBitmap(
     outputOffset = target ? target.y * outputWidth + target.x : 0,
     packed = target?.bpp === 2;
   if (regionWidth > 4 * nextWidth || regionHeight > 4 * nextHeight) {
+    const bounded = region?.boundedSource,
+      originX = bounded ? region.x : 0,
+      originY = bounded ? region.y : 0;
+    if (
+      bounded &&
+      (originX < 0 ||
+        originY < 0 ||
+        regionWidth <= 0 ||
+        regionHeight <= 0 ||
+        originX + regionWidth > width ||
+        originY + regionHeight > height)
+    )
+      throw new RangeError('Legacy glyph averaging requires a crop fully inside its atlas');
+    // The old glyph reducer consumes integer crop origins and advances each
+    // cell to its next truncated endpoint, including the last partial cell.
     const rx = f(f(regionWidth) / f(nextWidth)),
       ry = f(f(regionHeight) / f(nextHeight)),
       nx = Math.max(1, Math.trunc(rx)),
       ny = Math.max(1, Math.trunc(ry));
     for (let y = 0; y < nextHeight; y++)
       for (let x = 0; x < nextWidth; x++) {
-        const sx = Math.trunc(f(f(x) * rx)),
-          sy = Math.trunc(f(f(y) * ry));
+        const x0 = Math.trunc(f(f(x) * rx)),
+          y0 = Math.trunc(f(f(y) * ry)),
+          sx = originX + x0,
+          sy = originY + y0,
+          columns = bounded ? Math.max(1, Math.trunc(f(f(x + 1) * rx)) - x0) : nx,
+          rows = bounded ? Math.max(1, Math.trunc(f(f(y + 1) * ry)) - y0) : ny;
         for (let c = 0; c < 4; c++) {
-          let sum = 0,
-            count = 0;
-          for (let j = 0; j < ny; j++)
-            for (let i = 0; i < nx; i++) {
-              sum += source[((sy + j) * width + sx + i) * 4 + c];
-              count++;
-            }
-          const channel = Math.floor(sum / count);
+          let sum = 0;
+          for (let j = 0; j < rows; j++)
+            for (let i = 0; i < columns; i++) sum += source[((sy + j) * width + sx + i) * 4 + c];
+          const channel = Math.floor(sum / (columns * rows));
           output[(outputOffset + y * outputWidth + x) * 4 + c] = packed
             ? (channel >>> 4) * 17
             : channel;
@@ -553,7 +568,7 @@ export function resampleBitmap(
         fy = Math.imul(y, stepY) + (region?.y ?? 0),
         sx = fx >> 15,
         sy = fy >> 15;
-      if (sx >= width || sy >= height) continue;
+      if (sx >= width || sy >= height || (region?.boundedSource && (sx < 0 || sy < 0))) continue;
       const a = (sy * width + sx) * 4,
         b = sx < width - 1 ? a + 4 : a;
       const c = sy < height - 1 ? a + width * 4 : a,

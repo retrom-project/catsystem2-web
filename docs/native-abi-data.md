@@ -19,8 +19,8 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 487       | 57            | 17            | 308     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.63 | 938        | 392       | 80            | 19            | 447     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
+| 2.6.1.23 | 869        | 489       | 57            | 17            | 306     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.63 | 938        | 393       | 80            | 19            | 446     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51                                     |
@@ -101,6 +101,15 @@ ARGB8888, including empty dimensions and the visible output flag.
 The Core guards packed text bitmaps and a line-break table that would spill
 into its neighboring count. Both wrappers return control 2 with the result
 untouched.
+
+Main 136 normalizes a borrowed bitmap into an independent ARGB8888 atlas
+for the live kind 8 text owner. The copy uses its logical canvas, native
+signed offsets and packed pixel conversion. A zero bitmap operand skips
+the message. Main 137 inserts the first rectangle for the low 16 bits of
+the character and retains it on repeated insertion. Both return control 2.
+The atlas consumer uses physical rows, signed bounds for interpolation and
+integer crop origins for area reduction. The Core guards area reduction
+beyond the owned atlas, as well as invalid or uninitialized owners.
 
 Main 27 appends zeroed storage to the caller's virtual memory. A zero-byte
 allocation keeps an empty record and returns `0xffffffff`. Main 28

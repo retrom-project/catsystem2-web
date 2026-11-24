@@ -118,6 +118,11 @@ const mainEvidence = [
       'Own 2.6.1.23 wrappers 0x487d80–0x488110 send raw 98–101, 103–105 and 111 to the kind 8 receiver at 0x41bc80. State, rows and the optional query owner were compared.',
   },
   {
+    ids: [136, 137],
+    value:
+      'Own 2.6.1.23 wrappers 0x488010 and 0x488050 send raw 109 and 110 to each configured kind 8 glyph manager. Atlas normalization and first-insertion glyph records were checked through original GCALL.',
+  },
+  {
     ids: [120],
     value:
       'Own 2.6.1.23 wrapper 0x488d50 reads a signed RECT and an array of 12-byte bitmap records, clears the clipped target and selects physical pixel kernels.',
@@ -953,6 +958,7 @@ export default {
     legacyConfigurationBytes: 1128,
     legacyClearPublishes: true,
     legacyTaskWordOperations,
+    legacyGlyphAtlas: true,
     legacyInitializerBitmapBpp: 4,
     settingsCharacterBytes: 1,
     pathBytes: 260,
@@ -1459,6 +1465,22 @@ export default {
                 : parameter,
             ),
             resultWritten: id === 129,
+          },
+        })),
+        ...[136, 137].map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) => {
+              if (parameter.name === 'task')
+                return { ...parameter, type: { kind: 'object-id', objectKind: 'legacy-text' } };
+              if (parameter.name === 'bitmap')
+                return {
+                  ...parameter,
+                  type: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' },
+                };
+              return parameter;
+            }),
+            resultWritten: false,
           },
         })),
         {

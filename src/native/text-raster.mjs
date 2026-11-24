@@ -2,7 +2,11 @@
 import { blendBitmapPixel, resampleBitmap } from './image.mjs';
 import { blendPackedRow, packedBitmapWords } from './raster-kernel.mjs';
 // GDI gray64, FreeType gray256 and image-font cells share the integer compositor.
-export function rasterTextGlyph(parser, r, { image = null, sourceRect = null, padding = 1 } = {}) {
+export function rasterTextGlyph(
+  parser,
+  r,
+  { image = null, sourceRect = null, padding = 1, legacyImageAtlas = false } = {},
+) {
   const font = parser.rasterFont?.(r) ?? parser.font(r),
     ft = Boolean(font.backend);
   if (!image && (r[1] === 32 || r[1] === 0x8140) && !ft) return empty();
@@ -18,12 +22,20 @@ export function rasterTextGlyph(parser, r, { image = null, sourceRect = null, pa
         ),
         y * image.width * 4,
       );
-    for (let at = 0; at < physical.length; at += 4)
-      if (!physical[at + 3]) physical.fill(0, at, at + 3);
+    if (!legacyImageAtlas)
+      for (let at = 0; at < physical.length; at += 4)
+        if (!physical[at + 3]) physical.fill(0, at, at + 3);
     glyph = {
       width: side,
       height: side,
-      rgba: resampleBitmap(physical, image.width, image.height, side, side, sourceRect),
+      rgba: resampleBitmap(
+        physical,
+        image.width,
+        image.height,
+        side,
+        side,
+        legacyImageAtlas && sourceRect ? { ...sourceRect, boundedSource: true } : sourceRect,
+      ),
     };
   } else if (ft) {
     glyph = parser.glyphs.glyphNative(font, r[1]);
@@ -57,6 +69,7 @@ export function rasterTextGlyph(parser, r, { image = null, sourceRect = null, pa
       const out = (py * width + px) * 4,
         source = (yy * glyph.width + xx) * 4;
       let alpha = image ? glyph.rgba[source + 3] : glyph.alpha[yy * glyph.width + xx];
+      if (image && legacyImageAtlas && !alpha) continue;
       if (!image && !ft) {
         alpha = Math.floor((Math.round((alpha * 64) / 255) * 255) / 64);
         if (font.weight === 700) alpha = Math.min(255, alpha * 2);
@@ -106,7 +119,7 @@ export function rasterTextGlyph(parser, r, { image = null, sourceRect = null, pa
 function empty() {
   return { width: 0, height: 0, rgba: new Uint8ClampedArray(), rect: [0, 0, 0, 0] };
 }
-export function compositeTextGlyph(destination, shape, x, y) {
+export function compositeTextGlyph(destination, shape, x, y, bottomUp = false) {
   const { width, height, rgba } = destination;
   // Source and destination clipping are independent in the original blitter.
   const left = Math.max(0, x),
@@ -123,7 +136,8 @@ export function compositeTextGlyph(destination, shape, x, y) {
     outputWords = packed ? packedBitmapWords(rgba) : null,
     inputWords = packed ? packedBitmapWords(shape.rgba) : null;
   for (let yy = 0; yy < rows; yy++) {
-    const output = ((top + yy) * width + left) * 4,
+    const row = bottomUp ? height - 1 - top - yy : top + yy,
+      output = (row * width + left) * 4,
       start = yy * shape.width * 4;
     if (left > 0 && rgba.subarray(output - 4, output).every((v) => !v))
       rgba.set([shape.rgba[start], shape.rgba[start + 1], shape.rgba[start + 2], 0], output - 4);
