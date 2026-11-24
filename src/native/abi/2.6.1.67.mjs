@@ -536,7 +536,7 @@ export default {
           },
           {
             min: 200,
-            max: 200,
+            max: 203,
             offset: 5,
           },
           {
@@ -673,7 +673,7 @@ export default {
           },
           {
             min: 205,
-            max: 205,
+            max: 208,
             offset: -5,
           },
           {
@@ -990,7 +990,7 @@ export default {
           817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 836, 837,
           838, 839, 840, 841, 842, 843, 845, 846, 847, 853, 854, 855, 856, 857, 858, 859, 860, 861,
           862, 869, 871, 873, 874, 875, 877, 878, 879, 880, 881, 884, 885, 886, 887, 888, 889, 890,
-          891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 935, 936,
+          891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905,
         ],
         recovered: [
           1, 4, 5, 6, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 35, 36, 37,
@@ -1010,12 +1010,17 @@ export default {
           594, 595, 596, 597, 605, 606, 607, 608, 609, 610, 630, 633, 634, 635, 636, 637, 638, 639,
           640, 645, 646, 647, 649, 650, 651, 653, 654, 655, 658, 659, 694, 696, 697, 698, 699, 700,
           739, 740, 741, 785, 789, 790, 833, 834, 835, 844, 848, 849, 850, 851, 852, 863, 864, 865,
-          866, 867, 868, 870, 872, 876, 882, 883, 934, 937,
+          866, 867, 868, 870, 872, 876, 882, 883, 934, 935, 936, 937,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: [935, 936],
+          value:
+            "Own 2.6.1.67 Main0x49c480 and 0x49c5d0 resolve Sound through Root raw 33. They build a zeroed 280-byte CP932 packet with loop marker at +272 and the low DWORD of unsigned frames×1000/60 at +276. Main935 uses raw 174/175. Main936 picks raw 200/201 by numeric group or raw 202/203 by the packet's zero type word. The original Sound owner uses the inclusive bank range and returns the allocated bank or -1 through control 1. Uninitialized invalid load types remain rejected.",
+        },
         {
           ids: [304, 535],
           value:

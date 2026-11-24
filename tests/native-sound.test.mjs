@@ -631,6 +631,87 @@ for (const profile of [gameProfile, sdkProfile])
     }
   });
 
+test('2.6.1.67 KCS Sound offset loads use the original timing packet and both group selectors', async (t) => {
+  const profile = 'bokutomo-engine-2.6.1.67',
+    calls = [
+      [935, [7, 0xffffffff, 288, 1, 67]],
+      [935, [8, 0, 288, 2, 1]],
+      [936, [5, 0, 288, 1, 1, 19]],
+      [936, [5, 0, 288, 1, 2, 23]],
+      [936, [0x10005, 0, 288, 0, 1, 37]],
+      [936, [0x10005, 0, 288, 0, 2, 41]],
+      [936, [9, 0, 288, 1, 1, 15]],
+    ],
+    outputs = (index) => 80 + index * 4,
+    world = await dataWorld(profile, {
+      'あ_line.wav': Uint8Array.of(1, 2, 3),
+      'offsets.kcs': kcsProgram(
+        [
+          ...calls.flatMap(([id, args], index) => [
+            ...args.map((arg) => [37, arg]),
+            [43, id, args.length * 4],
+            [38, outputs(index)],
+          ]),
+          [59],
+        ],
+        [[288, 'あ_line.wav']],
+      ),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  world.sound.audio = fixture(profile).audio;
+  const receiver = world.sound.primary(world.main.id),
+    dispatch = receiver.message.bind(receiver),
+    packets = [];
+  receiver.groups.set(5, { id: 5, type: 'voice', typeCode: 2, min: 10, max: 11 });
+  receiver.groups.set(2, { id: 2, type: 'bgm', typeCode: 0, min: 13, max: 14 });
+  receiver.message = (words, context) => {
+    const id = words[1];
+    if ([174, 175, 200, 201, 202, 203].includes(id)) {
+      const packet = context.payload;
+      packets.push([
+        id,
+        packet.data.length,
+        packet.load(4),
+        packet.load(8),
+        packet.load(272),
+        packet.load(276),
+      ]);
+    }
+    return dispatch(words, context);
+  };
+  const task = await world.spawnScript('offsets.kcs', {
+    parent: world.main.id,
+    initialExecute: false,
+  });
+  await world.runtime.scheduler.execute(task);
+  assert.deepEqual(
+    calls.map((_, index) => task.machine.load(outputs(index))),
+    [1, 1, 10, 11, 13, 14, 0xffffffff],
+  );
+  assert.deepEqual(packets, [
+    [174, 280, 0, 0, 1, 1116],
+    [175, 280, 0, 0, 1, 16],
+    [200, 280, 5, 0, 1, 316],
+    [201, 280, 5, 0, 1, 383],
+    [202, 280, 0x10005, 0, 0, 616],
+    [203, 280, 0x10005, 0, 0, 683],
+    [200, 280, 9, 0, 1, 250],
+  ]);
+  for (const [bank, mode, offset] of [
+    [7, 'stream', 1116],
+    [8, 'static', 16],
+    [10, 'stream', 316],
+    [11, 'static', 383],
+    [13, 'stream', 616],
+    [14, 'static', 683],
+  ]) {
+    const device = world.sound.device[bank];
+    assert.equal(device.file, 'あ_line.wav');
+    assert.equal(device.sourceMode, mode);
+    assert.equal(device.decoderOption, offset);
+  }
+});
+
 test('2.6.1.67 Sound GCALLs use compact load packets and control the actual Root bank', async (t) => {
   const profile = 'bokutomo-engine-2.6.1.67',
     program = (calls) =>
