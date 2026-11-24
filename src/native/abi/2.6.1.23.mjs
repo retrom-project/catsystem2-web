@@ -1016,6 +1016,7 @@ export default {
     variableBankOffset: 436,
     frameDecodeResources: true,
     objectHeadsFirst: true,
+    endChildYieldsFrame: true,
     controlResources: { kinds: [42], sliderProtocol: 'legacy' },
     commonHeads: engine23CommonHeads,
     configurationMessage: {

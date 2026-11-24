@@ -161,6 +161,11 @@ basenames with C-locale byte folding. A null manager writes zero
 without reading the filename. A qualified filename can miss even
 if its basename names a loaded motion.
 
+FES `endfes` and `endkcs` enqueue separate child-destruction records
+and reset `_EXITCODE_` to -1. Both return one to the decoder. The
+frame cursor resumes on the next tick, after the child's destruction
+request, and a notification cursor stops at the command.
+
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word
 and three trailing words for VRAM coordinates and output. Main 611–615

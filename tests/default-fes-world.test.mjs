@@ -19,6 +19,98 @@ import { append } from './fixtures/fes-log-model.mjs';
 const bytes = (value) => new TextEncoder().encode(value),
   pixel = Uint8Array.from([22, 33, 44, 255, 55, 66, 77, 255, 88, 99, 111, 255, 122, 133, 144, 255]);
 
+test('2.6.1.23 FES closes its child before a replacement can start', async (t) => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    source = [
+      '#START',
+      'execfes first',
+      'next WAIT',
+      '#WAIT',
+      'if (_EXITCODE_!=-1)',
+      'next REOPEN',
+      'endif',
+      '#REOPEN',
+      'endfes',
+      'execfes second 42',
+      'next IDLE',
+      '#IDLE',
+      '#CLOSE',
+      'endfes',
+      '\\10=114',
+    ].join('\n');
+  const world = await defaultFESWorld(profile, {
+    'screen.fes': bytes(source),
+    'first.fes': bytes('#START\nwait 2\nexit -2\n'),
+    'second.fes': bytes('#START\nexit \\0\n'),
+  });
+  t.after(() => world.close());
+  const { id, instance, task } = await loadDefaultFES(world);
+  await world.tick();
+  const first = world.objects.objects.get(instance.childTaskID);
+  assert.equal(first.parent, id);
+  assert.equal(first.implementation.player.root.name, 'first');
+  await world.tick();
+  await world.tick();
+  assert.equal(instance.label, 'REOPEN');
+  assert.equal(instance.childTaskID, null);
+  assert.equal(instance.system('_EXITCODE_'), -1);
+  assert.equal(first.destroyRequested, true);
+  await world.tick();
+  const second = world.objects.objects.get(instance.childTaskID);
+  assert.notEqual(second, first);
+  assert.equal(second.parent, id);
+  assert.equal(second.implementation.player.root.name, 'second');
+  assert.equal(second.exitCode, 42);
+  assert.equal(instance.label, 'IDLE');
+  assert.equal(
+    [...world.objects.objects.values()].filter(({ kind, parent }) => kind === 34 && parent === id)
+      .length,
+    1,
+  );
+  await task.player.notify('CLOSE');
+  await task.player.flush();
+  assert.equal(instance.childTaskID, null);
+  assert.equal(second.destroyRequested, true);
+  assert.equal(instance.local(10), 0);
+});
+
+test('2.6.1.23 FES endkcs yields even when there is no live script', async (t) => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    source = [
+      '#START',
+      'endkcs',
+      '\\11=9',
+      'execkcs worker.kcs',
+      'next CLOSE',
+      '#CLOSE',
+      'endkcs',
+      '\\12=_EXITCODE_',
+      'next IDLE',
+      '#IDLE',
+    ].join('\n');
+  const world = await defaultFESWorld(profile, {
+    'screen.fes': bytes(source),
+    'worker.kcs': kcsProgram([[59]]),
+  });
+  t.after(() => world.close());
+  const { id, instance } = await loadDefaultFES(world);
+  await world.tick();
+  assert.equal(instance.local(11), 0);
+  assert.equal(instance.kcsTaskID, null);
+  await world.tick();
+  assert.equal(instance.local(11), 9);
+  assert.equal(instance.label, 'CLOSE');
+  const worker = [...world.objects.objects.values()].find(
+    ({ kind, parent }) => kind === 12 && parent === id,
+  );
+  assert.ok(worker?.destroyRequested);
+  assert.equal(instance.kcsTaskID, null);
+  await world.tick();
+  assert.equal(instance.local(12), -1);
+  assert.equal(instance.label, 'IDLE');
+  assert.equal(world.objects.objects.has(worker.id), false);
+});
+
 test('2.6.1.23 authored Slider owns its low task, decoded skin, click and drag', async () => {
   const profile = 'grisaia-jp-engine-2.6.1.23';
   const source = [

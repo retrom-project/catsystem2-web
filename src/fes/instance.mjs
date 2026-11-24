@@ -938,10 +938,10 @@ export class FESInstance {
       return {};
     }
     const profile = this.runtime?.world?.profile;
-    const resolvedHead =
-      profile && nativeABI(profile).fes.objectHeadsFirst
-        ? this.runtime.commandHead(words[0])
-        : undefined;
+    const fesBehavior = profile ? nativeABI(profile).fes : null;
+    const resolvedHead = fesBehavior?.objectHeadsFirst
+      ? this.runtime.commandHead(words[0])
+      : undefined;
     if (resolvedHead?.object)
       return this.executeNativeHead(words, args, bytes, execution, pc, mode, resolvedHead);
     const host = this.player.host;
@@ -1073,17 +1073,20 @@ export class FESInstance {
           Array.from({ length: 16 }, (_, i) => (args[i + 1] === undefined ? 0 : p(i + 1))),
         );
         return { action: 'flush' };
-      case 'endfes':
-        this.player.endFES(this);
-        return { action: 'flush' };
       case 'execkcs':
         this.exitCode = -1;
         this.player.requestKCS(this.text(args[0]), this);
         return { action: 'flush' };
-      case 'endkcs':
-        this.exitCode = -1;
-        this.player.endKCS(this);
+      case 'endfes':
+      case 'endkcs': {
+        const endKCS = head === 'endkcs';
+        if (endKCS || fesBehavior?.endChildYieldsFrame) this.exitCode = -1;
+        if (endKCS) this.player.endKCS(this);
+        else this.player.endFES(this);
+        if (fesBehavior?.endChildYieldsFrame)
+          return mode === 'event' ? { action: 'event-stop' } : this.nativeCommandReturn(1);
         return { action: 'flush' };
+      }
       case 'baseimg': {
         const object = args.length ? this.elements(args[0])[0] : null;
         if (args.length && !object) return {};
