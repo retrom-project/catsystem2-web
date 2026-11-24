@@ -208,6 +208,8 @@ export class ParticleScriptInstance {
         machine,
         argumentWords,
         this.interpreterMath.anglesUseX87,
+        this.interpreterMath.atan2UsesX87,
+        this.interpreterMath.powUsesSSE2Identities,
       );
     if (scalarReply) return scalarReply;
     if (scalarMath.has(id)) return real(scalarMath.get(id)(bitsFloat(args[0])));

@@ -19,9 +19,9 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 432       | 57            | 17            | 363     | Generic 25 of 45, Particle 40 of 44 and 42 of 51 |
+| 2.6.1.23 | 869        | 440       | 57            | 17            | 355     | Generic 25 of 45, Particle 41 of 44 and 43 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
-| 2.6.1.67 | 938        | 398       | 80            | 19            | 441     | Generic 14 of 45, Particle 12 of 44 and 12 of 51 |
+| 2.6.1.67 | 938        | 449       | 80            | 19            | 390     | Generic 33 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                                     |
 
@@ -50,6 +50,17 @@ the same y, x operand order and x87 CRT
 result as Generic 7 and Particle 12. Main 64 and Generic 16 take the signed
 integer absolute value. Main 318 uses x87 interpolation and Main 319 writes
 the low word of the integer64 after half-step rounding.
+
+Main 7 returns the caller's frame-rate DWORD, sharing its native body with
+slot 4 in both Particle tables. Main 53, 55, 56, 58, 59, 60, 61 and 321
+share bodies with Particle 9, 11, 13, 15, 16, 17, 18 and 43 respectively.
+All publish one float32 result word. Physical x86 confirms the original
+remainder, including signed zero from nonzero dividends and NaN operand
+selection. The triangle wave uses the Core x87 PC24 baseline. PC53 and
+PC64 can differ by one float32 ULP on subnormal results. Both Particle
+power entries follow the same initialized SSE2 CRT selection as Main 61.
+Main 52 remains guarded. The existing Generic 3 and Particle 8 tangent
+coverage has a known numerical difference for very large finite angles.
 
 Main 10 formats CP932 bytes and expands backslash-n before opening the caller's
 clipboard. The browser host publishes text under its normal permission and user

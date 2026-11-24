@@ -8,6 +8,7 @@ import {
   x87AngleConversion,
   x87Atan2Word,
   x87RemainderWord,
+  x87TriangleWaveWord,
 } from '../ppi/numeric.mjs';
 const f = Math.fround;
 const unary = {
@@ -136,6 +137,12 @@ export function installNativeScalarMath(world) {
     if (!names.has(entry.name?.replace(/^math\./, ''))) continue;
     if (abi.math?.remainderUsesX87 && entry.name === 'math.fmod') {
       world.runtime.register('main', entry.id, (args) => nativeReply(1, x87RemainderWord(...args)));
+      continue;
+    }
+    if (abi.math?.triangleWaveUsesX87 && entry.name === 'math.triangleWave') {
+      world.runtime.register('main', entry.id, (args) =>
+        nativeReply(1, x87TriangleWaveWord(...args)),
+      );
       continue;
     }
     world.runtime.register('main', entry.id, (args, machine) =>

@@ -127,6 +127,87 @@ test('2.6.1.23 MOT and PTCL trigonometry preserve the original exceptional resul
   }
 });
 
+test('2.6.1.23 Main and both PTCL versions publish the words of their shared scalar handlers', async (t) => {
+  const cases = [
+    [53, 9, [0x3f800000], 0x3fc90fdb],
+    [53, 9, [0x80000000], 0x80000000],
+    [53, 9, [0x40000000], 0xffc00000],
+    [53, 9, [0xff801235], 0xffc01235],
+    [55, 11, [0x3f800000], 0x3f490fdb],
+    [55, 11, [0xff800000], 0xbfc90fdb],
+    [56, 13, [0xbf000000], 0x80000000],
+    [56, 13, [0x7f801269], 0x7fc01269],
+    [58, 15, [0xbf000000], 0xbf800000],
+    [58, 15, [0x80000000], 0x80000000],
+    [59, 16, [0xc1c80000, 0x27b9e727], 0xa6a9ae0c],
+    [59, 16, [0xc0000000, 0x40000000], 0x80000000],
+    [59, 16, [0x80000000, 0x40000000], 0],
+    [59, 16, [0x3f800000, 0], 0xffc00000],
+    [59, 16, [0x7fc11234, 0xff801234], 0x7fc11234],
+    [60, 17, [0x40c80000], 0x40200000],
+    [60, 17, [0xbf800000], 0xffc00000],
+    [60, 17, [0x7f7fffff], 0x5f7fffff],
+    [61, 18, [0x3f8ccccd, 0x40a00000], 0x3fce2533],
+    [61, 18, [0xbf800000, 0xff800000], 0x3f800000],
+    [61, 18, [0xff801234, 0], 0xffc01234],
+    [321, 43, [0x3f800000, 0x40800000], 0x3f800000],
+    [321, 43, [0x40000000, 0x40800000], 0x80000000],
+    [321, 43, [0xc1c80000, 0x27b9e727], 0x3f69a8ea],
+    [321, 43, [0x8bb44e07, 0x4ce1489d], 0x00199c6e],
+    [321, 43, [0xc1c80000, 0xff801235], 0x7fc01235],
+  ];
+  const world = await dataWorld(profile, {
+    'case.kcs': kcsProgram([
+      [37, sentinel],
+      ...cases.flatMap(([id, , args]) => [
+        ...args.map((word) => [37, word]),
+        [43, id, args.length * 4],
+      ]),
+      [59],
+    ]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const { machine } = world.main,
+    expected = [sentinel, ...cases.map(([, , , result]) => result)],
+    first = machine.sp - expected.length * 4;
+  assert.deepEqual(
+    expected.map((_, i) => machine.load(first + i * 4)),
+    expected,
+  );
+  for (const [main, ptcl, args, result] of cases) {
+    assert(world.runtime.calls.has(`main:${main}`));
+    for (const table of particles) {
+      const { run } = await guest(table, ptcl, args);
+      run(1, result);
+    }
+  }
+  for (const table of particles) {
+    const badWidth = await guest(table, 18, [0x3f000000]);
+    assert.throws(() => badWidth.instance.update(27), /PTCL pow requires 2 arguments/);
+    assert.equal(badWidth.instance.calls.size, 0);
+  }
+  assert.throws(
+    () => world.runtime.native('main', 52, [0x5f000000], machine, world.main),
+    /Unsupported .*\/main native 0x34/,
+  );
+});
+
+test('2.6.1.23 Main and Particle report the owning task frame rate as a full word', async (t) => {
+  const script = kcsProgram([[37, sentinel], [43, 7, 0], [59]]);
+  const world = await dataWorld(profile, { 'fps.kcs': script });
+  t.after(() => world.close({ flushFiles: false }));
+  for (const fps of [15, 60, 120, 0xffffffff]) {
+    const parent = await world.objects.create({ kind: 1, frameRate: fps }),
+      { machine } = await world.spawnScript('fps.kcs', { parent, initialExecute: true });
+    assert.equal(machine.load(machine.sp - 8), sentinel);
+    assert.equal(machine.load(machine.sp - 4), fps);
+    for (const table of particles) {
+      const { run } = await guest(table, 4, [], { fps });
+      run(1, fps);
+    }
+  }
+});
+
 test('2.6.1.23 Main sound geometry helpers preserve x87 result words through GCALL', async (t) => {
   const cases = [
     [51, [0x80000000], 0x3f800000],

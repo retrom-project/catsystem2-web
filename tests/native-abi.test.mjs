@@ -47,10 +47,10 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 432);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 440);
   assert.equal(base.main.entries.filter(({ status }) => status === 'reserved').length, 57);
   assert.equal(base.main.entries.filter(({ status }) => status === 'constant-zero').length, 17);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 363);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 355);
   assert.equal(base.main.entries.filter((entry) => entry.observedArgumentWords.length).length, 435);
   assert.deepEqual(base.main.entries[464].observedArgumentWords, []);
   assert.deepEqual(base.main.entries[543].observedArgumentWords, [3]);
@@ -73,9 +73,32 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
   }
   assert.equal(base.generic.entries[38].signature.resultWritten, false);
   assert.equal(base.generic.entries[41].signature.resultWritten, true);
+  for (const [main, particle, width] of [
+    [7, 4, 0],
+    [53, 9, 1],
+    [55, 11, 1],
+    [56, 13, 1],
+    [58, 15, 1],
+    [59, 16, 2],
+    [60, 17, 1],
+    [61, 18, 2],
+    [321, 43, 2],
+  ]) {
+    for (const [table, id] of [
+      ['main', main],
+      ['particle-v1', particle],
+      ['particle-v2', particle],
+    ]) {
+      const { status, signature } = base[table].entries[id];
+      assert.equal(status, 'recovered');
+      assert.equal(signature.argumentWords, width);
+      assert.equal(signature.resultWritten, true);
+      assert.deepEqual(signature.controlCodes, [1]);
+    }
+  }
   const particle = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 22, 23, 24, 25, 26, 27,
-    28, 30, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43,
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+    27, 28, 30, 31, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42, 43,
   ];
   for (const [table, ids] of [
     ['particle-v1', particle],
@@ -109,7 +132,7 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
   assert.equal(position.signature.resultWritten, false);
   assert.deepEqual(position.signature.controlCodes, [2]);
   assert(position.signature.parameters.every(({ type }) => type.direction === 'out'));
-  for (const id of [287, 288, 629]) assert.equal(base.main.entries[id].status, 'unknown');
+  for (const id of [52, 287, 288, 629]) assert.equal(base.main.entries[id].status, 'unknown');
   const unknown = nativeABI('sdk-4.01-engine-2.6.1.74').tables.main.entries[0x52];
   assert.equal(unknown.name, null);
   assert.equal(unknown.signature.parameters, null);

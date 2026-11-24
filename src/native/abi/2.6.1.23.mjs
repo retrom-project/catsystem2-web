@@ -92,6 +92,16 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [7],
+    value:
+      'Own 2.6.1.23 Main 0x48C460 aliases both Particle slot 4 entries and writes the owning task DWORD at +0x48.',
+  },
+  {
+    ids: [53, 55, 56, 58, 59, 60, 321],
+    value:
+      'Own 2.6.1.23 Main entries alias Particle v1 and v2 slots 9, 11, 13, 15, 16, 17 and 43. Physical x86 GCALL confirms one written float32 word, using the Core x87 PC24 arithmetic for the triangle wave.',
+  },
+  {
     ids: [576, 689],
     value:
       'Own 2.6.1.23 wrappers 0x484DE0 and 0x484EF0 read an existing CSS record before raw 389 and 398. Return words are verified for the absent 3D owner and neutral Top and Script recipients.',
@@ -670,6 +680,11 @@ const mainEvidence = [
 ];
 const particleInterpreterEvidence = [
   {
+    ids: [18],
+    value:
+      'Own 2.6.1.23 Particle v1 and v2 slot 18 alias Main 61 at 0x48C590. The initialized SSE2 CRT writes one float32 result word.',
+  },
+  {
     ids: [38],
     value:
       'Own 2.6.1.23 PTCL v1 and v2 point to 0x48CCD0. The scalar PC24 inverse projection uses viewport, priority and near and writes four ordered float words.',
@@ -719,8 +734,8 @@ const particleInterpreterSignatures = [
   },
   {
     ids: [
-      1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 33, 34, 36, 40, 41, 42,
-      43,
+      1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 33, 34, 36, 40, 41,
+      42, 43,
     ],
     fields: { resultWritten: true },
   },
@@ -949,6 +964,7 @@ export default {
     anglesUseX87: true,
     atan2UsesX87: true,
     powUsesSSE2Identities: true,
+    remainderUsesX87: true,
     randomFloatUsesX87: true,
     interpreterUsesNativeScalarMath: true,
     lerpUsesX87: true,
@@ -1217,6 +1233,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [7, 53, 55, 56, 58, 59, 60, 61, 321], fields: { resultWritten: true } },
         { ids: [109], fields: { resultWritten: true } },
         { ids: [701], fields: { resultWritten: false } },
         { ids: [702], fields: { resultWritten: true } },
