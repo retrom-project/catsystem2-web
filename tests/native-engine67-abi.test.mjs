@@ -573,6 +573,80 @@ test('2.6.1.67 narrow GCALLs append bytes and write the original result words', 
   );
 });
 
+test('2.6.1.67 string expansion uses the existing Script bank and writes two terminators', async (t) => {
+  const expanded = encodeCP932('猫+$str2/z:/$strQ');
+  const world = await dataWorld(profile, {
+    'case.kcs': kcsProgram([[59]]),
+    'strings.kcs': kcsProgram(
+      [
+        [37, 0x89541afb],
+        [37, 7],
+        [37, 192],
+        [43, 276, 8],
+        [37, 0xffffffff],
+        [37, 224],
+        [43, 276, 8],
+        [37, 42],
+        [37, 256],
+        [43, 276, 8],
+        [37, 44],
+        [37, 288],
+        [43, 276, 8],
+        [37, 44],
+        [37, 320],
+        [43, 277, 8],
+        [38, 84],
+        [37, 7],
+        [37, 352],
+        [43, 277, 8],
+        [38, 88],
+        [37, 128],
+        [43, 278, 4],
+        [59],
+      ],
+      [
+        [128, '$str7+$str-1/$str0x2a:$str44/$strQ'],
+        [192, '猫'],
+        [224, '$str2'],
+        [256, 'z'],
+        [288, ''],
+        [320, 'old'],
+        [352, 'old'],
+      ],
+    ),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const { runtime, task: plain } = await run([[37, 128], [43, 278, 4], [59]]);
+  const plainWord = encodeCP932('plain $strQ');
+  plain.machine.writeStringBytes(plainWord, 128);
+  plain.machine.bytes(128 + plainWord.length + 1, 2).fill(0x7f);
+  await runtime.scheduler.execute(plain);
+  assert.equal(runtime.stringBank(plain, false), null);
+  assert.deepEqual(
+    plain.machine.bytes(128, plainWord.length + 3),
+    Uint8Array.of(...plainWord, 0, 0, 0x7f),
+  );
+
+  const { runtime: unownedRuntime, task: unowned } = await run([[37, 128], [43, 278, 4], [59]]);
+  unowned.machine.writeString('$str7', 128);
+  await assert.rejects(
+    () => unownedRuntime.scheduler.execute(unowned),
+    /Native string expansion requires the caller string bank/,
+  );
+
+  const task = await world.spawnScript('strings.kcs', { initialExecute: false });
+  const { machine } = task;
+  const floor = machine.sp;
+  const tail = machine.load(128 + expanded.length + 2, 1);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), 0x89541afb);
+  assert.deepEqual(machine.bytes(128, expanded.length + 3), Uint8Array.of(...expanded, 0, 0, tail));
+  assert.deepEqual([machine.load(84), machine.load(88)], [0, 1]);
+  assert.equal(machine.string(320), '');
+  assert.equal(machine.string(352), '猫');
+});
+
 test('2.6.1.67 Draw GCALLs copy, clear and force the owned pixel surface', async (t) => {
   const target = [0x13, 80];
   const pixels = [23, 47, 89, 255];
