@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -10,6 +11,7 @@ import {
   inspectCST,
   surveyContainer,
 } from '../scripts/survey-native-corpus.mjs';
+import { verifyWorkExecutable } from '../scripts/collect-native-abi-acceptance.mjs';
 import { kcsProgram, catScene, kif } from './helpers.mjs';
 
 test('static GCALL decoding distinguishes immediate, memory and stack operands', async () => {
@@ -132,6 +134,52 @@ test('archive inventory binds byte-identical FES callers to each include context
     }
     assert.equal(reports[0].sha256, reports[1].sha256);
     assert.notEqual(reports[0].includes['shared.h'], reports[1].includes['shared.h']);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('work fingerprints are checked against the bytes of every staged executable', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'cs2-work-executable-'));
+  try {
+    const expectedBytes = Buffer.from('MZ fixture SDK 2.6.1.74 original'),
+      distinctBytes = Buffer.from('MZ fixture SDK 2.6.1.74 alternate'),
+      sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex'),
+      executableSha256 = sha256(expectedBytes),
+      same = join(directory, 'first.exe'),
+      copy = join(directory, 'second.exe'),
+      different = join(directory, 'alternate.exe');
+    await Promise.all([
+      writeFile(same, expectedBytes),
+      writeFile(copy, expectedBytes),
+      writeFile(different, distinctBytes),
+    ]);
+    await verifyWorkExecutable(
+      { id: 'first', executableSha256, executablePath: same },
+      executableSha256,
+    );
+    await verifyWorkExecutable(
+      { id: 'second', executableSha256, executablePath: copy },
+      executableSha256,
+    );
+    await assert.rejects(
+      verifyWorkExecutable({ id: 'second', executableSha256 }, executableSha256),
+      /requires its executablePath/,
+    );
+    await assert.rejects(
+      verifyWorkExecutable(
+        { id: 'alternate', executableSha256: sha256(distinctBytes), executablePath: different },
+        executableSha256,
+      ),
+      /requires the exact executable SHA-256/,
+    );
+    await assert.rejects(
+      verifyWorkExecutable(
+        { id: 'alternate', executableSha256, executablePath: different },
+        executableSha256,
+      ),
+      /SHA-256 mismatch/,
+    );
   } finally {
     await rm(directory, { recursive: true, force: true });
   }

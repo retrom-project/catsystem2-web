@@ -25,6 +25,14 @@ async function checkedBytes(path, expected) {
   return bytes;
 }
 
+export async function verifyWorkExecutable(work, executableSha256) {
+  if (work.executableSha256 !== executableSha256)
+    throw new Error(`Work ${work.id} requires the exact executable SHA-256`);
+  if (typeof work.executablePath !== 'string' || !work.executablePath)
+    throw new Error(`Work ${work.id} requires its executablePath`);
+  await checkedBytes(work.executablePath, executableSha256);
+}
+
 async function readSurvey({ survey, surveySha256, executableSha256 }) {
   const image = JSON.parse(await checkedBytes(survey, surveySha256));
   if (!validSHA(executableSha256) || image.sha256 !== executableSha256)
@@ -193,8 +201,8 @@ async function collectScripts(workInputs, executableSha256, facts, particleFallb
     works = [],
     ids = new Set();
   for (const work of workInputs) {
-    if (!work.id || ids.has(work.id) || work.executableSha256 !== executableSha256)
-      throw new Error('Every work must have a unique ID and the exact executable SHA-256');
+    if (!work.id || ids.has(work.id)) throw new Error('Every work must have a unique ID');
+    await verifyWorkExecutable(work, executableSha256);
     if (work.contentIdentity != null && !validSHA(work.contentIdentity))
       throw new Error(`Invalid content identity for ${work.id}`);
     if (!Array.isArray(work.containers) || !work.containers.length)
@@ -252,6 +260,7 @@ async function collectScripts(workInputs, executableSha256, facts, particleFallb
     }
     works.push({
       id: work.id,
+      executableSha256,
       contentIdentity: work.contentIdentity ?? null,
       scripts: entriesSorted(added),
       contexts: entriesSorted(contexts),

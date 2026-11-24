@@ -17,17 +17,19 @@ node scripts/extract-native-abi.mjs /path/to/original.exe .local/original.json
 node scripts/collect-native-abi-acceptance.mjs .local/acceptance.json .local/acceptance-report.json
 ```
 
-Paths in the manifest resolve from the current directory. The collector checks
-extractor and archive SHA-256 values, uses the selected registration at the
-declared Core revision, and retains all four native tables. See the extractor,
-signature comparison and corpus commands for their independent review scope.
+Paths in the manifest resolve from the current directory. The collector hashes
+the executable staged for each work and checks the extractor and archive
+digests. It uses the selected registration at the declared Core revision and
+retains all four native tables. Use the actual entry executable for each work
+when multiple mounts share a version label. See the extractor, signature
+comparison and corpus commands for their independent review scope.
 [Offline ABI survey](native-abi-survey.md)
 
 | Manifest field      | Content                                                                                                                                                                                                                                                                                                                      |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `build`             | `executableSha256`, the local `survey` path and its `surveySha256`, the registered `profile`, and a full `coreRevision`.                                                                                                                                                                                                     |
 | `alternates`        | Optional objects with `executableSha256`, `survey` and `surveySha256`. Each has the same reported version and a distinct digest. Keep a wrapper or incomplete survey visible with its original reason.                                                                                                                       |
-| `works`             | At least one work with a unique `id`, its exact `executableSha256`, optional full `contentIdentity`, and `containers`. Each container has a local `path`, the archive's actual `sha256`, a `logicalPath` such as `mot.int`, and its provenance `role`. Use a selected mount per work. Put the baseline work first.           |
+| `works`             | At least one work with a unique `id`, its staged `executablePath`, exact `executableSha256`, optional full `contentIdentity`, and `containers`. Each container has a local `path`, the archive's actual `sha256`, a normalized `logicalPath` and its provenance `role`. Put the baseline first.                              |
 | `callShapeEvidence` | Optional `path` and `sha256` for a static call survey with `scripts[].sha256` and `scripts[].sites`. Every matching site's PC, GCALL number and operand count must agree with the decoded script.                                                                                                                            |
 | `receipts`          | Objects with a unique `id`, `kind`, `path`, `sha256` and `executableSha256`. Kinds are `original`, `vm`, `guard` and `product`. The three runtime kinds also need their full `coreRevision`. Product receipts identify an included `contentIdentity` and may list the `scripts` SHA-256 values exercised in the short scene. |
 | `reviews`           | A `table`, `id`, observed `handlerVA`, `disposition`, `reason` and referenced `receipts` for each reviewed slot. Optional facts record the original argument order, exact widths and kinds, result writes, effects and unresolved branches.                                                                                  |
