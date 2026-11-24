@@ -4,6 +4,7 @@ import test from 'node:test';
 import { encodeCP932, floatBits } from '../src/kcs.mjs';
 import { openImage } from '../src/formats/hg3.mjs';
 import { MOTION_ABI, motionVector, setMotionVector } from '../src/motion/abi.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { NULL_NATIVE_TEXTURE } from '../src/native/texture-layout.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { hg3, kcsProgram } from './helpers.mjs';
@@ -110,6 +111,91 @@ test('2.6.1.67 KCS prepares owned screen targets and captures only the requested
   world.configuration.fields.general.renderTargetCount = 0;
   await execute('capture.kcs');
   assert.deepEqual(owned.map(revision), [1, 1]);
+});
+
+test('2.6.1.67 KCS initializes both mask transitions and retains the clock on stop', async (t) => {
+  const maskPixels = Uint8ClampedArray.of(4, 7, 20, 255, 9, 12, 200, 255),
+    taskArgument = [0x13, 80],
+    mask = [0x13, 84],
+    range = [floatBits(0.75), floatBits(45000)],
+    call = (id, args, out) => [
+      ...args.map((arg) => [37, arg]),
+      [43, id, args.length * 4],
+      ...(out === undefined ? [] : [[38, out]]),
+    ],
+    program = (...instructions) => kcsProgram([[37, 0x7f920aaa], ...instructions, [59]]),
+    world = await dataWorld(profile, {
+      'mask.hg3': hg3(2, 1, maskPixels),
+      'gradient.kcs': program(
+        ...call(520, [0], 88),
+        ...call(520, [taskArgument], 92),
+        ...call(530, [taskArgument, 20, ...range, mask]),
+        ...call(531, [taskArgument, 3]),
+        ...call(520, [taskArgument], 96),
+      ),
+      'threshold.kcs': program(...call(905, [taskArgument, 10, ...range, mask])),
+      'release.kcs': program(...call(531, [taskArgument, 0]), ...call(520, [taskArgument], 92)),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  for (const [raw, canonical] of [
+    [366, 377],
+    [376, 387],
+    [377, 388],
+  ]) {
+    assert.equal(mapABIMessage(profile, 'screen', 'raw', canonical), raw);
+    assert.equal(mapABIMessage(profile, 'screen', 'canonical', raw), canonical);
+  }
+  assert.throws(() => mapABIMessage(profile, 'screen', 'canonical', 378), /Unreviewed ABI message/);
+  world.graphics.view.configure({
+    clientWidth: 2,
+    clientHeight: 1,
+    drawingRectangle: [0, 0, 2, 1],
+  });
+  const parent = world.main.id,
+    id = await world.objects.create({ kind: 39, parent, name: 'Original mask owner' }),
+    effect = world.screenEffects.tasks.get(id),
+    bitmap = await world.graphics.images.load('mask.hg3', 0, parent),
+    execute = async (filename) => {
+      const task = await world.spawnScript(filename, { parent, initialExecute: false }),
+        machine = task.machine,
+        floor = machine.sp;
+      machine.store(80, world.nativeTaskID(id));
+      machine.store(84, bitmap);
+      await world.runtime.scheduler.execute(task);
+      assert.equal(machine.sp, floor + 4);
+      assert.equal(machine.load(floor), 0x7f920aaa);
+      return machine;
+    };
+  effect.record.effectiveFrame = 17;
+  const gradient = await execute('gradient.kcs');
+  assert.deepEqual(
+    [88, 92, 96].map((at) => gradient.load(at)),
+    [0, 0, 3],
+  );
+  const state = effect.state;
+  assert.deepEqual(state.params, [...range, 20, bitmap, 0]);
+  assert.deepEqual([state.start, state.end], [17, 37]);
+  assert.deepEqual(world.stageRenderer.surfacePixels(state.mask), new Uint8Array(maskPixels));
+  const rendering = world.screenEffects.rendering;
+  rendering.clear = () => {};
+  const drawn = [];
+  rendering.drawRange = (min, max) => drawn.push([min, max]);
+  rendering.drawSurface = (surface) => drawn.push(surface);
+  effect.record.effectiveFrame = 27;
+  await effect.renderTransition();
+  assert.deepEqual(drawn.slice(0, 3), [[0, 45000], [-1, -1], state.work[0]]);
+  const alpha = () =>
+    [...world.stageRenderer.surfacePixels(state.work[0])].filter((_, i) => i % 4 === 3);
+  assert.deepEqual(alpha(), [235, 55]);
+  await execute('threshold.kcs');
+  assert.deepEqual(state.params, [...range, 10, bitmap, 1]);
+  assert.deepEqual([state.start, state.end], [27, 37]);
+  effect.record.effectiveFrame = 32;
+  await effect.renderTransition();
+  assert.deepEqual(alpha(), [255, 0]);
+  const stopped = await execute('release.kcs');
+  assert.equal(stopped.load(92), 0);
+  assert.deepEqual([state.start, state.end], [27, 37]);
 });
 
 test('2.6.1.67 KCS reads live capture counters and writes a CP932 line at the original file position', async (t) => {
