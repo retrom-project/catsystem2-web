@@ -9,6 +9,7 @@ import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
+import { parseXML } from '../src/xml.mjs';
 import { kcsProgram } from './helpers.mjs';
 
 const profile = 'bokutomo-engine-2.6.1.67';
@@ -1399,4 +1400,24 @@ test('2.6.1.67 KCS geometry uses live DWORD overlap and the original float accum
   assert.deepEqual(read(480, 4), [4, 8, 12, 16]);
   assert.deepEqual(read(512, 5), [0, 1, 1, 1, 123]);
   assert.deepEqual(read(matrix, 8), [0, 1, 1, 1, 33554432, 0, 0, 0]);
+});
+
+test('2.6.1.67 KCS reads the startup static log word during restore', async (t) => {
+  const world = await dataWorld(profile, {
+    'log.kcs': kcsProgram([[43, 852, 0], [38, 128], [59]]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const read = async () => {
+    const task = await world.spawnScript('log.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    });
+    await world.runtime.scheduler.execute(task);
+    return task.machine.load(128);
+  };
+  assert.equal(await read(), 0);
+  world.configuration.applyStartup(
+    parseXML('<document><GAME><log><static>3</static></log></GAME></document>'),
+  );
+  assert.equal(await read(), 3);
 });
