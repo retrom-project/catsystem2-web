@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 388       | 57            | 17            | 407     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.23 | 869        | 395       | 57            | 17            | 400     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 187       | 80            | 19            | 652     | Generic 8 of 45, Particle 6 of 44 and 6 of 51    |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -97,6 +97,18 @@ Both screen effects keep the raw mode word and restart the clock range
 on active initialization. WipeMosaic retains the base frame on zero and
 one-frame intervals. Both mode branches keep the original working texture
 pixels, mirrored wipe keys and fade alpha.
+
+Main 29 scans the formatted CP932 mode bytes for the first lowercase
+`r` or `w`. Main 30 and 31 transfer the DWORD product of the element
+size and count, report the actual byte count and turn an unavailable
+transfer into zero. A mapped read that cannot fit its destination leaves
+the open cursor intact. Main 32 releases the owned file and leaves the
+VM result untouched.
+
+Main 683–685 load, release and query a CP932 section table. Section and
+key comparison is byte-exact. Repeated headings accumulate matching
+rows in order. The lookup uses the zero-based ordinal and writes a
+NUL-terminated value only for a match, including an empty value.
 
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word

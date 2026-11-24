@@ -92,6 +92,16 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [29, 30, 31, 32],
+    value:
+      'Own 2.6.1.23 file wrappers at 0x48aeb0–0x48aff0 scan the formatted mode bytes and dispatch the wrapped byte count to the opened file owner',
+  },
+  {
+    ids: [683, 684, 685],
+    value:
+      'Own 2.6.1.23 section-table wrappers at 0x477c00–0x477e1c read the CP932 resource, match byte-exact headings and keys, and write the selected ordinal value',
+  },
+  {
     ids: [853, 854, 856],
     value:
       'Own 2.6.1.23 WipeMosaic and FadeMosaic raw 447, 448 and 450 use five-word initializers, private captures and the original mode and timing selectors',
@@ -800,6 +810,7 @@ export default {
     extendedQueries: null,
   },
   calendar: { weekdayAlgorithm: 'century-integer' },
+  fileIO: { rawModeAndBoundedBuffer: true },
   globalFile: { growthBytes: 524288 },
   nameTable: { legacyFieldBytes: 32 },
   math: {
@@ -1032,6 +1043,8 @@ export default {
           },
         },
         { ids: [83, 86, 87], fields: { resultWritten: false } },
+        { ids: [29, 30, 31, 683, 685], fields: { resultWritten: true } },
+        { ids: [32, 684], fields: { resultWritten: false } },
         {
           ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],
           fields: { resultWritten: false },

@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
 import { SaveStore } from '../saves.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
-import { nativeDataArgument, nativeDataCString, nativeDataFormat } from './data-text.mjs';
+import { nativeABI } from './abi/index.mjs';
+import {
+  nativeDataArgument,
+  nativeDataCString,
+  nativeDataFormat,
+  nativeDataMapped,
+} from './data-text.mjs';
 import {
   gameSaveFileKind,
   NativeGameSaveProgress,
@@ -389,7 +395,10 @@ export class NativeFileAccess {
   async open(name, mode) {
     // Native 0x1D scans for the first lowercase r/w; '+' and 'a' do not
     // implement CRT fopen modes. No r/w means existing read/write access.
-    const first = /[rw]/.exec(mode)?.[0],
+    const first =
+        mode instanceof Uint8Array
+          ? String.fromCharCode(mode.find((byte) => byte === 114 || byte === 119) ?? 0)
+          : /[rw]/.exec(mode)?.[0],
       writable = first !== 'r',
       readable = first !== 'w';
     const bytes = first === 'w' ? new Uint8Array() : await this.storage.read(name);
@@ -403,11 +412,12 @@ export class NativeFileAccess {
       dirty: first === 'w',
     });
   }
-  read(handle, count) {
+  read(handle, count, consume) {
     if (!handle) return null;
     const file = this.handles().get(handle, 'file');
     if (!file.readable) return null;
     const bytes = file.bytes.slice(file.position, file.position + count);
+    consume?.(bytes);
     file.position += bytes.length;
     return bytes;
   }
@@ -454,15 +464,33 @@ export class NativeFileAccess {
 }
 
 export function nativeFiles(id, args, machine, services = {}) {
-  if (!(services.files instanceof NativeFileAccess) || ![0x1d, 0x20].includes(id)) return undefined;
-  const count = id === 0x1d ? 2 : 1;
+  const { files, profile } = services;
+  if (!(files instanceof NativeFileAccess) || id < 0x1d || id > 0x20) return undefined;
+  const oldFileIO = profile && nativeABI(profile).fileIO?.rawModeAndBoundedBuffer;
+  if (!oldFileIO && id !== 0x1d && id !== 0x20) return undefined;
+  const count = [2, 4, 4, 1][id - 0x1d];
   if (args.length !== count)
     throw new Error(`KCS file native 0x${id.toString(16)} expects ${count} arguments`);
-  if (id === 0x20) return services.files.close(args[0]).then(() => nativeReply(2));
+  if (id === 0x20) return files.close(args[0]).then(() => nativeReply(2));
+  if (id === 0x1e || id === 0x1f) {
+    const [address, elementBytes, elements, handle] = args,
+      size = Math.imul(elementBytes, elements) >>> 0;
+    if (!handle || !nativeDataMapped(machine, address)) return nativeReply(1, 0);
+    if (id === 0x1e) {
+      const bytes = files.read(handle, size, (data) =>
+        machine.bytes(address, data.length).set(data),
+      );
+      return nativeReply(1, bytes?.length ?? 0);
+    }
+    return nativeReply(1, Math.max(0, files.write(handle, machine.bytes(address, size))));
+  }
   if (!services.format) return undefined;
-  return services.files
-    .open(services.format(args[0], machine), services.format(args[1], machine))
-    .then((handle) => nativeReply(1, handle));
+  const name = services.format(args[0], machine),
+    mode = oldFileIO
+      ? nativeDataFormat(args, machine, services, 1)
+      : services.format(args[1], machine);
+  if (mode === null) return nativeReply(1, 0);
+  return files.open(name, mode).then((handle) => nativeReply(1, handle));
 }
 
 export function installNativeFormattedFileOutput(world) {
