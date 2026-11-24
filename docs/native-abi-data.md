@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 345       | 57            | 17            | 450     | Generic 22 of 45, Particle 38 of 44 and 39 of 51 |
+| 2.6.1.23 | 869        | 353       | 57            | 17            | 442     | Generic 22 of 45, Particle 38 of 44 and 39 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -182,6 +182,15 @@ The Plane consumes both notifications without changing its state.
 Main 218 replaces the caller's signed rectangle with its intersection,
 using four zero words for an empty result. All four wrappers leave the
 VM result unwritten.
+
+Main 119 returns bitmap size through two mapped guest output words. Main 363
+writes bitmap offsets through the same argument shape. Both write zeros for a
+null bitmap and leave the GCALL result unwritten. Main 372 and 373 set bitmap
+canvas dimensions or offsets and return zero for a null bitmap. Main 369
+multiplies each of four channels by its packed channel byte divided by 255.
+Main 718–720 update an image owner's canvas dimensions, offsets or base point.
+These three report success on a null owner and failure when an existing owner
+has an empty bitmap.
 
 Main 111 loads a formatted image list. Main 112 creates a bitmap, Main 114
 releases it, and Main 118 clones its pixels into an independent owner.

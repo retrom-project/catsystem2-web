@@ -92,6 +92,26 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [119, 363],
+    value:
+      'Own 2.6.1.23 0x488cf0 and 0x489020 write bitmap size and offset pairs to mapped VM outputs',
+  },
+  {
+    ids: [369],
+    value:
+      'Own 2.6.1.23 0x489580 multiplies four channels by packed bytes divided by 255 for a four-byte bitmap',
+  },
+  {
+    ids: [372, 373],
+    value:
+      'Own 2.6.1.23 0x4896f0 and 0x489730 set bitmap canvas dimensions or offset, returning zero for a null bitmap',
+  },
+  {
+    ids: [718, 719, 720],
+    value:
+      'Own 2.6.1.23 0x4767e0, 0x476830 and 0x476880 write the owned bitmap canvas, offset and base fields through independent pairs',
+  },
+  {
     ids: [4],
     value: 'Own 2.6.1.23 Main 0x47b390 returns the WINMM timeGetTime DWORD',
   },
@@ -926,7 +946,8 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
-        { ids: [4, 786], fields: { resultWritten: true } },
+        { ids: [4, 372, 373, 718, 719, 720, 786], fields: { resultWritten: true } },
+        { ids: [119, 363, 369], fields: { resultWritten: false } },
         {
           ids: [25],
           fields: {

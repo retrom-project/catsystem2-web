@@ -2,9 +2,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { NativeRuntime } from '../src/native/runtime.mjs';
+import { readKCS } from '../src/kcs.mjs';
 import { NativeSystemClock } from '../src/native/clock.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
-import { kcsProgram } from './helpers.mjs';
+import { NativeWorld } from '../src/native/world.mjs';
+import { NativeConfiguration } from '../src/native/config.mjs';
+import { MotionLibrary } from '../src/motion/library.mjs';
+import { ParticleRandom } from '../src/ppi/random.mjs';
+import { kcsProgram, memoryGame } from './helpers.mjs';
 
 const profile = 'grisaia-jp-engine-2.6.1.23';
 const caller = 'sdk-call.kcs';
@@ -142,4 +147,142 @@ test('fixed 2.6.1.23 clock, integer and weekday check arity and mapped string ad
     assert.equal(task.machine.sp, task.machine.floor + 4);
     assert.equal(task.machine.pop(), sentinel);
   }
+});
+
+const call = (id, args) => [...args.map((arg) => [37, arg]), [43, id, args.length * 4]];
+const storeResult = (address) => [38, [0x13, address]];
+
+function renderWorld() {
+  const game = memoryGame({}),
+    random = new ParticleRandom();
+  return new NativeWorld({
+    profile,
+    game,
+    random,
+    host: {},
+    images: {},
+    configuration: new NativeConfiguration({ profile }),
+    motionLibrary: new MotionLibrary(game, { profile, random }),
+    storage: { read: async () => null, write: async () => true },
+  });
+}
+
+async function runRenderGuest(world, source, setup) {
+  const program = await readKCS(kcsProgram([[37, sentinel], ...source, [59]]));
+  const task = world.runtime.scheduler.add(program, {
+    name: 'sdk-bitmap.kcs',
+    abi: 'main',
+  });
+  setup?.(task);
+  for (let frame = 0; frame < 20 && task.status !== 'finished'; frame++) await world.runtime.tick();
+  assert.equal(task.status, 'finished');
+  assert.equal(task.machine.sp, task.machine.floor + 4);
+  assert.equal(task.machine.pop(), sentinel);
+  return task;
+}
+
+test('fixed 2.6.1.23 owned bitmap helpers preserve sizes, offsets and RGBA through the VM', async () => {
+  const world = renderWorld(),
+    handle = [0x13, 512],
+    task = await runRenderGuest(
+      world,
+      [
+        ...call(112, [2, 1]),
+        storeResult(512),
+        ...call(117, [handle, 0, 0, 2, 1, 0xad997f63]),
+        ...call(119, [handle, 520, 524]),
+        ...call(372, [handle, 40, 30]),
+        storeResult(528),
+        ...call(373, [handle, -9, 12]),
+        storeResult(532),
+        ...call(363, [handle, 536, 540]),
+        ...call(119, [handle, 544, 544]),
+        ...call(369, [handle, 0x7f69ebac]),
+        ...call(119, [0, 548, 552]),
+        ...call(363, [0, 556, 560]),
+        ...call(372, [0, 40, 30]),
+        storeResult(564),
+        ...call(373, [0, 1, 1]),
+        storeResult(568),
+        ...call(369, [0, 0]),
+      ],
+      ({ machine }) => machine.bytes(520, 52).fill(0xab),
+    );
+  const { machine } = task;
+  assert.deepEqual(
+    Array.from({ length: 13 }, (_, n) => machine.load(520 + n * 4)),
+    [2, 1, 1, 1, 0xfffffff7, 12, 1, 0, 0, 0, 0, 0, 0],
+  );
+  const bitmap = world.graphics.images.get(machine.load(512));
+  assert.deepEqual([bitmap.state.canvasWidth, bitmap.state.canvasHeight], [40, 30]);
+  assert.deepEqual([...(await bitmap.pixels())], [63, 117, 66, 86, 63, 117, 66, 86]);
+  const table = nativeABI(profile).tables.main.entries;
+  for (const [id, count, resultWritten] of [
+    [119, 3, false],
+    [363, 3, false],
+    [369, 2, false],
+    [372, 3, true],
+    [373, 3, true],
+  ])
+    assert.deepEqual(
+      [table[id].signature.argumentWords, table[id].signature.resultWritten],
+      [count, resultWritten],
+    );
+});
+
+test('fixed 2.6.1.23 image owners update independent geometry and preserve null and empty-owner returns', async () => {
+  const world = renderWorld(),
+    handle = [0x13, 512],
+    emptyOwner = [0x13, 516],
+    task = await runRenderGuest(
+      world,
+      [
+        ...call(733, [3, 2]),
+        storeResult(512),
+        ...call(718, [handle, 50, 33]),
+        storeResult(544),
+        ...call(719, [handle, -24, 22]),
+        storeResult(548),
+        ...call(720, [handle, -5, 6]),
+        storeResult(552),
+        ...call(718, [0, -1, -2]),
+        storeResult(556),
+        ...call(719, [emptyOwner, 14, 15]),
+        storeResult(560),
+        ...call(720, [0, -1, -2]),
+        storeResult(564),
+        ...call(712, [handle, 568, 572]),
+        ...call(714, [handle, 576, 580]),
+        ...call(715, [handle, 584, 588]),
+      ],
+      (task) => task.machine.store(516, world.imageOwners.add(0, task.id, [])),
+    );
+  const { machine } = task,
+    record = world.imageOwners.get(machine.load(512)),
+    bitmap = world.graphics.images.get(record.bitmap);
+  assert.deepEqual([bitmap.state.baseX, bitmap.state.baseY], [-5, 6]);
+  assert.deepEqual(
+    Array.from({ length: 12 }, (_, n) => machine.load(544 + n * 4)),
+    [1, 1, 1, 1, 0, 1, 3, 2, 50, 33, 0xffffffe8, 22],
+  );
+  const table = nativeABI(profile).tables.main.entries;
+  for (const id of [718, 719, 720])
+    assert.deepEqual(
+      [table[id].signature.argumentWords, table[id].signature.resultWritten],
+      [3, true],
+    );
+});
+
+test('fixed 2.6.1.23 bitmap queries reject unmapped outputs and image ownership mismatch', async () => {
+  const world = renderWorld();
+  await assert.rejects(
+    runRenderGuest(world, call(119, [0, 0xffffffff, 128])),
+    /KCS memory ffffffff/,
+  );
+  const bitmap = world.graphics.images.create(1, 1, 2);
+  await assert.rejects(runRenderGuest(world, call(718, [bitmap, 10, 20])), /image-owner/);
+  assert.deepEqual(
+    [world.graphics.images.get(bitmap).width, world.graphics.images.get(bitmap).height],
+    [1, 1],
+  );
 });
