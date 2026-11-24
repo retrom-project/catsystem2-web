@@ -424,8 +424,14 @@ export default {
       },
       screen: {
         unmapped: 'reject',
-        raw: [{ min: 377, max: 388, offset: -11 }],
-        canonical: [{ min: 366, max: 377, offset: 11 }],
+        raw: [
+          { min: 377, max: 388, offset: -11 },
+          { min: 516, max: 520, offset: -39 },
+        ],
+        canonical: [
+          { min: 366, max: 377, offset: 11 },
+          { min: 477, max: 481, offset: 39 },
+        ],
       },
       area: {
         unmapped: 'reject',
@@ -966,8 +972,9 @@ export default {
     drawDirtyUsesRawWord: true,
     emptyImageSizeWritesZero: true,
     imageFilterRequiresLayers: true,
-    screenEffectRetimesOnActiveInit: [38, 39],
-    screenEffectPreserveStoppedClockKinds: [38, 39],
+    screenEffectRetimesOnActiveInit: [38, 39, 50, 51],
+    screenEffectPreserveStoppedClockKinds: [38, 39, 50, 51],
+    screenEffectMosaic: { fadeInitializerWords: 6, retainShortWipe: true },
     screenEffectFloatArguments: {
       521: [2, 3, 4, 6, 7],
       522: [],
@@ -979,6 +986,11 @@ export default {
       528: [],
       529: [],
       530: [2, 3],
+      853: [2, 3],
+      854: [],
+      855: [],
+      856: [2, 3],
+      857: [],
       905: [2, 3],
     },
     planeAlphaFlags: 1,
@@ -1033,9 +1045,9 @@ export default {
           779, 780, 781, 782, 783, 784, 786, 787, 788, 791, 792, 793, 794, 795, 796, 797, 798, 799,
           800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817,
           818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 836, 837, 838,
-          839, 840, 841, 842, 843, 845, 846, 847, 853, 854, 855, 856, 857, 860, 861, 869, 871, 873,
-          874, 875, 877, 878, 879, 880, 881, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894,
-          895, 896, 897, 898, 899, 900, 901, 902, 903,
+          839, 840, 841, 842, 843, 845, 846, 847, 860, 861, 869, 871, 873, 874, 875, 877, 878, 879,
+          880, 881, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899,
+          900, 901, 902, 903,
         ],
         recovered: [
           1, 4, 5, 6, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 35, 36, 37,
@@ -1057,13 +1069,24 @@ export default {
           605, 606, 607, 608, 609, 610, 625, 630, 633, 634, 635, 636, 637, 638, 639, 640, 645, 646,
           647, 649, 650, 651, 653, 654, 655, 658, 659, 694, 696, 697, 698, 699, 700, 710, 711, 712,
           713, 714, 715, 717, 718, 719, 720, 723, 724, 726, 727, 728, 730, 731, 732, 733, 736, 737,
-          739, 740, 741, 785, 789, 790, 833, 834, 835, 844, 848, 849, 850, 851, 852, 858, 859, 862,
-          863, 864, 865, 866, 867, 868, 870, 872, 876, 882, 883, 904, 905, 934, 935, 936, 937,
+          739, 740, 741, 785, 789, 790, 833, 834, 835, 844, 848, 849, 850, 851, 852, 853, 854, 855,
+          856, 857, 858, 859, 862, 863, 864, 865, 866, 867, 868, 870, 872, 876, 882, 883, 904, 905,
+          934, 935, 936, 937,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: [853, 854, 855],
+          value:
+            'Own 2.6.1.67 WipeMosaic receiver 0x47c2f0 uses raw 477 for five words, 478 for the second capture, and 479 for the complete active DWORD. It owns two working captures and transfers their cached mosaic pixels in the original time and source order, including duration zero or one. Active initialization retimes the animation. Stop leaves both clocks unchanged. All wrappers return 2 without writing the result.',
+        },
+        {
+          ids: [856, 857],
+          value:
+            'Own 2.6.1.67 FadeMosaic receiver 0x4796d0 uses raw 480 for six words and raw 481 for the complete active DWORD. It retains the sixth DWORD at +0x94. Both original fade modes produce the same working texture and submission alpha across the observed values of that word. Active initialization retimes the animation and stop preserves the clocks. Null targets are ignored and both wrappers return control 2 without writing a result.',
+        },
         {
           ids: [723],
           value:
@@ -1870,6 +1893,136 @@ export default {
       ],
       signatures: [
         {
+          ids: [853],
+          fields: {
+            resultWritten: false,
+            parameters: [
+              {
+                name: 'task',
+                description: 'WipeMosaic task ID',
+                type: { kind: 'object-id', objectKind: 'WipeMosaic' },
+              },
+              {
+                name: 'duration',
+                description: 'u32 duration in task clock frames',
+                type: { kind: 'integer', bits: 32, signed: false },
+              },
+              {
+                name: 'minimum',
+                description: 'f32 minimum draw priority',
+                type: { kind: 'float', bits: 32 },
+              },
+              {
+                name: 'maximum',
+                description: 'f32 maximum draw priority',
+                type: { kind: 'float', bits: 32 },
+              },
+              {
+                name: 'maximumBlock',
+                description: 'i32 maximum mosaic block size',
+                type: { kind: 'integer', bits: 32, signed: true },
+              },
+              {
+                name: 'linear',
+                description: 'Nonzero selects linear mosaic expansion',
+                type: { kind: 'bits', bits: 32 },
+              },
+            ],
+          },
+        },
+        {
+          ids: [854],
+          fields: {
+            resultWritten: false,
+            parameters: [
+              {
+                name: 'task',
+                description: 'WipeMosaic task ID',
+                type: { kind: 'object-id', objectKind: 'WipeMosaic' },
+              },
+            ],
+          },
+        },
+        {
+          ids: [855],
+          fields: {
+            resultWritten: false,
+            parameters: [
+              {
+                name: 'task',
+                description: 'WipeMosaic task ID',
+                type: { kind: 'object-id', objectKind: 'WipeMosaic' },
+              },
+              {
+                name: 'active',
+                description: 'Complete active DWORD',
+                type: { kind: 'bits', bits: 32 },
+              },
+            ],
+          },
+        },
+        {
+          ids: [856],
+          fields: {
+            resultWritten: false,
+            parameters: [
+              {
+                name: 'task',
+                description: 'FadeMosaic task ID',
+                type: { kind: 'object-id', objectKind: 'FadeMosaic' },
+              },
+              {
+                name: 'duration',
+                description: 'u32 duration in task clock frames',
+                type: { kind: 'integer', bits: 32, signed: false },
+              },
+              {
+                name: 'minimum',
+                description: 'f32 minimum draw priority',
+                type: { kind: 'float', bits: 32 },
+              },
+              {
+                name: 'maximum',
+                description: 'f32 maximum draw priority',
+                type: { kind: 'float', bits: 32 },
+              },
+              {
+                name: 'maximumBlock',
+                description: 'i32 maximum mosaic block size',
+                type: { kind: 'integer', bits: 32, signed: true },
+              },
+              {
+                name: 'linear',
+                description: 'Nonzero selects linear mosaic expansion',
+                type: { kind: 'bits', bits: 32 },
+              },
+              {
+                name: 'retainedWord',
+                description: 'Additional DWORD copied to the FadeMosaic owner',
+                type: { kind: 'bits', bits: 32 },
+              },
+            ],
+          },
+        },
+        {
+          ids: [857],
+          fields: {
+            resultWritten: false,
+            parameters: [
+              {
+                name: 'task',
+                description: 'FadeMosaic task ID',
+                type: { kind: 'object-id', objectKind: 'FadeMosaic' },
+              },
+              {
+                name: 'active',
+                description: 'Complete active DWORD',
+                type: { kind: 'bits', bits: 32 },
+              },
+            ],
+          },
+        },
+        {
           ids: [723],
           fields: {
             resultWritten: false,
@@ -2669,63 +2822,6 @@ export default {
             parameters: NATIVE_SEMANTICS.main[385].signature.parameters.slice(0, 4),
             resultWritten: true,
             review: 'reviewed',
-          },
-        },
-        {
-          ids: [856],
-          fields: {
-            argumentWords: 7,
-            parameters: [
-              {
-                name: 'arg0',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-              {
-                name: 'arg1',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-              {
-                name: 'arg2',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-              {
-                name: 'arg3',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-              {
-                name: 'arg4',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-              {
-                name: 'arg5',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-              {
-                name: 'arg6',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-            ],
           },
         },
         {

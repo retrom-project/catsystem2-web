@@ -1,17 +1,188 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
-import { encodeCP932, floatBits } from '../src/kcs.mjs';
+import { KCSMachine, encodeCP932, floatBits, readKCS } from '../src/kcs.mjs';
 import { openImage } from '../src/formats/hg3.mjs';
 import { MOTION_ABI, motionVector, setMotionVector } from '../src/motion/abi.mjs';
 import { identity } from '../src/motion/matrix.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { NULL_NATIVE_TEXTURE } from '../src/native/texture-layout.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { makeWorld } from './fixtures/fes-effect-model-world.mjs';
+import { authoredScreenFrame, ScreenVectorGPU } from './fixtures/screen-effects-fixture.mjs';
 import { hg3, kcsProgram } from './helpers.mjs';
 
 const profile = 'bokutomo-engine-2.6.1.67',
   target = [0x13, 80];
+
+async function screenGuest(world, ...calls) {
+  const marker = 0x4d7a91e3,
+    program = kcsProgram([
+      [37, marker],
+      ...calls.flatMap(([id, args]) => [
+        ...args.map((word) => [37, word]),
+        [43, id, args.length * 4],
+      ]),
+      [59],
+    ]),
+    task = { ...world.main, io: null };
+  const machine = (task.machine = new KCSMachine(await readKCS(program), {
+    native: (id, args, caller) => world.runtime.scheduler.native(task, id, args, caller),
+  }));
+  const floor = machine.sp;
+  assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.pop(), marker);
+}
+
+test('2.6.1.67 KCS mosaic commands preserve private captures, fade packet and original pixels', async (t) => {
+  const world = await makeWorld(profile);
+  t.after(() => world.close({ flushFiles: false }));
+  const cases = [
+      [
+        50,
+        16,
+        8,
+        0,
+        8,
+        4,
+        2,
+        0,
+        0xffffffff,
+        '3db8e196b2cb0c86ef62395c11dcd91968423ea042098cf76af480251014c6cd',
+      ],
+      [
+        50,
+        13,
+        7,
+        1,
+        11,
+        6,
+        5,
+        1,
+        0xffffffff,
+        'a095231a4bcf41e75a9c01dbd91309f5728a5e99cb6bef22353e14e844e3664d',
+      ],
+      [
+        50,
+        16,
+        8,
+        0,
+        1,
+        4,
+        0,
+        0,
+        0xffffffff,
+        '6848705b762d74deddf1065e314f2e478103201f7bf749574209a6c11df64c4c',
+      ],
+      [
+        50,
+        16,
+        8,
+        1,
+        0,
+        4,
+        0,
+        0,
+        0xffffffff,
+        '1c0dcca9afffb7337ee73d60e26a483567289e3aa1c0fbafa86b1d80d8b8ceee',
+      ],
+      [
+        51,
+        16,
+        8,
+        0,
+        8,
+        4,
+        3,
+        0,
+        0xa0ffffff,
+        '3db8e196b2cb0c86ef62395c11dcd91968423ea042098cf76af480251014c6cd',
+      ],
+      [
+        51,
+        13,
+        7,
+        1,
+        11,
+        5,
+        6,
+        0,
+        0x74ffffff,
+        '981a1ef015f7661abeed9fccbb0eb7c2110169b795da68ec3863f75eb71ed653',
+      ],
+    ],
+    stage = world.stageRenderer,
+    rendering = world.screenEffects.rendering;
+  for (const raw of [477, 478, 479, 480, 481]) {
+    assert.equal(mapABIMessage(profile, 'screen', 'raw', raw + 39), raw);
+    assert.equal(mapABIMessage(profile, 'screen', 'canonical', raw), raw + 39);
+  }
+  for (const [kind, width, height, mode, duration, level, sample, slot, color, digest] of cases) {
+    const gpu = (stage.gpu = new ScreenVectorGPU(width, height));
+    Object.assign(world.graphics.view, { clientWidth: width, clientHeight: height });
+    const drawGeometry = gpu.drawGeometry.bind(gpu);
+    let drawn;
+    gpu.drawGeometry = (geometry, frame, options) => {
+      drawn = { frame, color: geometry[0].vertices[0].color };
+      return drawGeometry(geometry, frame, options);
+    };
+    assert.equal(rendering.prepare(2), true);
+    rendering.captures.forEach((capture, index) =>
+      stage.writeSurface(capture, authoredScreenFrame(width, height, index === 1)),
+    );
+    const objectID = await world.objects.create({ kind, parent: world.main.id }),
+      nativeID = world.nativeTaskID(objectID),
+      effect = world.screenEffects.tasks.get(objectID),
+      { record, state } = effect,
+      init = kind === 50 ? 853 : 856,
+      start = kind === 50 ? 855 : 857,
+      bounds = [floatBits(0), floatBits(60000)],
+      tail = [level, mode, ...(kind === 51 ? [0x4000abcd] : [])],
+      args = [nativeID, duration, ...bounds, ...tail];
+    await screenGuest(world, [init, args.with(0, 0)], [start, [0, 0x80000011]]);
+    assert.equal(state.initialized, false);
+    assert.equal(state.active, 0);
+    await screenGuest(world, [init, args]);
+    assert.deepEqual(state.params, [...bounds, duration, ...tail]);
+    assert.equal(state.initialized, true);
+    assert.equal(world.screenEffects.callback, objectID);
+    if (kind === 50) {
+      await screenGuest(world, [854, [0]]);
+      assert.equal(state.work[1], undefined);
+      await screenGuest(world, [854, [nativeID]]);
+      assert.ok(state.work[1]);
+    } else {
+      await assert.rejects(screenGuest(world, [init, args.slice(0, -1)]), /expects 7 arguments/);
+    }
+    assert.deepEqual(rendering.captures, []);
+    Object.assign(record, { effectiveFrame: 0, pausedFrames: 0 });
+    await screenGuest(world, [start, [nativeID, 0x80000011]]);
+    assert.equal(state.active, 0x80000011);
+    for (let clock = 0; clock <= sample; clock++) {
+      record.effectiveFrame = clock;
+      await effect.render();
+    }
+    assert.equal(state.lastKey, sample);
+    assert.equal(drawn.color, color);
+    assert.equal(drawn.frame, stage.surfaceFrame(state.work[slot]));
+    assert.equal(createHash('sha256').update(drawn.frame.rgba).digest('hex'), digest);
+    assert.equal(state.active, sample < duration ? 0x80000011 : 0);
+    if (kind === 51) {
+      Object.assign(record, { effectiveFrame: 126, pausedFrames: 25 });
+      await screenGuest(world, [init, args.with(1, 24)]);
+      assert.deepEqual([state.start, state.end, state.active], [101, 125, 0x80000011]);
+    }
+    const clock = [state.start, state.end];
+    await screenGuest(world, [start, [nativeID, 0]]);
+    assert.equal(state.active, 0);
+    assert.deepEqual([state.start, state.end], clock);
+    assert.equal(state.lastKey, 0xffffffff);
+    await world.objects.release(objectID);
+    assert.equal(world.screenEffects.callback, 0);
+  }
+});
 
 test('2.6.1.67 KCS loads a CP932 formatted bitmap with physical layered offsets', async (t) => {
   const background = Uint8ClampedArray.of(34, 56, 78, 255),
