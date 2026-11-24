@@ -12,34 +12,34 @@ with the reviewed SHA-256. Simple entries were also exercised through authored
 normal GCALLs; the game table was not used as evidence for SDK identity. The ABI
 contains the names/signatures; these EXE targets remain documentation/test evidence.
 
-| SDK ID | Semantic                             | Words | Control | Original handler | Validation                             |
-| ------ | ------------------------------------ | ----- | ------- | ---------------- | -------------------------------------- |
-| `1`    | `debug.print`                        | 1     | 2       | `51C010`         | body confirmed; normal fixture pending |
-| `6`    | `word.identity`                      | 1     | 1       | `51B320`         | independent GCALL                      |
-| `9`    | `application.exit`                   | 1     | 2       | `51B570`         | original window callback and KCS World |
-| `A`    | `clipboard.copy`                     | 1     | 2       | `51B360`         | original CF_TEXT and KCS browser host  |
-| `B`    | `clock.localDate`                    | 7     | 2       | `51B9E0`         | body confirmed; normal fixture pending |
-| `1B`   | `memory.allocate`                    | 1     | 1       | `5232D0`         | body confirmed; normal fixture pending |
-| `1C`   | `memory.free`                        | 1     | 1       | `5230A0`         | body confirmed; normal fixture pending |
-| `1E`   | `file.read`                          | 4     | 1       | `523050`         | body confirmed; normal fixture pending |
-| `1F`   | `file.write`                         | 4     | 1       | `5230C0`         | body confirmed; normal fixture pending |
-| `21`   | `random.integer`                     | 0     | 1       | `523360`         | independent GCALL                      |
-| `22`   | `random.float`                       | 0     | 1       | `523030`         | independent GCALL                      |
-| `23`   | `memory.copy`                        | 3     | 2       | `5232F0`         | independent GCALL                      |
-| `24`   | `memory.fill`                        | 3     | 2       | `523330`         | independent GCALL                      |
-| `25`   | `number.formatThousands`             | 3     | 2       | `5231A0`         | independent GCALL                      |
-| `26`   | `string.copyUntilSeparator`          | 4     | 1       | `5233E0`         | independent GCALL                      |
-| `27`   | `string.copyFormattedUntilSeparator` | 4     | 1       | `5234C0`         | independent GCALL                      |
-| `28`   | `string.isDoubleByte`                | 1     | 1       | `522CB0`         | independent GCALL                      |
-| `29`   | `list.split`                         | 3     | 2       | `523600`         | independent GCALL                      |
-| `2A`   | `list.select`                        | 3     | 1       | `523110`         | independent GCALL                      |
-| `2B`   | `list.splitGroups`                   | 3     | 2       | `5235B0`         | independent GCALL                      |
-| `2C`   | `list.join`                          | 4     | 2       | `522EA0`         | independent GCALL                      |
-| `2D`   | `string.replace`                     | 4     | 2       | `523380`         | independent GCALL                      |
-| `2F`   | `string.characterLength`             | 1     | 1       | `522E00`         | independent GCALL                      |
-| `30`   | `string.formattedCharacterLength`    | 1     | 1       | `522E50`         | independent GCALL                      |
-| `31`   | `string.findAtCharacterBoundary`     | 2     | 1       | `523B40`         | independent GCALL                      |
-| `41`   | `task.yield`                         | 0     | 4       | `51BED0`         | independent GCALL                      |
+| SDK ID | Semantic                             | Words | Control | Original handler | Validation                              |
+| ------ | ------------------------------------ | ----- | ------- | ---------------- | --------------------------------------- |
+| `1`    | `debug.print`                        | 1     | 2       | `51C010`         | body confirmed; normal fixture pending  |
+| `6`    | `word.identity`                      | 1     | 1       | `51B320`         | independent GCALL                       |
+| `9`    | `application.exit`                   | 1     | 2       | `51B570`         | original window callback and KCS World  |
+| `A`    | `clipboard.copy`                     | 1     | 2       | `51B360`         | original CF_TEXT and KCS browser host   |
+| `B`    | `clock.localDate`                    | 7     | 2       | `51B9E0`         | original time fields and VM alias order |
+| `1B`   | `memory.allocate`                    | 1     | 1       | `5232D0`         | original heap and VM address mapping    |
+| `1C`   | `memory.free`                        | 1     | 1       | `5230A0`         | original heap and VM compaction         |
+| `1E`   | `file.read`                          | 4     | 1       | `523050`         | body confirmed; normal fixture pending  |
+| `1F`   | `file.write`                         | 4     | 1       | `5230C0`         | body confirmed; normal fixture pending  |
+| `21`   | `random.integer`                     | 0     | 1       | `523360`         | independent GCALL                       |
+| `22`   | `random.float`                       | 0     | 1       | `523030`         | independent GCALL                       |
+| `23`   | `memory.copy`                        | 3     | 2       | `5232F0`         | independent GCALL                       |
+| `24`   | `memory.fill`                        | 3     | 2       | `523330`         | independent GCALL                       |
+| `25`   | `number.formatThousands`             | 3     | 2       | `5231A0`         | independent GCALL                       |
+| `26`   | `string.copyUntilSeparator`          | 4     | 1       | `5233E0`         | independent GCALL                       |
+| `27`   | `string.copyFormattedUntilSeparator` | 4     | 1       | `5234C0`         | independent GCALL                       |
+| `28`   | `string.isDoubleByte`                | 1     | 1       | `522CB0`         | independent GCALL                       |
+| `29`   | `list.split`                         | 3     | 2       | `523600`         | independent GCALL                       |
+| `2A`   | `list.select`                        | 3     | 1       | `523110`         | independent GCALL                       |
+| `2B`   | `list.splitGroups`                   | 3     | 2       | `5235B0`         | independent GCALL                       |
+| `2C`   | `list.join`                          | 4     | 2       | `522EA0`         | independent GCALL                       |
+| `2D`   | `string.replace`                     | 4     | 2       | `523380`         | independent GCALL                       |
+| `2F`   | `string.characterLength`             | 1     | 1       | `522E00`         | independent GCALL                       |
+| `30`   | `string.formattedCharacterLength`    | 1     | 1       | `522E50`         | independent GCALL                       |
+| `31`   | `string.findAtCharacterBoundary`     | 2     | 1       | `523B40`         | independent GCALL                       |
+| `41`   | `task.yield`                         | 0     | 4       | `51BED0`         | independent GCALL                       |
 
 `memory.copy/fill` retain VM pointer translation and byte width, number formatting
 uses signed integers, and CP932 helpers preserve byte boundaries. Split/select/join,
@@ -49,12 +49,9 @@ only that byte span is private scratch, and raw PE write evidence is retained.
 All remaining PE bytes, VM regions, result-write behavior, handles and task state
 compare exactly. Public golden cases run without a private executable.
 
-The six remaining signatures retain the scope of their independent review. Debug
-print requires its debug-window transport. Local date uses a controlled local-time
-provider. Allocate and free use the complete original VM allocation container.
-File read and write use the live original file manager. The ABI records the
-observed parameter widths and controls from the SDK bodies along with the
-remaining evidence scope.
+The remaining signatures record the original wrapper evidence for debug print
+and file read/write. The debug-window sink and the actual file receiver have
+independent review scope.
 
 On the fixed SDK build, Main9 posts WM_CLOSE for a nonzero selector and 0x433
 for zero. Its application callback uses the language table to translate the
@@ -64,6 +61,15 @@ Script event 160 before the close sequence. Main10 formats one CP932 argument,
 converts each literal backslash-n byte pair to CRLF, and writes CF_TEXT. The
 browser adapter projects those formatted bytes to text under the platform's
 clipboard rules. Both calls return control 2 with the result left unwritten.
+
+Main11 writes the seven 16-bit OS clock fields as unsigned words in the
+original order, which determines the final value if output pointers alias.
+Main27 appends a zeroed block to the original memory list. An empty block
+returns the all-ones sentinel. Main28 only releases an exact mapped block
+start. The remaining blocks retain their bytes and their virtual addresses
+compact to follow the live preceding regions. Original Main140, 142 and 549
+share one operand-free body that returns control 1 without writing a result.
+Their VM calls retain the normal initial result sentinel at every tested width.
 
 ## Independent MT19937 checks
 

@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { nativeABI } from '../src/native/abi/index.mjs';
 import { BrowserNativeClipboard } from '../src/native/clipboard-browser.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
@@ -10,12 +11,13 @@ const profile = 'sdk-4.01-engine-2.6.1.74';
 const marker = 0xb5178731;
 
 function program(id, words) {
-  return kcsProgram([
-    [37, marker],
-    ...words.map((word) => [37, word]),
-    [43, id, words.length * 4],
-    [59],
-  ]);
+  return kcsProgram([[37, marker], ...callNative(id, words), [59]]);
+}
+
+function callNative(id, words, result) {
+  const code = [...words.map((word) => [37, word]), [43, id, words.length * 4]];
+  if (result !== undefined) code.push([38, result]);
+  return code;
 }
 
 async function runGuest(world, name, initialize) {
@@ -233,5 +235,74 @@ test('fixed 2.6.1.74 RNG rejects undefined division and signed table overflow', 
     await assert.rejects(world.tick(), failure, row);
     assert.equal(world.random.integer.index, 624);
     assert.equal(bank.dirty, false);
+  }
+});
+
+test('fixed 2.6.1.74 KCS local date writes seven unsigned fields in alias order', async (t) => {
+  const address = [64, 68, 72, 76, 80, 84, 88];
+  const world = await dataWorld(profile, {
+    'clock.kcs': program(11, address),
+    'clock-alias.kcs': program(11, Array(7).fill(64)),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  world.runtime.services.date = () => new Date(2000, 1, 29, 23, 59, 58, 27);
+  const now = await runGuest(world, 'clock.kcs');
+  assert.deepEqual(
+    address.map((at) => now.load(at)),
+    [2000, 2, 2, 29, 23, 59, 58],
+  );
+  const alias = await runGuest(world, 'clock-alias.kcs', (machine) => machine.store(68, marker));
+  assert.equal(alias.load(64), 58);
+  assert.equal(alias.load(68), marker);
+});
+
+test('fixed 2.6.1.74 KCS heap compacts addresses and retains the empty allocation sentinel', async (t) => {
+  const memory = (slot) => [0x13, slot];
+  const executable = kcsProgram([
+    [37, marker],
+    ...callNative(27, [0], 64),
+    ...callNative(27, [17], 68),
+    ...callNative(27, [8], 72),
+    ...callNative(36, [memory(72), 0x51, 3]),
+    ...callNative(28, [memory(64)], 76),
+    ...callNative(28, [memory(68)], 80),
+    ...callNative(28, [memory(72)], 84),
+    [59],
+  ]);
+  const world = await dataWorld(profile, { 'heap.kcs': executable });
+  t.after(() => world.close({ flushFiles: false }));
+  const machine = await runGuest(world, 'heap.kcs');
+  const base = machine.load(68);
+  assert.equal(machine.load(64), 0xffffffff);
+  assert.equal(machine.load(72), base + 17);
+  assert.deepEqual(
+    [76, 80, 84].map((address) => machine.load(address)),
+    [0, 1, 0],
+  );
+  assert.deepEqual([...machine.bytes(base, 8)], [0x51, 0x51, 0x51, 0, 0, 0, 0, 0]);
+  assert.throws(() => machine.bytes(base + 17, 1), /KCS memory/);
+});
+
+test('fixed 2.6.1.74 original control-one stubs consume any declared stack span and leave the result unwritten', async (t) => {
+  const abi = nativeABI(profile);
+  for (const id of [140, 142, 549]) {
+    const { signature } = abi.tables.main.entries[id];
+    assert.deepEqual(signature.controlCodes, [1]);
+    assert.equal(signature.argumentWords, null);
+    assert.equal(signature.resultWritten, false);
+    const code = kcsProgram([
+      [37, marker],
+      ...callNative(id, [], 64),
+      ...callNative(id, [0xffffffff], 68),
+      ...callNative(id, [1, 2, 0xffffffff, 4], 72),
+      [59],
+    ]);
+    const world = await dataWorld(profile, { 'unwritten.kcs': code });
+    t.after(() => world.close({ flushFiles: false }));
+    const machine = await runGuest(world, 'unwritten.kcs');
+    assert.deepEqual(
+      [64, 68, 72].map((at) => machine.load(at)),
+      Array(3).fill(0xcccccccc),
+    );
   }
 });
