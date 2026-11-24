@@ -11,6 +11,52 @@ import { hg3, kcsProgram } from './helpers.mjs';
 const profile = 'bokutomo-engine-2.6.1.67',
   target = [0x13, 80];
 
+test('2.6.1.67 KCS prepares owned screen targets and captures only the requested index', async (t) => {
+  const range = [floatBits(1.25), floatBits(9.5)],
+    program = (...calls) =>
+      kcsProgram([
+        [37, 0x4af36828],
+        ...calls.flatMap(([id, ...args]) => [
+          ...args.map((arg) => [37, arg]),
+          [43, id, args.length * 4],
+        ]),
+        [59],
+      ]),
+    world = await dataWorld(profile, {
+      'prepare.kcs': program([858, 2], [859, 1, ...range], [859, 2, ...range]),
+      'capture.kcs': program([568, ...range]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const rendering = world.screenEffects.rendering,
+    revision = (id) => world.stageRenderer.surfaces.get(id).revision ?? 0;
+  world.graphics.view.configure({
+    clientWidth: 4,
+    clientHeight: 3,
+    drawingRectangle: [0, 0, 4, 3],
+  });
+  const execute = async (filename) => {
+    const task = await world.spawnScript(filename, {
+        parent: world.main.id,
+        initialExecute: false,
+      }),
+      floor = task.machine.sp;
+    await world.runtime.scheduler.execute(task);
+    assert.equal(task.machine.sp, floor + 4);
+    assert.equal(task.machine.load(floor), 0x4af36828);
+  };
+  await execute('prepare.kcs');
+  const owned = rendering.captures.slice();
+  assert.equal(owned.length, 2);
+  assert.deepEqual(owned.map(revision), [0, 1]);
+  await execute('capture.kcs');
+  assert.deepEqual(rendering.captures, owned);
+  assert.deepEqual(owned.map(revision), [1, 1]);
+  assert.deepEqual(world.stageRenderer.surfacePixels(owned[0]), new Uint8Array(4 * 3 * 4));
+  world.configuration.fields.general.renderTargetCount = 0;
+  await execute('capture.kcs');
+  assert.deepEqual(owned.map(revision), [1, 1]);
+});
+
 test('2.6.1.67 KCS reads live capture counters and writes a CP932 line at the original file position', async (t) => {
   const files = new Map([
       ['line.log', Uint8Array.of(0x61, 0x62, 0x63, 0)],
