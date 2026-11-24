@@ -5,6 +5,7 @@ import { bitsFloat, encodeCP932, floatBits, readKCS } from '../src/kcs.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { BrowserNativeClipboard } from '../src/native/clipboard-browser.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
@@ -72,6 +73,120 @@ test('2.6.1.67 Main stubs preserve their original three result behaviors', async
     }
     assert.equal(diagnostics.length, 3);
     assert.ok(diagnostics.every((event) => event.type === 'native-result-sentinel'));
+  }
+});
+
+test('2.6.1.67 Main9 preserves queued close confirmation and Script shutdown', async (t) => {
+  const marker = 0x62913675;
+  for (const [selector, accepted] of [
+    [0, false],
+    [1, false],
+    [0xffffffff, true],
+  ]) {
+    const program = kcsProgram([[37, marker], [37, selector], [43, 9, 4], [59]]);
+    const world = await dataWorld(profile, { 'desktop-close.kcs': program });
+    t.after(() => world.close({ flushFiles: false }));
+    const task = await world.spawnScript('desktop-close.kcs', { initialExecute: false });
+    const main = world.objects.objects.get(world.main.id),
+      actions = [],
+      title = world.configuration.fields.application.title;
+    world.host.nativeWindowAction = async (action) => {
+      actions.push(action);
+      if (action.type === 'close') assert.equal(main.scriptEnabled, 0);
+      return accepted;
+    };
+    await world.runtime.scheduler.execute(task);
+    assert.equal(task.machine.sp, task.machine.floor + 4);
+    assert.equal(task.machine.pop(), marker);
+    assert.deepEqual(actions, []);
+    assert.deepEqual(world.windowMessages, [
+      { message: selector ? 0x10 : 0x433, wParam: 0, lParam: 0 },
+    ]);
+    await world.processWindowMessages();
+    const quits = !selector || accepted,
+      expected = selector
+        ? [
+            {
+              type: 'confirm-close',
+              message: `${title} を終了してよろしいですか？`,
+              caption: '終了',
+            },
+          ]
+        : [];
+    if (quits) expected.push({ type: 'hide' }, { type: 'close' });
+    assert.deepEqual(actions, expected);
+    assert.equal(main.scriptEnabled, quits ? 0 : 1);
+    assert.equal(Boolean(world.quitRequested), quits);
+  }
+});
+
+test('2.6.1.67 Main10 formats raw CP932 clipboard bytes through the browser owner', async (t) => {
+  const marker = 0x21695740,
+    program = kcsProgram([[37, marker], [37, 256], [43, 10, 4], [59]]);
+  const world = await dataWorld(profile, { 'clipboard.kcs': program });
+  t.after(() => world.close({ flushFiles: false }));
+  const writes = [],
+    diagnostics = [];
+  let userActive = true;
+  const clipboard = new BrowserNativeClipboard({
+    clipboard: {
+      async writeText(text) {
+        assert.equal(clipboard.owner, world.window.handle);
+        if (!userActive) throw new Error('User activation is required');
+        writes.push(text);
+      },
+    },
+    diagnostic: (detail) => diagnostics.push(detail),
+  });
+  world.runtime.services.nativeClipboard = clipboard;
+  async function copy(source, output) {
+    const task = await world.spawnScript('clipboard.kcs', { initialExecute: false });
+    task.machine.store(192, -41);
+    task.machine.writeString(source, 256);
+    await world.runtime.scheduler.execute(task);
+    assert.equal(task.machine.sp, task.machine.floor + 4);
+    assert.equal(task.machine.pop(), marker);
+    assert.equal(task.machine.string(256), source);
+    assert.deepEqual(writes.splice(0), output);
+    assert.equal(clipboard.opened, false);
+  }
+  await copy('猫\\n犬 %d[G192] 100%%', ['', '猫\r\n犬 -41 100%']);
+  await copy('ソnZ', ['', '\ufffd\r\nZ']);
+  await copy('', ['', '']);
+  userActive = false;
+  await copy('clipboard permission denied', []);
+  assert.deepEqual(
+    diagnostics.map((detail) => detail.type),
+    ['native-clipboard', 'native-clipboard'],
+  );
+});
+
+test('2.6.1.67 Main7 and Main11 return the task rate and write the local date in guest order', async (t) => {
+  const marker = 0xfe473287,
+    addresses = [68, 0x80000048, 76, 0x80000050, 84, 0x80000058, 92],
+    dateProgram = (targets) =>
+      kcsProgram([[37, marker], ...targets.map((word) => [37, word]), [43, 11, 28], [59]]);
+  const world = await dataWorld(profile, {
+    'clock-date.kcs': dateProgram(addresses),
+    'clock-alias.kcs': dateProgram(Array(7).fill(0x80000044)),
+    'clock-rate.kcs': kcsProgram([[37, marker], [43, 7, 0], [38, 64], [59]]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  world.runtime.services.date = () => new Date(2000, 1, 29, 23, 59, 58, 999);
+  for (const [source, output, expected] of [
+    ['clock-date.kcs', addresses, [2000, 2, 2, 29, 23, 59, 58]],
+    ['clock-alias.kcs', [0x80000044], [58]],
+    ['clock-rate.kcs', [64], [0x80000000]],
+  ]) {
+    const task = await world.spawnScript(source, { initialExecute: false });
+    if (source === 'clock-rate.kcs') world.objects.objects.get(task.id).frameRate = expected[0];
+    await world.runtime.scheduler.execute(task);
+    assert.equal(task.machine.sp, task.machine.floor + 4);
+    assert.equal(task.machine.pop(), marker);
+    assert.deepEqual(
+      output.map((address) => task.machine.load(address)),
+      expected,
+    );
   }
 });
 
