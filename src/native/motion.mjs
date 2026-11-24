@@ -11,7 +11,6 @@ import {
   roundInteger,
   x87LinearInterpolate,
 } from '../ppi/numeric.mjs';
-import { roundX87Single } from '../ppi/x87.mjs';
 import { floatBits } from '../kcs.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { nativeDataFormat, nativeDataKey, nativeDataMapped } from './data-text.mjs';
@@ -144,12 +143,8 @@ export function nativeMotion(id, args, machine, services = {}) {
   if (id === 0x140) {
     const x87 = services.profile && nativeABI(services.profile).motion?.splineUsesX87;
     const count = x87 ? args[1] | 0 : args[1];
-    if (x87 && count < 3) return done();
-    prepareMotionSpline(
-      machine.bytes(args[0], count * 20),
-      count,
-      x87 ? roundX87Single : undefined,
-    );
+    if (x87 && ((count - 1) | 0) < 2) return done();
+    prepareMotionSpline(machine.bytes(args[0], count * 20), count, { x87 });
     return done();
   }
   if (!ids.has(id) || !services.motion) return undefined;

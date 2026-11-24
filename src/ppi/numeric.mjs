@@ -17,7 +17,7 @@ export function x87AngleConversion(angle, toRadians) {
   return f(roundX87Single(product / (toRadians ? 180 : pi)));
 }
 
-function x87BinaryNaNWord(left, right, rightFromMemory = false, preserveSignaling = false) {
+export function x87BinaryNaNWord(left, right, rightFromMemory = false, preserveSignaling = false) {
   const infinity = 0x7f800000,
     magnitudeLeft = left & 0x7fffffff,
     magnitudeRight = right & 0x7fffffff;

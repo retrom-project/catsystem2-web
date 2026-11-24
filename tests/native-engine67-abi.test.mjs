@@ -75,6 +75,83 @@ test('2.6.1.67 Main stubs preserve their original three result behaviors', async
   }
 });
 
+test('2.6.1.67 Main320 prepares spline records in the authored memory domain', async (t) => {
+  const marker = 0xc41e2359,
+    program = kcsProgram([[37, marker], [37, [0x13, 64]], [37, [0x13, 68]], [43, 320, 8], [59]]),
+    world = await dataWorld(profile, { 'spline.kcs': program });
+  t.after(() => world.close({ flushFiles: false }));
+  async function runSpline(address, count, points, expected) {
+    const task = await world.spawnScript('spline.kcs', { initialExecute: false }),
+      { machine } = task,
+      sp = machine.sp;
+    machine.store(64, address);
+    machine.store(68, count);
+    if (points.length) {
+      machine.bytes(address - 1, points.length * 20 + 2).fill(0xa5);
+      points.forEach(([x, y], i) => {
+        machine.store(address + 20 * i, floatBits(x));
+        machine.store(address + 20 * i + 4, floatBits(y));
+      });
+    }
+    assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+    assert.equal(machine.sp, sp + 4);
+    assert.equal(machine.pop(), marker);
+    if (points.length) {
+      assert.equal(machine.load(address - 1, 1), 0xa5);
+      assert.equal(machine.load(address + points.length * 20, 1), 0xa5);
+      points.forEach(([x, y], i) => {
+        const at = address + 20 * i;
+        assert.equal(machine.load(at), floatBits(x));
+        assert.equal(machine.load(at + 4), floatBits(y));
+        assert.deepEqual(
+          [8, 12, 16].map((offset) => machine.load(at + offset)),
+          expected[i],
+        );
+      });
+    }
+    await world.objects.release(task.id);
+  }
+  await runSpline(0xffffffff, 2, [], []);
+  await runSpline(
+    131,
+    3,
+    [
+      [0, 4],
+      [4, 12],
+      [8, 20],
+    ],
+    [
+      [0x40000000, 0x80000000, 0],
+      [0x40000000, 0, 0x80000000],
+      [0x40000000, 0x80000000, 0x80000000],
+    ],
+  );
+  const upperNaN = [0x7fc00000, 0x7fc00000, 0x7fc00000],
+    lowerNaN = [0xffc00000, 0xffc00000, 0xffc00000];
+  await runSpline(
+    0x80000087,
+    4,
+    [
+      [0, 2],
+      [0, 2],
+      [1, 4],
+      [3, 9],
+    ],
+    Array(4).fill(upperNaN),
+  );
+  await runSpline(
+    0x8000008b,
+    4,
+    [
+      [1, 0],
+      [2, 2.75],
+      [3, 2],
+      [3, 6.75],
+    ],
+    Array(4).fill(lowerNaN),
+  );
+});
+
 test('2.6.1.67 GCALL still rejects the adjacent unreviewed native slot', async () => {
   const args = [17, 18, 19, 20, 21, 22],
     { runtime, task } = await run([...args.map((arg) => [37, arg]), [43, 599, 24], [59]]);

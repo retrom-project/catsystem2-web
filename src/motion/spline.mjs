@@ -2,6 +2,9 @@
 // Main native 0x140 prepares the five-float records consumed by motSpline*.
 // Keep the frozen engine's endpoint formula and float32 temporaries verbatim
 // as arithmetic contracts; using a library's cubic spline changes the result.
+import { x87BinaryNaNWord } from '../ppi/numeric.mjs';
+import { roundX87Single } from '../ppi/x87.mjs';
+
 const bits = new DataView(new ArrayBuffer(4));
 const quietNaNBit = 1 << 22;
 const word = (value) => {
@@ -12,15 +15,18 @@ const real = (value) => {
   bits.setUint32(0, value, true);
   return bits.getFloat32(0, true);
 };
-function binary(a, b, operation, round) {
-  if (Number.isNaN(a)) return real(word(a) | quietNaNBit);
-  if (Number.isNaN(b)) return real(word(b) | quietNaNBit);
+function binary(a, b, operation, round, x87) {
+  if (Number.isNaN(a) || Number.isNaN(b)) {
+    return real(
+      x87 ? x87BinaryNaNWord(word(a), word(b)) : word(Number.isNaN(a) ? a : b) | quietNaNBit,
+    );
+  }
   const result = round(operation(a, b));
   return Number.isNaN(result) ? real(0xffc00000) : result;
 }
 const neg = (a) => real(word(a) ^ 0x80000000);
 
-export function prepareMotionSpline(bytes, count, round = Math.fround) {
+export function prepareMotionSpline(bytes, count, { x87 = false } = {}) {
   if (
     !(bytes instanceof Uint8Array) ||
     !Number.isInteger(count) ||
@@ -29,10 +35,11 @@ export function prepareMotionSpline(bytes, count, round = Math.fround) {
   )
     throw new Error('Invalid MOT spline point buffer/count');
   if (count < 3) return;
-  const add = (a, b) => binary(a, b, (x, y) => x + y, round),
-    sub = (a, b) => binary(a, b, (x, y) => x - y, round),
-    mul = (a, b) => binary(a, b, (x, y) => x * y, round),
-    div = (a, b) => binary(a, b, (x, y) => x / y, round);
+  const round = x87 ? roundX87Single : Math.fround,
+    add = (a, b) => binary(a, b, (x, y) => x + y, round, x87),
+    sub = (a, b) => binary(a, b, (x, y) => x - y, round, x87),
+    mul = (a, b) => binary(a, b, (x, y) => x * y, round, x87),
+    div = (a, b) => binary(a, b, (x, y) => x / y, round, x87);
   const f = Math.fround,
     view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const get = (i, k) => view.getFloat32(i * 20 + k * 4, true),
@@ -68,16 +75,12 @@ export function prepareMotionSpline(bytes, count, round = Math.fround) {
       ),
     );
     set(0, 3, div(mul(f(Math.pow(get(0, 4), 2)), get(0, 3)), sub(get(3, 0), get(1, 0))));
-    set(
-      last,
-      3,
-      neg(
-        div(
-          mul(f(Math.pow(get(last - 1, 4), 2)), get(last, 3)),
-          sub(get(last, 0), get(last - 3, 0)),
-        ),
-      ),
-    );
+    const endpoint = get(last, 3),
+      scaledEndpoint = div(
+        mul(f(Math.pow(get(last - 1, 4), 2)), x87 ? neg(endpoint) : endpoint),
+        sub(get(last, 0), get(last - 3, 0)),
+      );
+    set(last, 3, x87 ? scaledEndpoint : neg(scaledEndpoint));
   }
   for (let i = 1; i <= last; i++) {
     const ratio = div(get(i - 1, 4), get(i - 1, 2));
