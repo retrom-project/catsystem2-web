@@ -169,15 +169,18 @@ export class FESControlDriver {
       throw new Error('FES control requires an initialized Draw World surface');
     return id;
   }
-  usesLegacyScroll(object) {
+  usesLegacyMessages(object) {
     const type = object.nativeType;
-    if (type !== 13 && type !== 14) return false;
-    const { scrollProtocol, scroll2Protocol } = controlTaskBehavior(this.world.profile);
-    return (type === 13 ? scrollProtocol : scroll2Protocol) === 'legacy';
+    const { scrollProtocol, scroll2Protocol, sliderRawMessages } = controlTaskBehavior(
+      this.world.profile,
+    );
+    if (type === 15) return sliderRawMessages;
+    if (type === 13) return scrollProtocol === 'legacy';
+    return type === 14 && scroll2Protocol === 'legacy';
   }
   send(instance, object, message, w = 0, l = 0, payload = null) {
     const context = payload ? { payload, flags: 1 } : { flags: 1 };
-    if (this.usesLegacyScroll(object))
+    if (this.usesLegacyMessages(object))
       return this.world.sendNativeEngine(
         this.world.nativeTaskID(object.nativeTaskID),
         instance.runtimeID,
@@ -240,7 +243,7 @@ export class FESControlDriver {
     }
     const config = fesControlLoadPacket(object, this.draw(instance), plane);
     config.file = nativeCategoryFilename(this.world.game, object.file, 'image') ?? '';
-    if (this.usesLegacyScroll(object)) {
+    if (this.usesLegacyMessages(object)) {
       const filename = encodeCP932(config.file);
       const packet = new NativeGraphicsPacket(new Array(73).fill(0));
       const scroll = object.nativeType === 13;
@@ -252,7 +255,8 @@ export class FESControlDriver {
         : [config.priority, ...config.rect, config.planeX, config.planeY];
       if (scroll) packet.store(0, config.type);
       fields.forEach((word, index) => packet.store(drawOffset + 264 + index * 4, word));
-      await this.send(instance, object, scroll ? 353 : 368, 0, 0, packet);
+      const message = scroll ? 353 : object.nativeType === 14 ? 368 : 359;
+      await this.send(instance, object, message, 0, 0, packet);
     } else await task.load(config);
     if (object.nativeType !== 13)
       object.direction =

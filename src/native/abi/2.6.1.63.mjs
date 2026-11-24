@@ -442,13 +442,15 @@ export default {
         unmapped: 'reject',
         raw: [
           { min: 353, max: 358, offset: -12, kinds: [40] },
-          ...[6, 9, 10].map((id) => ({ min: id, max: id, offset: 0, kinds: [40] })),
-          { min: 64, max: 65, offset: -3, kinds: [40] },
+          { min: 359, max: 367, offset: -12, kinds: [42] },
+          ...[6, 9, 10].map((id) => ({ min: id, max: id, offset: 0, kinds: [40, 42] })),
+          { min: 64, max: 65, offset: -3, kinds: [40, 42] },
         ],
         canonical: [
           { min: 341, max: 346, offset: 12, kinds: [40] },
-          ...[6, 9, 10].map((id) => ({ min: id, max: id, offset: 0, kinds: [40] })),
-          { min: 61, max: 62, offset: 3, kinds: [40] },
+          { min: 347, max: 355, offset: 12, kinds: [42] },
+          ...[6, 9, 10].map((id) => ({ min: id, max: id, offset: 0, kinds: [40, 42] })),
+          { min: 61, max: 62, offset: 3, kinds: [40, 42] },
         ],
       },
       sound: {
@@ -855,7 +857,12 @@ export default {
     },
     macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
     trailingIntegerAfterCurrent: true,
-    controlResources: { kinds: [40], scrollProtocol: 'legacy' },
+    controlResources: {
+      kinds: [40, 42],
+      scrollProtocol: 'legacy',
+      sliderProtocol: 'legacy',
+      sliderRawMessages: true,
+    },
   },
   input: {
     bitmapMaskNativeRows: true,

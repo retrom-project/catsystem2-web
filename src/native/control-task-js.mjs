@@ -61,6 +61,7 @@ export class JSControlTask {
     this.model = new ControlTaskModel(record.kind, (...args) => this.service(...args), undefined, {
       legacySlider: this.legacySlider,
       rawControlFlags: this.legacyScroll || this.legacyScroll2 || this.legacySlider,
+      sliderTrackDrag: !this.legacySlider || this.rawSlider,
     });
     this.drawFields = new Array(15).fill(0);
     this.drawFields[9] = this.drawFields[10] = floatBits(1);
@@ -79,6 +80,9 @@ export class JSControlTask {
   }
   get legacySlider() {
     return this.kind === 42 && this.behavior.sliderProtocol === 'legacy';
+  }
+  get rawSlider() {
+    return this.legacySlider && this.behavior.sliderRawMessages;
   }
   get legacyScroll2() {
     return this.kind === 41 && this.behavior.scroll2Protocol === 'legacy';
@@ -747,12 +751,17 @@ export class JSControlTask {
       if ((id >= 357 && id <= 365) || id === 61 || id === 62)
         message = canonicalMessage(this.world.profile, this.kind, id);
     }
+    if (this.rawSlider) {
+      if (id >= 356) return this.base.message(words, context);
+      if ((id >= 347 && id <= 355) || id === 61 || id === 62)
+        message = canonicalMessage(this.world.profile, this.kind, id);
+    }
     context.nativeUnhandled = false;
     const state = this.model.state;
     const senderWorld =
       context.nativeSenderWorldID ?? this.world.resolveTaskID(sender, this.record.id);
     const model = this.model;
-    if (this.legacySlider && message >= 359 && message <= 367)
+    if (this.legacySlider && !this.rawSlider && message >= 359 && message <= 367)
       canonicalMessage(this.world.profile, this.kind, message);
     const loadID = this.kind === 40 ? 353 : this.kind === 41 ? 368 : 359;
     if (message === loadID) {
@@ -767,6 +776,7 @@ export class JSControlTask {
         return NATIVE_UNWRITTEN_WORD;
       case 2:
         if (this.kind === 40 || this.kind === 42) {
+          if (this.rawSlider) await model.skin('thumb', l ? 0 : 1);
           await model.setEnabled(l);
           return NATIVE_UNWRITTEN_WORD;
         }
@@ -815,7 +825,7 @@ export class JSControlTask {
       message === 9 ||
       message === 10 ||
       message === 64 ||
-      (message === 65 && !this.legacySlider)
+      (message === 65 && (!this.legacySlider || this.rawSlider))
     ) {
       const previous = this.eventSender;
       this.eventSender = senderWorld;
@@ -866,6 +876,7 @@ export class JSControlTask {
     this.model = new ControlTaskModel(this.kind, (...args) => this.service(...args), saved.model, {
       legacySlider: this.legacySlider,
       rawControlFlags: this.legacyScroll || this.legacyScroll2 || this.legacySlider,
+      sliderTrackDrag: !this.legacySlider || this.rawSlider,
     });
   }
   async unload(destroyChildren) {

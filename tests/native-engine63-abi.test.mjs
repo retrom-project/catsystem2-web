@@ -573,6 +573,113 @@ test('2.6.1.63 FES SCROLL sends its original packet and owns its actual children
   }
 });
 
+test('2.6.1.63 FES SLIDER drives its raw packet, Input flags and Draw skin', async (t) => {
+  const { 'area.hg2': area, 'controls.hg2': skin } = await controlFiles(new Uint8Array());
+  const source = new TextEncoder().encode(
+    '#DEFINE\nPLANE panel\nSLIDER sample\n#OBJECT SIZE VRAM DISP\n' +
+      'panel 128,96 2,3 1\n#OBJECT FILE PL POS2 PRI DISP ENABLE\n' +
+      'sample controls panel[0] area:7 82 1 1\n' +
+      '#START\nsample page 0 100\nsample pos 25\nsample blend 129\nnext WAIT\n#WAIT\nbreak\n',
+  );
+  const world = await defaultFESWorld(profile, {
+    'area.hg2': area,
+    'controls.hg2': skin,
+    'screen.fes': source,
+  });
+  t.after(() => world.close());
+  const outgoing = [],
+    dispatch = world.sendNativeEngine.bind(world);
+  world.sendNativeEngine = (target, sender, message, w, l, context) => {
+    if (message >= 347 && message <= 355)
+      outgoing.push({
+        target,
+        sender,
+        message,
+        w,
+        l,
+        flags: context.flags,
+        bytes: context.payload?.data.slice(),
+      });
+    return dispatch(target, sender, message, w, l, context);
+  };
+  const { id, task, instance, surface } = await loadDefaultFES(world);
+  await task.tick();
+  const object = instance.byKey.get('sample'),
+    control = world.objects.objects.get(object.nativeTaskID).implementation,
+    target = world.nativeTaskID(object.nativeTaskID),
+    state = control.model.state,
+    input = world.inputFor(id);
+  assert.ok(
+    outgoing.every(
+      (message) => message.target === target && message.sender === id && message.flags === 1,
+    ),
+  );
+  const [load] = outgoing,
+    loadView = new DataView(load.bytes.buffer),
+    range = new DataView(outgoing.find(({ message }) => message === 350).bytes.buffer);
+  assert.equal(load.message, 347);
+  assert.equal(load.bytes.length, 292);
+  assert.equal(loadView.getUint32(0, true), world.nativeTaskID(surface));
+  const filename = new TextEncoder().encode('@cat/image/controls\0');
+  assert.deepEqual(load.bytes.slice(4, 4 + filename.length), filename);
+  assert.deepEqual(
+    Array.from({ length: 7 }, (_, i) => loadView.getInt32(264 + i * 4, true)),
+    [102, 16, 12, 88, 24, 2, 3],
+  );
+  assert.deepEqual(
+    outgoing.slice(0, 7).map(({ message }) => message),
+    [347, 352, 350, 351, 353, 349, 348],
+  );
+  assert.deepEqual([range.getInt32(0, true), range.getInt32(4, true)], [0, 100]);
+  assert.deepEqual([state.direction, state.value, state.alpha], [0, 25, 129]);
+  assert.equal(control.record.parent, id);
+  const { thumb, track } = control.resource.areas;
+  assert.ok(input.get(thumb) && input.get(track));
+  assert.ok((await drawPixels(world, surface)).some((byte) => byte !== 0));
+
+  const send = (message, w = 0, l = 0, context = {}) =>
+    dispatch(target, id, message, w, l, context);
+  assert.equal(await send(349), NATIVE_UNWRITTEN_WORD);
+  assert.equal(state.state, 1);
+  assert.equal(input.get(thumb).enabled, 0);
+  assert.equal(input.get(track).enabled, 0);
+  assert.equal(await send(349, 0, 0x80002000), NATIVE_UNWRITTEN_WORD);
+  assert.equal(state.state, 0);
+  assert.equal(input.get(thumb).enabled, 0x80002000);
+  assert.equal(input.get(track).enabled, 0x80002000);
+  assert.equal(await send(352), 0);
+  assert.equal(await send(354, 0, 2), NATIVE_UNWRITTEN_WORD);
+  assert.equal(await send(355), NATIVE_UNWRITTEN_WORD);
+  assert.equal(state.skinTable[0], 2);
+  assert.equal(control.resource.current, control.resource.frames.find(([frame]) => frame === 2)[1]);
+  const touches = [],
+    inputMessage = input.message.bind(input);
+  input.message = (message, ...args) => {
+    if (message === 155) touches.push(message);
+    return inputMessage(message, ...args);
+  };
+  assert.equal(await send(62, world.nativeTaskID(thumb)), NATIVE_UNWRITTEN_WORD);
+  assert.deepEqual(touches, [155]);
+  const [, top, right, bottom] = input.get(track).bounds,
+    y = (top + bottom) >> 1;
+  input.pointer(right - 4, y, 1);
+  await world.tick();
+  input.key(0, true, 2, 1);
+  await world.tick();
+  assert.equal(state.dragging, true);
+  const draggedValue = state.value;
+  assert.ok(draggedValue > 25);
+  input.pointer(right - 23, y, 1);
+  await world.tick();
+  assert.ok(state.value < draggedValue);
+  input.key(0, false, 2, 1);
+  await world.tick();
+  assert.equal(state.dragging, false);
+  const unreviewed = {};
+  assert.equal(await send(359, 0, 0, unreviewed), NATIVE_UNWRITTEN_WORD);
+  assert.equal(unreviewed.nativeUnhandled, true);
+});
+
 test('2.6.1.63 KCS preserves nested CSS, narrow strings, HG-2 thumbnails and log records', async () => {
   const world = await defaultFESWorld(
     profile,

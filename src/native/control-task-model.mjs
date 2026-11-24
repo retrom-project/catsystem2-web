@@ -249,7 +249,7 @@ export class ControlTaskModel {
     kind,
     service,
     state = createControlTaskState(kind),
-    { legacySlider = false, rawControlFlags = legacySlider } = {},
+    { legacySlider = false, rawControlFlags = legacySlider, sliderTrackDrag = !legacySlider } = {},
   ) {
     if (kind !== 40 && kind !== 41 && kind !== 42)
       throw new RangeError(`Unsupported control task kind ${kind}`);
@@ -259,6 +259,7 @@ export class ControlTaskModel {
     this.service = service;
     this.legacySlider = legacySlider;
     this.rawControlFlags = rawControlFlags;
+    this.sliderTrackDrag = sliderTrackDrag;
     this.packets = new Map(
       packetNames.map((name) => [
         name,
@@ -470,7 +471,7 @@ export class ControlTaskModel {
       }
       await this.emit('render', null, updateBounds);
       await this.emit('notify', null, notify27);
-      if (s.kind !== 42 || this.legacySlider) return true;
+      if (s.kind !== 42 || !this.sliderTrackDrag) return true;
     }
     if (s.kind !== 42 && s.pixelMinimum >= s.pixelMaximum) return true;
     if (s.kind !== 40) await this.skin('thumb', 3);
@@ -501,7 +502,7 @@ export class ControlTaskModel {
     if (s.kind === 40 && (await this.skin(part, 0))) await this.emit('release');
     if (button !== 0) return this.unconsumed(part);
     const endsDrag =
-      part === 'thumb' || (s.kind === 42 && !this.legacySlider && part === 'track' && s.dragging);
+      part === 'thumb' || (s.kind === 42 && this.sliderTrackDrag && part === 'track' && s.dragging);
     if (endsDrag) {
       if (s.kind !== 40) {
         await this.skin('thumb', 0);
