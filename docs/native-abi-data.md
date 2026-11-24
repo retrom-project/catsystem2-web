@@ -19,10 +19,10 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 467       | 57            | 17            | 328     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 468       | 57            | 17            | 327     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 379       | 80            | 19            | 460     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
-| 2.6.1.74 | 1009       | 856       | 82            | 19            | 52      | 45 / 44 / 51                                     |
+| 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                                     |
 
 The registry represents 5,509 slots, including 2,344 SDK74/Game76 slots.
@@ -61,6 +61,14 @@ PC64 can differ by one float32 ULP on subnormal results. Both Particle
 power entries follow the same initialized SSE2 CRT selection as Main 61.
 Main 52 remains guarded. The existing Generic 3 and Particle 8 tangent
 coverage has a known numerical difference for very large finite angles.
+
+Main 121 scales a borrowed bitmap and Main 713 walks owned layer and animation
+bitmaps. Both take four words in bitmap or image, red, green, blue order. They
+return control 2 without writing the result. A null owner or three factors of
+100 skip owner lookup. The shared CPU kernel updates the RGB bytes of each
+four-byte pixel with unsigned DWORD multiplication, division by 100, and
+saturation to 255. The kernel preserves alpha, row padding and metadata.
+Repeated references to a layer bitmap apply the operation repeatedly.
 
 Main 405–416 load and query binary gallery resources in the FES category.
 Variants use 20 groups of eight 540-byte records. A missing or wrong-size

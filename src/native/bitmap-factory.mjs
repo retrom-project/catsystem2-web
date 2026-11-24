@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Script-owned bitmap handles and their automatic task lifetime live in JS.
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { nativeDataArgument } from './data-text.mjs';
 
 export const NATIVE_BITMAP_FACTORY_CONTRACTS = Object.freeze(
@@ -67,9 +68,23 @@ export class NativeBitmapFactories {
         machine.store(argument(2), bitmap?.height ?? 0);
         return done();
       }
-      case 0x79:
-        if (handle) await images.get(handle).tone(argument(1), argument(2), argument(3));
+      case 0x79: {
+        const skipNeutralOwner = nativeABI(this.world.profile).graphics.bitmapToneSkipsNeutralOwner;
+        if (skipNeutralOwner && args.length !== contracts.get(id).words)
+          throw new Error('Native bitmap tone expects four argument words');
+        if (!handle) return done();
+        if (!skipNeutralOwner) {
+          await images.get(handle).tone(argument(1), argument(2), argument(3));
+          return done();
+        }
+        const red = argument(1),
+          green = argument(2),
+          blue = argument(3);
+        if (red === 100 && green === 100 && blue === 100) return done();
+        const bitmap = images.get(handle);
+        if (bitmap.width && bitmap.height) await bitmap.tone(red, green, blue);
         return done();
+      }
     }
   }
   snapshot() {

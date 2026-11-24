@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { KCSMachine, readKCS } from '../src/kcs.mjs';
 import { NativeBitmap, NativeImages, nativeImage, resampleBitmap } from '../src/native/image.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
+import { kcsProgram } from './helpers.mjs';
 
 const bitmap = (pixels, width, height) =>
   new NativeBitmap(null, {
@@ -204,6 +207,73 @@ test('native tone uses unsigned integer lookup tables and leaves alpha intact', 
   const image = bitmap([100, 80, 60, 33, 255, 1, 0, 128], 2, 1);
   await image.tone(50, 200, -1);
   assert.deepEqual([...(await image.pixels())], [50, 160, 255, 33, 127, 2, 0, 128]);
+});
+
+test('2.6.1.23 bitmap and collection tone honor native ownership and color order', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23'),
+    images = world.graphics.images,
+    canary = 0x375a86dc,
+    invalid = 0xf0a16000;
+  t.after(() => world.close({ flushFiles: false }));
+  function create(pixels) {
+    const handle = images.create(pixels.length / 4, 1, world.main.id);
+    images.get(handle).state.rgba = Uint8ClampedArray.from(pixels);
+    return handle;
+  }
+  async function invoke(id, args, error) {
+    const program = await readKCS(
+      kcsProgram([
+        [37, canary],
+        ...args.map((word) => [37, word]),
+        [43, id, args.length * 4],
+        [59],
+      ]),
+    );
+    const task = { ...world.main, io: null };
+    const machine = (task.machine = new KCSMachine(program, {
+      native: (call, words, caller) => world.runtime.scheduler.native(task, call, words, caller),
+    }));
+    const start = machine.sp;
+    const executed = world.runtime.scheduler.execute(task);
+    if (error) return assert.rejects(executed, error);
+    assert.equal((await executed).status, 'halted');
+    assert.equal(machine.sp, start + 4);
+    assert.equal(machine.pop(), canary);
+  }
+  for (const id of [121, 713]) {
+    await invoke(id, [invalid, 100, 100, 100]);
+    await invoke(id, [0, 50, 175, 0]);
+    await invoke(
+      id,
+      [invalid, 100, 100, 101],
+      /invalid or released native (bitmap|image-owner) handle/i,
+    );
+  }
+  await invoke(121, [invalid, 100, 100], /four argument words/);
+  const handle = create([72, 90, 160, 33, 255, 26, 15, 127]),
+    direct = images.get(handle),
+    empty = images.create(0, 3, world.main.id);
+  await invoke(121, [empty, 100, 100, 255]);
+  assert.equal(images.get(empty).state.revision, 0);
+  await invoke(121, [handle, 175, 50, 0x80000000]);
+  assert.deepEqual([...(await direct.pixels())], [126, 45, 0, 33, 255, 13, 255, 127]);
+  const shared = create([160, 50, 5, 61]),
+    animated = create([17, 62, 151, 81]),
+    owner = world.imageOwners.add(shared, world.main.id, Array(11).fill(0)),
+    collection = world.imageOwners.get(owner);
+  await invoke(713, [owner, 100, 100, 100]);
+  assert.equal(collection.info[9], 0);
+  await invoke(713, [owner, 50, 170, 37], /requires loaded layers/);
+  collection.layers = [
+    { bitmap: shared },
+    { bitmap: shared },
+    { animation: { frames: [{ bitmap: animated }] } },
+  ];
+  await invoke(713, [owner, 50, 170, 37]);
+  assert.equal(collection.info[9], 1);
+  assert.equal(collection.revision, 1);
+  assert.deepEqual([...(await images.get(shared).pixels())], [40, 144, 0, 61]);
+  assert.deepEqual([...(await images.get(animated).pixels())], [8, 105, 55, 81]);
 });
 
 test('native CPU alpha blending preserves original integer rounding and transparent edge colors', async () => {

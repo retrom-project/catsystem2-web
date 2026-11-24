@@ -66,6 +66,13 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
     return done();
   }
   if (!first) return id === 0x2d4 || id === 0x2d5 ? value(1) : done();
+  const neutralTone = () => a(1) === 100 && a(2) === 100 && a(3) === 100;
+  if (
+    id === 0x2c9 &&
+    nativeABI(world.profile).graphics.bitmapToneSkipsNeutralOwner &&
+    neutralTone()
+  )
+    return done();
   const record = owners.get(first),
     bitmap = record.bitmap ? images.get(record.bitmap) : null;
   if (id === 0x2d4)
@@ -95,7 +102,7 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
       await bitmapColor(bitmap, 'filter', a(1));
     return done();
   }
-  if (id === 0x2c9 && a(1) === 100 && a(2) === 100 && a(3) === 100) return done();
+  if (id === 0x2c9 && neutralTone()) return done();
   if (!record.layers)
     throw new RangeError('Original image collection operation requires loaded layers');
   const visit = async (fn) => {

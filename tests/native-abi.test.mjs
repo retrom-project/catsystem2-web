@@ -47,10 +47,10 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 467);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 468);
   assert.equal(base.main.entries.filter(({ status }) => status === 'reserved').length, 57);
   assert.equal(base.main.entries.filter(({ status }) => status === 'constant-zero').length, 17);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 328);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 327);
   assert.equal(base.main.entries.filter((entry) => entry.observedArgumentWords.length).length, 435);
   assert.deepEqual(base.main.entries[464].observedArgumentWords, []);
   assert.deepEqual(base.main.entries[543].observedArgumentWords, [3]);
@@ -60,6 +60,21 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
   assert.equal(base.main.entries[82].signature.argumentWords, 2);
   assert.deepEqual(base.main.entries[82].controlCodes, [2]);
   assert.equal(base.main.entries[82].signature.resultWritten, false);
+  for (const [id, owner] of [
+    [121, 'bitmap'],
+    [713, 'image-owner'],
+  ]) {
+    const { status, signature } = base.main.entries[id];
+    assert.equal(status, 'recovered');
+    assert.equal(signature.argumentWords, 4);
+    assert.deepEqual(signature.controlCodes, [2]);
+    assert.equal(signature.resultWritten, false);
+    assert.equal(signature.parameters[0].type.handleKind, owner);
+    assert.deepEqual(
+      signature.parameters.slice(1).map(({ name }) => name),
+      ['red', 'green', 'blue'],
+    );
+  }
   for (const id of [74, 75, 77, 107]) {
     const { status, signature } = base.main.entries[id];
     assert.equal(status, 'recovered');

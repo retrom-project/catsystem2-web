@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [121, 713],
+    value:
+      'Own 2.6.1.23 wrappers 0x488f70 and 0x476610 check neutral factors before dereferencing the owner; the shared 0x4d9590 kernel scales the three physical color bytes.',
+  },
+  {
     ids: [122, 705],
     value:
       'Own 2.6.1.23 aliases at 0x48A120 use the same owned bitmap resize, x87 dimension words, raster interpolation and integer-cell averaging.',
@@ -673,9 +678,9 @@ const mainEvidence = [
       'Own 2.6.1.23 image selection 0x489dc0, Script bitmap owners 0x476380–0x477100 and the 60-byte Draw packet through raw 256 at 0x4809e0',
   },
   {
-    ids: [712, 713, 715, 717, 724, 726, 730, 737],
+    ids: [712, 715, 717, 724, 726, 730, 737],
     value:
-      'Own 2.6.1.23 Script images 0x4765a0–0x476b1c and 0x477110 read geometry and attributes and apply authored tone, blur, resize and filter',
+      'Own 2.6.1.23 Script images 0x4765a0–0x476b1c and 0x477110 read geometry and attributes and apply authored blur, resize and filter',
   },
   {
     ids: [625, 728],
@@ -1221,6 +1226,7 @@ export default {
   },
   graphics: {
     bitmapResizeUsesLegacyCells: true,
+    bitmapToneSkipsNeutralOwner: true,
     formattedBitmapPhysical: true,
     bitmapBlitUsesSourceSize: true,
     sameSizeBitmapCopyClips: true,
@@ -1308,7 +1314,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
-        ...[122, 705].map((id) => ({
+        ...[121, 122, 705].map((id) => ({
           ids: [id],
           fields: {
             parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) =>
@@ -1322,6 +1328,20 @@ export default {
             resultWritten: false,
           },
         })),
+        {
+          ids: [713],
+          fields: {
+            parameters: [
+              {
+                description: 'handle image',
+                name: 'image',
+                type: { kind: 'handle', handleKind: 'image-owner', ownership: 'borrowed' },
+              },
+              ...NATIVE_SEMANTICS.main[121].signature.parameters.slice(1),
+            ],
+            resultWritten: false,
+          },
+        },
         ...Array.from({ length: 12 }, (_, i) => {
           const id = 405 + i,
             signature = NATIVE_SEMANTICS.main[id].signature;
@@ -1612,7 +1632,7 @@ export default {
         { ids: [270, 417, 787, 788], fields: { resultWritten: false } },
         { ids: [625, 728], fields: { resultWritten: false } },
         { ids: [717, 724], fields: { resultWritten: true } },
-        { ids: [712, 713, 715, 726, 730, 737], fields: { resultWritten: false } },
+        { ids: [712, 715, 726, 730, 737], fields: { resultWritten: false } },
         { ids: [598, 710, 733], fields: { resultWritten: true } },
         { ids: [711, 714, 732, 736], fields: { resultWritten: false } },
         { ids: [699], fields: { resultWritten: false } },
