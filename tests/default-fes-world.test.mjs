@@ -11,6 +11,7 @@ import { controlFiles } from './fixtures/control-files.mjs';
 import { nativeM2Files, nativeM2Program } from './fixtures/native-m2-fixture.mjs';
 import { hg3, kcsProgram } from './helpers.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
+import { nativeABIBehavior } from '../src/native/abi/index.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { append } from './fixtures/fes-log-model.mjs';
@@ -143,6 +144,38 @@ test('2.6.1.23 authored Slider owns its low task, decoded skin, click and drag',
     assert.equal(slider.model.state.loaded, true);
     assert.ok(retained());
     assert.ok(!world.nativeEngine);
+  } finally {
+    await world.close();
+  }
+});
+
+test('2.6.1.23 FES screen configuration queues the full mode DWORD for Window', async () => {
+  const profile = 'grisaia-jp-engine-2.6.1.23';
+  const source = [
+    '#START',
+    'setconf 1 screen',
+    'setconf 0 screen',
+    'setconf -1 screen',
+    'setconf 2 screen',
+    'setconf 4 messpd',
+    'next WAIT',
+    '#WAIT',
+  ].join('\n');
+  const world = await defaultFESWorld(profile, { 'screen.fes': bytes(source) });
+  const posts = [];
+  world.host.nativeWindowMessage = (message) => posts.push(message);
+  try {
+    const initialMode = world.configuration.screen.fullscreen;
+    const { task } = await loadDefaultFES(world);
+    await task.tick();
+    assert.equal(nativeABIBehavior(profile, 'messages.screenEvent'), 18);
+    assert.equal(world.fesConfiguration.get('messpd'), 4);
+    assert.equal(world.configuration.screen.fullscreen, initialMode);
+    await world.tick();
+    assert.deepEqual(
+      posts.map(({ message, wParam, lParam }) => [message, wParam, lParam]),
+      [1, 0, 0xffffffff, 2].map((mode) => [0x467, 0, mode]),
+    );
   } finally {
     await world.close();
   }
