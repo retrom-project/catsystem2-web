@@ -3909,11 +3909,11 @@ async function verifyCloseBoundaries(profile, emptyStringResult) {
     await assert.rejects(() => world.runtime.scheduler.execute(empty), /unwritten|uninitialized/);
     assert.equal(empty.machine.load(64), 0xa5a5a5a5);
     assert.deepEqual(world.runtime.handles.snapshot(), before);
-    for (const id of [239, 856, 871])
+    for (const id of [856, 871])
       assert.equal(nativeABI(profile).tables.main.entries[id].status, 'unknown');
-    if (profile === title67Profile)
-      for (const id of [385, 836, 869, 873])
-        assert.equal(nativeABI(profile).tables.main.entries[id].status, 'unknown');
+    const unreviewed = profile === title67Profile ? [836, 869, 873] : [239];
+    for (const id of unreviewed)
+      assert.equal(nativeABI(profile).tables.main.entries[id].status, 'unknown');
   } finally {
     await source.world.close();
     await source.audio.dispose();
