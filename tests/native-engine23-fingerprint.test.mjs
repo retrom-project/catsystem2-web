@@ -154,8 +154,8 @@ test('fixed 2.6.1.23 clock, integer and weekday check arity and mapped string ad
 const call = (id, args) => [...args.map((arg) => [37, arg]), [43, id, args.length * 4]];
 const storeResult = (address) => [38, [0x13, address]];
 
-function renderWorld() {
-  const game = memoryGame({}),
+function renderWorld(files = {}) {
+  const game = memoryGame(files),
     random = new ParticleRandom();
   return new NativeWorld({
     profile,
@@ -182,6 +182,73 @@ async function runRenderGuest(world, source, setup) {
   assert.equal(task.machine.pop(), sentinel);
   return task;
 }
+
+test('fixed 2.6.1.23 MOT filename GCALL resolves the formatted narrow name and resets working state', async () => {
+  const motion = kcsProgram([[59]]);
+  const world = renderWorld({
+    'owned-7.kcs': motion,
+    'folder/other.kcs': motion,
+    'ヂ.kcs': motion,
+    'ダミーソ.kcs': motion,
+  });
+  const resource = { name: 'mot', extension: 'kcs', directory: '' };
+  const registry = world.runtime.services.motion;
+  const game = registry.library.game;
+  game.nativeResources = { entries: [resource] };
+  game.readCategory = (name) => game.read(name.includes('.') ? name : name + '.kcs');
+  const handle = registry.create(42);
+  const manager = registry.get(handle);
+  async function query(name, owner = handle) {
+    manager.working.fill(0x71);
+    const task = await runRenderGuest(
+      world,
+      [...call(514, [owner, 256]), storeResult(512)],
+      ({ machine }) => {
+        machine.writeString(name, 256);
+        machine.store(768, 7);
+        machine.store(508, sentinel);
+        machine.store(516, sentinel);
+      },
+    );
+    assert.deepEqual([task.machine.load(508), task.machine.load(516)], [sentinel, sentinel]);
+    assert.deepEqual(manager.working, owner ? manager.base : new Uint8Array(144).fill(0x71));
+    return task.machine.load(512);
+  }
+  try {
+    assert.equal(nativeABI(profile).tables.main.entries[514].signature.argumentWords, 2);
+    assert.equal(await query('owned-7', 0), 0);
+    assert.equal(await query('owned-7'), 0);
+    for (const filename of ['owned-%d[G768]', 'folder/other.kcs', 'ヂ', 'ダミーソ']) {
+      const task = await runRenderGuest(
+        world,
+        [...call(304, [handle, 256, 0, 0, 0, 0, 9]), storeResult(512)],
+        ({ machine }) => {
+          machine.writeString(filename, 256);
+          machine.store(768, 7);
+        },
+      );
+      assert.ok(task.machine.load(512));
+    }
+    for (const [name, expected] of [
+      ['owned-%d[G768]', 1],
+      ['OWNED-7.KCS', 1],
+      ['other', 1],
+      ['folder/other.kcs', 0],
+      ['folder\\other.kcs', 0],
+      ['owned-7.mot', 0],
+      ['ア', 1], // The original C-locale comparison folds the CP932 trail byte too.
+      ['ダミーソ', 0],
+      ['.kcs', 1], // The old record setter treats the CP932 trail 0x5c as a path separator.
+    ])
+      assert.equal(await query(name), expected, name);
+    resource.directory = 'motions';
+    assert.equal(await query('owned-7'), 0);
+    assert.equal(await query('motions/owned-7.kcs'), 0);
+    assert.equal(manager.records.size, 4);
+  } finally {
+    await world.close();
+  }
+});
 
 test('fixed 2.6.1.23 owned bitmap helpers preserve sizes, offsets and RGBA through the VM', async () => {
   const world = renderWorld(),

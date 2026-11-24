@@ -14,9 +14,11 @@ import {
 import { roundX87Single } from '../ppi/x87.mjs';
 import { floatBits } from '../kcs.mjs';
 import { nativeABI } from './abi/index.mjs';
-import { nativeDataFormat, nativeDataMapped } from './data-text.mjs';
+import { nativeDataFormat, nativeDataKey, nativeDataMapped } from './data-text.mjs';
 
 const cp932 = new TextDecoder('shift_jis');
+const cFilenameKey = (bytes) =>
+  nativeDataKey(bytes).replace(/[A-Z]/g, (character) => character.toLowerCase());
 const value = (word) => nativeReply(1, word >>> 0),
   done = () => nativeReply(2);
 const transfer = [
@@ -211,9 +213,8 @@ export function nativeMotion(id, args, machine, services = {}) {
       case 0x130:
       case 0x217: {
         const formatted = behavior?.addUsesFormat;
-        const name = formatted
-          ? cp932.decode(nativeDataFormat(args, machine, services, 1) ?? undefined)
-          : machine.string(word(1));
+        const nameBytes = formatted ? nativeDataFormat(args, machine, services, 1) : null;
+        const name = formatted ? cp932.decode(nameBytes ?? undefined) : machine.string(word(1));
         if (!name || name === '-') return value(0);
         const initialRegisters = registerWords(word(2), word(3), formatted);
         const extra =
@@ -221,7 +222,7 @@ export function nativeMotion(id, args, machine, services = {}) {
             ? machine.bytes(word(4), word(5)).slice()
             : null;
         const script = registry.library.optional
-          ? registry.library.optional(name)
+          ? registry.library.optional(name, nameBytes ? { nameBytes } : undefined)
           : registry.library.load(name);
         return Promise.resolve(script).then((script) =>
           script
@@ -286,6 +287,20 @@ export function nativeMotion(id, args, machine, services = {}) {
       }
       case 0x202: {
         manager.working.set(manager.base);
+        if (registry.library.nativeFilenameQuery) {
+          const nameBytes = nativeDataFormat(args, machine, services, 1);
+          if (nameBytes === null) return value(0);
+          const filename = registry.library.nativeFilename(nameBytes);
+          if (filename === null) return value(0);
+          const key = cFilenameKey(filename);
+          return value(
+            Number(
+              [...manager.records.values()].some(
+                ({ instance }) => cFilenameKey(instance.script.recordNameBytes) === key,
+              ),
+            ),
+          );
+        }
         const name = machine.string(word(1)).replaceAll('\\', '/').split('/').at(-1).toLowerCase();
         return value(
           Number(

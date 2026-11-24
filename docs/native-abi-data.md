@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 408       | 57            | 17            | 387     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.23 | 869        | 409       | 57            | 17            | 386     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 187       | 80            | 19            | 652     | Generic 8 of 45, Particle 6 of 44 and 6 of 51    |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -153,6 +153,13 @@ forwards the same DWORD to both areas and retains the current
 skin. The verified window settings use the direction query, range,
 value, alpha, enable and show messages. Kind 40 SCROLL, kind 41
 SCROLL2 and Slider skin-table mutation remain guarded on this build.
+
+Main 514 formats its CP932 operand and completes the MOT category
+filename. It copies the manager's 144-byte base bank to working
+before comparing the requested filename to the retained record
+basenames with C-locale byte folding. A null manager writes zero
+without reading the filename. A qualified filename can miss even
+if its basename names a loaded motion.
 
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word

@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [514],
+    value:
+      'Own 2.6.1.23 0x482830 formats CP932 and resolves the MOT category filename. 0x5966d0 copies the manager base bank to working and compares the resulting name against its retained record basenames.',
+  },
+  {
     ids: [445],
     value:
       'Own 2.6.1.23 0x47b800 formats mapped CP932 text and passes the system error caption and zero buttons flag to the application dialog.',
@@ -856,6 +861,7 @@ export default {
   },
   motion: {
     addUsesFormat: true,
+    nativeFilenameQuery: true,
     elapsedUsesX87: true,
     splineUsesX87: true,
     currentMatrixFallback: true,
@@ -1086,6 +1092,29 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        {
+          ids: [514],
+          fields: {
+            resultWritten: true,
+            parameters: [
+              {
+                name: 'manager',
+                description: 'Borrowed motion manager',
+                type: { kind: 'handle', handleKind: 'motion-manager', ownership: 'borrowed' },
+              },
+              {
+                name: 'filename',
+                description: 'NUL-terminated MOT filename format',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: { kind: 'format-string', encoding: 'CP932' },
+                },
+              },
+            ],
+          },
+        },
         {
           ids: [521, 522, 523, 524, 853, 854, 855, 857, 860, 861],
           fields: { resultWritten: false },
