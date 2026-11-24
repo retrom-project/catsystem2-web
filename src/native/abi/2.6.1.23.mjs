@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [454, 577, 651, 694],
+    value:
+      'Own 2.6.1.23 FES context copy 0x47b8b0 and task wrappers 0x47ba40, 0x48a8c0 and 0x48a8f0 preserve control 2. Top raw 37 and Base raw 23 and 28 write the selected task fields.',
+  },
+  {
     ids: [29, 30, 31, 32],
     value:
       'Own 2.6.1.23 file wrappers at 0x48aeb0–0x48aff0 scan the formatted mode bytes and dispatch the wrapped byte count to the opened file owner',
@@ -911,7 +916,11 @@ export default {
   },
   messages: {
     channels: {
-      base: { unmapped: 'reject', raw: baseMessages, canonical: baseMessages },
+      base: {
+        unmapped: 'reject',
+        raw: [...baseMessages, ...[23, 24, 29].map((id) => toMessage(id, -1))],
+        canonical: [...baseMessages, ...[22, 23, 28].map((id) => toMessage(id, 1))],
+      },
       control: { unmapped: 'reject', raw: [], canonical: [] },
       screen: {
         unmapped: 'reject',
@@ -1045,6 +1054,25 @@ export default {
         { ids: [83, 86, 87], fields: { resultWritten: false } },
         { ids: [29, 30, 31, 683, 685], fields: { resultWritten: true } },
         { ids: [32, 684], fields: { resultWritten: false } },
+        {
+          ids: [454],
+          fields: {
+            parameters: [
+              {
+                name: 'destination',
+                description: 'NUL-terminated FES context name',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'out',
+                  target: { kind: 'character', bits: 8, encoding: 'CP932' },
+                },
+              },
+            ],
+            resultWritten: false,
+          },
+        },
+        { ids: [577, 651, 694], fields: { resultWritten: false } },
         {
           ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],
           fields: { resultWritten: false },

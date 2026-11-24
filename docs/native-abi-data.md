@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 395       | 57            | 17            | 400     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.23 | 869        | 399       | 57            | 17            | 396     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 187       | 80            | 19            | 652     | Generic 8 of 45, Particle 6 of 44 and 6 of 51    |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -109,6 +109,12 @@ Main 683–685 load, release and query a CP932 section table. Section and
 key comparison is byte-exact. Repeated headings accumulate matching
 rows in order. The lookup uses the zero-based ordinal and writes a
 NUL-terminated value only for a match, including an empty value.
+
+Main 454 copies the caller's NUL-terminated CP932 FES context name to VM
+memory. Main 577 sends raw 37 to the caller's Top and sets its field.
+Main 651 and 694 send raw 23 and 28 to the selected Base task and set
+its exit or user word. Target zero routes to Top, whose receiver leaves
+the Base fields untouched. Calls preserve the VM result word.
 
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word
