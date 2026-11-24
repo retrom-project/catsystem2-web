@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { sectionFixture, sectionFiles } from './fixtures/section-table-fixture.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { kcsProgram } from './helpers.mjs';
 for (const [profile, variable] of [
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
@@ -90,6 +91,7 @@ for (const [profile, variable] of [
 }
 for (const profile of [
   'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
   'sdk-4.01-engine-2.6.1.74',
   'nekopara-vol3-engine-2.6.1.76',
 ]) {
@@ -123,6 +125,69 @@ for (const profile of [
     },
   );
 }
+
+test('fixed 2.6.1.67 KCS opens, queries and releases a CP932 section table', async (t) => {
+  const filename = 256,
+    section = 512,
+    key = 640,
+    out = 768,
+    handle = [0x13, 128],
+    marker = 0xdd674a95;
+  const resultCall = (id, words, result) => [
+    ...words.map((word) => [37, word]),
+    [43, id, words.length * 4],
+    [38, result],
+  ];
+  const world = await dataWorld('bokutomo-engine-2.6.1.67', {
+    ...Object.fromEntries(sectionFiles()),
+    'section.kcs': kcsProgram([
+      [37, marker],
+      ...resultCall(683, [filename], 128),
+      ...resultCall(685, [handle, section, key, [0x13, 132], out], 136),
+      [37, handle],
+      [43, 684, 4],
+      [59],
+    ]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  for (const [file, group, entry, ordinal, expected] of [
+    ['basic.txt', '#first', 'key', 0, 'first value'],
+    ['basic.txt', '#first', 'key', 2, 'third value'],
+    ['basic.txt', '#First', 'key', 0, 'case distinct'],
+    ['basic.txt', '#first', 'empty', 0, ''],
+    ['basic.txt', '#first', 'comment', 0, 'before after'],
+    ['basic.txt', '#second', 'key', 0, '日本語'],
+    ['basic.txt', '#first', 'Key', 0, null],
+    ['basic.txt', '#first', 'key', -1, null],
+    ['basic.txt', '#first', 'key', 3, null],
+    ['empty.txt', '#first', 'key', 0, null],
+    ['missing.txt', '#first', 'key', 0, null],
+  ]) {
+    const task = await world.spawnScript('section.kcs', {
+        parent: world.main.id,
+        initialExecute: false,
+      }),
+      machine = task.machine,
+      floor = machine.sp;
+    machine.writeString(file, filename);
+    machine.writeString(group, section);
+    machine.writeString(entry, key);
+    machine.store(132, ordinal);
+    machine.bytes(out - 1, 40).fill(0x91);
+    assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+    assert.equal(machine.sp, floor + 4);
+    assert.equal(machine.pop(), marker);
+    const loaded = machine.load(128);
+    assert.equal(Boolean(loaded), file !== 'missing.txt');
+    assert.equal(world.runtime.handles.records.has(loaded), false);
+    assert.equal(machine.load(136), Number(expected !== null));
+    const encoded = expected === null ? [] : [...encodeCP932(expected), 0];
+    assert.deepEqual(
+      [...machine.bytes(out - 1, 40)],
+      [0x91, ...encoded, ...new Array(39 - encoded.length).fill(0x91)],
+    );
+  }
+});
 
 test('63 section table lookup returns CP932 data and its integer wrapper reads the same buffer', async () => {
   const world = await dataWorld('rebellions-jp-engine-2.6.1.63', {
