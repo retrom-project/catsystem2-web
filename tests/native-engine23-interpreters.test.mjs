@@ -573,8 +573,8 @@ test('2.6.1.23 MOT and PTCL retain their unresolved guards and exact arities', a
   assert.throws(() => wrongMOT.instance.update(0), /expects 1 arguments, got 0/);
   assert.equal(wrongMOT.instance.calls.size, 0);
   for (const table of particles) {
-    const closed = await guest(table, 34);
-    assert.throws(() => closed.instance.update(0), /Unreviewed PTCL native .*\/34/);
+    const closed = await guest(table, 38, [64, 68, 72, 76, 80]);
+    assert.throws(() => closed.instance.update(0), /Unreviewed PTCL native .*\/38/);
     assert.equal(closed.instance.calls.size, 0);
     const wrongPTCL = await guest(table, 28, [64, 68]);
     assert.throws(() => wrongPTCL.instance.update(0), /requires 3 arguments, received 2/);
