@@ -1226,3 +1226,50 @@ test('2.6.1.67 KCS common Base commands reset the exit word and pause the design
   await run('resume.kcs');
   assert.equal(paused.userValue, 0);
 });
+
+test('2.6.1.67 KCS Plane restore relays the VRAM selector and formats both notification packets', async (t) => {
+  const target = [0x13, 80],
+    command = (id, words) => [...words.map((word) => [37, word]), [43, id, words.length * 4]],
+    world = await dataWorld(profile, {
+      'restore.kcs': kcsProgram([
+        [37, 0x283e9da1],
+        ...command(653, [target, 0x80234567]),
+        ...command(654, [target, 96, 128]),
+        ...command(655, [target, 160]),
+        ...command(653, [0, 7]),
+        [59],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const id = await world.objects.create({ kind: 2, parent: world.main.id }),
+    plane = world.graphics.get(id),
+    task = await world.spawnScript('restore.kcs', { parent: world.main.id, initialExecute: false }),
+    machine = task.machine,
+    stack = machine.sp,
+    receiver = plane.message.bind(plane),
+    packets = [];
+  plane.message = (words, context) => {
+    const [, message, w, l] = words;
+    if (message === 85 || message === 86) {
+      const size = message === 85 ? 512 : 256;
+      packets.push({ message, w, l, bytes: context.payload.bytes(0, size).slice() });
+    }
+    return receiver(words, context);
+  };
+  machine.store(80, world.nativeTaskID(id));
+  machine.writeString('背景', 96);
+  machine.writeString('復帰', 128);
+  machine.writeString('', 160);
+  const original = structuredClone(plane.state);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, stack + 4);
+  assert.equal(machine.load(stack), 0x283e9da1);
+  assert.deepEqual(plane.state, { ...original, vramType: 0x80234567 });
+  const pair = new Uint8Array(512);
+  pair.set(encodeCP932('背景'));
+  pair.set(encodeCP932('復帰'), 256);
+  assert.deepEqual(packets, [
+    { message: 85, w: 0, l: 256, bytes: pair },
+    { message: 86, w: 0, l: 0, bytes: new Uint8Array(256) },
+  ]);
+});
