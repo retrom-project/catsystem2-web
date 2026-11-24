@@ -41,6 +41,7 @@ export class NativeLegacyTextRuntime {
     const text = world.profile && nativeABI(world.profile).text;
     this.configurationBytes = text?.legacyConfigurationBytes ?? 1116;
     this.clearPublishes = text?.legacyClearPublishes;
+    this.characterPairs = text?.characterLengthPairs;
   }
   async create(record) {
     const task = new NativeLegacyTextTask(this, record);
@@ -79,9 +80,11 @@ export class NativeLegacyTextRuntime {
         v = new DataView(bytes.buffer);
       bytes.set(machine.bytes(arg(1), 96));
       for (const [at, index] of [[96, 2], ...(id === 0x1a2 ? [[612, 3]] : [])]) {
-        const units = nativeTextUnits(nativeDataCString(machine, arg(index))).map((c) =>
-          c >= 128 && c <= 255 ? c | 0xff00 : c,
-        );
+        const units = nativeTextUnits(
+          nativeDataCString(machine, arg(index)),
+          false,
+          this.characterPairs,
+        ).map((c) => (c >= 128 && c <= 255 ? c | 0xff00 : c));
         if (units.length > 255)
           throw new RangeError('Legacy text line-break profile exceeds 255 units');
         v.setUint32(at, units.length, true);
@@ -302,7 +305,7 @@ export class NativeLegacyTextTask {
         return 0;
       case 103:
         if (!this.bitmap) return 0;
-        if (t.append(this.read(m, l)) && t.w(194) !== 1) {
+        if (t.append(this.read(m, l), this.owner.characterPairs) && t.w(194) !== 1) {
           await this.raster(0xffffffff);
           await this.output();
         }

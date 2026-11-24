@@ -5,9 +5,36 @@ import { NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { defaultFESWorld } from './fixtures/default-fes-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 
 const profile = 'rebellions-jp-engine-2.6.1.63';
+
+const mainProgram = (id, width) =>
+  kcsProgram([
+    [37, 0x82345678],
+    ...Array.from({ length: width }, (_, index) => [37, [0x13, 80 + index * 4]]),
+    [43, id, width * 4],
+    [59],
+  ]);
+
+async function executeMain(world, id, argv, setup = () => {}) {
+  const task = await world.spawnScript(`main-${id}.kcs`, {
+    parent: world.main.id,
+    initialExecute: false,
+  });
+  try {
+    const machine = task.machine;
+    argv.forEach((word, index) => machine.store(80 + index * 4, word));
+    setup(machine);
+    await world.runtime.scheduler.execute(task);
+    assert.equal(machine.halted, true);
+    assert.equal(machine.sp, machine.floor + 4);
+    assert.equal(machine.pop(), 0x82345678);
+  } finally {
+    await world.objects.release(task.id);
+  }
+}
 
 async function run(instructions, diagnostic) {
   const runtime = new NativeRuntime({
@@ -123,6 +150,72 @@ test('2.6.1.63 FES declares only its original type names and indexes', async () 
       /Unknown FES object factory index 33/,
     );
     assert.equal(root.byKey.size, 6);
+  } finally {
+    await world.close();
+  }
+});
+
+test('2.6.1.63 KCS configures, appends and clears the original narrow Text owner', async () => {
+  const world = await defaultFESWorld(profile, {
+    'main-123.kcs': mainProgram(123, 3),
+    'main-124.kcs': mainProgram(124, 2),
+    'main-125.kcs': mainProgram(125, 1),
+    'main-418.kcs': mainProgram(418, 4),
+    'main-557.kcs': mainProgram(557, 2),
+  });
+  try {
+    const id = await world.objects.create({ kind: 8, parent: world.root });
+    const target = world.nativeTaskID(id),
+      owner = world.legacyText.tasks.get(id),
+      text = owner.text,
+      append = (bytes) =>
+        executeMain(world, 124, [target, 512], (machine) =>
+          machine.writeStringBytes(Uint8Array.from(bytes), 512),
+        ),
+      configureText = (enabled) => (machine) => {
+        for (const [index, word] of [
+          [2, 96],
+          [3, 48],
+          [5, 1],
+          [6, 12],
+          [15, enabled ? 32 : 0],
+          [16, 0xffffffff],
+        ]) {
+          machine.store(256 + index * 4, word);
+        }
+        machine.writeStringBytes(Uint8Array.of(0xb1, 0x21, 0xfa, 0x40), 512);
+        machine.writeString('a'.repeat(254) + 'あ', 768);
+      };
+    const source = [0x96, 0x7b, 0x95, 0xb6, 0x25, 0x25, 0xfa, 0x40];
+    await append(source);
+    assert.equal(owner.bitmap, 0);
+    assert.equal(text.rows.length, 0);
+
+    await executeMain(world, 418, [target, 256, 512, 768], configureText(false));
+    assert.equal(owner.bitmap, 0);
+    await executeMain(world, 418, [target, 256, 512, 768], configureText(true));
+    assert.equal(owner.owner.configurationBytes, 1128);
+    assert.deepEqual([...text.profile(201, 202)], [0xffb1, 0x21, 0xfa40]);
+    assert.deepEqual([...text.profile(330, 331)], [0x61, 0x82a0]);
+    assert.equal(text.w(330), 255);
+    assert.equal(text.w(458) & 0xffff, 0x82a0);
+    await executeMain(world, 557, [target, 0xff123456]);
+    assert.equal(text.w(470) >>> 0, 0xff123456);
+
+    await append(source);
+    assert.deepEqual(
+      text.rows.map((row) => row[0]),
+      [0x967b, 0x95b6, 0x25, 0xfa40],
+    );
+    const vram = world.graphics.images.get(world.graphics.vramHandle);
+    assert.ok((await vram.pixels()).some((byte) => byte !== 0));
+    await executeMain(world, 125, [target]);
+    assert.deepEqual(text.rows, []);
+    assert.ok((await vram.pixels()).every((byte) => byte === 0));
+
+    await executeMain(world, 123, [target, 256, 512], configureText(true));
+    assert.deepEqual([...text.profile(201, 202)], [0xffb1, 0x21, 0xfa40]);
+    assert.equal(text.w(330), 0);
   } finally {
     await world.close();
   }

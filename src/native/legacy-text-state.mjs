@@ -94,9 +94,9 @@ export class LegacyTextState {
       v = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
     return new Set(Array.from({ length: bytes.length / 2 }, (_, i) => v.getUint16(i * 2, true)));
   }
-  append(bytes) {
+  append(bytes, characterPairs) {
     if (!this.configured) return 0;
-    const units = nativeTextUnits(bytes),
+    const units = nativeTextUnits(bytes, false, characterPairs),
       start = this.rows.length;
     let at = 0,
       inRuby = false,
