@@ -1111,6 +1111,80 @@ test('2.6.1.67 texture GCALLs release intersecting pages and allocate missing pa
   assert.deepEqual([...left.rgba.subarray(0, 4)], [52, 54, 56, 255]);
 });
 
+test('2.6.1.67 KCS reads bitmap extent and binds native-row alpha to one Plane region', async (t) => {
+  const bitmapID = [0x13, 84],
+    x = [0x23, 120],
+    y = [0x23, 124],
+    alias = [0x23, 128],
+    marker = 0xa4c671f9;
+  const world = await dataWorld(profile, {
+    'measure.kcs': planeProgram([
+      [119, [bitmapID, x, y]],
+      [119, [bitmapID, alias, alias]],
+      [119, [0, [0x23, 132], [0x23, 136]]],
+    ]),
+    'bind.kcs': planeProgram([[104, [target, 20, 40, 10, 4, 7, 0]]]),
+    'mask.kcs': planeProgram([[394, [target, bitmapID]]]),
+    'clear.kcs': planeProgram([[394, [target, 0]]]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    plane = await world.objects.create({ kind: 6, parent }),
+    nativeID = world.nativeTaskID(plane),
+    handle = world.graphics.images.create(3, 2, parent),
+    bitmap = world.graphics.images.get(handle),
+    input = world.inputFor(parent);
+  Object.assign(bitmap.state, { canvasWidth: 10, canvasHeight: 4, offsetX: 1, offsetY: 1 });
+  const rgba = await bitmap.pixels();
+  rgba[7] = 16; // Top display row.
+  rgba[15] = 240; // The original bitmap stores the bottom row first.
+  rgba[23] = 240;
+  await bitmap.changed();
+  const execute = async (name, targetID = nativeID, imageID = handle) => {
+    const task = await world.spawnScript(name, { parent, initialExecute: false }),
+      machine = task.machine,
+      floor = machine.sp;
+    machine.store(80, targetID);
+    machine.store(84, imageID);
+    for (let at = 116; at <= 140; at += 4) machine.store(at, marker);
+    assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+    assert.equal(machine.sp, floor + 4);
+    assert.equal(machine.load(floor), 0x72394ca1);
+    return machine;
+  };
+  const measured = await execute('measure.kcs');
+  assert.deepEqual(
+    [116, 120, 124, 128, 132, 136, 140].map((at) => measured.load(at)),
+    [marker, 3, 2, 2, 0, 0, marker],
+  );
+  await execute('mask.kcs');
+  assert.equal(input.get(plane), null);
+  await execute('bind.kcs');
+  const region = input.get(plane);
+  for (const bpp of [4, 3, 2]) {
+    bitmap.state.bpp = bpp;
+    input.changed = false;
+    await execute('mask.kcs');
+    assert.deepEqual(region.alpha, {
+      width: 10,
+      height: 4,
+      bytes: Uint8Array.from(bpp === 3 ? [0, 0, 0, 0, 0, 0, 0, 0] : [0, 0, 10, 0, 4, 0, 0, 0]),
+    });
+    assert.equal(input.changed, false);
+    assert.equal(input.hit(region, false, [21, 41]), bpp !== 3);
+    assert.equal(input.hit(region, false, [22, 42]), bpp !== 3);
+    assert.equal(input.hit(region, false, [21, 42]), false);
+  }
+  const retained = region.alpha;
+  await execute('mask.kcs', 0);
+  assert.equal(region.alpha, retained);
+  await assert.rejects(execute('mask.kcs', 0, 0xa234b879), /native bitmap handle/);
+  assert.equal(region.alpha, retained);
+  await execute('clear.kcs');
+  assert.equal(region.alpha, null);
+  assert.equal(input.changed, false);
+});
+
 test('2.6.1.67 bitmap GCALLs own decoded pixels and copy original frame metadata and clipped extent', async (t) => {
   const rgba = Uint8Array.of(17, 34, 51, 255, 68, 85, 102, 255),
     source = hg3(2, 1, rgba),
