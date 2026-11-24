@@ -47,15 +47,26 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 459);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 462);
   assert.equal(base.main.entries.filter(({ status }) => status === 'reserved').length, 57);
   assert.equal(base.main.entries.filter(({ status }) => status === 'constant-zero').length, 17);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 336);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 333);
   assert.equal(base.main.entries.filter((entry) => entry.observedArgumentWords.length).length, 435);
   assert.deepEqual(base.main.entries[464].observedArgumentWords, []);
   assert.deepEqual(base.main.entries[543].observedArgumentWords, [3]);
   assert.deepEqual(base.main.entries[575].observedArgumentWords, [3]);
   assert.equal(base.main.entries[108].signature.resultWritten, false);
+  for (const [id, width, control] of [
+    [96, 3, 2],
+    [97, 2, 2],
+    [98, 1, 1],
+  ]) {
+    const { status, signature } = base.main.entries[id];
+    assert.equal(status, 'recovered');
+    assert.equal(signature.argumentWords, width);
+    assert.deepEqual(signature.controlCodes, [control]);
+    assert.equal(signature.resultWritten, control === 1);
+  }
   assert.equal(base.main.entries[315].signature.argumentWords, 2);
   assert.deepEqual(base.main.entries[315].observedArgumentWords, [1]);
   for (const id of [122, 705]) {
@@ -190,7 +201,6 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     assert.equal(signature.resultWritten, control === 1);
     assert.deepEqual(signature.controlCodes, [control]);
   }
-  assert.equal(base.main.entries[98].status, 'unknown');
   for (const id of [52, 287, 288, 629]) assert.equal(base.main.entries[id].status, 'unknown');
   const unknown = nativeABI('sdk-4.01-engine-2.6.1.74').tables.main.entries[0x52];
   assert.equal(unknown.name, null);

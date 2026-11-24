@@ -152,6 +152,126 @@ test('2.6.1.23 Plane selection hides the selected owner and retains the full att
   assert.equal(owner.state.frameStep, 0xffffffff);
 });
 
+test('2.6.1.23 Plane button GCALLs copy local and shared rows and register Input once', async (t) => {
+  const world = await dataWorld(profile);
+  t.after(() => world.close({ flushFiles: false }));
+  const untouched = [canary, canary, canary],
+    id = await world.objects.create({ kind: 2, parent: world.root }),
+    owner = world.graphics.get(id),
+    target = world.nativeTaskID(id),
+    flags = 0x88112273,
+    first = [0, -31, 9, 0x80000000, 7, 33, 1, 0, 0, 0, 888, -13],
+    setRows = (words, address = 64) =>
+      call(world, 96, [target, flags, address], untouched, undefined, (machine) => {
+        if (address >= 0x80000000) machine.shared = new Uint8Array(64);
+        words.forEach((word, index) => machine.store(address + index * 4, word));
+      }),
+    select = (word, error) => call(world, 97, [target, word], untouched, error),
+    read = (word) => call(world, 98, [target], untouched, undefined, undefined, word),
+    pose = () => motionVector(owner.graph.kx2, MOTION_ABI.pos);
+  let device = world.graphics.createLogicalDevice();
+  owner.makeGraph({ type: 2, width: 22, height: 17 });
+  setMotionVector(owner.graph.kx2, MOTION_ABI.base, [8.5, -6.25, 15.75]);
+  setMotionVector(owner.graph.kx2, MOTION_ABI.pos, [4.125, 3.875, 8.5]);
+  const texture = (owner.graph.textureTransform = owner.graph.kx2.slice());
+  setMotionVector(texture, MOTION_ABI.pos, [-7, -8, -9]);
+  await read(0);
+  await call(world, 96, [target, flags, 0x70000300], untouched, /KCS memory/);
+  assert.equal(owner.input.get(id), null);
+  await setRows(first);
+  assert.equal(owner.state.bindExtra, 0);
+  assert.deepEqual(
+    owner.state.button,
+    first.map((word) => word >>> 0),
+  );
+  assert.equal(owner.state.buttonEnabled, true);
+  assert.deepEqual(pose(), [4.125, 3.875, 8.5]);
+  const region = owner.input.get(id);
+  assert.deepEqual(
+    [region.bounds, region.priority, region.flags, region.mask, region.extra],
+    [[-4, 10, 17, 27], 15, flags, 7, 0],
+  );
+  await select(0x80000001);
+  await read(0x80000001);
+  assert.deepEqual(pose(), [7, 33, 8.5]);
+  assert.deepEqual(motionVector(texture, MOTION_ABI.pos), [-7, -8, -9]);
+  await select(3);
+  await read(1);
+  await select(0xffff0002);
+  await read(0x80000002);
+  assert.deepEqual(pose(), [0, 0, 8.5]);
+  await setRows([1, ...first.slice(1)], 0x80000004);
+  assert.equal(owner.input.get(id), region);
+  assert.deepEqual(region.bounds, [-4, 10, 17, 27]);
+  assert.deepEqual(pose(), [-31, 9, 8.5]);
+  await read(0x80000000);
+  device.retire();
+  await select(0x00000001);
+  await read(1);
+  assert.deepEqual(pose(), [-31, 9, 8.5]);
+  await setRows(first);
+  assert.equal(owner.input.get(id), region);
+  device = world.graphics.createLogicalDevice();
+  world.graphics.view.configure({ virtualWidth: 640, virtualHeight: 480 });
+  await call(world, 83, [target], untouched);
+  assert.equal(owner.input.get(id), null);
+  await call(world, 96, [target, flags, 0x70000300], untouched, /KCS memory/);
+  await call(world, 96, [target, flags, 64], untouched, /requires live model geometry/);
+  assert.equal(owner.input.get(id), null);
+  owner.makeGraph({ type: 2, width: 640, height: 480 });
+  setMotionVector(owner.graph.kx2, MOTION_ABI.base, [0, 0, -124.75]);
+  await setRows(first);
+  assert.deepEqual(owner.input.get(id).bounds, [-100000, -100000, 100000, 100000]);
+  device.retire();
+  await call(world, 96, [0, flags, 0x70000300], untouched);
+  await call(world, 97, [0, 0xffffffff], untouched);
+  await call(world, 98, [0], untouched, undefined, undefined, 0);
+  await call(world, 98, [0xf92d8819], untouched, /no initialized 32-bit output word/);
+  await call(world, 96, [target, flags], untouched, /expects 3 arguments/);
+  await call(world, 97, [target], untouched, /expects 2 arguments/);
+  await call(world, 98, [target, 0], untouched, /expects 1 arguments/);
+});
+
+test('2.6.1.23 Plane button state places and hides a linked hint using its written dimensions', async (t) => {
+  const world = await dataWorld(profile);
+  t.after(() => world.close({ flushFiles: false }));
+  const untouched = [canary, canary, canary],
+    id = await world.objects.create({ kind: 2, parent: world.root }),
+    owner = world.graphics.get(id),
+    target = world.nativeTaskID(id),
+    hintID = await world.objects.create({ kind: 2, parent: world.root }),
+    hint = world.graphics.get(hintID),
+    hintTarget = world.nativeTaskID(hintID),
+    rows = [1, 17, -23, 1, 23, 7, 1, -29, 11, 1, 31, 41];
+  world.graphics.createLogicalDevice();
+  world.graphics.view.configure({ clientWidth: 1024, clientHeight: 576 });
+  owner.makeGraph({ type: 2, width: 26, height: 84 });
+  hint.makeGraph({ type: 2, width: 110.75, height: 18.875 });
+  setMotionVector(owner.graph.kx2, MOTION_ABI.base, [0, 0, 0]);
+  setMotionVector(owner.graph.kx2, MOTION_ABI.pos, [992, 4, 0]);
+  await call(world, 102, [target, hintTarget], untouched);
+  await call(world, 96, [target, 0x81801000, 64], untouched, undefined, (machine) => {
+    rows.forEach((word, index) => machine.store(64 + index * 4, word));
+  });
+  assert.equal(hint.state.shown, false);
+  assert.deepEqual(owner.input.get(id).bounds, [992, 4, 1018, 88]);
+  await call(world, 97, [target, 0x80000001], untouched);
+  assert.equal(hint.state.shown, true);
+  assert.deepEqual(motionVector(hint.graph.kx2, MOTION_ABI.pos), [914, 88, 0]);
+  await call(world, 97, [target, 3], untouched);
+  assert.equal(hint.state.shown, false);
+  await call(world, 103, [target, 0], untouched);
+  await call(world, 97, [target, 1], untouched);
+  assert.equal(hint.state.shown, false);
+  await call(world, 97, [target, 2], untouched);
+  await call(world, 103, [target, 0x80000000], untouched);
+  await call(world, 102, [target, 0xea333890], untouched);
+  await call(world, 97, [target, 0x80000001], untouched, /dimensions require a Plane receiver/);
+  assert.equal(owner.state.phase, 2);
+  assert.equal(owner.state.blocked, false);
+  assert.deepEqual(motionVector(owner.graph.kx2, MOTION_ABI.pos), [-29, 11, 0]);
+});
+
 test('fixed 2.6.1.23 Plane GCALLs read owned geometry and texture poses and release tracked input', async () => {
   const world = await dataWorld(profile);
   try {

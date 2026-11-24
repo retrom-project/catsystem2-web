@@ -257,6 +257,11 @@ const mainEvidence = [
       'Own 2.6.1.23 Plane raw 57 returns the selected model priority. Raw 49 stores three parent offsets and applies the original selected parent base and position when the renderer is attached. Raw 50 clears inheritance without changing the retained pose or offsets.',
   },
   {
+    ids: [96, 97, 98],
+    value:
+      'Own 2.6.1.23 Plane raw 67 copies the four 12-byte button states and registers Input only once. Raw 68 selects the low halfword and sets the independent blocked bit. Raw 69 writes both parts of the button state.',
+  },
+  {
     ids: [102, 103],
     value:
       'Own 2.6.1.23 Plane raw 72 stores the selected task DWORD and sends raw 43 to hide it. Raw 73 stores the complete hint attribute DWORD.',
@@ -1220,6 +1225,7 @@ export default {
     planePoseUsesRawWords: true,
     planeInheritanceUsesRenderer: true,
     planeResetReleasesTrackedInput: true,
+    planeUsesLegacyButtonStates: true,
     planeImageSelectorHidesTarget: true,
     planeTrailUsesScalarWords: true,
     planeKx3UsesLegacyReceiver: true,
@@ -1474,7 +1480,7 @@ export default {
           },
         },
         { ids: [83, 86, 87], fields: { resultWritten: false } },
-        { ids: [89], fields: { resultWritten: true } },
+        { ids: [89, 98], fields: { resultWritten: true } },
         { ids: [90, 91, 102, 103], fields: { resultWritten: false } },
         { ids: [29, 30, 31, 683, 685], fields: { resultWritten: true } },
         { ids: [32, 684], fields: { resultWritten: false } },

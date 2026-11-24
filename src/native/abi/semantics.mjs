@@ -3513,26 +3513,79 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    96: {
+      name: 'plane.configureButton',
+      family: 'plane',
+      signature: {
+        argumentWords: 3,
+        controlCodes: [2],
+        parameters: [
+          {
+            description: 'native Plane task ID',
+            name: 'target',
+            type: { kind: 'object-id', objectKind: 'plane' },
+          },
+          {
+            description: 'button and initial Input flags',
+            name: 'flags',
+            type: { kind: 'bits', bits: 32 },
+          },
+          {
+            description: 'four enabled/signed-X/signed-Y rows, 48 bytes',
+            name: 'states',
+            type: {
+              addressSpace: 'vm',
+              direction: 'in',
+              kind: 'pointer',
+              target: { kind: 'record', name: 'Plane button states' },
+            },
+          },
+        ],
+        result: { description: 'void', kind: 'void' },
+        resultWritten: false,
+        review: 'declared',
+      },
+    },
+    97: {
+      name: 'plane.selectButtonState',
+      family: 'plane',
+      signature: {
+        argumentWords: 2,
+        controlCodes: [2],
+        parameters: [
+          {
+            description: 'native Plane task ID',
+            name: 'target',
+            type: { kind: 'object-id', objectKind: 'plane' },
+          },
+          {
+            description: 'low 16 bits select the state, high bit blocks the button',
+            name: 'selection',
+            type: { kind: 'bits', bits: 32 },
+          },
+        ],
+        result: { description: 'void', kind: 'void' },
+        resultWritten: false,
+        review: 'declared',
+      },
+    },
     98: {
-      name: 'plane.hasBitmap',
+      name: 'plane.buttonState',
       family: 'plane',
       signature: {
         argumentWords: 1,
         controlCodes: [1],
         parameters: [
           {
-            description: 'handle task',
-            name: 'task',
-            type: {
-              handleKind: 'unknown',
-              kind: 'handle',
-              ownership: 'unknown',
-            },
+            description: 'native Plane task ID',
+            name: 'target',
+            type: { kind: 'object-id', objectKind: 'plane' },
           },
         ],
         result: {
-          description: 'bool',
-          kind: 'boolean',
+          description: 'button state with the blocked flag in bit 31',
+          kind: 'bits',
+          bits: 32,
         },
         resultWritten: null,
         review: 'declared',

@@ -3,7 +3,7 @@
 Native meanings live once in
 [semantics.mjs](../src/native/abi/semantics.mjs), indexed by table namespace and
 numeric ID. Main, generic/MOT and the two particle namespaces remain separate.
-The catalog contains 921 reviewed main meanings and 45/44/51 auxiliary meanings.
+The catalog contains 927 reviewed main meanings and 45/44/51 auxiliary meanings.
 These are the union of the registered engines' recovered declarations, not a
 list of functions enabled in every engine. Project descriptive names do not
 claim to recover the compiler's original symbols.
@@ -19,8 +19,8 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 459       | 57            | 17            | 336     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
+| 2.6.1.23 | 869        | 462       | 57            | 17            | 333     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.63 | 938        | 344       | 80            | 19            | 495     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                                     |
@@ -181,6 +181,15 @@ Main 95 registers input through Plane raw 83 using the owned pose,
 configured virtual dimensions and signed rectangle coordinates. A live
 device and registered graph are required to obtain this geometry. A repeat
 retains the installed region and updates the receiver's last flags.
+Main 96–98 send raw 67–69 to the Plane button owner. Main 96 copies four
+12-byte enable/X/Y rows and stores the complete flags word. The first call
+requires live model geometry and registers its current hit rectangle.
+Repeats preserve the existing Input registration. Main 97 selects the row
+from the low halfword and stores bit 31 independently. A disabled row keeps
+the current phase and position. An enabled row moves the primary model on
+a live device. A linked hint uses the retained Input rectangle and a Plane's
+written dimensions. Main 98 returns the phase DWORD with the blocked bit
+in bit 31 and requires a written reply from a nonzero target.
 Main 109 retains the full raw Input source word through Plane or BasePlane
 raw 89 and Input raw 129. A route miss writes zero. A route without a
 verified source reply fails before exposing an output.

@@ -527,6 +527,7 @@ export class NativeGraphicTask {
     this.planePoseUsesRawWords = abi?.planePoseUsesRawWords;
     this.planeInheritanceUsesRenderer = Boolean(abi?.planeInheritanceUsesRenderer);
     this.planeResetReleasesTrackedInput = Boolean(abi?.planeResetReleasesTrackedInput);
+    this.planeUsesLegacyButtonStates = Boolean(abi?.planeUsesLegacyButtonStates);
     this.planeEmptyGraphRequiresMode1 = Boolean(abi?.planeEmptyGraphRequiresMode1);
     this.planeAlphaRequiresGraph = Boolean(abi?.planeAlphaRequiresGraph);
     this.planeKx3UsesLegacyReceiver = Boolean(abi?.planeKx3UsesLegacyReceiver);
@@ -552,6 +553,7 @@ export class NativeGraphicTask {
       renderPaused: true,
       blocked: false,
       phase: 0,
+      ...(this.planeUsesLegacyButtonStates ? { frameStep: 1 } : {}),
       renderType: 1,
       drawType: 0,
       shapeWords: [],
@@ -1126,23 +1128,37 @@ export class NativeGraphicTask {
       case 71:
         return this.planeKx3UsesLegacyReceiver ? undefined : 0;
       case 72: {
-        const rect = this.planeBounds(),
-          position = vector(MOTION_ABI.pos),
-          base = vector(MOTION_ABI.base),
-          left = Math.fround(position[0] - base[0]),
-          top = Math.fround(position[1] - base[1]);
-        await this.message([sender, 89, 0, 0], {
-          ...context,
-          payload: new NativeGraphicsPacket([
-            Math.trunc(left),
-            Math.trunc(top),
-            Math.trunc(Math.fround(rect[2] + left)),
-            Math.trunc(Math.fround(rect[3] + top)),
-            Math.trunc(base[2]),
-            l,
-          ]),
-        });
-        this.state.button = Array.from({ length: 12 }, (_, i) => load(w + i * 4));
+        const legacy = this.planeUsesLegacyButtonStates,
+          button = legacy
+            ? Array.from({ length: 12 }, (_, index) =>
+                nativeEngineWord(load(w + index * 4), 'Native Plane button state record'),
+              )
+            : null;
+        if (legacy) {
+          if (this.state.receiver === -1) {
+            if (!this.graphics.device.ready || !this.graph?.kx2)
+              throw new Error('Native Plane button registration requires live model geometry');
+            await this.registerInputArea(sender, this.graphInputFields(l), true);
+          }
+        } else {
+          const rect = this.planeBounds(),
+            position = vector(MOTION_ABI.pos),
+            base = vector(MOTION_ABI.base),
+            left = Math.fround(position[0] - base[0]),
+            top = Math.fround(position[1] - base[1]);
+          await this.message([sender, 89, 0, 0], {
+            ...context,
+            payload: new NativeGraphicsPacket([
+              Math.trunc(left),
+              Math.trunc(top),
+              Math.trunc(Math.fround(rect[2] + left)),
+              Math.trunc(Math.fround(rect[3] + top)),
+              Math.trunc(base[2]),
+              l,
+            ]),
+          });
+        }
+        this.state.button = button ?? Array.from({ length: 12 }, (_, index) => load(w + index * 4));
         this.state.buttonEnabled = true;
         this.state.buttonFlags = l;
         if (this.state.button[0]) await this.selectButton(0);
@@ -1268,33 +1284,10 @@ export class NativeGraphicTask {
           }
           return tracksGraph ? undefined : 0;
         }
-        const graphFields = tracksGraph ? this.graphInputFields(l) : null;
-        if (!this.input?.register)
-          throw new Error('Native plane input registration is unavailable');
-        const fields = graphFields ?? Array.from({ length: 6 }, (_, i) => load(l + i * 4)),
-          bounds = fields.slice(0, 4).map((v) => v | 0),
-          [width, height] = this.legacyPlaneRegistration
-            ? this.graphics.virtualSize()
-            : [this.world.game.width, this.world.game.height];
-        const full = bounds[0] <= 0 && bounds[1] <= 0 && bounds[2] >= width && bounds[3] >= height;
-        const retainedBounds = full ? [-100000, -100000, 100000, 100000] : bounds;
-        await this.input.register({
-          owner: this.record.id,
-          receiver: sender,
-          bounds: retainedBounds,
-          priority: fields[4] | 0,
-          flags: fields[5],
-          mask: 7,
-          extra: 0,
-        });
-        this.state.bindArea = retainedBounds;
-        this.state.bindFlags = fields[5];
-        if (tracksGraph) {
-          this.state.inputTracksGraph = true;
-          if (this.legacyPlaneRegistration) this.state.bindExtra = l >>> 0;
-        }
-        this.state.receiver = sender;
-        this.state.changed = 1;
+        const fields = tracksGraph
+          ? this.graphInputFields(l)
+          : Array.from({ length: 6 }, (_, i) => load(l + i * 4));
+        await this.registerInputArea(sender, fields, tracksGraph, l);
         return tracksGraph ? undefined : 1;
       }
       case 90:
@@ -1391,6 +1384,33 @@ export class NativeGraphicTask {
         return this.base.message(words, context);
     }
   }
+  async registerInputArea(sender, fields, tracksGraph, bindExtra = 0) {
+    const input = this.input;
+    if (!input?.register) throw new Error('Native plane input registration is unavailable');
+    const bounds = fields.slice(0, 4).map((value) => value | 0),
+      [width, height] = this.legacyPlaneRegistration
+        ? this.graphics.virtualSize()
+        : [this.world.game.width, this.world.game.height],
+      full = bounds[0] <= 0 && bounds[1] <= 0 && bounds[2] >= width && bounds[3] >= height,
+      retainedBounds = full ? [-100000, -100000, 100000, 100000] : bounds;
+    await input.register({
+      owner: this.record.id,
+      receiver: sender,
+      bounds: retainedBounds,
+      priority: fields[4] | 0,
+      flags: fields[5],
+      mask: 7,
+      extra: 0,
+    });
+    this.state.bindArea = retainedBounds;
+    this.state.bindFlags = fields[5];
+    if (tracksGraph) {
+      this.state.inputTracksGraph = true;
+      if (this.legacyPlaneRegistration) this.state.bindExtra = bindExtra >>> 0;
+    }
+    this.state.receiver = sender;
+    this.state.changed = 1;
+  }
   graphInputFields(flags) {
     const motion = this.graph?.kx2,
       vector = (offset) => (motion ? motionVector(motion, offset) : [0, 0, 0]),
@@ -1405,33 +1425,64 @@ export class NativeGraphicTask {
     const row = selector * 3,
       button = this.state.button;
     if (!button || selector > 3 || !button[row]) return;
-    if (this.graph) {
-      const transform = this.graph.textureTransform,
-        position = motionVector(transform, MOTION_ABI.pos);
+    const legacy = this.planeUsesLegacyButtonStates,
+      hint = this.state.imageIndex,
+      hintEnabled = this.state.frameStep ?? Number(legacy),
+      checkedHint =
+        legacy && hint !== -1 && selector === 1 && hintEnabled
+          ? await this.buttonHintPosition()
+          : null,
+      transform = legacy
+        ? this.graphics.device.ready && this.graph?.kx2
+        : this.graph?.textureTransform;
+    if (transform) {
+      const position = motionVector(transform, MOTION_ABI.pos);
       setMotionVector(transform, MOTION_ABI.pos, [
         button[row + 1] | 0,
         button[row + 2] | 0,
         position[2],
       ]);
+      if (legacy) this.markBoundsDirty();
     }
     this.state.phase = selector;
     this.sync();
-    if (this.state.imageIndex !== -1) {
-      if (selector === 1) await this.positionHint();
-      else await this.world.sendNativeEngine(this.state.imageIndex, this.record.id, 47, 0, 0);
+    if (hint !== -1) {
+      if (selector === 1) {
+        if (!hintEnabled) return;
+        const position = checkedHint ?? (await this.buttonHintPosition());
+        await this.world.sendNativeEngine(hint, this.record.id, 51, 0, 0, {
+          payload: new NativeGraphicsPacket(position.map(floatBits)),
+        });
+        await this.world.sendNativeEngine(hint, this.record.id, 47, 0, 1);
+      } else {
+        await this.world.sendNativeEngine(hint, this.record.id, 47, 0, 0);
+        if (legacy && selector === 3)
+          await this.world.sendNativeEngine(hint, this.record.id, 47, 0, 0);
+      }
     }
   }
-  async positionHint() {
-    if (!this.state.frameStep) return;
-    const dimensions = new NativeGraphicsPacket(),
+  async buttonHintPosition() {
+    const legacy = this.planeUsesLegacyButtonStates,
+      dimensions = new NativeGraphicsPacket([], { unwritten: legacy ? [0, 1] : [] }),
       bounds = this.input?.get(this.record.id)?.bounds,
       view = this.graphics.view;
     if (!bounds) throw new Error('Plane hint positioning requires its input rectangle');
+    if (legacy) {
+      const target = this.world.resolveTaskID(this.state.imageIndex, this.record.id);
+      if (this.world.objects.objects.get(target)?.kind !== 2)
+        throw new Error('Native Plane hint dimensions require a Plane receiver');
+    }
     await this.world.sendNativeEngine(this.state.imageIndex, this.record.id, 75, 0, 4, {
       payload: dimensions,
     });
-    const width = Math.trunc(bitsFloat(dimensions.load(0))),
-      height = Math.trunc(bitsFloat(dimensions.load(4))),
+    const dimension = (offset) => {
+        const word = dimensions.load(offset);
+        return Math.trunc(
+          bitsFloat(legacy ? nativeEngineWord(word, 'Native Plane hint size') : word),
+        );
+      },
+      width = dimension(0),
+      height = dimension(4),
       centered = (bounds[0] - (((bounds[0] - bounds[2] + width) >>> 0) >>> 1)) | 0,
       x = Math.max(
         0,
@@ -1440,10 +1491,7 @@ export class NativeGraphicTask {
           : (view.clientWidth - width) | 0,
       ),
       y = (bounds[1] - height) | 0;
-    await this.world.sendNativeEngine(this.state.imageIndex, this.record.id, 51, 0, 0, {
-      payload: new NativeGraphicsPacket([x, y >= 0 ? y : bounds[3], 0].map(floatBits)),
-    });
-    await this.world.sendNativeEngine(this.state.imageIndex, this.record.id, 47, 0, 1);
+    return [x, y >= 0 ? y : bounds[3], 0];
   }
   updateGraphInputArea() {
     if (!this.state.inputTracksGraph) return;
@@ -1662,17 +1710,19 @@ export function installNativeGraphics(world) {
 }
 
 export const NATIVE_GRAPHICS_IDS = Object.freeze([
-  0x4e, 0x4f, 0x50, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x62,
-  0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6c, 0x6d, 0x6e, 0x350, 0x351, 0x157, 0x158,
-  0x159, 0x192, 0x21d, 0x21e,
+  0x4e, 0x4f, 0x50, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x60,
+  0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6c, 0x6d, 0x6e, 0x350, 0x351, 0x157,
+  0x158, 0x159, 0x192, 0x21d, 0x21e,
 ]);
 
 export async function nativeGraphics(id, args, machine, task, world) {
   if (!NATIVE_GRAPHICS_IDS.includes(id)) return undefined;
   const abi = world.profile && nativeABI(world.profile),
     requirePose = abi?.graphics.planePoseQueriesRequireReply,
+    legacyButton = abi?.graphics.planeUsesLegacyButtonStates,
     ownArity =
       (requirePose && [0x53, 0x56, 0x57, 0x59, 0x5a, 0x5b].includes(id)) ||
+      (legacyButton && [0x60, 0x61, 0x62].includes(id)) ||
       (abi?.graphics.planeImageSelectorHidesTarget && [0x66, 0x67].includes(id)),
     planeSourceViaInput =
       id === 0x6d && (abi?.input?.planeSourceViaInput || abi?.input?.planeSourceUsesRawWord);
@@ -1826,8 +1876,20 @@ export async function nativeGraphics(id, args, machine, task, world) {
         nativeABI(world.profile).graphics.planeAlphaFlags ?? 0,
       );
       return done();
-    case 0x62:
-      return value(await send(74));
+    case 0x60: {
+      const source = machine.bytes(args[2], 48),
+        view = new DataView(source.buffer, source.byteOffset, source.byteLength);
+      const button = Array.from({ length: 12 }, (_, index) => view.getUint32(index * 4, true));
+      await send(72, 0, args[1], packet(button));
+      return done();
+    }
+    case 0x61:
+      await send(73, 0, args[1]);
+      return done();
+    case 0x62: {
+      const result = await send(74);
+      return value(legacyButton ? nativeEngineWord(result, 'Native Plane button state') : result);
+    }
     case 0x63:
       await send(90);
       return done();
