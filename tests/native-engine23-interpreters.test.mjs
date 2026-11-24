@@ -557,6 +557,84 @@ test('2.6.1.23 PTCL v2 alone admits the blend-mode word', async () => {
   assert.equal(original.instance.calls.size, 0);
 });
 
+test('2.6.1.23 MOT uses the original PC24 rotation order through GCALL', async () => {
+  const shared = 0x80000203,
+    input = [
+      1.125, 0.25, 0.5, 0, -0.125, 0.5, -0.25, 0, 0.5, 0.625, 1.875, 0, 17.25, -8.125, -3, 1,
+    ],
+    angles = [1.3125, -0.357, 0.089999999].map(floatBits),
+    ypr = [
+      0x3f1d7780, 0x3f00b4e0, 0xbf791fca, 0, 0xbede4fc4, 0x3ebcc468, 0x3d77efec, 0, 0x3fcafd45,
+      0x3fa3e9eb, 0xbd1b92f8, 0, 0x408229b2, 0xc0e5af4a, 0xc18b9a4b, 0x3f800000,
+    ],
+    relative = [
+      0x3f9fd165, 0xbd2ea94f, 0xbe06eb5a, 0, 0xbe2faa8a, 0xbd29824c, 0xbf0b829c, 0, 0x3fae7827,
+      0x3fc13234, 0xbe11b3d2, 0, 0x41503cd6, 0xc147b22f, 0x40dc59af, 0x3f800000,
+    ];
+  for (const [id, args, expected] of [
+    [43, [shared, ...angles], ypr],
+    [44, [shared, shared, 64], relative],
+  ]) {
+    const { instance, machine, run } = await guest('generic', id, args);
+    machine.bytes(shared - 1, 66).fill(0xa3);
+    input.forEach((value, i) => machine.store(shared + i * 4, floatBits(value)));
+    angles.forEach((value, i) => machine.store(64 + i * 4, value));
+    run(2);
+    assert.deepEqual(
+      expected.map((_, i) => machine.load(shared + i * 4)),
+      expected,
+    );
+    assert.equal(machine.load(shared - 1, 1), 0xa3);
+    assert.equal(machine.load(shared + 64, 1), 0xa3);
+    assert.equal(instance.frame, 27);
+    assert.equal(instance.active, true);
+  }
+  const invalid = await guest('generic', 44, [shared, 0xffffffff, 64]);
+  invalid.machine.bytes(shared, 64).fill(0x63);
+  const before = invalid.machine.bytes(shared, 64).slice();
+  assert.throws(() => invalid.run(2), /KCS memory ffffffff\+64/);
+  assert.deepEqual(invalid.machine.bytes(shared, 64), before);
+  const nonFinite = await guest('generic', 43, [shared, 0x7f800000, ...angles.slice(1)]);
+  nonFinite.machine.bytes(shared, 64).set(before);
+  assert.throws(() => nonFinite.run(2), /scalar FSINCOS range/);
+  assert.deepEqual(nonFinite.machine.bytes(shared, 64), before);
+});
+
+test('2.6.1.23 Main writes the local YPR matrix without reading the previous owner', async (t) => {
+  const args = [64, ...[1.3125, -0.357, 0.089999999].map(floatBits)];
+  const world = await dataWorld(
+    profile,
+    {
+      'case.kcs': kcsProgram([
+        [37, sentinel],
+        ...args.map((word) => [37, word]),
+        [43, 662, 16],
+        [59],
+      ]),
+    },
+    { initialize: false },
+  );
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.runtime.spawn('case.kcs'),
+    machine = task.machine,
+    expected = [
+      0x3e6568c0, 0x3dac772a, 0xbf788f4f, 0, 0xbeb80b7c, 0x3f6ee366, 0xbb038640, 0, 0x3f67e6f3,
+      0x3eb2ed14, 0x3e751280, 0, 0, 0, 0, 0x3f800000,
+    ];
+  machine.bytes(63, 66).fill(0x76);
+  machine.store(64, 0xffc00000);
+  await world.runtime.tick();
+  assert.equal(task.status, 'finished');
+  assert.equal(machine.sp, machine.floor + 4);
+  assert.equal(machine.load(machine.floor), sentinel);
+  assert.deepEqual(
+    expected.map((_, i) => machine.load(64 + i * 4)),
+    expected,
+  );
+  assert.equal(machine.load(63, 1), 0x76);
+  assert.equal(machine.load(128, 1), 0x76);
+});
+
 test('2.6.1.23 MOT and PTCL retain their unresolved guards and exact arities', async () => {
   for (const [id, expected] of [
     [23, 4],

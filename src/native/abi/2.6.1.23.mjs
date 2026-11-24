@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [662],
+    value:
+      'Own 2.6.1.23 0x486740 writes the entire guest matrix through the original scalar YPR quaternion path and returns control 2.',
+  },
+  {
     ids: [735],
     value:
       'Own 2.6.1.23 0x476E20 clips two retained rectangles and writes packed destination rows in physical order. An empty destination owner routes the source rectangle to VRAM.',
@@ -880,6 +885,7 @@ export default {
     elapsedUsesX87: true,
     splineUsesX87: true,
     currentMatrixFallback: true,
+    orderedScalarRotations: true,
   },
   particle: {
     frameScale: 'x87-uint32',
@@ -1385,12 +1391,34 @@ export default {
           value:
             'Own 2.6.1.23 MOT 0x595490 shares the x87 triangle wave body with Particle 0x48cfc0',
         },
+        {
+          ids: [43, 44],
+          value:
+            'Own 2.6.1.23 MOT 0x595EA0 and 0x595900 preserve their local/shared in-place matrix writes with the PE scalar PC24 D3DX dispatch.',
+        },
       ]),
       signatures: [
         {
           ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 39, 40, 41, 42],
           fields: { resultWritten: true },
         },
+        ...[43, 44].map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.generic[id].signature.parameters.map((parameter, index) =>
+              parameter.type.kind === 'pointer'
+                ? {
+                    ...parameter,
+                    type: {
+                      ...parameter.type,
+                      addressSpace: 'vm',
+                      direction: index === 0 ? 'inout' : 'in',
+                    },
+                  }
+                : parameter,
+            ),
+          },
+        })),
       ],
     },
     'particle-v1': {

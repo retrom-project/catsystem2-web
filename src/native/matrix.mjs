@@ -2,6 +2,7 @@
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply, bitsFloat } from '../kcs/vm.mjs';
 import { identity, translation, scaling } from '../motion/matrix.mjs';
+import { yawPitchRollX87 } from '../motion/native-rotation.mjs';
 import { multiplyNativeMatrix } from './calculation-math.mjs';
 import { matrixStorage, floats, floatBytes } from './calculation-memory.mjs';
 import { nativeScalarMath } from './scalar-math.mjs';
@@ -10,6 +11,7 @@ export const NATIVE_MATRIX_OPERATIONS = Object.freeze([
   'matrix.translate',
   'matrix.scale',
   'matrix.identity',
+  'matrix.setYawPitchRoll',
 ]);
 function rotation(axis, word) {
   // D3DX uses FSINCOS directly. Outside its finite argument range the
@@ -28,6 +30,11 @@ function rotation(axis, word) {
 export function nativeMatrix(operation, args, machine, state) {
   const count = operation === 'matrix.identity' ? 1 : 4;
   if (args.length !== count) throw new Error(`${operation} expects ${count} arguments`);
+  if (operation === 'matrix.setYawPitchRoll') {
+    const output = machine.bytes(args[0], 64);
+    output.set(floatBytes(yawPitchRollX87(...args.slice(1).map(bitsFloat))));
+    return nativeReply(2);
+  }
   const storage = matrixStorage(machine, args[0] >>> 0, state);
   let m = floats(storage.read());
   if (operation === 'matrix.identity') m = identity();

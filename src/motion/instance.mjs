@@ -2,6 +2,8 @@
 import { KCSMachine, nativeReply, floatBits, bitsFloat, formatNative } from '../kcs.mjs';
 import { nativeCatalog } from '../native/catalog.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
+import { floatBytes, floats } from '../native/calculation-memory.mjs';
+import { multiplyNativeMatrix } from '../native/calculation-math.mjs';
 import { nativeMatrix } from '../native/matrix.mjs';
 import { nativeScalarMath } from '../native/scalar-math.mjs';
 import { ParticleRandom } from '../ppi/random.mjs';
@@ -19,6 +21,7 @@ import {
   rotateVector,
 } from '../ppi/numeric.mjs';
 import { MOTION_ABI, initialMotionObject } from './abi.mjs';
+import { rotateRelativeX87, yawPitchRollX87 } from './native-rotation.mjs';
 import {
   identity,
   inverse,
@@ -75,6 +78,7 @@ export class MotionInstance {
     this.interpreterMath = this.math?.interpreterUsesNativeScalarMath ? this.math : null;
     this.multiplyMatrix = abi.math?.motionMatrixMultiplySSE ? multiplySSE : multiply;
     this.transformVector = abi.math?.vectorTransformPairwise ? transformFloat32Pairs : transform;
+    this.orderedScalarRotations = abi.motion?.orderedScalarRotations;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
     this.currentMatrixFallback = abi.motion?.currentMatrixFallback;
     this.calculations = calculations;
@@ -308,6 +312,18 @@ export class MotionInstance {
         put(args[0], transform(vector(args[0], 4), vector(args[1], 16)));
         return done();
       case 43: {
+        if (this.orderedScalarRotations) {
+          const destination = machine.bytes(args[0], 64);
+          const matrix = floats(destination);
+          if (matrix.some((value) => !Number.isFinite(value)))
+            throw new RangeError('Non-finite scalar rotation matrix');
+          destination.set(
+            floatBytes(
+              multiplyNativeMatrix(matrix, yawPitchRollX87(...args.slice(1).map(bitsFloat))),
+            ),
+          );
+          return done();
+        }
         put(
           args[0],
           this.multiplyMatrix(vector(args[0], 16), yawPitchRoll(...args.slice(1).map(bitsFloat))),
@@ -315,6 +331,16 @@ export class MotionInstance {
         return done();
       }
       case 44: {
+        if (this.orderedScalarRotations) {
+          const destination = machine.bytes(args[0], 64),
+            matrix = floats(destination),
+            reference = floats(machine.bytes(args[1], 64)),
+            angles = floats(machine.bytes(args[2], 12));
+          if ([...matrix, ...reference].some((value) => !Number.isFinite(value)))
+            throw new RangeError('Non-finite scalar rotation matrix');
+          destination.set(floatBytes(rotateRelativeX87(matrix, reference, angles)));
+          return done();
+        }
         const reference = vector(args[1], 16),
           angles = vector(args[2], 3);
         const x = this.transformVector([-1, 0, 0, 0], reference);

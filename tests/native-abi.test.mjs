@@ -37,17 +37,20 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     assert.equal(abi.tables.main.entries[0x181].signature.argumentWords, 4);
     assert.equal(abi.tables.main.entries[0x181].status, 'recovered');
     assert.equal(abi.tables.main.entries[0x358].signature.argumentWords, 7);
-    assert.equal(abi.tables.main.entries[0x358].status, 'unknown');
+    assert.equal(
+      abi.tables.main.entries[0x358].status,
+      version === '2.6.1.67' ? 'recovered' : 'unknown',
+    );
   }
   const base = abiForEngineVersion('2.6.1.23').tables;
   assert.deepEqual(
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 413);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 414);
   assert.equal(base.main.entries.filter(({ status }) => status === 'reserved').length, 57);
   assert.equal(base.main.entries.filter(({ status }) => status === 'constant-zero').length, 17);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 382);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 381);
   assert.equal(base.main.entries.filter((entry) => entry.observedArgumentWords.length).length, 435);
   assert.deepEqual(base.main.entries[464].observedArgumentWords, []);
   assert.deepEqual(base.main.entries[543].observedArgumentWords, [3]);
@@ -57,7 +60,7 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
   assert.deepEqual(base.main.entries[315].observedArgumentWords, [1]);
   assert.deepEqual(
     base.generic.entries.filter(({ status }) => status === 'recovered').map(({ id }) => id),
-    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 23, 26, 38, 39, 40, 41, 42],
+    [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 23, 26, 38, 39, 40, 41, 42, 43, 44],
   );
   assert.equal(base.generic.entries[17].signature.resultWritten, true);
   for (const [id, count] of [

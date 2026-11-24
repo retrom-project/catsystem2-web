@@ -22788,6 +22788,34 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    662: {
+      name: 'matrix.setYawPitchRoll',
+      family: 'matrix',
+      signature: {
+        argumentWords: 4,
+        controlCodes: [2],
+        parameters: [
+          {
+            description: 'VMptr matrix4 destination',
+            name: 'destination',
+            type: {
+              addressSpace: 'vm',
+              direction: 'out',
+              kind: 'pointer',
+              target: { kind: 'record', name: 'matrix4' },
+            },
+          },
+          ...['yaw', 'pitch', 'roll'].map((name) => ({
+            description: `f32 ${name}`,
+            name,
+            type: { bits: 32, kind: 'float' },
+          })),
+        ],
+        result: { description: 'void', kind: 'void' },
+        resultWritten: false,
+        review: 'declared',
+      },
+    },
     664: {
       name: 'fes.setNamedLocal',
       family: 'fes',
