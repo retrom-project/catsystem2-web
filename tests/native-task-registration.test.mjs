@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { NativeWorld } from '../web/transitional-entry.mjs';
+import { installNativeAreaEffects } from '../oracle/area-effect-original.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
@@ -76,7 +77,7 @@ for (const [profile, variable] of [
           const game = memoryGame({ 'engine.exe': executable, 'main.kcs': program }),
             configuration = new NativeConfiguration({ profile }),
             random = new ParticleRandom();
-          return new NativeWorld({
+          const owner = new NativeWorld({
             game,
             images: {},
             host: {},
@@ -86,6 +87,8 @@ for (const [profile, variable] of [
             motionLibrary: new MotionLibrary(game, { profile, random }),
             storage: { read: async () => null, write: async () => true },
           });
+          installNativeAreaEffects(owner);
+          return owner;
         },
         world = make(),
         call = (owner, id, ...args) =>
@@ -114,9 +117,11 @@ for (const [profile, variable] of [
           siblingRecord = named(world, 'Sibling'),
           memory = await world.getNativeFeature('task-memory'),
           p = world.nativeEngine.process;
+        const actorPointer = actor.implementation.pointer;
+        assert.ok(p.allocations.has(actorPointer));
         assert.equal(actor.parent, caller);
         assert.equal(actor.effectiveFrame, 192);
-        assert.equal(p.load(actor.implementation.pointer + 12), await memory.pointer(caller));
+        assert.equal(p.load(actorPointer + 12), await memory.pointer(caller));
         assert.equal(world.resolveTaskID(sibling, caller), siblingRecord.id);
 
         const first = vm.load(76),
