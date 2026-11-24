@@ -10,7 +10,8 @@ import { nvTextConfig, textConfig, unpackTextConfiguration } from './text-config
 import { CanvasTextGlyphs } from '../render/native-text.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
 import { nativeReply } from '../kcs.mjs';
-import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
+import { nativeEngineWord, NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
+import { nativeDataMapped } from './data-text.mjs';
 import { installNativeLegacyText } from './text-legacy.mjs';
 import { installNativeDisplayLogs } from './text-log.mjs';
 const copyTextFrame = NativeTextWriter.prototype.frame;
@@ -236,12 +237,21 @@ export class NativeTextTask {
           height: dimensions.getUint32(8, true),
           vram: true,
         });
-        const position = nativeCP932 ? this.text.vram.map((word) => word >>> 0) : this.text.vram;
+        const position =
+          nativeCP932 && !resourceMessages.cp932SignedVramPosition
+            ? this.text.vram.map((word) => word >>> 0)
+            : this.text.vram;
         setMotionVector(this.graph.textureTransform, MOTION_ABI.pos, [...position, 0]);
         this.sync();
       } else if (this.mode === 'utf8') {
         await writer.clear();
         if (this.text.source) await writer.appendSource(this.text.source);
+      } else if (resourceMessages.cp932ReconfigureRetainsPageMarkers) {
+        await writer.clear();
+        for (const event of this.text.sourceEvents) {
+          if (event.kind === 'mark') await writer.mark();
+          else await writer.appendEncoded(event.bytes);
+        }
       }
       await this.output();
       if (operation === 2) await this.restart();
@@ -278,7 +288,9 @@ export class NativeTextTask {
         return reply;
       case 6:
         if (this.graph) {
-          await writer.draw(-1, nativeCP932 ? -1 : this.text.pageLimit);
+          const pageLimit =
+            nativeCP932 && !resourceMessages.cp932DrawUsesPageLimit ? -1 : this.text.pageLimit;
+          await writer.draw(-1, pageLimit);
           await this.dirtyOutput();
           this.text.active = false;
         }
@@ -643,15 +655,23 @@ export async function nativeText(id, args, machine, task, world) {
           payload ? { payload } : {},
         )
       : world.graphics.send(args[0], task.id, first + operation, w, l, payload);
+  const configure = (operation) =>
+    nativeCP932 && !nativeDataMapped(machine, args[1])
+      ? send(operation)
+      : send(operation, 0, args[1], machine);
+  const remaining = async (operation) => {
+    const reply = await send(operation);
+    return nativeReply(1, nativeCP932 ? nativeEngineWord(reply, 'Native text remaining') : reply);
+  };
   switch (id) {
     case 0x263:
-      await send(0, 0, args[1], machine);
+      await configure(0);
       break;
     case 0x264:
-      await send(1, 0, args[1], machine);
+      await configure(1);
       break;
     case 0x265:
-      await send(2, 0, args[1], machine);
+      await configure(2);
       break;
     case 0x266: {
       const format = world.runtime.services?.formatBytes;
@@ -671,7 +691,7 @@ export async function nativeText(id, args, machine, task, world) {
       await send(4);
       break;
     case 0x268:
-      return nativeReply(1, await send(5));
+      return remaining(5);
     case 0x269:
       await send(6);
       break;
@@ -713,7 +733,7 @@ export async function nativeText(id, args, machine, task, world) {
       await send(12, 0, args[1]);
       break;
     case 0x374:
-      return nativeReply(1, await send(17));
+      return remaining(17);
   }
   return nativeReply(2);
 }

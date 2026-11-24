@@ -147,11 +147,11 @@ test('ABI 2.6.1.67 writes the empty CP932 writer pointer to its query output', a
       child = await world.objects.create({ kind: 48, parent: owner }),
       task = world.objects.objects.get(child).implementation,
       output = new Map([[4, 0xdeadbeef]]);
-    await task.message([owner, 467, 0, 4], {
+    await task.message([owner, 449, 0, 4], {
       payload: { store: (at, word) => output.set(at, word) },
     });
     assert.deepEqual([...output], [[4, 0]]);
-    await task.message([owner, 467, 0, 0]);
+    await task.message([owner, 449, 0, 0]);
   } finally {
     await world.close();
   }

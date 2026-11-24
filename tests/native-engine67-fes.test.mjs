@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
+import { encodeHG2 } from '../src/formats/hg2.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { MOTION_ABI, motionVector } from '../src/motion/abi.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
@@ -256,4 +260,173 @@ test('2.6.1.67 named FES word GCALLs format CP932 dictionary keys and keep recei
     initialExecute: false,
   });
   await assert.rejects(() => world.runtime.scheduler.execute(missing), /unwritten output pointer/);
+});
+
+test('2.6.1.67 CP932 STRING uses its own packet, signed position, page limit and font ownership in KCS', async (t) => {
+  const address = 240,
+    textAddress = 512,
+    value = [0x13, 100],
+    result = 104,
+    target = [0x13, 80],
+    bindings = [
+      [611, [target, address]],
+      [612, [target, address]],
+      [613, [target, address]],
+      [614, [target, textAddress]],
+      [615, [target]],
+      [616, [target], result],
+      [617, [target]],
+      [618, [target]],
+      [619, [target, value]],
+      [620, [target, value]],
+      [621, [target, 0xabcd0041, 1]],
+      [695, [target, value]],
+      [884, [target], result],
+    ];
+  const glyphs = {
+    measure: (_font, text) => ({
+      width: text.length * 5,
+      height: 10,
+      ascent: 7,
+      descent: 3,
+      averageWidth: 5,
+      maximumWidth: 8,
+    }),
+    glyph: () => ({
+      width: 4,
+      height: 6,
+      originX: 0,
+      originY: 6,
+      advanceX: 5,
+      advanceY: 0,
+      alpha: new Uint8Array(24).fill(255),
+    }),
+  };
+  const world = await dataWorld(
+    profile,
+    Object.fromEntries(bindings.map((entry) => [`string-${entry[0]}.kcs`, nativeProgram([entry])])),
+    { glyphs },
+  );
+  t.after(() => world.close({ flushFiles: false }));
+  world.graphics.createLogicalDevice();
+  const task = await world.objects.create({ kind: 48, parent: world.root }),
+    owner = world.graphics.get(task),
+    nativeID = world.nativeTaskID(task);
+  Object.assign(world.configuration.fields.font, {
+    name: 'ＭＳ ゴシック',
+    weight: 1,
+    rightdown: 3,
+    around: 2,
+    prop: 1,
+    fix: 17,
+  });
+  new DataView(world.configuration.blocks[1].buffer).setUint32(56, 1, true);
+  async function call(id, prepare = () => {}, receiver = nativeID) {
+    const caller = await world.spawnScript(`string-${id}.kcs`, {
+      parent: world.main.id,
+      initialExecute: false,
+    });
+    const { machine } = caller,
+      floor = machine.sp;
+    machine.store(80, receiver);
+    machine.store(result, 0xcafec784);
+    prepare(machine);
+    assert.equal((await world.runtime.scheduler.execute(caller)).status, 'halted');
+    assert.equal(machine.sp, floor + 4);
+    assert.equal(machine.pop(), 0x862afb3d);
+    return machine;
+  }
+  const preparePacket = (machine, size) => {
+    machine.bytes(address - 4, 208).fill(0xbd);
+    machine.store(address, size);
+  };
+  const initial = await call(611, (machine) => preparePacket(machine, 200)),
+    record = initial.bytes(address, 200).slice();
+  assert.equal(
+    createHash('sha256').update(record).digest('hex'),
+    'fce5d9e192eba7f8e6afeb8cbafe68bf5b3fd7998ba773cbb7091eb95c77622a',
+  );
+  assert.equal(initial.load(address - 4), 0xbdbdbdbd);
+  assert.equal(initial.load(address + 200), 0xbdbdbdbd);
+  const wrongSize = await call(611, (machine) => preparePacket(machine, 199));
+  assert.deepEqual([...wrongSize.bytes(address + 4, 196)], Array(196).fill(0xbd));
+  await assert.rejects(call(616), /initialized writer/);
+  await assert.rejects(
+    call(884, () => {}, 0x9abcdef0),
+    /initialized 32-bit output/,
+  );
+  await call(613, (machine) => preparePacket(machine, 200));
+  assert.equal(await owner.writer(), null);
+  await call(612, (machine) => preparePacket(machine, 199));
+  assert.ok(await owner.writer());
+  assert.equal(owner.graph, null);
+  const configure = (machine, x = -7) => {
+    machine.bytes(address, 200).set(record);
+    machine.store(address + 4, 0);
+    machine.store(address + 8, 96);
+    machine.store(address + 12, 48);
+    machine.store(address + 188, x);
+    machine.store(address + 192, -8);
+  };
+  await call(612, configure);
+  const writer = await owner.writer();
+  assert.deepEqual([writer.pixels.width, writer.pixels.height], [96, 48]);
+  assert.deepEqual(owner.text.vram, [-7, -8]);
+  assert.deepEqual(motionVector(owner.graph.textureTransform, MOTION_ABI.pos), [-7, -8, 0]);
+  const append = (source) => call(614, (machine) => machine.writeString(source, textAddress));
+  await append('文字%%');
+  assert.deepEqual(writer.parser.source, encodeCP932('文字%'));
+  await call(618);
+  await call(613, (machine) => configure(machine, -19));
+  assert.equal(await owner.writer(), writer);
+  assert.deepEqual(owner.text.vram, [-19, -8]);
+  assert.deepEqual(writer.parser.source, encodeCP932('文字%'));
+  await append('B');
+  await call(619, (machine) => machine.store(100, 0));
+  assert.equal(owner.text.pageLimit, 0);
+  await call(617);
+  assert.equal(writer.parser.rows.findLast((row) => row[1] === 66)[15], 0);
+  assert.ok(writer.frame().rgba.some((value) => value !== 0));
+  assert.equal(
+    (await call(616)).load(result),
+    1,
+    JSON.stringify(writer.parser.rows.map((row) => [row[1], row[15]])),
+  );
+  assert.equal((await call(884)).load(result), 0);
+  await call(619, (machine) => machine.store(100, 1));
+  await call(617);
+  assert.equal(writer.parser.rows.findLast((row) => row[1] === 66)[15], 1);
+  assert.equal((await call(616)).load(result), 0);
+  writer.maximumTime = 13;
+  writer.lastFrame = 87;
+  await call(695, (machine) => machine.store(100, 21));
+  assert.deepEqual([writer.speedValue, writer.baseTime, writer.baseFrame], [21, 13, 87]);
+  writer.maximumTime = 29;
+  await call(695, (machine) => machine.store(100, 21));
+  assert.equal(writer.baseTime, 13);
+  await call(621);
+  assert.equal(writer.fontImages.size, 0);
+  const buffers = world.runtime.imageDataBuffers,
+    bytes = await encodeHG2(
+      { width: 2, height: 2, rgba: new Uint8ClampedArray(16).fill(255) },
+      { id: 1 },
+    ),
+    pointer = buffers.createPointer(bytes),
+    handle = buffers.handle(pointer);
+  await call(620, (machine) => machine.store(100, 0));
+  assert.equal(buffers.owns(pointer), true);
+  await call(620, (machine) => machine.store(100, handle));
+  assert.equal(buffers.owns(pointer), false);
+  assert.deepEqual(writer.imageFont, bytes);
+  await call(621);
+  assert.deepEqual([...writer.fontImages], [[65, 1]]);
+  assert.deepEqual(await world.engineMessages.dispatchNative(world.main.id, nativeID, 467), {
+    routed: true,
+    handled: false,
+    result: NATIVE_UNWRITTEN_WORD,
+  });
+  await call(615);
+  assert.equal(writer.parser.source.length, 0);
+  assert.deepEqual([owner.text.active, owner.text.elapsed, owner.text.pageLimit], [false, 0, 0]);
+  assert.ok(writer.frame().rgba.every((value) => value === 0));
 });
