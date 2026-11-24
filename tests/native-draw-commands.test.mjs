@@ -274,7 +274,13 @@ test('2.6.1.67 Draw GCALLs initialize, replace and remove a sender-keyed bitmap'
       'draw-add.kcs': script([[257, point(1, 2, 302)]]),
       'draw-blank.kcs': script([[261, [target], 92]]),
       'draw-change.kcs': script([[259, point(3, 4, 98)]]),
+      'draw-clip.kcs': script([[339, [target, 6, 1, 2, 3, 4]]]),
+      'draw-hide.kcs': script([[263, [target, 6, 0]]]),
+      'draw-show.kcs': script([[263, [target, 6, 1]]]),
       'draw-remove.kcs': script([[258, [target, 6]]]),
+      'draw-unset-dirty.kcs': script([[534, [target, 0]]]),
+      'draw-set-dirty.kcs': script([[534, [target, 0xf3271ed0]]]),
+      'draw-refresh-rectangle.kcs': script([[862, [target, 2, 1, 5, 3]]]),
     });
   t.after(() => world.close({ flushFiles: false }));
   const parent = world.main.id,
@@ -313,8 +319,31 @@ test('2.6.1.67 Draw GCALLs initialize, replace and remove a sender-keyed bitmap'
     assert.equal(images.get(item.image).dataHandle, images.get(source).dataHandle);
     assert.equal(draw.state.renderer.items.length, 1);
   }
+  for (const name of ['draw-clip.kcs', 'draw-hide.kcs']) {
+    await transport.loadScript(name);
+    await invoke(name, transport.task);
+  }
+  assert.deepEqual(draw.entry(key).clip, [1, 2, 4, 6]);
+  assert.equal(draw.entry(key).visible, false);
+  await transport.loadScript('draw-show.kcs');
+  await invoke('draw-show.kcs', transport.task);
+  assert.equal(draw.entry(key).visible, true);
   await transport.loadScript('draw-remove.kcs');
   await invoke('draw-remove.kcs', transport.task);
   assert.equal(draw.entry(key), undefined);
   assert.equal(images.get(source).state.rgba[0], 0x12);
+  await invoke('draw-unset-dirty.kcs');
+  assert.equal(draw.state.dirty, 0);
+  await invoke('draw-set-dirty.kcs');
+  assert.equal(draw.state.dirty, 0xf3271ed0);
+  const output = images.get(draw.state.renderer.bitmap);
+  await output.fill(0, 0, 8, 6, 0xff123456);
+  await invoke('draw-refresh-rectangle.kcs');
+  const pixels = await output.pixels();
+  for (let y = 0; y < 6; y++)
+    for (let x = 0; x < 8; x++) {
+      const at = ((5 - y) * 8 + x) * 4;
+      const expected = x >= 2 && x < 5 && y >= 1 && y < 3 ? [0, 0, 0, 0] : [18, 52, 86, 255];
+      assert.deepEqual([...pixels.subarray(at, at + 4)], expected);
+    }
 });

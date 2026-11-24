@@ -316,7 +316,9 @@ export class NativeDrawTask {
       case 306:
         return 0; // Explicit original drawing-task empty branches.
       case 304:
-        this.state.dirty = Boolean(l);
+        this.state.dirty = nativeABI(this.world.profile).graphics.drawDirtyUsesRawWord
+          ? l >>> 0
+          : Boolean(l);
         return 0;
       default:
         if (message >= 279 && message <= 313 && message !== 303)
