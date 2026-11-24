@@ -5,7 +5,12 @@ import { nativeReply, bitsFloat } from '../kcs.mjs';
 import { initialMotionObject } from '../motion/abi.mjs';
 import { encodeMotionRecords, restoreMotionRecords } from '../motion/checkpoint.mjs';
 import { prepareMotionSpline } from '../motion/spline.mjs';
-import { linearInterpolate, roundInteger, x87LinearInterpolate } from '../ppi/numeric.mjs';
+import {
+  linearInterpolate,
+  quietFloat32Bits,
+  roundInteger,
+  x87LinearInterpolate,
+} from '../ppi/numeric.mjs';
 import { roundX87Single } from '../ppi/x87.mjs';
 import { floatBits } from '../kcs.mjs';
 import { nativeABI } from './abi/index.mjs';
@@ -150,7 +155,19 @@ export function nativeMotion(id, args, machine, services = {}) {
   // reads (SDK 13B). The C wrapper observes adjacent guest stack words. Do not
   // invent a zero default: GCALL leaves its argument block at machine.sp.
   const argumentBase = machine.sp,
-    word = (index) => (index < args.length ? args[index] : machine.load(argumentBase + index * 4));
+    word = (index) => (index < args.length ? args[index] : machine.load(argumentBase + index * 4)),
+    behavior = services.profile && nativeABI(services.profile).motion;
+  const registerWords = (address, count, allowEmpty) => {
+    const size = Math.min(count >>> 0, 256) * 4;
+    if (!size && allowEmpty) return new Uint8Array();
+    const bytes = machine.bytes(address, size).slice();
+    if (behavior?.registerWordsUseX87) {
+      const view = new DataView(bytes.buffer);
+      for (let offset = 0; offset < size; offset += 4)
+        view.setUint32(offset, quietFloat32Bits(view.getUint32(offset, true)), true);
+    }
+    return bytes;
+  };
   const registry = services.motion;
   if (id === 0x126) return value(registry.create(services.owner));
   if (!word(0)) return returning.has(id) ? value(0) : done();
@@ -193,14 +210,12 @@ export function nativeMotion(id, args, machine, services = {}) {
         return done();
       case 0x130:
       case 0x217: {
-        const formatted = services.profile && nativeABI(services.profile).motion?.addUsesFormat;
+        const formatted = behavior?.addUsesFormat;
         const name = formatted
           ? cp932.decode(nativeDataFormat(args, machine, services, 1) ?? undefined)
           : machine.string(word(1));
         if (!name || name === '-') return value(0);
-        const count = Math.min(word(3) >>> 0, 256);
-        const registerWords =
-          formatted && !count ? new Uint8Array() : machine.bytes(word(2), count * 4).slice();
+        const initialRegisters = registerWords(word(2), word(3), formatted);
         const extra =
           word(5) && (!formatted || nativeDataMapped(machine, word(4)))
             ? machine.bytes(word(4), word(5)).slice()
@@ -212,7 +227,7 @@ export function nativeMotion(id, args, machine, services = {}) {
           script
             ? value(
                 manager.add(script, {
-                  registerWords,
+                  registerWords: initialRegisters,
                   extra,
                   group: word(6),
                   delay: id === 0x217 ? word(7) : 0,
@@ -229,7 +244,7 @@ export function nativeMotion(id, args, machine, services = {}) {
         const record = manager.records.get(word(1));
         if (record)
           record.instance.setRegisterWords(
-            machine.bytes(word(2), Math.min(word(3) >>> 0, 256) * 4),
+            registerWords(word(2), word(3), behavior?.registerWordsUseX87),
           );
         return done();
       }

@@ -11,6 +11,68 @@ const profile = 'bokutomo-engine-2.6.1.67',
   motionWord = [0x13, 84],
   flags = 0x81fe0032;
 
+test('2.6.1.67 KCS loads formatted MOT entries and replaces their native F32 register bank', async (t) => {
+  const world = await dataWorld(profile, {
+    'owned-7.kcs': kcsProgram([[59]]),
+    'add.kcs': motionProgram([
+      [304, [0, 128, 192, 2, 224, 3, 17], 88],
+      [304, [managerWord, 128, 192, 2, 224, 3, 17], 84],
+      [304, [managerWord, 160, 0xffffffff, 0, 0xffffffff, 0, 17], 92],
+      [535, [managerWord, 128, 0xffffffff, 0, 0xffffffff, 0, 19, 11], 96],
+    ]),
+    'replace.kcs': motionProgram([
+      [306, [managerWord, 0, 0xffffffff, 7]],
+      [306, [managerWord, motionWord, 192, 1]],
+    ]),
+    'clear.kcs': motionProgram([[306, [managerWord, motionWord, 0xffffffff, 0]]]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const owner = world.runtime.services.motion.create(world.main.id),
+    { manager } = world.runtime.handles.get(owner, 'motion-manager'),
+    run = async (name, handle = 0) => {
+      const task = await world.spawnScript(name, { parent: world.main.id, initialExecute: false }),
+        m = task.machine;
+      m.store(80, owner);
+      m.store(84, handle);
+      m.writeString('owned-%d[G512]', 128);
+      m.writeString('missing', 160);
+      m.store(512, 7);
+      m.store(192, name === 'add.kcs' ? 0x7f812345 : 0xff812345);
+      m.store(196, 0x80000000);
+      m.bytes(224, 3).set([2, 4, 8]);
+      const stack = m.sp;
+      await world.runtime.scheduler.execute(task);
+      assert.equal(m.sp, stack + 4);
+      assert.equal(m.load(stack), 0xa0263136);
+      return m;
+    };
+  const task = await run('add.kcs'),
+    handle = task.load(84),
+    record = manager.records.get(handle),
+    instance = record.instance,
+    { registers, extraData } = MOTION_ABI,
+    words = () =>
+      Array.from({ length: 3 }, (_, i) => instance.view.getUint32(registers + i * 4, true));
+  assert.equal(handle, 1);
+  assert.deepEqual([task.load(88), task.load(92), manager.records.size], [0, 0, 2]);
+  const delayed = manager.records.get(task.load(96));
+  assert.equal(delayed.group, 19);
+  assert.equal(delayed.instance.delay, 11);
+  assert.equal(delayed.instance.view.getUint32(MOTION_ABI.registers, true), 0);
+  assert.equal(record.group, 17);
+  assert.equal(instance.script.name, 'owned-7');
+  assert.deepEqual(words(), [0x7fc12345, 0x80000000, 0]);
+  assert.deepEqual(
+    instance.machine.bytes(instance.view.getUint32(extraData, true), 3),
+    Uint8Array.of(2, 4, 8),
+  );
+  await run('replace.kcs', handle);
+  assert.deepEqual(words(), [0xffc12345, 0, 0]);
+  await run('clear.kcs', handle);
+  assert.deepEqual(words(), [0, 0, 0]);
+  assert.equal(instance.activeWord, 1);
+});
+
 function motionProgram(steps) {
   return kcsProgram([
     [37, 0xa0263136],
