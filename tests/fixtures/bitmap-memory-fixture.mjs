@@ -6,13 +6,16 @@ import { NativeHandles } from '../../src/native/handles.mjs';
 import { NativeDataBuffers } from '../../oracle/data-buffer.mjs';
 import { nativeRectangleDefinitions } from '../../src/native/windows-rectangles.mjs';
 import { NativeBitmapOperations } from '../../oracle/bitmap-operations.mjs';
+import { originalWorldState } from '../../oracle/world-operations.mjs';
+import { installOriginalImageImport } from '../../oracle/image-import-original.mjs';
 import { KCSMachine } from '../../src/kcs/vm.mjs';
 import { Binary } from '../../src/binary.mjs';
 export async function bitmapMemoryFixture(bytes, profile, { uploadBoundary = false } = {}) {
   const engine = await NativeEngineProcess.open({ bytes, profile }),
     world = {
       nativeEngine: engine,
-      runtime: { handles: new NativeHandles() },
+      transitionalExe: { worldState: originalWorldState },
+      runtime: { handles: new NativeHandles(), services: {} },
       graphics: {},
       images: {},
       objects: { machine: () => null },
@@ -44,6 +47,7 @@ export async function bitmapMemoryFixture(bytes, profile, { uploadBoundary = fal
     return f;
   };
   const memory = new NativeBitmapMemory(engine, world);
+  installOriginalImageImport(world);
   const operations = new NativeBitmapOperations(engine, world),
     machine = new KCSMachine(
       {
