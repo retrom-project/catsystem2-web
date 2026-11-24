@@ -42,12 +42,15 @@ export function installNativeInputCommands(world) {
       }
       if (id === 0x5f && !originalOwner(world)) {
         if (args[0] === 0) return nativeReply(2);
-        const top = world.engineMessages.closestTop(task.id);
-        if (top?.nativeID !== 0)
-          throw new Error('Native graph input registration requires an owned zero-ID Top');
-        const target = world.objects.objects.get(world.resolveTaskID(args[0], task.id));
-        if (target?.kind !== 2)
-          throw new Error('Native graph input registration requires a reviewed Graph receiver');
+        const target = world.objects.objects.get(world.resolveTaskID(args[0], task.id)),
+          missing = !target && nativeABI(world.profile).input?.legacyPlaneRegistration;
+        if (!missing) {
+          const top = world.engineMessages.closestTop(task.id);
+          if (top?.nativeID !== 0)
+            throw new Error('Native graph input registration requires an owned zero-ID Top');
+          if (target?.kind !== 2)
+            throw new Error('Native graph input registration requires a reviewed Graph receiver');
+        }
         await world.sendNativeEngine(args[0], task.id, 89, world.nativeTaskID(task.id), args[1], {
           flags: 0,
         });

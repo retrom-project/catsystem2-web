@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [95, 109],
+    value:
+      'Own 2.6.1.23 0x47F2A0 registers Plane raw 83 geometry. Own 0x48A310 queries Plane or BasePlane raw 89 and routes Input raw 129 for the complete source word.',
+  },
+  {
     ids: [61, 461],
     value:
       'Own 2.6.1.23 0x48C590 and 0x481C60 write the CRT power and base-10 logarithm results. The original CPU gate selects SSE2 under the ordinary masked environment, and the wrappers publish float32 through x87.',
@@ -1132,7 +1137,12 @@ export default {
       861: [],
     },
   },
-  input: { bitmapMaskNativeRows: true, cursorWarpNativeBounds: true },
+  input: {
+    bitmapMaskNativeRows: true,
+    cursorWarpNativeBounds: true,
+    legacyPlaneRegistration: true,
+    planeSourceUsesRawWord: true,
+  },
   gallery: { listVariantWidth: 64 },
   startup: {
     loosePath: 'config/startup.xml',
@@ -1166,6 +1176,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [109], fields: { resultWritten: true } },
         {
           ids: [346],
           fields: {

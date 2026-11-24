@@ -377,3 +377,77 @@ test('fixed 2.6.1.23 Plane KX3 sends CP932 and leaves verified recipients unchan
     await world.close({ flushFiles: false });
   }
 });
+
+test('fixed 2.6.1.23 Plane input preserves installed geometry and the raw source word', async () => {
+  const world = await dataWorld(profile);
+  try {
+    const id = await world.objects.create({ kind: 2, parent: world.root }),
+      baseID = await world.objects.create({ kind: 6, parent: world.root }),
+      target = world.nativeTaskID(id),
+      base = world.nativeTaskID(baseID),
+      plane = world.graphics.get(id),
+      memory = Array(3).fill(canary),
+      flags = 0x8012ab73,
+      replacement = 0x00004455;
+    await call(world, 95, [0, flags], memory);
+    await call(world, 95, [0x1234abc, flags], memory);
+    await call(world, 95, [target, flags], memory, /input geometry is unreviewed/);
+    world.graphics.view.configure({ virtualWidth: 64, virtualHeight: 48 });
+    await world.sendNativeEngine(target, world.main.id, 41, 0, 0, {
+      payload: new NativeGraphicsPacket([0, 0, 0, floatBits(64), floatBits(48), 32, 1, 0]),
+    });
+    setMotionVector(plane.graph.kx2, MOTION_ABI.base, [0, 0, 12.875]);
+    await call(world, 95, [target, flags], memory);
+    const region = plane.input.get(id);
+    assert.deepEqual(region.bounds, [-100000, -100000, 100000, 100000]);
+    assert.equal(region.priority, 12);
+    assert.equal(region.flags, flags);
+    assert.equal(region.mask, 7);
+    assert.equal(plane.state.bindFlags, flags);
+    assert.equal(plane.state.bindExtra, flags);
+    await call(world, 95, [target, replacement], memory);
+    assert.equal(plane.input.get(id), region);
+    assert.equal(region.flags, flags);
+    assert.equal(plane.state.bindFlags, flags);
+    assert.equal(plane.state.bindExtra, replacement);
+
+    const query = await readKCS(
+      kcsProgram([
+        [37, canary],
+        [37, target],
+        [43, 109, 4],
+        [37, base],
+        [43, 109, 4],
+        [37, 0x1234abc],
+        [43, 109, 4],
+        [59],
+      ]),
+    );
+    for (const source of [0, 2, 16, 0x80000001, 0xffffffff]) {
+      const task = { ...world.main, io: null };
+      const machine = (task.machine = new KCSMachine(query, {
+        native: (native, args, caller) =>
+          world.runtime.scheduler.native(task, native, args, caller),
+      }));
+      plane.input.source = source;
+      await world.runtime.scheduler.execute(task);
+      assert.equal(machine.sp, machine.floor + 16);
+      assert.deepEqual(
+        [0, 4, 8, 12].map((at) => machine.load(machine.floor + at)),
+        [canary, source, source, 0],
+      );
+    }
+    await call(world, 109, [0], memory, /requires a verified receiver/);
+    await call(
+      world,
+      109,
+      [world.nativeTaskID(world.main.id)],
+      memory,
+      /requires a verified receiver/,
+    );
+    await call(world, 83, [target], memory);
+    assert.equal(plane.input.get(id), null);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});

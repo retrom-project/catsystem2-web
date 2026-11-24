@@ -517,12 +517,15 @@ export class NativeGraphicTask {
     this.world = graphics.world;
     this.record = record;
     this.base = this.world.base(record);
-    const abi = this.world.profile && nativeABI(this.world.profile).graphics;
+    const profile = this.world.profile && nativeABI(this.world.profile),
+      abi = profile?.graphics;
     this.coordinateModeRequiresGraph = Boolean(abi?.coordinateModeRequiresGraph);
     this.planePoseQueriesRequireReply = Boolean(abi?.planePoseQueriesRequireReply);
     this.planeResetReleasesTrackedInput = Boolean(abi?.planeResetReleasesTrackedInput);
     this.planeKx3UsesLegacyReceiver = Boolean(abi?.planeKx3UsesLegacyReceiver);
     this.tilePlaneRequiresEmptyOwner = Boolean(abi?.tilePlaneRequiresEmptyOwner);
+    this.legacyPlaneRegistration = Boolean(profile?.input?.legacyPlaneRegistration);
+    this.planeSourceUsesRawWord = Boolean(profile?.input?.planeSourceUsesRawWord);
     // Initial BasePlane and SimplePlane state.
     this.state = {
       receiver: -1,
@@ -1203,19 +1206,21 @@ export class NativeGraphicTask {
         if (this.record.kind === 2 && !this.graph?.kx2)
           throw new Error('Native plane input geometry is unreviewed');
         if (this.state.receiver !== -1) {
-          if (tracksGraph) this.state.inputTracksGraph = true;
+          if (tracksGraph) {
+            this.state.inputTracksGraph = true;
+            if (this.legacyPlaneRegistration) this.state.bindExtra = l >>> 0;
+          }
           return tracksGraph ? undefined : 0;
         }
         const graphFields = tracksGraph ? this.graphInputFields(l) : null;
         if (!this.input?.register)
           throw new Error('Native plane input registration is unavailable');
-        const fields = graphFields ?? Array.from({ length: 6 }, (_, i) => load(l + i * 4));
-        const bounds = fields.slice(0, 4).map((v) => v | 0);
-        const full =
-          bounds[0] <= 0 &&
-          bounds[1] <= 0 &&
-          bounds[2] >= this.world.game.width &&
-          bounds[3] >= this.world.game.height;
+        const fields = graphFields ?? Array.from({ length: 6 }, (_, i) => load(l + i * 4)),
+          bounds = fields.slice(0, 4).map((v) => v | 0),
+          [width, height] = this.legacyPlaneRegistration
+            ? this.graphics.virtualSize()
+            : [this.world.game.width, this.world.game.height];
+        const full = bounds[0] <= 0 && bounds[1] <= 0 && bounds[2] >= width && bounds[3] >= height;
         const retainedBounds = full ? [-100000, -100000, 100000, 100000] : bounds;
         await this.input.register({
           owner: this.record.id,
@@ -1228,7 +1233,10 @@ export class NativeGraphicTask {
         });
         this.state.bindArea = retainedBounds;
         this.state.bindFlags = fields[5];
-        if (tracksGraph) this.state.inputTracksGraph = true;
+        if (tracksGraph) {
+          this.state.inputTracksGraph = true;
+          if (this.legacyPlaneRegistration) this.state.bindExtra = l >>> 0;
+        }
         this.state.receiver = sender;
         this.state.changed = 1;
         return tracksGraph ? undefined : 1;
@@ -1258,6 +1266,21 @@ export class NativeGraphicTask {
         return 0;
       }
       case 95:
+        if (this.planeSourceUsesRawWord) {
+          const world = this.world,
+            root = world.objects.objects.get(world.resolveTaskID(0, this.record.id));
+          if (root?.kind !== 1) return;
+          const input = await world.sendNativeEngine(
+            0,
+            this.record.id,
+            world.engineMessages.layout.rootStart + 2,
+          );
+          const owner =
+            typeof input === 'number' &&
+            world.objects.objects.get(world.resolveTaskID(input, this.record.id));
+          if (owner?.kind !== 11) return;
+          return world.sendNativeEngine(input, this.record.id, 136, this.record.nativeID, 0);
+        }
         return this.input?.source === 16 ? 2 : (this.input?.source ?? 0);
       case 98: {
         if (this.state.receiver !== -1) {
@@ -1573,7 +1596,8 @@ export const NATIVE_GRAPHICS_IDS = Object.freeze([
 export async function nativeGraphics(id, args, machine, task, world) {
   if (!NATIVE_GRAPHICS_IDS.includes(id)) return undefined;
   const abi = world.profile && nativeABI(world.profile),
-    requirePose = abi?.graphics.planePoseQueriesRequireReply;
+    requirePose = abi?.graphics.planePoseQueriesRequireReply,
+    rawPlaneSource = id === 0x6d && abi?.input?.planeSourceUsesRawWord;
   const count =
     requirePose && [0x53, 0x56, 0x57].includes(id)
       ? abi.tables.main.entries[id].signature.argumentWords
@@ -1605,6 +1629,7 @@ export async function nativeGraphics(id, args, machine, task, world) {
     id !== 0x69 &&
     id !== 0x6a &&
     id !== 0x6c &&
+    !rawPlaneSource &&
     id !== 0x350 &&
     id !== 0x351
   )
@@ -1764,6 +1789,14 @@ export async function nativeGraphics(id, args, machine, task, world) {
       await send(93, 0, args[1]);
       return done();
     case 0x6d:
+      if (rawPlaneSource) {
+        const target = world.objects.objects.get(world.resolveTaskID(args[0], task.id));
+        if (target && ![2, 6].includes(target.kind))
+          throw new Error('Native Plane input source requires a verified receiver');
+        const context = { flags: 0 },
+          result = await world.sendNativeEngine(args[0], task.id, 95, 0, 0, context);
+        return value(context.nativeRouted ? nativeEngineWord(result, 'Plane input source') : 0);
+      }
       return value(await send(95));
     case 0x6e:
       await send(96, 0, args[1]);

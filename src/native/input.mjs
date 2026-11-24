@@ -608,7 +608,13 @@ export class NativeInput {
         this.changed = true;
         break;
       case 136:
-        return this.source === 16 ? 2 : this.source;
+        return this.source === 16 &&
+          !(
+            this.configuration?.profile &&
+            nativeABI(this.configuration.profile).input?.planeSourceUsesRawWord
+          )
+          ? 2
+          : this.source;
       case 137:
         if (this.configuration && !readWord(this.configuration.blocks[2], 3)) break;
         return this.message(138, w, l, context);

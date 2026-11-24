@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 423       | 57            | 17            | 372     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
+| 2.6.1.23 | 869        | 425       | 57            | 17            | 370     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 398       | 80            | 19            | 441     | Generic 14 of 45, Particle 12 of 44 and 12 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -102,6 +102,13 @@ geometry or texture pose and write two or three float words. The query
 leaves guest memory unchanged when the target ID is zero. A nonzero
 target must supply initialized pose words before the Core writes the VM
 outputs.
+
+Main 95 registers input through Plane raw 83 using the owned pose,
+configured virtual dimensions and signed rectangle coordinates. A repeat
+retains the installed region and updates the receiver's last flags.
+Main 109 retains the full raw Input source word through Plane or BasePlane
+raw 89 and Input raw 129. A route miss writes zero. A route without a
+verified source reply fails before exposing an output.
 
 Main 346 formats a CP932 filename and resolves the configured KX3 directory
 before sending raw 66. The verified Plane and BasePlane receivers leave
