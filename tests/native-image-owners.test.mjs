@@ -142,6 +142,73 @@ test('2.6.1.67 KCS owns CP932 image layers, their bitmap metadata and pixel edit
   assert.equal(world.runtime.handles.records.has(target), false);
 });
 
+test('2.6.1.67 KCS rotates and reflects retained image pixels, anchors and clip', async (t) => {
+  const args = (id, owner, mode) => [
+      [37, owner],
+      [37, mode],
+      [43, id, 8],
+    ],
+    cases = [
+      [723, 0, [1, 2, 3, 4, 5, 6], [2, 3, 9, 12, 2, -4, 5, -3], [1, 1, 2, 3]],
+      [723, 90, [2, 4, 6, 1, 3, 5], [3, 2, 12, 9, 13, 2, 15, 5], [0, 0, 3, 2]],
+      [723, 180, [6, 5, 4, 3, 2, 1], [2, 3, 9, 12, 5, 13, 4, 15], [0, 0, 2, 3]],
+      [723, 270, [5, 3, 1, 6, 4, 2], [3, 2, 12, 9, -4, 5, -3, 4], [0, 0, 3, 2]],
+      [727, 0, [5, 6, 3, 4, 1, 2], [2, 3, 9, 12, 2, 13, 5, 15], [1, 1, 2, 3]],
+      [727, -1, [2, 1, 4, 3, 6, 5], [2, 3, 9, 12, 5, -4, 4, -3], [1, 1, 2, 3]],
+    ],
+    program = kcsProgram([
+      [37, 0xb51c7042],
+      ...cases.flatMap(([id, mode], index) => args(id, [0x13, 64 + index * 4], mode)),
+      ...args(723, 0, 90),
+      ...args(727, 0, -1),
+      [59],
+    ]),
+    world = await dataWorld('bokutomo-engine-2.6.1.67', { 'retained.kcs': program });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('retained.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    }),
+    { machine } = task,
+    { imageOwners: owners } = world,
+    { images } = world.graphics,
+    floor = machine.sp,
+    pixels = (order) =>
+      Uint8ClampedArray.from(order.flatMap((i) => [9 * i, 13 * i, 27 * i, 255 - 17 * i]));
+  const records = cases.map((_, index) => {
+    const bitmap = images.create(2, 3),
+      owner = owners.add(bitmap, null, new Array(11).fill(0)),
+      record = owners.get(owner),
+      { state } = images.get(bitmap);
+    Object.assign(state, {
+      canvasWidth: 9,
+      canvasHeight: 12,
+      offsetX: 2,
+      offsetY: -4,
+      baseX: 5,
+      baseY: -3,
+      clip: [1, 1, 2, 3],
+      rgba: pixels([1, 2, 3, 4, 5, 6]),
+    });
+    record.layers = [{ bitmap, animation: null }];
+    machine.store(64 + index * 4, owner);
+    return { bitmap, record };
+  });
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), 0xb51c7042);
+  assert.equal(world.runtime.calls.get('main:723'), 5);
+  assert.equal(world.runtime.calls.get('main:727'), 3);
+  for (const [index, [, , order, geometry, clip]] of cases.entries()) {
+    const { bitmap, record } = records[index],
+      image = images.get(bitmap);
+    assert.equal(record.bitmap, bitmap);
+    assert.deepEqual(record.info.slice(0, 10), [...geometry, 4, 1]);
+    assert.deepEqual(image.state.clip, clip);
+    assert.deepEqual(await image.pixels(), pixels(order));
+  }
+});
+
 test('2.6.1.67 KCS Draw keeps a generated image owner through replacement and release', async (t) => {
   const receiver = [0x13, 80],
     owner = [0x13, 84],
