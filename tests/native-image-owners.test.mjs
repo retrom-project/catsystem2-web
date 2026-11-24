@@ -11,7 +11,136 @@ import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { memoryGame, kcsProgram, hg3 } from './helpers.mjs';
 import { defaultFESWorld } from './fixtures/default-fes-world.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 import { installImageOwnerOracle } from './fixtures/image-owner-oracle-world.mjs';
+
+test('2.6.1.67 KCS owns CP932 image layers, their bitmap metadata and pixel edits', async (t) => {
+  const owner = [0x13, 80],
+    generated = [0x13, 84],
+    empty = [0x13, 88],
+    rgba = Uint8Array.from({ length: 24 }, (_, index) => [17, 34, 51, 255][index % 4]),
+    program = (calls, strings = []) =>
+      kcsProgram(
+        [
+          [37, 0x3e4d5c61],
+          ...calls.flatMap(([id, args, out]) => [
+            ...args.map((word) => [37, word]),
+            [43, id, args.length * 4],
+            ...(out === undefined ? [] : [[38, out]]),
+          ]),
+          [59],
+        ],
+        strings,
+      ),
+    world = await dataWorld('bokutomo-engine-2.6.1.67', {
+      '試験.hg3': hg3(3, 2, rgba),
+      'load.kcs': program(
+        [
+          [710, [256], 80],
+          [710, [288], 84],
+          [733, [2, 1], 88],
+        ],
+        [
+          [256, '試験.hg3'],
+          [288, 'missing.hg3'],
+        ],
+      ),
+      'geometry.kcs': program([
+        [712, [owner, 128, 132]],
+        [712, [empty, 136, 140]],
+        [718, [owner, 11, 12], 192],
+        [719, [owner, -3, 5], 196],
+        [720, [owner, -7, 9], 200],
+        [714, [owner, 144, 148]],
+        [715, [owner, 152, 156]],
+        [717, [owner, 160, 164], 204],
+        [717, [empty, 168, 172], 208],
+        [724, [owner, 0x10007, 220, 224, 228, 232, 236], 212],
+        [724, [owner, 8, 220, 224, 228, 232, 236], 216],
+      ]),
+      'color.kcs': program([
+        [713, [owner, 200, 100, 50]],
+        [737, [owner, 3]],
+        [728, [owner, 16]],
+        [736, [generated, 1, 0, 1, 1, 0xff224466]],
+        [737, [generated, 3]],
+      ]),
+      'resize.kcs': program([
+        [719, [owner, 0, 0], 192],
+        [718, [owner, 3, 2], 196],
+        [730, [owner, 6, 4]],
+        [726, [owner, 1, 1]],
+      ]),
+      'release.kcs': program([
+        [711, [owner]],
+        [711, [generated]],
+        [711, [0]],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    load = await world.spawnScript('load.kcs', { parent, initialExecute: false }),
+    execute = async (name) => {
+      const task =
+          name === 'load.kcs'
+            ? load
+            : await world.spawnScript(name, { parent, initialExecute: false }),
+        m = task.machine,
+        floor = m.sp;
+      if (name !== 'load.kcs') {
+        m.store(80, source);
+        m.store(84, target);
+        m.store(88, emptyImage);
+        m.store(136, 0x9c158fc7);
+        m.store(140, 0x9c158fc7);
+        m.store(168, 0x9c158fc7);
+        m.store(172, 0x9c158fc7);
+      }
+      await world.runtime.scheduler.execute(task);
+      assert.equal(m.sp, floor + 4);
+      assert.equal(m.load(floor), 0x3e4d5c61);
+      return m;
+    };
+  const m = await execute('load.kcs'),
+    source = m.load(80),
+    target = m.load(88),
+    emptyImage = world.imageOwners.add(0, load.id, []),
+    record = world.imageOwners.get(source),
+    images = world.graphics.images,
+    bitmap = images.get(record.bitmap),
+    targetBitmap = images.get(world.imageOwners.get(target).bitmap);
+  assert.equal(m.load(84), 0);
+  assert.equal(record.owner, load.id);
+  assert.deepEqual(await bitmap.pixels(), new Uint8ClampedArray(rgba));
+  bitmap.state.attributes = [{ id: 7, rect: [10, -20, 30, -40], color: 0xff800123 }];
+  const geometry = await execute('geometry.kcs');
+  assert.deepEqual(
+    Array.from({ length: 12 }, (_, i) => geometry.load(128 + i * 4) | 0),
+    [3, 2, 0, 0, 11, 12, -3, 5, -7, 9, 0x9c158fc7 | 0, 0x9c158fc7 | 0],
+  );
+  assert.deepEqual(
+    Array.from({ length: 7 }, (_, i) => geometry.load(192 + i * 4)),
+    [1, 1, 1, 1, 0, 1, 0],
+  );
+  assert.deepEqual(
+    Array.from({ length: 5 }, (_, i) => geometry.load(220 + i * 4)),
+    [10, -20 >>> 0, 30, -40 >>> 0, 0xff800123],
+  );
+  await execute('color.kcs');
+  assert.deepEqual(
+    (await bitmap.pixels()).subarray(0, 4),
+    Uint8ClampedArray.of(221, 221, 230, 255),
+  );
+  assert.deepEqual(await targetBitmap.pixels(), Uint8ClampedArray.of(0, 0, 0, 0, 34, 68, 102, 255));
+  assert.equal(bitmap.state.mask, 16);
+  await execute('resize.kcs');
+  const resized = images.get(record.bitmap);
+  assert.deepEqual([resized.width, resized.height], [6, 4]);
+  assert.ok(resized.state.revision > 1);
+  await execute('release.kcs');
+  assert.equal(world.runtime.handles.records.has(source), false);
+  assert.equal(world.runtime.handles.records.has(target), false);
+});
 
 test('23 Script resolves a base image and owns its decoded and generated canvases', async (t) => {
   const rgba = Uint8Array.of(17, 34, 51, 255, 1, 2, 3, 255),
