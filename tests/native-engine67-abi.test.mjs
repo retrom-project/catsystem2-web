@@ -990,3 +990,48 @@ test('2.6.1.67 Main519 selects a space token through its live CP932 group scanne
   assert.deepEqual(machine.bytes(384, 3), Uint8Array.of(0, 0x6c, 0x69));
   assert.deepEqual(machine.bytes(416, 3), Uint8Array.of(0, 0xa5, 0xa5));
 });
+
+test('2.6.1.67 KCS guest allocation and copying retain byte ranges and forward MMX overlap', async () => {
+  const call = (id, words, at) => [
+    ...words.map((word) => [37, word]),
+    [43, id, words.length * 4],
+    ...(at === undefined ? [] : [[38, at]]),
+  ];
+  const {
+    runtime,
+    task,
+    machine: m,
+  } = await run([
+    ...call(27, [0], 80),
+    ...call(27, [8], 84),
+    ...call(35, [320, [0x13, 84], 8]),
+    ...call(36, [[0x13, 84], 0x123456cb, 4]),
+    ...call(35, [328, [0x13, 84], 8]),
+    ...call(28, [[0x13, 84]], 88),
+    ...call(28, [[0x13, 84]], 92),
+    ...call(35, [352, 0xffffffff, 1]),
+    ...call(35, [0xffffffff, 352, 1]),
+    ...call(35, [0xffffffff, 0xffffffff, 0]),
+    ...call(35, [385, 384, 16]),
+    ...call(35, [417, 416, 12]),
+    ...call(35, [449, 448, 11]),
+    [59],
+  ]);
+  m.bytes(320, 40).fill(0xa5);
+  for (const at of [384, 416, 448]) m.bytes(at, 17).set(Array.from({ length: 17 }, (_, i) => i));
+  const stack = m.sp;
+  await runtime.scheduler.execute(task);
+  assert.equal(m.sp, stack);
+  assert.equal(m.load(80), 0xffffffff);
+  assert.equal(m.load(84), m.memory.length);
+  assert.deepEqual([m.load(88), m.load(92)], [1, 0]);
+  assert.deepEqual(m.bytes(320, 8), new Uint8Array(8));
+  assert.deepEqual(m.bytes(328, 8), Uint8Array.of(0xcb, 0xcb, 0xcb, 0xcb, 0, 0, 0, 0));
+  assert.deepEqual(m.bytes(352, 3), Uint8Array.of(0xa5, 0xa5, 0xa5));
+  assert.deepEqual(
+    m.bytes(384, 17),
+    Uint8Array.of(0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 9, 10, 11, 12, 13, 14, 15),
+  );
+  assert.deepEqual(m.bytes(416, 13), Uint8Array.of(0, 0, 1, 2, 3, 3, 5, 6, 7, 7, 9, 10, 11));
+  assert.deepEqual(m.bytes(448, 12), Uint8Array.of(0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+});

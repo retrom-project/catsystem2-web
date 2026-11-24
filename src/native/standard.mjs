@@ -429,10 +429,26 @@ export function nativeStandard(id, args, m, services = {}) {
           ? services.random.rand()
           : floatBits(services.random.frand(services.math?.randomFloatUsesX87)),
       );
-    case 0x23:
+    case 0x23: {
       requireArguments(3);
-      m.bytes(args[0], args[2]).set(m.bytes(args[1], args[2]));
+      const [destination, source, size] = args,
+        mmx = services.profile && nativeABI(services.profile).memory?.copyUsesMMX;
+      if (mmx && (!size || !nativeDataMapped(m, destination) || !nativeDataMapped(m, source)))
+        return done();
+      const from = m.bytes(source, size),
+        to = m.bytes(destination, size);
+      const overlap =
+        from.buffer === to.buffer &&
+        to.byteOffset > from.byteOffset &&
+        to.byteOffset < from.byteOffset + size;
+      if (mmx && overlap && !(size & 3)) {
+        // x86 MMX copies one forward 64-bit or 32-bit chunk at a time.
+        const width = size & 7 ? 4 : 8;
+        for (let offset = 0; offset < size; offset += width)
+          to.set(from.subarray(offset, offset + width), offset);
+      } else to.set(from);
       return done();
+    }
     case 0x24:
       requireArguments(3);
       m.bytes(args[0], args[2]).fill(args[1]);
