@@ -426,6 +426,7 @@ export default {
     planeButtonUsesTexturePose: true,
     planeImageSelectorHidesTarget: true,
     planeResetReleasesTrackedInput: true,
+    sameSizeBitmapCopyClips: true,
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: 'model-and-pages',
     resizeRGB24: true,

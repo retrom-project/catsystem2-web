@@ -127,6 +127,38 @@ for (const profile of ['grisaia-jp-engine-2.6.1.23', 'rebellions-jp-engine-2.6.1
     assert.deepEqual([...(await graphics.images.get(restored).pixels())], clipped);
   });
 
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+  test(`${profile} clips equal requested bitmap rectangles before copying rows`, async (t) => {
+    const guard = 0x9951a321,
+      program = kcsProgram([
+        [37, guard],
+        ...Array.from({ length: 10 }, (_, i) => [37, [0x13, 128 + i * 4]]),
+        [43, 116, 40],
+        [59],
+      ]),
+      world = await dataWorld(profile, { 'copy.kcs': program });
+    t.after(() => world.close({ flushFiles: false }));
+    const images = world.graphics.images,
+      dest = images.create(4, 3, world.main.id),
+      src = images.create(4, 3, world.main.id),
+      source = Uint8ClampedArray.from({ length: 48 }, (_, i) => (i * 73 + 31) & 255),
+      initial = Uint8ClampedArray.from({ length: 48 }, (_, i) => (i * 127 + 67) & 255),
+      task = await world.spawnScript('copy.kcs', { initialExecute: false }),
+      { machine } = task,
+      sp = machine.sp;
+    images.get(src).state.rgba = source;
+    images.get(dest).state.rgba = initial.slice();
+    [dest, 0, 0, 4, 3, src, -2, -1, 4, 3].forEach((word, i) => machine.store(128 + i * 4, word));
+    assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+    assert.equal(machine.sp, sp + 4);
+    assert.equal(machine.pop(), guard);
+    const expected = initial.slice();
+    expected.set(source.subarray(16, 24), 16);
+    expected.set(source.subarray(32, 40), 32);
+    assert.deepEqual(await images.get(dest).pixels(), expected);
+    assert.deepEqual(await images.get(src).pixels(), source);
+  });
+
 test('23 choice setup reads the caller parent and the authored bitmap attribute', async (t) => {
   const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
   t.after(() => world.close());

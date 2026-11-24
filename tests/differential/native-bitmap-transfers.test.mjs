@@ -78,6 +78,7 @@ for (const fixture of await engineFixtureSet())
         }
         await run(0x73, ['dest', 0, 0, 3, 2, 'src', 0, 0, 3, 2]);
         await run(0x74, ['dest', 0, 0, 2, 2, 'src', 0, 0, 4, 3]);
+        await run(0x74, ['dest', 0, 0, 4, 3, 'src', -1, 1, 4, 3]);
         await run(0x1be, ['dest', 768]);
         await run(0x218, ['dest', 7, 768, 772, 776, 780, 784]);
         await run(0x219, ['dest', 'src']);

@@ -13,6 +13,10 @@ neighbor samples outside a cropped extent, and source/destination aliases matter
 `16F` uses the clipped blend variant. A null destination uploads the source to
 the actual renderer through an independent bitmap input projection.
 
+The fixed `.74` SDK and prepared `.76` original wrappers compare the requested
+widths and heights after clipping their local rectangles. Equal requested
+sizes copy the common physical extent. Unequal requests use the resampler.
+
 `78` reads its handle list and rectangle without modifying VM bytes, clears the
 region to opaque black, and retains the original zero-opacity behavior for RGBA
 layers. `1BE` computes bounds in a local rectangle: its success result does not
