@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { floatBits } from '../src/kcs.mjs';
+import { openImage } from '../src/formats/hg3.mjs';
 import { MOTION_ABI, motionVector, setMotionVector } from '../src/motion/abi.mjs';
 import { NULL_NATIVE_TEXTURE } from '../src/native/texture-layout.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
@@ -9,6 +10,123 @@ import { hg3, kcsProgram } from './helpers.mjs';
 
 const profile = 'bokutomo-engine-2.6.1.67',
   target = [0x13, 80];
+
+test('2.6.1.67 KCS capture produces an opaque owned bitmap and copies it through the CSS thumbnail', async (t) => {
+  const capture = [0x13, 80],
+    thumbnail = [0x13, 84],
+    file = [0x13, 88],
+    clone = [0x13, 92],
+    loaded = [0x13, 96],
+    call = (id, args, at) => [
+      ...args.map((arg) => [37, arg]),
+      [43, id, args.length * 4],
+      ...(at === undefined ? [] : [[38, at]]),
+    ];
+  const world = await dataWorld(profile, {
+    'thumbnail.kcs': kcsProgram([
+      ...call(113, [], 80),
+      ...call(112, [2, 2], 84),
+      ...call(116, [thumbnail, 0, 0, 2, 2, capture, 0, 0, 2, 2]),
+      ...call(112, [1, 1], 136),
+      ...call(116, [[0x13, 136], 0, 0, 1, 1, capture, 0, 0, 2, 2]),
+      ...call(116, [thumbnail, 0, 0, 2, 2, 0, 0, 0, 2, 2]),
+      ...call(118, [thumbnail], 92),
+      ...call(118, [0], 100),
+      ...call(238, [0x2400], 88),
+      ...call(241, [0, 7, clone], 104),
+      ...call(241, [file, 7, 0], 108),
+      ...call(241, [file, 7, clone], 112),
+      ...call(251, [file, 9], 116),
+      ...call(251, [file, 7], 96),
+      ...call(114, [capture]),
+      ...call(114, [thumbnail]),
+      ...call(114, [clone]),
+      ...call(362, [loaded, 128, 132]),
+      [59],
+    ]),
+    'inactive.kcs': kcsProgram([...call(113, [], 80), [59]]),
+    'rgb.kcs': kcsProgram([...call(241, [file, 8, clone], 112), ...call(251, [file, 8], 96), [59]]),
+  });
+  const stage = world.stageRenderer,
+    originalGPU = stage.gpu,
+    originalRender = stage.render,
+    frames = [];
+  t.after(async () => {
+    stage.gpu = originalGPU;
+    stage.render = originalRender;
+    await world.close({ flushFiles: false });
+  });
+  stage.gpu = {
+    primaryTarget: { width: 2, height: 2 },
+    pixels: () =>
+      Uint8Array.of(20, 40, 60, 25, 70, 90, 110, 60, 120, 140, 160, 80, 200, 210, 220, 10),
+  };
+  stage.render = (scene, _audio, _items, { present }) => frames.push({ scene, present });
+  const task = await world.spawnScript('thumbnail.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    }),
+    m = task.machine,
+    stack = m.sp;
+  await world.runtime.scheduler.execute(task);
+  assert.equal(m.sp, stack);
+  assert.deepEqual(frames, [{ scene: world.graphics.stage, present: false }]);
+  assert.deepEqual(
+    [100, 104, 108, 112, 116, 128, 132].map((at) => m.load(at)),
+    [0, 0, 0, 1, 0, 2, 2],
+  );
+  const images = world.graphics.images,
+    bitmap = images.get(m.load(96));
+  assert.notEqual(m.load(92), m.load(96));
+  assert.equal(bitmap.owner, task.id);
+  for (const at of [80, 84, 92]) assert.throws(() => images.get(m.load(at)), /released|unknown/i);
+  const expected = Uint8ClampedArray.of(
+    120,
+    140,
+    160,
+    255,
+    200,
+    210,
+    220,
+    255,
+    20,
+    40,
+    60,
+    255,
+    70,
+    90,
+    110,
+    255,
+  );
+  assert.deepEqual(await bitmap.pixels(), expected);
+  assert.deepEqual(await images.get(m.load(136)).pixels(), Uint8ClampedArray.of(20, 40, 60, 255));
+  const css = world.runtime.handles.get(m.load(88), 'global-file'),
+    compressed = css.read(7),
+    hg = await openImage(compressed);
+  assert.deepEqual(compressed.subarray(0, 4), Uint8Array.of(72, 71, 45, 50));
+  assert.equal(hg.frame(0).bpp, 32);
+  bitmap.state.bpp = 3;
+  const second = await world.spawnScript('rgb.kcs', {
+    parent: world.main.id,
+    initialExecute: false,
+  });
+  second.machine.store(88, m.load(88));
+  second.machine.store(92, m.load(96));
+  await world.runtime.scheduler.execute(second);
+  assert.equal(second.machine.load(112), 1);
+  assert.equal((await openImage(css.read(8))).frame(0).bpp, 24);
+  const rgb = images.get(second.machine.load(96));
+  assert.equal(rgb.state.bpp, 4);
+  assert.deepEqual(await rgb.pixels(), expected);
+  world.graphics.view.active = false;
+  const inactive = await world.spawnScript('inactive.kcs', {
+    parent: world.main.id,
+    initialExecute: false,
+  });
+  await world.runtime.scheduler.execute(inactive);
+  assert.equal(inactive.machine.load(80), 0);
+  assert.equal(frames.length, 1);
+});
 
 function planeProgram(calls) {
   return kcsProgram([

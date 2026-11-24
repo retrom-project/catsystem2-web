@@ -5,6 +5,7 @@ import { encodeHG2 } from '../formats/hg2.mjs';
 import { openImage } from '../formats/hg3.mjs';
 import { UnsupportedNativeImageFormat } from '../formats/raster.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 export function installNativeImagePersistence(world) {
   for (const id of [0xf1, 0xfb])
@@ -48,7 +49,10 @@ export function installNativeImagePersistence(world) {
         offsetY: frame.offsetY,
         baseX: frame.baseX,
         baseY: frame.baseY,
-        bpp: frame.bpp / 8,
+        bpp:
+          frame.bpp === 24 && nativeABI(world.profile).graphics.savedImageExpandsRGB24
+            ? 4
+            : frame.bpp / 8,
         rgba: new Uint8ClampedArray(frame.rgba),
       });
       bitmap.changed();
