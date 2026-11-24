@@ -135,12 +135,15 @@ export default {
     interpreterUsesNativeScalarMath: true,
     lerpUsesX87: true,
     matrixCopyChunkBytes: 4,
+    motionMatrixMultiplySSE: true,
     triangleWaveUsesX87: true,
     roundIntegerResult: 'int64-low-word',
     vectorLengthUsesX87: true,
     vectorTransformPairwise: true,
   },
   motion: {
+    currentMatrixFallback: true,
+    matrixMemoryOperationsUseNativeOrder: true,
     elapsedUsesX87: true,
     skipBypassesDelay: false,
     activeQueryUsesRawWord: true,
@@ -2998,13 +3001,17 @@ export default {
     generic: {
       count: 45,
       slots: {
-        unknown: [
-          0, 11, 13, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37,
-          39, 40, 43, 44,
+        unknown: [0, 11, 13, 18, 19, 20, 21, 22, 27, 31, 32, 33, 34, 35, 36, 37, 39, 40, 43, 44],
+        recovered: [
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 17, 23, 24, 25, 26, 28, 29, 30, 38, 41, 42,
         ],
-        recovered: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 17, 38, 41, 42],
       },
       evidence: [
+        {
+          ids: [23, 24, 25, 26, 28, 29, 30],
+          value:
+            'Own 2.6.1.67 Generic23–26 translate the guest matrix pointer and select the current matrix when it maps to null. The original routines postmultiply XYZ rotations, translation or scale and write identity. Generic28 copies sixteen live DWORDs in ascending order. Generic29 postmultiplies two mapped matrices through the default SSE2 dispatch at 0x5e89c3. Generic30 subtracts sixteen live f32 values in forward order. All seven return control 2 with the result untouched.',
+        },
         {
           ids: [7, 8, 10, 12],
           value:
@@ -3027,6 +3034,7 @@ export default {
         },
       ],
       signatures: [
+        { ids: [23, 24, 25, 26, 28, 29, 30], fields: { resultWritten: false } },
         { ids: [7, 8, 10, 12], fields: { resultWritten: true } },
         { ids: [1, 2, 3, 4, 5, 6], fields: { resultWritten: true } },
         { ids: [9, 14, 15, 16], fields: { resultWritten: true } },

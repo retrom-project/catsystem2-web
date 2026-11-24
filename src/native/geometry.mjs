@@ -38,8 +38,9 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     }
     return nativeReply(2);
   }
-  if (operation === 'vector4.add' || operation === 'vector4.subtract') {
-    for (let i = 0; i < 4; i++) {
+  if (['vector4.add', 'vector4.subtract', 'matrix.subtract'].includes(operation)) {
+    const size = operation === 'matrix.subtract' ? 16 : 4;
+    for (let i = 0; i < size; i++) {
       const x = bitsFloat(machine.load((a + i * 4) >>> 0)),
         y = bitsFloat(machine.load((b + i * 4) >>> 0));
       machine.store((a + i * 4) >>> 0, floatBits(operation === 'vector4.add' ? x + y : x - y));

@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { floatBits, readKCS } from '../src/kcs.mjs';
 import { MOTION_ABI } from '../src/motion/abi.mjs';
 import { decodeMotionRecords } from '../src/motion/checkpoint.mjs';
+import { MotionInstance } from '../src/motion/instance.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 
@@ -84,6 +86,113 @@ function motionProgram(steps) {
     [59],
   ]);
 }
+
+test('2.6.1.67 Motion matrix calls preserve native fallback, SSE2 products and forward aliases', async () => {
+  const affine = [
+      1.125, 0.25, 0.5, 0, -0.125, 0.5, -0.25, 0, 0.5, 0.625, 1.875, 0, 17.25, -8.125, -3, 1,
+    ].map(floatBits),
+    general = [
+      1.31, 0.17, -0.571, 0.08, 0.31, 0.92, -0.222, 1.222, -1.034, 0.7, -2.1, 1.07, -17.125, 8.25,
+      19.11, 0.675,
+    ].map(floatBits),
+    angles = [1.3125, -0.357, 0.089999999].map(floatBits),
+    left = 0x80000043,
+    right = 128,
+    fromHex = (data) => data.split(' ').map((word) => Number.parseInt(word, 16));
+  const outputs = new Map([
+    [
+      23,
+      fromHex(
+        '3f757ca1 beab60b0 3f3d4167 00000000 be977cd3 3eb03e1f 3eb2e6fd 00000000 3e73de06 bfd1b66f 3f984625 00000000 4198305f 4022e481 c0033162 3f800000',
+      ),
+    ],
+    [
+      24,
+      fromHex(
+        '3f900000 3e800000 3f000000 00000000 be000000 3f000000 be800000 00000000 3f000000 3f200000 3ff00000 00000000 41948000 c107b646 c03a3d71 3f800000',
+      ),
+    ],
+    [
+      25,
+      fromHex(
+        '3fbd0000 bdb6c8b4 3d3851eb 00000000 be280000 be36c8b4 bcb851eb 00000000 3f280000 be647ae1 3e2ccccc 00000000 41b52000 4039a3d7 be8a3d70 3f800000',
+      ),
+    ],
+    [
+      26,
+      fromHex(
+        '3f800000 00000000 00000000 00000000 00000000 3f800000 00000000 00000000 00000000 00000000 3f800000 00000000 00000000 00000000 00000000 3f800000',
+      ),
+    ],
+    [
+      29,
+      fromHex(
+        '3f84624c 3f4570a4 bfdfba5e 3f6e3540 3e7fbe78 3e870a3e 3ef88312 3eaac083 bf8b851f 3ffc7ae1 c08b9374 4033d70b 40c1c8b6 3fcdc294 418ae979 c131570a',
+      ),
+    ],
+    [
+      30,
+      fromHex(
+        'be3d70a0 3da3d70a 3f891687 bda3d70a bedeb852 bed70a3e bce56040 bf9c6a7f 3fc45a1d bd999998 407e6666 bf88f5c3 42098000 c1830000 c1b0e148 3ea66666',
+      ),
+    ],
+  ]);
+  const write = (machine, address, words) =>
+      words.forEach((word, index) => machine.store(address + index * 4, word)),
+    read = (machine, address, count = 16) =>
+      Array.from({ length: count }, (_, index) => machine.load(address + index * 4));
+  const motion = async (id, words, options) =>
+    new MotionInstance(await readKCS(motionProgram([[id, words]])), { profile, ...options });
+  const run = (instance) => {
+    assert.equal(instance.update(0).status, 'halted');
+    assert.equal(instance.machine.pop(), 0xa0263136);
+    assert.equal(instance.machine.sp, instance.machine.floor);
+  };
+  for (const [id, expected] of outputs) {
+    const argumentsFor = (address) => {
+      if (id === 26) return [address];
+      if (id >= 29) return [address, right];
+      return [address, ...angles];
+    };
+    const instance = await motion(id, argumentsFor(left)),
+      { machine } = instance;
+    machine.store(left - 4, 0xce5852f0);
+    machine.store(left + 64, 0xce5852f0);
+    write(machine, left, affine);
+    write(machine, right, general);
+    run(instance);
+    assert.deepEqual(read(machine, left), expected, `Generic ${id}`);
+    assert.deepEqual(read(machine, right), general, `Generic ${id} reference`);
+    assert.equal(machine.load(left - 4), 0xce5852f0);
+    assert.equal(machine.load(left + 64), 0xce5852f0);
+    if (id > 26) continue;
+    const selected = new Uint32Array(affine),
+      usingCurrent = await motion(id, argumentsFor(0xffffffff), {
+        calculations: { matrix: new Uint8Array(selected.buffer) },
+      });
+    run(usingCurrent);
+    assert.deepEqual([...selected], expected, `Generic ${id} current matrix`);
+  }
+  for (const id of [28, 30]) {
+    const instance = await motion(id, [68, 64]),
+      { machine } = instance;
+    write(
+      machine,
+      64,
+      Array.from({ length: 18 }, (_, index) => floatBits(index * 2 + 1)),
+    );
+    run(instance);
+    assert.deepEqual(
+      read(machine, 68),
+      Array.from({ length: 16 }, (_, index) => floatBits(id === 28 ? 1 : index + 2)),
+    );
+    assert.equal(machine.load(132), floatBits(35));
+  }
+  const malformed = await motion(23, []),
+    guarded = await motion(27, [64]);
+  assert.throws(() => malformed.update(0), /expects 4 arguments/);
+  assert.throws(() => guarded.update(0), /Unrecovered MOT native .*:1b/);
+});
 
 test('2.6.1.67 motion GCALLs own a manager, identity matrix, flags, members and release', async (t) => {
   const world = await dataWorld(profile, {

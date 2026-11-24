@@ -4,6 +4,7 @@ import { nativeCatalog } from '../native/catalog.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
 import { floatBytes, floats } from '../native/calculation-memory.mjs';
 import { multiplyNativeMatrix } from '../native/calculation-math.mjs';
+import { nativeGeometry } from '../native/geometry.mjs';
 import { nativeMatrix } from '../native/matrix.mjs';
 import { nativeScalarMath } from '../native/scalar-math.mjs';
 import { ParticleRandom } from '../ppi/random.mjs';
@@ -79,6 +80,7 @@ export class MotionInstance {
     this.multiplyMatrix = abi.math?.motionMatrixMultiplySSE ? multiplySSE : multiply;
     this.transformVector = abi.math?.vectorTransformPairwise ? transformFloat32Pairs : transform;
     this.orderedScalarRotations = abi.motion?.orderedScalarRotations;
+    this.matrixMemoryOperationsUseNativeOrder = abi.motion?.matrixMemoryOperationsUseNativeOrder;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
     this.currentMatrixFallback = abi.motion?.currentMatrixFallback;
     this.calculations = calculations;
@@ -187,8 +189,13 @@ export class MotionInstance {
     if (this.interpreterMath && id === 11) return word(x87RemainderWord(...args));
     if (this.interpreterMath?.triangleWaveUsesX87 && id === 42)
       return word(x87TriangleWaveWord(...args));
-    if (this.currentMatrixFallback && (id === 23 || id === 26))
+    if (this.currentMatrixFallback && id >= 23 && id <= 26)
       return nativeMatrix(contract.name, args, machine, this.calculations);
+    if (this.matrixMemoryOperationsUseNativeOrder && (id === 28 || id === 30)) {
+      machine.bytes(args[0], 64);
+      machine.bytes(args[1], 64);
+      return nativeGeometry(contract.name, args, machine, contract.argumentWords, null, this.math);
+    }
     const scalarReply =
       this.interpreterMath &&
       nativeScalarMath(
@@ -277,9 +284,11 @@ export class MotionInstance {
       case 28:
         machine.bytes(args[0], 64).set(machine.bytes(args[1], 64).slice());
         return done();
-      case 29:
-        put(args[0], multiply(vector(args[0], 16), vector(args[1], 16)));
+      case 29: {
+        const product = this.matrixMemoryOperationsUseNativeOrder ? this.multiplyMatrix : multiply;
+        put(args[0], product(vector(args[0], 16), vector(args[1], 16)));
         return done();
+      }
       case 30:
         put(
           args[0],
