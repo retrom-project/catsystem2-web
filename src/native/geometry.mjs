@@ -2,6 +2,7 @@
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply, bitsFloat, floatBits } from '../kcs/vm.mjs';
 import { roundX87Single as r } from '../ppi/x87.mjs';
+import { quietFloat32Bits, x87Float32Arithmetic } from '../ppi/numeric.mjs';
 import { inverseNativeMatrix } from './calculation-math.mjs';
 import { matrixStorage, floats, floatBytes } from './calculation-memory.mjs';
 import { transformFloat32Pairs } from '../motion/matrix.mjs';
@@ -20,6 +21,16 @@ export const NATIVE_GEOMETRY_OPERATIONS = Object.freeze([
 const read = (m, a, n) => Array.from({ length: n }, (_, i) => bitsFloat(m.load((a + i * 4) >>> 0)));
 const dot = (v) => f(f(f(f(v[0] * v[0]) + f(v[1] * v[1])) + f(v[2] * v[2])) + f(v[3] * v[3]));
 const x87Dot = ([x, y, z, w]) => f(r(r(r(r(x * x) + r(y * y)) + r(z * z)) + r(w * w)));
+function x87DotNaN(machine, address) {
+  let result;
+  for (let i = 0; i < 4; i++) {
+    const word = machine.load((address + i * 4) >>> 0);
+    if ((word & 0x7fffffff) <= 0x7f800000) continue;
+    const squared = quietFloat32Bits(word);
+    result = result === undefined ? squared : x87Float32Arithmetic('add', result, squared);
+  }
+  return result;
+}
 export function nativeGeometry(operation, args, machine, argumentWords, state, math) {
   const words = Array.from(args);
   while (words.length < argumentWords) words.push(machine.nativeArgument(words.length));
@@ -39,17 +50,24 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     return nativeReply(2);
   }
   if (['vector4.add', 'vector4.subtract', 'matrix.subtract'].includes(operation)) {
-    const size = operation === 'matrix.subtract' ? 16 : 4;
+    const size = operation === 'matrix.subtract' ? 16 : 4,
+      addition = operation === 'vector4.add';
     for (let i = 0; i < size; i++) {
-      const x = bitsFloat(machine.load((a + i * 4) >>> 0)),
-        y = bitsFloat(machine.load((b + i * 4) >>> 0));
-      machine.store((a + i * 4) >>> 0, floatBits(operation === 'vector4.add' ? x + y : x - y));
+      const target = (a + i * 4) >>> 0,
+        x = machine.load(target),
+        y = machine.load((b + i * 4) >>> 0);
+      const value = math?.vectorWordArithmeticUsesX87
+        ? x87Float32Arithmetic(addition ? 'add' : 'subtract', x, y)
+        : floatBits(addition ? bitsFloat(x) + bitsFloat(y) : bitsFloat(x) - bitsFloat(y));
+      machine.store(target, value);
     }
     return nativeReply(2);
   }
   const v = read(machine, a, 4);
   let output;
   if (operation === 'vector4.length' || operation === 'vector4.lengthSquared') {
+    const nan = math?.vectorWordArithmeticUsesX87 ? x87DotNaN(machine, a) : undefined;
+    if (nan !== undefined) return nativeReply(1, nan);
     const squared = math?.vectorLengthUsesX87 ? x87Dot(v) : dot(v);
     return nativeReply(1, floatBits(operation === 'vector4.length' ? Math.sqrt(squared) : squared));
   }
@@ -59,7 +77,15 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     const inverse = r(1 / r(Math.sqrt(squared)));
     output = squared > 2 ** -126 ? v.map((n) => f(r(n * inverse))) : v.map(() => 0);
   } else if (operation === 'vector4.scale') {
-    const factor = bitsFloat(machine.load(b));
+    const factorWord = machine.load(b);
+    if (math?.vectorWordArithmeticUsesX87) {
+      for (let i = 0; i < 4; i++) {
+        const target = (a + i * 4) >>> 0;
+        machine.store(target, x87Float32Arithmetic('multiply', machine.load(target), factorWord));
+      }
+      return nativeReply(2);
+    }
+    const factor = bitsFloat(factorWord);
     output = v.map((n) => f(n * factor));
   } else {
     const m = read(machine, b, 16);

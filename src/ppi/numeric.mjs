@@ -17,7 +17,7 @@ export function x87AngleConversion(angle, toRadians) {
   return f(roundX87Single(product / (toRadians ? 180 : pi)));
 }
 
-function x87BinaryNaNWord(left, right, rightFromMemory = false) {
+function x87BinaryNaNWord(left, right, rightFromMemory = false, preserveSignaling = false) {
   const infinity = 0x7f800000,
     magnitudeLeft = left & 0x7fffffff,
     magnitudeRight = right & 0x7fffffff;
@@ -25,9 +25,11 @@ function x87BinaryNaNWord(left, right, rightFromMemory = false) {
     // FLD quiets a signaling NaN. A direct memory operand can still signal,
     // in which case the quiet register operand wins regardless of payload.
     if (rightFromMemory && !(right & quietNaNBit)) return (left | quietNaNBit) >>> 0;
-    // With two quiet operands the larger payload wins, then the positive sign.
-    const payloadLeft = magnitudeLeft | quietNaNBit,
-      payloadRight = magnitudeRight | quietNaNBit;
+    // Raw operands keep their quiet or signaling priority. Equal payloads
+    // select the positive sign.
+    const quietMask = preserveSignaling ? 0 : quietNaNBit,
+      payloadLeft = magnitudeLeft | quietMask,
+      payloadRight = magnitudeRight | quietMask;
     const selected =
       payloadLeft === payloadRight ? left & right : payloadLeft > payloadRight ? left : right;
     return (selected | quietNaNBit) >>> 0;
@@ -143,6 +145,15 @@ export function x87TriangleWaveWord(value, period) {
 
 function x87ResultWord(value) {
   return Number.isNaN(value) ? 0xffc00000 : floatBits(roundX87Single(value));
+}
+
+export function x87Float32Arithmetic(operation, left, right) {
+  const nan = x87BinaryNaNWord(left, right, false, true);
+  if (nan !== undefined) return nan;
+  const a = bitsFloat(left),
+    b = bitsFloat(right);
+  const value = operation === 'add' ? a + b : operation === 'subtract' ? a - b : a * b;
+  return x87ResultWord(value);
 }
 
 export function x87AddWords(left, right, rightFromMemory) {

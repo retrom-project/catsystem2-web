@@ -81,6 +81,7 @@ export class MotionInstance {
     this.transformVector = abi.math?.vectorTransformPairwise ? transformFloat32Pairs : transform;
     this.orderedScalarRotations = abi.motion?.orderedScalarRotations;
     this.matrixMemoryOperationsUseNativeOrder = abi.motion?.matrixMemoryOperationsUseNativeOrder;
+    this.vectorOperationsUseNativeGeometry = abi.motion?.vectorOperationsUseNativeGeometry;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
     this.currentMatrixFallback = abi.motion?.currentMatrixFallback;
     this.calculations = calculations;
@@ -194,6 +195,11 @@ export class MotionInstance {
     if (this.matrixMemoryOperationsUseNativeOrder && (id === 28 || id === 30)) {
       machine.bytes(args[0], 64);
       machine.bytes(args[1], 64);
+      return nativeGeometry(contract.name, args, machine, contract.argumentWords, null, this.math);
+    }
+    if (this.vectorOperationsUseNativeGeometry && id >= 32 && id <= 36) {
+      machine.bytes(args[0], 16);
+      if (id === 32 || id === 33) machine.bytes(args[1], 16);
       return nativeGeometry(contract.name, args, machine, contract.argumentWords, null, this.math);
     }
     const scalarReply =

@@ -194,6 +194,77 @@ test('2.6.1.67 Motion matrix calls preserve native fallback, SSE2 products and f
   assert.throws(() => guarded.update(0), /Unrecovered MOT native .*:1b/);
 });
 
+test('2.6.1.67 Motion vector calls preserve x87 result words and native operand aliases', async () => {
+  const left = 64,
+    right = 0x80000000,
+    parentCanary = 0x7da9be21;
+  const samples = [
+    {
+      id: 32,
+      args: [left + 4, left],
+      before: [1, 3, 5, 7, 9].map(floatBits),
+      after: [4, 9, 16, 25].map(floatBits),
+    },
+    {
+      id: 33,
+      args: [left + 4, left],
+      before: [1, 3, 5, 7, 9].map(floatBits),
+      after: [2, 3, 4, 5].map(floatBits),
+    },
+    {
+      id: 32,
+      args: [left, right],
+      before: [0x7f812345, 0xffc43210, 0x7f800000, 0x80000000],
+      source: [0xff812348, 0x7f825482, 0xff800000, 0x80000000],
+      after: [0xffc12348, 0xffc43210, 0xffc00000, 0x80000000],
+    },
+    {
+      id: 33,
+      args: [left, right],
+      before: [0x7f812345, 0xffc43210, 0x7f800000, 0x80000000],
+      source: [0xff812348, 0x7f825482, 0xff800000, 0x80000000],
+      after: [0xffc12348, 0xffc43210, 0x7f800000, 0],
+    },
+    { id: 34, args: [left], before: [1, 2, 3, 4].map(floatBits), reply: 0x40af456f },
+    { id: 35, args: [left], before: Array(4).fill(0x1a000000), reply: 2 },
+    { id: 34, args: [left], before: [0xffc40212, 0x7f800042, 0, 0], reply: 0xffc40212 },
+    { id: 35, args: [left], before: [0x7f800042, 0xffc40212, 0, 0], reply: 0xffc40212 },
+    {
+      id: 36,
+      args: [left, left + 4],
+      before: [2, -3, 4, 0.5].map(floatBits),
+      after: [-6, 9, -12, -1.5].map(floatBits),
+    },
+    {
+      id: 36,
+      args: [left, right],
+      before: [0x7fc12345, 0x7f800000, 0xff820234, 0x80000000],
+      source: [0xffc91234],
+      after: Array(4).fill(0xffc91234),
+    },
+  ];
+  for (const { id, args, before, source = [], after = before, reply } of samples) {
+    const program = await readKCS(
+        motionProgram([[id, args, reply === undefined ? undefined : 160]]),
+      ),
+      instance = new MotionInstance(program, { profile }),
+      { machine } = instance;
+    before.forEach((word, index) => machine.store(left + index * 4, word));
+    source.forEach((word, index) => machine.store(right + index * 4, word));
+    machine.store(args[0] + 16, parentCanary);
+    if (reply !== undefined) machine.store(160, parentCanary);
+    assert.equal(instance.update(0).status, 'halted');
+    assert.equal(machine.pop(), 0xa0263136);
+    assert.equal(machine.sp, machine.floor);
+    assert.deepEqual(
+      after.map((_, index) => machine.load(args[0] + index * 4)),
+      after,
+    );
+    assert.equal(machine.load(args[0] + 16), parentCanary);
+    if (reply !== undefined) assert.equal(machine.load(160), reply);
+  }
+});
+
 test('2.6.1.67 motion GCALLs own a manager, identity matrix, flags, members and release', async (t) => {
   const world = await dataWorld(profile, {
     'motion-create.kcs': motionProgram([

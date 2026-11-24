@@ -140,10 +140,12 @@ export default {
     roundIntegerResult: 'int64-low-word',
     vectorLengthUsesX87: true,
     vectorTransformPairwise: true,
+    vectorWordArithmeticUsesX87: true,
   },
   motion: {
     currentMatrixFallback: true,
     matrixMemoryOperationsUseNativeOrder: true,
+    vectorOperationsUseNativeGeometry: true,
     elapsedUsesX87: true,
     skipBypassesDelay: false,
     activeQueryUsesRawWord: true,
@@ -3001,12 +3003,18 @@ export default {
     generic: {
       count: 45,
       slots: {
-        unknown: [0, 11, 13, 18, 19, 20, 21, 22, 27, 31, 32, 33, 34, 35, 36, 37, 39, 40, 43, 44],
+        unknown: [0, 11, 13, 18, 19, 20, 21, 22, 27, 31, 37, 39, 40, 43, 44],
         recovered: [
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 17, 23, 24, 25, 26, 28, 29, 30, 38, 41, 42,
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 17, 23, 24, 25, 26, 28, 29, 30, 32, 33, 34,
+          35, 36, 38, 41, 42,
         ],
       },
       evidence: [
+        {
+          ids: [32, 33, 34, 35, 36],
+          value:
+            'Own 2.6.1.67 Generic32–36 enter the same x87 vector functions as Main353–357. Four f32 values are added or subtracted in live address order. Length and squared length write one result word with control 1. Scale reads the factor before writing and uses the original raw NaN selection. Add, subtract and scale return control 2 without a result write.',
+        },
         {
           ids: [23, 24, 25, 26, 28, 29, 30],
           value:
@@ -3034,6 +3042,8 @@ export default {
         },
       ],
       signatures: [
+        { ids: [32, 33, 36], fields: { resultWritten: false } },
+        { ids: [34, 35], fields: { resultWritten: true } },
         { ids: [23, 24, 25, 26, 28, 29, 30], fields: { resultWritten: false } },
         { ids: [7, 8, 10, 12], fields: { resultWritten: true } },
         { ids: [1, 2, 3, 4, 5, 6], fields: { resultWritten: true } },
