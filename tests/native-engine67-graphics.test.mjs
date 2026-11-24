@@ -11,6 +11,61 @@ import { hg3, kcsProgram } from './helpers.mjs';
 const profile = 'bokutomo-engine-2.6.1.67',
   target = [0x13, 80];
 
+test('2.6.1.67 KCS loads a CP932 formatted bitmap with physical layered offsets', async (t) => {
+  const background = Uint8ClampedArray.of(34, 56, 78, 255),
+    foreground = Uint8ClampedArray.of(14, 210, 83, 255),
+    pixels = new Uint8ClampedArray(3 * 3 * 4);
+  for (let i = 0; i < pixels.length; i += 4) pixels.set(background, i);
+  const base = hg3(3, 3, pixels),
+    overlay = hg3(1, 1, foreground);
+  new DataView(base.buffer).setUint32(16, 7, true);
+  new DataView(overlay.buffer).setInt32(48, 1, true);
+  const world = await dataWorld(profile, {
+    '底.hg3': base,
+    '重.hg3': overlay,
+    'bitmap-load.kcs': kcsProgram(
+      [
+        [37, 0x15e43871],
+        [37, 288],
+        [43, 111, 4],
+        [38, 80],
+        [37, 352],
+        [43, 111, 4],
+        [38, 84],
+        [59],
+      ],
+      [
+        [288, 'missing.hg3 底:%d[G152].hg3 重.hg3'],
+        [352, 'missing.hg3'],
+      ],
+    ),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('bitmap-load.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    }),
+    machine = task.machine,
+    floor = machine.sp;
+  machine.store(152, 7);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), 0x15e43871);
+  assert.equal(machine.load(84), 0);
+  const handle = machine.load(80),
+    bitmap = world.graphics.images.get(handle);
+  assert.equal(bitmap.owner, task.id);
+  assert.equal(bitmap.state.bpp, 4);
+  pixels.set(foreground, (2 * 3 + 1) * 4);
+  assert.deepEqual(await bitmap.pixels(), pixels);
+  assert.deepEqual(
+    [...world.runtime.handles.records]
+      .filter(([, record]) => record.type === 'bitmap' && record.value.owner === task.id)
+      .map(([id]) => id),
+    [handle],
+  );
+});
+
 test('2.6.1.67 KCS prepares owned screen targets and captures only the requested index', async (t) => {
   const range = [floatBits(1.25), floatBits(9.5)],
     program = (...calls) =>
