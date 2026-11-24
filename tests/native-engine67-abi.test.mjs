@@ -76,17 +76,70 @@ test('2.6.1.67 Main stubs preserve their original three result behaviors', async
 });
 
 test('2.6.1.67 GCALL still rejects the adjacent unreviewed native slot', async () => {
-  const { runtime, task } = await run([[37, 17], [37, 18], [37, 19], [43, 935, 12], [59]]);
+  const args = [17, 18, 19, 20, 21, 22],
+    { runtime, task } = await run([...args.map((arg) => [37, arg]), [43, 599, 24], [59]]);
   await assert.rejects(
     () => runtime.scheduler.execute(task),
     (error) => {
       assert.ok(error instanceof UnsupportedKCSNative);
       assert.equal(error.details.profile, profile);
       assert.equal(error.details.table, 'main');
-      assert.equal(error.details.id, 935);
-      assert.deepEqual(error.details.args, [17, 18, 19]);
+      assert.equal(error.details.id, 599);
+      assert.deepEqual(error.details.args, args);
       return true;
     },
+  );
+});
+
+test('2.6.1.67 KCS resource selection and comma replacement preserve their CP932 destinations', async (t) => {
+  const call = (id, a, b) => [
+      [37, a],
+      [37, b],
+      [43, id, 8],
+    ],
+    world = await dataWorld(profile, {
+      'resource.kcs': kcsProgram(
+        [
+          [37, 0xb53ca8dd],
+          ...call(598, 288, 512),
+          [38, 80],
+          ...call(598, 350, 560),
+          [38, 84],
+          ...call(598, 384, 384),
+          [38, 88],
+          ...call(904, 640, 416),
+          ...call(904, 704, 464),
+          [59],
+        ],
+        [
+          [288, ',空%d[G156],一,二,'],
+          [350, ',,,'],
+          [384, '重ね,Ｃ'],
+          [416, '@,新,,@'],
+          [464, '@,@'],
+        ],
+      ),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('resource.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    }),
+    machine = task.machine,
+    floor = machine.sp;
+  machine.store(156, 9);
+  machine.writeString('保持', 560);
+  machine.writeString('元,重', 640);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), 0xb53ca8dd);
+  assert.deepEqual(
+    [80, 84, 88].map((at) => machine.load(at)),
+    [1, 0, 1],
+  );
+  assert.deepEqual(
+    [512, 560, 384, 640, 704].map((at) => machine.string(at)),
+    ['空9', '保持', '重ね', '元,新,0', '0,0'],
   );
 });
 
