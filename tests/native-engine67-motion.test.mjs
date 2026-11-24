@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { MOTION_ABI } from '../src/motion/abi.mjs';
 import { decodeMotionRecords } from '../src/motion/checkpoint.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
@@ -228,4 +229,96 @@ test('2.6.1.67 motion checkpoints read a live adjacent frame and restore compact
   assert.equal(motion.instance.delay, 3);
   assert.equal(world.runtime.handles.get(loaded.load(100), 'motion-checkpoint').owner, dst);
   assert.throws(() => world.runtime.handles.get(checkpoint, 'motion-checkpoint'), /released/);
+});
+
+test('2.6.1.67 motion playback retains unsigned timing, shift, raw active words and skip selection', async (t) => {
+  const secondWord = [0x13, 88],
+    play = (speed, frame, defer = 0) => [
+      [308, [managerWord, speed]],
+      [307, [managerWord, frame, defer], 96],
+    ],
+    world = await dataWorld(profile, {
+      'defer.kcs': motionProgram(play(0x3fc00000, 100, 1)),
+      'start.kcs': motionProgram([
+        [305, [managerWord, 0, 100]],
+        [305, [managerWord, secondWord, 102]],
+        [312, [managerWord, motionWord]],
+        ...play(0x3fc00000, 103),
+      ]),
+      'update.kcs': motionProgram(play(0x3fc00000, 104)),
+      'query.kcs': motionProgram([
+        [309, [managerWord, motionWord], 96],
+        [309, [managerWord, 0], 100],
+        [310, [managerWord, 17], 104],
+        [310, [managerWord, 99], 108],
+        [311, [managerWord], 112],
+        [311, [0], 116],
+      ]),
+      'group.kcs': motionProgram([[313, [managerWord, 23]]]),
+      'all.kcs': motionProgram([[314, [managerWord]]]),
+      'finish.kcs': motionProgram([[440, [managerWord], 96]]),
+      'last-frame.kcs': motionProgram(play(0x33800000, 0xffffffff, 1)),
+      'motion.kcs': kcsProgram([
+        [21, [0x13, 0x80000000 + MOTION_ABI.pos], [0x13, 0x80000000 + MOTION_ABI.frame]],
+        [21, [0x13, 0x80000000 + MOTION_ABI.active], 0x81366521],
+        [59],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const registry = world.runtime.services.motion,
+    h = registry.create(world.main.id),
+    manager = registry.get(h),
+    script = await manager.loadScript('motion'),
+    first = manager.add(script, { group: 17, delay: 6 }),
+    second = manager.add(script, { group: 23 }),
+    firstRecord = manager.records.get(first),
+    secondRecord = manager.records.get(second),
+    execute = async (name) => {
+      const task = await world.spawnScript(name, { parent: world.main.id, initialExecute: false }),
+        { machine } = task,
+        floor = machine.sp;
+      machine.store(80, h);
+      machine.store(84, first);
+      machine.store(88, second);
+      await world.runtime.scheduler.execute(task);
+      assert.equal(machine.sp, floor + 4);
+      assert.equal(machine.load(floor), 0xa0263136);
+      return machine;
+    };
+  assert.equal((await execute('defer.kcs')).load(96), 0);
+  assert.equal(firstRecord.startTick, 0);
+  assert.equal(manager.speed, 1.5);
+  assert.equal((await execute('start.kcs')).load(96), 1);
+  assert.deepEqual(
+    [firstRecord, secondRecord].map((record) => [
+      record.startTick,
+      record.instance.frame,
+      record.instance.skip,
+    ]),
+    [
+      [100, 0, true],
+      [102, 2, false],
+    ],
+  );
+  assert.equal(firstRecord.instance.activeWord, 1);
+  await execute('update.kcs');
+  const query = await execute('query.kcs');
+  assert.deepEqual(
+    [96, 100, 104, 108, 112, 116].map((at) => query.load(at)),
+    [0x81366521, 0, 1, 0, 1, 0],
+  );
+  await execute('group.kcs');
+  assert.equal(secondRecord.instance.skip, true);
+  const third = manager.records.get(manager.add(script, { group: 99 }));
+  await execute('all.kcs');
+  assert.equal(third.instance.skip, true);
+  assert.equal((await execute('last-frame.kcs')).load(96), 1);
+  assert.equal(third.startTick, 0);
+  assert.equal(third.instance.frame, 256);
+  assert.equal((await execute('finish.kcs')).load(96), 1);
+  assert.equal(new DataView(manager.working.buffer).getUint32(MOTION_ABI.pos, true), 0xffffffff);
+  assert.equal(third.instance.frame, 256);
+  assert.equal(third.instance.activeWord, 0x81366521);
+  manager.clear();
+  assert.equal((await execute('finish.kcs')).load(96), 0);
 });

@@ -239,8 +239,11 @@ export function nativeMotion(id, args, machine, services = {}) {
       case 0x134:
         manager.speed = bitsFloat(word(1));
         return done();
-      case 0x135:
-        return value(Number(manager.records.get(word(1))?.instance.active || false));
+      case 0x135: {
+        const instance = manager.records.get(word(1))?.instance,
+          raw = services.profile && nativeABI(services.profile).motion?.activeQueryUsesRawWord;
+        return value(raw ? (instance?.activeWord ?? 0) : Number(instance?.active ?? false));
+      }
       case 0x136:
         return value(Number(manager.busy(word(1))));
       case 0x137:

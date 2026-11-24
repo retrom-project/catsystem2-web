@@ -100,8 +100,11 @@ export class MotionInstance {
   get frame() {
     return this.view.getInt32(MOTION_ABI.frame, true);
   }
+  get activeWord() {
+    return this.view.getUint32(MOTION_ABI.active, true);
+  }
   get active() {
-    return this.view.getInt32(MOTION_ABI.active, true) !== 0;
+    return this.activeWord !== 0;
   }
   get skip() {
     return this.view.getInt32(MOTION_ABI.skip, true) !== 0;
