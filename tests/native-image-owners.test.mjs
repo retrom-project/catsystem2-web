@@ -158,6 +158,14 @@ test('2.6.1.67 KCS Draw keeps a generated image owner through replacement and re
         ...call(736, [owner, 0, 0, 1, 1, 0xff3173b2]),
         ...bind(731, 1.25, 2.5, 512),
         ...bind(732, 3.75, 4.5, 127),
+        ...call(462, [receiver, 19]),
+        [38, 92],
+        ...call(463, [receiver, 3, -7]),
+        ...call(462, [receiver, 3]),
+        [38, 96],
+        ...call(625, [receiver, 3, 0]),
+        ...call(464, [receiver, 3]),
+        ...call(625, [receiver, 3, 1]),
         ...call(711, [owner]),
         [59],
       ]),
@@ -171,12 +179,16 @@ test('2.6.1.67 KCS Draw keeps a generated image owner through replacement and re
     draw = world.graphics.drawTasks.get(id),
     key = (world.nativeTaskID(task.id) | (3 << 16)) >>> 0,
     witness = [],
+    enabled = [],
     receive = draw.message.bind(draw);
   draw.message = async (words, context) => {
     const result = await receive(words, context);
     if (words[1] === 280 || words[1] === 282) {
       const item = draw.entry(key);
       witness.push([words[1], words[2], item.position, item.alpha, item.image]);
+    } else if (words[1] === 295) {
+      const retained = world.retainedDraw.record(draw, key);
+      enabled.push(world.renderSources.get(retained.source).enabled);
     }
     return result;
   };
@@ -185,6 +197,8 @@ test('2.6.1.67 KCS Draw keeps a generated image owner through replacement and re
   assert.equal(m.sp, floor + 4);
   assert.equal(m.load(floor), 0xd73a4719);
   assert.equal(world.runtime.handles.records.has(m.load(84)), false);
+  assert.deepEqual([m.load(92), m.load(96)], [0xffffffff, -7 >>> 0]);
+  assert.deepEqual(enabled, [0, 1]);
   assert.deepEqual(
     witness.map((row) => row.slice(0, 4)),
     [
@@ -193,6 +207,7 @@ test('2.6.1.67 KCS Draw keeps a generated image owner through replacement and re
     ],
   );
   assert.equal(draw.state.renderer.items.length, 1);
+  assert.equal(draw.entry(key).layer, -7);
   assert.deepEqual(
     await world.graphics.images.get(draw.entry(key).image).pixels(),
     Uint8ClampedArray.of(49, 115, 178, 255),
