@@ -181,6 +181,52 @@ test('2.6.1.23 FES screen configuration queues the full mode DWORD for Window', 
   }
 });
 
+test('2.6.1.23 live FES objects take precedence over matching common heads', async () => {
+  const profile = 'grisaia-jp-engine-2.6.1.23';
+  const shadowed = [
+    '#DEFINE',
+    'BUTTON sysvoice[2]',
+    'CIMAGE setconf',
+    '#START',
+    'sysvoice enable 0',
+    'sysvoice[1] enable 1',
+    'setconf disp 1',
+    'sysvoice 12',
+    'setconf 10 messpd',
+    'next WAIT',
+    '#WAIT',
+  ].join('\n');
+  const unshadowed = ['#START', 'sysvoice 12', 'setconf 9 messpd', 'next WAIT', '#WAIT'].join('\n');
+  const world = await defaultFESWorld(profile, {
+    'screen.fes': bytes(shadowed),
+    'unshadowed.fes': bytes(unshadowed),
+  });
+  world.configuration.fields.sysplay.fill(0);
+  world.configuration.fields.systemVoice[7 * 32] = 1;
+  world.configuration.fields.sysplay[7] = 1;
+  try {
+    const startingSpeed = world.fesConfiguration.get('messpd');
+    const { task, instance } = await loadDefaultFES(world);
+    await task.tick();
+    assert.equal(instance.label, 'WAIT');
+    assert.deepEqual(
+      [0, 1].map((index) => instance.collection.lookup('sysvoice', index).enable),
+      [false, true],
+    );
+    assert.ok(instance.collection.lookup('setconf', 0).disp);
+    assert.equal(instance.global(12), 0);
+    assert.equal(world.fesConfiguration.get('messpd'), startingSpeed);
+    assert.equal(task.player.unsupportedCommands.size, 2);
+    const common = await loadDefaultFES(world, 'unshadowed');
+    await common.task.tick();
+    assert.equal(common.instance.label, 'WAIT');
+    assert.equal(common.instance.global(12), 7);
+    assert.equal(world.fesConfiguration.get('messpd'), 9);
+  } finally {
+    await world.close();
+  }
+});
+
 test('Game FES definition misses retain diagnostics without an unsupported command', async () => {
   const source = `#DEFINE
 CIMAGE owned

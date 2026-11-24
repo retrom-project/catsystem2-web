@@ -134,6 +134,13 @@ FES `setconf screen` appends the five-word event `[18, mode, 0, 0, 0]`.
 The Root task posts window message `0x467` with the full mode DWORD
 as its `lParam`. The response from the window updates the stored mode.
 
+The original FES row dispatcher resolves the expanded name and index
+against the live object collection before considering its common
+command table. A matching object always uses its object verb or named
+subcommand. A missing object falls through to the common command for
+the original head. The same spelling can therefore name a button in
+one FES collection and a common command in another.
+
 FES type 15 owns a kind 42 Slider. The original FES update at
 `0x472140` sends raw 328–334 to the kind 42 receiver at `0x455d40`.
 The 292-byte load packet holds the Draw ID, a 260-byte CP932

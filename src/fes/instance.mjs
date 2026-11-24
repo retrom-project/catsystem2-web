@@ -937,6 +937,13 @@ export class FESInstance {
       assign(line, this);
       return {};
     }
+    const profile = this.runtime?.world?.profile;
+    const resolvedHead =
+      profile && nativeABI(profile).fes.objectHeadsFirst
+        ? this.runtime.commandHead(words[0])
+        : undefined;
+    if (resolvedHead?.object)
+      return this.executeNativeHead(words, args, bytes, execution, pc, mode, resolvedHead);
     const host = this.player.host;
     if (this.runtime && FES_PLATFORM_COMMANDS.includes(head))
       return this.nativeCommandReturn(this.runtime.platform.command(head, args, bytes));
@@ -985,7 +992,8 @@ export class FESInstance {
         return { action: 'call', target };
       }
       case 'wait':
-        if (this.runtime) return this.executeNativeHead(words, args, bytes, execution, pc, mode);
+        if (this.runtime)
+          return this.executeNativeHead(words, args, bytes, execution, pc, mode, resolvedHead);
         if (this.executingLabel?.includes('.')) {
           this.diagnostic('wait is not permitted in an event handler');
           return {};
@@ -1556,8 +1564,15 @@ export class FESInstance {
     }
     return {};
   }
-  executeNativeHead(words, args, bytes, execution, pc, mode) {
-    const { selection, object } = this.runtime.commandHead(words[0]);
+  executeNativeHead(
+    words,
+    args,
+    bytes,
+    execution,
+    pc,
+    mode,
+    { selection, object } = this.runtime.commandHead(words[0]),
+  ) {
     if (!object)
       return this.commonCommandReturn(this.runtime.commonHead(words[0], args, bytes), mode);
     if (args[0] === undefined) return {};
