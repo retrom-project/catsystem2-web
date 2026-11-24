@@ -279,22 +279,27 @@ test('unknown admission precedes registered handlers and service preparation', a
 });
 
 test('unknown admission precedes the main built-in fallback and resource services', async () => {
-  let posted = 0,
+  let registryReads = 0,
     preparation = 0,
     error;
+  const id = 0x4d,
+    args = [7],
+    records = new Map();
   const runtime = new NativeRuntime({
     profile: 'bokutomo-engine-2.6.1.67',
     read: async () => compiled([[59]]),
     services: {
       objects: {
-        send() {
-          posted++;
-          return 1;
+        get objects() {
+          registryReads++;
+          return records;
         },
       },
     },
   });
   const task = await runtime.spawn('fallback.kcs');
+  records.set(task.id, { kind: 1, parent: null });
+  records.set(args[0], { kind: 7, parent: task.id });
   Object.defineProperty(runtime.services, 'admissionProbe', {
     enumerable: true,
     get() {
@@ -302,16 +307,16 @@ test('unknown admission precedes the main built-in fallback and resource service
       return 1;
     },
   });
-  assert.equal(runtime.tables.get('main')[0x46].status, 'unknown');
-  assert.equal(runtime.handlers.has('main:70'), false);
+  assert.equal(runtime.tables.get('main')[id].status, 'unknown');
+  assert.equal(runtime.handlers.has(`main:${id}`), false);
   try {
-    runtime.native('main', 0x46, [7, 0x1234, 3, 4], task.machine, task, runtime.scheduler);
+    runtime.native('main', id, args, task.machine, task, runtime.scheduler);
   } catch (failure) {
     error = failure;
   }
   assert.deepEqual(
-    { rejected: error?.name, preparation, posted },
-    { rejected: 'UnsupportedKCSNative', preparation: 0, posted: 0 },
+    { rejected: error?.name, preparation, registryReads },
+    { rejected: 'UnsupportedKCSNative', preparation: 0, registryReads: 0 },
   );
-  assertUnknownDiagnostic(error, runtime, 0x46, [7, 0x1234, 3, 4], task);
+  assertUnknownDiagnostic(error, runtime, id, args, task);
 });
