@@ -682,6 +682,105 @@ test('2.6.1.23 PTCL v2 alone admits the blend-mode word', async () => {
   assert.equal(original.instance.calls.size, 0);
 });
 
+test('2.6.1.23 PTCL v2 backs up and restores every owned quad', async () => {
+  const sequence = [
+      [37, sentinel],
+      [37, 0x80000000],
+      [43, 45, 4],
+      [37, 64],
+      [43, 31, 4],
+      [37, 0xffffffff],
+      [43, 44, 4],
+      [59],
+    ],
+    code = kcsProgram(sequence);
+  new DataView(code.buffer).setUint16(8, 2, true);
+  const instance = new ParticleScriptInstance(await readKCS(code), {
+      profile,
+      count: 3,
+      width: 16,
+      height: 32,
+      screenWidth: 1280,
+      screenHeight: 720,
+    }),
+    machine = instance.machine,
+    floor = machine.sp;
+  assert.deepEqual(instance.backupQuads, instance.quads);
+  const live = instance.quads.map((_, index) => 19 + index * 31);
+  instance.quads.set(live);
+  instance.backupQuads.fill(0xc3);
+  machine.bytes(64, PTCL_ABI.quadSize).fill(0xdf);
+  machine.start();
+  assert.equal(machine.run().status, 'halted');
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), sentinel);
+  assert.deepEqual(instance.quads, live);
+  assert.deepEqual(instance.backupQuads, live);
+  assert.deepEqual(
+    [...instance.calls],
+    [
+      [45, 1],
+      [31, 1],
+      [44, 1],
+    ],
+  );
+  assert(machine.bytes(64, PTCL_ABI.quadSize).every((byte) => byte === 0xdf));
+  for (const id of [44, 45]) {
+    const empty = await guest('particle-v2', id, [0x80000007], { count: 0 });
+    empty.machine.start();
+    assert.equal(empty.machine.run().status, 'halted');
+    assert.equal(empty.instance.quads.length, 0);
+    const wrongWidth = await guest('particle-v2', id);
+    assert.throws(() => wrongWidth.run(2), /requires 1 arguments/);
+    const oldTable = await guest('particle-v1', id, [0]);
+    assert.throws(() => oldTable.run(2), /Unreviewed PTCL native/);
+  }
+});
+
+test('2.6.1.23 PTCL v2 publishes the attachment word and validates both base outputs', async () => {
+  for (const word of [0xffffffff, 0, 101, 0x80000000, 0xffff1234]) {
+    const { run } = await guest('particle-v2', 46, [], {
+      attachPlane: word,
+      attachment: () => assert.fail('The attachment ID does not resolve a graph'),
+    });
+    run(1, word);
+  }
+  const options = {
+    attachPlane: 101,
+    attachment: () => ({ base: [-0, -0.375, 9], pos: [1, 2, 3] }),
+    shared: new Uint8Array(12).fill(0x97),
+  };
+  const owned = await guest('particle-v2', 48, [64, 0x80000004], options);
+  owned.run(2);
+  assert.equal(owned.machine.load(64), floatBits(-0));
+  assert.equal(owned.machine.load(0x80000004), floatBits(-0.375));
+  assert.equal(owned.machine.load(0x80000000), 0x97979797);
+  const aliased = await guest('particle-v2', 48, [64, 64], options);
+  aliased.run(2);
+  assert.equal(aliased.machine.load(64), floatBits(-0.375));
+  const detached = await guest('particle-v2', 48, [64, 68], {
+    ...options,
+    attachmentDevicePresent: () => false,
+    attachment: () => assert.fail('A detached device does not resolve a graph'),
+  });
+  detached.machine.bytes(63, 10).fill(0xdf);
+  detached.run(2);
+  assert.deepEqual([...detached.machine.bytes(63, 10)], [0xdf, ...new Array(8).fill(0), 0xdf]);
+  const invalid = await guest('particle-v2', 48, [64, 0x80000009], options);
+  invalid.machine.store(64, sentinel);
+  assert.throws(() => invalid.run(2), /KCS memory 80000009\+4/);
+  assert.equal(invalid.machine.load(64), sentinel);
+  const stale = await guest('particle-v2', 48, [64, 68], {
+    ...options,
+    attachment: () => null,
+  });
+  stale.machine.store(64, sentinel);
+  assert.throws(() => stale.run(2), /requires a live attachment graph/);
+  assert.equal(stale.machine.load(64), sentinel);
+  const unreviewed = await guest('particle-v2', 47);
+  assert.throws(() => unreviewed.run(1), /Unreviewed PTCL native .*\/47/);
+});
+
 test('2.6.1.23 both Particle tables write only the current quad UV words and publish x87 distance', async () => {
   for (const table of particles) {
     const maybeUnused = [0xd2ddef88, 0xdba829fa],
@@ -733,9 +832,16 @@ test('2.6.1.23 both Particle tables write only the current quad UV words and pub
   }
 });
 
-test('2.6.1.23 PTCL v2 reads its live Plane position through the particle task', async (t) => {
-  const output = [64, 68, 72],
-    code = kcsProgram([...output.map((at) => [37, at]), [43, 49, 12], [59]]);
+test('2.6.1.23 PTCL v2 reads its live Plane base and position through the particle task', async (t) => {
+  const base = [80, 84],
+    position = [64, 68, 72],
+    code = kcsProgram([
+      ...base.map((at) => [37, at]),
+      [43, 48, 8],
+      ...position.map((at) => [37, at]),
+      [43, 49, 12],
+      [59],
+    ]);
   new DataView(code.buffer, code.byteOffset, code.byteLength).setUint16(8, 2, true);
   const world = await dataWorld(profile, { 'position.kcs': code });
   t.after(() => world.close({ flushFiles: false }));
@@ -747,23 +853,25 @@ test('2.6.1.23 PTCL v2 reads its live Plane position through the particle task',
     host = world.particles.host;
   task.state.attachment = planeID;
   owner.makeGraph({ type: 2, width: 2, height: 2 });
+  setMotionVector(owner.graph.kx2, MOTION_ABI.base, [-2, 3.25, 5000]);
   setMotionVector(owner.graph.kx2, MOTION_ABI.pos, [1.375, -0, -12.25]);
   const bank = await task.load({ family: 'script', program: 'position', count: 1, priority: 0 }),
     machine = bank.instance.machine,
-    read = () => output.map((at) => machine.load(at));
+    read = () => [...base, ...position].map((at) => machine.load(at)),
+    expected = [-2, 3.25, 1.375, -0, -12.25].map(floatBits);
   const device = world.graphics.createLogicalDevice();
   host.start(bank.key);
   host.updateBank(bank.key, 0);
-  assert.deepEqual(read(), [1.375, -0, -12.25].map(floatBits));
+  assert.deepEqual(read(), expected);
   device.retire();
   host.updateBank(bank.key, 1);
-  assert.deepEqual(read(), [0, 0, 0]);
+  assert.deepEqual(read(), [0, 0, 0, 0, 0]);
   world.graphics.createLogicalDevice();
   host.updateBank(bank.key, 2);
-  assert.deepEqual(read(), [1.375, -0, -12.25].map(floatBits));
+  assert.deepEqual(read(), expected);
   await world.objects.release(plane);
   assert.throws(() => host.updateBank(bank.key, 3), /requires a live attachment graph/);
-  assert.deepEqual(read(), [1.375, -0, -12.25].map(floatBits));
+  assert.deepEqual(read(), expected);
 });
 
 test('2.6.1.23 PTCL v2 only writes its three position words after validating every output', async () => {

@@ -119,7 +119,7 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
   ];
   for (const [table, ids] of [
     ['particle-v1', particle],
-    ['particle-v2', [...particle, 49, 50]],
+    ['particle-v2', [...particle, 44, 45, 46, 48, 49, 50]],
   ]) {
     assert.deepEqual(
       base[table].entries.filter(({ status }) => status === 'recovered').map(({ id }) => id),
@@ -154,11 +154,27 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     assert.equal(entry.signature.resultWritten, true);
     assert.deepEqual(entry.signature.controlCodes, [1]);
   }
-  const position = base['particle-v2'].entries[49];
-  assert.equal(position.signature.argumentWords, 3);
-  assert.equal(position.signature.resultWritten, false);
-  assert.deepEqual(position.signature.controlCodes, [2]);
-  assert(position.signature.parameters.every(({ type }) => type.direction === 'out'));
+  const extensions = base['particle-v2'].entries;
+  for (const id of [44, 45]) {
+    const { signature } = extensions[id];
+    assert.equal(signature.argumentWords, 1);
+    assert.equal(signature.parameters[0].type.kind, 'ignored');
+    assert.deepEqual(signature.controlCodes, [2]);
+    assert.equal(signature.resultWritten, false);
+  }
+  assert.equal(extensions[46].signature.argumentWords, 0);
+  assert.equal(extensions[46].signature.resultWritten, true);
+  assert.equal(extensions[47].status, 'unknown');
+  for (const [id, words] of [
+    [48, 2],
+    [49, 3],
+  ]) {
+    const { signature } = extensions[id];
+    assert.equal(signature.argumentWords, words);
+    assert.equal(signature.resultWritten, false);
+    assert.deepEqual(signature.controlCodes, [2]);
+    assert(signature.parameters.every(({ type }) => type.direction === 'out'));
+  }
   for (const id of [52, 287, 288, 629]) assert.equal(base.main.entries[id].status, 'unknown');
   const unknown = nativeABI('sdk-4.01-engine-2.6.1.74').tables.main.entries[0x52];
   assert.equal(unknown.name, null);

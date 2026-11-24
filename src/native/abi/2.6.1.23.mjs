@@ -1739,6 +1739,21 @@ export default {
       ...tables(51, [
         ...particleInterpreterEvidence,
         {
+          ids: [44, 45],
+          value:
+            'Own 2.6.1.23 PTCL v2 0x48C0B0 and 0x48C0E0 copy every owned 112-byte quad between the active and backup spans. Initial allocation seeds the backup with the active span.',
+        },
+        {
+          ids: [46],
+          value:
+            'Own 2.6.1.23 PTCL v2 0x48C110 returns the complete retained attachment DWORD without querying a renderer or model.',
+        },
+        {
+          ids: [48],
+          value:
+            'Own 2.6.1.23 PTCL v2 0x48C180 writes the selected live model base X/Y. The renderer gates produce zero for a disabled device or empty attachment. A stale active model leaves undefined scratch words.',
+        },
+        {
           ids: [49],
           value:
             'Own 2.6.1.23 PTCL v2 0x48C1F0 writes three coordinates from the selected model. The native renderer gates produce zero for a disabled device or absent attachment.',
@@ -1748,9 +1763,22 @@ export default {
       signatures: [
         ...particleInterpreterSignatures,
         {
-          ids: [49],
+          ids: [44, 45],
           fields: {
-            parameters: NATIVE_SEMANTICS['particle-v2'][49].signature.parameters.map(
+            parameters: [
+              {
+                name: 'ignored',
+                description: 'unused DWORD',
+                type: { kind: 'ignored', bits: 32 },
+              },
+            ],
+          },
+        },
+        { ids: [46], fields: { resultWritten: true } },
+        ...[48, 49].map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS['particle-v2'][id].signature.parameters.map(
               (parameter) => ({
                 ...parameter,
                 type: { ...parameter.type, addressSpace: 'vm', direction: 'out' },
@@ -1759,7 +1787,7 @@ export default {
             result: { description: 'void', kind: 'void' },
             resultWritten: false,
           },
-        },
+        })),
       ],
     },
   },

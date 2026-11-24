@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 454       | 57            | 17            | 341     | Generic 25 of 45, Particle 43 of 44 and 45 of 51 |
+| 2.6.1.23 | 869        | 454       | 57            | 17            | 341     | Generic 25 of 45, Particle 43 of 44 and 49 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -117,12 +117,19 @@ current matrix from the caller's World when the address does not map.
 PTCL v1 and v2 slot 38 point to the same receiver. It computes four
 bounds from the viewport, live priority and near plane and writes the
 four output words in call order. Guest offset zero is a valid destination.
-The query runs without a texture or graph attachment. PTCL v2 slot 49
-writes three coordinates from the selected live Plane graph. An explicit
-empty attachment or detached graphics device produces three zero words.
-All three VM destinations are checked before writing. An active renderer
-with an unresolved graph remains protected because the original stale
-registration can reuse overwritten scratch coordinates after a prior query.
+The query runs without a texture or graph attachment. PTCL v2 slots 44 and
+45 restore and save every owned 112-byte quad. Initial allocation seeds
+the backup from the active span. The single argument is ignored. Slot 46
+publishes the full attachment DWORD without resolving a graph.
+
+PTCL v2 slots 48 and 49 write the selected live model's base X/Y and
+position X/Y/Z respectively. An empty attachment or detached graphics
+device produces zero words. Each call checks all destinations before
+writing. An active renderer with an unresolved model stays protected
+because the original can return prior scratch coordinates. Slot 47
+reads the separate renderer registration DWORD. Some original callers
+retain non-Boolean values there, so that slot stays guarded while the
+production provider tracks only the enable flag.
 
 PTCL slots 29 and 37 share the same handlers across v1 and v2. Slot 29 reads
 the first and third words as float32, subtracts a half texel, and divides by
