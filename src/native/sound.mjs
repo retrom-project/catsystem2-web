@@ -1071,6 +1071,7 @@ export class NativeSoundTask {
         control.word(C.lastFrame, this.frame);
         return 0;
       case 192:
+        if (this.sound.abi.sound.spatialRequiresLoadedBuffer && !device.loaded) return 0;
         device.nativeSpatial.maximumDistance = readFloat(l + 4);
         this.sound.refresh(selected[0]);
         return 0;

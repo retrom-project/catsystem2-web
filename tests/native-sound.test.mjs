@@ -15,7 +15,8 @@ import { NativeWorld } from '../src/native/world.mjs';
 import { BlobFile, GameFiles, RangeFile } from '../src/files.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
-import { kif } from './helpers.mjs';
+import { kif, kcsProgram } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 import { floatBits } from '../src/kcs/vm.mjs';
 import { parseXML } from '../src/xml.mjs';
 
@@ -629,3 +630,127 @@ for (const profile of [gameProfile, sdkProfile])
       await world.close({ flushFiles: false });
     }
   });
+
+test('2.6.1.67 Sound GCALLs use compact load packets and control the actual Root bank', async (t) => {
+  const profile = 'bokutomo-engine-2.6.1.67',
+    program = (calls) =>
+      kcsProgram(
+        [
+          [37, 0xa056f028],
+          ...calls.flatMap(([id, args, destination]) => [
+            ...args.map((arg) => [37, arg]),
+            [43, id, args.length * 4],
+            ...(destination === undefined ? [] : [[38, destination]]),
+          ]),
+          [59],
+        ],
+        [
+          [288, 'あ_line.wav'],
+          [320, 'missing.wav'],
+        ],
+      ),
+    xyz = [7, ...[1.25, 2.5, 4.5].map(floatBits)],
+    range = [7, floatBits(8.25), floatBits(72.5)],
+    world = await dataWorld(profile, {
+      'あ_line.wav': Uint8Array.of(1, 2, 3),
+      'sound-load.kcs': program([
+        [155, [7, 0xffffffff, 288, 1], 80],
+        [155, [8, 0, 288, 2], 84],
+        [155, [9, 0, 320, 2], 88],
+        [284, [0, 288], 92],
+        [284, [0, 320], 96],
+      ]),
+      'sound-play.kcs': program([
+        [161, [7, 65]],
+        [162, [7], 80],
+        [164, [7, -34]],
+        [165, [7], 84],
+        [157, [7, 4]],
+        [160, [7], 88],
+        [163, [7, 83, 19]],
+        [166, [7, -88, 28]],
+      ]),
+      'sound-spatial.kcs': program([
+        [167, range],
+        [168, xyz],
+      ]),
+      'sound-pause.kcs': program([
+        [158, [7]],
+        [160, [7], 80],
+        [157, [7, 1]],
+        [159, [7]],
+        [160, [7], 84],
+      ]),
+      'sound-invalid.kcs': program([[155, [7, 0, 288, 9], 80]]),
+      'sound-release.kcs': program([
+        [156, [7]],
+        [156, [8]],
+      ]),
+    }),
+    audio = fixture(profile).audio;
+  t.after(() => world.close({ flushFiles: false }));
+  world.sound.audio = audio;
+  world.configuration.soundOptions.use3d = 1;
+  const sound = world.sound,
+    receiver = sound.primary(world.main.id),
+    device = sound.device[7],
+    control = receiver.controls[7],
+    packets = [],
+    dispatch = receiver.message.bind(receiver),
+    execute = async (name) => {
+      const task = await world.spawnScript(name, { parent: world.main.id, initialExecute: false }),
+        floor = task.machine.sp;
+      await world.runtime.scheduler.execute(task);
+      assert.equal(task.machine.sp, floor + 4);
+      assert.equal(task.machine.load(floor), 0xa056f028);
+      return task.machine;
+    };
+  receiver.message = (words, context) => {
+    if (words[1] === 174 || words[1] === 175)
+      packets.push([words[1], words[2], context.payload.data.length, context.payload.load(272)]);
+    return dispatch(words, context);
+  };
+  await execute('sound-spatial.kcs');
+  assert.deepEqual(device.nativeSpatial.position, [0, 0, 0]);
+  assert.notEqual(device.nativeSpatial.maximumDistance, 72.5);
+  const loaded = await execute('sound-load.kcs');
+  assert.deepEqual(
+    [80, 84, 88, 92, 96].map((at) => loaded.load(at)),
+    [1, 1, 0, 1, 0],
+  );
+  assert.deepEqual(packets, [
+    [174, 0, 280, 1],
+    [175, 0, 280, 1],
+    [175, 0, 280, 1],
+  ]);
+  assert.equal(device.file, 'あ_line.wav');
+  assert.equal(device.sourceMode, 'stream');
+  assert.equal(sound.device[8].sourceMode, 'static');
+  assert.equal(device.decoderOption, 0);
+  assert.equal(audio.channels.size, 0);
+  const playing = await execute('sound-play.kcs');
+  assert.deepEqual(
+    [80, 84, 88].map((at) => playing.load(at)),
+    [65, 0xffffffde, 1],
+  );
+  assert.equal(device.loopCount, 4);
+  assert.equal(control.word(C.flags) & 3, 3);
+  assert.equal(control.float(C.targetVolume), 83);
+  assert.equal(control.float(C.targetPan), -88);
+  assert.equal(control.float(C.volumeRemaining), 19);
+  assert.equal(control.float(C.panRemaining), 28);
+  await execute('sound-spatial.kcs');
+  assert.equal(device.nativeSpatial.maximumDistance, 72.5);
+  assert.deepEqual(device.nativeSpatial.position, [1.25, 2.5, 4.5]);
+  const paused = await execute('sound-pause.kcs');
+  assert.deepEqual(
+    [80, 84].map((at) => paused.load(at)),
+    [0, 0],
+  );
+  assert.equal(sound.channel(7).offset, 0);
+  await assert.rejects(() => execute('sound-invalid.kcs'), /result uninitialized/);
+  await execute('sound-release.kcs');
+  assert.equal(device.loaded, false);
+  assert.equal(sound.device[8].loaded, false);
+  assert.equal(audio.channels.size, 0);
+});
