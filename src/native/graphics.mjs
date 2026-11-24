@@ -805,6 +805,18 @@ export class NativeGraphicTask {
       case 4:
       case 5:
       case 6: {
+        if (
+          id === 4 &&
+          this.planeUsesLegacyButtonStates &&
+          (this.state.buttonEnabled || this.state.blocked) &&
+          !(await this.acceptLegacyButtonKey(l))
+        ) {
+          // The original Input caller's reply word still holds its nonzero
+          // owner pointer if the Plane returns before its base task writes.
+          return this.world.objects.objects.get(context.nativeSenderWorldID)?.kind === 11
+            ? 1
+            : undefined;
+        }
         await this.forwardInput(
           id === 4 ? (l ? 9 : 10) : id === 5 ? 65 : 6,
           id === 6 ? w : this.record.nativeID,
@@ -816,9 +828,16 @@ export class NativeGraphicTask {
         return changed;
       }
       case 7:
-      case 8:
+      case 8: {
+        const legacyButton =
+          this.planeUsesLegacyButtonStates && (this.state.buttonEnabled || this.state.blocked);
+        if (legacyButton) {
+          if (this.state.phase === 3 || this.state.blocked) return undefined;
+          await this.selectButton(id === 7 ? 1 : 0);
+        }
         await this.forwardInput(64, this.record.nativeID, id === 7 ? 1 : 0, context);
-        return 0;
+        return legacyButton ? undefined : 0;
+      }
       case 41: {
         this.unregisterGraph();
         const mode = this.state.vramType;
@@ -1420,6 +1439,20 @@ export class NativeGraphicTask {
         this.planeBounds().slice(2, 4),
       );
     return [...bounds, priority, flags];
+  }
+  async acceptLegacyButtonKey(down) {
+    if (this.state.phase === 3) return false;
+    const input = this.input;
+    if (!input) throw new Error('Native Plane button event requires its Input owner');
+    if (!(input.source & 2)) return true;
+    if (this.state.blocked) return false;
+    if (down) await this.selectButton(2);
+    else {
+      const region = input.get(this.record.id);
+      if (!region) throw new Error('Native Plane button release requires its Input registration');
+      await this.selectButton(region.active && this.state.button?.[3] ? 1 : 0);
+    }
+    return true;
   }
   async selectButton(selector) {
     const row = selector * 3,

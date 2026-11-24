@@ -190,6 +190,10 @@ the current phase and position. An enabled row moves the primary model on
 a live device. A linked hint uses the retained Input rectangle and a Plane's
 written dimensions. Main 98 returns the phase DWORD with the blocked bit
 in bit 31 and requires a written reply from a nonzero target.
+The registered Input owner selects the hover and press rows on pointer
+events and selects the hover or idle row on button release. The blocked
+bit suppresses pointer transitions. A selected state 3 suppresses both
+pointer and keyboard forwarding through the Plane's key receiver.
 Main 109 retains the full raw Input source word through Plane or BasePlane
 raw 89 and Input raw 129. A route miss writes zero. A route without a
 verified source reply fails before exposing an output.

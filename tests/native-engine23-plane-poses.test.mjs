@@ -272,6 +272,69 @@ test('2.6.1.23 Plane button state places and hides a linked hint using its writt
   assert.deepEqual(motionVector(owner.graph.kx2, MOTION_ABI.pos), [-29, 11, 0]);
 });
 
+test('2.6.1.23 registered Plane buttons follow real Input hover, press and release', async (t) => {
+  const world = await dataWorld(profile);
+  t.after(() => world.close({ flushFiles: false }));
+  const untouched = [canary, canary, canary],
+    id = await world.objects.create({ kind: 2, parent: world.root }),
+    owner = world.graphics.get(id),
+    target = world.nativeTaskID(id),
+    rows = [1, 10, 25, 1, 15, 19, 1, 20, 13, 1, 25, 7],
+    read = (word) => call(world, 98, [target], untouched, undefined, undefined, word),
+    select = (word) => call(world, 97, [target, word], untouched);
+  world.graphics.createLogicalDevice();
+  owner.makeGraph({ type: 2, width: 16, height: 14 });
+  setMotionVector(owner.graph.kx2, MOTION_ABI.pos, [0, 0, 4]);
+  await call(world, 96, [target, 4, 64], untouched, undefined, (machine) => {
+    rows.forEach((word, index) => machine.store(64 + index * 4, word));
+  });
+  const input = owner.input,
+    position = () => motionVector(owner.graph.kx2, MOTION_ABI.pos);
+  // A smaller hit area keeps the test independent of full-view capture.
+  input.get(id).bounds = [0, 0, 16, 14];
+  const sent = [],
+    send = world.sendNativeEngine.bind(world);
+  world.sendNativeEngine = (...args) => {
+    if (args[1] === id && [9, 10, 64].includes(args[2])) sent.push(args.slice(2, 5));
+    return send(...args);
+  };
+  input.pointer(5, 6);
+  await input.hover();
+  await read(1);
+  assert.deepEqual(position(), [15, 19, 4]);
+  assert.equal(await input.route(7, true, 2), false);
+  await read(2);
+  assert.deepEqual(position(), [20, 13, 4]);
+  assert.equal(await input.route(7, false, 2), true);
+  await read(1);
+  assert.deepEqual(position(), [15, 19, 4]);
+  await select(0x80000001);
+  assert.equal(await input.route(7, true, 2), false);
+  await read(0x80000001);
+  assert.equal(await input.route(7, true, 1), true);
+  await read(0x80000001);
+  await select(3);
+  assert.equal(await input.route(7, true, 1), false);
+  input.pointer(18, 9);
+  await input.hover();
+  await read(3);
+  await select(2);
+  input.pointer(5, 6);
+  await input.hover();
+  input.pointer(18, 9);
+  await input.hover();
+  await read(0);
+  assert.deepEqual(position(), [10, 25, 4]);
+  assert.deepEqual(sent, [
+    [64, target, 1],
+    [9, target, 7],
+    [10, target, 7],
+    [9, target, 7],
+    [64, target, 1],
+    [64, target, 0],
+  ]);
+});
+
 test('fixed 2.6.1.23 Plane GCALLs read owned geometry and texture poses and release tracked input', async () => {
   const world = await dataWorld(profile);
   try {
