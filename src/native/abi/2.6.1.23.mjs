@@ -93,6 +93,11 @@ export const engine23CommonHeads = {
 const legacyTaskWordOperations = [126, 127, 128, 129, 131, 132, 138, 139];
 const mainEvidence = [
   {
+    ids: [27, 28],
+    value:
+      'Own 2.6.1.23 wrappers 0x48ae70 and 0x48ae90 allocate zeroed VM blocks and release only the mapped block start, compacting the guest addresses.',
+  },
+  {
     ids: [123],
     value:
       'Own 2.6.1.23 0x487a60 builds a 1128-byte raw94 configuration with one counted CP932 table and an empty second table for the same Task 8 receiver as Main 418.',
@@ -1333,6 +1338,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [27, 28], fields: { resultWritten: true } },
         {
           ids: [123],
           fields: {

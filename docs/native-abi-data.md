@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 478       | 57            | 17            | 317     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 480       | 57            | 17            | 315     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 387       | 80            | 19            | 452     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
@@ -101,6 +101,14 @@ ARGB8888, including empty dimensions and the visible output flag.
 The Core guards packed text bitmaps and a line-break table that would spill
 into its neighboring count. Both wrappers return control 2 with the result
 untouched.
+
+Main 27 appends zeroed storage to the caller's virtual memory. A zero-byte
+allocation keeps an empty record and returns `0xffffffff`. Main 28
+releases a mapped allocation at its exact start and returns 1. Interior,
+unmapped, local and shared addresses return 0. Releasing a block compacts
+later virtual addresses while keeping their bytes. A stale address can
+therefore resolve to the start of another block.
+Both wrappers return control 1 with a written result.
 
 Main 405–416 load and query binary gallery resources in the FES category.
 Variants use 20 groups of eight 540-byte records. A missing or wrong-size

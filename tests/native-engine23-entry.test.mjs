@@ -16,6 +16,7 @@ import {
   startupVersionImage,
 } from './fixtures/ordinary-startup.mjs';
 import { hg3, kcsProgram, kif } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 const profile = 'grisaia-jp-engine-2.6.1.23',
   text = (value) => new TextEncoder().encode(value),
@@ -31,6 +32,53 @@ async function gameFiles(files) {
   await game.open();
   return game;
 }
+
+test('2.6.1.23 GCALL allocation zeroes storage and release compacts later VM addresses', async (t) => {
+  const marker = 0x317b2aee,
+    script = kcsProgram([
+      ...push(marker),
+      ...native(27, 0),
+      receive(64),
+      ...native(27, 5),
+      receive(68),
+      ...native(27, 9),
+      receive(72),
+      ...native(36, loadedWord(72), 0xa5980be4, 4),
+      ...native(28, loadedWord(64)),
+      receive(76),
+      ...native(28, loadedWord(68)),
+      receive(80),
+      ...native(28, loadedWord(72)),
+      receive(84),
+      ...native(27, 3),
+      receive(88),
+      ...native(36, loadedWord(88), 0x46, 2),
+      ...native(28, loadedWord(68)),
+      receive(92),
+      ...native(28, loadedWord(72)),
+      receive(96),
+      [59],
+    ]);
+  const world = await dataWorld(profile, { 'heap.kcs': script });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('heap.kcs'),
+    machine = task.machine,
+    base = machine.memory.length,
+    start = machine.sp;
+  assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+  assert.equal(machine.sp, start + 4);
+  assert.equal(machine.pop(), marker);
+  assert.deepEqual(
+    Array.from({ length: 9 }, (_, i) => machine.load(64 + i * 4)),
+    [0xffffffff, base, base + 5, 0, 1, 0, base + 9, 1, 0],
+  );
+  assert.deepEqual(
+    machine.blocks.map((row) => [...row]),
+    [[], [0x46, 0x46, 0]],
+  );
+  assert.deepEqual([...machine.bytes(base, 3)], [0x46, 0x46, 0]);
+  assert.throws(() => machine.bytes(base + 3, 1), /KCS memory/);
+});
 
 test('2.6.1.23 selects the loose startup and drives KCS, Draw and FES through a fresh Core', async () => {
   const startup = (entry, width, height) =>
