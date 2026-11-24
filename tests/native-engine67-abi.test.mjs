@@ -75,14 +75,14 @@ test('2.6.1.67 Main stubs preserve their original three result behaviors', async
 });
 
 test('2.6.1.67 GCALL still rejects the adjacent unreviewed native slot', async () => {
-  const { runtime, task } = await run([[37, 17], [37, 18], [37, 19], [43, 934, 12], [59]]);
+  const { runtime, task } = await run([[37, 17], [37, 18], [37, 19], [43, 935, 12], [59]]);
   await assert.rejects(
     () => runtime.scheduler.execute(task),
     (error) => {
       assert.ok(error instanceof UnsupportedKCSNative);
       assert.equal(error.details.profile, profile);
       assert.equal(error.details.table, 'main');
-      assert.equal(error.details.id, 934);
+      assert.equal(error.details.id, 935);
       assert.deepEqual(error.details.args, [17, 18, 19]);
       return true;
     },
