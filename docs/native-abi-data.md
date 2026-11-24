@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 421       | 57            | 17            | 374     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
+| 2.6.1.23 | 869        | 423       | 57            | 17            | 372     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 398       | 80            | 19            | 441     | Generic 14 of 45, Particle 12 of 44 and 12 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -88,6 +88,13 @@ and viewport values differently. Core uses the selectable scalar path
 with D3DX CPU optimizations disabled. The observed native CPU paths
 share the same control codes, output locations and task state transitions.
 This coverage concerns the arithmetic and VM outputs before rendering.
+
+Main 61 and 461 use their linked CRT operations for power and base-10
+logarithm. Under the original modern CPU selector and masked floating-point
+environment, the power wrapper retains a NaN base when the exponent is zero.
+Bases of either sign at unit magnitude return one with an infinite exponent.
+Both wrappers write through x87 and quiet signaling NaNs in the guest result.
+The original fallback without SSE2 differs in some power result words.
 
 Main 83 uses Plane raw 63 to release the graph and its tracked input
 registration. Main 86 and 87 send raw 57 and 58 to query the selected

@@ -173,6 +173,50 @@ test('2.6.1.23 Main sound geometry helpers preserve x87 result words through GCA
   assert.equal(world.runtime.calls.get('main:397'), 6);
 });
 
+test('2.6.1.23 Main power and logarithm follow the selected native CRT and x87 output', async (t) => {
+  const cases = [
+      [61, [0x3f8ccccd, 0x40a00000], 0x3fce2533],
+      [61, [0xc0000000, 0x40400000], 0xc1000000],
+      [61, [0xbf800000, 0x3f000000], 0xffc00000],
+      [61, [0xbf800000, 0x7f800000], 0x3f800000],
+      [61, [0xbf800000, 0xff800000], 0x3f800000],
+      [61, [0x7f801234, 0], 0x7fc01234],
+      [61, [0xff801234, 0x80000000], 0xffc01234],
+      [61, [0x7fc65432, 0], 0x7fc65432],
+      [61, [1, 0x3f800000], 1],
+      [61, [0x7f7fffff, 0x40400000], 0x7f800000],
+      [461, [0x3f800000], 0],
+      [461, [0x42c80000], 0x40000000],
+      [461, [1], 0xc23369f4],
+      [461, [0], 0xff800000],
+      [461, [0x80000000], 0xff800000],
+      [461, [0x7f800000], 0x7f800000],
+      [461, [0xff800000], 0xffc00000],
+      [461, [0x7f801234], 0x7fc01234],
+      [461, [0xff801234], 0xffc01234],
+    ],
+    world = await dataWorld(profile, {
+      'case.kcs': kcsProgram([
+        [37, sentinel],
+        ...cases.flatMap(([id, args]) => [
+          ...args.map((word) => [37, word]),
+          [43, id, args.length * 4],
+        ]),
+        [59],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const { machine } = world.main,
+    expected = [sentinel, ...cases.map(([, , word]) => word)];
+  assert.equal(machine.sp, machine.floor + expected.length * 4);
+  assert.deepEqual(
+    expected.map((_, i) => machine.load(machine.floor + i * 4)),
+    expected,
+  );
+  assert.equal(world.runtime.calls.get('main:61'), 10);
+  assert.equal(world.runtime.calls.get('main:461'), 9);
+});
+
 test('2.6.1.23 remainder preserves the original CRT classification and FPREM result', async () => {
   for (const [args, expected] of [
     [[0xbf800000, 0x3f000000], 0x80000000],

@@ -81,6 +81,7 @@ export function nativeScalarMath(
   argumentWords,
   anglesUseX87 = false,
   atan2UsesX87 = false,
+  powUsesSSE2Identities = false,
 ) {
   const name = operation?.replace(/^math\./, '');
   if (!names.has(name)) return undefined;
@@ -99,9 +100,13 @@ export function nativeScalarMath(
   const x = bitsFloat(a),
     y = bitsFloat(b);
   if (name !== 'triangleWave') {
-    // CRT pow checks identities before NaN propagation.
-    if (name === 'pow' && (y === 0 || (x === 1 && !Number.isNaN(y))))
-      return nativeReply(1, floatBits(1));
+    if (name === 'pow') {
+      if (powUsesSSE2Identities) {
+        if (nan(a)) return nativeReply(1, quiet(a));
+        if (Math.abs(x) === 1 && Math.abs(y) === Infinity) return nativeReply(1, floatBits(1));
+      }
+      if (y === 0 || (x === 1 && !Number.isNaN(y))) return nativeReply(1, floatBits(1));
+    }
     if (nan(a)) return nativeReply(1, quiet(a));
     if (argumentWords > 1 && nan(b)) return nativeReply(1, quiet(b));
   }
@@ -136,6 +141,7 @@ export function installNativeScalarMath(world) {
         entry.signature.argumentWords,
         abi.math?.anglesUseX87,
         abi.math?.atan2UsesX87,
+        abi.math?.powUsesSSE2Identities,
       ),
     );
   }

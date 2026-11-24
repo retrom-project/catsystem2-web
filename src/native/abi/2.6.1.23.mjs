@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [61, 461],
+    value:
+      'Own 2.6.1.23 0x48C590 and 0x481C60 write the CRT power and base-10 logarithm results. The original CPU gate selects SSE2 under the ordinary masked environment, and the wrappers publish float32 through x87.',
+  },
+  {
     ids: [346],
     value:
       'Own 2.6.1.23 0x47ED90 formats CP932 and resolves the KX3 directory before raw 66. Plane and BasePlane leave the payload, owner and result untouched.',
@@ -911,6 +916,7 @@ export default {
   math: {
     anglesUseX87: true,
     atan2UsesX87: true,
+    powUsesSSE2Identities: true,
     randomFloatUsesX87: true,
     interpreterUsesNativeScalarMath: true,
     lerpUsesX87: true,
