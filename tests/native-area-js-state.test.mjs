@@ -104,6 +104,100 @@ test('2.6.1.23 area natives start and finish an owned bitmap wipe', async (t) =>
   assert.deepEqual([...machine.bytes(128, 56)], [...new NativeGraphicsPacket(params).bytes(0, 56)]);
 });
 
+test('2.6.1.23 KCS changes the live Raster packet without rebinding its graph or clock', async (t) => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    canary = 0x29ff8631,
+    argv = [80, 84, 88],
+    program = kcsProgram([
+      [37, canary],
+      ...argv.map((word) => [37, [0x13, word]]),
+      [43, 201, 12],
+      [59],
+    ]),
+    world = await dataWorld(profile, { 'area-update.kcs': program });
+  t.after(() => world.close({ flushFiles: false }));
+  const call = (id, args) => world.runtime.native('main', id, args, world.main.machine, world.main),
+    parent = world.main.id,
+    graphOwner = await world.objects.create({ kind: 2, parent }),
+    rasterID = await world.objects.create({ kind: 18, parent }),
+    hydroID = await world.objects.create({ kind: 25, parent }),
+    foreignID = await world.objects.create({ kind: 6, parent }),
+    area = world.areaEffects.tasks.get(rasterID),
+    graph = world.nativeTaskID(graphOwner),
+    raster = world.nativeTaskID(rasterID),
+    hydro = world.nativeTaskID(hydroID),
+    foreign = world.nativeTaskID(foreignID),
+    store = (machine, at, words) => words.forEach((word, i) => machine.store(at + i * 4, word)),
+    update = async (target, selector, pointer, params) => {
+      const task = await world.spawnScript('area-update.kcs', { parent, initialExecute: false }),
+        machine = task.machine,
+        floor = machine.sp;
+      store(machine, 80, [target, selector, pointer]);
+      if (params) store(machine, pointer, params);
+      const before = params && machine.bytes(pointer, 20).slice();
+      await world.runtime.scheduler.execute(task);
+      assert.equal(machine.sp, floor + 4);
+      assert.equal(machine.load(floor), canary);
+      if (before) assert.deepEqual(machine.bytes(pointer, 20), before);
+    };
+  assert.equal(mapABIMessage(profile, 'area', 'raw', 264), 238);
+  assert.equal(mapABIMessage(profile, 'area', 'raw', 273), 247);
+  await world.sendEngine(graphOwner, parent, 41, 0, 0, {
+    payload: new NativeGraphicsPacket([...[0, 0, 0, 24, 18, 0, 0].map(floatBits), 0xffffffff]),
+  });
+  const renderGraph = world.graphics.tasks.get(graphOwner).graph,
+    firstPacket = [graph, 1, ...[3.25, 8.5, 14].map(floatBits)],
+    updatePacket = [0xffb87316, 0x80000000, ...[7.125, 3.75, 35.625].map(floatBits)];
+  store(world.main.machine, 128, firstPacket);
+  assert.deepEqual(await call(196, [raster, 128]), { control: 2 });
+  assert.deepEqual(await call(197, [raster]), { control: 2 });
+  assert.equal(renderGraph.vertexEffectID, rasterID);
+  const configuration = world.configuration.blocks[2],
+    speed = new DataView(configuration.buffer, configuration.byteOffset, 4);
+  speed.setUint32(0, 1, true);
+  await world.tick();
+  await world.tick();
+  assert.equal(area.state.rasterElapsed, 2);
+  const start = area.state.start,
+    lastClock = area.state.lastClock;
+  await update(raster, 0, 128, updatePacket);
+  assert.deepEqual(area.state.params, [...firstPacket.slice(0, 2), ...updatePacket.slice(2)]);
+  assert.equal(area.state.start, start);
+  assert.equal(area.state.lastClock, lastClock);
+  assert.equal(area.state.rasterElapsed, 2);
+  assert.equal(renderGraph.vertexEffectID, rasterID);
+  assert.deepEqual(await call(200, [raster]), { control: 1, value: 1 });
+  await world.tick();
+  assert.equal(area.state.rasterElapsed, 0);
+  const [vertex] = world.graphics.effectVertices(renderGraph, [{ x: 8.5, y: 0, z: -8, w: 1 }], 0);
+  assert.deepEqual(vertex, { x: 8.5, y: 0, z: -8, w: 1 });
+  const unchanged = area.snapshot();
+  await update(raster, 0xffffffff, 0xffffffff);
+  await update(hydro, 0, 0x7eeeeeb2);
+  await update(foreign, 0, 0xffffffff);
+  assert.deepEqual(area.snapshot(), unchanged);
+  await assert.rejects(update(0x6eeeabce, 0, 0xffffffff), /Area effect query did not write/);
+  await assert.rejects(
+    update(raster, 0, 0xffffffff),
+    /Area geometry initializer has no translated packet/,
+  );
+  await assert.rejects(update(raster, 0, 0x7eeeeeb2), /KCS memory/);
+  assert.deepEqual(area.snapshot(), unchanged);
+  const converted = [graph, 0x80000002, 0x80000001, 2, 3];
+  store(world.main.machine, 128, converted);
+  assert.deepEqual(await call(196, [raster, 128]), { control: 2 });
+  await update(raster, 0, 0x80000040, [0x885005a4, 1, 0x80000001, 2, 3]);
+  assert.equal(area.state.geometry.mode, 2);
+  assert.deepEqual(
+    [area.state.geometry.amplitude, area.state.geometry.frequency, area.state.geometry.period].map(
+      floatBits,
+    ),
+    [0x80000001, 0x7f800000, 3],
+  );
+  await world.objects.release(rasterID);
+  assert.equal(renderGraph.vertexEffectID, undefined);
+});
+
 async function checkPositionedWipe(t, kind, maskedPixels) {
   const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
   t.after(() => world.close());

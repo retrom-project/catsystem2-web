@@ -57,7 +57,8 @@ export class NativeAreaEffectCommands {
       await send(id === 0xc5 ? 257 : id === 0xc6 ? 258 : 261);
       return nativeReply(2);
     }
-    const memory = world.runtime.imageDataBuffers.process,
+    const abi = nativeABI(world.profile),
+      memory = world.runtime.imageDataBuffers.process,
       out = memory.allocate(4),
       caller = id === 0xc4 ? out : world.engineMessages.callerAddress(task.id);
     memory.store(out, caller);
@@ -66,7 +67,7 @@ export class NativeAreaEffectCommands {
         nativeResult: out,
         resultMemory: memory,
       });
-      if (!Number.isInteger(value) && nativeABI(world.profile).messages.areaQueriesRequireReply)
+      if (!Number.isInteger(value) && abi.messages.areaQueriesRequireReply)
         throw new Error('Area effect query did not write its result');
       const kind = Number.isInteger(value) ? value : memory.load(out);
       if (id === 0xc8) return nativeReply(1, kind);
@@ -85,7 +86,8 @@ export class NativeAreaEffectCommands {
       // make a private matrix copy, including receivers with empty branches.
       if (address === 0xffffffff) await send(message, 0, undefined, { nativeNullPayload: true });
       else {
-        machine.bytes(address, 1);
+        // The old live update translates the pointer even when the receiver ignores it.
+        if (id !== 0xc9 || !abi.graphics.areaRasterX87) machine.bytes(address, 1);
         await send(message, address, machine);
       }
       return nativeReply(2);

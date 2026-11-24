@@ -9,14 +9,18 @@ const f = Math.fround,
   multiply = (a, b) => multiplyNativeMatrix(a, b, roundX87Single),
   transform = (a, b) => transformNativeVector(a, b, roundX87Single),
   fraction = (x) => x - Math.trunc(x);
-export function rasterParameters(words, frameRate) {
-  const converted = Boolean(words[1] & 0x80000000);
+export function rasterParameters(words, frameRate, x87 = false) {
+  const converted = Boolean(words[1] & 0x80000000),
+    frequency = bitsFloat(words[3]),
+    period = bitsFloat(words[4]),
+    round = x87 ? roundX87Single : f,
+    rate = x87 && frameRate < 0x80000000 ? frameRate : f(frameRate);
   return {
     graph: words[0],
     mode: words[1] & 0x7fffffff,
     amplitude: bitsFloat(words[2]),
-    frequency: converted ? f(1 / bitsFloat(words[3])) : bitsFloat(words[3]),
-    period: converted ? f(f(bitsFloat(words[4]) / 60) * f(frameRate)) : bitsFloat(words[4]),
+    frequency: converted ? f(round(1 / frequency)) : frequency,
+    period: converted ? f(round(round(period / 60) * rate)) : period,
     converted,
   };
 }

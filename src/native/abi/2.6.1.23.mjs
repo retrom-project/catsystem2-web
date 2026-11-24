@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [201],
+    value:
+      'Own 2.6.1.23 0x486AF0 queries raw 12, then sends Raster raw 238 or Hydro raw 247 for selector zero. Raster changes exactly three float words while retaining its attached graph and phase.',
+  },
+  {
     ids: [95, 109],
     value:
       'Own 2.6.1.23 0x47F2A0 registers Plane raw 83 geometry. Own 0x48A310 queries Plane or BasePlane raw 89 and routes Input raw 129 for the complete source word.',
@@ -1023,8 +1028,8 @@ export default {
     channels: {
       base: {
         unmapped: 'reject',
-        raw: [...baseMessages, ...[23, 24, 29].map((id) => toMessage(id, -1))],
-        canonical: [...baseMessages, ...[22, 23, 28].map((id) => toMessage(id, 1))],
+        raw: [...baseMessages, ...[13, 23, 24, 29].map((id) => toMessage(id, -1))],
+        canonical: [...baseMessages, ...[12, 22, 23, 28].map((id) => toMessage(id, 1))],
       },
       control: {
         unmapped: 'reject',
@@ -1053,6 +1058,11 @@ export default {
           ...[342, 343, 344, 345, 346, 349, 350, 352, 353].map((id) => toMessage(id, 35)),
           ...[447, 448, 449, 450, 451, 452, 453].map((id) => toMessage(id, 69)),
         ],
+      },
+      area: {
+        unmapped: 'reject',
+        raw: [257, 258, 259, 261, 263, 264, 273, 274].map((id) => toMessage(id, -26)),
+        canonical: [231, 232, 233, 235, 237, 238, 247, 248].map((id) => toMessage(id, 26)),
       },
       sound: {
         unmapped: 'reject',
@@ -1111,6 +1121,7 @@ export default {
     drawEnablePendingPolicy: 'rising-edge',
     emptyImageSizeWritesZero: true,
     positionedAreaWipeKinds: [26, 29, 30],
+    areaRasterX87: true,
     textureCapsPolicy: 'virtual-d3d9',
     texturedBoundsQuery: null,
     planeAlphaFlags: 1,
@@ -1367,6 +1378,34 @@ export default {
         { ids: [51, 54, 57, 397], fields: { resultWritten: true } },
         { ids: [76, 536], fields: { resultWritten: true } },
         { ids: [80, 81, 149, 196, 197, 203, 862], fields: { resultWritten: false } },
+        {
+          ids: [201],
+          fields: {
+            parameters: [
+              {
+                name: 'task',
+                description: 'Native task ID queried for its kind in the caller Top',
+                type: { kind: 'object-id', objectKind: 'Task' },
+              },
+              {
+                name: 'selector',
+                description: 'Zero selects the Raster or Hydro live parameter message',
+                type: { kind: 'integer', bits: 32, signed: false },
+              },
+              {
+                name: 'parameters',
+                description: 'Borrowed VM packet with Raster amplitude, frequency and period',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: { kind: 'record', name: 'Raster parameters' },
+                },
+              },
+            ],
+            resultWritten: false,
+          },
+        },
         { ids: [200], fields: { resultWritten: true } },
         { ids: [124, 125, 418, 557], fields: { resultWritten: false } },
         { ids: [320], fields: { resultWritten: false } },

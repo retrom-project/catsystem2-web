@@ -40,6 +40,19 @@ unwritten kind query starts outside the effect-kind range. The wrapper
 verifier normalizes this opaque dispatch-slot identity after checking the
 original GCALL slot independently.
 
+The fixed 2.6.1.23 build implements Main 201 through raw kind query 12
+and then raw 238 for Raster or 247 for Hydro. A nonzero selector and a
+different kind stop after the kind query. Hydro and Raster without a
+renderer leave the parameters unread. A live Raster keeps its graph,
+axis, active word and accumulated phase and reads only amplitude,
+frequency and period from the translated packet. A missing kind reply
+or an invalid packet for a live Raster raises a VM error before changing
+the effect. The original can reuse the last kind reply from its local
+stack. The Core uses the original x87 PC24 precision for the converted
+parameters and advances the phase with per-tick truncation and one
+frequency subtraction. Original raw outputs and the three fixed KCS
+call sites are checked separately from product route smoke tests.
+
 CPU effects keep physical bitmap row addressing. WipeAlpha's work allocation,
 mask offset, blend rectangle and upload rectangle remain distinct, including
 the natural-end reset of its mask offset. The speed table is sampled on start.

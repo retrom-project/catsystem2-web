@@ -8,7 +8,8 @@ import { NativeBitmap } from './image.mjs';
 import { flipBitmapRows } from './raster-kernel.mjs';
 import { blendAreaPixels, physicalPixel, prepareAreaWipeSource } from './area-effect-pixels.mjs';
 import { truncateFloat32 } from '../ppi/numeric.mjs';
-import { bitsFloat } from '../kcs.mjs';
+import { roundX87Single } from '../ppi/x87.mjs';
+import { bitsFloat, floatBits } from '../kcs.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
 import {
   rasterParameters,
@@ -64,14 +65,15 @@ export class NativeAreaEffectTask {
     this.world = owner.world;
     this.record = record;
     this.base = this.world.base(record);
-    this.positionedWipeMask =
-      nativeABI(this.world.profile).graphics.positionedAreaWipeKinds?.includes(record.kind) ===
-      true;
+    const graphics = nativeABI(this.world.profile).graphics;
+    this.rasterX87 = record.kind === 18 && graphics.areaRasterX87 === true;
+    this.positionedWipeMask = graphics.positionedAreaWipeKinds?.includes(record.kind) === true;
     this.clippedWipeUpload = this.positionedWipeMask && record.kind !== 26;
+    const rasterParams = [0, 0, 0, 0, this.rasterX87 ? floatBits(1) : 0];
     this.state = {
       initialized: false,
       active: 0,
-      params: record.kind === 20 ? [0, 0, 0] : [],
+      params: this.rasterX87 ? rasterParams : record.kind === 20 ? [0, 0, 0] : [],
       work: 0,
       imports: [],
       start: 0,
@@ -88,7 +90,10 @@ export class NativeAreaEffectTask {
       output: [0, 0],
       fadeIn: false,
       capability: this.world.graphics.view.active,
-      geometry: record.kind === 18 ? rasterParameters([0, 0, 0, 0, 0], record.frameRate) : null,
+      geometry:
+        record.kind === 18
+          ? rasterParameters(rasterParams, record.frameRate, this.rasterX87)
+          : null,
       shards: [],
       drops: [],
       lastClock: 0,
@@ -108,7 +113,7 @@ export class NativeAreaEffectTask {
       await originalOperation(this.world, 'releaseOwnerImages', this.record.id);
     this.state.imports = [];
   }
-  async readPacket(message, l, context) {
+  async readPacket(message, l, context, firstWord = 0) {
     const size =
         message === 260
           ? this.record.kind === 30
@@ -124,7 +129,9 @@ export class NativeAreaEffectTask {
     if (context.nativeNullPayload || (context.nativePointer && !l)) return null;
     const bytes = memory.bytes ? memory.bytes(l, size) : memory.read(l, size),
       view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-    return Array.from({ length: size / 4 }, (_, i) => view.getUint32(i * 4, true));
+    return Array.from({ length: size / 4 - firstWord }, (_, i) =>
+      view.getUint32((firstWord + i) * 4, true),
+    );
   }
   async bitmap(handle, context) {
     if (!handle) return 0;
@@ -232,16 +239,13 @@ export class NativeAreaEffectTask {
     context.nativeUnhandled = false;
     if (message === 259) return state.active;
     if (message === initializers.get(kind) || (kind === 18 && message === 264)) {
-      const params = await this.readPacket(message, l, context);
+      const firstWord = this.rasterX87 && message === 264 ? 2 : 0,
+        params = await this.readPacket(message, l, context, firstWord);
       if (!params) throw new RangeError('Area geometry initializer has no translated packet');
       if (kind === 18) {
-        if (message === 263) {
-          state.params = params;
-          state.geometry = rasterParameters(params, this.record.frameRate);
-        } else {
-          state.params.splice(2, 3, ...params.slice(2, 5));
-          state.geometry = rasterParameters(state.params, this.record.frameRate);
-        }
+        if (message === 263) state.params = params;
+        else state.params.splice(2, 3, ...params.slice(2 - firstWord));
+        state.geometry = rasterParameters(state.params, this.record.frameRate, this.rasterX87);
       } else if (kind === 20) state.params = params;
       else await this.initializeRain(params);
       return NATIVE_UNWRITTEN_WORD;
@@ -346,6 +350,7 @@ export class NativeAreaEffectTask {
     model?.bind(this);
     state.active = 1;
     state.start = state.lastClock = this.clock();
+    if (this.rasterX87) state.rasterElapsed = 0;
   }
   async stopGeometry() {
     const state = this.state;
@@ -361,11 +366,27 @@ export class NativeAreaEffectTask {
   vertices(vertices, triangle) {
     const state = this.state;
     return this.record.kind === 18
-      ? rasterVertices(state.geometry, (this.clock() - state.start) >>> 0, 1, vertices)
+      ? rasterVertices(
+          state.geometry,
+          this.rasterX87 ? (state.rasterElapsed ?? 0) : (this.clock() - state.start) >>> 0,
+          1,
+          vertices,
+        )
       : glassVertices(state.shards[triangle], vertices);
   }
   async tick() {
     const state = this.state;
+    if (state.active && this.rasterX87) {
+      const frame = this.record.lastFrame,
+        delta = (frame - state.lastClock) >>> 0,
+        cycle = Math.trunc(state.geometry.frequency) >>> 0,
+        elapsed =
+          ((state.rasterElapsed ?? 0) + Math.trunc(roundX87Single(delta * this.effectSpeed(1)))) >>>
+          0;
+      state.rasterElapsed = elapsed >= cycle ? elapsed - cycle : elapsed;
+      state.lastClock = frame;
+      return;
+    }
     if (!state.active || ![19, 20].includes(this.record.kind)) return;
     const clock = this.clock(),
       delta = f((clock - state.lastClock) >>> 0);
@@ -488,13 +509,13 @@ export class NativeAreaEffectTask {
     await bitmap.changed();
     state.initialized = true;
   }
-  effectSpeed() {
+  effectSpeed(fallback) {
     const index = new DataView(
         this.world.configuration.blocks[2].buffer,
         this.world.configuration.blocks[2].byteOffset,
         4,
       ).getUint32(0, true),
-      speed = speeds[index];
+      speed = speeds[index] ?? fallback;
     if (speed === undefined) throw new RangeError('Area effect speed is outside the engine table');
     return speed;
   }
