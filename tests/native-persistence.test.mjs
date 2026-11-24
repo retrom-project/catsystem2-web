@@ -95,7 +95,15 @@ test('2.6.1.23 CSS stores the existing caller string bank and creates one only f
   assert.equal(bank.get(0x82123456), '猫');
 });
 
-test('fixed 2.6.1.23 imports optional task records in the reviewed CSS ownership domain', async (t) => {
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'nekopara-vol3-engine-2.6.1.76',
+])
+  test(`${profile} reads optional CSS task records through reviewed owners`, (t) =>
+    verifyOptionalTaskRecords(t, profile));
+
+async function verifyOptionalTaskRecords(t, profile) {
   const guest = kcsProgram([
       [37, 0x685d2e9a],
       [37, [0x13, 104]],
@@ -108,7 +116,7 @@ test('fixed 2.6.1.23 imports optional task records in the reviewed CSS ownership
       [43, 689, 12],
       [59],
     ]),
-    world = await dataWorld('grisaia-jp-engine-2.6.1.23', { 'record.kcs': guest });
+    world = await dataWorld(profile, { 'record.kcs': guest });
   t.after(() => world.close({ flushFiles: false }));
   const file = new NativeGlobalFile(),
     handle = world.runtime.handles.add('global-file', file),
@@ -148,7 +156,7 @@ test('fixed 2.6.1.23 imports optional task records in the reviewed CSS ownership
   assert.throws(() => call(689, [handle, 0, 0]), /unwritten CSS record zero/);
   assert.throws(() => call(688, [handle, 13, 0]), UnsupportedKCSNative);
   assert.deepEqual(file.snapshot(), before);
-});
+}
 
 test('global-file clear retains its tag and restores initial capacity while clones own independent payloads', () => {
   const m = machine(),
