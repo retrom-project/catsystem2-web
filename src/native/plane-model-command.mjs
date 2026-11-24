@@ -9,6 +9,7 @@ import { nativeDataArgument, nativeDataFormat } from './data-text.mjs';
 import { nativeCategoryFilename, nativeNarrowCategoryPath } from './resource-file.mjs';
 const modelCommands = new Map([
   [0x51, 2],
+  [0x52, 2],
   [0x15a, 3],
   [0x18e, 12],
   [0x18f, 7],
@@ -19,13 +20,19 @@ export class NativePlaneModelCommands {
     this.filename = '';
     const abi = world.profile && nativeABI(world.profile);
     this.trailUsesScalarWords = abi?.graphics.planeTrailUsesScalarWords;
+    this.coloredKx2CategoryCount = abi?.graphics.planeUsesLegacyColoredKX2
+      ? abi.resources.categoryCount
+      : 0;
     this.kx3CategoryCount = abi?.graphics.planeKx3UsesLegacyReceiver
       ? abi.resources.categoryCount
       : 0;
   }
   async apply(id, args, machine, task) {
     const world = this.world,
-      target = nativeDataArgument(args, machine, 0);
+      legacyColored = id === 0x52 && this.coloredKx2CategoryCount > 0;
+    if (legacyColored && args[0] !== 0 && args.length < 2)
+      throw new Error('Native KX2 requires a target and filename format');
+    const target = nativeDataArgument(args, machine, 0);
     if (!target && id !== 0x18f) return nativeReply(2);
     const a = Array.from({ length: modelCommands.get(id) }, (_, i) =>
       nativeDataArgument(args, machine, i),
@@ -33,30 +40,41 @@ export class NativePlaneModelCommands {
     let message,
       w = 0,
       packet;
-    if (id === 0x51 || id === 0x15a) {
-      const legacyKx3 = id === 0x15a && this.kx3CategoryCount > 0;
-      if (legacyKx3) {
+    if (id === 0x51 || id === 0x52 || id === 0x15a) {
+      const legacyKx3 = id === 0x15a && this.kx3CategoryCount > 0,
+        category = id === 0x15a ? 'kx3' : 'kx2';
+      if (legacyKx3 || legacyColored) {
         const owner = world.resolveTaskID(target, task.id);
         if (owner !== null && ![2, 6].includes(world.objects.objects.get(owner)?.kind))
-          throw new Error('Native KX3 receiver requires a Plane or BasePlane');
+          throw new Error(
+            `Native ${category.toUpperCase()} receiver requires a Plane or BasePlane`,
+          );
       }
       const name = nativeDataFormat(args, machine, world.runtime.services, 1);
-      if (legacyKx3) {
+      if (legacyKx3 || legacyColored) {
+        const label = category.toUpperCase();
         if (!name || name.length >= 256)
-          throw new RangeError('Native KX3 format exceeds its CP932 pathname buffer');
-        const filename = nativeNarrowCategoryPath(world.game, name, 'kx3', this.kx3CategoryCount);
+          throw new RangeError(`Native ${label} format exceeds its CP932 pathname buffer`);
+        const filename = nativeNarrowCategoryPath(
+          world.game,
+          name,
+          category,
+          legacyKx3 ? this.kx3CategoryCount : this.coloredKx2CategoryCount,
+        );
+        if (legacyColored && filename?.length > 256)
+          throw new RangeError('Native KX2 resolved path exceeds its CP932 pathname buffer');
         if (filename) this.filename = filename;
       } else if (name)
         this.filename = nativeCategoryFilename(
           world.game,
           new TextDecoder('shift_jis').decode(name),
-          id === 0x51 ? 'kx2' : 'kx3',
+          category,
         );
       const bytes =
         this.filename instanceof Uint8Array ? this.filename : encodeCP932(this.filename + '\0');
       packet = new NativeGraphicsPacket(new Array(Math.ceil(bytes.length / 4)).fill(0));
       packet.bytes(0, bytes.length).set(bytes);
-      message = id === 0x51 ? 69 : 71;
+      message = id === 0x51 ? 69 : id === 0x52 ? 70 : 71;
       w = id === 0x15a ? a[2] : 0;
     } else if (id === 0x18e) {
       message = 79;

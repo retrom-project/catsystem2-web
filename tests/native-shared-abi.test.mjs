@@ -21,7 +21,9 @@ test('shared semantics do not name or enable explicitly unknown profile slots', 
   assert.equal(earlierDraw.status, 'unknown');
   assert.equal(sdk.tables.main.entries[0x108].name, 'draw.countEntries');
   assert.equal(game.tables.main.entries[0x108].name, 'draw.countEntries');
-  assert.equal(Object.hasOwn(NATIVE_SEMANTICS.main, 0x52), false);
+  assert.equal(NATIVE_SEMANTICS.main[0x52].name, 'plane.loadColoredKX2');
+  assert.equal(sdk.tables.main.entries[0x52].status, 'unknown');
+  assert.equal(sdk.tables.main.entries[0x52].name, null);
   assert.deepEqual(sdk.tables.main.entries[0x52].controlCodes, []);
   assert.deepEqual(game.tables.main.entries[0x52].controlCodes, [2]);
   assert.throws(() => nativeABI('unregistered'), /Unregistered/);

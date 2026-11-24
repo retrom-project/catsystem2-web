@@ -5,11 +5,13 @@ import { multiply, rotation } from '../motion/matrix.mjs';
 import { linearInterpolate, x87AddWords } from '../ppi/numeric.mjs';
 import { bitsFloat, floatBits } from '../kcs/vm.mjs';
 const f = Math.fround;
-export function decodePlaneKX2(bytes) {
-  if (bytes.length < 24) throw new RangeError('Truncated KX2 header');
+export function decodePlaneKX2(bytes, { allowUnknownSignature = false } = {}) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
-    count = view.getUint32(20, true);
-  if (view.getUint32(0, true) !== 0x0032584b) throw new Error('Invalid KX2 signature');
+    identified = bytes.length >= 4 && view.getUint32(0, true) === 0x0032584b;
+  if (allowUnknownSignature && bytes.length >= 4 && !identified) return null;
+  if (bytes.length < 24) throw new RangeError('Truncated KX2 header');
+  if (!identified) throw new Error('Invalid KX2 signature');
+  const count = view.getUint32(20, true);
   if (count > Math.floor((bytes.length - 24) / 48)) throw new RangeError('Truncated KX2 triangles');
   const rect = Array.from({ length: 4 }, (_, i) => view.getFloat32(4 + i * 4, true)),
     triangles = Array.from({ length: count }, (_, i) =>

@@ -3,7 +3,7 @@
 Native meanings live once in
 [semantics.mjs](../src/native/abi/semantics.mjs), indexed by table namespace and
 numeric ID. Main, generic/MOT and the two particle namespaces remain separate.
-The catalog contains 927 reviewed main meanings and 45/44/51 auxiliary meanings.
+The catalog contains 928 reviewed main meanings and 45/44/51 auxiliary meanings.
 These are the union of the registered engines' recovered declarations, not a
 list of functions enabled in every engine. Project descriptive names do not
 claim to recover the compiler's original symbols.
@@ -19,10 +19,10 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 466       | 57            | 17            | 329     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.63 | 938        | 370       | 80            | 19            | 469     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
+| 2.6.1.23 | 869        | 467       | 57            | 17            | 328     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.63 | 938        | 379       | 80            | 19            | 460     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
-| 2.6.1.74 | 1009       | 850       | 82            | 19            | 58      | 45 / 44 / 51                                     |
+| 2.6.1.74 | 1009       | 856       | 82            | 19            | 52      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                                     |
 
 The registry represents 5,509 slots, including 2,344 SDK74/Game76 slots.
@@ -484,8 +484,13 @@ Fade or Wipe recomputes its start and end from the live task clock.
 
 Main 78 creates a textured Plane through raw message 38 with an eight-word
 rectangle packet. Main 80 resets it through raw 41. Main 81 formats a narrow
-filename and loads the mounted KX2 triangle model through raw 64. Both wrappers
-return control 2 without writing a VM result. Main 84, 85 and 93 update its
+filename and loads the mounted KX2 triangle model through raw 64. Main 82
+uses raw 65 to load the standalone colored model through the original
+CP932 category path. It copies the triangles and signed bounds into a
+new owner in renderer mode 1. A repeat retains an existing graph. An
+inactive renderer, missing file or another file signature leaves the
+owner unchanged. These wrappers return control 2 without writing a VM
+result. Main 84, 85 and 93 update its
 position, planar base or rotation. The planar base update reads and preserves depth. Main 94 clamps
 the signed alpha to 0 through 255 and sends raw message 59 with flag one.
 Main 101 and 344 set scale and a selected transform matrix. Main 343 and
@@ -1045,8 +1050,8 @@ argument counts and scalar comparison policies retain their existing behavior.
 The central runtime rejects a resolved `status: 'unknown'` slot before preparing
 bank/resource services, invoking a registered handler or entering a built-in
 fallback. Registration may retain a dormant implementation shared with another
-profile; it does not grant that slot permission to execute. For example, SDK
-main264 keeps its unknown signature and cannot reach its installed drawing
+profile; it does not grant that slot permission to execute. For example,
+2.6.1.67 Main 264 keeps its unknown signature and cannot reach its drawing
 handler. A signature's `review: 'needs-review'` is separate from slot status:
 known recovered/declared calls still follow their existing dispatch, control
 validation and explicit reserved/constant-zero behavior.

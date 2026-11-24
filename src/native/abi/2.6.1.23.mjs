@@ -262,6 +262,11 @@ const mainEvidence = [
       'Own 2.6.1.23 Main 0x48a710, 0x48a760 and 0x48a880 read Base raw 12 flags, count signed registry keys with a directly owned branch, and query membership through Top raw 30.',
   },
   {
+    ids: [82],
+    value:
+      'Own 2.6.1.23 Main 0x47ecf0 sends the formatted CP932 KX2 path through Plane raw 65. The mode-1 renderer copies the packed colored triangles into a new owner. Declined and repeated registrations preserve the existing model.',
+  },
+  {
     ids: [107],
     value:
       'Own 2.6.1.23 Main 0x48a280 selects Input through Top raw 31, then sends the region key through Input raw 126 to read its full activity word. An absent region leaves the original output scratch unchanged.',
@@ -1238,6 +1243,7 @@ export default {
     planeUsesLegacyButtonStates: true,
     planeImageSelectorHidesTarget: true,
     planeTrailUsesScalarWords: true,
+    planeUsesLegacyColoredKX2: true,
     planeKx3UsesLegacyReceiver: true,
     planeMovieLegacy: true,
     tilePlaneRequiresEmptyOwner: true,

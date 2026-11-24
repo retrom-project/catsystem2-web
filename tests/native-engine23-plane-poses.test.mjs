@@ -673,6 +673,95 @@ test('fixed 2.6.1.23 Plane KX3 sends CP932 and leaves verified recipients unchan
   }
 });
 
+test('fixed 2.6.1.23 loads an untextured KX2 model with bounded original ownership', async (t) => {
+  const bytes = new Uint8Array(24 + 48),
+    view = new DataView(bytes.buffer),
+    rect = [11.5, -3.25, -2.25, 2.5],
+    vertices = [
+      { x: -2, y: -1, z: 0, color: 0xff336699 },
+      { x: 6, y: -1, z: 0.5, color: 0xffcc33aa },
+      { x: -1, y: 5, z: 1, color: 0xff771122 },
+    ];
+  view.setUint32(0, 0x0032584b, true);
+  rect.forEach((word, i) => view.setFloat32(4 + i * 4, word, true));
+  view.setUint32(20, 1, true);
+  vertices.forEach(({ x, y, z, color }, i) => {
+    const at = 24 + i * 16;
+    view.setFloat32(at, x, true);
+    view.setFloat32(at + 4, y, true);
+    view.setFloat32(at + 8, z, true);
+    view.setUint32(at + 12, color, true);
+  });
+  const world = await dataWorld(profile, {
+    'models/模型.kx2': bytes,
+    'models/invalid.kx2': new Uint8Array(24),
+    'models/short.kx2': bytes.slice(0, 25),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  world.game.nativeResources = {
+    entries: [{ name: 'KX2', directory: 'models', extension: 'kx2' }],
+  };
+  const memory = Array(3).fill(canary),
+    id = await world.objects.create({ kind: 2, parent: world.root }),
+    owner = world.graphics.get(id),
+    target = world.nativeTaskID(id),
+    read = world.game.read.bind(world.game),
+    reads = [];
+  world.game.read = (name) => {
+    reads.push(name);
+    return read(name);
+  };
+  const load = (name, error, at = 64) =>
+    call(world, 82, [target, at], memory, error, (guest) => {
+      const text = encodeCP932(name + '\0');
+      guest.bytes(at, text.length).set(text);
+    });
+  await load('模型');
+  assert.equal(owner.graph, null);
+  assert.deepEqual(reads, []);
+  world.graphics.createLogicalDevice();
+  owner.state.vramType = 2;
+  await load('模型');
+  assert.equal(owner.graph, null);
+  assert.deepEqual(reads, []);
+  owner.state.vramType = 1;
+  await load('missing');
+  await load('invalid');
+  await load('short', /Truncated KX2 triangles/);
+  assert.equal(owner.graph, null);
+  await load('模型', undefined, 0x80000040);
+  const installed = owner.graph;
+  assert.deepEqual(owner.state.rect, [11.5, -3.25, 13.75, 5.75]);
+  assert.equal(owner.state.drawType, 6);
+  assert.equal(installed.vram, false);
+  assert.equal(installed.filename, 'models/模型.kx2');
+  assert.deepEqual(installed.triangles, [vertices]);
+  assert.equal(installed.registrationWord, 1);
+  const observed = [];
+  await owner.drawGPU({ drawGeometry: (triangles) => observed.push(triangles) });
+  assert.equal(observed[0].length, 1);
+  await load('模型');
+  await load('invalid');
+  assert.equal(owner.graph, installed);
+  assert.deepEqual(reads, [
+    'models/missing.kx2',
+    'models/invalid.kx2',
+    'models/short.kx2',
+    'models/模型.kx2',
+    'models/模型.kx2',
+    'models/invalid.kx2',
+  ]);
+  await call(world, 82, [target], memory, /target and filename format/);
+  await call(world, 82, [0, 0xffffffff], memory);
+  await call(
+    world,
+    82,
+    [world.nativeTaskID(world.main.id), 0xffffffff],
+    memory,
+    /requires a Plane or BasePlane/,
+  );
+});
+
 test('fixed 2.6.1.23 Plane input preserves installed geometry and the raw source word', async () => {
   const world = await dataWorld(profile);
   try {

@@ -530,6 +530,7 @@ export class NativeGraphicTask {
     this.planeUsesLegacyButtonStates = Boolean(abi?.planeUsesLegacyButtonStates);
     this.planeEmptyGraphRequiresMode1 = Boolean(abi?.planeEmptyGraphRequiresMode1);
     this.planeAlphaRequiresGraph = Boolean(abi?.planeAlphaRequiresGraph);
+    this.planeUsesLegacyColoredKX2 = Boolean(abi?.planeUsesLegacyColoredKX2);
     this.planeKx3UsesLegacyReceiver = Boolean(abi?.planeKx3UsesLegacyReceiver);
     this.tilePlaneRequiresEmptyOwner = Boolean(abi?.tilePlaneRequiresEmptyOwner);
     this.legacyPlaneRegistration = Boolean(profile?.input?.legacyPlaneRegistration);
@@ -994,6 +995,8 @@ export class NativeGraphicTask {
       }
       case 69:
       case 70: {
+        const legacyColored = id === 70 && this.planeUsesLegacyColoredKX2;
+        if (legacyColored && (!this.graphics.device.ready || this.state.vramType !== 1)) return 0;
         const name = [];
         for (let at = 0; ; at++) {
           const byte = bytes(l + at, 1)[0];
@@ -1003,12 +1006,32 @@ export class NativeGraphicTask {
         }
         const filename = new TextDecoder('shift_jis').decode(Uint8Array.from(name)),
           data = await readNativeResource(this.world, filename);
-        this.unload();
-        if (data) {
-          const graph = decodePlaneKX2(data);
-          this.makeGraph({ ...graph, type: id === 69 ? 6 : 7, vram: id === 69, filename });
-          this.state.rect = [graph.rect[0], graph.rect[1], graph.width, graph.height];
+        if (!legacyColored) this.unload();
+        if (!data || (legacyColored && !data.length)) return 0;
+        const graph = decodePlaneKX2(data, { allowUnknownSignature: legacyColored });
+        if (!graph) return 0;
+        if (legacyColored) {
+          if (this.graph || !this.graphics.device.ready || this.state.vramType !== 1) return 0;
+          if (
+            ![...graph.rect, graph.width, graph.height].every(Number.isFinite) ||
+            graph.triangles.some((triangle) =>
+              triangle.some(({ x, y, z }) => ![x, y, z].every(Number.isFinite)),
+            )
+          )
+            throw new Error('Native colored KX2 requires finite model coordinates');
         }
+        this.makeGraph({
+          ...graph,
+          type: id === 69 ? 6 : 7,
+          vram: id === 69,
+          filename,
+          ...(legacyColored ? { registrationEnabled: graph.triangles.length > 0 } : {}),
+        });
+        if (legacyColored) {
+          this.graph.registrationWord = Number(this.graph.registrationEnabled);
+          this.state.drawType = 6;
+        }
+        this.state.rect = [graph.rect[0], graph.rect[1], graph.width, graph.height];
         return 0;
       }
       case 79:

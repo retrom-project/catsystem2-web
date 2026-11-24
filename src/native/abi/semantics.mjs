@@ -2962,6 +2962,34 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    82: {
+      name: 'plane.loadColoredKX2',
+      family: 'plane',
+      signature: {
+        argumentWords: 2,
+        controlCodes: [2],
+        parameters: [
+          {
+            description: 'native Plane task ID',
+            name: 'target',
+            type: { kind: 'object-id', objectKind: 'plane' },
+          },
+          {
+            description: 'NUL-terminated CP932 model filename format',
+            name: 'filename',
+            type: {
+              addressSpace: 'vm',
+              direction: 'in',
+              kind: 'pointer',
+              target: { encoding: 'CP932', kind: 'format-string' },
+            },
+          },
+        ],
+        result: { description: 'void', kind: 'void' },
+        resultWritten: false,
+        review: 'declared',
+      },
+    },
     83: {
       name: 'plane.resetBase',
       family: 'plane',
