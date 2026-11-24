@@ -140,14 +140,14 @@ export function wrapDisplayLog(bytes, model, speaker, tag, crNext) {
   }
   return rows;
 }
-export function encodeDisplayLog(model) {
+export function encodeDisplayLog(model, blockWords = 7) {
   const sections = [[], [], [], []],
     word = (list, n) => list.push(n & 255, (n >>> 8) & 255, (n >>> 16) & 255, n >>> 24),
     str = (list, b) => list.push(...b, 0);
   word(sections[0], model.scenes.length);
   model.scenes.forEach((b) => str(sections[0], b));
   word(sections[1], model.blocks.length);
-  model.blocks.forEach((b) => b.forEach((n) => word(sections[1], n)));
+  model.blocks.forEach((b) => b.slice(0, blockWords).forEach((n) => word(sections[1], n)));
   word(sections[2], model.rows.length);
   model.rows.forEach((r) => {
     word(sections[2], r.tag);
@@ -167,7 +167,7 @@ export function encodeDisplayLog(model) {
   v.setUint32(20, model.rowBase, true);
   return out;
 }
-export function decodeDisplayLog(bytes) {
+export function decodeDisplayLog(bytes, blockWords = 7) {
   const b = new Binary(bytes, 'Native display log');
   b.range(0, 24);
   const model = {
@@ -183,9 +183,12 @@ export function decodeDisplayLog(bytes) {
       count = b.u32(offset);
     let at = offset + 4;
     if (side === 1) {
-      b.range(at, count * 28);
-      for (let i = 0; i < count; i++, at += 28)
-        model.blocks.push(Array.from({ length: 7 }, (_, j) => b.u32(at + j * 4)));
+      const stride = blockWords * 4;
+      b.range(at, count * stride);
+      for (let i = 0; i < count; i++, at += stride)
+        model.blocks.push(
+          Array.from({ length: 7 }, (_, j) => (j < blockWords ? b.u32(at + j * 4) : 0xffffffff)),
+        );
       continue;
     }
     for (let i = 0; i < count; i++) {
@@ -207,6 +210,7 @@ export function decodeDisplayLog(bytes) {
 export class NativeDisplayLogs {
   constructor(world) {
     this.world = world;
+    this.blockRecordWords = nativeABI(world.profile).displayLog?.blockRecordWords ?? 7;
   }
   get(handle) {
     return this.world.runtime.handles.get(handle, 'display-log');
@@ -449,11 +453,11 @@ export class NativeDisplayLogs {
       if (!a(0) || !a(2)) return value(0);
       const file = this.world.runtime.handles.get(a(0), 'global-file'),
         model = this.get(a(2));
-      if (id === 0x352) file.write(a(1), encodeDisplayLog(model));
+      if (id === 0x352) file.write(a(1), encodeDisplayLog(model, this.blockRecordWords));
       else {
         const bytes = file.read(a(1));
         if (bytes === null) return value(0);
-        Object.assign(model, decodeDisplayLog(bytes));
+        Object.assign(model, decodeDisplayLog(bytes, this.blockRecordWords));
         model.revision++;
         this.prune(model);
       }

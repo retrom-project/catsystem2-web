@@ -126,6 +126,7 @@ export default {
   motion: { elapsedUsesX87: true, skipBypassesDelay: false, activeQueryUsesRawWord: true },
   globalFile: { growthBytes: 524288 },
   gallery: { listVariantWidth: 64 },
+  displayLog: { blockRecordWords: 6 },
   nameTable: { legacyFieldBytes: 32 },
   stringBank: { emptyGetResult: 0, expandUsesExistingBank: true },
   database: { nullExportPolicy: 'reject-unwritten' },
@@ -958,17 +959,17 @@ export default {
           610, 611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621, 622, 623, 624, 625, 628, 629,
           631, 632, 641, 648, 651, 653, 654, 655, 657, 658, 659, 662, 663, 664, 665, 666, 667, 668,
           669, 674, 675, 676, 677, 678, 679, 680, 681, 682, 683, 684, 685, 688, 689, 690, 691, 692,
-          693, 694, 695, 696, 697, 698, 699, 700, 701, 702, 703, 704, 705, 706, 707, 708, 709, 710,
-          711, 712, 713, 714, 715, 716, 717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727, 728,
-          729, 730, 731, 732, 733, 734, 735, 736, 737, 738, 742, 743, 744, 745, 746, 747, 748, 749,
-          750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767,
-          768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785,
-          786, 787, 788, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805,
-          806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823,
-          824, 825, 826, 827, 828, 829, 830, 831, 832, 836, 837, 838, 839, 840, 841, 842, 843, 844,
-          845, 846, 847, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 869, 871,
-          873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890,
-          891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 935, 936, 937,
+          693, 694, 695, 701, 702, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715,
+          716, 717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727, 728, 729, 730, 731, 732, 733,
+          734, 735, 736, 737, 738, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754,
+          755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771, 772,
+          773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 786, 787, 788, 791, 792, 793,
+          794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811,
+          812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829,
+          830, 831, 832, 836, 837, 838, 839, 840, 841, 842, 843, 844, 845, 846, 847, 852, 853, 854,
+          855, 856, 857, 858, 859, 860, 861, 862, 869, 871, 873, 874, 875, 877, 878, 879, 880, 881,
+          882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899,
+          900, 901, 902, 903, 904, 905, 935, 936, 937,
         ],
         recovered: [
           1, 4, 5, 6, 8, 13, 14, 15, 16, 17, 19, 21, 25, 36, 41, 57, 62, 63, 64, 65, 66, 67, 68, 69,
@@ -981,13 +982,33 @@ export default {
           393, 400, 401, 402, 403, 404, 419, 420, 421, 422, 423, 424, 425, 440, 447, 448, 449, 450,
           451, 452, 453, 454, 455, 458, 459, 465, 466, 467, 469, 515, 516, 517, 518, 541, 542, 549,
           586, 590, 591, 592, 593, 594, 595, 596, 597, 605, 608, 630, 633, 634, 635, 636, 637, 638,
-          639, 640, 645, 646, 647, 649, 650, 739, 740, 741, 789, 790, 833, 834, 835, 848, 849, 863,
-          864, 865, 866, 867, 868, 870, 872, 934,
+          639, 640, 645, 646, 647, 649, 650, 696, 697, 698, 699, 700, 739, 740, 741, 785, 789, 790,
+          833, 834, 835, 848, 849, 850, 851, 863, 864, 865, 866, 867, 868, 870, 872, 876, 934,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: [696, 697],
+          value:
+            'Own 2.6.1.67 Main696 initializes the 248-byte display-log owner at 0x508b10 and its CP932 name configuration at 0x507fc0, then writes the handle through control 1. Main697 destroys the tables and releases the owner via 0x508e70.',
+        },
+        {
+          ids: [698, 699, 700],
+          value:
+            'Own 2.6.1.67 Main698 formats scene, speaker and message at 0x62cee0 and appends CP932 rows through 0x5097a0. Main699 clears and rebuilds through the path history’s saved block counts and the named voice and paragraph commands. Main700 clears the translated destination and copies the speaker found by signed row index. All three return control 2.',
+        },
+        {
+          ids: [785, 876],
+          value:
+            'Own 2.6.1.67 Main785 sets the unsigned block limit and prunes through 0x508150, with all ones as unlimited. Main876 clears the four tables through 0x508de0 and retains the block and row bases; both leave the VM result untouched.',
+        },
+        {
+          ids: [850, 851],
+          value:
+            'Own 2.6.1.67 Main850/851 use CSS header offsets for four sections and two bases with 24-byte block records. Serialization 0x507650 and reread 0x508ff0 share the narrow speaker/scene/row sections. Restore prunes to the destination owner’s limit. Control 1 writes success.',
+        },
         {
           ids: [155],
           value:
@@ -1398,6 +1419,8 @@ export default {
         },
       ],
       signatures: [
+        { ids: [696, 850, 851], fields: { resultWritten: true } },
+        { ids: [697, 698, 699, 700, 785, 876], fields: { resultWritten: false } },
         {
           ids: [156, 157, 158, 159, 161, 163, 164, 166, 167, 168],
           fields: { resultWritten: false },

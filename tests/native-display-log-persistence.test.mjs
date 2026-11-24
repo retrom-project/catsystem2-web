@@ -212,3 +212,137 @@ for (const [profile, fixture] of [
       }
     },
   );
+
+test('2.6.1.67 log GCALLs store six-word CP932 blocks and rebuild through the saved Scene cursor', async (t) => {
+  const log = [0x13, 80],
+    target = [0x13, 84],
+    cursor = [0x13, 88],
+    file = [0x13, 92],
+    command = (calls) =>
+      kcsProgram(
+        [
+          [37, 0xa0182de0],
+          ...calls.flatMap(([id, args, result]) => [
+            ...args.map((arg) => [37, arg]),
+            [43, id, args.length * 4],
+            ...(result === undefined ? [] : [[38, result]]),
+          ]),
+          [59],
+        ],
+        [
+          [320, 'story.cst'],
+          [352, '声'],
+          [384, '一'],
+          [416, '二'],
+          [448, '三'],
+          [480, 'voice'],
+          [512, 'paragraph'],
+        ],
+      ),
+    world = await dataWorld('bokutomo-engine-2.6.1.67', {
+      'story.cst': scene([
+        [
+          [33, '役＠声'],
+          [32, '原版本文'],
+          [48, 'voice line.ogg'],
+        ],
+        [[32, '先の台詞']],
+      ]),
+      'line.ogg': Uint8Array.of(1),
+      'log-create.kcs': command([
+        [696, [], 80],
+        [696, [], 84],
+        [323, [], 88],
+        [238, [88], 92],
+      ]),
+      'log-store.kcs': command([
+        [785, [log, 2]],
+        [698, [log, 320, 1, 352, 384, 0, 0]],
+        [698, [log, 320, 2, 352, 416, 1, 0]],
+        [698, [log, 320, 2, 352, 448, 0, 0]],
+        [698, [log, 320, 3, 352, 448, 0, 0]],
+        [700, [log, 128, 1]],
+        [700, [log, 160, -1]],
+        [850, [file, 250, log], 96],
+        [850, [file, 251, 0], 100],
+        [876, [log]],
+      ]),
+      'log-restore.kcs': command([
+        [851, [file, 251, target], 96],
+        [851, [file, 250, target], 100],
+        [700, [target, 128, 1]],
+        [697, [log]],
+      ]),
+      'log-rebuild.kcs': command([
+        [329, [cursor, 320, 1], 96],
+        [699, [target, cursor, 480, 512]],
+        [697, [0]],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const { runtime } = world,
+    { fields } = world.configuration;
+  Object.assign(fields.log, {
+    nameFirst: '',
+    nameLast: '',
+    dispName: true,
+    nameline: true,
+    nameindent: 0,
+    col: 40,
+  });
+  world.game.resolveCategory = (name, category) =>
+    category === 'scene' && !name.endsWith('.cst') ? name + '.cst' : name;
+  const run = async (name, handles = []) => {
+    const task = await world.spawnScript(name, { parent: world.main.id, initialExecute: false }),
+      { machine } = task,
+      floor = machine.sp;
+    handles.forEach((word, i) => machine.store(80 + i * 4, word));
+    machine.store(160, 0xaabbccdd);
+    await runtime.scheduler.execute(task);
+    assert.equal(machine.sp, floor + 4);
+    assert.equal(machine.load(floor), 0xa0182de0);
+    return machine;
+  };
+  const created = await run('log-create.kcs'),
+    handles = [80, 84, 88, 92].map((at) => created.load(at)),
+    model = runtime.handles.get(handles[0], 'display-log');
+  assert.equal(model.limit, 100);
+  const stored = await run('log-store.kcs', handles);
+  assert.equal(stored.string(128), '声');
+  assert.equal(stored.load(160), 0xaabbcc00);
+  assert.deepEqual([stored.load(96), stored.load(100)], [1, 0]);
+  assert.deepEqual(
+    [model.blocks.length, model.rows.length, model.blockBase, model.rowBase],
+    [0, 0, 1, 2],
+  );
+
+  const bytes = runtime.handles.get(handles[3], 'global-file').read(250),
+    view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
+    word = (at) => view.getUint32(at, true);
+  assert.deepEqual(
+    [word(0), word(4), word(8), word(12), word(16), word(20)],
+    [24, 38, 90, 122, 1, 2],
+  );
+  assert.deepEqual(
+    Array.from({ length: 13 }, (_, i) => word(38 + i * 4)),
+    [2, 7, 0, 2, 2, 3, 0, 3, 0, 3, 4, 5, 0],
+  );
+  assert.equal(word(90), 4);
+  assert.equal(word(122), 1);
+
+  const loaded = await run('log-restore.kcs', handles),
+    copy = runtime.handles.get(handles[1], 'display-log');
+  assert.deepEqual([loaded.load(96), loaded.load(100), loaded.string(128)], [0, 1, '声']);
+  assert.equal(runtime.handles.records.has(handles[0]), false);
+  assert.deepEqual(
+    copy.blocks.map((block) => block[6]),
+    [0xffffffff, 0xffffffff],
+  );
+  const rebuilt = await run('log-rebuild.kcs', handles);
+  assert.equal(rebuilt.load(96), 1);
+  assert.equal(copy.blocks[0][0] & 7, 7);
+  assert.deepEqual(
+    copy.rows.map((row) => new TextDecoder('shift_jis').decode(row.first)),
+    ['声', '原版本文'],
+  );
+});
