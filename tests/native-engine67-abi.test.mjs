@@ -906,3 +906,52 @@ test('2.6.1.67 Input GCALLs collect four physical sources and clear region activ
   assert.equal(region.active, 0);
   assert.deepEqual([input.previousX, input.previousY, input.forceCursor], [-1, -1, true]);
 });
+
+test('2.6.1.67 narrow string GCALLs preserve native byte aliases and character boundaries', async () => {
+  const { runtime, task, machine } = await run([
+    [37, 0xfa9232f2],
+    ...[
+      [43, [416, 320, 352]],
+      [42, [480, 416, 1], 80],
+      [42, [512, 416, 99], 84],
+      [44, [544, 416, 0, -1]],
+      [45, [576, 384, 448, 640]],
+      [45, [704, 704, 448, 640]],
+      [47, [768], 88],
+      [48, [800], 92],
+      [49, [768, 832], 96],
+      [49, [768, 864], 100],
+      [49, [768, 896], 104],
+    ].flatMap(([id, args, output]) => [
+      ...args.map((word) => [37, word]),
+      [43, id, args.length * 4],
+      ...(output === undefined ? [] : [[38, output]]),
+    ]),
+    [59],
+  ]);
+  const floor = machine.sp;
+  machine.bytes(416, 232).fill(0xa5);
+  machine.writeString('a(b,(:c)),終', 320);
+  machine.writeString(',', 352);
+  machine.writeString('x-a-a-尾', 384);
+  machine.writeString('a', 448);
+  machine.writeString('写', 640);
+  machine.writeString('a-tail', 704);
+  machine.bytes(768, 5).set([0x81, 0x5c, 0x5c, 65, 0]);
+  machine.writeString('二文字', 800);
+  machine.writeString('\\', 832);
+  machine.writeString('absent', 864);
+  machine.writeString('', 896);
+  await runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), 0xfa9232f2);
+  assert.equal(machine.string(480), '(b,(:c))');
+  assert.deepEqual(machine.bytes(512, 3), Uint8Array.of(0, 0, 0xa5));
+  assert.equal(machine.string(544), 'a (b,(:c)) 終 ');
+  assert.equal(machine.string(576), 'x-写-写-尾');
+  assert.deepEqual(machine.bytes(704, 4), Uint8Array.of(0, 0, 0x74, 0x61));
+  assert.deepEqual(
+    [80, 84, 88, 92, 96, 100, 104].map((at) => machine.load(at)),
+    [1, 0, 3, 3, 2, 4, 0],
+  );
+});
