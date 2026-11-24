@@ -166,6 +166,11 @@ and reset `_EXITCODE_` to -1. Both return one to the decoder. The
 frame cursor resumes on the next tick, after the child's destruction
 request, and a notification cursor stops at the command.
 
+FES `getconf iswindow` reads the startup flag for windowed mode
+availability. `getconf screen` reads the independently stored current
+display setting. The browser can fit the rendered canvas into the
+viewport in windowed mode, including when fullscreen is currently active.
+
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word
 and three trailing words for VRAM coordinates and output. Main 611–615

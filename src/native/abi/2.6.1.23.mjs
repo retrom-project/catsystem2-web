@@ -1017,6 +1017,7 @@ export default {
     frameDecodeResources: true,
     objectHeadsFirst: true,
     endChildYieldsFrame: true,
+    windowedCapability: true,
     controlResources: { kinds: [42], sliderProtocol: 'legacy' },
     commonHeads: engine23CommonHeads,
     configurationMessage: {

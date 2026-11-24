@@ -164,6 +164,10 @@ export class EngineHost {
   nativeIsWindow() {
     return !document.fullscreenElement;
   }
+  nativeWindowedAvailable() {
+    // The canvas can fit its viewport independently of the current fullscreen mode.
+    return Boolean(this.engine.canvas.ownerDocument.defaultView);
+  }
   nativeTitleChanged(title, world) {
     if (world === this.engine.world) document.title = title;
   }

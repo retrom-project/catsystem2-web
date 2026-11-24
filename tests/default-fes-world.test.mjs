@@ -111,6 +111,29 @@ test('2.6.1.23 FES endkcs yields even when there is no live script', async (t) =
   assert.equal(world.objects.objects.has(worker.id), false);
 });
 
+test('2.6.1.23 FES reads windowed availability independently of the current mode', async (t) => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    world = await defaultFESWorld(profile, {
+      'screen.fes': bytes('#START\ngetconf 7 iswindow\ngetconf 8 screen\n'),
+    });
+  t.after(() => world.close());
+  let available = 1;
+  world.host.nativeIsWindow = () => assert.fail('The current browser mode is not this query');
+  world.host.nativeWindowedAvailable = () => available;
+  const { instance } = await loadDefaultFES(world);
+  for (const [canWindow, fullscreen] of [
+    [1, 0],
+    [1, 1],
+    [0, 0],
+    [0, 1],
+  ]) {
+    available = canWindow;
+    world.configuration.screen.fullscreen = fullscreen;
+    await world.tick();
+    assert.deepEqual([instance.global(7), instance.global(8)], [canWindow, fullscreen]);
+  }
+});
+
 test('2.6.1.23 authored Slider owns its low task, decoded skin, click and drag', async () => {
   const profile = 'grisaia-jp-engine-2.6.1.23';
   const source = [

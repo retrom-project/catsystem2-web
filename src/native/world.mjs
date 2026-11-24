@@ -297,8 +297,12 @@ export class NativeWorld {
       configuration,
       languages: () => configuration.language?.entries || [],
       isWindow: () => {
-        if (!host.nativeIsWindow) throw new Error('Native window state service is unavailable');
-        return Number(host.nativeIsWindow(this));
+        const query = nativeABI(profile).fes.windowedCapability
+          ? host.nativeWindowedAvailable
+          : host.nativeIsWindow;
+        if (typeof query !== 'function')
+          throw new Error('Native window state service is unavailable');
+        return Number(query.call(host, this));
       },
       emit: (event) => {
         const [type, value] = event,
