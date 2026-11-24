@@ -35,6 +35,7 @@ export class NativeMovies {
     active = () => true,
     audio = () => ({ factor: 100, mute: false }),
     alwaysUseBgmVolume = false,
+    redrawRequiresRunning = false,
     diagnostic = () => {},
     directShow = () => null,
     planeMovies = () => null,
@@ -50,6 +51,7 @@ export class NativeMovies {
       active,
       audio,
       alwaysUseBgmVolume,
+      redrawRequiresRunning,
       diagnostic,
       directShow,
       planeMovies,
@@ -108,7 +110,8 @@ export class NativeMovies {
     const record = this.get(handle);
     if (this.handles.records.get(handle)?.type === 'plane-movie') {
       if (record.prepared) await this.planeMovies().frame({ handle });
-    } else this.sessions.get(handle)?.redraw();
+    } else if (!this.redrawRequiresRunning || (record.prepared && record.running))
+      this.sessions.get(handle)?.redraw();
   }
   async open(filename, owner) {
     if (this.disabled()) return 0;
@@ -322,6 +325,7 @@ export function installNativeMovies(world) {
     active: () =>
       world.host.nativeWindowActive ? world.host.nativeWindowActive(world) : world.input.foreground,
     alwaysUseBgmVolume: nativeABI(world.profile).movie?.alwaysUseBgmVolume,
+    redrawRequiresRunning: nativeABI(world.profile).movie?.redrawRequiresRunning,
     audio: () => {
       const config = world.configuration,
         b = config.blocks[0],
@@ -332,15 +336,15 @@ export function installNativeMovies(world) {
       };
     },
     inputGate: async (owner, enabled) => {
-      const input = await world.sendEngine(
+      const input = await world.sendNativeEngine(
         0,
         owner,
         nativeABI(world.profile).messages.movieInput.query,
       );
-      if (input === NATIVE_UNWRITTEN_WORD)
-        throw new Error('Native movie has no initialized InputTask identity');
+      const target = input === NATIVE_UNWRITTEN_WORD ? null : world.resolveTaskID(input, owner);
+      if (target === null) throw new Error('Native movie has no initialized InputTask identity');
       await world.sendEngine(
-        input,
+        target,
         owner,
         nativeABI(world.profile).messages.movieInput.gate,
         0,
