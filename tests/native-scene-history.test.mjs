@@ -185,6 +185,64 @@ test('2.6.1.67 Scene history GCALLs keep CP932 aliases and import compact save r
   );
 });
 
+test('2.6.1.67 KCS CSS history uses the designated Script owner and restores both compact sides', async (t) => {
+  const file = [0x13, 80],
+    source = [0x13, 84],
+    destination = [0x13, 88],
+    calls = [
+      [238, [0x80000001], 80],
+      [239, [file, 10, 0, 0, 0], 92],
+      [239, [file, 10, source, 0, 0], 96],
+      [239, [file, 11, source, 1, 1], 100],
+      [249, [file, 10, destination, 0], 104],
+      [249, [file, 11, destination, 1], 108],
+      [249, [file, 12, destination, 1], 112],
+      [249, [0, 10, destination, 0], 116],
+    ],
+    world = await dataWorld('bokutomo-engine-2.6.1.67', {
+      'scene-owner.kcs': kcsProgram([[59]]),
+      'history-file.kcs': kcsProgram([
+        ...calls.flatMap(([id, words, at]) => [
+          ...words.map((word) => [37, word]),
+          [43, id, words.length * 4],
+          [38, at],
+        ]),
+        [59],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const spawn = (script) =>
+    world.spawnScript(script, { parent: world.main.id, initialExecute: false });
+  const writer = await spawn('scene-owner.kcs'),
+    reader = await spawn('scene-owner.kcs'),
+    io = await spawn('history-file.kcs'),
+    sourceHistory = world.runtime.sceneData(writer, true).history,
+    destinationHistory = world.runtime.sceneData(reader, true).history;
+  sourceHistory.markSeen('回想', 42);
+  sourceHistory.appendPath('回想', 19);
+  sourceHistory.setString(0, 2, 3, Uint8Array.of(0x94, 0x4c));
+  destinationHistory.appendPath('other', 7);
+  const m = io.machine,
+    stack = m.sp;
+  m.store(84, world.nativeTaskID(writer.id));
+  m.store(88, world.nativeTaskID(reader.id));
+  await world.runtime.scheduler.execute(io);
+  assert.equal(m.sp, stack);
+  assert.deepEqual(
+    [92, 96, 100, 104, 108, 112, 116].map((address) => m.load(address)),
+    [0, 1, 1, 1, 1, 0, 0],
+  );
+  const css = world.runtime.handles.get(m.load(80), 'global-file');
+  assert.equal(css.read(10).length, 40);
+  assert.equal(css.read(11).length, 40 + 72);
+  assert.equal(destinationHistory.seenValue('回想'), 42);
+  assert.deepEqual(
+    destinationHistory.path.map(({ scene, value }) => [scene, value]),
+    [['回想', 19]],
+  );
+  assert.deepEqual(destinationHistory.getString(0, 2, 3).bytes, Uint8Array.of(0x94, 0x4c));
+});
+
 for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
   test(`${profile} direct history saves read and write original compact records`, () =>
     verifyCompactHistory(profile));
