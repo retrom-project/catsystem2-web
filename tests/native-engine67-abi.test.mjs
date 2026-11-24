@@ -143,6 +143,59 @@ test('2.6.1.67 KCS resource selection and comma replacement preserve their CP932
   );
 });
 
+test('2.6.1.67 KCS percentage conversion rounds after division and writes only its string', async () => {
+  const cases = [
+      ['149913%', 123, '184392'],
+      ['16777217%', 6, '1006633'],
+      ['158%', 16777217, '26508002'],
+      ['-12%', 80, '-9'],
+      ['50%', 0xffffffff, '-2147483648'],
+      ['-50%', 0xffffffff, '-2147483648'],
+      ['1.5%', 200, '1.5%'],
+      ['0x20 text%', 200, '64'],
+      ['word%', 100, 'word%'],
+      ['25', 100, '25'],
+      ['4294967297%', 100, '1'],
+      ['0%', 0xc0000000, '0'],
+      ['', 100, ''],
+    ],
+    address = (index) => 256 + index * 40,
+    unchangedStack = 0x82345678,
+    { runtime, task, machine } = await run([
+      [37, unchangedStack],
+      ...cases.flatMap(([, base], index) => [
+        [37, address(index)],
+        [37, base],
+        [43, 46, 8],
+      ]),
+      [37, 0x80000001],
+      [37, 100],
+      [43, 46, 8],
+      [59],
+    ]);
+  const floor = machine.sp;
+  cases.forEach(([input], index) => {
+    const at = address(index);
+    machine.bytes(at - 1, 40).fill(0xa5);
+    machine.bytes(at, input.length + 1).set([...encodeCP932(input), 0]);
+  });
+  await runtime.scheduler.execute(task);
+  assert.equal(runtime.calls.get('main:46'), cases.length + 1);
+  assert.equal(machine.sp, floor + 4);
+  assert.equal(machine.load(floor), unchangedStack);
+  cases.forEach(([input, , expected], index) => {
+    const at = address(index),
+      initial = Uint8Array.from([
+        ...encodeCP932(input),
+        0,
+        ...new Uint8Array(38 - input.length).fill(0xa5),
+      ]);
+    initial.set([...encodeCP932(expected), 0]);
+    assert.equal(machine.load(at - 1, 1), 0xa5);
+    assert.deepEqual(machine.bytes(at, initial.length), initial, input);
+  });
+});
+
 const scalarCases = [
   { ids: [50, 1, 6], args: [0x3f000000], result: 0x3ef57744 },
   { ids: [50, 1, 6], args: [0x80000000], result: 0x80000000 },
