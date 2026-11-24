@@ -1140,7 +1140,11 @@ async function oldTitleWorld(
   return { world, audio };
 }
 
-for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
+for (const profile of [
+  'rebellions-jp-engine-2.6.1.63',
+  title67Profile,
+  'grisaia-jp-engine-2.6.1.23',
+])
   test(`${profile} Script persists its owned CG registrations and releases the restored handle`, () =>
     verifyCGRegistrations(profile));
 
