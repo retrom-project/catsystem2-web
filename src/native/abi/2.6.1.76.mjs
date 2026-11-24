@@ -6,6 +6,8 @@ export default {
   id: 'cs2-2.6.1.76',
   profile: 'nekopara-vol3-engine-2.6.1.76',
   engineVersion: '2.6.1.76',
+  executableSha256: 'ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0',
+  particle: { scriptVersionFallback: 'particle-v1' },
   xmlEncoding: 'UTF-8',
   text: {
     freeTypeCharacterEncoding: 'code-unit',

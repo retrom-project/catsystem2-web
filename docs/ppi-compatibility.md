@@ -43,3 +43,10 @@ inspection, CPU backend and Windows services are domain8 infrastructure until
 the remaining migration removes them. They are not a plugin execution fallback.
 The shared renderer consumer view projects only the registered FES/media fields
 (domains7/8); no domain9 projection remains.
+
+The exact prepared 2.6.1.76 executable selects Particle v2 when the KCS
+header version is 0x20000. It selects v1 for the other members in the
+original archive, including the seven with version zero. The original
+binding was executed with all 17 authored headers and matched production
+dispatch. The ABI acceptance inventory uses this fallback for the
+verified prepared executable fingerprint.
