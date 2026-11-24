@@ -152,6 +152,98 @@ test('2.6.1.67 Main320 prepares spline records in the authored memory domain', a
   );
 });
 
+test('2.6.1.67 kind 8 Text preserves its original packets, rows and published clear', async (t) => {
+  const widths = new Map([
+      [123, 3],
+      [124, 2],
+      [125, 1],
+      [418, 4],
+      [557, 2],
+    ]),
+    marker = 0xe59f171d,
+    programs = Object.fromEntries(
+      [...widths].map(([id, width]) => [
+        `${id}.kcs`,
+        kcsProgram([
+          [37, marker],
+          ...Array.from({ length: width }, (_, i) => [37, [0x13, 64 + i * 4]]),
+          [43, id, width * 4],
+          [59],
+        ]),
+      ]),
+    ),
+    world = await dataWorld(profile, programs);
+  t.after(() => world.close({ flushFiles: false }));
+  const owner = await world.objects.create({ kind: 8, parent: world.root }),
+    target = world.nativeTaskID(owner),
+    model = world.legacyText.tasks.get(owner),
+    uploads = [];
+  world.graphics.output = async (bitmap, position) => {
+    uploads.push({ position, bytes: (await bitmap.pixels()).slice() });
+  };
+  const configuration = Array(24).fill(0);
+  Object.assign(configuration, {
+    0: 5,
+    1: -6,
+    2: 128,
+    3: 64,
+    4: 4,
+    5: 1,
+    6: 16,
+    11: 3,
+    12: 4,
+    15: 40,
+    16: 0xff35791a,
+    17: 1,
+  });
+  async function call(id, args, initialize = () => {}) {
+    const task = await world.spawnScript(`${id}.kcs`, { initialExecute: false }),
+      { machine } = task,
+      start = machine.sp;
+    try {
+      args.forEach((word, index) => machine.store(64 + index * 4, word));
+      initialize(machine);
+      assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+      assert.equal(machine.sp, start + 4);
+      assert.equal(machine.pop(), marker);
+    } finally {
+      await world.objects.release(task.id);
+    }
+  }
+  const define = (machine, second) => {
+    configuration.forEach((word, index) => machine.store(513 + index * 4, word));
+    machine.bytes(800, 257).fill(65);
+    machine.store(1056, 0, 1);
+    machine.writeString(second, 1088);
+  };
+  await call(123, [target, 513, 800], (machine) => define(machine, ''));
+  assert.deepEqual([model.text.w(201), model.text.w(330)], [256, 0]);
+  await call(418, [target, 513, 800, 1088], (machine) => define(machine, 'あ。'));
+  assert.deepEqual([model.text.w(201), model.text.w(330)], [256, 2]);
+  assert.deepEqual([...model.text.profile(330, 331)], [0x82a0, 0x8142]);
+  await call(557, [target, 0x84123456]);
+  assert.equal(model.text.w(470) >>> 0, 0x84123456);
+  await call(124, [target, 513], (machine) => machine.writeString('本文', 513));
+  assert.deepEqual(
+    model.text.rows.map((row) => [...row].map((word) => word >>> 0)),
+    [
+      [0x967b, 0xff35791a, 0, 0, 16, 16, 0, 0, 0, 0],
+      [0x95b6, 0xff35791a, 16, 0, 16, 16, 0, 0, 0, 0],
+    ],
+  );
+  const bitmap = world.graphics.images.get(model.bitmap);
+  await bitmap.fill(0, 0, 128, 64, 0xa5347962);
+  uploads.length = 0;
+  await call(125, [target]);
+  assert.deepEqual(model.text.rows, []);
+  assert.deepEqual([model.text.w(459), model.text.w(460)], [3, 4]);
+  assert.equal(uploads.length, 1);
+  assert.deepEqual(uploads[0].position, [5, -6]);
+  assert.ok(uploads[0].bytes.every((byte) => byte === 0));
+  await call(124, [0x76512345, 513], (machine) => machine.writeString('本文', 513));
+  assert.deepEqual(model.text.rows, []);
+});
+
 test('2.6.1.67 GCALL still rejects the adjacent unreviewed native slot', async () => {
   const args = [17, 18, 19, 20, 21, 22],
     { runtime, task } = await run([...args.map((arg) => [37, arg]), [43, 599, 24], [59]]);

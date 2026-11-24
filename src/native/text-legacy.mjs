@@ -78,6 +78,7 @@ export class NativeLegacyTextRuntime {
     this.characterPairs = text?.characterLengthPairs;
     this.wordOperations = text?.legacyTaskWordOperations ?? [];
     this.initializerBitmapBpp = text?.legacyInitializerBitmapBpp;
+    this.initializerSlots = text?.legacyInitializerSlots ?? [0x7b];
     this.glyphAtlas = text?.legacyGlyphAtlas;
   }
   async create(record) {
@@ -88,7 +89,8 @@ export class NativeLegacyTextRuntime {
   }
   async apply(id, args, machine, task) {
     machine = vmMemory(machine);
-    const checkedInitializer = id === 0x7b && this.initializerBitmapBpp !== undefined,
+    const checkedInitializer =
+        this.initializerBitmapBpp !== undefined && this.initializerSlots.includes(id),
       checkedGlyph = this.glyphAtlas && (id === 0x88 || id === 0x89),
       checkedOwner = checkedInitializer || checkedGlyph || this.wordOperations.includes(id);
     let absentOwner = false;
@@ -104,7 +106,7 @@ export class NativeLegacyTextRuntime {
       absentOwner = !record || (args[0] === 0 && record.kind === 1);
       if (absentOwner) {
         if (id === 0x81) throw new Error('Legacy text query has no initialized 32-bit output word');
-        if (!checkedInitializer) return nativeReply(2);
+        if (!checkedInitializer && id !== 0x7c) return nativeReply(2);
       } else if (record.kind !== 8) throw new Error('Native legacy text requires a kind 8 task');
     }
     const arg = (i) => nativeDataArgument(args, machine, i),
@@ -141,7 +143,7 @@ export class NativeLegacyTextRuntime {
           false,
           this.characterPairs,
         ).map((c) => (c >= 128 && c <= 255 ? c | 0xff00 : c));
-        const maximum = checkedInitializer ? 256 : 255;
+        const maximum = checkedInitializer && at === 96 ? 256 : 255;
         if (units.length > maximum)
           throw new RangeError(`Legacy text line-break profile exceeds ${maximum} units`);
         v.setUint32(at, units.length, true);
@@ -164,7 +166,7 @@ export class NativeLegacyTextRuntime {
         bytes = service?.formatBytes
           ? service.formatBytes(arg(1), machine)
           : nativeDataCString(machine, arg(1));
-      await send(103, 0, 0, Uint8Array.from([...bytes, 0]));
+      if (!absentOwner) await send(103, 0, 0, Uint8Array.from([...bytes, 0]));
       return nativeReply(2);
     }
     if (id === 0x86) {
