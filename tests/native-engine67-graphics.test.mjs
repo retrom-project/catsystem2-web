@@ -5,7 +5,7 @@ import { floatBits } from '../src/kcs.mjs';
 import { MOTION_ABI, motionVector, setMotionVector } from '../src/motion/abi.mjs';
 import { NULL_NATIVE_TEXTURE } from '../src/native/texture-layout.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
-import { kcsProgram } from './helpers.mjs';
+import { hg3, kcsProgram } from './helpers.mjs';
 
 const profile = 'bokutomo-engine-2.6.1.67',
   target = [0x13, 80];
@@ -309,4 +309,125 @@ test('2.6.1.67 texture GCALLs release intersecting pages and allocate missing pa
   assert.notEqual(cleared, right);
   assert.deepEqual([...cleared.rgba], Array(16).fill(0));
   assert.deepEqual([...left.rgba.subarray(0, 4)], [52, 54, 56, 255]);
+});
+
+test('2.6.1.67 bitmap GCALLs own decoded pixels and copy original frame metadata and clipped extent', async (t) => {
+  const rgba = Uint8Array.of(17, 34, 51, 255, 68, 85, 102, 255),
+    source = hg3(2, 1, rgba),
+    packed = [0x13, 80],
+    bitmap = [0x13, 84],
+    destination = [0x13, 88],
+    invalid = [0x13, 92],
+    run = (calls) =>
+      kcsProgram(
+        [
+          [37, 0xe1c2a2f8],
+          ...calls.flatMap(([id, args, output]) => [
+            ...args.map((arg) => [37, arg]),
+            [43, id, args.length * 4],
+            ...(output === undefined ? [] : [[38, output]]),
+          ]),
+          [59],
+        ],
+        [
+          [480, '背景.hg3'],
+          [512, 'unknown.hg3'],
+          [544, 'missing.hg3'],
+        ],
+      ),
+    world = await dataWorld(profile, {
+      '背景.hg3': source,
+      'unknown.hg3': Uint8Array.of(68, 65, 84, 65),
+      'bitmap-load.kcs': run([
+        [365, [480], 80],
+        [365, [512], 92],
+        [365, [544], 96],
+        [368, [0, 0, 224], 100],
+        [368, [packed, 0, 264], 104],
+        [368, [invalid, 0, 304], 108],
+        [364, [packed, 0], 84],
+        [364, [0, 0], 112],
+        [112, [4, 1], 88],
+      ]),
+      'bitmap-query.kcs': run([
+        [362, [bitmap, 128, 132]],
+        [372, [bitmap, 11, 9], 96],
+        [362, [bitmap, 136, 140]],
+        [373, [bitmap, -3, 2], 100],
+        [363, [bitmap, 144, 148]],
+        [374, [bitmap, 5, -4], 104],
+        [371, [bitmap, 152, 156], 108],
+        [370, [bitmap, -3, 2], 112],
+        [370, [bitmap, 99, 99], 116],
+        [373, [bitmap, 0, 0], 120],
+        [362, [0, 160, 164]],
+      ]),
+      'bitmap-blend.kcs': run([
+        [367, [destination, 0, 0, 1, 1, bitmap, 0, 0, 2, 1]],
+        [369, [bitmap, 0xff808080]],
+        [366, [packed]],
+        [366, [invalid]],
+      ]),
+      'bitmap-release.kcs': run([
+        [114, [bitmap]],
+        [114, [destination]],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const buffers = world.runtime.imageDataBuffers,
+    images = world.graphics.images,
+    execute = async (name, handles = []) => {
+      const task = await world.spawnScript(name, { parent: world.main.id, initialExecute: false }),
+        { machine } = task,
+        floor = machine.sp;
+      handles.forEach((handle, i) => machine.store(80 + i * 4, handle));
+      machine.bytes(128, 40).fill(0xa5);
+      machine.bytes(224, 120).fill(0xa5);
+      await world.runtime.scheduler.execute(task);
+      assert.equal(machine.sp, floor + 4);
+      assert.equal(machine.load(floor), 0xe1c2a2f8);
+      return task;
+    };
+  const loaded = await execute('bitmap-load.kcs'),
+    { machine } = loaded,
+    handles = [80, 84, 88, 92].map((at) => machine.load(at)),
+    pointer = buffers.pointer(handles[0]),
+    foreground = images.get(handles[1]),
+    target = images.get(handles[2]);
+  assert.deepEqual(
+    [96, 100, 104, 108, 112].map((at) => machine.load(at)),
+    [0, 0, 1, 0, 0],
+  );
+  assert.deepEqual(buffers.data(pointer), source);
+  assert.equal(foreground.owner, loaded.id);
+  assert.equal(foreground.state.bpp, 4);
+  assert.deepEqual(machine.bytes(224, 40), new Uint8Array(40).fill(0xa5));
+  assert.deepEqual(
+    Array.from({ length: 10 }, (_, i) => machine.load(264 + i * 4)),
+    [0, 0, 2, 1, 2, 1, 4, 0, 0, 0xa5a5a5a5],
+  );
+  assert.deepEqual(machine.bytes(304, 36), new Uint8Array(36));
+  const { machine: queried } = await execute('bitmap-query.kcs', handles);
+  assert.deepEqual(
+    Array.from({ length: 10 }, (_, i) => queried.load(128 + i * 4) | 0),
+    [2, 1, 11, 9, -3, 2, 5, -4, 0, 0],
+  );
+  assert.deepEqual(
+    [96, 100, 104, 108, 112, 116, 120].map((at) => queried.load(at)),
+    [1, 1, 1, 1, 255, 0, 1],
+  );
+  await target.fill(0, 0, 4, 1, 0xff102030);
+  await execute('bitmap-blend.kcs', handles);
+  assert.deepEqual(
+    await target.pixels(),
+    Uint8ClampedArray.of(...rgba, 16, 32, 48, 255, 16, 32, 48, 255),
+  );
+  assert.deepEqual(
+    await foreground.pixels(),
+    Uint8ClampedArray.of(8, 17, 25, 255, 34, 42, 51, 255),
+  );
+  assert.throws(() => buffers.require(pointer), /released/);
+  await execute('bitmap-release.kcs', handles);
+  assert.equal(world.runtime.handles.records.has(handles[1]), false);
+  assert.equal(world.runtime.handles.records.has(handles[2]), false);
 });
