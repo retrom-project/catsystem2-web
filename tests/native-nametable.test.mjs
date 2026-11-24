@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { nameTableFixture, nameTableFiles } from './fixtures/name-table-fixture.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { kcsProgram } from './helpers.mjs';
 
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
@@ -134,6 +135,70 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       }
     },
   );
+
+test('2.6.1.67 name table GCALLs preserve CP932 fields and original filename rules', async (t) => {
+  const query = [0x23, 256],
+    table = [0x13, 64],
+    output = (address) => [0x23, address],
+    call = (id, args) => [...args.map((word) => [37, word]), [43, id, args.length * 4]],
+    rows = [
+      [633, [[0x23, 320]], 0],
+      [635, [table, [0x23, 384]], 0xffffffff],
+      [635, [table, [0x23, 448]], 0],
+      [636, [table, 0], 7],
+      [636, [table, 2], 0xffffffff],
+      [637, [table, 0, output(544)], 1],
+      [638, [table, 0, 0, output(608)], 1],
+      [638, [table, 0, 1, output(672)], 1],
+      [638, [table, 0, 2, output(736)], 0],
+      [639, [table, 1, [0x23, 768]], 1],
+      [639, [table, 1, [0x23, 832]], 0],
+      [640, [table, 1, [0x23, 768], output(896)], 1],
+    ],
+    world = await dataWorld('bokutomo-engine-2.6.1.67', {
+      'names.csv': encodeCP932(
+        `8\t${'x'.repeat(32)}\tignored\r\n7\t猫\t${'a'.repeat(40)}\t${'b'.repeat(40)}\talias\r\n3\t犬\tbg*\tprefix_%n\r\n`,
+      ),
+      'query-name.kcs': kcsProgram(
+        [
+          ...call(633, [query]),
+          [38, 64],
+          ...rows.flatMap(([id, args], index) => [...call(id, args), [38, 1024 + index * 4]]),
+          ...call(634, [table]),
+          ...call(634, [0]),
+          [59],
+        ],
+        [
+          [256, 'names.csv'],
+          [320, 'absent.csv'],
+          [384, 'alias'],
+          [448, '猫'],
+          [768, 'bg002.hg3,1'],
+          [832, 'body.hg3'],
+        ],
+      ),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('query-name.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    }),
+    { machine } = task,
+    floor = machine.sp;
+  machine.bytes(544, 224).fill(0xa5);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(machine.sp, floor);
+  assert.deepEqual(
+    rows.map((_, index) => machine.load(1024 + index * 4)),
+    rows.map(([, , expected]) => expected),
+  );
+  assert.deepEqual(machine.bytes(544, 4), Uint8Array.of(...encodeCP932('猫'), 0, 0xa5));
+  assert.equal(machine.string(608), 'a'.repeat(31));
+  assert.equal(machine.string(672), 'b'.repeat(31));
+  assert.equal(machine.load(736), 0xa5a5a5a5);
+  assert.equal(machine.string(896), 'prefix_002,1');
+  assert.throws(() => world.runtime.handles.get(machine.load(64), 'nametable'), /released/);
+});
 
 for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
   test(`${profile} name table uses CP932 fields capped at 32 bytes and keeps authored row order`, () =>
