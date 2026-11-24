@@ -1453,6 +1453,80 @@ test('2.6.1.67 KCS voice queries use the CP932 directory, name prefix and owned 
   await check([0, 0, 0, 0, 0]);
 });
 
+test('2.6.1.67 KCS category lookup selects the first configured archive or the flat voice row', async (t) => {
+  const filename = 0x80000020,
+    category = 416,
+    marker = 0xde7c1b3a,
+    world = await dataWorld(profile, {
+      'category.kcs': kcsProgram([
+        [37, marker],
+        [37, filename],
+        [37, category],
+        [43, 674, 8],
+        [59],
+      ]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const entries = [];
+  for (const [index, name] of [
+    [0, 'image'],
+    [2, 'bGM'],
+    [5, 'same'],
+    [11, 'SAME'],
+    [17, 'A%rc'],
+    [58, '表名前'],
+    [63, 'voices'],
+    [64, 'outside'],
+  ])
+    entries[index] = { name };
+  world.game.nativeResources = { entries };
+  Object.assign(world.soundConfiguration, {
+    loaded: true,
+    parts: [{ head: '表actor', int: 'outside', children: [] }],
+  });
+  const config = world.configuration,
+    configBytes = config.blocks[0],
+    archiveByte = config.voiceLayout.archiveByte;
+  for (const [index, head, archive] of [
+    [1, '表actor', 'voices'],
+    [2, 'a', 'bgm'],
+    [47, 'zz', '表名前'],
+  ]) {
+    const row = config.voiceRecordByte(index);
+    configBytes.set(encodeCP932(head), row + 40);
+    configBytes.set(encodeCP932(archive), row + archiveByte);
+  }
+  for (const [name, kind, expected] of [
+    ['unused', 'IMAGE', 0],
+    ['unused', 'BGM', 2],
+    ['unused', 'same', 5],
+    ['unused', 'outside', -1],
+    ['unused', '', 1],
+    ['unused', 'a%%rc', 17],
+    ['unused', '表名前', 58],
+    ['unused', 'absent', -1],
+    ['表ACTOR_01.wav', 'sOuNd', 63],
+    ['VOICES.int/line.wav', 'sound', 63],
+    ['other/actor_01.wav', 'sound', -1],
+    ['a001.ogg', 'sound', 2],
+    ['zz0101.wav', 'sound', 58],
+    ['rr0.wav', 'sound', -1],
+  ]) {
+    const task = await world.spawnScript('category.kcs', {
+        parent: world.main.id,
+        initialExecute: false,
+      }),
+      machine = task.machine,
+      floor = machine.sp;
+    machine.writeString(name, filename);
+    machine.writeString(kind, category);
+    assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+    assert.equal(machine.sp, floor + 8);
+    assert.equal(machine.pop(), expected >>> 0, JSON.stringify([name, kind]));
+    assert.equal(machine.pop(), marker);
+  }
+});
+
 test('2.6.1.67 KCS geometry uses live DWORD overlap and the original float accumulation', async (t) => {
   const matrix = 0x80000020,
     command = (id, ...words) => [...words.map((word) => [37, word]), [43, id, words.length * 4]],
