@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { bitsFloat, floatBits, readKCS } from '../src/kcs.mjs';
+import { KCSMachine, bitsFloat, floatBits, readKCS } from '../src/kcs.mjs';
 import { MOTION_ABI, setMotionVector } from '../src/motion/abi.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
 import { PTCL_ABI } from '../src/ppi/abi.mjs';
@@ -777,8 +777,91 @@ test('2.6.1.23 PTCL v2 publishes the attachment word and validates both base out
   stale.machine.store(64, sentinel);
   assert.throws(() => stale.run(2), /requires a live attachment graph/);
   assert.equal(stale.machine.load(64), sentinel);
-  const unreviewed = await guest('particle-v2', 47);
-  assert.throws(() => unreviewed.run(1), /Unreviewed PTCL native .*\/47/);
+});
+
+test('2.6.1.23 PTCL v2 reads raw Plane registration words through Main and Particle GCALL', async (t) => {
+  const code = kcsProgram([[37, sentinel], [43, 47, 0], [59]]);
+  new DataView(code.buffer).setUint16(8, 2, true);
+  const world = await dataWorld(profile, { 'visible.kcs': code });
+  t.after(() => world.close({ flushFiles: false }));
+  const call = async (id, args) => {
+    const program = await readKCS(
+      kcsProgram([
+        [37, sentinel],
+        ...args.map((word) => [37, word]),
+        [43, id, args.length * 4],
+        [59],
+      ]),
+    );
+    const task = { ...world.main, io: null };
+    const machine = (task.machine = new KCSMachine(program, {
+      native: (number, words, caller) =>
+        world.runtime.scheduler.native(task, number, words, caller),
+    }));
+    const floor = machine.sp;
+    assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+    assert.equal(machine.sp, floor + 4);
+    assert.equal(machine.load(floor), sentinel);
+  };
+  const planeID = 101,
+    parentID = 121,
+    parent = await world.objects.create({ kind: 2, parent: world.root, nativeID: parentID }),
+    plane = await world.objects.create({ kind: 2, parent, nativeID: planeID }),
+    owner = world.graphics.get(plane),
+    particle = await world.objects.create({ kind: 16, parent: world.root }),
+    task = world.particles.get(particle),
+    host = world.particles.host,
+    make = (target) => call(79, [target, floatBits(8), floatBits(4), 0xff117799]),
+    show = (target, word) => call(92, [target, word]),
+    display = (word) => world.sendNativeEngine(planeID, world.main.id, 48, 0, word),
+    first = 0xffd138ab;
+  const device = world.graphics.createLogicalDevice();
+  await make(planeID);
+  task.state.attachment = planeID;
+  const bank = await task.load({ family: 'script', program: 'visible', count: 1, priority: 0 });
+  host.start(bank.key);
+  const machine = bank.instance.machine;
+  const floor = machine.sp;
+  let frame = 0;
+  const read = () => {
+    host.updateBank(bank.key, frame++);
+    assert.equal(machine.sp, floor + 8);
+    const result = machine.pop();
+    assert.equal(machine.pop(), sentinel);
+    return result;
+  };
+  assert.equal(read(), 0);
+  await show(planeID, first);
+  assert.equal(read(), first);
+  await show(planeID, 7);
+  assert.equal(read(), first);
+  await display(0);
+  assert.equal(read(), 0);
+  await display(0x80000000);
+  assert.equal(read(), 0x80000000);
+  device.retire();
+  await show(planeID, 0);
+  assert.equal(read(), 0);
+  world.graphics.createLogicalDevice();
+  assert.equal(read(), 0x80000000);
+  await show(planeID, 0);
+  assert.equal(read(), 0);
+  await make(parentID);
+  await show(parentID, 0x758903ab);
+  owner.state.inheritPosition = true;
+  await show(planeID, 1);
+  assert.equal(read(), 0x758903ab);
+  world.graphics.get(parent).unload();
+  await show(planeID, 0);
+  assert.equal(read(), 0x758903ab);
+  const checkpoint = owner.snapshot();
+  owner.restore(checkpoint);
+  assert.equal(read(), 0x758903ab);
+  delete checkpoint.graph.registrationWord;
+  owner.restore(checkpoint);
+  assert.throws(read, /Particle attachment registration word is unavailable/);
+  owner.unload();
+  assert.equal(read(), 0);
 });
 
 test('2.6.1.23 both Particle tables write only the current quad UV words and publish x87 distance', async () => {

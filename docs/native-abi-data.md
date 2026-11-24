@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 454       | 57            | 17            | 341     | Generic 25 of 45, Particle 43 of 44 and 49 of 51 |
+| 2.6.1.23 | 869        | 454       | 57            | 17            | 341     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -127,9 +127,12 @@ position X/Y/Z respectively. An empty attachment or detached graphics
 device produces zero words. Each call checks all destinations before
 writing. An active renderer with an unresolved model stays protected
 because the original can return prior scratch coordinates. Slot 47
-reads the separate renderer registration DWORD. Some original callers
-retain non-Boolean values there, so that slot stays guarded while the
-production provider tracks only the enable flag.
+reads the separate renderer registration DWORD. Plane raw 43 and 44
+retain the old word when a request leaves enablement in the same state.
+The fixed registration tracks the complete DWORD for proven live records
+and returns zero for a detached device, empty attachment or missing
+record. Older snapshots and graph types without a verified register
+word reject this query until a covered registration is created.
 
 PTCL slots 29 and 37 share the same handlers across v1 and v2. Slot 29 reads
 the first and third words as float32, subtracts a half texel, and divides by

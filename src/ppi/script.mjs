@@ -102,6 +102,7 @@ export class ParticleScriptInstance {
     this.projectionBoundsUseX87 = abi?.particle?.projectionBoundsUseX87;
     this.projectionBoundsUseSSE = abi?.particle?.projectionBoundsUseSSE;
     this.attachmentPositionRequiresOwner = abi?.particle?.attachmentPositionRequiresOwner;
+    this.attachmentReadsRegistrationWord = abi?.particle?.attachmentReadsRegistrationWord;
     this.count = count;
     this.width = f(width);
     this.height = f(height);
@@ -399,8 +400,17 @@ export class ParticleScriptInstance {
         return voidReply();
       case 46:
         return scalar(this.attachPlane);
-      case 47:
-        return scalar(this.currentAttachment()?.disp || 0);
+      case 47: {
+        if (!this.attachmentReadsRegistrationWord)
+          return scalar(this.currentAttachment()?.disp || 0);
+        if (this.attachmentDevicePresent?.() === false) return scalar(0);
+        const attachment = this.currentAttachment();
+        if (!attachment) return scalar(0);
+        const word = attachment.registrationWord;
+        if (!Number.isInteger(word) || word < 0 || word > 0xffffffff)
+          throw new Error('Particle attachment registration word is unavailable');
+        return scalar(word);
+      }
       case 48:
       case 49: {
         const field = id === 48 ? 'base' : 'pos';

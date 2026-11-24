@@ -95,6 +95,7 @@ export class NativeGraphics {
       // defaults. Other startup paths use their own TEXTURE configuration.
       pluginDeviceDefaults =
         abi && abi.startup.applicationServices.includes('m2') ? abi.plugins.requiredRenderer : null;
+    this.particleAttachmentReadsRegistrationWord = abi?.particle?.attachmentReadsRegistrationWord;
     this.d3dContext = createD3DContext({
       depthStencilEnabled: true,
       magFilter: texture && !pluginDeviceDefaults ? texture.mag + 1 : 2,
@@ -424,6 +425,7 @@ export class NativeGraphics {
         view.getFloat32(MOTION_ABI.matrix + i * 4, true),
       ),
       display: graph.style?.shown !== false && view.getInt32(MOTION_ABI.display, true) !== 0,
+      registrationWord: graph.registrationWord,
     };
   }
   graphHandle(taskID) {
@@ -626,7 +628,7 @@ export class NativeGraphicTask {
     )
       this.setRegistrationEnabled(false);
   }
-  setRegistrationEnabled(enabled) {
+  setRegistrationEnabled(enabled, word = enabled === null ? null : Number(enabled)) {
     const graph = this.graph;
     if (
       (graph.callback || isNativeColoredModel(graph) || this.ownsTexturedBounds(graph)) &&
@@ -636,6 +638,15 @@ export class NativeGraphicTask {
     ) {
       this.markBoundsDirty();
       this.world.screenEffects.rendering.collectDirty();
+    }
+    if (
+      this.graphics.particleAttachmentReadsRegistrationWord &&
+      this.graphics.device.attachment &&
+      Object.hasOwn(graph, 'registrationWord')
+    ) {
+      // The original renderer only stores a requested word when enablement changes.
+      if (word === null || word === 0 || graph.registrationWord === 0)
+        graph.registrationWord = word;
     }
     graph.registrationEnabled = enabled;
   }
@@ -712,6 +723,12 @@ export class NativeGraphicTask {
       matrixExplicit: false,
       textureMatrixExplicit: false,
     };
+    if (
+      this.graphics.particleAttachmentReadsRegistrationWord &&
+      this.graphics.device.attachment &&
+      this.graph.registrationEnabled === false
+    )
+      this.graph.registrationWord = 0;
     if (isNativeColoredModel(this.graph) || this.ownsTexturedBounds()) {
       this.graph.boundsDirty = false;
       this.graph.cachedBounds = [0, 0, 0, 0];
@@ -972,17 +989,18 @@ export class NativeGraphicTask {
           const parent = this.state.inheritPosition
             ? this.graphics.get(this.record.parent)?.graph
             : null;
-          if (!this.state.inheritPosition) this.setRegistrationEnabled(this.state.shown);
-          else if (parent)
-            // An unverified parent may be a failed lookup, so even an external
-            // zero does not establish the result. A real miss retains it.
-            this.setRegistrationEnabled(
-              !hasRegistration(parent)
-                ? null
-                : this.state.shown
-                  ? parent.registrationEnabled
-                  : false,
-            );
+          if (!this.state.inheritPosition) this.setRegistrationEnabled(this.state.shown, l >>> 0);
+          else if (parent) {
+            // A known miss retains the old word. A parent with unverified
+            // registration makes the result indeterminate.
+            if (!hasRegistration(parent)) this.setRegistrationEnabled(null);
+            else if (!this.state.shown) this.setRegistrationEnabled(false);
+            else
+              this.setRegistrationEnabled(
+                parent.registrationEnabled,
+                parent.registrationWord ?? null,
+              );
+          }
         }
         this.setInputDisplay();
         this.sync();
@@ -990,7 +1008,10 @@ export class NativeGraphicTask {
       case 48:
         this.state.renderPaused = !l;
         if (hasRegistration(this.graph))
-          this.setRegistrationEnabled(this.state.shown && Boolean(l));
+          this.setRegistrationEnabled(
+            this.state.shown && Boolean(l),
+            this.state.shown ? l >>> 0 : 0,
+          );
         if (this.graph)
           new DataView(this.graph.kx2.buffer).setInt32(
             MOTION_ABI.display,

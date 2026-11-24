@@ -1019,6 +1019,7 @@ export default {
     distanceUsesX87: true,
     projectionBoundsUseX87: true,
     attachmentPositionRequiresOwner: true,
+    attachmentReadsRegistrationWord: true,
     taskMessageStart: 285,
     deferGraphAttachment: true,
   },
@@ -1749,6 +1750,11 @@ export default {
             'Own 2.6.1.23 PTCL v2 0x48C110 returns the complete retained attachment DWORD without querying a renderer or model.',
         },
         {
+          ids: [47],
+          value:
+            'Own 2.6.1.23 PTCL v2 0x48C130 returns the renderer registration DWORD or initialized zero. Main 92 and Plane raw 43/44 preserve the old DWORD for requests on the same side of zero.',
+        },
+        {
           ids: [48],
           value:
             'Own 2.6.1.23 PTCL v2 0x48C180 writes the selected live model base X/Y. The renderer gates produce zero for a disabled device or empty attachment. A stale active model leaves undefined scratch words.',
@@ -1774,7 +1780,7 @@ export default {
             ],
           },
         },
-        { ids: [46], fields: { resultWritten: true } },
+        { ids: [46, 47], fields: { resultWritten: true } },
         ...[48, 49].map((id) => ({
           ids: [id],
           fields: {
