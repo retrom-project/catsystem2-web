@@ -12,6 +12,7 @@ import {
 } from './data-text.mjs';
 
 export const NATIVE_NAME_TABLE_IDS = Object.freeze(Array.from({ length: 8 }, (_, i) => 0x279 + i));
+const NATIVE_NAME_PAIR_IDS = [289, 290, 291, 292, 293];
 function wildcard(source, pattern) {
   if (pattern.length === 1 && pattern[0] === 42) return true;
   let at = 0;
@@ -170,6 +171,64 @@ export async function nativeNameTable(id, args, machine, services) {
   );
   return nativeReply(1, 1);
 }
+
+function foldNamePair(bytes) {
+  return nativeDataKey(bytes).replace(/[A-Z]/g, (letter) => letter.toLowerCase());
+}
+
+function nativeNamePair(id, args, machine, services) {
+  const [handle, nameOrFirst, firstOrSecond, secondOrOutput] = args;
+  const { handles } = services;
+  const nameBytes = 32;
+  const rowBytes = nameBytes + 8;
+  if (id === 289) {
+    const size =
+      Math.imul(Math.imul(Math.imul(handle, nameOrFirst), firstOrSecond), rowBytes) >>> 0;
+    return nativeReply(1, handles.add('name-pairs', new Uint8Array(size)));
+  }
+  if (!handle) return nativeReply(2);
+  if (id === 290) {
+    handles.release(handle, 'name-pairs');
+    return nativeReply(2);
+  }
+  const block = handles.get(handle, 'name-pairs');
+  const values = new DataView(block.buffer, block.byteOffset, block.byteLength);
+  let name = id === 293 ? null : nativeDataFormat(args, machine, services, 1);
+  if (id !== 293 && (!name || name.length >= nameBytes))
+    throw new RangeError('Native name pair requires a mapped name shorter than its 32-byte field');
+  if (id === 292) name = foldNamePair(name);
+  for (let offset = 0; offset + rowBytes <= block.length; offset += rowBytes) {
+    const first = offset + nameBytes;
+    const second = first + 4;
+    if (!block[offset]) {
+      if (id !== 291) return nativeReply(1, 0);
+      block.set(name, offset);
+      block[offset + name.length] = 0;
+      values.setUint32(first, firstOrSecond, true);
+      values.setUint32(second, secondOrOutput, true);
+      return nativeReply(2);
+    }
+    if (id === 292 && foldNamePair(block.subarray(offset, offset + nameBytes)) === name) {
+      machine.bytes(firstOrSecond, 4);
+      machine.bytes(secondOrOutput, 4);
+      machine.store(firstOrSecond, values.getUint32(first, true));
+      machine.store(secondOrOutput, values.getUint32(second, true));
+      return nativeReply(1, 1);
+    }
+    if (
+      id === 293 &&
+      values.getUint32(first, true) === nameOrFirst &&
+      values.getUint32(second, true) === firstOrSecond
+    ) {
+      const end = block.indexOf(0, offset);
+      if (end < 0 || end >= first) throw new Error('Native name pair has no field terminator');
+      machine.bytes(secondOrOutput, end - offset + 1).set(block.subarray(offset, end + 1));
+      return nativeReply(1, 1);
+    }
+  }
+  throw new RangeError('Native name pair operation reached the end of its allocation');
+}
+
 export function installNativeNameTables(world) {
   const abi = nativeABI(world.profile);
   world.runtime.services.nameTableAliases = abi.capabilities.nameTableAliases;
@@ -178,4 +237,11 @@ export function installNativeNameTables(world) {
     world.runtime.register('main', id, (args, machine) =>
       nativeNameTable(id, args, machine, world.runtime.services),
     );
+  if (abi.nameTable?.fixedPairs)
+    for (const id of NATIVE_NAME_PAIR_IDS)
+      world.runtime.register('main', id, (args, machine) => {
+        if (args.length !== abi.tables.main.entries[id].signature.argumentWords)
+          throw new Error(`Native name pair ${id} received an invalid argument width`);
+        return nativeNamePair(id, args, machine, world.runtime.services);
+      });
 }

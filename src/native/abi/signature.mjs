@@ -39,7 +39,7 @@ function validType(type) {
       return (
         typeof type.handleKind === 'string' &&
         type.handleKind.length > 0 &&
-        ['unknown', 'borrowed'].includes(type.ownership)
+        ['unknown', 'borrowed', 'owned'].includes(type.ownership)
       );
     case 'object-id':
       return typeof type.objectKind === 'string' && type.objectKind.length > 0;

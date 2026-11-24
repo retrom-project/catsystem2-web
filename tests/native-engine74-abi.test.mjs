@@ -146,6 +146,71 @@ test('fixed SDK file GCALLs use the byte mode and complete reads before advancin
   }
 });
 
+test('fixed SDK name pairs append and query original bytes through the owned four-word calls', async (t) => {
+  const handle = [0x13, 64];
+  const compare = (source, first, second, result) =>
+    callNative(292, [handle, source, first, second], result);
+  const source = {
+    'names.kcs': kcsProgram([
+      [37, marker],
+      ...callNative(289, [0x80000006, 2, 1], 64),
+      ...callNative(291, [handle, 160, 0x1111, 0x2222]),
+      ...callNative(291, [handle, 192, 0x81234567, 0x76543218]),
+      ...callNative(291, [handle, 224, 11, 22]),
+      ...callNative(291, [handle, 256, 0xfedcba98, 0x80000000]),
+      ...callNative(291, [handle, 288, 61, 62]),
+      ...callNative(291, [handle, 320, 71, 72]),
+      ...compare(224, 104, 0x80000310, 68),
+      ...compare(256, 108, 108, 72),
+      ...compare(320, 112, 116, 76),
+      ...compare(352, 120, 124, 80),
+      ...callNative(293, [handle, 11, 22, 0x80000320], 84),
+      ...callNative(293, [handle, 0x1111, 0x2222, 384], 88),
+      ...callNative(292, [0, 224, 124, 124]),
+      ...callNative(293, [0, 11, 22, 384]),
+      [59],
+    ]),
+    'free.kcs': kcsProgram([[37, marker], ...callNative(290, [handle]), [59]]),
+  };
+  const world = await dataWorld(profile, source);
+  t.after(() => world.close({ flushFiles: false }));
+  const m = await runGuest(world, 'names.kcs', (vm) => {
+    vm.writeString('', 160);
+    vm.writeString('Tea', 192);
+    vm.writeString('TEA', 224);
+    vm.writeString('黒猫', 256);
+    vm.writeStringBytes(Uint8Array.of(0x81, 0x72), 288);
+    vm.writeStringBytes(Uint8Array.of(0x81, 0x52), 320);
+    vm.writeString('missing', 352);
+    vm.bytes(384, 8).fill(0xc5);
+    vm.bytes(0x80000320, 8).fill(0xc5);
+    vm.store(120, marker);
+    vm.store(124, marker);
+  });
+  assert.deepEqual(
+    [68, 72, 76, 80, 84, 88].map((at) => m.load(at)),
+    [1, 1, 1, 0, 1, 0],
+  );
+  assert.deepEqual(
+    [104, 0x80000310, 108, 112, 116, 120, 124].map((at) => m.load(at)),
+    [0x81234567, 0x76543218, 0x80000000, 61, 62, marker, marker],
+  );
+  assert.deepEqual(m.bytes(0x80000320, 8), Uint8Array.of(84, 69, 65, 0, 0xc5, 0xc5, 0xc5, 0xc5));
+  assert.deepEqual(m.bytes(384, 8), new Uint8Array(8).fill(0xc5));
+  const id = m.load(64);
+  const pairs = world.runtime.handles.get(id, 'name-pairs');
+  assert.equal(pairs.length, 12 * 40);
+  assert.deepEqual(pairs.subarray(5 * 40), new Uint8Array(7 * 40));
+  const fresh = await dataWorld(profile, source, { initialize: false });
+  t.after(() => fresh.close({ flushFiles: false }));
+  await fresh.restore(world.snapshot());
+  assert.deepEqual(fresh.runtime.handles.get(id, 'name-pairs'), pairs);
+  assert.notEqual(fresh.runtime.handles.get(id, 'name-pairs'), pairs);
+  await runGuest(fresh, 'free.kcs', (vm) => vm.store(64, id));
+  assert.equal(fresh.runtime.handles.records.has(id), false);
+  assert.equal(world.runtime.handles.records.has(id), true);
+});
+
 test('fixed 2.6.1.74 Main9 post, language confirmation, and ordinary Script shutdown', async (t) => {
   for (const [selector, accepted, translated] of [
     [1, false, false],

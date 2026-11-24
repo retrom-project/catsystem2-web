@@ -32,3 +32,22 @@ oracle-only tool using `oracle/nametable.mjs`.
 
 Run `node --test tests/native-nametable.test.mjs` and, with private images,
 `node --test tests/differential/native-data-tables.test.mjs`.
+
+## Fixed SDK 4.01 name pairs
+
+Main289 through 293 own a zeroed allocation with 40-byte rows. Each row holds
+a 32-byte CP932 C string and two unsigned DWORDs. The length uses the low
+DWORD of the product of the three counts and the row size. Main290 releases
+the caller's opaque handle. Main291 appends at the first row whose first byte
+is zero. An empty name leaves that row available for the next append.
+
+Main292 scans in insertion order and compares bytes with ASCII case folding.
+A folded byte can be the trailing byte of a CP932 character. The native
+test compares both spellings and verifies the first matching row. Main293
+matches the two words exactly and copies the first matching name and its NUL.
+The two lookups return a written Boolean with control 1 for a present
+array. A miss leaves the guest outputs alone. A null handle returns
+control 2 without a result. The browser guards lookups that would cross the
+allocated rows and formatted names that would overrun the 32-byte field.
+Original physical allocation and byte probes and ordinary World GCALLs
+cover the author-visible behavior and cold handle ownership.
