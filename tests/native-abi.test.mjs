@@ -47,10 +47,10 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 454);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 459);
   assert.equal(base.main.entries.filter(({ status }) => status === 'reserved').length, 57);
   assert.equal(base.main.entries.filter(({ status }) => status === 'constant-zero').length, 17);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 341);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 336);
   assert.equal(base.main.entries.filter((entry) => entry.observedArgumentWords.length).length, 435);
   assert.deepEqual(base.main.entries[464].observedArgumentWords, []);
   assert.deepEqual(base.main.entries[543].observedArgumentWords, [3]);
@@ -177,6 +177,20 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     assert.deepEqual(signature.controlCodes, [2]);
     assert(signature.parameters.every(({ type }) => type.direction === 'out'));
   }
+  for (const [id, argumentWords, control] of [
+    [89, 1, 1],
+    [90, 4, 2],
+    [91, 1, 2],
+    [102, 2, 2],
+    [103, 2, 2],
+  ]) {
+    const { status, signature } = base.main.entries[id];
+    assert.equal(status, 'recovered');
+    assert.equal(signature.argumentWords, argumentWords);
+    assert.equal(signature.resultWritten, control === 1);
+    assert.deepEqual(signature.controlCodes, [control]);
+  }
+  assert.equal(base.main.entries[98].status, 'unknown');
   for (const id of [52, 287, 288, 629]) assert.equal(base.main.entries[id].status, 'unknown');
   const unknown = nativeABI('sdk-4.01-engine-2.6.1.74').tables.main.entries[0x52];
   assert.equal(unknown.name, null);

@@ -9,6 +9,7 @@ import { Stage } from '../stage.mjs';
 import { MOTION_ABI, initialMotionObject, motionVector, setMotionVector } from '../motion/abi.mjs';
 import { applyObjectMotionState } from '../motion/target.mjs';
 import { bitsFloat, floatBits, nativeReply } from '../kcs.mjs';
+import { quietFloat32Bits } from '../ppi/numeric.mjs';
 import { NativeRetainedDraw } from './retained-draw.mjs';
 import { NativeDrawTask, NATIVE_DRAW_IDS, nativeDraw } from './draw-task.mjs';
 import { NativeImages, NATIVE_IMAGE_IDS, nativeImage } from './image.mjs';
@@ -523,6 +524,8 @@ export class NativeGraphicTask {
       abi = profile?.graphics;
     this.coordinateModeRequiresGraph = Boolean(abi?.coordinateModeRequiresGraph);
     this.planePoseQueriesRequireReply = Boolean(abi?.planePoseQueriesRequireReply);
+    this.planePoseUsesRawWords = Boolean(abi?.planePoseUsesRawWords);
+    this.planeInheritanceUsesRenderer = Boolean(abi?.planeInheritanceUsesRenderer);
     this.planeResetReleasesTrackedInput = Boolean(abi?.planeResetReleasesTrackedInput);
     this.planeKx3UsesLegacyReceiver = Boolean(abi?.planeKx3UsesLegacyReceiver);
     this.tilePlaneRequiresEmptyOwner = Boolean(abi?.tilePlaneRequiresEmptyOwner);
@@ -1046,12 +1049,16 @@ export class NativeGraphicTask {
         this.updateGraphInputArea();
         await this.broadcast(52, w, l, context);
         return 0;
-      case 53:
+      case 53: {
+        const offset = floats(l, 3);
+        if (this.planeInheritanceUsesRenderer && !offset.every(Number.isFinite))
+          throw new Error('Plane inheritance requires finite offsets');
+        this.inheritTransform(offset);
         this.state.inheritPosition = true;
-        this.state.parentOffset = floats(l, 3);
-        this.inheritTransform();
+        this.state.parentOffset = offset;
         this.sync();
         return 0;
+      }
       case 55:
         setVector(MOTION_ABI.rotation, floats(l, 3));
         if (this.graph)
@@ -1135,11 +1142,17 @@ export class NativeGraphicTask {
         this.state.blocked = Boolean(l >>> 31);
         return 0;
       case 61:
-        if (this.graph) put(l, vector(MOTION_ABI.base));
+      case 62: {
+        const offset = id === 61 ? MOTION_ABI.base : MOTION_ABI.pos;
+        if (this.graph && this.planePoseUsesRawWords) {
+          const source = transformState(),
+            view = new DataView(source.buffer, source.byteOffset, source.byteLength);
+          for (let at = 0; at < 12; at += 4)
+            store(l + at, quietFloat32Bits(view.getUint32(offset + at, true)));
+        } else if (this.graph || (id === 62 && !this.planePoseQueriesRequireReply))
+          put(l, vector(offset));
         return 0;
-      case 62:
-        if (this.graph || !this.planePoseQueriesRequireReply) put(l, vector(MOTION_ABI.pos));
-        return 0;
+      }
       case 63:
         if (this.graph) {
           const view = new DataView(this.graph.kx2.buffer),
@@ -1440,18 +1453,36 @@ export class NativeGraphicTask {
     if (!region.enabled) region.active = false;
     this.input.changed = true;
   }
-  inheritTransform() {
-    const parent = this.graphics.get(this.record.parent),
-      base = parent?.graph ? motionVector(parent.graph.kx2, MOTION_ABI.base) : [0, 0, 0],
-      pos = parent?.graph ? motionVector(parent.graph.kx2, MOTION_ABI.pos) : [0, 0, 0],
-      offset = this.state.parentOffset;
+  inheritTransform(offset = this.state.parentOffset) {
+    if (this.planeInheritanceUsesRenderer && (!this.graph || !this.graphics.device.attachment))
+      return;
+    const parent = this.graphics.get(this.record.parent);
+    if (this.planeInheritanceUsesRenderer && parent && !parent.graph)
+      throw new Error('Plane inheritance requires a live parent model');
+    const base = parent?.graph ? motionVector(parent.graph.kx2, MOTION_ABI.base) : [0, 0, 0],
+      pos = parent?.graph ? motionVector(parent.graph.kx2, MOTION_ABI.pos) : [0, 0, 0];
+    if (
+      this.planeInheritanceUsesRenderer &&
+      (!base.every(Number.isFinite) || !pos.every(Number.isFinite))
+    )
+      throw new Error('Plane inheritance requires finite parent coordinates');
     if (this.graph) {
-      setMotionVector(this.graph.kx2, MOTION_ABI.base, [
+      const inheritedBase = [
         Math.fround(base[0] - offset[0]),
         Math.fround(base[1] - offset[1]),
         Math.fround(base[2] + offset[2]),
-      ]);
-      setMotionVector(this.graph.kx2, MOTION_ABI.pos, pos);
+      ];
+      const bytes = this.graph.kx2;
+      for (const [channel, values] of [
+        [MOTION_ABI.base, inheritedBase],
+        [MOTION_ABI.pos, pos],
+      ]) {
+        if (
+          !this.planeInheritanceUsesRenderer ||
+          motionVector(bytes, channel).some((value, i) => value !== values[i])
+        )
+          setMotionVector(bytes, channel, values);
+      }
       this.markBoundsDirty();
     } else {
       const region = this.input?.get(this.record.id);
@@ -1620,22 +1651,24 @@ export async function nativeGraphics(id, args, machine, task, world) {
   if (!NATIVE_GRAPHICS_IDS.includes(id)) return undefined;
   const abi = world.profile && nativeABI(world.profile),
     requirePose = abi?.graphics.planePoseQueriesRequireReply,
+    ownArity =
+      (requirePose && [0x53, 0x56, 0x57, 0x59, 0x5a, 0x5b].includes(id)) ||
+      (abi?.graphics.planeImageSelectorHidesTarget && [0x66, 0x67].includes(id)),
     planeSourceViaInput =
       id === 0x6d && (abi?.input?.planeSourceViaInput || abi?.input?.planeSourceUsesRawWord);
-  const count =
-    requirePose && [0x53, 0x56, 0x57].includes(id)
-      ? abi.tables.main.entries[id].signature.argumentWords
-      : id === 0x21d
-        ? 4
-        : id === 0x21e
-          ? 0
-          : id === 0x159
-            ? 5
-            : id === 0x157 || id === 0x158
-              ? 3
-              : id === 0x192
-                ? 2
-                : null;
+  const count = ownArity
+    ? abi.tables.main.entries[id].signature.argumentWords
+    : id === 0x21d
+      ? 4
+      : id === 0x21e
+        ? 0
+        : id === 0x159
+          ? 5
+          : id === 0x157 || id === 0x158
+            ? 3
+            : id === 0x192
+              ? 2
+              : null;
   if (count !== null && args.length !== count)
     throw new Error(`Native graphics 0x${id.toString(16)} expects ${count} arguments`);
   const graphics = world.graphics,
@@ -1746,9 +1779,11 @@ export async function nativeGraphics(id, args, machine, task, world) {
       return done();
     }
     case 0x59: {
-      const p = packet();
-      await send(61, 0, 0, p);
-      return value(p.load(8));
+      const p = requirePose ? new NativeGraphicsPacket([], { unwritten: [0, 1, 2] }) : packet();
+      if (!requirePose || graphics.device.attachment)
+        await send(61, 0, 0, p, Number(Boolean(requirePose)));
+      const priority = p.load(8);
+      return value(requirePose ? nativeEngineWord(priority, 'Native Plane priority') : priority);
     }
     case 0x5a:
       await send(53, 0, 0, packet(args.slice(1, 4)));

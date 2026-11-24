@@ -12,7 +12,7 @@ import { kcsProgram } from './helpers.mjs';
 const profile = 'grisaia-jp-engine-2.6.1.23';
 const canary = 0xd9237ab1;
 
-async function call(world, id, args, expectedMemory, error, initialize = () => {}) {
+async function call(world, id, args, expectedMemory, error, initialize = () => {}, resultWord) {
   const script = kcsProgram([
     [37, canary],
     ...args.map((word) => [37, word]),
@@ -31,7 +31,8 @@ async function call(world, id, args, expectedMemory, error, initialize = () => {
   if (error) await assert.rejects(executed, error);
   else {
     assert.equal((await executed).status, 'halted');
-    assert.equal(machine.sp, floor + 4);
+    assert.equal(machine.sp, floor + (resultWord === undefined ? 4 : 8));
+    if (resultWord !== undefined) assert.equal(machine.pop(), resultWord);
     assert.equal(machine.pop(), canary);
   }
   assert.deepEqual(
@@ -39,6 +40,117 @@ async function call(world, id, args, expectedMemory, error, initialize = () => {
     [canary, ...expectedMemory, canary],
   );
 }
+
+test('2.6.1.23 Plane priority reads a written model word and rejects unresolved poses', async (t) => {
+  const world = await dataWorld(profile);
+  t.after(() => world.close({ flushFiles: false }));
+  const untouched = [canary, canary, canary],
+    priority = (target, result, error) =>
+      call(world, 89, [target], untouched, error, undefined, result);
+  await priority(0, 0);
+  const id = await world.objects.create({ kind: 2, parent: world.root }),
+    target = world.nativeTaskID(id),
+    owner = world.graphics.get(id);
+  const device = world.graphics.createLogicalDevice();
+  await priority(target, undefined, /initialized 32-bit output word/);
+  owner.makeGraph({ type: 2, width: 4, height: 4 });
+  for (const z of [-0, 0, 5000, -9.375, Infinity]) {
+    setMotionVector(owner.graph.kx2, MOTION_ABI.base, [8, -6, z]);
+    await priority(target, floatBits(z));
+  }
+  new DataView(owner.graph.kx2.buffer).setUint32(MOTION_ABI.base + 8, 0x7fc12345, true);
+  await priority(target, 0x7fc12345);
+  setMotionVector(owner.graph.kx2, MOTION_ABI.base, [8, -6, Infinity]);
+  await priority(0xed112839, undefined, /initialized 32-bit output word/);
+  device.retire();
+  await priority(target, undefined, /initialized 32-bit output word/);
+  world.graphics.createLogicalDevice();
+  await priority(target, floatBits(Infinity));
+  await call(world, 89, [target, 17], untouched, /argument/i);
+});
+
+test('2.6.1.23 Plane inheritance retains the original offset, selected model and stopped pose', async (t) => {
+  const world = await dataWorld(profile);
+  t.after(() => world.close({ flushFiles: false }));
+  const untouched = [canary, canary, canary],
+    parentID = await world.objects.create({ kind: 2, parent: world.root }),
+    parent = world.graphics.get(parentID),
+    childID = await world.objects.create({ kind: 2, parent: parentID }),
+    child = world.graphics.get(childID),
+    childTarget = world.nativeTaskID(childID),
+    inherit = (values, error) =>
+      call(world, 90, [childTarget, ...values.map(floatBits)], untouched, error),
+    stop = () => call(world, 91, [childTarget], untouched),
+    modelPose = (owner) =>
+      [MOTION_ABI.base, MOTION_ABI.pos].map((offset) => motionVector(owner.graph.kx2, offset));
+  const device = world.graphics.createLogicalDevice();
+  parent.makeGraph({ type: 2, width: 4, height: 3 });
+  setMotionVector(parent.graph.kx2, MOTION_ABI.base, [123.25, -55.5, 638.125]);
+  setMotionVector(parent.graph.kx2, MOTION_ABI.pos, [-9.25, 70.75, -2.5]);
+  await inherit([3.25, -2.5, 0.125]);
+  assert.equal(child.state.inheritPosition, true);
+  assert.deepEqual(child.state.parentOffset, [3.25, -2.5, 0.125]);
+  assert.equal(child.graph, null);
+  child.makeGraph({ type: 2, width: 4, height: 3 });
+  await inherit([3.25, -2.5, 0.125]);
+  const pose = [
+    [120, -53, 638.25],
+    [-9.25, 70.75, -2.5],
+  ];
+  assert.deepEqual(modelPose(child), pose);
+  await stop();
+  assert.equal(child.state.inheritPosition, false);
+  assert.deepEqual(child.state.parentOffset, [3.25, -2.5, 0.125]);
+  assert.deepEqual(modelPose(child), pose);
+  await inherit([3.25, NaN, 0.125], /Plane inheritance requires finite offsets/);
+  assert.equal(child.state.inheritPosition, false);
+  assert.deepEqual(child.state.parentOffset, [3.25, -2.5, 0.125]);
+  device.retire();
+  await inherit([9.75, -4.625, 2.125]);
+  assert.deepEqual(child.state.parentOffset, [9.75, -4.625, 2.125]);
+  assert.deepEqual(modelPose(child), pose);
+  world.graphics.createLogicalDevice();
+  setMotionVector(parent.graph.kx2, MOTION_ABI.pos, [Infinity, 3, 4]);
+  await inherit([4, 5, 6], /Plane inheritance requires finite parent coordinates/);
+  parent.unload();
+  await inherit([4, 5, 6], /Plane inheritance requires a live parent model/);
+  assert.deepEqual(child.state.parentOffset, [9.75, -4.625, 2.125]);
+  assert.deepEqual(modelPose(child), pose);
+  await stop();
+  await call(world, 90, [0, 0, 0, 0], untouched);
+  await call(world, 91, [0], untouched);
+});
+
+test('2.6.1.23 Plane selection hides the selected owner and retains the full attribute word', async (t) => {
+  const world = await dataWorld(profile);
+  t.after(() => world.close({ flushFiles: false }));
+  const untouched = [canary, canary, canary],
+    id = await world.objects.create({ kind: 2, parent: world.root }),
+    target = world.nativeTaskID(id),
+    owner = world.graphics.get(id),
+    hintID = await world.objects.create({ kind: 2, parent: world.root }),
+    hint = world.nativeTaskID(hintID),
+    hintOwner = world.graphics.get(hintID),
+    raw = 0x8f7330da;
+  world.graphics.createLogicalDevice();
+  await call(world, 79, [hint, floatBits(3), floatBits(3), 0xff00ff11], untouched);
+  await call(world, 92, [hint, raw], untouched);
+  assert.equal(hintOwner.graph.registrationWord, raw);
+  await call(world, 102, [target, hint], untouched);
+  assert.equal(owner.state.imageIndex, hint);
+  assert.equal(hintOwner.state.shown, false);
+  assert.equal(hintOwner.graph.registrationWord, 0);
+  for (const value of [raw, 0, 7, 0xffffffff]) {
+    await call(world, 103, [target, value], untouched);
+    assert.equal(owner.state.frameStep, value);
+  }
+  await call(world, 102, [target, raw], untouched);
+  assert.equal(owner.state.imageIndex >>> 0, raw);
+  await call(world, 102, [0, hint], untouched);
+  await call(world, 103, [0, raw], untouched);
+  assert.equal(owner.state.imageIndex >>> 0, raw);
+  assert.equal(owner.state.frameStep, 0xffffffff);
+});
 
 test('fixed 2.6.1.23 Plane GCALLs read owned geometry and texture poses and release tracked input', async () => {
   const world = await dataWorld(profile);

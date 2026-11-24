@@ -252,6 +252,16 @@ const mainEvidence = [
       'Own 2.6.1.23 Plane raw 63 releases the graph and its tracked input, while raw 57 and 58 return the selected base and position vectors into VM outputs',
   },
   {
+    ids: [89, 90, 91],
+    value:
+      'Own 2.6.1.23 Plane raw 57 returns the selected model priority. Raw 49 stores three parent offsets and applies the original selected parent base and position when the renderer is attached. Raw 50 clears inheritance without changing the retained pose or offsets.',
+  },
+  {
+    ids: [102, 103],
+    value:
+      'Own 2.6.1.23 Plane raw 72 stores the selected task DWORD and sends raw 43 to hide it. Raw 73 stores the complete hint attribute DWORD.',
+  },
+  {
     ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],
     value:
       'Own 2.6.1.23 kind-48 STRING receiver 0x426cf0, raw 407–411, 413–417 and 419, with the 188-byte CP932 configuration',
@@ -1207,7 +1217,10 @@ export default {
     planeAlphaFlags: 1,
     coordinateModeRequiresGraph: true,
     planePoseQueriesRequireReply: true,
+    planePoseUsesRawWords: true,
+    planeInheritanceUsesRenderer: true,
     planeResetReleasesTrackedInput: true,
+    planeImageSelectorHidesTarget: true,
     planeTrailUsesScalarWords: true,
     planeKx3UsesLegacyReceiver: true,
     planeMovieLegacy: true,
@@ -1461,6 +1474,8 @@ export default {
           },
         },
         { ids: [83, 86, 87], fields: { resultWritten: false } },
+        { ids: [89], fields: { resultWritten: true } },
+        { ids: [90, 91, 102, 103], fields: { resultWritten: false } },
         { ids: [29, 30, 31, 683, 685], fields: { resultWritten: true } },
         { ids: [32, 684], fields: { resultWritten: false } },
         {

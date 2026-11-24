@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 454       | 57            | 17            | 341     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 459       | 57            | 17            | 336     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -113,6 +113,17 @@ the complete matrix. Generic 43 and 44 preserve overlapping source and
 destination spans, including unaligned local or shared memory.
 Main 204–206 apply XYZ rotation, translation and scale. They use the
 current matrix from the caller's World when the address does not map.
+
+Main 89 reads the priority of the selected Plane model through raw 57.
+A zero target returns a zero float word. An unwritten or unresolved
+active result stays guarded because the original wrapper can copy stale
+stack bytes. Main 90 stores finite parent offsets and applies the attached
+renderer model's pose. It retains those offsets when a child is unloaded
+or the renderer is detached. A live child with unresolved parent model
+coordinates stays protected before mutation. Main 91 stops inheritance
+without changing the stored offset or pose. Main 102 stores the selected
+task and hides that recipient through raw 43. Main 103 retains the
+complete hint attribute word.
 
 PTCL v1 and v2 slot 38 point to the same receiver. It computes four
 bounds from the viewport, live priority and near plane and writes the
