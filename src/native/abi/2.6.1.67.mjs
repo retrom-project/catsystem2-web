@@ -190,7 +190,7 @@ export default {
     crossfade: false,
     positionRequires3D: true,
     spatialRequiresLoadedBuffer: true,
-    allowQuotedFesNames: null,
+    allowQuotedFesNames: false,
     fesExtensions: null,
     fesLoadParameters: false,
     categoryLookupUsesFlatVoice: true,
@@ -3208,8 +3208,6 @@ export default {
     'sound.controlBytes':
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'sound.missingIdPathFields':
-      'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
-    'sound.allowQuotedFesNames':
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',
     'sound.fesExtensions':
       'Not admitted by the selected own first normal construction/three native wrappers; require own evidence at the actual consumer.',

@@ -241,10 +241,16 @@ for (const [version, profile, soundTypeMessage, otherType] of versions) {
           /command is absent/,
         );
         assert.deepEqual(world.fesSoundConfiguration.tokens('volume master'), ['volume', 'master']);
-        assert.throws(
-          () => world.fesSoundConfiguration.tokens('volume "master"'),
-          /Unreviewed.*allowQuotedFesNames/,
-        );
+        if (version === '2.6.1.67')
+          assert.deepEqual(world.fesSoundConfiguration.tokens('volume "master"'), [
+            'volume',
+            '"master"',
+          ]);
+        else
+          assert.throws(
+            () => world.fesSoundConfiguration.tokens('volume "master"'),
+            /Unreviewed.*allowQuotedFesNames/,
+          );
         assert.throws(() => abiForEngineVersion('2.6.1.90'), /Unregistered/);
         assert.equal(nativeABI(profile).tables.main.entries[385].signature.argumentWords, 4);
         assert.equal(nativeABI(profile).tables.main.entries[856].signature.argumentWords, 7);

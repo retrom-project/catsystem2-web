@@ -167,6 +167,43 @@ next IDLE
   assert.deepEqual(text.nativeTextState.source, encodeCP932("猫 ソ ''a''"));
 });
 
+test('2.6.1.67 FES raw tokens and STRING append retain literal narrow quotes', async (t) => {
+  const world = await defaultFESWorld(profile, {
+    'screen.fes': encodeCP932(`#DEFINE
+STRING message
+#OBJECT SIZE POS PRI DISP
+message 80,24 4,4 60001 1
+#START
+message str prefix:
+next IDLE
+#IDLE
+#APPEND
+message apend $str1000
+break
+`),
+  });
+  t.after(() => world.close());
+  const { task, instance } = await loadDefaultFES(world),
+    text = instance.collection.lookup('message', 0),
+    line = String.raw`"猫 ソ" "" \" last"`,
+    bytes = encodeCP932(line);
+  const tokens = world.fesSoundConfiguration.tokens(encodeCP932('message apend ' + line));
+  assert.deepEqual(
+    tokens,
+    ['message', 'apend', '"猫', 'ソ"', '""', String.raw`\"`, 'last"'].map(encodeCP932),
+  );
+  world.runtime.stringBank(world.objects.objects.get(world.main.id)).setBytes(1000, bytes);
+  await task.tick();
+  await task.player.notify('APPEND');
+  assert.deepEqual(text.nativeTextState.source, encodeCP932('prefix:' + line));
+  await task.syncObjects();
+  const owner = world.graphics.get(text.nativeTaskID);
+  assert.deepEqual(
+    owner.text.sourceEvents.filter(({ kind }) => kind === 'append').at(-1).bytes,
+    bytes,
+  );
+});
+
 test('2.6.1.67 FES assignment keeps literal writes inert and evaluates their right operands', async (t) => {
   const world = await dataWorld(profile, {
     'expression.fes': encodeCP932(String.raw`#DEFINE
