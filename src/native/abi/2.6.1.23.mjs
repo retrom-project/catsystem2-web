@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [271, 272, 273, 274, 275, 426, 427, 693],
+    value:
+      'Own 2.6.1.23 wrappers use kind 16 raw messages 285–292 with the 656-byte load packet and 128-byte register record',
+  },
+  {
     ids: [33, 34],
     value:
       'Own 2.6.1.23 Main 0x48cbb0/0x48cbd0 share the Particle integer and real MT19937 streams and always write the result',
@@ -782,7 +787,12 @@ export default {
     splineUsesX87: true,
     currentMatrixFallback: true,
   },
-  particle: { frameScale: 'x87-uint32', quadUsesX87: true },
+  particle: {
+    frameScale: 'x87-uint32',
+    quadUsesX87: true,
+    taskMessageStart: 285,
+    deferGraphAttachment: true,
+  },
   movie: { alwaysUseBgmVolume: true },
   scene: {
     translations: false,
@@ -956,6 +966,8 @@ export default {
       signatures: [
         { ids: [4, 33, 34, 372, 373, 718, 719, 720, 786], fields: { resultWritten: true } },
         { ids: [119, 363, 369], fields: { resultWritten: false } },
+        { ids: [271, 274, 693], fields: { resultWritten: true } },
+        { ids: [272, 273, 275, 426, 427], fields: { resultWritten: false } },
         {
           ids: [25],
           fields: {

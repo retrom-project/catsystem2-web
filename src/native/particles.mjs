@@ -2,16 +2,27 @@
 // PTCL and PPI banks share the JS engine-side task and render contract.
 import { Particles } from '../particles.mjs';
 import { nativeABI } from './abi/index.mjs';
+import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { NativeParticleProjection } from './particle-projection.mjs';
 import { NativeParticleTextures } from './particle-textures.mjs';
 import { nativeParticleBounds } from './particle-bounds.mjs';
-import { NATIVE_PARTICLE_COMMANDS, installNativeParticleCommands } from './particle-commands.mjs';
+import {
+  NATIVE_PARTICLE_COMMANDS,
+  installNativeParticleCommands,
+  nativeParticleMessageOffset,
+} from './particle-commands.mjs';
 
 export const NATIVE_PARTICLE_IDS = Object.freeze(NATIVE_PARTICLE_COMMANDS.map(({ id }) => id));
 
-function registers(bytes) {
+function registers(bytes, quietNaN = false) {
   if (bytes.length !== 128) throw new Error('Native particle registers require 128 bytes');
-  return new Float32Array(bytes.slice().buffer);
+  const { buffer } = bytes.slice();
+  if (quietNaN) {
+    const words = new Uint32Array(buffer);
+    for (let index = 0; index < words.length; index++)
+      if ((words[index] & 0x7fffffff) > 0x7f800000) words[index] |= 0x00400000;
+  }
+  return new Float32Array(buffer);
 }
 
 export class NativeParticles {
@@ -105,20 +116,31 @@ export class NativeParticleTask {
     return bank;
   }
   source(sender, context) {
-    const memory = context.payload || context.machine || this.world.objects.machine(sender);
+    const memory =
+      context.payload ||
+      context.machine ||
+      this.world.objects.machine(context.nativeSenderWorldID ?? sender);
     if (!memory)
       throw new Error(`Particle task ${this.record.id} requires sender ${sender}'s VM memory`);
     return memory;
   }
   async message([sender, message, w, l], context = {}) {
-    const host = this.owner.host;
-    switch (message) {
+    const host = this.owner.host,
+      offset = nativeParticleMessageOffset(this.world.profile),
+      canonical = message - offset,
+      unwritten = offset ? NATIVE_UNWRITTEN_WORD : 0;
+    if (offset && canonical >= 314 && canonical <= 321 && !this.world.graphics.device.attachment) {
+      context.nativeUnhandled = true;
+      return NATIVE_UNWRITTEN_WORD;
+    }
+    switch (canonical) {
       case 0x13a: {
         if (context.spec) {
           await this.load(context.spec);
-          return 0;
+          return unwritten;
         }
-        if (context.nativePointer && !l) return 0;
+        if (!l && (context.nativePointer || (offset && !context.payload && !context.machine)))
+          return unwritten;
         const memory = this.source(sender, context),
           bytes = memory.bytes(l, 0x290),
           view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
@@ -140,37 +162,43 @@ export class NativeParticleTask {
           registers: registers(bytes.subarray(268, 396)),
           externalDraw: view.getUint32(396, true) !== 0,
         });
-        return 0;
+        return unwritten;
       }
       case 0x13b:
         this.state.active = true;
         if (this.bank) host.start(this.key);
-        return 0;
+        return unwritten;
       case 0x13c:
         this.state.active = false;
         if (this.bank) host.stop(this.key);
-        return 0;
+        return unwritten;
       case 0x13d:
         this.state.active = false;
         host.end(this.key, { stop: false });
-        return 0;
+        return unwritten;
       case 0x13e:
         return Number(this.active);
       case 0x13f: {
-        if (context.nativePointer && !l)
+        if (
+          !l &&
+          (context.nativePointer ||
+            (offset && !context.payload && !context.machine && !context.registers))
+        )
           throw new RangeError('Native particle registers require a mapped VM address');
-        const values = context.registers || registers(this.source(sender, context).bytes(l, 128));
+        const values =
+          context.registers ||
+          registers(this.source(sender, context).bytes(l, 128), Boolean(offset));
         if (this.bank) host.set(this.key, values);
-        return 0;
+        return unwritten;
       }
       case 0x140:
         this.state.alpha = (l | 0) >= 255 ? 256 : l | 0;
         if (this.bank) host.alpha(this.key, this.state.alpha);
-        return 0;
+        return unwritten;
       case 0x141:
         this.state.attachment = l ? l | 0 : -1;
         if (this.bank) host.attach(this.key, this.state.attachment);
-        return 0;
+        return unwritten;
       default:
         return this.base.message([sender, message, w, l], context);
     }

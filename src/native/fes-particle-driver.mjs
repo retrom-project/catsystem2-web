@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // FES PARTICLE owns authored state; the real kind16 task owns PTCL/PPI execution.
+import { nativeParticleMessageOffset } from './particle-commands.mjs';
+
 const f = Math.fround;
 
 export function initializeFESParticle(object) {
@@ -118,7 +120,14 @@ export class FESParticleDriver {
       child = resource && this.world.objects.objects.get(resource.taskID);
     if (!child || child.kind !== 16 || child.parent !== instance.runtimeID)
       throw new Error('FES particle message requires its live owned kind16 task');
-    return this.world.sendEngine(resource.taskID, instance.runtimeID, message, 0, l, context);
+    return this.world.sendEngine(
+      resource.taskID,
+      instance.runtimeID,
+      message + nativeParticleMessageOffset(this.world.profile),
+      0,
+      l,
+      context,
+    );
   }
   start(object) {
     if (!this.supports(object)) throw new TypeError('Expected FES PARTICLE');

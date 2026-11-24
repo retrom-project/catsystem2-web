@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeABI } from './abi/index.mjs';
 import { nativeReply, NATIVE_RESULT_SENTINEL } from '../kcs/vm.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
@@ -17,6 +18,10 @@ export const NATIVE_PARTICLE_COMMANDS = Object.freeze(
   ].map(([id, words, message]) => Object.freeze({ id, words, message })),
 );
 const commands = new Map(NATIVE_PARTICLE_COMMANDS.map((entry) => [entry.id, entry]));
+export function nativeParticleMessageOffset(profile) {
+  const start = nativeABI(profile).particle?.taskMessageStart;
+  return start === undefined ? 0 : start - 314;
+}
 export class NativeParticleCommands {
   constructor(world) {
     this.world = world;
@@ -24,8 +29,11 @@ export class NativeParticleCommands {
   async apply(id, args, machine, task) {
     const spec = commands.get(id);
     if (!spec) return undefined;
+    const world = this.world,
+      messageOffset = nativeParticleMessageOffset(world.profile);
+    if (messageOffset && args.length !== spec.words)
+      throw new Error(`Particle native ${id} expects ${spec.words} arguments`);
     const a = Array.from({ length: spec.words }, (_, i) => nativeDataArgument(args, machine, i)),
-      world = this.world,
       context = { flags: 0 },
       memory = world.runtime.imageDataBuffers.process;
     let l = 0;
@@ -64,7 +72,14 @@ export class NativeParticleCommands {
     context.nativeResult = out;
     context.resultMemory = memory;
     try {
-      const value = await world.sendNativeEngine(a[0], task.id, spec.message, 0, l, context);
+      const value = await world.sendNativeEngine(
+        a[0],
+        task.id,
+        spec.message + messageOffset,
+        0,
+        l,
+        context,
+      );
       if (id === 0x112) return nativeReply(1, Number.isInteger(value) ? value : memory.load(out));
       if (spec.message === 314) return nativeReply(1, 1);
       return nativeReply(2);

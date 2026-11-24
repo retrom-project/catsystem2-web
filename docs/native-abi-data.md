@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 355       | 57            | 17            | 440     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.23 | 869        | 363       | 57            | 17            | 432     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 52        | 0             | 0             | 886     | 4 of 45 generic recovered                        |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -50,6 +50,17 @@ the same y, x operand order and x87 CRT
 result as Generic 7 and Particle 12. Main 64 and Generic 16 take the signed
 integer absolute value. Main 318 uses x87 interpolation and Main 319 writes
 the low word of the integer64 after half-step rounding.
+
+The Main 271–275, 426–427 and 693 wrappers use the original kind 16
+receiver's raw messages 285–292. Load receives a 656-byte packet with
+separate 128-byte names and a 128-byte register section. Replacement
+keeps the active word. Main 271 and 693 write one. Main 274 initializes
+a zero result before routing and reads the active word when the owner
+answers. The raw status message is the only receiver case that writes
+a result. Raw load with a null pointer retains the bank. Register update
+quietens signaling NaNs during its float32 copy. Alpha is signed below 255
+and becomes 256 at or above 255. Attachment zero selects the detached
+state.
 
 Main 4 writes the current millisecond timer DWORD, including its rollover.
 Main 25 formats a CP932 string from guest memory and parses its signed decimal
