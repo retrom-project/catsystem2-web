@@ -167,6 +167,9 @@ export class NativeScreenEffectTask {
   get rendering() {
     return this.owner.rendering;
   }
+  get paddedBreakCapture() {
+    return nativeABI(this.world.profile).graphics.screenEffectBreakUsesPaddedCapture;
+  }
   clock() {
     return ((this.record.effectiveFrame ?? 0) - (this.record.pausedFrames ?? 0)) >>> 0;
   }
@@ -235,6 +238,15 @@ export class NativeScreenEffectTask {
       textureHeight: texture?.height ?? screen.currentHeight,
     };
   }
+  breakGeometryOptions(width, height) {
+    if (!this.paddedBreakCapture) return this.geometryOptions();
+    return {
+      drawingRectangle: [0, 0, width, height],
+      textureWidth: screenTextureSize(width),
+      textureHeight: screenTextureSize(height),
+      randomFloatUsesX87: nativeABI(this.world.profile).math.randomFloatUsesX87,
+    };
+  }
   async message(words, context = {}) {
     const [sender, message, , l] = words,
       kind = this.record.kind,
@@ -270,8 +282,9 @@ export class NativeScreenEffectTask {
       await this.initialize(params, context);
     } else if (start) {
       state.active = l >>> 0;
-      const preserveClock = nativeABI(this.world.profile).graphics
-        .screenEffectPreserveStoppedClockKinds?.includes(kind);
+      const preserveClock = nativeABI(
+        this.world.profile,
+      ).graphics.screenEffectPreserveStoppedClockKinds?.includes(kind);
       if (state.active || !preserveClock) {
         state.start = this.clock();
         state.end = (state.start + state.duration) >>> 0;
@@ -308,7 +321,20 @@ export class NativeScreenEffectTask {
   async initialize(params, context) {
     const state = this.state,
       kind = this.record.kind,
-      [width, height] = this.rendering.size();
+      [width, height] = this.rendering.size(),
+      breakOptions = kind === 52 ? this.breakGeometryOptions(width, height) : null,
+      shards =
+        breakOptions &&
+        breakShards(
+          width,
+          height,
+          params[3],
+          params[4],
+          bitsFloat(params[5]),
+          bitsFloat(params[6]),
+          this.world.random,
+          breakOptions,
+        );
     state.params = [...params];
     if (kind === 35) {
       state.minimum = bitsFloat(params[20]);
@@ -352,7 +378,7 @@ export class NativeScreenEffectTask {
       state.duration = params[2];
       if (
         state.active &&
-        (kind === 38 || kind === 39) &&
+        (kind === 38 || kind === 39 || (kind === 52 && this.paddedBreakCapture)) &&
         nativeABI(this.world.profile).graphics.retimeActiveScreenTransitions
       ) {
         state.start = this.clock();
@@ -406,19 +432,10 @@ export class NativeScreenEffectTask {
         this.clearCache();
         state.cache = this.cacheRows(state.work[0], state.duration, params[3], true);
       } else if (kind === 52) {
-        state.geometry = {
-          shards: breakShards(
-            width,
-            height,
-            params[3],
-            params[4],
-            bitsFloat(params[5]),
-            bitsFloat(params[6]),
-            this.world.random,
-            this.geometryOptions(),
-          ),
-        };
-        state.current = state.geometry.shards.map((shard) => ({
+        state.geometry = { shards };
+        if (this.paddedBreakCapture)
+          state.geometry.projectionSize = [breakOptions.textureWidth, breakOptions.textureHeight];
+        state.current = shards.map((shard) => ({
           vertices: shard.source.map((v) => ({ ...v, z: 0.5, w: 1 })),
         }));
       } else if (kind === 57) {
@@ -486,6 +503,33 @@ export class NativeScreenEffectTask {
   }
   drawSurface(id, alpha = 255, geometry = null) {
     this.rendering.drawSurface(id, geometry, { color: (((alpha & 255) << 24) | 0xffffff) >>> 0 });
+  }
+  paddedBreakSurface(id) {
+    if (!id) return id;
+    const source = this.stage.surfaces.get(id),
+      width = screenTextureSize(source.width),
+      height = screenTextureSize(source.height);
+    if (source.width === width && source.height === height) return id;
+    const current = this.state.work[0],
+      previous = this.breakCaptureSource;
+    if (previous?.id === id && previous.revision === source.revision) return current;
+
+    const target = current && this.stage.surfaces.get(current),
+      input = this.stage.surfacePixels(id),
+      pixels = new Uint8Array(width * height * 4),
+      stride = source.width * 4;
+    for (let at = 3; at < pixels.length; at += 4) pixels[at] = 255;
+    for (let y = 0; y < source.height; y++)
+      pixels.set(input.subarray(y * stride, (y + 1) * stride), y * width * 4);
+    if (target?.width === width && target.height === height) {
+      this.stage.writeSurface(current, pixels);
+    } else {
+      const next = this.surface(width, height, pixels);
+      this.releaseSurface(current);
+      this.state.work[0] = next;
+    }
+    this.breakCaptureSource = { id, revision: source.revision };
+    return this.state.work[0];
   }
   async renderCapture() {
     const r = this.rendering,
@@ -611,9 +655,12 @@ export class NativeScreenEffectTask {
       const selection = state.active ? this.updateMosaic() : kind === 50 ? 0 : 255;
       this.drawSurface(state.work[kind === 50 ? selection : 0], kind === 51 ? selection : 255);
     } else if (kind === 52) {
+      const padded = this.paddedBreakCapture,
+        [projectionWidth, projectionHeight] = state.geometry?.projectionSize ?? [width, height],
+        capture = padded ? this.paddedBreakSurface(r.captures[0]) : r.captures[0];
       if (state.active && state.initialized)
-        state.current = breakFrame(state, this.clock(), width, height);
-      r.drawSurface(r.captures[0], state.current, { drawType: 1 });
+        state.current = breakFrame(state, this.clock(), projectionWidth, projectionHeight, padded);
+      r.drawSurface(capture, state.current, { drawType: 1 });
     } else if (kind === 57) this.drawSurface(r.captures[0], 255, state.current);
     else if (kind === 58 && state.current) {
       r.clear(0, true);
@@ -650,6 +697,7 @@ export class NativeScreenEffectTask {
   }
   restore(snapshot) {
     this.state = structuredClone(snapshot.state);
+    this.breakCaptureSource = null;
     this.stage.restoreSurfaces(snapshot.surfaces);
   }
   async close() {

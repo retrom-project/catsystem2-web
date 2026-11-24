@@ -6,6 +6,7 @@ import { identity } from '../src/motion/matrix.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { screenEffectRawMessage } from '../src/native/screen-effect.mjs';
 import { makeWorld } from './fixtures/fes-effect-model-world.mjs';
+import { ScreenVectorGPU } from './fixtures/screen-effects-fixture.mjs';
 import { kcsProgram } from './helpers.mjs';
 
 const profile = 'grisaia-jp-engine-2.6.1.23';
@@ -168,6 +169,109 @@ test('fixed 2.6.1.23 mosaic and break starts preserve stopped receiver clocks', 
       state.capability = true;
       await world.objects.release(objectID);
     }
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+
+test('fixed 2.6.1.23 WBreak initializes the original shards and draws the padded capture', async () => {
+  const world = await makeWorld(profile);
+  try {
+    assert.equal(screenEffectRawMessage(profile, 521), 452);
+    assert.equal(mapABIMessage(profile, 'screen', 'canonical', 452), 521);
+    const width = 13,
+      height = 7,
+      stage = world.stageRenderer,
+      gpu = (stage.gpu = new ScreenVectorGPU(width, height)),
+      drawGeometry = gpu.drawGeometry.bind(gpu),
+      frames = [];
+    gpu.drawGeometry = (geometry, frame, options) => {
+      frames.push(frame);
+      return drawGeometry(geometry, frame, options);
+    };
+    Object.assign(world.graphics.view, {
+      clientWidth: width,
+      clientHeight: height,
+      drawingRectangle: [1, 2, 11, 6],
+    });
+    world.random.real.seed(4357);
+    const objectID = await world.objects.create({ kind: 52, parent: world.main.id }),
+      target = world.nativeTaskID(objectID),
+      task = world.screenEffects.tasks.get(objectID),
+      { record, state } = task,
+      args = [
+        target,
+        51,
+        floatBits(18.5),
+        floatBits(90.75),
+        5,
+        4,
+        floatBits(3.5),
+        floatBits(-9.125),
+      ],
+      expected = [floatBits(18.5), floatBits(90.75), 51, 5, 4, floatBits(3.5), floatBits(-9.125)];
+    await worldCall(world, 860, args);
+    assert.deepEqual(state.params, expected);
+    assert.deepEqual(state.geometry.projectionSize, [16, 8]);
+    assert.equal(state.geometry.shards.length, 12);
+    assert.equal(world.random.real.index, 48);
+    const first = state.geometry.shards[0];
+    assert.deepEqual(
+      first.source.map(({ x, y, u, v }) => [x, y, u, v]),
+      [
+        [-0.5, -0.5, 0, 0],
+        [4.5, -0.5, 0.3125, 0],
+        [-0.5, 3.5, 0, 0.5],
+      ],
+    );
+    assert.deepEqual(first.velocity.map(floatBits), [0xbf9e8a4f, 0xbf1e8a4d, 0, 0]);
+    assert.deepEqual(first.omega.map(floatBits), [0xbcaacd5a, 0x3d12aa2e, 0x3cf4f678]);
+    const off = args.with(0, 0).with(4, 0);
+    await worldCall(world, 860, off);
+    const before = structuredClone(state),
+      beforeRandom = world.random.snapshot();
+    await assert.rejects(worldCall(world, 860, args.with(4, 0)), /grid divides by zero/);
+    assert.deepEqual(state, before);
+    assert.deepEqual(world.random.snapshot(), beforeRandom);
+
+    const capture = world.screenEffects.rendering.captures[0],
+      pixels = new Uint8Array(width * height * 4);
+    pixels.set([11, 37, 93, 255], (width * height - 1) * 4);
+    stage.writeSurface(capture, pixels);
+    Object.assign(record, { effectiveFrame: 222, pausedFrames: 17 });
+    await worldCall(world, 861, [target, 17]);
+    await task.render();
+    record.effectiveFrame = 224;
+    await task.render();
+    assert.deepEqual([state.start, state.end, state.lastElapsed], [205, 256, 2]);
+    assert.deepEqual(
+      state.current[0].vertices.map(({ x, y, z, w, color }) => [
+        floatBits(x),
+        floatBits(y),
+        floatBits(z),
+        floatBits(w),
+        color,
+      ]),
+      [
+        [0xc038efd0, 0xbfeafe58, 0x3effffa7, 0x3a831844, 0xf5ffffff],
+        [0x40060bc0, 0xbfc46568, 0x3f000030, 0x3a830c46, 0xf5ffffff],
+        [0xc048c948, 0x4009e25c, 0x3efffffc, 0x3a8312b2, 0xf5ffffff],
+      ],
+    );
+    const padded = frames.at(-1);
+    assert.equal(frames.at(-2), padded);
+    assert.deepEqual([padded.width, padded.height], [16, 8]);
+    const corner = (6 * 16 + 12) * 4;
+    assert.deepEqual([...padded.rgba.slice(corner, corner + 8)], [11, 37, 93, 255, 0, 0, 0, 255]);
+    pixels.set([67, 39, 17, 255], (width * height - 1) * 4);
+    stage.writeSurface(capture, pixels);
+    await task.render();
+    assert.deepEqual([...frames.at(-1).rgba.slice(corner, corner + 4)], [67, 39, 17, 255]);
+
+    record.effectiveFrame = 251;
+    await worldCall(world, 860, args.with(1, 40));
+    assert.deepEqual([state.start, state.end, state.lastElapsed, state.active], [234, 274, 2, 17]);
+    assert.equal(world.random.real.index, 96);
   } finally {
     await world.close({ flushFiles: false });
   }

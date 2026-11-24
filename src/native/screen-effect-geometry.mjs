@@ -127,7 +127,7 @@ export function breakShards(
       const centered = subtract(pivot, center),
         tilt = f(f(distance(pivot, center) / diagonal) * f(Math.PI / 4)),
         azimuth = f(Math.atan2(centered[0], -centered[1])),
-        speed = f(random.frand() * radialSpeed),
+        speed = f(random.frand(options.randomFloatUsesX87) * radialSpeed),
         radial = multiply(multiply(identity(), rotation('x', tilt)), rotation('z', azimuth)),
         velocity = transform([0, 0, speed, 0], radial);
       velocity[2] = 0;
@@ -139,15 +139,18 @@ export function breakShards(
         pivot,
         position,
         velocity,
-        omega: Array.from({ length: 3 }, () => f(half - roundX87Single(random.frand() * span))),
+        omega: Array.from({ length: 3 }, () =>
+          f(half - roundX87Single(random.frand(options.randomFloatUsesX87) * span)),
+        ),
         matrix: identity(),
       });
     }
   return shards;
 }
-export function breakFrame(state, clock, width, height) {
+export function breakFrame(state, clock, width, height, unsignedStep = false) {
   const elapsed = (Math.min(clock, state.end) - state.start) >>> 0,
-    dt = f(elapsed - state.lastElapsed),
+    step = elapsed - state.lastElapsed,
+    dt = f(unsignedStep ? step >>> 0 : step),
     alpha = 255 - Math.min(255, Math.floor(((255 * elapsed) >>> 0) / Math.max(state.duration, 1))),
     color = ((alpha << 24) | 0xffffff) >>> 0;
   const geometry = state.geometry.shards.map((shard) => {

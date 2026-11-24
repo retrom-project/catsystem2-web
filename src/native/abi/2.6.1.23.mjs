@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [860],
+    value:
+      'Own 2.6.1.23 WBreak initializer raw 452 copies seven words and projects the seeded shards using the padded capture extent',
+  },
+  {
     ids: [855, 857, 861],
     value:
       'Own 2.6.1.23 Mosaic, FadeMosaic and WBreak start receivers use raw 449, 451 and 453 to set the active word; zero retains the effective clock range',
@@ -896,11 +901,11 @@ export default {
         unmapped: 'reject',
         raw: [
           ...[377, 378, 379, 380, 381, 384, 385, 387, 388].map((id) => toMessage(id, -35)),
-          ...[518, 520, 522].map((id) => toMessage(id, -69)),
+          ...[518, 520, 521, 522].map((id) => toMessage(id, -69)),
         ],
         canonical: [
           ...[342, 343, 344, 345, 346, 349, 350, 352, 353].map((id) => toMessage(id, 35)),
-          ...[449, 451, 453].map((id) => toMessage(id, 69)),
+          ...[449, 451, 452, 453].map((id) => toMessage(id, 69)),
         ],
       },
       sound: {
@@ -960,6 +965,7 @@ export default {
     planePoseQueriesRequireReply: true,
     planeResetReleasesTrackedInput: true,
     screenEffectPreserveStoppedClockKinds: [50, 51, 52],
+    screenEffectBreakUsesPaddedCapture: true,
     screenEffectFloatArguments: {
       521: [2, 3, 4, 6, 7],
       522: [],
@@ -967,6 +973,7 @@ export default {
       524: [],
       855: [],
       857: [],
+      860: [2, 3, 6, 7],
       861: [],
     },
   },
@@ -1003,7 +1010,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
-        { ids: [521, 522, 523, 524, 855, 857, 861], fields: { resultWritten: false } },
+        { ids: [521, 522, 523, 524, 855, 857, 860, 861], fields: { resultWritten: false } },
         { ids: [83, 86, 87], fields: { resultWritten: false } },
         {
           ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],
