@@ -4,6 +4,7 @@ import test from 'node:test';
 import { encodeCP932, floatBits } from '../src/kcs.mjs';
 import { openImage } from '../src/formats/hg3.mjs';
 import { MOTION_ABI, motionVector, setMotionVector } from '../src/motion/abi.mjs';
+import { identity } from '../src/motion/matrix.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { NULL_NATIVE_TEXTURE } from '../src/native/texture-layout.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
@@ -196,6 +197,112 @@ test('2.6.1.67 KCS initializes both mask transitions and retains the clock on st
   const stopped = await execute('release.kcs');
   assert.equal(stopped.load(92), 0);
   assert.deepEqual([state.start, state.end], [27, 37]);
+});
+
+test('2.6.1.67 KCS Screen configures the matrix, rectangle, shade and fade owners', async (t) => {
+  const target = [0x13, 80],
+    call = (id, args, output) => [
+      ...args.map((arg) => [37, arg]),
+      [43, id, args.length * 4],
+      ...(output === undefined ? [] : [[38, output]]),
+    ],
+    program = (...commands) => kcsProgram([[37, 0x45d29f07], ...commands, [59]]),
+    minmax = [floatBits(0.75), floatBits(300)],
+    matrix = identity().map(floatBits),
+    rectangle = [...[4, 8, 10, 12, 2, 1.5, 28, 300].map(floatBits), 0xf0403020],
+    world = await dataWorld(profile, {
+      'matrix.kcs': program(
+        ...call(521, [target, 256, 0xff812345, floatBits(2), floatBits(3), 0xf1807033, ...minmax]),
+        ...call(522, [target, 17]),
+        ...call(520, [target], 96),
+      ),
+      'rectangle.kcs': program(...call(523, [target, ...rectangle]), ...call(524, [target, 31])),
+      'shade.kcs': program(...call(525, [target, 2, ...minmax]), ...call(526, [target, 57])),
+      'fade.kcs': program(...call(527, [target, 16, ...minmax]), ...call(528, [target, 3])),
+      'retime.kcs': program(...call(527, [target, 8, ...minmax]), ...call(529, [target])),
+      'stop.kcs': program(...call(528, [target, 0]), ...call(520, [target], 96)),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  for (let raw = 366; raw <= 377; raw++) {
+    assert.equal(mapABIMessage(profile, 'screen', 'canonical', raw), raw + 11);
+    assert.equal(mapABIMessage(profile, 'screen', 'raw', raw + 11), raw);
+  }
+  Object.assign(world.configuration.screen, {
+    width: 16,
+    height: 16,
+    currentWidth: 24,
+    currentHeight: 12,
+  });
+  world.graphics.view.configure({
+    clientWidth: 24,
+    clientHeight: 12,
+    drawingRectangle: [0, 0, 24, 12],
+  });
+  const parent = world.main.id,
+    create = async (kind) => {
+      const id = await world.objects.create({ kind, parent });
+      return world.screenEffects.tasks.get(id);
+    },
+    run = async (file, effect) => {
+      const task = await world.spawnScript(file, { parent, initialExecute: false }),
+        m = task.machine,
+        floor = m.sp;
+      m.store(80, world.nativeTaskID(effect.record.id));
+      matrix.forEach((word, index) => m.store(256 + index * 4, word));
+      await world.runtime.scheduler.execute(task);
+      assert.equal(m.sp, floor + 4);
+      assert.equal(m.load(floor), 0x45d29f07);
+      assert.equal(m.load(284), matrix[7]);
+      return m.load(96);
+    };
+  matrix[7] = 0x7f801234;
+  const matrixOwner = await create(35);
+  assert.equal(await run('matrix.kcs', matrixOwner), 17);
+  assert.deepEqual(matrixOwner.state.params, [
+    ...matrix,
+    0xffc12345,
+    floatBits(2),
+    floatBits(3),
+    0xf1807033,
+    ...minmax,
+  ]);
+  const rectangleOwner = await create(36);
+  await run('rectangle.kcs', rectangleOwner);
+  assert.equal(rectangleOwner.state.active, 31);
+  assert.deepEqual(rectangleOwner.state.params, rectangle);
+  assert.deepEqual(
+    rectangleOwner.state.geometry[0].vertices.map(({ x, y }) => [x, y]),
+    [
+      [5.5, 5.5],
+      [20.5, 5.5],
+      [5.5, 14.5],
+      [20.5, 14.5],
+    ],
+  );
+  const shade = await create(37);
+  await run('shade.kcs', shade);
+  assert.deepEqual(
+    [shade.state.active, shade.state.radius, shade.state.minimum, shade.state.maximum],
+    [57, 2, 0.75, 300],
+  );
+  await world.objects.release(shade.record.id);
+  const fade = await create(38);
+  fade.record.effectiveFrame = 40;
+  await run('fade.kcs', fade);
+  assert.deepEqual([fade.state.active, fade.state.start, fade.state.end], [3, 40, 56]);
+  fade.record.effectiveFrame = 42;
+  await run('retime.kcs', fade);
+  assert.deepEqual([fade.state.start, fade.state.end, fade.state.finishFlag], [42, 50, 1]);
+  fade.record.effectiveFrame = 46;
+  const alpha = [],
+    rendering = world.screenEffects.rendering;
+  rendering.clear = () => {};
+  rendering.drawRange = () => {};
+  rendering.drawSurface = (_surface, _vertices, { color }) => alpha.push(color >>> 24);
+  await fade.renderTransition();
+  assert.deepEqual(alpha, [128]);
+  assert.equal(await run('stop.kcs', fade), 0);
+  assert.deepEqual([fade.state.start, fade.state.end], [42, 50]);
 });
 
 test('2.6.1.67 KCS reads live capture counters and writes a CP932 line at the original file position', async (t) => {
