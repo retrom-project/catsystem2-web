@@ -127,3 +127,48 @@ test('fixed 2.6.1.23 screen-effect GCALLs initialize the original matrix and rec
     await world.close({ flushFiles: false });
   }
 });
+
+test('fixed 2.6.1.23 mosaic and break starts preserve stopped receiver clocks', async () => {
+  const world = await makeWorld(profile);
+  try {
+    for (const [kind, id, canonical, raw] of [
+      [50, 855, 518, 449],
+      [51, 857, 520, 451],
+      [52, 861, 522, 453],
+    ]) {
+      assert.equal(screenEffectRawMessage(profile, canonical), raw);
+      assert.equal(mapABIMessage(profile, 'screen', 'canonical', raw), canonical);
+      const objectID = await world.objects.create({ kind, parent: world.main.id }),
+        target = world.nativeTaskID(objectID),
+        task = world.screenEffects.tasks.get(objectID),
+        { state, record } = task,
+        status = () => world.sendNativeEngine(target, world.main.id, 377);
+      assert.equal(state.capability, true);
+      Object.assign(state, { duration: 24, start: 2, end: 19, lastElapsed: 15, lastKey: 27 });
+      Object.assign(record, { effectiveFrame: 3, pausedFrames: 12 });
+
+      await worldCall(world, id, [0, 0x80000001]);
+      assert.equal(await status(), 0);
+      await worldCall(world, id, [target, 0x80000001]);
+      assert.equal(await status(), 0x80000001);
+      assert.deepEqual([state.start, state.end, state.lastElapsed], [0xfffffff7, 15, 0]);
+
+      Object.assign(state, { lastElapsed: 11, lastKey: 19 });
+      record.effectiveFrame = 40;
+      await worldCall(world, id, [target, 0]);
+      assert.equal(await status(), 0);
+      assert.deepEqual([state.start, state.end, state.lastElapsed], [0xfffffff7, 15, 11]);
+      if (kind !== 52) assert.equal(state.lastKey, 0xffffffff);
+
+      state.capability = false;
+      const before = structuredClone(state);
+      await worldCall(world, id, [target, 17]);
+      assert.deepEqual(state, before);
+      await assert.rejects(worldCall(world, id, [target]), /expects 2 arguments/);
+      state.capability = true;
+      await world.objects.release(objectID);
+    }
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});

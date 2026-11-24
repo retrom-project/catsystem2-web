@@ -270,10 +270,14 @@ export class NativeScreenEffectTask {
       await this.initialize(params, context);
     } else if (start) {
       state.active = l >>> 0;
-      state.start = this.clock();
-      state.end = (state.start + state.duration) >>> 0;
-      state.lastElapsed = 0;
-      state.firstFrame = true;
+      const preserveClock = nativeABI(this.world.profile).graphics
+        .screenEffectPreserveStoppedClockKinds?.includes(kind);
+      if (state.active || !preserveClock) {
+        state.start = this.clock();
+        state.end = (state.start + state.duration) >>> 0;
+        state.lastElapsed = 0;
+        state.firstFrame = true;
+      }
       state.lastKey = 0xffffffff;
     } else if (finish) state.finishFlag = 1;
     else if (prepare && this.copyWorking(1, 2)) {

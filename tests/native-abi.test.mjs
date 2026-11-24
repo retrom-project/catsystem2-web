@@ -31,14 +31,11 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
       .reduce((total, table) => total + table.count, 0),
     2344,
   );
-  for (const [version, fileStatus] of [
-    ['2.6.1.63', 'recovered'],
-    ['2.6.1.67', 'unknown'],
-  ]) {
+  for (const version of ['2.6.1.63', '2.6.1.67']) {
     const abi = abiForEngineVersion(version);
     assert.equal(abi.tables.main.count, 938);
     assert.equal(abi.tables.main.entries[0x181].signature.argumentWords, 4);
-    assert.equal(abi.tables.main.entries[0x181].status, fileStatus);
+    assert.equal(abi.tables.main.entries[0x181].status, 'recovered');
     assert.equal(abi.tables.main.entries[0x358].signature.argumentWords, 7);
     assert.equal(abi.tables.main.entries[0x358].status, 'unknown');
   }
@@ -47,10 +44,10 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 381);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 384);
   assert.equal(base.main.entries.filter(({ status }) => status === 'reserved').length, 57);
   assert.equal(base.main.entries.filter(({ status }) => status === 'constant-zero').length, 17);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 414);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 411);
   assert.equal(base.main.entries.filter((entry) => entry.observedArgumentWords.length).length, 435);
   assert.deepEqual(base.main.entries[464].observedArgumentWords, []);
   assert.deepEqual(base.main.entries[543].observedArgumentWords, [3]);

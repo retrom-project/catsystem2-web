@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [855, 857, 861],
+    value:
+      'Own 2.6.1.23 Mosaic, FadeMosaic and WBreak start receivers use raw 449, 451 and 453 to set the active word; zero retains the effective clock range',
+  },
+  {
     ids: [521, 522, 523, 524],
     value:
       'Own 2.6.1.23 kind-35/36 screen effects use raw 343–346 with the 88-byte matrix and 36-byte rectangle initializer packets',
@@ -889,8 +894,14 @@ export default {
       control: { unmapped: 'reject', raw: [], canonical: [] },
       screen: {
         unmapped: 'reject',
-        raw: [377, 378, 379, 380, 381, 384, 385, 387, 388].map((id) => toMessage(id, -35)),
-        canonical: [342, 343, 344, 345, 346, 349, 350, 352, 353].map((id) => toMessage(id, 35)),
+        raw: [
+          ...[377, 378, 379, 380, 381, 384, 385, 387, 388].map((id) => toMessage(id, -35)),
+          ...[518, 520, 522].map((id) => toMessage(id, -69)),
+        ],
+        canonical: [
+          ...[342, 343, 344, 345, 346, 349, 350, 352, 353].map((id) => toMessage(id, 35)),
+          ...[449, 451, 453].map((id) => toMessage(id, 69)),
+        ],
       },
       sound: {
         unmapped: 'reject',
@@ -948,11 +959,15 @@ export default {
     coordinateModeRequiresGraph: true,
     planePoseQueriesRequireReply: true,
     planeResetReleasesTrackedInput: true,
+    screenEffectPreserveStoppedClockKinds: [50, 51, 52],
     screenEffectFloatArguments: {
       521: [2, 3, 4, 6, 7],
       522: [],
       523: [1, 2, 3, 4, 5, 6, 7, 8],
       524: [],
+      855: [],
+      857: [],
+      861: [],
     },
   },
   gallery: { listVariantWidth: 64 },
@@ -988,7 +1003,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
-        { ids: [521, 522, 523, 524], fields: { resultWritten: false } },
+        { ids: [521, 522, 523, 524, 855, 857, 861], fields: { resultWritten: false } },
         { ids: [83, 86, 87], fields: { resultWritten: false } },
         {
           ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],

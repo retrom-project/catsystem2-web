@@ -19,9 +19,9 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 381       | 57            | 17            | 414     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.23 | 869        | 384       | 57            | 17            | 411     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
-| 2.6.1.67 | 938        | 110       | 80            | 19            | 729     | Generic 8 of 45, Particle 6 of 44 and 6 of 51    |
+| 2.6.1.67 | 938        | 187       | 80            | 19            | 652     | Generic 8 of 45, Particle 6 of 44 and 6 of 51    |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                                     |
 
@@ -75,6 +75,13 @@ packet. The rectangle initializer sends nine words and scales its
 rectangle using the current and configured view dimensions. The start
 wrappers pass the full active word. With no capture capability, the
 receiver leaves the effect state unchanged.
+
+Main 855, 857 and 861 use raw 449, 451 and 453 to start or stop kinds 50,
+51 and 52. The receivers retain the full active word. A nonzero word
+restarts the range from the effective frame minus paused frames. A zero
+word keeps the previous range and elapsed frame. Kinds 50 and 51 reset
+their mosaic selection key on both start and stop. A disabled receiver
+leaves state unchanged.
 
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word
