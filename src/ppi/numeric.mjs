@@ -215,7 +215,8 @@ function sseReciprocalEstimate(value) {
   const word = floatBits(value);
   const exponent = (word >>> 23) & 255;
   if (exponent === 0) return Infinity;
-  const bin = (word & 0x7fffff) >>> 12;
+  const fractionMask = (1 << 23) - 1;
+  const bin = (word & fractionMask) >>> 12;
   // RCPSS on the original SSE path approximates each mantissa bin and
   // flushes a subnormal reciprocal to zero.
   const significand = Math.round(8192 / (1 + (bin + 0.5) / 2048)) / 8192;
