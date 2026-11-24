@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // String task kinds 48 and 63.
-// Task messages here use the World's canonical game numbering. SDK wrappers
-// translate their independently recovered message numbers at the boundary.
+// Recovered native resource ranges are selected per ABI. Other resource
+// producers use the World's canonical message numbers.
 import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicTask } from './graphics.mjs';
 import { NativeBitmap } from './image.mjs';
@@ -10,6 +10,7 @@ import { nvTextConfig, textConfig, unpackTextConfiguration } from './text-config
 import { CanvasTextGlyphs } from '../render/native-text.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
 import { nativeReply } from '../kcs.mjs';
+import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { installNativeLegacyText } from './text-legacy.mjs';
 import { installNativeDisplayLogs } from './text-log.mjs';
 const copyTextFrame = NativeTextWriter.prototype.frame;
@@ -69,6 +70,10 @@ export class NativeTextTask {
     return this.record.kind === 63 ? 'utf8' : 'cp932';
   }
   get firstMessage() {
+    if (this.mode === 'cp932') {
+      const messages = nativeABI(this.world.profile).text.resourceMessages;
+      if (messages.cp932UsesNativeMessages) return messages.first.cp932;
+    }
     return this.mode === 'utf8' ? 469 : 449;
   }
   get graph() {
@@ -174,7 +179,9 @@ export class NativeTextTask {
     }
     const [sender, message, w, l] = words,
       operation = message - this.firstMessage,
-      resourceMessages = nativeABI(this.world.profile).text.resourceMessages;
+      resourceMessages = nativeABI(this.world.profile).text.resourceMessages,
+      nativeCP932 = this.mode === 'cp932' && resourceMessages.cp932UsesNativeMessages,
+      reply = nativeCP932 ? NATIVE_UNWRITTEN_WORD : 0;
     if (operation < 0 || operation > resourceMessages.maxOperation) {
       if (message === 47 && !this.text.output) return 0;
       return this.plane.message(words, context);
@@ -190,12 +197,12 @@ export class NativeTextTask {
       if (pointer && memory?.load(l) === packetSize)
         if (memory.write) memory.write(l, await runtime.defaultPacket(this.mode));
         else memory.bytes(l, packetSize).set(await runtime.defaultPacket(this.mode));
-      return 0;
+      return reply;
     }
     if (operation === 1 || operation === 2) {
-      if (!pointer) return 0;
+      if (!pointer) return reply;
       if (!memory) throw new Error('Native text configuration requires sender memory');
-      if (!writer && operation === 2) return 0;
+      if (!writer && operation === 2) return reply;
       if (!writer) {
         writer = await runtime.create(this.mode);
         this.text.writer = writer.pointer;
@@ -204,7 +211,7 @@ export class NativeTextTask {
         this.text.sourceEvents = [];
         this.text.source = '';
       }
-      if (memory.load(l) !== packetSize) return 0;
+      if (memory.load(l) !== packetSize) return reply;
       this.text.config = memory.bytes(l, packetSize).slice();
       const config = unpackTextConfiguration(
           bindings,
@@ -229,7 +236,8 @@ export class NativeTextTask {
           height: dimensions.getUint32(8, true),
           vram: true,
         });
-        setMotionVector(this.graph.textureTransform, MOTION_ABI.pos, [...this.text.vram, 0]);
+        const position = nativeCP932 ? this.text.vram.map((word) => word >>> 0) : this.text.vram;
+        setMotionVector(this.graph.textureTransform, MOTION_ABI.pos, [...position, 0]);
         this.sync();
       } else if (this.mode === 'utf8') {
         await writer.clear();
@@ -237,7 +245,7 @@ export class NativeTextTask {
       }
       await this.output();
       if (operation === 2) await this.restart();
-      return 0;
+      return reply;
     }
     if (operation === 5 || operation === 17) {
       if (!writer) throw new Error('Native text remaining query requires an initialized writer');
@@ -248,9 +256,9 @@ export class NativeTextTask {
         if (!memory) throw new Error('Native text engine query requires sender memory');
         memory.store(l, writer?.enginePointer() ?? 0);
       }
-      return 0;
+      return reply;
     }
-    if (!writer) return 0;
+    if (!writer && !(nativeCP932 && operation === 4)) return reply;
     switch (operation) {
       case 3: {
         if (!memory) throw new Error('Native text append requires sender memory');
@@ -258,32 +266,32 @@ export class NativeTextTask {
         this.text.sourceEvents.push({ kind: 'append', bytes });
         const text = await writer.appendEncoded(bytes);
         if (this.mode === 'utf8') this.text.source += text;
-        return 0;
+        return reply;
       }
       case 4:
-        await writer.clear();
+        await writer?.clear();
         this.text.elapsed = this.text.pageLimit = 0;
         this.text.active = false;
         this.text.source = '';
         this.text.sourceEvents = [];
         await this.output();
-        return 0;
+        return reply;
       case 6:
         if (this.graph) {
-          await writer.draw(-1, this.text.pageLimit);
+          await writer.draw(-1, nativeCP932 ? -1 : this.text.pageLimit);
           await this.dirtyOutput();
           this.text.active = false;
         }
-        return 0;
+        return reply;
       case 7:
         this.text.sourceEvents.push({ kind: 'mark' });
         await writer.mark();
         if (this.mode === 'utf8') this.text.source += '\uffff';
-        return 0;
+        return reply;
       case 8:
         this.text.pageLimit = l | 0;
         await this.restart();
-        return 0;
+        return reply;
       case 9:
         if (context.resourceBytes) {
           await writer.userFont(context.resourceBytes);
@@ -291,21 +299,27 @@ export class NativeTextTask {
         } else if (!l) await writer.resourceMessage(9, 0, 0);
         else if (context.nativePointer && this.world.transitionalExe?.readTextResource)
           await writer.userFont(await this.world.transitionalExe.readTextResource(this.world, l));
-        else throw new Error('Native text image font requires a mounted image-data resource');
-        return 0;
+        else if (nativeCP932 && !context.nativePointer) {
+          const buffers = this.world.runtime.imageDataBuffers,
+            source = buffers.pointer(l);
+          await writer.userFont(buffers.data(source));
+          buffers.releasePointer(source);
+        } else throw new Error('Native text image font requires a mounted image-data resource');
+        return reply;
       case 10:
-        await writer.resourceMessage(10, w, l);
-        return 0;
+        if (!nativeCP932 || writer.imageFont)
+          await writer.resourceMessage(10, nativeCP932 ? w & 0xffff : w, l);
+        return reply;
       case 11: {
         if (!memory) throw new Error('Native text cursor query requires sender memory');
         const [x, y] = await writer.endPosition();
         memory.store(w, x);
         memory.store(l, y);
-        return 0;
+        return reply;
       }
       case 12:
         await writer.speed(l);
-        return 0;
+        return reply;
       case 13: {
         if (!memory) throw new Error('Native text category edit requires sender memory');
         // The task parses category strings as CP932 even in STRING8 mode.
@@ -609,19 +623,35 @@ export const NATIVE_TEXT_IDS = Object.freeze([
 ]);
 export async function nativeText(id, args, machine, task, world) {
   if (!NATIVE_TEXT_IDS.includes(id)) return undefined;
-  const send = (message, w = 0, l = 0, payload = null) =>
+  const abi = world.profile && nativeABI(world.profile),
+    messages = abi?.text.resourceMessages,
+    nativeCP932 = messages?.cp932UsesNativeMessages,
+    first = nativeCP932 ? messages.first.cp932 : 449;
+  if (nativeCP932) {
+    const expected = abi.tables.main.entries[id].signature.argumentWords;
+    if (args.length !== expected)
+      throw new Error(`Text native ${id} expects ${expected} arguments`);
+  }
+  const send = (operation, w = 0, l = 0, payload = null) =>
     world.sendNativeEngine
-      ? world.sendNativeEngine(args[0], task.id, message, w, l, payload ? { payload } : {})
-      : world.graphics.send(args[0], task.id, message, w, l, payload);
+      ? world.sendNativeEngine(
+          args[0],
+          task.id,
+          first + operation,
+          w,
+          l,
+          payload ? { payload } : {},
+        )
+      : world.graphics.send(args[0], task.id, first + operation, w, l, payload);
   switch (id) {
     case 0x263:
-      await send(449, 0, args[1], machine);
+      await send(0, 0, args[1], machine);
       break;
     case 0x264:
-      await send(450, 0, args[1], machine);
+      await send(1, 0, args[1], machine);
       break;
     case 0x265:
-      await send(451, 0, args[1], machine);
+      await send(2, 0, args[1], machine);
       break;
     case 0x266: {
       const format = world.runtime.services?.formatBytes;
@@ -634,25 +664,29 @@ export async function nativeText(id, args, machine, task, world) {
           store: (at, value) => view.setUint32(at, value, true),
           bytes: (at, size) => source.subarray(at, at + size),
         };
-      await send(452, 0, 0, payload);
+      await send(3, 0, 0, payload);
       break;
     }
     case 0x267:
-      await send(453);
+      await send(4);
       break;
     case 0x268:
-      return nativeReply(1, await send(454));
+      return nativeReply(1, await send(5));
     case 0x269:
-      await send(455);
+      await send(6);
       break;
     case 0x26a:
-      await send(456);
+      await send(7);
       break;
     case 0x26b:
-      await send(457, 0, args[1]);
+      await send(8, 0, args[1]);
       break;
     case 0x26c: {
       if (!args[1]) break;
+      if (nativeCP932) {
+        await send(9, 0, args[1]);
+        break;
+      }
       const buffers = world.runtime.imageDataBuffers,
         source = buffers.pointer(args[1]),
         context = {
@@ -673,13 +707,13 @@ export async function nativeText(id, args, machine, task, world) {
       break;
     }
     case 0x26d:
-      await send(459, args[1], args[2]);
+      await send(10, args[1], args[2]);
       break;
     case 0x2b7:
-      await send(461, 0, args[1]);
+      await send(12, 0, args[1]);
       break;
     case 0x374:
-      return nativeReply(1, await send(466));
+      return nativeReply(1, await send(17));
   }
   return nativeReply(2);
 }

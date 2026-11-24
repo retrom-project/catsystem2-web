@@ -695,7 +695,7 @@ export class FESStringDriver {
       mode = object.nativeType === 29 ? 'nv' : object.nativeType === 37 ? 'utf8' : 'cp932',
       textABI = nativeABI(this.world.profile).text,
       messages = textABI.resourceMessages,
-      first = mode === 'nv' ? 489 : mode === 'utf8' ? 469 : 449,
+      first = mode === 'nv' ? 489 : task.firstMessage,
       scratch = this.workspace(object);
     let cursorMask = 0;
     if (s.first && object.sizePending) {

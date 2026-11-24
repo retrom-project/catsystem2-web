@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],
+    value:
+      'Own 2.6.1.23 kind-48 STRING receiver 0x426cf0, raw 407–411, 413–417 and 419, with the 188-byte CP932 configuration',
+  },
+  {
     ids: [271, 272, 273, 274, 275, 426, 427, 693],
     value:
       'Own 2.6.1.23 wrappers use kind 16 raw messages 285–292 with the 656-byte load packet and 128-byte register record',
@@ -733,6 +738,7 @@ export default {
     resourceMessages: {
       first: { cp932: 407, nv: 420, utf8: null },
       clearCategory: false,
+      cp932UsesNativeMessages: true,
       maxOperation: 12,
     },
     nvResetKeepsView: true,
@@ -964,6 +970,10 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        {
+          ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],
+          fields: { resultWritten: false },
+        },
         { ids: [4, 33, 34, 372, 373, 718, 719, 720, 786], fields: { resultWritten: true } },
         { ids: [119, 363, 369], fields: { resultWritten: false } },
         { ids: [271, 274, 693], fields: { resultWritten: true } },
