@@ -527,3 +527,76 @@ test('2.6.1.67 narrow GCALLs append bytes and write the original result words', 
     Uint8Array.of(...encodeCP932('猫/log/100%'), 0, 0, 0x5a),
   );
 });
+
+test('2.6.1.67 Draw GCALLs copy, clear and force the owned pixel surface', async (t) => {
+  const target = [0x13, 80];
+  const pixels = [23, 47, 89, 255];
+  const program = (id, args = [target]) =>
+    kcsProgram([
+      [37, 0xd714a16b],
+      ...args.map((word) => [37, word]),
+      [43, id, args.length * 4],
+      [59],
+    ]);
+  const world = await dataWorld(profile, {
+    'copy.kcs': program(455, [target, [0x13, 84]]),
+    'render.kcs': program(340),
+    'clear.kcs': program(341),
+    'force.kcs': program(342),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const texture = world.configuration.fields.texture;
+  texture.size.set([64, 64]);
+  texture.grid.set([1, 1]);
+  texture.bppY.set([0, 1]);
+  texture.areas[0].set([0, 0, 1, 1]);
+  texture.bpp = 32;
+  const owner = world.main;
+  const id = await world.objects.create({ kind: 15, parent: owner.id });
+  const nativeID = world.nativeTaskID(id);
+  const targetDraw = world.graphics.drawTasks.get(id);
+  await world.runtime.native('main', 256, [nativeID, 2, 2], owner.machine, owner);
+  await world.runtime.native('main', 260, [nativeID, 0, 0], owner.machine, owner);
+  await world.runtime.native('main', 262, [nativeID, 1], owner.machine, owner);
+  const image = world.graphics.images.create(1, 1, owner.id);
+  const source = world.graphics.images.get(image);
+  (await source.pixels()).set(pixels);
+  await source.changed();
+  const execute = async (name, handle = 0) => {
+    const task = await world.spawnScript(name);
+    const { machine } = task;
+    const stack = machine.sp;
+    machine.store(80, nativeID);
+    machine.store(84, handle);
+    await world.runtime.scheduler.execute(task);
+    assert.equal(machine.sp, stack + 4);
+    assert.equal(machine.load(stack), 0xd714a16b);
+  };
+  await execute('copy.kcs', image);
+  assert.equal(targetDraw.state.baseVisible, true);
+  assert.notEqual(targetDraw.state.baseImage, image);
+  assert.deepEqual(
+    Array.from(await world.graphics.images.get(targetDraw.state.baseImage).pixels()),
+    pixels,
+  );
+  await execute('render.kcs');
+  const rendered = await world.graphics.images.get(targetDraw.state.renderer.bitmap).pixels();
+  assert.ok(
+    rendered.some(
+      (_, offset) =>
+        offset % 4 === 0 && pixels.every((value, channel) => rendered[offset + channel] === value),
+    ),
+    'Expected the owned color in the ordinary Draw output',
+  );
+  await execute('copy.kcs');
+  await execute('clear.kcs');
+  assert.equal(targetDraw.state.baseVisible, false);
+  assert.deepEqual(targetDraw.state.renderer.items, []);
+  await world.runtime.native('main', 262, [nativeID, 0], owner.machine, owner);
+  await execute('force.kcs');
+  assert.equal(targetDraw.state.enabled, 0);
+  assert.deepEqual(
+    Array.from((await world.graphics.images.get(world.graphics.vramHandle).pixels()).slice(0, 4)),
+    [0, 0, 0, 0],
+  );
+});
