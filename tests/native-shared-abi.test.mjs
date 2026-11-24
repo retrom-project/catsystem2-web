@@ -55,8 +55,8 @@ test('profile signature knowledge, encodings and independent observations remain
   assert.equal(sdk.tables.main.entries[0x38a].signature.argumentWords, null);
   assert.deepEqual(sdk.tables.main.entries[0x38a].observedArgumentWords, [3]);
   assert.equal(game.tables.main.entries[0x38a].signature.argumentWords, 3);
-  assert.equal(sdk.tables.main.entries[1].signature.review, 'needs-review');
-  assert.ok(sdk.tables.main.entries[1].signature.reviewReason);
+  assert.equal(sdk.tables.main.entries[1].signature.review, 'reviewed');
+  assert.equal(sdk.tables.main.entries[1].signature.resultWritten, false);
 });
 
 for (const registration of [sdkRegistration, gameRegistration]) {

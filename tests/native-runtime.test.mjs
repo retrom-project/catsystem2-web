@@ -252,7 +252,7 @@ test('unknown admission precedes registered handlers and service preparation', a
   );
   assertUnknownDiagnostic(error, runtime, guardedID, [7, 1], task);
   assert.equal(runtime.tables.get('main')[1].status, 'recovered');
-  assert.equal(nativeABI(sdkProfile).tables.main.entries[1].signature.review, 'needs-review');
+  assert.equal(nativeABI(sdkProfile).tables.main.entries[1].signature.review, 'reviewed');
   assert.deepEqual(runtime.native('main', 1, [64], task.machine, task, runtime.scheduler), {
     control: 2,
   });

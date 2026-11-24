@@ -31,6 +31,32 @@ async function runGuest(world, name, initialize) {
   return task.machine;
 }
 
+test('fixed SDK debug GCALL keeps original CP932 bounds and literal percent output', async (t) => {
+  const world = await dataWorld(profile, { 'debug.kcs': program(1, [256]) });
+  t.after(() => world.close({ flushFiles: false }));
+  const output = [];
+  world.host.nativeLog = (text) => output.push(text);
+  for (const [source, expected] of [
+    ['', ''],
+    ['猫仮', '猫仮'],
+    ['%d[G192] 100%%', '-41 100%'],
+    ['100%%%%', '100%'],
+    ['%% line %%', '% line %'],
+    ['x'.repeat(499), 'x'.repeat(499)],
+    ['x'.repeat(501), 'x'.repeat(500)],
+    ['x'.repeat(499) + '猫', 'x'.repeat(499) + '\ufffd'],
+  ]) {
+    const machine = await runGuest(world, 'debug.kcs', (machine) => {
+      machine.writeString(source, 256);
+      machine.store(192, -41);
+    });
+    assert.equal(machine.string(256), source);
+    assert.equal(output.pop(), expected);
+  }
+  assert.deepEqual(output, []);
+  assert.equal(nativeABI(profile).tables.main.entries[1].signature.resultWritten, false);
+});
+
 test('fixed 2.6.1.74 Main9 post, language confirmation, and ordinary Script shutdown', async (t) => {
   for (const [selector, accepted, translated] of [
     [1, false, false],

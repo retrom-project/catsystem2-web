@@ -14,6 +14,7 @@ export default {
     fesNVFontWritesName: true,
     pathBytes: 260,
     clipboardUsesCP932: true,
+    debugPrintByteLimit: 500,
     recordingPrefix: {
       units: 'bytes',
       limit: 64,
@@ -1045,9 +1046,8 @@ export default {
         {
           ids: [1],
           fields: {
-            review: 'needs-review',
-            reviewReason:
-              'SDK body confirms semantic, argument width and control; independent normal execution still requires debug-window transport and original formatter.',
+            resultWritten: false,
+            review: 'reviewed',
           },
         },
         {
@@ -1344,6 +1344,11 @@ export default {
         },
       ],
       evidence: [
+        {
+          ids: [1],
+          value:
+            'Own 2.6.1.74 KCS debug formatter and original native debug-window transport, control 2 with no guest result. See docs/native-standard-review.md.',
+        },
         {
           ids: [80, 83, 86, 87, 89, 91, 94, 99, 102, 103, 109, 110],
           value:

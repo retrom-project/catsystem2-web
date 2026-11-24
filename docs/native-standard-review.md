@@ -14,7 +14,7 @@ contains the names/signatures; these EXE targets remain documentation/test evide
 
 | SDK ID | Semantic                             | Words | Control | Original handler | Validation                              |
 | ------ | ------------------------------------ | ----- | ------- | ---------------- | --------------------------------------- |
-| `1`    | `debug.print`                        | 1     | 2       | `51C010`         | body confirmed; normal fixture pending  |
+| `1`    | `debug.print`                        | 1     | 2       | `51C010`         | original window sink and KCS World      |
 | `6`    | `word.identity`                      | 1     | 1       | `51B320`         | independent GCALL                       |
 | `9`    | `application.exit`                   | 1     | 2       | `51B570`         | original window callback and KCS World  |
 | `A`    | `clipboard.copy`                     | 1     | 2       | `51B360`         | original CF_TEXT and KCS browser host   |
@@ -49,9 +49,15 @@ only that byte span is private scratch, and raw PE write evidence is retained.
 All remaining PE bytes, VM regions, result-write behavior, handles and task state
 compare exactly. Public golden cases run without a private executable.
 
-The remaining signatures record the original wrapper evidence for debug print
-and file read/write. The debug-window sink and the actual file receiver have
-independent review scope.
+Main1 formats a CP932 guest string and sends the result to an enabled and
+attached native debug receiver as message 0x401. The second formatter has a
+500-byte output limit. An isolated formatted percent and a terminal run keep
+the original literal output. The browser sends that byte-bounded text to its
+existing diagnostics. A CRT conversion with no guest variadic operands stays
+literal there. The GCALL uses control 2 without writing the result.
+
+The remaining file read and write signatures have independent receiver review
+scope.
 
 On the fixed SDK build, Main9 posts WM_CLOSE for a nonzero selector and 0x433
 for zero. Its application callback uses the language table to translate the

@@ -63,6 +63,27 @@ function formattedCString(services, m, address) {
     end = bytes?.indexOf(0);
   return end >= 0 ? bytes.subarray(0, end) : bytes;
 }
+function sdkDebugMessage(bytes, limit) {
+  const output = new Uint8Array(Math.min(bytes.length, limit));
+  let written = 0;
+  for (let at = 0; at < bytes.length && written < output.length; ) {
+    if (bytes[at] !== 37) {
+      output[written++] = bytes[at++];
+      continue;
+    }
+    let end = at + 1;
+    while (bytes[end] === 37) end++;
+    const run = end - at;
+    // A remaining CRT conversion has no guest variadic arguments. Keep that
+    // run literal in the host diagnostic.
+    const literal = run % 2 === 0 && end < bytes.length ? run : Math.ceil(run / 2);
+    const next = Math.min(output.length, written + literal);
+    output.fill(37, written, next);
+    written = next;
+    at = end;
+  }
+  return new TextDecoder('shift_jis').decode(output.subarray(0, written));
+}
 function doubleByte(bytes, at) {
   const lead = bytes[at],
     trail = bytes[at + 1];
@@ -274,12 +295,15 @@ export function nativeStandard(id, args, m, services = {}) {
     case 2:
     case 3:
       return done();
-    case 1:
+    case 1: {
       requireArguments(1);
-      a = formatted(args[0]);
-      if (a === undefined || typeof services.log !== 'function') return undefined;
-      services.log(a);
+      if (typeof services.log !== 'function') return undefined;
+      const limit = services.profile && nativeABI(services.profile).text.debugPrintByteLimit;
+      const message = limit ? formattedCString(services, m, args[0]) : formatted(args[0]);
+      if (message === undefined) return undefined;
+      services.log(limit ? sdkDebugMessage(message, limit) : message);
       return done();
+    }
     case 4: {
       requireArguments(0);
       if (typeof services.clock !== 'function') return undefined;
