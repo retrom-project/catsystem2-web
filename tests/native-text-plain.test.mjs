@@ -9,6 +9,7 @@ import { KCSMachine } from '../src/kcs/vm.mjs';
 import { formatNativeAt, encodeCP932 } from '../src/kcs.mjs';
 import { Binary } from '../src/binary.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { kcsProgram } from './helpers.mjs';
 
 test('23 Main392 extracts CP932 base text into shared memory and supports aliased source', async (t) => {
   const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
@@ -42,6 +43,38 @@ test('63 Main392 preserves wide CP932 pairs and emits only the displayed base te
   assert.deepEqual(await call(256), { control: 1, value: expected.length });
   assert.deepEqual(m.bytes(256, expected.length + 2), Uint8Array.of(...expected, 0, 0xa5));
   assert.deepEqual(await call(0xffffffff), { control: 1, value: 0 });
+});
+
+test('67 KCS Main392 extracts the original CP932 base bytes and ignores narrow control records', async (t) => {
+  const shared = 0x80000c3c,
+    source = Uint8Array.of(
+      0x81,
+      0x5c,
+      ...encodeCP932('[夏/なつ]\\n\\c0xff;光。\tA\\wrB\\qC\\id2:7;D\\$34;E\\sF'),
+    ),
+    expected = Uint8Array.of(0x81, 0x5c, ...encodeCP932('夏光。ABCD34;E　F'));
+  const world = await dataWorld('bokutomo-engine-2.6.1.67', {
+    'plain.kcs': kcsProgram([
+      ...[shared, 128, 0xffffffff].flatMap((destination, i) => [
+        [37, destination],
+        [37, 128],
+        [43, 392, 8],
+        [38, 80 + i * 4],
+      ]),
+      [59],
+    ]),
+  });
+  t.after(() => world.close());
+  const task = await world.runtime.spawn('plain.kcs'),
+    m = task.machine,
+    stack = m.sp;
+  m.writeStringBytes(source, 128);
+  m.bytes(shared, 64).fill(0xa5);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(m.sp, stack);
+  assert.deepEqual([m.load(80), m.load(84), m.load(88)], [expected.length, expected.length, 0]);
+  assert.deepEqual(m.bytes(shared, expected.length + 2), Uint8Array.of(...expected, 0, 0xa5));
+  assert.deepEqual(m.bytes(128, expected.length + 1), Uint8Array.of(...expected, 0));
 });
 
 const glyphs = {

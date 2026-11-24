@@ -26,11 +26,17 @@ export function scanNativeText(
     state = null,
     pairs,
     legacyNarrow = false,
+    discardUnknownNarrowEscapes = false,
   } = {},
 ) {
   const units =
       input instanceof Uint8Array ? nativeTextUnits(input, utf8, pairs) : Array.from(input),
-    records = [];
+    records = [],
+    narrowEscapes = legacyNarrow
+      ? '@cfnprswxy[\\'
+      : discardUnknownNarrowEscapes
+        ? '@cfinprswxy[\\'
+        : null;
   const get = (i, fallback = 0) => config[i] ?? fallback;
   let at = state?.at ?? 0,
     group = state?.group ?? 0,
@@ -107,7 +113,7 @@ export function scanNativeText(
     }
     const original = next(),
       c = String.fromCharCode(original).toLowerCase();
-    if (legacyNarrow && !'@cfnprswxy[\\'.includes(c)) return true;
+    if (narrowEscapes && !narrowEscapes.includes(c)) return true;
     if (c === '$') {
       const p = parameter();
       if (p.length) {
@@ -293,7 +299,12 @@ export function plainNativeText(bytes, utf8 = false, pairs, syntax) {
   const out = [],
     encoder = new TextEncoder(),
     legacyNarrow = syntax === 'legacy-narrow';
-  for (const r of scanNativeText(bytes, { utf8, pairs, legacyNarrow }).records)
+  for (const r of scanNativeText(bytes, {
+    utf8,
+    pairs,
+    legacyNarrow,
+    discardUnknownNarrowEscapes: syntax === 'narrow',
+  }).records)
     if (r.code > (legacyNarrow ? 8 : 9) && r.code !== 65535 && r.mode !== 2) {
       if (utf8) out.push(...encoder.encode(String.fromCharCode(r.code)));
       else {
