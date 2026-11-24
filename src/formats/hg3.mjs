@@ -5,6 +5,7 @@ import { unpackHG32RGBA, unpackHGPixels } from './hg-codec.mjs';
 import { HG2 } from './hg2.mjs';
 import { RasterImage } from './raster.mjs';
 import { decodeNativeJPEG } from './jpeg.mjs';
+import { nativeInflate } from '../native/zlib.mjs';
 
 const littleEndian = new Uint8Array(Uint32Array.of(1).buffer)[0] === 1;
 
@@ -102,9 +103,22 @@ export class HG3 {
       }
       const alpha = sections.get('img_al');
       if (alpha) {
-        const values = await inflate(b.range(alpha.at + 8, b.u32(alpha.at)), b.u32(alpha.at + 4));
-        if (values.length !== width * height) throw new Error('HG3 invalid alpha dimensions');
-        for (let i = 0; i < values.length; i++) rgba[i * 4 + 3] = values[i];
+        const packedLength = b.u32(alpha.at),
+          length = b.u32(alpha.at + 4);
+        if (packedLength > alpha.size - 8) throw new Error('HG3 invalid alpha bounds');
+        if (length !== width * height) throw new Error('HG3 invalid alpha dimensions');
+        const packed = b.range(alpha.at + 8, packedLength);
+        let values;
+        try {
+          values = await inflate(packed, length);
+        } catch (error) {
+          if (webp) throw error;
+          // The JPEG path inflates into at least 1024 bytes. It applies the
+          // alpha plane only when the legacy inflater returns its declared size.
+          const legacy = await nativeInflate(packed, new Uint8Array(Math.max(1024, length)));
+          if (legacy.result === length) values = legacy.bytes;
+        }
+        if (values) for (let i = 0; i < length; i++) rgba[i * 4 + 3] = values[i];
       }
       // The original JPEG helper writes decoded scanlines directly into
       // bottom-up DIB storage. Expose logical RGBA rows like the HG kernels.

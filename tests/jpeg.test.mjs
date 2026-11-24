@@ -2,8 +2,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { deflateSync } from 'node:zlib';
 import { decodeNativeJPEG } from '../src/formats/jpeg.mjs';
-import { openImage } from '../src/formats/hg3.mjs';
+import { HG3, openImage } from '../src/formats/hg3.mjs';
+import { ascii, u32 } from './helpers.mjs';
 const fixture = JSON.parse(
   await readFile(new URL('./fixtures/native-jpeg-cases.json', import.meta.url)),
 );
@@ -29,3 +31,52 @@ for (const sample of fixture.cases)
       );
     assert.throws(() => decodeNativeJPEG(bytes.subarray(0, bytes.length / 2)));
   });
+
+test('HG3 JPEG applies alpha only when the original inflate count matches the frame', async () => {
+  const sample = fixture.cases[0],
+    { width, height } = sample,
+    count = width * height,
+    jpeg = Buffer.from(sample.jpeg, 'base64'),
+    expected = Buffer.from(sample.rgba, 'base64'),
+    alpha = Uint8Array.from({ length: count }, (_, i) => (i * 23) & 255);
+  const tag = (name, bytes, final = false) => [
+    ...ascii(name.padEnd(8, '\0')),
+    ...u32(final ? 0 : bytes.length + 16),
+    ...u32(bytes.length),
+    ...bytes,
+  ];
+  const pixels = async (packed) => {
+    const image = new HG3(
+      Uint8Array.from([
+        ...ascii('HG-3'),
+        ...[12, 0x300, 0, 0].flatMap(u32),
+        ...tag('stdinfo', [width, height, 32, 0, 0, width, height, 1, 0, 0].flatMap(u32)),
+        ...tag('img_jpg', jpeg),
+        ...tag('img_al', [...u32(packed.length), ...u32(count), ...packed], true),
+      ]),
+    );
+    return (await image.decode(image.frame())).rgba;
+  };
+  const matching = deflateSync(alpha),
+    noChecksum = matching.subarray(0, -4),
+    mismatched = deflateSync(new Uint8Array(count + 5));
+  for (const [packed, applyAlpha] of [
+    [matching, true],
+    [noChecksum, true],
+    [mismatched, false],
+  ]) {
+    const rgba = await pixels(packed);
+    for (let y = 0; y < height; y++)
+      for (let x = 0; x < width; x++) {
+        const source = (height - 1 - y) * width + x,
+          offset = (y * width + x) * 4;
+        assert.deepEqual(
+          [...rgba.subarray(offset, offset + 4)],
+          [
+            ...expected.subarray(source * 4, source * 4 + 3),
+            applyAlpha ? alpha[source] : expected[source * 4 + 3],
+          ],
+        );
+      }
+  }
+});
