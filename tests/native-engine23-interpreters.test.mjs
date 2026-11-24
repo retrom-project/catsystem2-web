@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { bitsFloat, floatBits, readKCS } from '../src/kcs.mjs';
-import { MOTION_ABI } from '../src/motion/abi.mjs';
+import { MOTION_ABI, setMotionVector } from '../src/motion/abi.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
 import { PTCL_ABI } from '../src/ppi/abi.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
@@ -601,6 +601,61 @@ test('2.6.1.23 PTCL v2 alone admits the blend-mode word', async () => {
   assert.equal(original.instance.calls.size, 0);
 });
 
+test('2.6.1.23 PTCL v2 reads its live Plane position through the particle task', async (t) => {
+  const output = [64, 68, 72],
+    code = kcsProgram([...output.map((at) => [37, at]), [43, 49, 12], [59]]);
+  new DataView(code.buffer, code.byteOffset, code.byteLength).setUint16(8, 2, true);
+  const world = await dataWorld(profile, { 'position.kcs': code });
+  t.after(() => world.close({ flushFiles: false }));
+  const planeID = 101,
+    plane = await world.objects.create({ kind: 2, parent: world.root, nativeID: planeID }),
+    owner = world.graphics.get(plane),
+    particle = await world.objects.create({ kind: 16, parent: world.root }),
+    task = world.particles.get(particle),
+    host = world.particles.host;
+  task.state.attachment = planeID;
+  owner.makeGraph({ type: 2, width: 2, height: 2 });
+  setMotionVector(owner.graph.kx2, MOTION_ABI.pos, [1.375, -0, -12.25]);
+  const bank = await task.load({ family: 'script', program: 'position', count: 1, priority: 0 }),
+    machine = bank.instance.machine,
+    read = () => output.map((at) => machine.load(at));
+  const device = world.graphics.createLogicalDevice();
+  host.start(bank.key);
+  host.updateBank(bank.key, 0);
+  assert.deepEqual(read(), [1.375, -0, -12.25].map(floatBits));
+  device.retire();
+  host.updateBank(bank.key, 1);
+  assert.deepEqual(read(), [0, 0, 0]);
+  world.graphics.createLogicalDevice();
+  host.updateBank(bank.key, 2);
+  assert.deepEqual(read(), [1.375, -0, -12.25].map(floatBits));
+  await world.objects.release(plane);
+  assert.throws(() => host.updateBank(bank.key, 3), /requires a live attachment graph/);
+  assert.deepEqual(read(), [1.375, -0, -12.25].map(floatBits));
+});
+
+test('2.6.1.23 PTCL v2 only writes its three position words after validating every output', async () => {
+  const noSource = await guest('particle-v2', 49, [64, 68, 72]);
+  noSource.machine.bytes(63, 14).fill(0x7b);
+  noSource.run(2);
+  assert.deepEqual([...noSource.machine.bytes(63, 14)], [0x7b, ...new Array(12).fill(0), 0x7b]);
+  const options = {
+    attachPlane: 101,
+    attachment: () => ({ pos: [-0, -0.375, 5.75] }),
+    shared: new Uint8Array(12).fill(0x97),
+  };
+  const alias = await guest('particle-v2', 49, [64, 0x80000004, 64], options);
+  alias.run(2);
+  assert.equal(alias.machine.load(64), floatBits(5.75));
+  assert.equal(alias.machine.load(0x80000004), floatBits(-0.375));
+  assert.equal(alias.machine.load(0x80000000), 0x97979797);
+  const invalid = await guest('particle-v2', 49, [64, 0x80000004, 0x80000009], options);
+  invalid.machine.store(64, sentinel);
+  assert.throws(() => invalid.run(2), /KCS memory 80000009\+4/);
+  assert.equal(invalid.machine.load(64), sentinel);
+  assert.equal(invalid.machine.load(0x80000004), floatBits(-0.375));
+});
+
 test('2.6.1.23 MOT uses the original PC24 rotation order through GCALL', async () => {
   const shared = 0x80000203,
     input = [
@@ -792,9 +847,12 @@ test('2.6.1.23 MOT and PTCL retain their unresolved guards and exact arities', a
   const wrongMOT = await guest('generic', 1);
   assert.throws(() => wrongMOT.instance.update(0), /expects 1 arguments, got 0/);
   assert.equal(wrongMOT.instance.calls.size, 0);
-  const staleAttachment = await guest('particle-v2', 49, [64, 68, 72]);
-  assert.throws(() => staleAttachment.instance.update(0), /Unreviewed PTCL native .*\/49/);
-  assert.equal(staleAttachment.instance.calls.size, 0);
+  const v1Attachment = await guest('particle-v1', 49, [64, 68, 72]);
+  assert.throws(() => v1Attachment.instance.update(0), /Unreviewed PTCL native .*\/49/);
+  assert.equal(v1Attachment.instance.calls.size, 0);
+  const wrongAttachment = await guest('particle-v2', 49, [64, 68]);
+  assert.throws(() => wrongAttachment.instance.update(0), /requires 3 arguments, received 2/);
+  assert.equal(wrongAttachment.instance.calls.size, 0);
   for (const table of particles) {
     const wrongViewport = await guest(table, 38, [64, 68, 72, 76]);
     assert.throws(() => wrongViewport.instance.update(0), /requires 5 arguments, received 4/);

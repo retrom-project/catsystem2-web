@@ -293,6 +293,9 @@ export class Particles {
         ...common,
         profile: this.profile,
         screenBounds: this.scriptBounds,
+        attachmentDevicePresent: this.stage.nativeGraphics
+          ? () => Boolean(this.stage.nativeGraphics.device.attachment)
+          : undefined,
       });
       bank.instance.stop();
     }

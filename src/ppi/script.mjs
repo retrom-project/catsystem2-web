@@ -75,6 +75,7 @@ export class ParticleScriptInstance {
       registers = [],
       attachPlane = -1,
       attachment = () => null,
+      attachmentDevicePresent,
       random = new ParticleRandom(),
       shared = new Uint8Array(0),
       onDebug = null,
@@ -94,6 +95,7 @@ export class ParticleScriptInstance {
     this.frameScale = abi?.particle?.frameScale;
     this.quadUsesX87 = abi?.particle?.quadUsesX87;
     this.projectionBoundsUseX87 = abi?.particle?.projectionBoundsUseX87;
+    this.attachmentPositionRequiresOwner = abi?.particle?.attachmentPositionRequiresOwner;
     this.count = count;
     this.width = f(width);
     this.height = f(height);
@@ -104,6 +106,7 @@ export class ParticleScriptInstance {
     this.near = near;
     this.attachPlane = attachPlane | 0;
     this.attachment = attachment;
+    this.attachmentDevicePresent = attachmentDevicePresent;
     this.random = random;
     this.onDebug = onDebug;
     this.budget = budget;
@@ -392,9 +395,18 @@ export class ParticleScriptInstance {
       case 48:
         vectorOut(this.currentAttachment()?.base?.slice(0, 2) || [0, 0]);
         return voidReply();
-      case 49:
-        vectorOut(this.currentAttachment()?.pos || [0, 0, 0]);
+      case 49: {
+        let position;
+        if (this.attachmentPositionRequiresOwner) {
+          if (this.attachPlane !== -1 && this.attachmentDevicePresent?.() !== false) {
+            position = this.currentAttachment()?.pos;
+            if (!position) throw new Error('Particle position requires a live attachment graph');
+          }
+          args.forEach((address) => machine.region(address, 4));
+        } else position = this.currentAttachment()?.pos;
+        vectorOut(position || [0, 0, 0]);
         return voidReply();
+      }
       case 50:
         this.blendMode = args[0] >= 1 && args[0] <= 5 ? args[0] : 0;
         return voidReply();

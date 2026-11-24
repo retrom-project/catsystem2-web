@@ -79,7 +79,7 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
   ];
   for (const [table, ids] of [
     ['particle-v1', particle],
-    ['particle-v2', [...particle, 50]],
+    ['particle-v2', [...particle, 49, 50]],
   ]) {
     assert.deepEqual(
       base[table].entries.filter(({ status }) => status === 'recovered').map(({ id }) => id),
@@ -104,6 +104,11 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     assert.equal(entry.signature.resultWritten, true);
     assert.deepEqual(entry.signature.controlCodes, [1]);
   }
+  const position = base['particle-v2'].entries[49];
+  assert.equal(position.signature.argumentWords, 3);
+  assert.equal(position.signature.resultWritten, false);
+  assert.deepEqual(position.signature.controlCodes, [2]);
+  assert(position.signature.parameters.every(({ type }) => type.direction === 'out'));
   for (const id of [287, 288, 629]) assert.equal(base.main.entries[id].status, 'unknown');
   const unknown = nativeABI('sdk-4.01-engine-2.6.1.74').tables.main.entries[0x52];
   assert.equal(unknown.name, null);

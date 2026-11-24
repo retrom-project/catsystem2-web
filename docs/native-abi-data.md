@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 432       | 57            | 17            | 363     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
+| 2.6.1.23 | 869        | 432       | 57            | 17            | 363     | Generic 25 of 45, Particle 40 of 44 and 42 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 398       | 80            | 19            | 441     | Generic 14 of 45, Particle 12 of 44 and 12 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -86,8 +86,11 @@ PTCL v1 and v2 slot 38 point to the same receiver. It computes four
 bounds from the viewport, live priority and near plane and writes the
 four output words in call order. Guest offset zero is a valid destination.
 The query runs without a texture or graph attachment. PTCL v2 slot 49
-remains guarded because a stale graph registration can reuse overwritten
-scratch coordinates after a prior query.
+writes three coordinates from the selected live Plane graph. An explicit
+empty attachment or detached graphics device produces three zero words.
+All three VM destinations are checked before writing. An active renderer
+with an unresolved graph remains protected because the original stale
+registration can reuse overwritten scratch coordinates after a prior query.
 
 The fixed executable assigns the PTCL v2 table only to header version
 `0x20000` and selects v1 for other versions. The acceptance collector uses

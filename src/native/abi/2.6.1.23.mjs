@@ -969,6 +969,7 @@ export default {
     frameScale: 'x87-uint32',
     quadUsesX87: true,
     projectionBoundsUseX87: true,
+    attachmentPositionRequiresOwner: true,
     taskMessageStart: 285,
     deferGraphAttachment: true,
   },
@@ -1635,9 +1636,29 @@ export default {
     'particle-v2': {
       ...tables(51, [
         ...particleInterpreterEvidence,
+        {
+          ids: [49],
+          value:
+            'Own 2.6.1.23 PTCL v2 0x48C1F0 writes three coordinates from the selected model. The native renderer gates produce zero for a disabled device or absent attachment.',
+        },
         { ids: [50], value: 'Own 2.6.1.23 Particle v2 blend mode stores 1–5 or zero' },
       ]),
-      signatures: particleInterpreterSignatures,
+      signatures: [
+        ...particleInterpreterSignatures,
+        {
+          ids: [49],
+          fields: {
+            parameters: NATIVE_SEMANTICS['particle-v2'][49].signature.parameters.map(
+              (parameter) => ({
+                ...parameter,
+                type: { ...parameter.type, addressSpace: 'vm', direction: 'out' },
+              }),
+            ),
+            result: { description: 'void', kind: 'void' },
+            resultWritten: false,
+          },
+        },
+      ],
     },
   },
   layouts: {
