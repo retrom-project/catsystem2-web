@@ -157,6 +157,12 @@ function evaluateTokens(tokens, text, context, depth, operand) {
       return ~value;
     }
     if (assignments.has(node.op)) {
+      if (node.left.kind === 'number' && context.discardLiteralAssignmentWrites) {
+        // The original interpreter evaluates the right operand and reports
+        // zero when the left operand has no variable reference.
+        run(node.right);
+        return 0;
+      }
       const target = reference(node.left),
         value =
           node.op === '='

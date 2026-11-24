@@ -163,6 +163,53 @@ next IDLE
   assert.deepEqual(text.nativeTextState.source, encodeCP932("猫 ソ ''a''"));
 });
 
+test('2.6.1.67 FES assignment keeps literal writes inert and evaluates their right operands', async (t) => {
+  const world = await dataWorld(profile, {
+    'expression.fes': encodeCP932(String.raw`#DEFINE
+#START
+\131 = 10
+\130 = 131 = -1
+$1 = \130
+$2 = \131
+$3 = (131 = 7) + 9
+\130 = \131 = -1
+$4 = \130
+$5 = \131
+\130 = 131 = (\131 += 2)
+$6 = \130
+$7 = \131
+next HOLD
+#HOLD
+`),
+    'boot-expression.kcs': nativeProgram(
+      [
+        [447, [fes, 128]],
+        [448, [fes]],
+      ],
+      [[128, 'expression']],
+    ),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const owner = world.main.id,
+    id = await world.objects.create({ kind: 34, parent: owner }),
+    task = await world.spawnScript('boot-expression.kcs', {
+      parent: owner,
+      initialExecute: false,
+    }),
+    bank = world.runtime.variableBank(task);
+  bank.initialize(256);
+  bank.words[131] = 0x12345678;
+  const receiver = world.objects.objects.get(id).implementation;
+  task.machine.store(80, world.nativeTaskID(id));
+  await world.runtime.scheduler.execute(task);
+  const instance = receiver.player.root;
+  assert.equal(instance.label, 'HOLD');
+  assert.deepEqual([...bank.words.subarray(1, 8)], [0, 10, 9, 0xffffffff, 0xffffffff, 0, 1]);
+  assert.equal(instance.local(130), 0);
+  assert.equal(instance.local(131), 1);
+  assert.equal(bank.words[131], 0x12345678);
+});
+
 test('2.6.1.67 named FES word GCALLs format CP932 dictionary keys and keep receiver failures visible', async (t) => {
   const world = await dataWorld(profile, {
     'named.fes': encodeCP932('#DEFINE\n#START\nnext HOLD\n#HOLD\n'),

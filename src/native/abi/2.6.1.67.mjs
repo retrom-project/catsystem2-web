@@ -783,6 +783,7 @@ export default {
   fes: {
     variableBankOffset: 1800,
     namedWordFormatSkipsUnmapped: true,
+    discardLiteralAssignmentWrites: true,
     commonHeads: {
       shared: [
         '_redirect',

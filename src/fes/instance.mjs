@@ -8,6 +8,7 @@ import { NativeDictionary } from '../native/dictionary.mjs';
 import { expandNativeFESSoundConfigurationToken } from '../native/fes-sound-config.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NATIVE_FES_SAVE_COMMANDS } from '../native/save-slots.mjs';
+import { nativeABI } from '../native/abi/index.mjs';
 import { replaceFESMacros, fesRawTail } from './source.mjs';
 import {
   tokenizeFESByteLine,
@@ -212,6 +213,10 @@ export class FESInstance {
     if (name === '@') return this.eventIndex ?? this.eventObject?.index ?? 0;
     const match = /^(\w+)\[(.*)\]$/.exec(name);
     return match ? this.value(match[2]) : -1;
+  }
+  get discardLiteralAssignmentWrites() {
+    const profile = this.runtime?.world?.profile;
+    return profile && nativeABI(profile).fes.discardLiteralAssignmentWrites;
   }
   global(n) {
     if (!Number.isInteger(n) || n < 0) throw new Error(`Invalid FES global index ${n}`);
