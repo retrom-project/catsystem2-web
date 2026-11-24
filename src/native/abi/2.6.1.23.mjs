@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [346],
+    value:
+      'Own 2.6.1.23 0x47ED90 formats CP932 and resolves the KX3 directory before raw 66. Plane and BasePlane leave the payload, owner and result untouched.',
+  },
+  {
     ids: [433],
     value:
       'Own 2.6.1.23 0x47F890 routes Plane raw 42. With a live mode-1 device and an unregistered parent it creates row-major child planes. The empty parent has no defined bounds.',
@@ -1102,6 +1107,7 @@ export default {
     planePoseQueriesRequireReply: true,
     planeResetReleasesTrackedInput: true,
     planeTrailUsesScalarWords: true,
+    planeKx3UsesLegacyReceiver: true,
     tilePlaneRequiresEmptyOwner: true,
     screenEffectPreserveStoppedClockKinds: [50, 51, 52],
     screenEffectBreakUsesPaddedCapture: true,
@@ -1154,6 +1160,24 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        {
+          ids: [346],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[346].signature.parameters.map((parameter, index) =>
+              index === 1
+                ? {
+                    ...parameter,
+                    type: {
+                      kind: 'pointer',
+                      addressSpace: 'vm',
+                      direction: 'in',
+                      target: { kind: 'format-string', encoding: 'CP932' },
+                    },
+                  }
+                : parameter,
+            ),
+          },
+        },
         {
           ids: [399],
           fields: {

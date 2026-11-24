@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { KCSMachine, floatBits, readKCS } from '../src/kcs.mjs';
+import { KCSMachine, encodeCP932, floatBits, readKCS } from '../src/kcs.mjs';
 import { MOTION_ABI, motionVector, setMotionVector } from '../src/motion/abi.mjs';
 import { FESImages } from '../src/native/fes-image-driver.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
@@ -288,6 +289,90 @@ test('fixed 2.6.1.23 tiled Plane keeps registered owners and declines undefined 
     );
     await world.objects.release(id);
     assert(children.every((child) => !world.objects.objects.has(child.id)));
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+
+test('fixed 2.6.1.23 Plane KX3 sends CP932 and leaves verified recipients unchanged', async () => {
+  const world = await dataWorld(profile);
+  try {
+    const plane = await world.objects.create({ kind: 2, parent: world.root }),
+      base = await world.objects.create({ kind: 6, parent: world.root }),
+      target = world.nativeTaskID(plane),
+      baseTarget = world.nativeTaskID(base),
+      send = world.sendNativeEngine.bind(world),
+      memory = Array(3).fill(canary),
+      trace = [];
+    await send(target, world.main.id, 41, 0, 0, {
+      payload: new NativeGraphicsPacket([0, 0, 0, floatBits(37), floatBits(29), 32, 1, 0]),
+    });
+    const registered = world.graphics.get(plane).graph,
+      pose = registered.kx2.slice();
+    world.game.nativeResources = {
+      entries: [{ name: 'KX3', directory: 'models', archive: 'different.int', extension: 'kx3' }],
+    };
+    world.sendNativeEngine = (id, sender, message, w, l, context) => {
+      if (message === 71) {
+        const filename = [];
+        for (let i = 0; ; i++) {
+          const byte = context.payload.bytes(i, 1)[0];
+          filename.push(byte);
+          if (byte === 0) break;
+        }
+        trace.push({ id, w, filename });
+      }
+      return send(id, sender, message, w, l, context);
+    };
+
+    for (const [id, name, expected, formatAt = 256] of [
+      [target, '表情', 'models/表情.kx3', 0x80000040],
+      [baseTarget, 'mark.表', 'models/mark.表.kx3'],
+      [target, 'mix-%%-01', 'models/mix-%-01.kx3'],
+      [target, '/root', 'models//root.kx3'],
+      [target, '', 'models/.kx3'],
+      [0x83f0, 'parts/顔', 'parts/顔'],
+    ]) {
+      const selector = 0x88fe7311;
+      await call(world, 346, [id, formatAt, selector], memory, undefined, (machine) =>
+        machine.bytes(formatAt, encodeCP932(name).length + 1).set(encodeCP932(name + '\0')),
+      );
+      assert.deepEqual(trace.pop(), {
+        id,
+        w: selector,
+        filename: [...encodeCP932(expected + '\0')],
+      });
+    }
+    const retained = world.planeModelCommands.snapshot();
+    world.planeModelCommands.restore(structuredClone(retained));
+    world.game.nativeResources.entries = [];
+    await call(world, 346, [target, 256, 7], memory, undefined, (machine) =>
+      machine.bytes(256, 5).set(encodeCP932('next\0')),
+    );
+    assert.deepEqual(trace.pop(), { id: target, w: 7, filename: [...encodeCP932('parts/顔\0')] });
+    await call(world, 346, [0, 0xffffffff, 7], memory);
+    await call(
+      world,
+      346,
+      [world.nativeTaskID(world.main.id), 0xffffffff, 7],
+      memory,
+      /requires a Plane or BasePlane/,
+    );
+    assert.deepEqual(trace, []);
+    assert.equal(world.graphics.get(plane).graph, registered);
+    assert.deepEqual(registered.kx2, pose);
+    for (const [id, handled] of [
+      [target, true],
+      [baseTarget, false],
+    ]) {
+      const payload = { bytes: () => assert.fail('The original receiver ignores the payload') };
+      assert.deepEqual(
+        await world.engineMessages.dispatchNative(world.main.id, id, 71, 113, 0xffffffff, {
+          payload,
+        }),
+        { routed: true, handled, result: NATIVE_UNWRITTEN_WORD },
+      );
+    }
   } finally {
     await world.close({ flushFiles: false });
   }

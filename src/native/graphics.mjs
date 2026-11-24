@@ -521,6 +521,7 @@ export class NativeGraphicTask {
     this.coordinateModeRequiresGraph = Boolean(abi?.coordinateModeRequiresGraph);
     this.planePoseQueriesRequireReply = Boolean(abi?.planePoseQueriesRequireReply);
     this.planeResetReleasesTrackedInput = Boolean(abi?.planeResetReleasesTrackedInput);
+    this.planeKx3UsesLegacyReceiver = Boolean(abi?.planeKx3UsesLegacyReceiver);
     this.tilePlaneRequiresEmptyOwner = Boolean(abi?.tilePlaneRequiresEmptyOwner);
     // Initial BasePlane and SimplePlane state.
     this.state = {
@@ -1075,10 +1076,11 @@ export class NativeGraphicTask {
         this.sync();
         return 0;
       case 60:
-      case 71:
       case 85:
       case 86:
         return 0; // Explicit original simple-plane empty branches.
+      case 71:
+        return this.planeKx3UsesLegacyReceiver ? undefined : 0;
       case 72: {
         const rect = this.planeBounds(),
           position = vector(MOTION_ABI.pos),
