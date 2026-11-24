@@ -86,3 +86,20 @@ The process-backed `random-memory.mjs` binding remains an explicit phase-10
 exception because unmigrated EXE code still consumes those streams. Its original
 shared-state tests remain useful oracle evidence, separate from these independently
 seeded comparisons and their public exact golden fixtures.
+
+The fixed 2.6.1.74 SDK also gives FES `rand` and `randtbl` the integer stream
+used by Main33. `rand` reads three operands in order and writes the lower
+bound plus one unsigned remainder. `randtbl` reads four operands in order,
+initializes the destination range starting with the third operand, and makes
+1,001 pairs of draws to swap bank entries. The fourth operand is evaluated
+once. The commands leave the real stream untouched. The original bank ignores
+out-of-range writes, returns zero for out-of-range reads, and marks attempted
+writes dirty. Missing operands avoid writes and random draws. The project keeps
+the integer division trap and signed table initialization overflow outside of
+the supported range.
+
+The independent native probe ran both original FES common handlers and the
+following Main33 on five distinct seeds. It compared the next result and
+integer stream state with ordinary Core MT. The production regression uses FES
+and KCS together and asserts their target writes and the next native draw.
+See [the fixed-build VM tests](../tests/native-engine74-abi.test.mjs).

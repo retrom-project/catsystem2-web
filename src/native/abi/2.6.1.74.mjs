@@ -278,6 +278,7 @@ export default {
   },
   fes: {
     commonHeads: FES_COMMON_HEAD_REGISTRATIONS.sdk,
+    sharedIntegerRandom: true,
     configurationMessage: { liveObjects: false, notification: null, filenameComparison: null },
     controlResources: { scroll2Skin: 'state-direct' },
     fileList: { patternEncoding: 'cp932', keyEncoding: 'cp932' },

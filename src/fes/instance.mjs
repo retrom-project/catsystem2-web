@@ -260,6 +260,41 @@ export class FESInstance {
     if (!this.runtime) throw new Error('FES byte operands require the normal runtime');
     return evaluateOperand(bytes, this);
   }
+  sharedIntegerRandom(head, args) {
+    const table = head === 'randtbl',
+      count = table ? 4 : 3,
+      operands = args
+        .slice(0, count)
+        .map((token) => this.operandValue(this.argumentBytes(token)) | 0);
+    if (operands.length < count) return;
+    const low = operands[table ? 0 : 1],
+      high = operands[table ? 1 : 2],
+      width = (high - low + 1) >>> 0;
+    if (!width) throw new RangeError('Native FES ' + head + ' has a zero unsigned range');
+    if (table && high === 0x7fffffff)
+      throw new RangeError('Native FES randtbl initialization reaches signed index overflow');
+
+    const world = this.runtime.world,
+      owner = world.objects.objects.get(this.player.nativeOwner),
+      bank = owner && world.runtime.variableBank(owner, false);
+    if (!bank) throw new Error('Native FES ' + head + ' requires its owning variable bank');
+    const pick = () => (low + (world.random.rand() % width)) >>> 0;
+    if (!table) {
+      bank.set(operands[0], pick());
+      return;
+    }
+    // The original bank ignores out-of-range writes. Only the target bounds
+    // determine its initialized span. The fourth operand is evaluated once.
+    const last = Math.min(high, bank.capacity - 1);
+    for (let at = Math.max(0, low); at <= last; at++) bank.set(at, operands[2] + at - low);
+    for (let i = 0; i < 1001; i++) {
+      const a = pick(),
+        b = pick(),
+        previous = bank.get(a);
+      bank.set(a, bank.get(b));
+      bank.set(b, previous);
+    }
+  }
   valueLookup(nameBytes, index) {
     if (!this.runtime || !(nameBytes instanceof Uint8Array))
       throw new TypeError('FES numeric lookup requires a normal raw-name reference');
@@ -958,6 +993,10 @@ export class FESInstance {
       return this.nativeCommandReturn(this.runtime.buttonSimulate(args));
     if (this.runtime && ['sysvoice', 'sysvoiceex'].includes(head))
       return this.nativeCommandReturn(this.runtime.systemVoiceCommand(head, args));
+    if (fesBehavior?.sharedIntegerRandom && (head === 'rand' || head === 'randtbl')) {
+      this.sharedIntegerRandom(head, args);
+      return {};
+    }
     if (this.runtime && ['rdraw', 'rwipe', 'wbreak', 'rwmos', 'rfmos'].includes(head)) {
       this.enqueueCommandReply(this.runtime.screenCommand(head, args));
       return { action: 'flush' };
