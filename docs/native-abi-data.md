@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 452       | 57            | 17            | 343     | Generic 25 of 45, Particle 41 of 44 and 43 of 51 |
+| 2.6.1.23 | 869        | 454       | 57            | 17            | 341     | Generic 25 of 45, Particle 41 of 44 and 43 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -72,6 +72,16 @@ references merge two choice masks and write two trailing NUL bytes. Name
 lookups write one NUL byte. A reference with an unmapped destination returns
 zero. A valid name with an unmapped destination is refused before writing,
 since the original would write through a null pointer.
+
+Main 122 and 705 share the original bitmap resize wrapper. The four-byte
+bitmap path uses the Core x87 PC24 baseline for dimensions and metadata.
+It interpolates for ordinary scaling and averages the source cells when either
+axis exceeds a four-to-one shrink. The two-byte cell path publishes a zeroed
+bitmap. Ordinary resampling retains two- and three-byte bitmaps when the
+original kernel declines them. Empty dimensions follow the original result.
+Nonempty 24-bit cell averaging is protected because the original reads past
+its source allocation. The measured PC53 alternative can change large
+unsigned offsets without changing the sampled pixels or control word.
 
 Main 10 formats CP932 bytes and expands backslash-n before opening the caller's
 clipboard. The browser host publishes text under its normal permission and user

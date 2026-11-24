@@ -360,38 +360,71 @@ export class NativeBitmap {
     await this.changed();
     return true;
   }
-  async resize(width, height) {
+  async resize(width, height, { legacyCells = false } = {}) {
+    const old = this.state;
     if (
-      this.state.bpp !== 4 &&
+      !legacyCells &&
+      old.bpp !== 4 &&
       !(
-        this.state.bpp === 3 &&
+        old.bpp === 3 &&
         nativeABI(this.registry.world.profile ?? originalView(this.registry.world, 'profile'))
           .graphics.resizeRGB24
       )
     )
       return;
-    size(width, height);
-    const old = this.state,
-      ratioX = f(f(width) / f(old.canvasWidth || old.width)),
-      ratioY = f(f(height) / f(old.canvasHeight || old.height));
+    if (legacyCells && old.bpp === 1) return;
+    size(width, height, legacyCells);
+    const ratioX = f(
+        f(width) / f(legacyCells ? old.canvasWidth >>> 0 : old.canvasWidth || old.width),
+      ),
+      ratioY = f(
+        f(height) / f(legacyCells ? old.canvasHeight >>> 0 : old.canvasHeight || old.height),
+      );
     const round = (value, ratio) => Math.trunc(f(f(f(value) * ratio) + 0.5));
-    const nextWidth = round(old.width, ratioX),
-      nextHeight = round(old.height, ratioY);
-    size(nextWidth, nextHeight);
-    const logical = await this.pixels(),
-      physical = new Uint8ClampedArray(logical.length);
-    for (let y = 0; y < old.height; y++)
-      physical.set(
-        logical.subarray(y * old.width * 4, (y + 1) * old.width * 4),
-        (old.height - 1 - y) * old.width * 4,
-      );
-    const sampled = resampleBitmap(physical, old.width, old.height, nextWidth, nextHeight),
-      pixels = new Uint8ClampedArray(sampled.length);
-    for (let y = 0; y < nextHeight; y++)
-      pixels.set(
-        sampled.subarray(y * nextWidth * 4, (y + 1) * nextWidth * 4),
-        (nextHeight - 1 - y) * nextWidth * 4,
-      );
+    const nextWidth = legacyCells ? round(old.width, ratioX) >>> 0 : round(old.width, ratioX),
+      nextHeight = legacyCells ? round(old.height, ratioY) >>> 0 : round(old.height, ratioY),
+      empty = nextWidth === 0 || nextHeight === 0,
+      cells = legacyCells && (old.width > 4 * nextWidth || old.height > 4 * nextHeight),
+      sameSize = old.width === nextWidth && old.height === nextHeight;
+    size(nextWidth, nextHeight, legacyCells);
+    if (legacyCells) {
+      if (![2, 3, 4].includes(old.bpp))
+        throw new TypeError('Native bitmap resize requires a known packed layout');
+      if (nextWidth > 0x7fffffff || nextHeight > 0x7fffffff)
+        throw new RangeError('Native bitmap resize exceeds signed raster dimensions');
+      if (cells && !empty && old.bpp === 3)
+        throw new RangeError(
+          'Legacy 24-bit bitmap source boundary is undefined for cell averaging',
+        );
+      if (
+        cells &&
+        !empty &&
+        (old.width * nextWidth > 0x7fffffff || old.height * nextHeight > 0x7fffffff)
+      )
+        throw new RangeError('Native bitmap resize exceeds signed cell coordinates');
+      if (old.bpp !== 4 && !sameSize && !cells) return;
+      if (old.attributes?.length && (!Number.isFinite(ratioX) || !Number.isFinite(ratioY)))
+        throw new RangeError('Native bitmap resize has undefined attribute coordinates');
+      this.commitCanvas();
+    }
+    const pixels = new Uint8ClampedArray(nextWidth * nextHeight * 4);
+    if (!empty && !(cells && old.bpp === 2)) {
+      const logical = await this.pixels(),
+        physical = new Uint8ClampedArray(logical.length);
+      for (let y = 0; y < old.height; y++)
+        physical.set(
+          logical.subarray(y * old.width * 4, (y + 1) * old.width * 4),
+          (old.height - 1 - y) * old.width * 4,
+        );
+      const sampled = cells
+        ? averageBitmapCells(physical, old.width, old.height, nextWidth, nextHeight)
+        : resampleBitmap(physical, old.width, old.height, nextWidth, nextHeight);
+      for (let y = 0; y < nextHeight; y++)
+        pixels.set(
+          sampled.subarray(y * nextWidth * 4, (y + 1) * nextWidth * 4),
+          (nextHeight - 1 - y) * nextWidth * 4,
+        );
+    }
     this.state = {
       ...old,
       width: nextWidth,
@@ -416,6 +449,27 @@ export class NativeBitmap {
     this.commitCanvas();
     return structuredClone(this.state);
   }
+}
+
+function averageBitmapCells(source, width, height, nextWidth, nextHeight) {
+  const pixels = new Uint8ClampedArray(nextWidth * nextHeight * 4);
+  for (let y = 0; y < nextHeight; y++) {
+    const top = Math.floor((y * height) / nextHeight),
+      bottom = Math.max(top + 1, Math.floor(((y + 1) * height) / nextHeight));
+    for (let x = 0; x < nextWidth; x++) {
+      const left = Math.floor((x * width) / nextWidth),
+        right = Math.max(left + 1, Math.floor(((x + 1) * width) / nextWidth)),
+        count = (right - left) * (bottom - top);
+      for (let channel = 0; channel < 4; channel++) {
+        let sum = 0;
+        for (let row = top; row < bottom; row++)
+          for (let column = left; column < right; column++)
+            sum = (sum + source[(row * width + column) * 4 + channel]) | 0;
+        pixels[(y * nextWidth + x) * 4 + channel] = Math.trunc(sum / count) & 255;
+      }
+    }
+  }
+  return pixels;
 }
 
 export function blendBitmapPixel(destination, at, source, src, opacity = 255) {

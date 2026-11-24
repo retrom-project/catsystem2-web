@@ -8,6 +8,93 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
+
+test('2.6.1.23 both resize slots preserve the original pixel cells and bitmap metadata', async (t) => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    guard = 0x17fce129,
+    width = 15,
+    height = 11,
+    programs = Object.fromEntries(
+      [122, 705].map((id) => [
+        id + '.kcs',
+        kcsProgram([
+          [37, guard],
+          ...[64, 68, 72].map((address) => [37, [0x13, address]]),
+          [43, id, 12],
+          [59],
+        ]),
+      ]),
+    ),
+    expected = [
+      126, 118, 127, 133, 134, 135, 127, 122, 134, 126, 135, 129, 132, 122, 112, 118, 116, 125, 134,
+      134, 121, 128, 115, 131,
+    ];
+  const world = await dataWorld(profile, programs);
+  t.after(() => world.close({ flushFiles: false }));
+  async function resize(id, handle, w, h) {
+    const caller = await world.spawnScript(id + '.kcs'),
+      machine = caller.machine,
+      first = machine.sp;
+    try {
+      [handle, w, h].forEach((word, i) => machine.store(64 + i * 4, word));
+      await world.runtime.scheduler.execute(caller);
+      assert.equal(machine.sp, first + 4);
+      assert.equal(machine.load(first), guard);
+    } finally {
+      await world.objects.release(caller.id);
+    }
+  }
+  function make(bpp) {
+    const handle = world.graphics.images.create(width, height, world.main.id),
+      bitmap = world.graphics.images.get(handle),
+      rgba = new Uint8ClampedArray(width * height * 4);
+    for (let y = 0; y < height; y++)
+      for (let x = 0; x < width; x++) {
+        const native = ((height - 1 - y) * width + x) * 29 + 24;
+        rgba.set(
+          [(native * 3) & 255, (native * 2) & 255, native & 255, (native + 3 * x) & 255],
+          (y * width + x) * 4,
+        );
+      }
+    Object.assign(bitmap.state, {
+      rgba,
+      bpp,
+      canvasWidth: width,
+      canvasHeight: height,
+      baseX: -2,
+      baseY: 1,
+    });
+    return { handle, bitmap };
+  }
+  for (const id of [122, 705]) {
+    const rgba = make(4);
+    await resize(id, rgba.handle, 3, 2);
+    assert.deepEqual([...(await rgba.bitmap.pixels())], expected);
+    assert.deepEqual(rgba.bitmap.state.clip, [0, 0, 3, 2]);
+    assert.deepEqual(
+      [
+        rgba.bitmap.state.canvasWidth,
+        rgba.bitmap.state.canvasHeight,
+        rgba.bitmap.state.baseX,
+        rgba.bitmap.state.baseY,
+      ],
+      [3, 2, 0, 0],
+    );
+
+    const rgb = make(3),
+      initial = rgb.bitmap.snapshot();
+    await resize(id, rgb.handle, 7, 7);
+    assert.deepEqual(rgb.bitmap.snapshot(), initial);
+    await assert.rejects(resize(id, rgb.handle, 3, 2), /24-bit bitmap source boundary/);
+    assert.deepEqual(rgb.bitmap.snapshot(), initial);
+
+    await resize(id, rgb.handle, 0, 4);
+    assert.deepEqual([rgb.bitmap.width, rgb.bitmap.height], [0, 4]);
+    assert.equal((await rgb.bitmap.pixels()).length, 0);
+    await resize(id, 0, 0xffffffff, 0xffffffff);
+  }
+});
 for (const [profile, variable] of [
   ['nekopara-vol3-engine-2.6.1.76', 'CATSYSTEM2_ENGINE_EXE'],
   ['sdk-4.01-engine-2.6.1.74', 'CATSYSTEM2_SDK_EXE'],

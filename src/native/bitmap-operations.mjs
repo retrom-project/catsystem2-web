@@ -89,6 +89,11 @@ export class NativeBitmapOperations {
     }
     if (!bitmap)
       return byID.get(id).control === 1 ? value(id === 0x179 ? NATIVE_RESULT_SENTINEL : 0) : done();
+    const resize = id === 0x7a || id === 0x2c1;
+    if (resize && nativeABI(this.world.profile).graphics.bitmapResizeUsesLegacyCells) {
+      await bitmap.resize(a(1) >>> 0, a(2) >>> 0, { legacyCells: true });
+      return done();
+    }
     bitmap.commitCanvas();
     if (id === 0x172 || id === 0x402)
       return value(await bitmapSample(bitmap, a(1), a(2), id === 0x402));
@@ -108,7 +113,7 @@ export class NativeBitmapOperations {
     } else if (id === 0x17a || id === 0x234) {
       s[id === 0x17a ? 'alphaHint' : 'mask'] = id === 0x17a ? Number(a(1) !== 0) + 1 : a(1);
       await bitmap.changed();
-    } else if (id === 0x7a || id === 0x2c1) await bitmap.resize(a(1) >>> 0, a(2) >>> 0);
+    } else if (resize) await bitmap.resize(a(1) >>> 0, a(2) >>> 0);
     else if (id === 0x1d4 || id === 0x22e)
       await bitmapTransform(bitmap, id === 0x1d4 ? 'rotate' : 'mirror', a(1) | 0);
     else

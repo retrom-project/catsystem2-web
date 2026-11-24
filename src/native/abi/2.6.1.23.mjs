@@ -92,6 +92,11 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [122, 705],
+    value:
+      'Own 2.6.1.23 aliases at 0x48A120 use the same owned bitmap resize, x87 dimension words, raster interpolation and integer-cell averaging.',
+  },
+  {
     ids: [405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416],
     value:
       'Own 2.6.1.23 gallery wrappers 0x47C3D0–0x47C853 load the FES variants or names resource, and share close and count bodies across both typed layouts.',
@@ -1161,6 +1166,7 @@ export default {
     macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
   },
   graphics: {
+    bitmapResizeUsesLegacyCells: true,
     formattedBitmapPhysical: true,
     bitmapBlitUsesSourceSize: true,
     sameSizeBitmapCopyClips: true,
@@ -1238,6 +1244,20 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...[122, 705].map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) =>
+              parameter.name === 'bitmap'
+                ? {
+                    ...parameter,
+                    type: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' },
+                  }
+                : parameter,
+            ),
+            resultWritten: false,
+          },
+        })),
         ...Array.from({ length: 12 }, (_, i) => {
           const id = 405 + i,
             signature = NATIVE_SEMANTICS.main[id].signature;
