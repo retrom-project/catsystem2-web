@@ -10,6 +10,72 @@ import {
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { floatBits } from '../src/kcs.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
+import { kcsProgram } from './helpers.mjs';
+
+test('2.6.1.67 KCS retains and advances the owned area crossfade', async (t) => {
+  const profile = 'bokutomo-engine-2.6.1.67',
+    target = [0x13, 80],
+    call = (id, argv, result) => [
+      ...argv.map((word) => [37, word]),
+      [43, id, argv.length * 4],
+      ...(result === undefined ? [] : [[38, result]]),
+    ],
+    program = (...calls) =>
+      kcsProgram([[37, 0x29ff8620], ...calls.flatMap((args) => call(...args)), [59]]),
+    world = await dataWorld(profile, {
+      'area-initialize.kcs': program([196, [target, 128]], [200, [target], 88]),
+      'area-start.kcs': program([197, [target]], [200, [target], 88]),
+      'area-finish.kcs': program([203, [target]], [200, [target], 88]),
+      'area-stop.kcs': program([198, [target]], [200, [target], 88]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  for (const [raw, canonical] of [
+    [246, 257],
+    [247, 258],
+    [248, 259],
+    [250, 261],
+    [264, 275],
+  ]) {
+    assert.equal(mapABIMessage(profile, 'area', 'raw', canonical), raw);
+    assert.equal(mapABIMessage(profile, 'area', 'canonical', raw), canonical);
+  }
+  const parent = world.main.id,
+    id = await world.objects.create({ kind: 27, parent }),
+    area = world.areaEffects.tasks.get(id),
+    images = world.graphics.images,
+    uploads = recordAreaUploads(world),
+    handles = [images.create(2, 1, parent), images.create(2, 1, parent)],
+    params = areaPixelParameters({ kind: 27, duration: 4, extent: [2, 1] }, handles),
+    run = async (name) => {
+      const task = await world.spawnScript(name, { parent, initialExecute: false }),
+        m = task.machine,
+        floor = m.sp;
+      m.store(80, world.nativeTaskID(id));
+      params.forEach((word, index) => m.store(128 + index * 4, word));
+      await world.runtime.scheduler.execute(task);
+      assert.equal(m.sp, floor + 4);
+      assert.equal(m.load(floor), 0x29ff8620);
+      return m.load(88);
+    };
+  await images.get(handles[0]).fill(0, 0, 2, 1, 0xff002040);
+  await images.get(handles[1]).fill(0, 0, 2, 1, 0xff6480c0);
+  assert.equal(await run('area-initialize.kcs'), 0);
+  assert.deepEqual(area.state.params, params);
+  assert.equal(await run('area-start.kcs'), 1);
+  area.record.effectiveFrame = area.state.start + 2;
+  await area.drawTick();
+  assert.deepEqual(uploads.at(-1)?.pixels, [50, 80, 128, 255, 50, 80, 128, 255]);
+  assert.equal(await run('area-finish.kcs'), 0);
+  assert.deepEqual(uploads.at(-1)?.pixels, [100, 128, 192, 255, 100, 128, 192, 255]);
+  assert.equal(await run('area-start.kcs'), 1);
+  assert.equal(await run('area-stop.kcs'), 0);
+  assert.deepEqual([area.state.source, area.state.destination], handles);
+  const work = area.state.work;
+  await world.objects.release(id);
+  assert.equal(world.runtime.handles.records.has(work), false);
+  assert.ok(handles.every((handle) => world.runtime.handles.records.has(handle)));
+});
 
 test('2.6.1.23 area natives start and finish an owned bitmap wipe', async (t) => {
   const world = await dataWorld('grisaia-jp-engine-2.6.1.23');
