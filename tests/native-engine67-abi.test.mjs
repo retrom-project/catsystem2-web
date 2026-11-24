@@ -1081,3 +1081,51 @@ test('2.6.1.67 KCS argument expressions return a bounded list and raw space offs
     [0xfffffff5, 0xa5a5a5a5, 0xa5a5a5a5],
   );
 });
+
+test('2.6.1.67 KCS variable owner evaluates, backs up bytes, and addresses its selected private context', async () => {
+  const call = (id, words, at) => [
+    ...words.map((word) => [37, word]),
+    [43, id, words.length * 4],
+    ...(at === undefined ? [] : [[38, at]]),
+  ];
+  const {
+    runtime,
+    task,
+    machine: m,
+  } = await run([
+    ...call(212, [15]),
+    ...call(213, [320], 80),
+    ...call(213, [0xffffffff], 84),
+    ...call(609, []),
+    ...call(211, [0, 7]),
+    ...call(211, [1, 8]),
+    ...call(211, [2, 9]),
+    ...call(610, []),
+    ...call(210, [0], 88),
+    ...call(210, [1], 92),
+    ...call(210, [2], 96),
+    ...call(659, [511, 0xfedcba98]),
+    ...call(659, [512, 0xbeef]),
+    ...call(659, [0xffffffff, 0xdead]),
+    ...call(658, [511], 100),
+    ...call(658, [512], 104),
+    ...call(658, [0xffffffff], 108),
+    [59],
+  ]);
+  const bank = runtime.variableBank(task);
+  bank.initialize(8);
+  bank.words.set([100, 200, 300]);
+  bank.registerContext('unselected');
+  bank.registerContext('active');
+  m.writeString('$0+@%', 320);
+  const stack = m.sp;
+  await runtime.scheduler.execute(task);
+  assert.equal(m.sp, stack);
+  assert.deepEqual(
+    Array.from({ length: 8 }, (_, i) => m.load(80 + i * 4)),
+    [115, 0, 100, 200, 9, 0xfedcba98, 0, 0],
+  );
+  assert.equal(bank.context('unselected').words[511], 0);
+  assert.equal(bank.context('active').words[511], 0xfedcba98);
+  assert.equal(bank.context('active').words[0], 0);
+});
