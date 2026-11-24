@@ -200,6 +200,23 @@ export function nativeParticleNear(priority) {
   return f(f(65000 - f(priority)) - 1000);
 }
 
+export function x87ProjectionBoundsWords(
+  zWord,
+  width,
+  height,
+  priority,
+  near = nativeParticleNear(priority),
+) {
+  const total = x87AddWords(floatBits(priority), zWord, true),
+    nearWord = floatBits(near),
+    nan = x87BinaryNaNWord(total, nearWord);
+  // The zero matrix terms still multiply the depth during the native
+  // transform. Infinite depth produces the x87 indefinite word.
+  if (nan !== undefined || !Number.isFinite(bitsFloat(total)))
+    return Array(4).fill(nan ?? 0xffc00000);
+  return projectionBounds(bitsFloat(zWord), width, height, priority, near).map(floatBits);
+}
+
 export function projectionBounds(
   z,
   width,

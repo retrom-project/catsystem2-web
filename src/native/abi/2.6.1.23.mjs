@@ -615,6 +615,11 @@ const mainEvidence = [
 ];
 const particleInterpreterEvidence = [
   {
+    ids: [38],
+    value:
+      'Own 2.6.1.23 PTCL v1 and v2 point to 0x48CCD0. The scalar PC24 inverse projection uses viewport, priority and near and writes four ordered float words.',
+  },
+  {
     ids: [1, 2, 4, 5, 27, 28, 30, 31, 32, 35, 36, 39, 40],
     value:
       'Own 2.6.1.23 particle tables share these frame, viewport, quad, register and control bodies',
@@ -644,6 +649,19 @@ const particleInterpreterEvidence = [
   },
 ];
 const particleInterpreterSignatures = [
+  {
+    ids: [38],
+    fields: {
+      parameters: NATIVE_SEMANTICS['particle-v1'][38].signature.parameters.map((parameter) =>
+        parameter.type.kind === 'pointer'
+          ? {
+              ...parameter,
+              type: { ...parameter.type, addressSpace: 'vm', direction: 'out' },
+            }
+          : parameter,
+      ),
+    },
+  },
   {
     ids: [
       1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 33, 34, 36, 40, 41, 42,
@@ -890,6 +908,7 @@ export default {
   particle: {
     frameScale: 'x87-uint32',
     quadUsesX87: true,
+    projectionBoundsUseX87: true,
     taskMessageStart: 285,
     deferGraphAttachment: true,
   },

@@ -635,6 +635,54 @@ test('2.6.1.23 Main writes the local YPR matrix without reading the previous own
   assert.equal(machine.load(128, 1), 0x76);
 });
 
+test('2.6.1.23 PTCL writes the four viewport words in order in both tables', async () => {
+  const local = 64,
+    shared = 0x80000100,
+    options = {
+      width: 0,
+      height: 0,
+      screenWidth: 641,
+      screenHeight: 481,
+      priority: 9,
+      shared: new Uint8Array(512),
+      attachment: () => assert.fail('Viewport query attempted attachment lookup'),
+    };
+  for (const table of particles) {
+    for (const [z, outputs, expected] of [
+      [
+        floatBits(31),
+        [0, 0x80000000, local, shared],
+        [0x411eb860, 0x40ee1480, 0x441d851e, 0x43ec47ae],
+      ],
+      [
+        floatBits(31),
+        [local, local + 2, shared, shared + 2],
+        [0x1480b860, 0x40ee1480, 0x47ae851e, 0x43ec47ae],
+      ],
+      [0xffc5aa22, [local, local, shared, shared], Array(4).fill(0xffc5aa22)],
+      [0x7f800000, [local, local, local, local], Array(4).fill(0xffc00000)],
+    ]) {
+      const { instance, machine, run } = await guest(table, 38, [z, ...outputs], options);
+      machine.store(local + 6, sentinel);
+      machine.store(shared + 6, sentinel);
+      const quad = instance.quads.slice();
+      run(2);
+      assert.deepEqual(
+        outputs.map((address) => machine.load(address)),
+        expected,
+      );
+      assert.equal(machine.load(local + 6), sentinel);
+      assert.equal(machine.load(shared + 6), sentinel);
+      assert.deepEqual(instance.quads, quad);
+      assert.equal(instance.active, true);
+    }
+    const invalid = await guest(table, 38, [0, local, shared, 448, 0xffffffff], options);
+    invalid.machine.store(local, sentinel);
+    assert.throws(() => invalid.run(2), /KCS memory ffffffff\+4/);
+    assert.equal(invalid.machine.load(local), sentinel);
+  }
+});
+
 test('2.6.1.23 MOT and PTCL retain their unresolved guards and exact arities', async () => {
   for (const [id, expected] of [
     [23, 4],
@@ -650,10 +698,13 @@ test('2.6.1.23 MOT and PTCL retain their unresolved guards and exact arities', a
   const wrongMOT = await guest('generic', 1);
   assert.throws(() => wrongMOT.instance.update(0), /expects 1 arguments, got 0/);
   assert.equal(wrongMOT.instance.calls.size, 0);
+  const staleAttachment = await guest('particle-v2', 49, [64, 68, 72]);
+  assert.throws(() => staleAttachment.instance.update(0), /Unreviewed PTCL native .*\/49/);
+  assert.equal(staleAttachment.instance.calls.size, 0);
   for (const table of particles) {
-    const closed = await guest(table, 38, [64, 68, 72, 76, 80]);
-    assert.throws(() => closed.instance.update(0), /Unreviewed PTCL native .*\/38/);
-    assert.equal(closed.instance.calls.size, 0);
+    const wrongViewport = await guest(table, 38, [64, 68, 72, 76]);
+    assert.throws(() => wrongViewport.instance.update(0), /requires 5 arguments, received 4/);
+    assert.equal(wrongViewport.instance.calls.size, 0);
     const wrongPTCL = await guest(table, 28, [64, 68]);
     assert.throws(() => wrongPTCL.instance.update(0), /requires 3 arguments, received 2/);
     assert.equal(wrongPTCL.instance.calls.size, 0);

@@ -19,9 +19,9 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 414       | 57            | 17            | 381     | Generic 25 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.23 | 869        | 414       | 57            | 17            | 381     | Generic 25 of 45, Particle 40 of 44 and 41 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
-| 2.6.1.67 | 938        | 187       | 80            | 19            | 652     | Generic 8 of 45, Particle 6 of 44 and 6 of 51    |
+| 2.6.1.67 | 938        | 398       | 80            | 19            | 441     | Generic 14 of 45, Particle 12 of 44 and 12 of 51 |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 917       | 58            | 17            | 63      | 45 / 44 / 51                                     |
 
@@ -61,6 +61,27 @@ a result. Raw load with a null pointer retains the bank. Register update
 quietens signaling NaNs during its float32 copy. Alpha is signed below 255
 and becomes 256 at or above 255. Attachment zero selects the detached
 state.
+
+Generic 43 and 44 and Main 662 use the original unoptimized D3DX scalar
+path with x87 PC24 as the Core arithmetic baseline. Main 662 writes a
+new YPR matrix. Generic 43 multiplies its mapped matrix by the rotation.
+Generic 44 derives two axes from the reference matrix and applies three
+rotations in order. Each operation validates the mapped span and writes
+the complete matrix. Generic 43 and 44 preserve overlapping source and
+destination spans, including unaligned local or shared memory.
+
+PTCL v1 and v2 slot 38 point to the same receiver. It computes four
+bounds from the viewport, live priority and near plane and writes the
+four output words in call order. Guest offset zero is a valid destination.
+The query runs without a texture or graph attachment. PTCL v2 slot 49
+remains guarded because a stale graph registration can reuse overwritten
+scratch coordinates after a prior query.
+
+The original tuned x87 and SSE2 arithmetic can round intermediate matrix
+and viewport values differently. Core uses the selectable scalar path
+with D3DX CPU optimizations disabled. The observed native CPU paths
+share the same control codes, output locations and task state transitions.
+This coverage concerns the arithmetic and VM outputs before rendering.
 
 Main 83 uses Plane raw 63 to release the graph and its tracked input
 registration. Main 86 and 87 send raw 57 and 58 to query the selected

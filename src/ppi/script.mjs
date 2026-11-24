@@ -21,6 +21,7 @@ import {
   triangleWave,
   rotateVector,
   projectionBounds,
+  x87ProjectionBoundsWords,
 } from './numeric.mjs';
 
 const f = Math.fround;
@@ -92,6 +93,7 @@ export class ParticleScriptInstance {
     this.interpreterMath = abi?.math?.interpreterUsesNativeScalarMath ? abi.math : null;
     this.frameScale = abi?.particle?.frameScale;
     this.quadUsesX87 = abi?.particle?.quadUsesX87;
+    this.projectionBoundsUseX87 = abi?.particle?.projectionBoundsUseX87;
     this.count = count;
     this.width = f(width);
     this.height = f(height);
@@ -339,6 +341,19 @@ export class ParticleScriptInstance {
         return real(Math.sqrt(f(f(f(dx * dx) + f(dy * dy)) + f(dz * dz))));
       }
       case 38: {
+        const outputs = args.slice(1);
+        if (this.projectionBoundsUseX87) {
+          outputs.forEach((address) => machine.region(address, 4));
+          const words = x87ProjectionBoundsWords(
+            args[0],
+            this.screenWidth,
+            this.screenHeight,
+            this.priority,
+            this.near,
+          );
+          outputs.forEach((address, i) => machine.store(address, words[i]));
+          return voidReply();
+        }
         const bounds = this.screenBounds(
           bitsFloat(args[0]),
           this.screenWidth,
@@ -346,7 +361,7 @@ export class ParticleScriptInstance {
           this.priority,
           this.near,
         );
-        args.slice(1).forEach((address, i) => putFloat(address, bounds[i]));
+        outputs.forEach((address, i) => putFloat(address, bounds[i]));
         return voidReply();
       }
       case 39:
