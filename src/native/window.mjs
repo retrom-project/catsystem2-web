@@ -321,10 +321,12 @@ export class NativeWindow {
     if (message.message === 0x10 || directClose) {
       if (!directClose) {
         const applicationTitle = this.world.configuration.fields.application.title,
-          title = this.closeConfirmation ? applicationTitle : this.text(applicationTitle),
-          template = this.closeConfirmation?.template ?? this.text('$0000-0042$'),
+          confirmation = this.closeConfirmation,
+          title = confirmation ? applicationTitle : this.text(applicationTitle),
+          localize = (text) => (!confirmation || confirmation.localize ? this.text(text) : text),
+          template = localize(confirmation?.template ?? '$0000-0042$'),
           yes = await this.action('confirm-close', {
-            caption: this.closeConfirmation?.caption ?? this.text('$0000-0043$'),
+            caption: localize(confirmation?.caption ?? '$0000-0043$'),
             message: template.replace('%s', () => title),
           });
         if (!yes) return true;

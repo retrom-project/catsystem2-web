@@ -13,6 +13,7 @@ export default {
     settingsCharacterBytes: 1,
     fesNVFontWritesName: true,
     pathBytes: 260,
+    clipboardUsesCP932: true,
     recordingPrefix: {
       units: 'bytes',
       limit: 64,
@@ -406,6 +407,12 @@ export default {
   },
   messages: {
     screenEvent: 21,
+    windowDirectClose: 0x433,
+    windowCloseConfirmation: {
+      caption: '$0000-0043$終了',
+      template: '$0000-0042$%s を終了してよろしいですか？',
+      localize: true,
+    },
     root: {
       start: 30,
       captionWide: false,
@@ -1030,20 +1037,8 @@ export default {
           },
         },
         {
-          ids: [9],
-          fields: {
-            review: 'needs-review',
-            reviewReason:
-              'SDK body confirms semantic, argument width and control; independent normal execution still requires window action transport.',
-          },
-        },
-        {
-          ids: [10],
-          fields: {
-            review: 'needs-review',
-            reviewReason:
-              'SDK body confirms semantic, argument width and control; independent normal execution still requires ANSI clipboard transport.',
-          },
+          ids: [9, 10],
+          fields: { review: 'reviewed' },
         },
         {
           ids: [11],
@@ -1562,9 +1557,19 @@ export default {
           value: 'reviewed-SDK-2.6.1.74-main447-full-wrapper; see docs/native-fes-task.md',
         },
         {
-          ids: [1, 9, 10, 11, 27, 28, 30, 31],
+          ids: [1, 11, 27, 28, 30, 31],
           value:
             'reviewed-SDK-2.6.1.74-table-and-wrapper-body; normal host/allocator execution pending; see docs/native-standard-review.md',
+        },
+        {
+          ids: [9],
+          value:
+            'reviewed-SDK-2.6.1.74-Main9-own-window-post-confirmation-and-filtered-close-sequence; see docs/native-standard-review.md',
+        },
+        {
+          ids: [10],
+          value:
+            'reviewed-SDK-2.6.1.74-Main10-CP932-format-raw-CRLF-and-CF_TEXT; see docs/native-standard-review.md',
         },
         {
           ids: [

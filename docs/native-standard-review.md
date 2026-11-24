@@ -16,8 +16,8 @@ contains the names/signatures; these EXE targets remain documentation/test evide
 | ------ | ------------------------------------ | ----- | ------- | ---------------- | -------------------------------------- |
 | `1`    | `debug.print`                        | 1     | 2       | `51C010`         | body confirmed; normal fixture pending |
 | `6`    | `word.identity`                      | 1     | 1       | `51B320`         | independent GCALL                      |
-| `9`    | `application.exit`                   | 1     | 2       | `51B570`         | body confirmed; normal fixture pending |
-| `A`    | `clipboard.copy`                     | 1     | 2       | `51B360`         | body confirmed; normal fixture pending |
+| `9`    | `application.exit`                   | 1     | 2       | `51B570`         | original window callback and KCS World |
+| `A`    | `clipboard.copy`                     | 1     | 2       | `51B360`         | original CF_TEXT and KCS browser host  |
 | `B`    | `clock.localDate`                    | 7     | 2       | `51B9E0`         | body confirmed; normal fixture pending |
 | `1B`   | `memory.allocate`                    | 1     | 1       | `5232D0`         | body confirmed; normal fixture pending |
 | `1C`   | `memory.free`                        | 1     | 1       | `5230A0`         | body confirmed; normal fixture pending |
@@ -49,14 +49,21 @@ only that byte span is private scratch, and raw PE write evidence is retained.
 All remaining PE bytes, VM regions, result-write behavior, handles and task state
 compare exactly. Public golden cases run without a private executable.
 
-Eight named signatures remain `needs-review` for independent normal execution:
-debug print requires its debug-window transport; exit requires a window action;
-ANSI clipboard requires its transport; local date requires a controlled local-time
-provider; allocate/free require the complete original VM allocation container;
-file read/write require the live original file manager. Their meanings, parameter
-widths and controls are supported by SDK bodies, but naming does not certify those
-host/allocator behaviors. The ABI stores these reasons and the inventory copies
-them into each row. Existing platform/container tests remain in their owning groups.
+The six remaining signatures retain the scope of their independent review. Debug
+print requires its debug-window transport. Local date uses a controlled local-time
+provider. Allocate and free use the complete original VM allocation container.
+File read and write use the live original file manager. The ABI records the
+observed parameter widths and controls from the SDK bodies along with the
+remaining evidence scope.
+
+On the fixed SDK build, Main9 posts WM_CLOSE for a nonzero selector and 0x433
+for zero. Its application callback uses the language table to translate the
+embedded default caption and template. Accepting the dialog or posting 0x433
+deactivates the display and posts 0x410. That message sends original filtered
+Script event 160 before the close sequence. Main10 formats one CP932 argument,
+converts each literal backslash-n byte pair to CRLF, and writes CF_TEXT. The
+browser adapter projects those formatted bytes to text under the platform's
+clipboard rules. Both calls return control 2 with the result left unwritten.
 
 ## Independent MT19937 checks
 
