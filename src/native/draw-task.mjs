@@ -2,7 +2,7 @@
 import { originalFeature, originalView } from './original-adapter.mjs';
 import { truncateFloat32 } from '../ppi/numeric.mjs';
 import { mapABIMessage } from './abi/messages.mjs';
-import { nativeABIBehavior } from './abi/index.mjs';
+import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import { bitsFloat, floatBits, nativeReply } from '../kcs.mjs';
 import { affineBitmap, prepareBitmapAffine } from './image-affine.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
@@ -141,6 +141,11 @@ export class NativeDrawTask {
         store(l, this.state.offset[1]);
         return 0;
       case 285: {
+        if (
+          !this.state.renderer &&
+          nativeABI(this.world.profile).graphics.drawBitmapRequiresRenderer
+        )
+          throw new Error('The Draw bitmap query requires an initialized renderer');
         const handle = this.state.renderer?.bitmap || 0;
         store(
           l,

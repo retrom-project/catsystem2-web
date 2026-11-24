@@ -236,3 +236,85 @@ test(
     }
   },
 );
+
+test('2.6.1.67 Draw GCALLs initialize, replace and remove a sender-keyed bitmap', async (t) => {
+  const target = [0x13, 80],
+    bitmap = [0x13, 84],
+    point = (x, y, alpha) => [
+      target,
+      6,
+      bitmap,
+      floatBits(x),
+      floatBits(y),
+      0,
+      0,
+      0,
+      floatBits(1),
+      floatBits(1),
+      alpha,
+      1,
+      0,
+    ],
+    script = (calls) =>
+      kcsProgram([
+        [37, 0xef170f5e],
+        ...calls.flatMap(([id, args, result]) => [
+          ...args.map((arg) => [37, arg]),
+          [43, id, args.length * 4],
+          ...(result === undefined ? [] : [[38, result]]),
+        ]),
+        [59],
+      ]),
+    world = await dataWorld('bokutomo-engine-2.6.1.67', {
+      'draw-setup.kcs': script([
+        [256, [target, 8, 6]],
+        [260, [target, 0, 0]],
+        [261, [target], 92],
+      ]),
+      'draw-add.kcs': script([[257, point(1, 2, 302)]]),
+      'draw-blank.kcs': script([[261, [target], 92]]),
+      'draw-change.kcs': script([[259, point(3, 4, 98)]]),
+      'draw-remove.kcs': script([[258, [target, 6]]]),
+    });
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    taskID = await world.objects.create({ kind: 15, parent }),
+    targetID = world.nativeTaskID(taskID),
+    task = await world.spawnScript('draw-setup.kcs', { parent, initialExecute: false }),
+    draw = world.graphics.drawTasks.get(taskID),
+    images = world.graphics.images,
+    source = images.create(1, 1, parent),
+    { scheduler } = world.runtime;
+  await images.get(source).fill(0, 0, 1, 1, 0xff123456);
+  const invoke = async (name, existing = null) => {
+    const selected = existing ?? (await world.spawnScript(name, { parent, initialExecute: false })),
+      floor = selected.machine.sp;
+    selected.machine.store(80, targetID);
+    selected.machine.store(84, source);
+    await scheduler.execute(selected);
+    assert.equal(selected.machine.sp, floor + 4);
+    assert.equal(selected.machine.load(floor), 0xef170f5e);
+    return selected.machine;
+  };
+  await assert.rejects(() => invoke('draw-blank.kcs'), /initialized renderer/);
+  const m = await invoke('draw-setup.kcs', task);
+  assert.equal(m.load(92), draw.state.renderer.bitmap);
+  const key = (world.nativeTaskID(task.id) | (6 << 16)) >>> 0;
+  // All three commands use the same Script identity across reload.
+  const transport = world.objects.objects.get(task.id).implementation;
+  for (const [name, expected] of [
+    ['draw-add.kcs', [1, 2, 255]],
+    ['draw-change.kcs', [3, 4, 98]],
+  ]) {
+    await transport.loadScript(name);
+    await invoke(name, transport.task);
+    const item = draw.entry(key);
+    assert.deepEqual([...item.position, item.alpha], expected);
+    assert.equal(images.get(item.image).dataHandle, images.get(source).dataHandle);
+    assert.equal(draw.state.renderer.items.length, 1);
+  }
+  await transport.loadScript('draw-remove.kcs');
+  await invoke('draw-remove.kcs', transport.task);
+  assert.equal(draw.entry(key), undefined);
+  assert.equal(images.get(source).state.rgba[0], 0x12);
+});
