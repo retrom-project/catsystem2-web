@@ -211,12 +211,36 @@ export function nativeParticleNear(priority) {
   return f(f(65000 - f(priority)) - 1000);
 }
 
+function sseReciprocalEstimate(value) {
+  const word = floatBits(value);
+  const exponent = (word >>> 23) & 255;
+  if (exponent === 0) return Infinity;
+  const bin = (word & 0x7fffff) >>> 12;
+  // RCPSS on the original SSE path approximates each mantissa bin and
+  // flushes a subnormal reciprocal to zero.
+  const significand = Math.round(8192 / (1 + (bin + 0.5) / 2048)) / 8192;
+  const estimate = f(significand * 2 ** (127 - exponent));
+  return estimate < 2 ** -126 ? 0 : estimate;
+}
+
+function sseProjectionScales(scale, reciprocalW) {
+  const depthScale = f(1 / 65000);
+  const cofactorX = f(f(scale * reciprocalW) * depthScale);
+  const cofactorY = f(f(scale * depthScale) * reciprocalW);
+  const determinant = f(scale * cofactorX);
+  if (!determinant) return [scale, scale];
+  const estimate = sseReciprocalEstimate(determinant);
+  const reciprocal = f(f(estimate + estimate) - f(determinant * f(estimate * estimate)));
+  return [f(cofactorX * reciprocal), f(cofactorY * reciprocal)];
+}
+
 export function x87ProjectionBoundsWords(
   zWord,
   width,
   height,
   priority,
   near = nativeParticleNear(priority),
+  useSSE = false,
 ) {
   const total = x87AddWords(floatBits(priority), zWord, true),
     nearWord = floatBits(near),
@@ -225,7 +249,9 @@ export function x87ProjectionBoundsWords(
   // transform. Infinite depth produces the x87 indefinite word.
   if (nan !== undefined || !Number.isFinite(bitsFloat(total)))
     return Array(4).fill(nan ?? 0xffc00000);
-  return projectionBounds(bitsFloat(zWord), width, height, priority, near).map(floatBits);
+  return projectionBounds(bitsFloat(zWord), width, height, priority, near, useSSE ? 'sse' : 24).map(
+    floatBits,
+  );
 }
 
 export function projectionBounds(
@@ -241,8 +267,14 @@ export function projectionBounds(
     depth = f(65000 - f(f(priority) + f(z))),
     denominator = depth === near ? 1 : f(depth - near),
     scale = Math.max(0, f(1000 / denominator)),
-    reciprocalW = f(1 / denominator),
-    round = precision === 24 ? roundX87Single : (value) => value;
+    reciprocalW = f(1 / denominator);
+  if (precision === 'sse') {
+    const [inverseX, inverseY] = sseProjectionScales(scale, reciprocalW);
+    const x = f(halfX * inverseX),
+      y = f(halfY * inverseY);
+    return [f(halfX - x), f(halfY - y), f(halfX + x), f(halfY + y)];
+  }
+  const round = precision === 24 ? roundX87Single : (value) => value;
   // The native scalar inverse stores a diagonal cofactor before the
   // determinant. It then stores the reciprocal determinant and the inverse
   // scale separately. Collapsing these steps into 1/scale changes the bounds.

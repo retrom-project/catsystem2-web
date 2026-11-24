@@ -95,6 +95,7 @@ export class ParticleScriptInstance {
     this.frameScale = abi?.particle?.frameScale;
     this.quadUsesX87 = abi?.particle?.quadUsesX87;
     this.projectionBoundsUseX87 = abi?.particle?.projectionBoundsUseX87;
+    this.projectionBoundsUseSSE = abi?.particle?.projectionBoundsUseSSE;
     this.attachmentPositionRequiresOwner = abi?.particle?.attachmentPositionRequiresOwner;
     this.count = count;
     this.width = f(width);
@@ -353,6 +354,7 @@ export class ParticleScriptInstance {
             this.screenHeight,
             this.priority,
             this.near,
+            this.projectionBoundsUseSSE,
           );
           outputs.forEach((address, i) => machine.store(address, words[i]));
           return voidReply();

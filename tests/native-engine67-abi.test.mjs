@@ -486,8 +486,142 @@ for (const version of [1, 2]) {
     assert.equal(m.pop(), marker);
     assert.equal(m.sp, sp);
     assert.deepEqual(instance.update(10), { active: false, executed: 0 });
-    const guarded = await particle([...particleCall(3, [10]), [59]]);
-    assert.throws(() => guarded.update(9), /Unreviewed PTCL native .*\/3/);
+    const guarded = await particle([...particleCall(37, [1, 2, 3, 4, 5, 6]), [59]]);
+    assert.throws(() => guarded.update(9), /Unreviewed PTCL native .*\/37/);
+  });
+
+  test(`2.6.1.67 ${table} CalcFrame preserves signed input and rounds the unsigned rate at x87 precision`, async () => {
+    const frames = [0, 1, 0x1000001, 0x7fffffff, 0x80000000, 0xffffffff];
+    for (const [fps, expected] of [
+      [0, [0, 1, 1, 1, 0x80000000, 0xffffffff]],
+      [144, [0, 2, 0x266666c, 0x33333400, 0x80000000, 0xffffffff]],
+      [0x80000305, [0, 0x2222230, 0x34000000, 1, 0x80000000, 0xffffffff]],
+      [0xffffffff, [0, 0x4444448, 0x50000000, 1, 0x80000000, 0xffffffff]],
+    ]) {
+      const instance = await particle(
+        [...frames.flatMap((frame, index) => particleCall(3, [frame], 64 + index * 4)), [59]],
+        { fps },
+      );
+      instance.update(0);
+      assert.deepEqual(
+        frames.map((_, index) => instance.machine.load(64 + index * 4)),
+        expected,
+      );
+    }
+  });
+
+  test(`2.6.1.67 ${table} rotates, translates and scales all four positions without changing their other words`, async () => {
+    const vertices = [
+      [0x3faa9fbe, 0xc0151eb8, 0xbf8a3d71, 0x3e800000, 0x819212aa, 0, 0],
+      [0x402a9fbe, 0xbf89a36e, 0xc09b0a3d, 0x3fa00000, 0x819212ab, 0x3d8f5c29, 0x3e051eb8],
+      [0x407fef9e, 0x3e37b4a2, 0xc109c28f, 0x40100000, 0x819212ac, 0x3e0f5c29, 0x3e851eb8],
+      [0x40aa9fbe, 0x3fb79097, 0xc1460000, 0x40500000, 0x819212ad, 0x3e570a3d, 0x3ec7ae14],
+    ];
+    const angle = 0x3e000000,
+      operands = [angle, 0x3faa3d71, 0xbe70a3d7],
+      marker = 0xe6f13918,
+      address = 128;
+    for (const [slot, args, positions] of [
+      [
+        22,
+        [angle],
+        [
+          [0x3faa9fbe, 0xc01c92f4, 0xbf47f4f3],
+          [0x402a9fbe, 0xbfd5e1fe, 0xc0958a52],
+          [0x407fef9e, 0xbf653c27, 0xc1090b03],
+          [0x40aa9fbe, 0xbdf5a2a0, 0xc14750dd],
+        ],
+      ],
+      [
+        23,
+        [angle],
+        [
+          [0x3fba871b, 0xc0151eb8, 0xbf67c71f],
+          [0x404ff3ad, 0xbf89a36e, 0xc08f31af],
+          [0x40a151e8, 0x3e37b4a2, 0xc100b53d],
+          [0x40daa9f6, 0x3fb79097, 0xc139d1a3],
+        ],
+      ],
+      [
+        24,
+        [angle],
+        [
+          [0x3f841c18, 0xc01e97bf, 0xbf8a3d71],
+          [0x4020b674, 0xbfb31c08, 0xc09b0a3d],
+          [0x407f5edf, 0xbea42246, 0xc109c28f],
+          [0x40af03a2, 0x3f4215cb, 0xc1460000],
+        ],
+      ],
+      [
+        25,
+        operands,
+        [
+          [0x3fba9fbe, 0xbf7ffffe, 0xbfa851ec],
+          [0x40329fbe, 0x3e82680c, 0xc0a28f5c],
+          [0x4083f7cf, 0x3fc13405, 0xc10d851e],
+          [0x40ae9fbe, 0x4030e704, 0xc149c28f],
+        ],
+      ],
+      [
+        26,
+        operands,
+        [
+          [0x3e2a9fbe, 0xc0465461, 0x3e81f213],
+          [0x3eaa9fbe, 0xbfb70f1f, 0x3f91bcd3],
+          [0x3effef9e, 0x3e745415, 0x40017e91],
+          [0x3f2a9fbe, 0x3ff42426, 0x403a1eb8],
+        ],
+      ],
+    ]) {
+      const instance = await particle([
+          [37, marker],
+          ...particleCall(slot, [address, ...args]),
+          [59],
+        ]),
+        machine = instance.machine,
+        input = [marker, ...vertices.flat(), marker],
+        expected = [
+          marker,
+          ...vertices.flatMap((v, i) => [...positions[i], ...v.slice(3)]),
+          marker,
+        ];
+      input.forEach((value, index) => machine.store(address - 4 + index * 4, value));
+      instance.update(0);
+      assert.deepEqual(
+        input.map((_, index) => machine.load(address - 4 + index * 4)),
+        expected,
+        `slot ${slot}`,
+      );
+      assert.equal(machine.pop(), marker);
+    }
+  });
+
+  test(`2.6.1.67 ${table} writes the native SSE projection bounds in pointer order`, async () => {
+    const marker = 0xe6f13918;
+    for (const [screenWidth, screenHeight, priority, near, z, expected] of [
+      [1280, 720, 5000, 59000, 0xc51c4000, [0xc4c80000, 0xc4610000, 0x45340000, 0x44ca8000]],
+      [639, 479, 10000, 54000, 0xc5daca00, [0xc50b9662, 0xc4d12992, 0x45337662, 0x450674c9]],
+      [1280, 720, 5000, 59000, 0x7f800000, Array(4).fill(0xffc00000)],
+      [1279, 719, 5000, 59000, 0x7fc00000, Array(4).fill(0x7fc00000)],
+    ]) {
+      const outputs = [64, 68, 72, 76, 80],
+        instance = await particle(
+          [
+            [37, marker],
+            ...particleCall(38, [z, ...outputs.slice(0, 4)]),
+            ...particleCall(38, [z, 80, 80, 80, 80]),
+            [59],
+          ],
+          { screenWidth, screenHeight, priority, near },
+        );
+      instance.machine.store(84, marker);
+      instance.update(0);
+      assert.deepEqual(
+        [...outputs, 84].map((address) => instance.machine.load(address)),
+        [...expected, expected[3], marker],
+      );
+      assert.equal(instance.machine.pop(), marker);
+    }
   });
 
   if (version === 2)

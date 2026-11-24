@@ -18,8 +18,11 @@ const remainderEvidence =
 const randomEvidence =
   'Own 2.6.1.67 Main and Particle wrappers alias both complete native entry points. Separate MOT wrappers reach the same independent integer and real MT19937 streams. The real path rounds the converted unsigned high word at x87 single precision before scaling. Each wrapper consumes one value of its own stream and returns control 1.';
 const particleStateSlots = [1, 2, 4, 5, 27, 28, 30, 31, 32, 35, 36, 39, 40];
+const particleGeometrySlots = [22, 23, 24, 25, 26, 38];
 const particleRecoveredSlots = [
   ...particleStateSlots,
+  ...particleGeometrySlots,
+  3,
   33,
   34,
   6,
@@ -49,6 +52,18 @@ const particleStateSignatures = {
   ids: [1, 2, 4, 36, 40],
   fields: { resultWritten: true },
 };
+const particleGeometryEvidence = [
+  {
+    ids: [3],
+    value:
+      'Own shared Particle frame converter at 0x499ad0 preserves nonpositive input, rounds the unsigned rate and frame product under the default D3D9 x87 mode, then writes the low DWORD under control 1.',
+  },
+  {
+    ids: [22, 23, 24, 25, 26, 38],
+    value:
+      'Own Particle tables alias the complete quad and viewport wrappers. Quad writes follow the original x87 operand ordering and preserve the remaining vertex words. The viewport query uses the SSE D3DX inverse selected by original initialization and writes four f32 values under control 2.',
+  },
+];
 
 export default {
   id: 'cs2-2.6.1.67',
@@ -184,6 +199,10 @@ export default {
     taskMessageStart: 303,
     deferGraphAttachment: true,
     loadQuietsFloatWords: true,
+    frameScale: 'x87-uint32',
+    quadUsesX87: true,
+    projectionBoundsUseX87: true,
+    projectionBoundsUseSSE: true,
   },
   motion: {
     currentMatrixFallback: true,
@@ -3211,7 +3230,7 @@ export default {
     'particle-v1': {
       count: 44,
       slots: {
-        unknown: [0, 3, 18, 22, 23, 24, 25, 26, 29, 37, 38, 43],
+        unknown: [0, 18, 29, 37, 43],
         recovered: particleRecoveredSlots,
       },
       evidence: [
@@ -3221,6 +3240,7 @@ export default {
           value: remainderEvidence,
         },
         particleStateEvidence,
+        ...particleGeometryEvidence,
         {
           ids: [12, 13, 15, 17],
           value:
@@ -3238,6 +3258,7 @@ export default {
         },
       ],
       signatures: [
+        { ids: [3], fields: { resultWritten: true } },
         { ids: [33, 34], fields: { resultWritten: true } },
         { ids: [16], fields: { resultWritten: true } },
         particleStateSignatures,
@@ -3249,7 +3270,7 @@ export default {
     'particle-v2': {
       count: 51,
       slots: {
-        unknown: [0, 3, 18, 22, 23, 24, 25, 26, 29, 37, 38, 43, 44, 45, 46, 47, 48, 49],
+        unknown: [0, 18, 29, 37, 43, 44, 45, 46, 47, 48, 49],
         recovered: [...particleRecoveredSlots, 50],
       },
       evidence: [
@@ -3259,6 +3280,7 @@ export default {
           value: remainderEvidence,
         },
         particleStateEvidence,
+        ...particleGeometryEvidence,
         {
           ids: [50],
           value:
@@ -3281,6 +3303,7 @@ export default {
         },
       ],
       signatures: [
+        { ids: [3], fields: { resultWritten: true } },
         { ids: [33, 34], fields: { resultWritten: true } },
         { ids: [16], fields: { resultWritten: true } },
         particleStateSignatures,
