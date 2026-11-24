@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 404       | 57            | 17            | 391     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
+| 2.6.1.23 | 869        | 408       | 57            | 17            | 387     | Generic 23 of 45, Particle 39 of 44 and 40 of 51 |
 | 2.6.1.63 | 938        | 309       | 9             | 1             | 619     | 15 generic and 21 particle v2 recovered          |
 | 2.6.1.67 | 938        | 187       | 80            | 19            | 652     | Generic 8 of 45, Particle 6 of 44 and 6 of 51    |
 | 2.6.1.74 | 1009       | 833       | 82            | 19            | 75      | 45 / 44 / 51                                     |
@@ -124,6 +124,12 @@ leave the mask clear. Main 150 routes through the caller's Top and
 passes unsigned 16-bit coordinates to Input raw 130. The move keeps
 its original interval. A disabled preference or an out-of-bounds
 point leaves the pending move in place.
+
+Main 845–847 post display toggle, minimize and close commands to the
+script window. The queue drains through the corresponding menu
+commands. The close branch uses the fixed CP932 prompt and configured
+title. Decline leaves the task tree open. Main 445 formats its CP932
+operand and opens a modal with the fixed `system error` caption.
 
 The kind 48 STRING receiver handles raw CP932 resource messages 407–419.
 The 188-byte record contains 172 configuration bytes after its size word

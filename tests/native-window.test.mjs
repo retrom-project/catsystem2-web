@@ -41,9 +41,14 @@ async function fixture(profile = 'sdk-4.01-engine-2.6.1.74', World = NativeWorld
   };
   return { world, trace, host };
 }
-for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+])
   test(`${profile} Script window requests post before toggling display, minimizing or asking to close`, async () => {
-    const { world, trace } = await fixture(profile);
+    const legacy = profile.startsWith('grisaia-'),
+      { world, trace } = await fixture(profile, legacy ? OrdinaryNativeWorld : NativeWorld);
     try {
       const [task] = world.runtime.scheduler.tasks.values(),
         request = (id) =>
@@ -52,7 +57,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
         [0x34d, 0x469, [['mode', 1]]],
         [0x34d, 0x469, [['mode', 0]]],
         [0x34e, 0x46a, ['minimize']],
-        [0x34f, 0x46b, [['event', 158, 0, 1], 'confirm-close']],
+        [0x34f, 0x46b, legacy ? ['confirm-close'] : [['event', 158, 0, 1], 'confirm-close']],
       ]) {
         trace.length = 0;
         assert.deepEqual(request(id), { control: 2 });
@@ -67,6 +72,42 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       await world.close({ flushFiles: false });
     }
   });
+test('2.6.1.23 queued close uses its fixed text and starts Script shutdown after acceptance', async () => {
+  const { world, trace, host } = await fixture('grisaia-jp-engine-2.6.1.23', OrdinaryNativeWorld);
+  try {
+    const task = world.main,
+      title = world.configuration.fields.application.title,
+      invoke = () =>
+        world.runtime.native('main', 847, [], task.machine, task, world.runtime.scheduler);
+    let accepted = false;
+    host.nativeWindowAction = async (action) => {
+      trace.push(action);
+      return accepted;
+    };
+    const dialog = {
+      type: 'confirm-close',
+      caption: '終了',
+      message: `${title} を終了してよろしいですか？`,
+    };
+    assert.deepEqual(invoke(), { control: 2 });
+    await world.processWindowMessages();
+    assert.deepEqual(trace, [dialog]);
+    assert.equal(world.quitRequested, undefined);
+    trace.length = 0;
+    accepted = true;
+    assert.deepEqual(invoke(), { control: 2 });
+    await world.processWindowMessages();
+    assert.deepEqual(trace, [
+      dialog,
+      { type: 'hide' },
+      ['event', 162, 0, 0, { taskType: 12 }],
+      { type: 'close' },
+    ]);
+    assert.equal(world.quitRequested, true);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
 test('window messages drain posted menu commands and preserve native preparation/action order', async () => {
   const { world, trace } = await fixture();
   try {

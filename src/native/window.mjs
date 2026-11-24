@@ -20,9 +20,12 @@ const preparation = new Set([119, 40002, 40027, 40057, 40011, 40041, 40019, 4003
 export class NativeWindow {
   constructor(world) {
     this.world = world;
-    const { windowDirectClose, windowCloseConfirmation } = nativeABI(world.profile).messages;
+    const { windowDirectClose, windowCloseConfirmation, windowClosePreparation } = nativeABI(
+      world.profile,
+    ).messages;
     this.directCloseMessage = windowDirectClose;
     this.closeConfirmation = windowCloseConfirmation;
+    this.closePreparation = windowClosePreparation !== false;
     // The original Game owner constructor712820 initializes this raw DWORD.
     this.broadcastFlag = 0;
   }
@@ -233,7 +236,8 @@ export class NativeWindow {
       return true;
     }
     if (!commands.has(command)) return false;
-    if (preparation.has(command)) await this.sendEvent(158, 0, 1);
+    if (preparation.has(command) && (command !== 40002 || this.closePreparation))
+      await this.sendEvent(158, 0, 1);
     switch (command) {
       case 119:
         if (

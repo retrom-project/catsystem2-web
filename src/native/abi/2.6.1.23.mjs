@@ -92,6 +92,16 @@ export const engine23CommonHeads = {
 
 const mainEvidence = [
   {
+    ids: [445],
+    value:
+      'Own 2.6.1.23 0x47b800 formats mapped CP932 text and passes the system error caption and zero buttons flag to the application dialog.',
+  },
+  {
+    ids: [845, 846, 847],
+    value:
+      'Own 2.6.1.23 0x47bdf0–0x47be4e post raw 0x469–0x46b to the script window. The window owner routes these to display toggle, minimize or the fixed close-confirmation dialog.',
+  },
+  {
     ids: [99, 106, 110, 394],
     value:
       'Own 2.6.1.23 Plane raw 84, 87, 90 and 91 release the input region, select its active word, set its receiver or install an owned copy of the bitmap mask.',
@@ -965,6 +975,8 @@ export default {
     scriptForward: [9, 10, cursorVisibility, 64],
     screenEvent: null,
     tilePlaneCommand: null,
+    windowClosePreparation: false,
+    windowCloseConfirmation: { caption: '終了', template: '%s を終了してよろしいですか？' },
   },
   floatingPoint: {
     precisionBits: 24,
@@ -1085,6 +1097,7 @@ export default {
         },
         { ids: [577, 651, 694], fields: { resultWritten: false } },
         { ids: [99, 106, 110, 150, 394], fields: { resultWritten: false } },
+        { ids: [445, 845, 846, 847], fields: { resultWritten: false } },
         {
           ids: [611, 612, 613, 614, 615, 617, 618, 619, 620, 621, 695],
           fields: { resultWritten: false },
