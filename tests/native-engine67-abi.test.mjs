@@ -190,6 +190,95 @@ test('2.6.1.67 Main7 and Main11 return the task rate and write the local date in
   }
 });
 
+test('2.6.1.67 regular files retain raw modes and transfer counts through owning KCS handles', async (t) => {
+  const marker = 0x12bd6639,
+    saved = new Map([['input.bin', Uint8Array.of(25, 16, 255, 236, 14)]]),
+    fileHandle = [0x13, 64],
+    open = [
+      [37, 128],
+      [37, 208],
+      [43, 29, 8],
+      [38, 64],
+    ],
+    close = [
+      [37, fileHandle],
+      [43, 32, 4],
+    ],
+    transfer = (id, address, size, count, output) => [
+      [37, address],
+      [37, size],
+      [37, count],
+      [37, fileHandle],
+      [43, id, 16],
+      [38, output],
+    ],
+    input = kcsProgram([
+      [37, marker],
+      ...open,
+      ...transfer(30, 320, 2, 2, 72),
+      ...transfer(30, 0x80000300, 0x80000001, 2, 76),
+      ...transfer(31, 320, 1, 4, 80),
+      ...close,
+      [59],
+    ]),
+    output = kcsProgram([
+      [37, marker],
+      ...open,
+      ...transfer(31, 320, 2, 3, 72),
+      ...transfer(31, 0x80000300, 0x80000001, 2, 76),
+      ...transfer(30, 320, 1, 4, 80),
+      ...close,
+      [59],
+    ]);
+  const world = await dataWorld(
+    profile,
+    { 'file-reader.kcs': input, 'file-writer.kcs': output },
+    {
+      storage: {
+        read: async (name) => saved.get(name)?.slice() ?? null,
+        write: async (name, bytes) => {
+          saved.set(name, bytes.slice());
+          return true;
+        },
+      },
+    },
+  );
+  t.after(() => world.close({ flushFiles: false }));
+  const previous = [...saved.get('input.bin')],
+    bytes = Uint8Array.of(109, 110, 111, 112, 113, 114, 115, 116);
+  for (const [script, name, mode, counts] of [
+    ['file-reader.kcs', 'input.bin', [97, 0], [4, 1, 0]],
+    ['file-writer.kcs', 'output.bin', [0x81, 0x77, 0], [6, 2, 0]],
+  ]) {
+    const task = await world.spawnScript(script, { initialExecute: false }),
+      m = task.machine;
+    m.writeString(name, 128);
+    m.bytes(208, mode.length).set(mode);
+    m.bytes(320, bytes.length).set(bytes);
+    m.bytes(0x80000300, bytes.length).set(bytes);
+    await world.runtime.scheduler.execute(task);
+    assert.equal(m.sp, m.floor + 4);
+    assert.equal(m.pop(), marker);
+    const handle = m.load(64);
+    assert.ok(handle);
+    assert.equal(world.runtime.handles.records.has(handle), false);
+    assert.deepEqual(
+      [72, 76, 80].map((address) => m.load(address)),
+      counts,
+    );
+    assert.deepEqual(
+      [...m.bytes(320, 8)],
+      script === 'file-reader.kcs' ? [...previous.slice(0, 4), ...bytes.slice(4)] : [...bytes],
+    );
+    assert.deepEqual(
+      [...m.bytes(0x80000300, 8)],
+      script === 'file-reader.kcs' ? [previous[4], ...bytes.slice(1)] : [...bytes],
+    );
+  }
+  assert.deepEqual([...saved.get('input.bin')], previous);
+  assert.deepEqual([...saved.get('output.bin')], [...bytes.slice(0, 6), ...bytes.slice(0, 2)]);
+});
+
 test('2.6.1.67 Main320 prepares spline records in the authored memory domain', async (t) => {
   const marker = 0xc41e2359,
     program = kcsProgram([[37, marker], [37, [0x13, 64]], [37, [0x13, 68]], [43, 320, 8], [59]]),
