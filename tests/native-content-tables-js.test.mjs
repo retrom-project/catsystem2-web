@@ -380,7 +380,11 @@ for (const profile of [
     },
   );
 
-for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+])
   test(
     profile +
       ' Mission owners restore statistics and native state independently while protecting original invalid queries',
