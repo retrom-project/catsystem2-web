@@ -1,7 +1,7 @@
 # Built-in mahjong rules
 
 Main natives `0x1D6..0x201` expose 44 operations in the independently reviewed
-SDK 2.6.1.67, 2.6.1.74 and 2.6.1.76 ABIs. The
+SDK 2.6.1.63, 2.6.1.67, 2.6.1.74 and 2.6.1.76 ABIs. The
 136-tile wall, dice, seats, two/four-player configuration, hand patterns and
 point settlement identify an independent mahjong module. The semantic names
 are recovered project descriptions.
@@ -15,7 +15,7 @@ result caches. Starting through one context changes the model queried through
 its peers. Releasing a context only releases that context.
 
 The model's independent MT19937 stream initializes subsequent words with
-`69069 * previous`; its default seed is 4357. SDK 2.6.1.67 supplies the seed
+`69069 * previous`; its default seed is 4357. SDK 2.6.1.63 and 2.6.1.67 supply the seed
 from the owning World's initial local clock: year since 1900, month, day, hour,
 minute and second are packed with DWORD shifts of 4, 5, 5, 6 and 6 bits. This
 matches that build's registered C++ time-seed initializer. The main/generic
@@ -23,10 +23,10 @@ streams have a different initializer. A World checkpoint stores this tile stream
 then stores independent context caches through the handle codec. Pending event
 replay and the complete dealt hand resume in a fresh JS World.
 
-SDK 2.6.1.67 emits a pre-action ability notification only when the automatic
+SDK 2.6.1.63 and 2.6.1.67 emit a pre-action ability notification only when the automatic
 activation helper activates an ability. An already pending explicit human
 ability does not insert that notification into the ordinary discard sequence.
-Its ready-hand query also accepts a complete hand with a positive evaluated
+Their ready-hand query also accepts a complete hand with a positive evaluated
 score, including a fourteen-tile self-drawn winning hand.
 
 The implementation is split into the native interface, canonical rule record,
@@ -109,12 +109,14 @@ before applying their authored records so AI pointer setup is valid in the
 oracle. Comparisons cover observable results without requiring matching
 internal layouts.
 
-The 2.6.1.67 audit runs the complete original GCALL bridge after all registered
+The 2.6.1.63 and 2.6.1.67 audits run each original GCALL bridge after all registered
 tile initializers. Public reference swaps preserve the deck while preparing a
 standard winning hand and a historical meld. These paths also compare nonempty
 result and choice caches, explicit point payments, all seventeen command codes,
 eight deal policies and mapped local/shared/aliased VM outputs. Production
 tests restore nonempty caches in a fresh World and continue both branches.
+Six AI profiles additionally exercise automatic pre-action notifications,
+declaration cancellation and refund, score protection and late-wall abilities.
 
 The pure Node World test restores two contexts and a pending event, advances
 600 events independently, compares complete JS model/RNG snapshots and VM

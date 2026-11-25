@@ -8,9 +8,10 @@ for (const profile of [
   'sdk-4.01-engine-2.6.1.74',
   'nekopara-vol3-engine-2.6.1.76',
   'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
 ]) {
   test(`${profile} JS tile contexts share one model and restore independent event caches`, async (t) => {
-    if (profile === 'bokutomo-engine-2.6.1.67')
+    if (['bokutomo-engine-2.6.1.67', 'rebellions-jp-engine-2.6.1.63'].includes(profile))
       t.mock.method(Date, 'now', () => new Date(2026, 10, 25, 12, 34, 56).getTime());
     const first = await dataWorld(profile);
     let fresh;
