@@ -13,6 +13,7 @@ import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { NativeResources } from '../src/native/resources.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
+import { breakShards } from '../src/native/screen-effect-geometry.mjs';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
 import { areaPixelParameters } from './fixtures/area-effect-cases.mjs';
 import { controlFiles } from './fixtures/control-files.mjs';
@@ -2683,4 +2684,21 @@ test('fixed 2.6.1.63 screen transitions retain the fade extension and stopped cl
   } finally {
     await world.close({ flushFiles: false });
   }
+});
+
+test('WBreak accepts a mesh above 262144 cells within native shard allocation size', () => {
+  const firstShard = new Error('Reached the first shard');
+  const random = {
+    frand() {
+      throw firstShard;
+    },
+  };
+  assert.throws(
+    () => breakShards(545, 481, 1, 1, 0, 0, random),
+    (error) => error === firstShard,
+  );
+  assert.throws(
+    () => breakShards(4096, 4096, 1, 1, 0, 0, random),
+    /shard allocation exceeds its native size/,
+  );
 });

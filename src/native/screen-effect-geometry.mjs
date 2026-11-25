@@ -25,17 +25,19 @@ function inverseX([x, y, z, w], angle) {
     s = f(Math.sin(f(angle)));
   return [x, f(f(y * c) + f(z * s)), f(f(z * c) - f(y * s)), w];
 }
-function mesh(width, height, gridWidth, gridHeight, broken = false, options = {}) {
+function* mesh(width, height, gridWidth, gridHeight, broken = false, options = {}) {
   const [left, top, rightEdge, bottomEdge] = options.drawingRectangle ?? [0, 0, width, height];
   if (gridWidth <= 0 || gridHeight <= 0) throw new RangeError('Screen effect grid divides by zero');
-  if (
-    Math.ceil((rightEdge - left) / gridWidth) * Math.ceil((bottomEdge - top) / gridHeight) >
-    262144
-  )
+  const cells =
+    Math.ceil((rightEdge - left) / gridWidth) * Math.ceil((bottomEdge - top) / gridHeight);
+  // WBreak stores two shards per cell, with a 128-byte record per shard
+  // in its largest DWORD-sized allocation.
+  if (broken && cells * 2 * 128 > 0xffffffff)
+    throw new RangeError('Screen break shard allocation exceeds its native size');
+  if (!broken && cells > 262144)
     throw new RangeError('Screen effect mesh exceeds its resource limit');
   const textureWidth = options.textureWidth ?? width,
-    textureHeight = options.textureHeight ?? height,
-    cells = [];
+    textureHeight = options.textureHeight ?? height;
   for (let y = top; y < bottomEdge; y += gridHeight)
     for (let x = left; x < rightEdge; x += gridWidth) {
       const right = broken ? x + gridWidth : Math.min(x + gridWidth, rightEdge),
@@ -61,9 +63,8 @@ function mesh(width, height, gridWidth, gridHeight, broken = false, options = {}
               [0, 1, 2],
               [1, 3, 2],
             ];
-      cells.push({ x, y, vertices: order.flatMap((ids) => ids.map((i) => ({ ...corners[i] }))) });
+      yield { x, y, vertices: order.flatMap((ids) => ids.map((i) => ({ ...corners[i] }))) };
     }
-  return cells;
 }
 function foldProjection([x, y, z, w], originZ) {
   let denominator = f(z - f(originZ - 2000));
@@ -181,7 +182,9 @@ export function makePage(width, height, params) {
   radius = f(radius * f(currentWidth / windowedWidth));
   const cx = f(width * 0.5),
     cy = f(height * 0.5),
-    source = mesh(width, height, 32, 32, false, params).flatMap((cell) => cell.vertices),
+    source = Array.from(mesh(width, height, 32, 32, false, params)).flatMap(
+      (cell) => cell.vertices,
+    ),
     local = source.map((v) => inverseZ([f(v.x - cx), f(v.y - cy), 0, 1], axisAngle)),
     length = f(radius * TAU),
     arc = f(f(curlAngle / TAU) * length);
@@ -245,7 +248,7 @@ export function makeCube(width, height, params) {
     cx = f(width * 0.5),
     cy = f(height * 0.5),
     originZ = f(65000 - f(params.maximum + 1000)),
-    cells = mesh(width, height, gridWidth, gridHeight, false, params).map((cell) => {
+    cells = Array.from(mesh(width, height, gridWidth, gridHeight, false, params), (cell) => {
       const center = inverseZ(
           [f(f(cell.x + f(gridWidth * 0.5)) - cx), f(f(cell.y + f(gridHeight * 0.5)) - cy), 0, 1],
           phi,
