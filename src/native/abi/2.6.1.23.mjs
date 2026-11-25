@@ -100,6 +100,7 @@ const taskSceneOperations = [
 ];
 const crossTaskSceneOperations = [233, 234];
 const explicitHistoryStringOperations = [334, 335, 337];
+const taskSceneCSSOperations = [239, 249];
 function geometrySignatures(table, ids) {
   return ids.map((id) => {
     const { name, signature } = NATIVE_SEMANTICS[table][id],
@@ -570,6 +571,11 @@ const mainEvidence = [
     ids: explicitHistoryStringOperations,
     value:
       'Own 2.6.1.23 explicit Scene wrappers 0x4810a0/0x481120/0x481290 retain five-word string set/get and four-word expansion, clamped path selection, raw CP932 bytes, null-owner short circuits and saved-string isolation.',
+  },
+  {
+    ids: taskSceneCSSOperations,
+    value:
+      'Own 2.6.1.23 wrappers 0x483c10/0x484680 take four words, query raw 162 through the real Script tree and save/load one compact history side through the original in-memory CSS owner while preserving the other side.',
   },
   {
     ids: [385, 386],
@@ -2121,6 +2127,34 @@ export default {
         { ids: [864, 868], fields: { resultWritten: false } },
         { ids: [515, 518, 519], fields: { resultWritten: true } },
         { ids: [516, 517], fields: { resultWritten: false } },
+        {
+          ids: [238],
+          fields: {
+            resultWritten: true,
+            result: { kind: 'handle', handleKind: 'global-file', ownership: 'owned' },
+          },
+        },
+        ...taskSceneCSSOperations.map((id) => ({
+          ids: [id],
+          fields: {
+            argumentWords: 4,
+            resultWritten: true,
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters
+              .slice(0, 4)
+              .map((parameter) =>
+                parameter.type.kind !== 'handle'
+                  ? parameter
+                  : {
+                      ...parameter,
+                      type: {
+                        kind: 'handle',
+                        handleKind: parameter.name === 'globalFile' ? 'global-file' : 'task',
+                        ownership: 'borrowed',
+                      },
+                    },
+              ),
+          },
+        })),
         ...[
           ...taskSceneOperations,
           ...crossTaskSceneOperations,

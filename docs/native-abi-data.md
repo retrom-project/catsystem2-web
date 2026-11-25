@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 532       | 57            | 17            | 263     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 534       | 57            | 17            | 261     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 423       | 80            | 19            | 416     | Generic 16 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 506       | 80            | 19            | 333     | Generic 34 of 45, Particle 42 of 44 and 48 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
@@ -773,7 +773,11 @@ including FES, retain an explicit query guard until independently reviewed;
 the raw query cannot execute shared Script action 162 by numeric coincidence.
 The native CSS history wrappers 385 and 386 take four words. They use
 40-byte headerless records followed by 72 bytes per saved string. The
-CSS file wrappers 242, 248, 252, 389 and 390 store or extract an owned
+task-selected wrappers 239 and 249 also take four words. They resolve
+the requested Script owner, store or replace the selected seen/path list,
+and preserve the other side. Null CSS handles, absent history owners and
+missing CSS entries return zero without changing either list.
+The CSS file wrappers 242, 248, 252, 389 and 390 store or extract an owned
 nested file, query the tag, clear contents, and clone the file.
 Main 243 saves the existing caller string bank. Main 253 loads one only
 after finding its CSS entry. An absent bank or entry leaves caller

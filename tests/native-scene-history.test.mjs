@@ -383,7 +383,11 @@ test('2.6.1.67 Scene history GCALLs keep CP932 aliases and import compact save r
   );
 });
 
-test('2.6.1.67 KCS CSS history uses the designated Script owner and restores both compact sides', async (t) => {
+for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+  test(`${profile} KCS CSS history uses the designated Script owner and restores both compact sides`, (t) =>
+    verifyTaskHistoryCSS(profile, t));
+
+async function verifyTaskHistoryCSS(profile, t) {
   const file = [0x13, 80],
     source = [0x13, 84],
     destination = [0x13, 88],
@@ -396,8 +400,12 @@ test('2.6.1.67 KCS CSS history uses the designated Script owner and restores bot
       [249, [file, 11, destination, 1], 108],
       [249, [file, 12, destination, 1], 112],
       [249, [0, 10, destination, 0], 116],
-    ],
-    world = await dataWorld('bokutomo-engine-2.6.1.67', {
+    ].map(([id, words, at]) => [
+      id,
+      id === 239 && profile === 'grisaia-jp-engine-2.6.1.23' ? words.slice(0, 4) : words,
+      at,
+    ]),
+    files = {
       'scene-owner.kcs': kcsProgram([[59]]),
       'history-file.kcs': kcsProgram([
         ...calls.flatMap(([id, words, at]) => [
@@ -407,7 +415,8 @@ test('2.6.1.67 KCS CSS history uses the designated Script owner and restores bot
         ]),
         [59],
       ]),
-    });
+    },
+    world = await dataWorld(profile, files);
   t.after(() => world.close({ flushFiles: false }));
   const spawn = (script) =>
     world.spawnScript(script, { parent: world.main.id, initialExecute: false });
@@ -439,7 +448,48 @@ test('2.6.1.67 KCS CSS history uses the designated Script owner and restores bot
     [['回想', 19]],
   );
   assert.deepEqual(destinationHistory.getString(0, 2, 3).bytes, Uint8Array.of(0x94, 0x4c));
-});
+  if (profile === 'grisaia-jp-engine-2.6.1.23') {
+    await world.objects.objects
+      .get(writer.id)
+      .implementation.loadScript('missing.kcs', { nativeLoad: true });
+    assert.equal(world.runtime.scheduler.tasks.has(writer.id), false);
+    assert.deepEqual(
+      await world.runtime.native(
+        'main',
+        239,
+        [m.load(80), 13, world.nativeTaskID(writer.id), 1],
+        m,
+        io,
+      ),
+      { control: 1, value: 1 },
+    );
+    assert.deepEqual(css.read(13), css.read(11));
+    const restored = await dataWorld(profile, files, { initialize: false });
+    t.after(() => restored.close({ flushFiles: false }));
+    await restored.restore(structuredClone(world.snapshot()));
+    assert.deepEqual(
+      restored.runtime.handles.get(m.load(80), 'global-file').read(13),
+      css.read(13),
+    );
+    assert.equal(restored.runtime.scheduler.tasks.has(writer.id), false);
+    const restoredIO = restored.runtime.scheduler.tasks.get(io.id);
+    assert.deepEqual(
+      await restored.runtime.native(
+        'main',
+        249,
+        [m.load(80), 13, restored.nativeTaskID(reader.id), 1],
+        restoredIO.machine,
+        restoredIO,
+      ),
+      { control: 1, value: 1 },
+    );
+    const restoredReader = restored.runtime.scheduler.tasks.get(reader.id);
+    assert.deepEqual(
+      restored.runtime.sceneData(restoredReader).history.getString(0, 2, 3).bytes,
+      Uint8Array.of(0x94, 0x4c),
+    );
+  }
+}
 
 for (const profile of ['rebellions-jp-engine-2.6.1.63', 'grisaia-jp-engine-2.6.1.23'])
   test(`${profile} direct history saves read and write original compact records`, () =>
