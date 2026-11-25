@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { Binary, inflate } from '../binary.mjs';
+import { Binary } from '../binary.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeABI } from './abi/index.mjs';
 import {
@@ -8,6 +8,33 @@ import {
   nativeDataArgument,
   nativeDataMapped,
 } from './data-text.mjs';
+
+// The caller owns the declared-size output reservation. Allocation failure is
+// distinct from native zlib's ordinary failure result; no chunk list is retained.
+async function inflateCompiledBody(bytes, output) {
+  let reader;
+  try {
+    reader = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate')).getReader();
+    let length = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) return length === output.length;
+      if (value.length > output.length - length) return false;
+      output.set(value, length);
+      length += value.length;
+    }
+  } catch {
+    // Native uncompress reports internal allocation and corrupt-stream errors
+    // alike. The output allocation above this helper stays diagnostic.
+    return false;
+  } finally {
+    try {
+      await reader?.cancel();
+    } catch {
+      /* An errored stream can reject cancel. */
+    }
+  }
+}
 
 export class NativeCompiledTable {
   constructor() {
@@ -24,13 +51,10 @@ export class NativeCompiledTable {
     if (!file.magic('KCDB')) return false;
     const size = file.u32(8);
     const compressed = file.range(12, file.u32(4));
-    let unpacked;
-    try {
-      unpacked = await inflate(compressed, size, size);
-    } catch (error) {
-      if (error instanceof RangeError) throw error;
-      return false;
-    }
+    // Validate the complete source span before reserving output. A real typed
+    // array allocation failure corresponds to the original NULL-output fault.
+    const unpacked = new Uint8Array(size);
+    if (!(await inflateCompiledBody(compressed, unpacked))) return false;
     const body = new Binary(unpacked, 'Native KCDB body'),
       count = body.u32(0),
       columns = [];

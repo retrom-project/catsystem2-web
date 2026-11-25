@@ -2431,8 +2431,10 @@ storage and remains protected; explicit zero-byte records are supported.
 Question genre ranges match occupied keys without expanding every integer in a
 large legal interval. Duplicate and overlapping ranges retain their original order
 and shared integer RNG consumption. KCDB reads enforce the declared output size
-and exact decoded length without a local artificial size threshold. Distinguishing
-output-storage exhaustion from inflater-internal resource failure remains a
-precise secondary gap. The input tables are legal authored native-format fixtures;
+and exact decoded length without a local artificial size threshold. Its output
+reservation precedes local streaming decompression: output-allocation exhaustion
+stays diagnostic, while inflater-internal resource errors and bad streams return
+zero. The five own originals establish these distinct failure branches; small
+controlled real-GCALL cases cover retry and cold ownership without huge files. The input tables are legal authored native-format fixtures;
 scoped original-resource inventories did not find corresponding game data tables.
 These checks establish VM and native-format behavior, not a new product route.

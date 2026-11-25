@@ -16,7 +16,6 @@ import { kcsProgram } from './helpers.mjs';
 import { serializeCheckpoint, deserializeCheckpoint, checkpointBytes } from '../src/checkpoint.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
-import { NativeCompiledTable } from '../src/native/compiled-table.mjs';
 for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
   'bokutomo-engine-2.6.1.67',
@@ -595,35 +594,6 @@ for (const profile of [
     },
   );
 
-test('KCDB high declared sizes reach bounded decompression without an artificial threshold or large output allocation', async () => {
-  const bytes = new Uint8Array(13),
-    header = new DataView(bytes.buffer);
-  bytes.set([75, 67, 68, 66]);
-  header.setUint32(4, 1, true);
-  for (const size of [0x10000000, 0x10000001, 0x7fffffff]) {
-    header.setUint32(8, size, true);
-    assert.equal(await new NativeCompiledTable().load(bytes), false);
-  }
-});
-
-test('KCDB preserves an allocation exception from the decompression stage as a diagnostic', async () => {
-  const original = globalThis.DecompressionStream,
-    failure = new RangeError('authored storage allocation failure');
-  globalThis.DecompressionStream = class {
-    constructor() {
-      throw failure;
-    }
-  };
-  try {
-    await assert.rejects(
-      new NativeCompiledTable().load(contentFiles().get('questions')),
-      (error) => error === failure,
-    );
-  } finally {
-    globalThis.DecompressionStream = original;
-  }
-});
-
 for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
   'bokutomo-engine-2.6.1.67',
@@ -706,7 +676,7 @@ for (const profile of [
         await call(fresh, 834, [copy]);
         assert.equal(cold.allocations.size, 0);
         await assert.rejects(call(fresh, 833, [0xffffffff]), /signed allocation ABI/);
-        await assert.rejects(call(fresh, 834, [0x12345678]), /Unmapped/);
+        await assert.rejects(call(fresh, 834, [0x12345678]), /owned raw allocation/);
         const allocate = cold.allocate,
           diagnostic = new Error('authored unrelated allocation diagnostic');
         cold.allocate = () => {

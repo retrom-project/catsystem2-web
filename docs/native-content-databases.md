@@ -21,9 +21,17 @@ schema and fixed-width rows. Raw text bytes retain their encodings. The general
 reader zero-initializes numeric fields up to four bytes and returns zero for
 wider fields. Byte reads copy the declared width and return it. Decompression
 uses the file's declared unsigned size as its output bound and requires an exact
-match. There is no separate 256 MiB KCDB limit. Corrupt compressed data returns
-a load failure; storage allocation exceptions remain diagnostics rather than
-being converted into a successful or ordinary failed parse.
+match. There is no separate 256 MiB KCDB limit. The decoder first validates the
+compressed source span and reserves exactly the declared output length. Output
+storage exhaustion remains diagnostic: all five own originals fault when that
+output allocation returns NULL. The local streaming decoder writes chunks into
+that fixed buffer without collecting and concatenating a second output copy.
+Corrupt input, output overflow, short output and inflater-internal allocation
+failure return a load failure, matching the original zlib failure branch. Partial
+output never publishes a table. These resource stages also flow through Question,
+Mission and Selection GCALLs; failed loads can retry and successful state retains
+its ordinary cold ownership. Controlled small failures prove these branches;
+large valid-file and whole-OS exhaustion behavior is not claimed.
 
 Selection tables retain the first registered name and the first duplicate table
 ID. Selecting a table copies its nineteen values into the mutable work list.
