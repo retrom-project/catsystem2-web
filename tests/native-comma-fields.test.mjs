@@ -5,12 +5,8 @@ import {
   nativeCommaFields,
   parseNativeResourceSelection,
 } from '../src/native/resource-selection.mjs';
-import { NativeWorld } from '../web/transitional-entry.mjs';
-import { NativeConfiguration } from '../src/native/config.mjs';
-import { ParticleRandom } from '../src/ppi/random.mjs';
-import { MotionLibrary } from '../src/motion/library.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
-import { memoryGame, kcsProgram } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 test('native resource selections retain raw base bytes and signed leading selectors', () => {
   const result = parseNativeResourceSelection(
     Uint8Array.of(98, 44, 49, 50, 51, 44, 0xff, 44, 0x80, 44, 0x7f),
@@ -24,32 +20,20 @@ test('native resource selections retain raw base bytes and signed leading select
   );
   assert.throws(() => parseNativeResourceSelection(new Uint8Array(255).fill(97)), /scratch/);
 });
-for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+for (const profile of [
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+  'rebellions-jp-engine-2.6.1.63',
+]) {
   test(
     profile + ' comma field merge and selection use live VM bytes and survive a fresh World',
     async () => {
-      function make() {
-        const game = memoryGame({ 'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]) }),
-          random = new ParticleRandom(),
-          configuration = new NativeConfiguration({ profile });
-        return new NativeWorld({
-          game,
-          profile,
-          configuration,
-          random,
-          images: {},
-          host: {},
-          storage: { read: async () => null, write: async () => true },
-          motionLibrary: new MotionLibrary(game, { profile, random }),
-        });
-      }
-      const world = make(),
-        fresh = make(),
+      const world = await dataWorld(profile),
+        fresh = await dataWorld(profile, {}, { initialize: false }),
         call = (w, id, args) =>
           w.runtime.native('main', id, args, w.main.machine, w.main, w.runtime.scheduler);
       let state;
       try {
-        await world.initialize('main.kcs');
         const m = world.main.machine;
         m.writeString('a,,b,c', 256);
         m.writeString('@,new,@,@', 512);

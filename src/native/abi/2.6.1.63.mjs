@@ -1175,7 +1175,7 @@ export default {
           589, 599, 600, 601, 602, 603, 622, 623, 624, 628, 629, 631, 632, 641, 648, 650, 657, 658,
           659, 663, 664, 665, 666, 667, 668, 669, 677, 678, 679, 680, 682, 688, 690, 691, 692, 703,
           704, 705, 706, 707, 708, 709, 716, 721, 722, 725, 729, 734, 738, 837, 838, 839, 840, 841,
-          842, 843, 845, 846, 847, 904,
+          842, 843, 845, 846, 847,
         ],
 
         reserved: mainReserved,
@@ -1213,8 +1213,8 @@ export default {
           823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 844, 848, 849, 850,
           851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868,
           869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886,
-          887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 905,
-          934, 935, 936, 937,
+          887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904,
+          905, 934, 935, 936, 937,
         ],
       },
       evidence: [
@@ -1562,6 +1562,11 @@ export default {
           ids: [530, 531, 905],
           value:
             '2.6.1.63 own Wipe raw 375 uses the borrowed bitmap data for a private resampled mask and writes mode 0 or 1. Raw 376 starts from its task clock and preserves clocks when stopped.',
+        },
+        {
+          ids: [904],
+          value:
+            'Own CP932 comma merge snapshots both lists, retains the old nonempty field for a literal @, and fills missing old fields with 0. The replacement is formatted in the owning VM first. Control 2 leaves its result word untouched.',
         },
         {
           ids: [655],
@@ -2272,6 +2277,35 @@ export default {
         { ids: [218, 712, 715], fields: { resultWritten: false } },
         { ids: [50, 51, 54, 57, 397, 674], fields: { resultWritten: true } },
         { ids: [653, 654], fields: { resultWritten: false } },
+        {
+          ids: [904],
+          fields: {
+            parameters: [
+              {
+                name: 'inOut',
+                description: 'CP932 list read and rewritten in the caller VM',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'inout',
+                  target: { kind: 'character', encoding: 'CP932', bits: 8 },
+                },
+              },
+              {
+                name: 'replacement',
+                description: 'Replacement CP932 format source in the caller VM',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: { kind: 'format-string', encoding: 'CP932' },
+                },
+              },
+            ],
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        },
         {
           ids: [655],
           fields: {
