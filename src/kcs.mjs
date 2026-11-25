@@ -99,9 +99,12 @@ export class BootHost {
       case 0x0d:
         m.copyString(args[0], args[1]);
         return nativeReply(1, args[0]);
-      case 0x0e:
-        m.writeString(formatNative(m.string(args[1]), m), args[0]);
+      case 0x0e: {
+        const bytes = formatNativeAt(args[1], m),
+          end = bytes.indexOf(0);
+        m.writeStringBytes(end < 0 ? bytes : bytes.subarray(0, end), args[0]);
         return nativeReply(1, args[0]);
+      }
       case 0xd2:
         return nativeReply(1, this.globals[args[0] | 0] || 0);
       case 0xd3:
@@ -134,158 +137,219 @@ function nativeFormatAddress(region, digits, machine) {
   return (region === 'H' ? offset | 0x80000000 : offset + (region === 'L' ? machine.fp : 0)) >>> 0;
 }
 
-export function formatNative(text, m, depth = 0) {
-  if (depth > 32) throw new Error('KCS native format recursion');
-  let output = '';
-  for (let i = 0; i < text.length; ) {
-    if (text[i] !== '%') {
-      output += text[i++];
-      continue;
-    }
-    if (text[i + 1] === '%') {
-      output += '%';
-      i += 2;
-      continue;
-    }
-    const match = /^%([-+ #0]*)(\d*)(?:\.(\d+))?([diuoxXsfF])\[([LGH])(\d*)\]/.exec(text.slice(i));
-    if (!match) {
-      if (/^%[^[\]\r\n]*\[[LGH]\d*\]/.test(text.slice(i)))
-        throw new Error(`Unsupported native format conversion at ${text.slice(i, i + 64)}`);
-      output += text[i++];
-      continue;
-    }
-    const [, flags, widthText, precisionText, type, region, offsetText] = match;
-    const width = Number(widthText) || 0,
-      precision = precisionText === undefined ? undefined : Number(precisionText);
-    if (width > 65536 || (precision !== undefined && precision > 100))
-      throw new Error('KCS native format output bound');
-    const address = nativeFormatAddress(region, offsetText, m);
-    let value,
-      prefix = '';
-    if (type === 's') {
-      value = formatNative(m.string(address), m, depth + 1);
-      if (precision !== undefined)
-        value = new TextDecoder('shift_jis').decode(encodeCP932(value).subarray(0, precision));
+function nativeFormatNumber(digits) {
+  let value = 0;
+  for (let i = 0; i < digits.length; i++) value = (value * 10 + digits.charCodeAt(i) - 48) | 0;
+  return value;
+}
+function nativeFormatCString(machine, address) {
+  const bytes = [];
+  for (let at = address >>> 0; ; at = (at + 1) >>> 0) {
+    const byte = machine.load(at, 1);
+    if (!byte) return Uint8Array.from(bytes);
+    bytes.push(byte);
+  }
+}
+function nativeFormatFloat(word, precision, alternate) {
+  const number = Math.abs(bitsFloat(word));
+  let digits, point;
+  if (Number.isFinite(number)) {
+    if (!number) {
+      digits = '0';
+      point = 1;
     } else {
-      const word = m.load(address);
-      // Both pinned Microsoft CRTs consume uppercase F without producing a
-      // field. The VM still resolves and reads its floating argument first.
-      if (type === 'F') {
-        i += match[0].length;
-        continue;
-      }
-      if (type === 'f' || type === 'F') {
-        const number = bitsFloat(word);
-        if (!Number.isFinite(number) || Math.abs(number) >= 1e21)
-          throw new Error('Native CRT formatting of this float requires an exact runtime adapter');
-        value = Math.abs(number).toFixed(precision ?? 6);
-        prefix =
-          number < 0 || Object.is(number, -0)
-            ? '-'
-            : flags.includes('+')
-              ? '+'
-              : flags.includes(' ')
-                ? ' '
-                : '';
-      } else {
-        const signed = type === 'd' || type === 'i',
-          number = signed ? word | 0 : word;
-        const radix = type === 'o' ? 8 : /x/i.test(type) ? 16 : 10;
-        value = precision === 0 && number === 0 ? '' : Math.abs(number).toString(radix);
-        if (precision !== undefined) value = value.padStart(precision, '0');
-        if (type === 'X') value = value.toUpperCase();
-        if (signed)
-          prefix = number < 0 ? '-' : flags.includes('+') ? '+' : flags.includes(' ') ? ' ' : '';
-        else if (flags.includes('#'))
-          prefix =
-            type === 'o'
-              ? value.startsWith('0')
-                ? ''
-                : '0'
-              : !word
-                ? ''
-                : type === 'x'
-                  ? '0x'
-                  : type === 'X'
-                    ? '0X'
-                    : '';
-      }
+      // The pinned CRTs keep 17 significant decimal digits before fixed
+      // formatting. More precision appends zeroes to those digits.
+      const [mantissa, exponent] = number.toExponential(16).split('e');
+      digits = mantissa.replace('.', '');
+      point = Number(exponent) + 1;
     }
-    if (flags.includes('#') && /[fF]/.test(type) && !value.includes('.')) value += '.';
-    const count = Math.max(0, width - encodeCP932(prefix + value).length);
-    if (flags.includes('-')) value = prefix + value + ' '.repeat(count);
-    else if (type !== 's' && flags.includes('0') && (precision === undefined || /[fF]/.test(type)))
-      value = prefix + '0'.repeat(count) + value;
-    else value = ' '.repeat(count) + prefix + value;
-    output += value;
-    i += match[0].length;
+  } else {
+    digits = Number.isNaN(number) ? (word === 0xffc00000 ? '1#IND' : '1#QNAN') : '1#INF';
+    point = 1;
+  }
+  precision = precision === undefined || precision < 0 ? 6 : Math.min(precision, 512);
+  const count = point + precision;
+  let rounded = '';
+  if (count >= 0) {
+    rounded = digits.slice(0, count).padEnd(count, '0');
+    // The native digit-rounding helper also runs over INF/NAN spellings.
+    if ((digits[count] ?? '0') >= '5') {
+      const chars = [...rounded];
+      let at = chars.length - 1;
+      while (at >= 0 && chars[at] === '9') chars[at--] = '0';
+      if (at < 0) {
+        chars.unshift('1');
+        point++;
+      } else chars[at] = String.fromCharCode(chars[at].charCodeAt(0) + 1);
+      rounded = chars.join('');
+    }
+  }
+  const whole = point <= 0 ? '0' : rounded.padEnd(point, '0').slice(0, point),
+    fraction = (point < 0 ? '0'.repeat(-point) + rounded : rounded.slice(point))
+      .padEnd(precision, '0')
+      .slice(0, precision);
+  return whole + (precision || alternate ? '.' + fraction : '');
+}
+function nativeFormatField(field, machine, stringBytes) {
+  const { flags, type, modifier, address } = field,
+    width = Math.max(0, nativeFormatNumber(field.width)),
+    precision = field.precision === undefined ? undefined : nativeFormatNumber(field.precision);
+  let bytes,
+    prefix = '',
+    zero = false;
+  if (type === 's') {
+    bytes = stringBytes;
+    const end = bytes.indexOf(0);
+    if (end >= 0) bytes = bytes.subarray(0, end);
+    if (precision !== undefined && precision >= 0) bytes = bytes.subarray(0, precision);
+  } else {
+    const word = machine.load(address);
+    // Uppercase F resolves its argument but produces no field in these CRTs.
+    if (type === 'F') return new Uint8Array();
+    if (type === 'c') bytes = Uint8Array.of(word & 255);
+    else if (type === 'f') {
+      bytes = encodeCP932(nativeFormatFloat(word, precision, flags.includes('#')));
+      prefix = word >>> 31 ? '-' : flags.includes('+') ? '+' : flags.includes(' ') ? ' ' : '';
+      zero = flags.includes('0');
+    } else {
+      const signed = type === 'd' || type === 'i',
+        pointer = type === 'p',
+        value =
+          modifier === 'h'
+            ? signed
+              ? (word << 16) >> 16
+              : word & 65535
+            : signed
+              ? word | 0
+              : word,
+        radix = type === 'o' ? 8 : /[xXp]/.test(type) ? 16 : 10,
+        minimum = pointer ? 8 : Math.max(0, precision ?? 0);
+      if (minimum >= 0x2800)
+        throw new Error('Native format field exceeds its original VM temporary');
+      let text = precision === 0 && value === 0 && !pointer ? '' : Math.abs(value).toString(radix);
+      text = text.padStart(minimum, '0');
+      if (type === 'X' || pointer) text = text.toUpperCase();
+      if (signed)
+        prefix = value < 0 ? '-' : flags.includes('+') ? '+' : flags.includes(' ') ? ' ' : '';
+      else if (flags.includes('#'))
+        prefix =
+          type === 'o'
+            ? text.startsWith('0')
+              ? ''
+              : '0'
+            : !word
+              ? ''
+              : type === 'x'
+                ? '0x'
+                : /[Xp]/.test(type)
+                  ? '0X'
+                  : '';
+      bytes = encodeCP932(text);
+      zero = !pointer && flags.includes('0') && (precision === undefined || precision < 0);
+    }
+  }
+  const head = encodeCP932(prefix),
+    length = head.length + bytes.length,
+    size = Math.max(width, length);
+  if (size >= 0x2800) throw new Error('Native format field exceeds its original VM temporary');
+  const output = new Uint8Array(size),
+    padding = size - length;
+  output.fill(32);
+  if (flags.includes('-')) {
+    output.set(head);
+    output.set(bytes, head.length);
+  } else if (zero) {
+    output.set(head);
+    output.fill(48, head.length, head.length + padding);
+    output.set(bytes, head.length + padding);
+  } else {
+    output.set(head, padding);
+    output.set(bytes, padding + head.length);
   }
   return output;
 }
 
-// The VM formatter is byte oriented. Text conversion belongs to its consumer
-// (for example STRING versus STRING8), never to this shared formatting step.
-export function formatNativeBytes(source, m, depth = 0) {
-  if (depth > 32) throw new Error('KCS native format recursion');
-  const output = [],
-    append = (bytes) => {
-      for (const byte of bytes) output.push(byte);
-    },
-    text = Array.from(source, (byte) => String.fromCharCode(byte)).join('');
-  for (let i = 0; i < source.length; ) {
-    if (source[i] !== 37) {
-      output.push(source[i++]);
-      continue;
-    }
-    if (source[i + 1] === 37) {
-      output.push(37);
-      i += 2;
-      continue;
-    }
-    const match = /^%([-+ #0]*)(\d*)(?:\.(\d+))?([diuoxXsfF])\[([LGH])(\d*)\]/.exec(text.slice(i));
-    if (!match) {
-      if (/^%[^[\]\r\n]*\[[LGH]\d*\]/.test(text.slice(i)))
-        throw new Error(`Unsupported native format conversion at ${text.slice(i, i + 64)}`);
-      output.push(source[i++]);
-      continue;
-    }
-    const [, flags, widthText, precisionText, type, region, offsetText] = match,
-      address = nativeFormatAddress(region, offsetText, m);
-    if (type === 's') {
-      const bytes = [];
-      for (let at = address; ; at = (at + 1) >>> 0) {
-        const byte = m.load(at, 1);
-        if (!byte) break;
-        bytes.push(byte);
-      }
-      let value = formatNativeBytes(Uint8Array.from(bytes), m, depth + 1);
-      const width = Number(widthText) || 0,
-        precision = precisionText === undefined ? undefined : Number(precisionText);
-      if (width > 65536 || (precision !== undefined && precision > 100))
-        throw new Error('KCS native format output bound');
-      if (precision !== undefined) value = value.subarray(0, precision);
-      const padding = new Uint8Array(Math.max(0, width - value.length)).fill(32);
-      if (!flags.includes('-')) append(padding);
-      append(value);
-      if (flags.includes('-')) append(padding);
-    } else {
-      // Numeric fields contain only ASCII. Preserve the independently tested
-      // CRT integer/float conversion while feeding it the resolved word.
-      append(
-        encodeCP932(formatNative(match[0].replace(/\[([LGH])\d*\]/, `[G${address}]`), m, depth)),
-      );
-    }
-    i += match[0].length;
-  }
-  return Uint8Array.from(output);
+// Native formatting consumes bytes. Decode only after the complete result, so
+// a precision-truncated CP932 lead byte is never replaced between fields.
+export function formatNative(text, machine) {
+  return new TextDecoder('shift_jis').decode(formatNativeBytes(encodeCP932(text), machine));
 }
-
-export function formatNativeAt(address, machine) {
-  const bytes = [];
-  for (let at = address >>> 0; ; at = (at + 1) >>> 0) {
-    const byte = machine.load(at, 1);
-    if (!byte) break;
-    bytes.push(byte);
+export function formatNativeBytes(source, machine) {
+  const frames = [{ source, at: 0, chunks: [], length: 0 }],
+    active = new Set(),
+    append = (frame, bytes) => {
+      frame.chunks.push(bytes);
+      frame.length += bytes.length;
+    };
+  while (frames.length) {
+    const frame = frames.at(-1);
+    if (frame.at >= frame.source.length) {
+      const output = new Uint8Array(frame.length);
+      let at = 0;
+      for (const bytes of frame.chunks) {
+        output.set(bytes, at);
+        at += bytes.length;
+      }
+      frames.pop();
+      if (!frames.length) return output;
+      active.delete(frame.address);
+      if (output.length >= 0x800)
+        throw new Error('Native format string exceeds its original recursive temporary');
+      const parent = frames.at(-1);
+      append(parent, nativeFormatField(parent.pending, machine, output));
+      delete parent.pending;
+      continue;
+    }
+    const start = frame.at;
+    if (frame.source[start] !== 37) {
+      const next = frame.source.indexOf(37, start),
+        end = next < 0 ? frame.source.length : next;
+      append(frame, frame.source.subarray(start, end));
+      frame.at = end;
+      continue;
+    }
+    if (frame.source[start + 1] === 37) {
+      append(frame, Uint8Array.of(37));
+      frame.at += 2;
+      continue;
+    }
+    const text = Array.from(frame.source.subarray(start), (byte) => String.fromCharCode(byte)).join(
+        '',
+      ),
+      match = /^%([-+ #0]*)(\d*)(?:\.(\d*))?([hl]?)([diuoxXcpsfF])\[([LGH])(\d*)\]/.exec(text);
+    if (
+      !match ||
+      (match[4] && !/[diuoxXfF]/.test(match[5])) ||
+      (match[4] === 'h' && /[fF]/.test(match[5]))
+    ) {
+      if (/^%[^[\]\r\n]*\[[LGH]\d*\]/.test(text))
+        throw new Error(`Unsupported native format conversion at ${text.slice(0, 64)}`);
+      append(frame, Uint8Array.of(37));
+      frame.at++;
+      continue;
+    }
+    if (match[0].indexOf('[') >= 64)
+      throw new Error('Native format conversion exceeds its original field buffer');
+    const [, flags, width, precision, modifier, type, region, digits] = match,
+      address = nativeFormatAddress(region, digits, machine),
+      field = { flags, width, precision, modifier, type, address };
+    frame.at += match[0].length;
+    if (type === 's') {
+      if (active.has(address))
+        throw new Error('KCS native format recursion follows a cyclic string');
+      active.add(address);
+      frame.pending = field;
+      frames.push({
+        source: nativeFormatCString(machine, address),
+        address,
+        at: 0,
+        chunks: [],
+        length: 0,
+      });
+    } else append(frame, nativeFormatField(field, machine));
   }
-  return formatNativeBytes(Uint8Array.from(bytes), machine);
+}
+export function formatNativeAt(address, machine) {
+  return formatNativeBytes(nativeFormatCString(machine, address), machine);
 }

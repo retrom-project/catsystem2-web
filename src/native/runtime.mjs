@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { readKCS, nativeReply, formatNative, formatNativeAt, encodeCP932 } from '../kcs.mjs';
+import { readKCS, nativeReply, formatNativeAt, encodeCP932 } from '../kcs.mjs';
 import { KCSScheduler } from '../kcs/scheduler.mjs';
 import { nativeCatalog } from './catalog.mjs';
 import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
@@ -40,6 +40,7 @@ import { nativeArguments } from './arguments.mjs';
 import { nativeContentDatabaseCodec } from './content-databases.mjs';
 import { nativeSectionTableCodec } from './section-table.mjs';
 import { nativeImageOwnerCodec } from './image-owner.mjs';
+import { nativeDataString } from './data-text.mjs';
 
 export class UnsupportedKCSNative extends Error {
   constructor(details) {
@@ -73,7 +74,9 @@ export class NativeRuntime {
       profile,
       ...(abi.math ? { math: abi.math } : {}),
       format:
-        services.format || ((address, machine) => formatNative(machine.string(address), machine)),
+        services.format ||
+        ((address, machine) =>
+          new TextDecoder('shift_jis').decode(nativeDataString(formatNativeAt(address, machine)))),
       formatBytes:
         services.formatBytes ||
         (services.format

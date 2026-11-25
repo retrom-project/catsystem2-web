@@ -53,7 +53,7 @@ export class NativeKCSMemory {
       copy(() => machine.shared, mapping?.shared),
     );
     process.store(this.pointer + 44, machine.shared.length);
-    process.store(this.pointer + 1388, allocate(8192));
+    process.store(this.pointer + 1388, allocate(0x2800));
     const container = allocate(4),
       head = allocate(16);
     process.store(container, head);
