@@ -113,6 +113,9 @@ export function divideNativeTriangles(
   layout,
   position = [0, 0, 0],
   includesPage = null,
+  // A pure point provider can reuse XY clips; page selection and all output
+  // arithmetic/ownership still belong to this traversal.
+  clipTriangle = clipNativeTriangle,
 ) {
   const {
       pageSize: [pw, ph],
@@ -141,12 +144,11 @@ export function divideNativeTriangles(
           continue;
         const textureID = Math.trunc(column / ratio) + pageColumns * Math.trunc(row / ratio);
         if (includesPage && !includesPage(textureID)) continue;
-        const points = clipNativeTriangle(triangle, [
-            f(column * cw),
-            f(row * ch),
-            f((column + 1) * cw),
-            f((row + 1) * ch),
-          ]),
+        const points = clipTriangle(
+            triangle,
+            [f(column * cw), f(row * ch), f((column + 1) * cw), f((row + 1) * ch)],
+            id,
+          ),
           xPage = textureID % pageColumns,
           yPage = Math.trunc(textureID / pageColumns);
         for (let i = 1; i < points.length - 1; i++)

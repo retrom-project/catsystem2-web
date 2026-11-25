@@ -6,12 +6,76 @@ import {
   transformNativeTriangles,
   nativeVertexBounds,
 } from './native-geometry.mjs';
-import { divideNativeTriangles, nativeDivisionLayout } from '../native/divided-model.mjs';
+import {
+  clipNativeTriangle,
+  divideNativeTriangles,
+  nativeDivisionLayout,
+} from '../native/divided-model.mjs';
 import { nativeMeshGeometry } from '../native/mesh.mjs';
 
 // Model ownership is independent of the current bounds calculation domain.
 export const isNativeTexturedModel = (graph) =>
   graph?.type === 1 && graph.vram === true && !graph.custom && !graph.callback;
+
+// Derived XY clips only: source transforms still run before comparison, and
+// division still queries each current dirty page and creates every output vertex.
+// Weak keys keep this transient cache out of checkpoints and cold graph restores.
+const divisionClips = new WeakMap(),
+  MAX_CACHED_TRIANGLES = 64,
+  MAX_CACHED_CLIPS = 1024;
+function clipsFor(graph, triangles, division) {
+  const prototype = Object.getPrototypeOf(graph);
+  if (prototype !== Object.prototype && prototype !== null) return undefined;
+  if (
+    Object.getOwnPropertyDescriptor(graph, 'type')?.value !== 1 ||
+    Object.getOwnPropertyDescriptor(graph, 'vram')?.value !== true
+  )
+    return undefined;
+  for (const key of ['custom', 'callback', 'movie', 'vertexEffectID']) {
+    const field = Object.getOwnPropertyDescriptor(graph, key);
+    // Do not invoke a new accessor or infer a callback's effects from identity.
+    if (
+      field &&
+      (!Object.hasOwn(field, 'value') ||
+        (key === 'vertexEffectID' ? field.value !== undefined : field.value))
+    )
+      return undefined;
+  }
+  if (triangles.length > MAX_CACHED_TRIANGLES) return undefined;
+  const values = [...division.pageSize, ...division.cellSize, ...division.cells];
+  for (const triangle of triangles) {
+    if (!Array.isArray(triangle) || triangle.length !== 3) return undefined;
+    for (const vertex of triangle) {
+      if (!vertex || typeof vertex !== 'object') return undefined;
+      values.push(vertex.x, vertex.y);
+    }
+  }
+  if (!values.every(Number.isFinite)) return undefined;
+  let cached = divisionClips.get(graph);
+  if (
+    !cached ||
+    cached.values.length !== values.length ||
+    !values.every((value, index) => Object.is(value, cached.values[index]))
+  ) {
+    cached = { values, clips: triangles.map(() => new Map()), count: 0 };
+    divisionClips.set(graph, cached);
+  }
+  return (triangle, rectangle, index) => {
+    const clips = cached.clips[index],
+      key = rectangle.join(',');
+    let points = clips.get(key);
+    if (!points) {
+      points = clipNativeTriangle(triangle, rectangle);
+      if (cached.count < MAX_CACHED_CLIPS) {
+        clips.set(key, points);
+        cached.count++;
+      }
+    }
+    // divideNativeTriangles reads these points into fresh vertex records;
+    // neither draw/deformation callbacks nor callers can mutate the cache.
+    return points;
+  };
+}
 
 function divideNativeModel(graph, layout, includesPage) {
   const source = graph.textureTransform.slice(),
@@ -26,7 +90,16 @@ function divideNativeModel(graph, layout, includesPage) {
     triangles = transformNativeTriangles(graph.triangles || rectangleTriangles(graph), source, {
       useEuler: !graph.textureMatrixExplicit,
     });
-  return { ...graph, mesh: divideNativeTriangles(triangles, division, position, includesPage) };
+  return {
+    ...graph,
+    mesh: divideNativeTriangles(
+      triangles,
+      division,
+      position,
+      includesPage,
+      clipsFor(graph, triangles, division),
+    ),
+  };
 }
 
 export function nativeTexturedGeometry(

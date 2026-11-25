@@ -118,6 +118,18 @@ transform and half-pixel offset before projection. Source and geometry
 transforms therefore remain distinct; rotating or moving texture coordinates
 does not become a crop of the full CPU bitmap.
 
+Ordinary textured models retain a transient cache of source XY clips. Every
+query still performs the current source transform in the original float32
+operation order, compares all transformed XY coordinates and division layout
+values, and checks each selected cell's current dirty-page flag. Only identical
+finite inputs reuse polygon points; UV generation, color, source-position
+subtraction, geometry transforms, deformation and projection remain live.
+Output vertices are newly owned for every invocation. Custom/callback/movie
+models, vertex effects, accessor flags and wider source shapes use ordinary
+clipping. Each graph admits at most 64 source triangles and 1,024 cached clips;
+additional cells recompute. Weak graph ownership keeps this cache out of
+checkpoints, and a cold restored graph starts empty.
+
 16-bit pages use the original A4R4G4B4 high-nibble conversion. Page frame objects
 remain stable while their revision changes, causing an existing GPU texture to
 upload new pixels. Checkpoints preserve allocated holes, page depth, revisions
