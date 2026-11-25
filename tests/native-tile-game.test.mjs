@@ -9,9 +9,16 @@ for (const profile of [
   'nekopara-vol3-engine-2.6.1.76',
   'bokutomo-engine-2.6.1.67',
   'rebellions-jp-engine-2.6.1.63',
+  'grisaia-jp-engine-2.6.1.23',
 ]) {
   test(`${profile} JS tile contexts share one model and restore independent event caches`, async (t) => {
-    if (['bokutomo-engine-2.6.1.67', 'rebellions-jp-engine-2.6.1.63'].includes(profile))
+    if (
+      [
+        'bokutomo-engine-2.6.1.67',
+        'rebellions-jp-engine-2.6.1.63',
+        'grisaia-jp-engine-2.6.1.23',
+      ].includes(profile)
+    )
       t.mock.method(Date, 'now', () => new Date(2026, 10, 25, 12, 34, 56).getTime());
     const first = await dataWorld(profile);
     let fresh;
@@ -77,30 +84,35 @@ for (const profile of [
   });
 }
 
-for (const [fields, seed, stream] of [
-  [[1970, 0, 2, 0, 0, 0], 0x18040000, [0xa3a0c528, 0x8a614458, 0x25501e94, 0xbb766a1d]],
-  [[2000, 1, 29, 23, 59, 59], 0x907b7efb, [0x7e505426, 0x860fcbb1, 0x32b6c287, 0xfcb2f493]],
-  [[2026, 10, 25, 12, 34, 56], 0xfab2c8b8, [0xf68b2d9c, 0xd4b855d3, 0x18f1d52f, 0x18b738db]],
+for (const profile of [
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+  'grisaia-jp-engine-2.6.1.23',
 ])
-  test(`2.6.1.67 initializes its tile random stream from local clock fields ${fields.join('/')}`, async (t) => {
-    t.mock.method(Date, 'now', () => new Date(...fields).getTime());
-    const world = await dataWorld('bokutomo-engine-2.6.1.67');
-    t.after(() => world.close({ flushFiles: false }));
-    const random = world.tileGame.model.random;
-    assert.equal(random.index, 624);
-    assert.equal(random.words[0], seed);
-    assert.deepEqual(
-      stream.map(() => random.nextUint32()),
-      stream,
-    );
-    const checkpoint = structuredClone(world.snapshot());
-    t.mock.method(Date, 'now', () => new Date(2038, 0, 19, 3, 14, 8).getTime());
-    const fresh = await dataWorld('bokutomo-engine-2.6.1.67', {}, { initialize: false });
-    t.after(() => fresh.close({ flushFiles: false }));
-    await fresh.restore(checkpoint);
-    assert.deepEqual(fresh.tileGame.snapshot(), world.tileGame.snapshot());
-    assert.deepEqual(
-      Array.from({ length: 32 }, () => fresh.tileGame.model.random.nextUint32()),
-      Array.from({ length: 32 }, () => random.nextUint32()),
-    );
-  });
+  for (const [fields, seed, stream] of [
+    [[1970, 0, 2, 0, 0, 0], 0x18040000, [0xa3a0c528, 0x8a614458, 0x25501e94, 0xbb766a1d]],
+    [[2000, 1, 29, 23, 59, 59], 0x907b7efb, [0x7e505426, 0x860fcbb1, 0x32b6c287, 0xfcb2f493]],
+    [[2026, 10, 25, 12, 34, 56], 0xfab2c8b8, [0xf68b2d9c, 0xd4b855d3, 0x18f1d52f, 0x18b738db]],
+  ])
+    test(`${profile} initializes its tile random stream from local clock fields ${fields.join('/')}`, async (t) => {
+      t.mock.method(Date, 'now', () => new Date(...fields).getTime());
+      const world = await dataWorld(profile);
+      t.after(() => world.close({ flushFiles: false }));
+      const random = world.tileGame.model.random;
+      assert.equal(random.index, 624);
+      assert.equal(random.words[0], seed);
+      assert.deepEqual(
+        stream.map(() => random.nextUint32()),
+        stream,
+      );
+      const checkpoint = structuredClone(world.snapshot());
+      t.mock.method(Date, 'now', () => new Date(2038, 0, 19, 3, 14, 8).getTime());
+      const fresh = await dataWorld(profile, {}, { initialize: false });
+      t.after(() => fresh.close({ flushFiles: false }));
+      await fresh.restore(checkpoint);
+      assert.deepEqual(fresh.tileGame.snapshot(), world.tileGame.snapshot());
+      assert.deepEqual(
+        Array.from({ length: 32 }, () => fresh.tileGame.model.random.nextUint32()),
+        Array.from({ length: 32 }, () => random.nextUint32()),
+      );
+    });

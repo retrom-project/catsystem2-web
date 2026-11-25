@@ -224,7 +224,60 @@ function geometrySignatures(table, ids) {
     };
   });
 }
+const tileGamePrototypes = [
+  [0, 1],
+  [1, 2],
+  [9, 2],
+  [1, 1],
+  [2, 2],
+  [1, 1],
+  [1, 1],
+  [3, 1],
+  [3, 1],
+  [3, 1],
+  [2, 1],
+  [1, 1],
+  [5, 2],
+  [3, 2],
+  [1, 1],
+  [2, 1],
+  [3, 1],
+  [4, 1],
+  [2, 2],
+  [4, 2],
+  [4, 1],
+  [3, 1],
+  [1, 1],
+  [2, 1],
+  [7, 2],
+  [2, 1],
+  [5, 2],
+  [2, 1],
+  [3, 1],
+  [1, 1],
+  [1, 1],
+  [1, 2],
+  [2, 1],
+  [2, 1],
+  [1, 1],
+  [4, 1],
+  [2, 1],
+  [2, 1],
+  [1, 1],
+  [3, 1],
+  [4, 1],
+  [2, 1],
+  [2, 1],
+  [2, 1],
+];
+const tileGameOperations = tileGamePrototypes.map((_, index) => 470 + index);
 const mainEvidence = [
+  {
+    ids: tileGameOperations,
+    value:
+      'Own 2.6.1.23 Main470–513 have independently verified word counts and controls through the full GCALL bridge. All registered Tile initializers construct one process-wide model and auxiliary rules scratch, then seed its independent stream from local calendar fields. Contexts own four vectors and retain event/choice/result caches while sharing the model. Standard two/four-player rounds, all seventeen command codes, eight deal policies, abilities, preserved-inventory reference swaps, winning score/payment/result decoding, historical choices/melds, cached replay, mapped local/shared/aliased outputs and release isolation match the original. Original pre-action notifications use the automatic activation return, and ready queries also accept a positive scored complete hand. Six native AI profiles additionally verify automatic pre-action, declaration cancellation/refund, score protection and late-wall abilities. Cold JS checkpoints retain the shared model/RNG and independent contexts.',
+  },
+
   {
     ids: rawDataOperations,
     value:
@@ -1175,6 +1228,11 @@ export default {
   id: 'cs2-2.6.1.23',
   profile: 'grisaia-jp-engine-2.6.1.23',
   engineVersion: '2.6.1.23',
+  tileGame: {
+    seedFromLocalClock: true,
+    preActionNotificationUsesResult: true,
+    readyIncludesScoredHand: true,
+  },
   executableSha256: '9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67',
   xmlEncoding: 'Shift_JIS',
   text: {
@@ -1640,6 +1698,41 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...tileGameOperations.map((id, index) => ({
+          ids: [id],
+          fields: {
+            argumentWords: tileGamePrototypes[index][0],
+            controlCodes: [tileGamePrototypes[index][1]],
+            resultWritten: tileGamePrototypes[index][1] === 1,
+            ...(id === 470
+              ? { result: { kind: 'handle', handleKind: 'tile-game', ownership: 'owned' } }
+              : {}),
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) =>
+              parameter.type.kind === 'handle'
+                ? {
+                    ...parameter,
+                    type: {
+                      kind: 'handle',
+                      handleKind: 'tile-game',
+                      ownership: id === 471 ? 'owned' : 'borrowed',
+                    },
+                  }
+                : parameter.type.kind === 'pointer'
+                  ? {
+                      ...parameter,
+                      type: {
+                        kind: 'pointer',
+                        addressSpace: 'vm',
+                        direction: [472, 503, 505].includes(id) ? 'in' : 'out',
+                        target: { kind: 'bits', bits: 32 },
+                      },
+                    }
+                  : parameter,
+            ),
+            review: 'reviewed',
+          },
+        })),
+
         ...rawDataSignatures(),
         ...contentDatabaseSignatures(questionDatabaseOperations),
         ...contentDatabaseSignatures(missionDatabaseOperations),

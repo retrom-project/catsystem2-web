@@ -74,7 +74,11 @@ async function cold(t, world) {
   return fresh;
 }
 
-for (const profile of ['bokutomo-engine-2.6.1.67', 'rebellions-jp-engine-2.6.1.63']) {
+for (const profile of [
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+  'grisaia-jp-engine-2.6.1.23',
+]) {
   const version = nativeABI(profile).engineVersion;
   test(`${version} tile declarations retain own widths, controls and context ownership`, () => {
     const entries = nativeABI(profile).tables.main.entries;
