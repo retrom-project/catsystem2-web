@@ -280,6 +280,8 @@ export default {
     vectorLengthUsesX87: true,
     vectorTransformPairwise: true,
     vectorWordArithmeticUsesX87: true,
+    matrixMultiplyUsesSSEWords: true,
+    yawPitchRollUsesSSEWords: true,
   },
   particle: {
     taskMessageStart: 303,
@@ -301,6 +303,7 @@ export default {
     vectorTransformUsesSSEWords: true,
     vectorNormalizeUsesSSEWords: true,
     matrixInverseUsesSSEWords: true,
+    relativeRotationUsesSSEWords: true,
     vectorComponentsUseX87: true,
     nativeFilenameQuery: true,
     queryFormatsUnmappedAsEmpty: true,
@@ -3924,13 +3927,23 @@ export default {
     generic: {
       count: 45,
       slots: {
-        unknown: [0, 43, 44],
+        unknown: [0],
         recovered: [
           1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-          26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+          26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
         ],
       },
       evidence: [
+        {
+          ids: [43],
+          value:
+            'Own MOT wrapper 0x55ddf0 loads three f32 angle words through x87, builds yaw/pitch/roll via selector-2 SSE polynomial quaternion 0x5ec343 and the scalar quaternion matrix body, then postmultiplies through native SSE2 0x5e89c3. Control 2 leaves the result unwritten.',
+        },
+        {
+          ids: [44],
+          value:
+            'Own MOT wrapper 0x55e480 snapshots three VM operands and transforms its negative X/Z reference axes through selector-2 SSE2. Each direction uses Vec4Normalize, and MatrixRotationAxis independently uses the selector-2 Vec3Normalize threshold 2^-46 and its own reciprocal-square-root correction order. Three scalar FSINCOS axis matrices then postmultiply in order through SSE2. Control 2 leaves the result unwritten.',
+        },
         {
           ids: [27],
           value:
@@ -4013,13 +4026,21 @@ export default {
         { ids: [39, 40], fields: { resultWritten: true } },
         { ids: [11], fields: { resultWritten: true } },
         { ids: [32, 33, 36], fields: { resultWritten: false } },
-        ...[27, 31, 37].map((id) => ({
+        ...[27, 31, 37, 43, 44].map((id) => ({
           ids: [id],
           fields: {
-            parameters: NATIVE_SEMANTICS.generic[id].signature.parameters.map((parameter, i) => ({
-              ...parameter,
-              type: { ...parameter.type, addressSpace: 'vm', direction: i === 0 ? 'inout' : 'in' },
-            })),
+            parameters: NATIVE_SEMANTICS.generic[id].signature.parameters.map((parameter, i) =>
+              parameter.type.kind === 'pointer'
+                ? {
+                    ...parameter,
+                    type: {
+                      ...parameter.type,
+                      addressSpace: 'vm',
+                      direction: i === 0 ? 'inout' : 'in',
+                    },
+                  }
+                : parameter,
+            ),
             resultWritten: false,
             review: 'reviewed',
           },

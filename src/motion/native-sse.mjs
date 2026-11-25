@@ -68,6 +68,28 @@ const subtract = (left, right) => vectorArithmetic('subtract', left, right);
 const swapPairs = ([a, b, c, d]) => [b, a, d, c];
 const rotateHalves = ([a, b, c, d]) => [c, d, a, b];
 
+export function normalizeAxisSSEWords(vector) {
+  const squares = vector.map((word) => sseFloat32Arithmetic('multiply', word, word)),
+    squared = sseFloat32Arithmetic(
+      'add',
+      sseFloat32Arithmetic('add', squares[0], squares[1]),
+      squares[2],
+    );
+  if (!(bitsFloat(squared) >= 2 ** -46)) return [0, 0, 0];
+  const seed = reciprocalSquareRootSSEWord(squared),
+    correction = sseFloat32Arithmetic(
+      'subtract',
+      floatBits(3),
+      sseFloat32Arithmetic('multiply', sseFloat32Arithmetic('multiply', seed, squared), seed),
+    ),
+    factor = sseFloat32Arithmetic(
+      'multiply',
+      correction,
+      sseFloat32Arithmetic('multiply', seed, floatBits(0.5)),
+    );
+  return vector.map((word) => sseFloat32Arithmetic('multiply', word, factor));
+}
+
 export function inverseSSEWords(matrix) {
   // Form four adjugate rows from the original packed column products.
   // Keep each subtraction and addition separate: reassociation changes f32.

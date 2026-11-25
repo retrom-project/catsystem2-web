@@ -26,7 +26,7 @@ import {
   x87RotateVectorWords,
 } from '../ppi/numeric.mjs';
 import { MOTION_ABI, initialMotionObject } from './abi.mjs';
-import { rotateRelativeX87, yawPitchRollX87 } from './native-rotation.mjs';
+import { rotateRelativeSSEWords, rotateRelativeX87, yawPitchRollX87 } from './native-rotation.mjs';
 import { inverseSSEWords, normalizeSSEWords, transformSSEWords } from './native-sse.mjs';
 import {
   identity,
@@ -90,6 +90,7 @@ export class MotionInstance {
     this.vectorTransformUsesSSEWords = abi.motion?.vectorTransformUsesSSEWords;
     this.vectorNormalizeUsesSSEWords = abi.motion?.vectorNormalizeUsesSSEWords;
     this.matrixInverseUsesSSEWords = abi.motion?.matrixInverseUsesSSEWords;
+    this.relativeRotationUsesSSEWords = abi.motion?.relativeRotationUsesSSEWords;
     this.vectorOperationsUseNativeGeometry = abi.motion?.vectorOperationsUseNativeGeometry;
     this.vectorComponentsUseX87 = abi.motion?.vectorComponentsUseX87;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
@@ -434,6 +435,16 @@ export class MotionInstance {
         return done();
       }
       case 44: {
+        if (this.relativeRotationUsesSSEWords) {
+          const destination = machine.bytes(args[0], 64),
+            matrix = floatWords(destination),
+            reference = floatWords(machine.bytes(args[1], 64)),
+            angles = floatWords(machine.bytes(args[2], 12)),
+            result = rotateRelativeSSEWords(matrix, reference, angles),
+            view = new DataView(destination.buffer, destination.byteOffset, destination.byteLength);
+          result.forEach((word, i) => view.setUint32(i * 4, word, true));
+          return done();
+        }
         if (this.orderedScalarRotations) {
           const destination = machine.bytes(args[0], 64),
             matrix = floats(destination),

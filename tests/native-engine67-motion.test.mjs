@@ -265,6 +265,52 @@ test('2.6.1.67 Motion vector calls preserve x87 result words and native operand 
   }
 });
 
+test('2.6.1.67 MOT rotations retain the selector-2 quaternion and independent axis normalization', async () => {
+  const matrix = [
+      1.125, 0.25, 0.5, 0, -0.125, 0.5, -0.25, 0, 0.5, 0.625, 1.875, 0, 17.25, -8.125, -3, 1,
+    ].map(floatBits),
+    reference = [
+      1.31, 0.17, -0.571, 0.08, 0.31, 0.92, -0.222, 1.222, -1.034, 0.7, -2.1, 1.07, -17.125, 8.25,
+      19.11, 0.675,
+    ].map(floatBits),
+    angles = [1.3125, -0.357, 0.089999999].map(floatBits),
+    expected = {
+      43: '3f1d7783 3f00b4e0 bf791fc4 00000000 bede4fc2 3ebcc468 3d77efce 00000000 3fcafd42 3fa3e9ea bd1b9268 00000000 408229ba c0e5af4a c18b9a48 3f800000',
+      44: '3f07c10d 3f80cf2f bf087b7b 00000000 bebf8f3b be20997f becf0ec4 00000000 bee4eab6 3ffd7a13 3e3f0b64 00000000 4192ca12 406315c6 c09a833e 3f800000',
+    };
+  for (const id of [43, 44]) {
+    const address = 0x80000043,
+      args = id === 43 ? [address, ...angles] : [address, 128, 256],
+      instance = new MotionInstance(await readKCS(motionProgram([[id, args]])), { profile }),
+      { machine } = instance;
+    for (const [at, words] of [
+      [address, matrix],
+      [128, reference],
+      [256, angles],
+    ])
+      words.forEach((word, i) => machine.store(at + i * 4, word));
+    machine.bytes(address - 1, 1)[0] = 0x91;
+    machine.bytes(address + 64, 1)[0] = 0x7a;
+    assert.equal(instance.update(0).status, 'halted');
+    assert.equal(machine.pop(), 0xa0263136);
+    assert.equal(machine.sp, machine.floor);
+    assert.deepEqual(
+      Array.from({ length: 16 }, (_, i) => machine.load(address + i * 4)),
+      expected[id].split(' ').map((word) => Number.parseInt(word, 16)),
+    );
+    assert.equal(machine.bytes(address - 1, 1)[0], 0x91);
+    assert.equal(machine.bytes(address + 64, 1)[0], 0x7a);
+    assert.deepEqual(
+      reference.map((_, i) => machine.load(128 + i * 4)),
+      reference,
+    );
+    assert.deepEqual(
+      angles.map((_, i) => machine.load(256 + i * 4)),
+      angles,
+    );
+  }
+});
+
 test('2.6.1.67 MOT inverse uses the native SSE reciprocal and current-matrix fallback', async () => {
   const matrix = [
       1.125, 0.25, 0.5, 0, -0.125, 0.5, -0.25, 0, 0.5, 0.625, 1.875, 0, 17.25, -8.125, -3, 1,

@@ -4,7 +4,13 @@ import { nativeTrigWord } from '../native/scalar-math.mjs';
 import { multiplyNativeMatrix } from '../native/calculation-math.mjs';
 import { quietFloat32Bits, x87BinaryNaNWord } from '../ppi/numeric.mjs';
 import { roundX87Single as r } from '../ppi/x87.mjs';
-import { sseFloat32Arithmetic } from './native-sse.mjs';
+import {
+  multiplyMatrixSSEWords,
+  normalizeAxisSSEWords,
+  normalizeSSEWords,
+  sseFloat32Arithmetic,
+  transformSSEWords,
+} from './native-sse.mjs';
 
 const f = Math.fround;
 const product = (a, b) => r(a * b);
@@ -161,8 +167,8 @@ export function yawPitchRollSSE(yaw, pitch, roll) {
   return matrixFromQuaternion(yawQuaternionSSE(yaw, pitch, roll).map(bitsFloat));
 }
 
-function rotationAxis(input, angle, useNativeReduction) {
-  const [x, y, z] = normalize(input.slice(0, 3)),
+function rotationAxis(input, angle, useNativeReduction, normalizeVector = normalize) {
+  const [x, y, z] = normalizeVector(input.slice(0, 3)),
     [sin, cos] = sinCos(angle, useNativeReduction),
     t = f(r(1 - cos)),
     xy = f(product(product(y, x), t)),
@@ -201,6 +207,22 @@ export function rotateRelativeX87(matrix, reference, angles, useNativeReduction 
   return axes.reduce(
     (value, axis, i) =>
       multiplyNativeMatrix(value, rotationAxis(axis, angles[i], useNativeReduction)),
+    matrix,
+  );
+}
+
+export function rotateRelativeSSEWords(matrix, reference, angles) {
+  const x = transformSSEWords([-1, 0, 0, 0].map(floatBits), reference),
+    z = transformSSEWords([0, 0, -1, 0].map(floatBits), reference);
+  x[1] = 0;
+  const axes = [normalizeSSEWords(x), [0, floatBits(-1), 0, 0], normalizeSSEWords(z)],
+    normalizeAxis = (values) => normalizeAxisSSEWords(values.map(floatBits)).map(bitsFloat);
+  return axes.reduce(
+    (value, axis, i) =>
+      multiplyMatrixSSEWords(
+        value,
+        rotationAxis(axis.map(bitsFloat), bitsFloat(angles[i]), true, normalizeAxis).map(floatBits),
+      ),
     matrix,
   );
 }
