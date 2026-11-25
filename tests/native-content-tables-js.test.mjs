@@ -2,7 +2,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { dataWorld } from './fixtures/data-world.mjs';
-import { contentFiles } from './fixtures/content-database-data.mjs';
+import {
+  contentFiles,
+  contentDatabase,
+  MISSION_COLUMNS,
+  MISSION_ROWS,
+} from './fixtures/content-database-data.mjs';
 import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
 import { KCSMachine, readKCS, encodeCP932 } from '../src/kcs.mjs';
 import { kcsProgram } from './helpers.mjs';
@@ -314,6 +319,73 @@ test('fixed SDK .23 large legal genre ranges visit only occupied question keys a
     assert.equal((await call(776, [handle, 0, 1024])).value, 12);
     assert.equal((await call(745, [handle])).value, 3);
     await call(743, [handle]);
+  } finally {
+    await fresh?.close({ flushFiles: false });
+    await first.close({ flushFiles: false });
+  }
+});
+
+test('fixed SDK .23 Mission owners restore statistics and native state independently while protecting original invalid queries', async () => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    files = Object.fromEntries(contentFiles());
+  files.missions = contentDatabase(
+    MISSION_ROWS.map((row) => ({ ...row, CHAR: '[0]' })),
+    MISSION_COLUMNS,
+  );
+  files.emptychar = contentDatabase(
+    MISSION_ROWS.map((row) => ({ ...row, CHAR: '' })),
+    MISSION_COLUMNS,
+  );
+  const first = await dataWorld(profile, files);
+  let fresh;
+  const call = (world, id, args = []) =>
+    world.runtime.native('main', id, args, world.main.machine, world.main);
+  try {
+    first.main.machine.writeString('missing', 64);
+    assert.equal((await call(first, 795, [64])).value, 0);
+    await assert.rejects(() => call(first, 795, [0x7fffffff]), /mapped filename/);
+    first.main.machine.writeString('missions', 64);
+    const owner = (await call(first, 795, [64])).value;
+    await call(first, 821, [owner]);
+    await call(first, 797, [owner, 7]);
+    await call(first, 801, [owner, 10]);
+    await call(first, 811, [owner, 0, 5]);
+    await call(first, 812, [owner, 0, 2]);
+    await call(first, 807, [owner, 0, 1]);
+    await call(first, 803, [owner, 10, 1024, 1040]);
+    assert.deepEqual(
+      [1024, 1040].map((at) => first.main.machine.load(at)),
+      [1, 1],
+    );
+    const size = (await call(first, 823, [owner, 0])).value,
+      raw = first.runtime.imageDataBuffers.process,
+      pointer = raw.allocate(size);
+    assert.equal((await call(first, 823, [owner, pointer])).value, size);
+    const saved = raw.read(pointer, size).slice();
+    fresh = await dataWorld(profile, {}, { initialize: false });
+    await fresh.restore(await deserializeCheckpoint(await serializeCheckpoint(first.snapshot())));
+    assert.equal((await call(fresh, 798, [owner])).value, 7);
+    assert.equal((await call(fresh, 820, [owner, 10, 7, 1024])).value, 1);
+    assert.equal(fresh.main.machine.load(1024), 7);
+    await call(fresh, 797, [owner, 9]);
+    await call(fresh, 801, [owner, 10]);
+    assert.equal((await call(first, 798, [owner])).value, 7);
+    assert.equal((await call(fresh, 824, [owner, pointer, size])).value, 1);
+    await call(fresh, 820, [owner, 10, 7, 1024]);
+    assert.equal(fresh.main.machine.load(1024), 7);
+    assert.deepEqual(fresh.runtime.imageDataBuffers.process.read(pointer, size), saved);
+    first.main.machine.writeString('emptychar', 64);
+    const empty = (await call(first, 795, [64])).value;
+    first.main.machine.store(1024, 0x12345678);
+    await assert.rejects(() => call(first, 820, [empty, 10, 9, 1024]), /empty set/);
+    assert.equal(first.main.machine.load(1024), 0x12345678);
+    assert.equal((await call(first, 820, [empty, 10, 0, 1024])).value, 1);
+    assert.equal(first.main.machine.load(1024), 1);
+    await assert.rejects(() => call(first, 745, [owner]), /different object family/);
+    await call(first, 796, [empty]);
+    await call(fresh, 796, [owner]);
+    await assert.rejects(() => call(fresh, 798, [owner]), /released/);
+    assert.equal((await call(first, 798, [owner])).value, 7);
   } finally {
     await fresh?.close({ flushFiles: false });
     await first.close({ flushFiles: false });

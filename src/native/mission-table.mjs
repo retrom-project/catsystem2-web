@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { NativeCompiledTable } from './compiled-table.mjs';
 import { parseNativeInteger } from './standard.mjs';
 import {
@@ -301,6 +302,12 @@ export async function nativeMissionTable(id, args, machine, services) {
   if (id === 0x31b) {
     const table = new NativeMissionTable(),
       name = nativeDataFormat(args, machine, services, 0);
+    if (
+      name === null &&
+      services.profile &&
+      nativeABI(services.profile).database?.missionFilenameRequired
+    )
+      throw new RangeError('Native mission creation requires a mapped filename');
     if (name !== null) {
       const filename = new TextDecoder('shift_jis').decode(name),
         first = await services.read(filename, 'database');
@@ -411,6 +418,13 @@ export async function nativeMissionTable(id, args, machine, services) {
     const row = record(),
       selector = argument(2) >>> 0;
     if (!row || selector > 11 || !mapped(3)) return value(0);
+    if (
+      selector === 9 &&
+      !row.characters.length &&
+      services.profile &&
+      nativeABI(services.profile).database?.missionCharacterQueryRequiresEntry
+    )
+      throw new RangeError('Native mission character query dereferences an empty set');
     const { fields, progress } = row,
       words = [
         fields.TYPE,

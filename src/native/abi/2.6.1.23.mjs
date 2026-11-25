@@ -105,6 +105,7 @@ const historyCursorOperations = [379, 380, 381, 382, 383, 384];
 const questionDatabaseOperations = Array.from({ length: 37 }, (_, i) => 742 + i).filter(
   (id) => id !== 769 && id !== 770,
 );
+const missionDatabaseOperations = Array.from({ length: 34 }, (_, i) => 795 + i);
 function contentDatabaseSignatures(ids) {
   return ids.map((id) => {
     const signature = NATIVE_SEMANTICS.main[id].signature;
@@ -112,7 +113,7 @@ function contentDatabaseSignatures(ids) {
       ids: [id],
       fields: {
         resultWritten: signature.controlCodes.includes(1),
-        ...(id === 742
+        ...([742, 795].includes(id)
           ? { result: { kind: 'handle', handleKind: 'content-database', ownership: 'owned' } }
           : {}),
         parameters: signature.parameters.map((parameter) => {
@@ -123,19 +124,31 @@ function contentDatabaseSignatures(ids) {
               type: { kind: 'handle', handleKind: 'content-database', ownership: 'borrowed' },
             };
           if (type.kind !== 'pointer') return parameter;
-          const raw = id === 767 || id === 768;
+          const raw = [767, 768, 823, 824].includes(id);
           const format = type.target.kind === 'format-string';
           return {
             ...parameter,
             type: {
               kind: 'pointer',
               addressSpace: raw ? 'native' : 'vm',
-              direction: raw ? (id === 767 ? 'out' : 'in') : format ? 'in' : 'out',
+              direction: raw
+                ? [767, 823].includes(id)
+                  ? 'out'
+                  : 'in'
+                : format || id === 816
+                  ? 'in'
+                  : 'out',
               target: raw
-                ? { kind: 'record', name: 'question-state header and 88-byte records' }
+                ? {
+                    kind: 'record',
+                    name:
+                      id < 795
+                        ? 'question-state header and 88-byte records'
+                        : 'mission-state header, 24-byte rows and 28-byte characters',
+                  }
                 : format
                   ? { kind: 'format-string', encoding: 'CP932' }
-                  : [746, 748, 754, 757, 776].includes(id)
+                  : [746, 748, 754, 757, 776, 804, 806].includes(id)
                     ? { kind: 'character', bits: 8, encoding: 'CP932' }
                     : { kind: 'integer', bits: 32, signed: true },
             },
@@ -168,6 +181,11 @@ function geometrySignatures(table, ids) {
   });
 }
 const mainEvidence = [
+  {
+    ids: missionDatabaseOperations,
+    value:
+      'Own 2.6.1.23 wrappers 0x475b80–0x476380 construct the 20-byte Mission owner at 0x4963f0 and load authored KCDB through 0x496d10 and the original 0x4be1e0 parser. Conditions, character statistics, priority/tag selection, completion and the 36-byte state header with 24-byte mission/28-byte character rows match independent production GCALL.',
+  },
   {
     ids: questionDatabaseOperations,
     value:
@@ -1279,6 +1297,8 @@ export default {
     questionIdentitySignedIndex: true,
     questionLoadSkipsKnownFiles: true,
     questionGenrePlaceholderContinues: true,
+    missionCharacterQueryRequiresEntry: true,
+    missionFilenameRequired: true,
   },
   sound: {
     banks: 32,
@@ -1554,6 +1574,7 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         ...contentDatabaseSignatures(questionDatabaseOperations),
+        ...contentDatabaseSignatures(missionDatabaseOperations),
         ...geometrySignatures('main', mainGeometryOperations),
         {
           ids: [255],
