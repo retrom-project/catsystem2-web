@@ -81,7 +81,8 @@ test('2.6.1.23 transition wrappers retain the captured fade and wipe inputs', as
     const wipeID = await world.objects.create({ kind: 39, parent: main.id }),
       wipe = screenEffects.tasks.get(wipeID),
       wipeTask = world.nativeTaskID(wipeID),
-      mask = world.graphics.images.create(2, 1, main.id);
+      mask = world.graphics.images.create(2, 1, main.id),
+      maskData = world.graphics.images.get(mask).dataHandle;
     await fillBitmap(world, mask, [5, 18, 125, 255]);
     assert.deepEqual(await invoke(530, wipeTask, 9, floatBits(3), floatBits(24), mask), {
       control: 2,
@@ -94,7 +95,12 @@ test('2.6.1.23 transition wrappers retain the captured fade and wipe inputs', as
     assert.deepEqual(await invoke(531, wipeTask, 1), { control: 2 });
     assert.equal(await read(wipeTask), 1);
     await world.graphics.images.release(mask);
-    assert.equal(world.graphics.images.get(wipe.state.maskSource).width, 2);
+    assert.equal(wipe.state.maskSource, 0);
+    assert.ok(!world.graphics.images.handles.records.has(maskData));
+    assert.deepEqual(
+      [...world.stageRenderer.surfacePixels(wipe.state.mask).subarray(0, 4)],
+      [5, 18, 125, 255],
+    );
   } finally {
     await world.close();
   }
