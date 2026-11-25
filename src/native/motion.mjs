@@ -281,11 +281,15 @@ export function nativeMotion(id, args, machine, services = {}) {
         return value(Number(any));
       }
       case 0x202: {
-        manager.working.set(manager.base);
         if (registry.library.nativeFilenameQuery) {
           const nameBytes = nativeDataFormat(args, machine, services, 1);
-          if (nameBytes === null && !behavior?.queryFormatsUnmappedAsEmpty) return value(0);
-          const filename = registry.library.nativeFilename(nameBytes ?? new Uint8Array());
+          if (nameBytes === null && behavior?.queryRequiresMappedFormat)
+            throw new Error(
+              'Native MOT filename format is unmapped; original formatter reads NULL',
+            );
+          manager.working.set(manager.base);
+          if (nameBytes === null) return value(0);
+          const filename = registry.library.nativeFilename(nameBytes);
           if (filename === null) return value(0);
           const key = cFilenameKey(filename);
           return value(
@@ -296,6 +300,7 @@ export function nativeMotion(id, args, machine, services = {}) {
             ),
           );
         }
+        manager.working.set(manager.base);
         const name = machine.string(word(1)).replaceAll('\\', '/').split('/').at(-1).toLowerCase();
         return value(
           Number(

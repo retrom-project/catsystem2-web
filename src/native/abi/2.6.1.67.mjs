@@ -331,7 +331,7 @@ export default {
     relativeRotationUsesSSEWords: true,
     vectorComponentsUseX87: true,
     nativeFilenameQuery: true,
-    queryFormatsUnmappedAsEmpty: true,
+    queryRequiresMappedFormat: true,
     elapsedUsesX87: true,
     skipBypassesDelay: false,
     activeQueryUsesRawWord: true,
@@ -1496,7 +1496,7 @@ export default {
         {
           ids: [514],
           value:
-            'Own wrapper 0x4ad930 formats CP932, expands the mounted mot resource path and searches the stored C-locale filename through 0x55bc30. A live manager copies all 144 base bytes to its working bank before searching. The original formats an unmapped name as empty. Control 1 writes a boolean, including zero for a null manager.',
+            'Own wrapper 0x4ad930 formats mapped CP932, expands the mounted mot resource path and searches the stored C-locale filename through 0x55bc30. After formatting, a live manager copies all 144 base bytes to its working bank before searching. A translated-null name reaches a direct NULL byte read at the owning formatter instruction before that copy and remains diagnostic. Earlier emulator low-page empty-string results for this undefined input are superseded. Control 1 writes a boolean for defined calls, including zero for a null manager before any name access.',
         },
         {
           ids: [320],
