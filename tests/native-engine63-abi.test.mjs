@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { openImage } from '../src/formats/hg3.mjs';
 import { floatBits, NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
+import { MOTION_ABI } from '../src/motion/abi.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
@@ -115,6 +116,69 @@ async function run(instructions, diagnostic) {
   const task = await runtime.spawn('abi-probe.kcs');
   return { runtime, task, machine: task.machine };
 }
+
+test('2.6.1.63 Plane lifecycle and poses use an attached graph and the original selector', async (t) => {
+  const widths = new Map([
+    [80, 1],
+    [83, 1],
+    [86, 4],
+    [87, 5],
+  ]);
+  const world = await dataWorld(
+    profile,
+    Object.fromEntries(
+      [...widths].map(([id, words]) => [`main-${id}.kcs`, mainProgram(id, words)]),
+    ),
+  );
+  t.after(() => world.close({ flushFiles: false }));
+  const id = await world.objects.create({ kind: 2, parent: world.main.id }),
+    owner = world.graphics.get(id),
+    target = world.nativeTaskID(id),
+    call = (number, args = [], initialize) =>
+      executeMain(world, number, [target, ...args], initialize);
+
+  owner.makeGraph({ type: 1, width: 26, height: 48 });
+  const first = owner.graph;
+  await call(80);
+  assert.equal(owner.graph, first);
+  await assert.rejects(() => call(87, [156, 160, 164, 0]), /initialized 32-bit output word/);
+  world.graphics.createLogicalDevice();
+  owner.state.vramType = 1;
+  const store = (bytes, offset, words) => {
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    words.forEach((word, i) => view.setUint32(offset + i * 4, word, true));
+  };
+  store(owner.graph.kx2, MOTION_ABI.base, [0x7fa41234, 0x80000000, floatBits(7)]);
+  store(owner.graph.kx2, MOTION_ABI.pos, [floatBits(-42.25), 0x7f801234, floatBits(15)]);
+  store(owner.graph.textureTransform, MOTION_ABI.base, [-3, 8, 7].map(floatBits));
+  store(owner.graph.textureTransform, MOTION_ABI.pos, [9, 8, 7].map(floatBits));
+  const base = await call(86, [156, 160, 0]);
+  assert.deepEqual([base.load(156), base.load(160)], [0x7fe41234, 0x80000000]);
+  const pos = await call(87, [156, 160, 164, 0]);
+  assert.deepEqual(
+    [pos.load(156), pos.load(160), pos.load(164)],
+    [floatBits(-42.25), 0x7fc01234, floatBits(15)],
+  );
+  const aliased = await call(87, [157, 157, 157, 0x80000007]);
+  assert.equal(aliased.load(157), floatBits(7));
+
+  await world.sendNativeEngine(target, world.main.id, 89, 0, 157);
+  assert.equal(owner.state.inputTracksGraph, true);
+  assert.ok(owner.input.get(id));
+  await call(80);
+  assert.equal(owner.graph.type, 5);
+  assert.deepEqual(
+    [owner.graph.width, owner.graph.height, owner.graph.triangles.length],
+    [0, 0, 0],
+  );
+  assert.ok(owner.input.get(id));
+  await call(83);
+  assert.equal(owner.graph, null);
+  assert.equal(owner.input.get(id), null);
+  assert.equal(owner.state.inputTracksGraph, false);
+  assert.deepEqual(owner.state.rect, [0, 0, 0, 0]);
+  await assert.rejects(() => call(86, [156, 160, 0]), /initialized 32-bit output word/);
+});
 
 test('2.6.1.63 Draw borrows its bitmap and redraws a signed region or the full surface', async (t) => {
   const widths = new Map([

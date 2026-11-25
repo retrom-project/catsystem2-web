@@ -525,6 +525,8 @@ export class NativeGraphicTask {
     this.coordinateModeRequiresGraph = Boolean(abi?.coordinateModeRequiresGraph);
     this.planePoseQueriesRequireReply = Boolean(abi?.planePoseQueriesRequireReply);
     this.planePoseUsesRawWords = abi?.planePoseUsesRawWords;
+    this.planePoseRequiresDevice =
+      Boolean(abi?.planePoseRequiresDevice) || this.planePoseUsesRawWords === 'unchanged';
     this.planeInheritanceUsesRenderer = Boolean(abi?.planeInheritanceUsesRenderer);
     this.planeResetReleasesTrackedInput = Boolean(abi?.planeResetReleasesTrackedInput);
     this.planeUsesLegacyButtonStates = Boolean(abi?.planeUsesLegacyButtonStates);
@@ -1220,8 +1222,7 @@ export class NativeGraphicTask {
         return 0;
       case 61:
       case 62: {
-        if (this.planePoseUsesRawWords === 'unchanged' && !this.graphics.device.attachment)
-          return 0;
+        if (this.planePoseRequiresDevice && !this.graphics.device.attachment) return 0;
         const offset = id === 61 ? MOTION_ABI.base : MOTION_ABI.pos;
         if (this.graph && this.planePoseUsesRawWords) {
           const source = transformState(),
