@@ -24,6 +24,7 @@ const legacyTextStateSlots = [126, 127, 128, 129, 131, 132, 138, 139, 456, 585, 
 const rectangleOperations = [214, 215, 216, 217, 218];
 const namePairOperations = [289, 290, 291, 292, 293];
 const questionDatabaseOperations = Array.from({ length: 37 }, (_, i) => 742 + i);
+const missionDatabaseOperations = Array.from({ length: 34 }, (_, i) => 795 + i);
 const galleryTableOperations = Array.from({ length: 12 }, (_, i) => 405 + i);
 const taskSceneOperations = [
   219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 235,
@@ -354,6 +355,8 @@ export default {
   nameTable: { legacyFieldBytes: 32, fixedPairs: true, pairByteLimit: 64 * 1024 * 1024 },
   stringBank: { emptyGetResult: 0, expandUsesExistingBank: true, cssOwnerLookupOnly: true },
   database: {
+    missionCharacterQueryRequiresEntry: true,
+    missionFilenameRequired: true,
     questionIdentitySignedIndex: true,
     questionFormatRequired: true,
     questionLoadSkipsKnownFiles: true,
@@ -1281,9 +1284,8 @@ export default {
           564, 569, 582, 583, 584, 587, 588, 589, 600, 601, 602, 603, 604, 622, 623, 624, 628, 629,
           631, 632, 641, 648, 657, 663, 669, 681, 682, 688, 690, 691, 692, 701, 702, 703, 704, 705,
           706, 707, 708, 709, 716, 721, 722, 725, 729, 734, 735, 738, 779, 780, 781, 782, 783, 784,
-          791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808,
-          809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826,
-          827, 828, 829, 830, 831, 832, 837, 838, 839, 840, 841, 842, 843, 879, 880, 881, 903,
+          791, 792, 793, 794, 829, 830, 831, 832, 837, 838, 839, 840, 841, 842, 843, 879, 880, 881,
+          903,
         ],
         recovered: [
           1, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
@@ -1317,16 +1319,23 @@ export default {
           697, 698, 699, 700, 710, 711, 712, 713, 714, 715, 717, 718, 719, 720, 723, 724, 726, 727,
           728, 730, 731, 732, 733, 736, 737, 739, 740, 741, 742, 743, 744, 745, 746, 747, 748, 749,
           750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767,
-          768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 785, 786, 787, 788, 789, 790, 833,
-          834, 835, 836, 844, 845, 846, 847, 848, 849, 850, 851, 852, 853, 854, 855, 856, 857, 858,
-          859, 860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876,
-          877, 878, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897,
-          898, 899, 900, 901, 902, 904, 905, 934, 935, 936, 937,
+          768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 785, 786, 787, 788, 789, 790, 795,
+          796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813,
+          814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 833, 834, 835,
+          836, 844, 845, 846, 847, 848, 849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860,
+          861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878,
+          882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899,
+          900, 901, 902, 904, 905, 934, 935, 936, 937,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: missionDatabaseOperations,
+          value:
+            'Own 2.6.1.67 Main795–828 construct a 20-byte Mission owner at 0x4bfb00 and destroy it at 0x4c00e0. The 0x4bfbe0 loader consumes original mode19 mounted bytes through the 0x51e1b0 KCDB parser. Original conditions, Question inputs, priority/tag/dependency selection, character statistics, counters, aliases and native state match production GCALL. Empty CHAR selector9 and an unmapped constructor format reach the original CRT invalid-parameter handler. Cold state keeps independent owner statistics and the native save bytes.',
+        },
         {
           ids: questionDatabaseOperations,
           value:
@@ -2374,6 +2383,7 @@ export default {
         },
       ],
       signatures: [
+        ...nativeContentDatabaseSignatures(missionDatabaseOperations),
         ...nativeContentDatabaseSignatures(questionDatabaseOperations),
         ...NATIVE_TILE_GAME_SIGNATURES,
         ...sseGeometryOperations.map((id) => ({
