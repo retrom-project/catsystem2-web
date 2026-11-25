@@ -203,12 +203,15 @@ function nativeFormatField(field, machine, stringBytes) {
     const end = bytes.indexOf(0);
     if (end >= 0) bytes = bytes.subarray(0, end);
     if (precision !== undefined && precision >= 0) bytes = bytes.subarray(0, precision);
+    zero = flags.includes('0');
   } else {
     const word = machine.load(address);
     // Uppercase F resolves its argument but produces no field in these CRTs.
     if (type === 'F') return new Uint8Array();
-    if (type === 'c') bytes = Uint8Array.of(word & 255);
-    else if (type === 'f') {
+    if (type === 'c') {
+      bytes = Uint8Array.of(word & 255);
+      zero = flags.includes('0');
+    } else if (type === 'f') {
       bytes = encodeCP932(nativeFormatFloat(word, precision, flags.includes('#')));
       prefix = word >>> 31 ? '-' : flags.includes('+') ? '+' : flags.includes(' ') ? ' ' : '';
       zero = flags.includes('0');
