@@ -102,6 +102,49 @@ const crossTaskSceneOperations = [233, 234];
 const explicitHistoryStringOperations = [334, 335, 337];
 const taskSceneCSSOperations = [239, 249];
 const historyCursorOperations = [379, 380, 381, 382, 383, 384];
+const questionDatabaseOperations = Array.from({ length: 37 }, (_, i) => 742 + i).filter(
+  (id) => id !== 769 && id !== 770,
+);
+function contentDatabaseSignatures(ids) {
+  return ids.map((id) => {
+    const signature = NATIVE_SEMANTICS.main[id].signature;
+    return {
+      ids: [id],
+      fields: {
+        resultWritten: signature.controlCodes.includes(1),
+        ...(id === 742
+          ? { result: { kind: 'handle', handleKind: 'content-database', ownership: 'owned' } }
+          : {}),
+        parameters: signature.parameters.map((parameter) => {
+          const type = parameter.type;
+          if (type.kind === 'handle')
+            return {
+              ...parameter,
+              type: { kind: 'handle', handleKind: 'content-database', ownership: 'borrowed' },
+            };
+          if (type.kind !== 'pointer') return parameter;
+          const raw = id === 767 || id === 768;
+          const format = type.target.kind === 'format-string';
+          return {
+            ...parameter,
+            type: {
+              kind: 'pointer',
+              addressSpace: raw ? 'native' : 'vm',
+              direction: raw ? (id === 767 ? 'out' : 'in') : format ? 'in' : 'out',
+              target: raw
+                ? { kind: 'record', name: 'question-state header and 88-byte records' }
+                : format
+                  ? { kind: 'format-string', encoding: 'CP932' }
+                  : [746, 748, 754, 757, 776].includes(id)
+                    ? { kind: 'character', bits: 8, encoding: 'CP932' }
+                    : { kind: 'integer', bits: 32, signed: true },
+            },
+          };
+        }),
+      },
+    };
+  });
+}
 function geometrySignatures(table, ids) {
   return ids.map((id) => {
     const { name, signature } = NATIVE_SEMANTICS[table][id],
@@ -125,6 +168,11 @@ function geometrySignatures(table, ids) {
   });
 }
 const mainEvidence = [
+  {
+    ids: questionDatabaseOperations,
+    value:
+      'Own 2.6.1.23 wrappers 0x474f40–0x475930 construct the 740-byte Question owner at 0x4912d0; its 0x48d570 loader uses the original 0x4be1e0 KCDB/zlib parser, CP932 configuration/pool/state operations and 12-byte header with 88-byte save records. Main769/770 remain the own no-op stubs.',
+  },
   {
     ids: mainGeometryOperations,
     value:
@@ -1226,7 +1274,12 @@ export default {
     directPathResult: 'success',
   },
   stringBank: { emptyGetResult: 1, expandUsesExistingBank: true, cssOwnerLookupOnly: true },
-  database: { nullExportPolicy: null },
+  database: {
+    nullExportPolicy: null,
+    questionIdentitySignedIndex: true,
+    questionLoadSkipsKnownFiles: true,
+    questionGenrePlaceholderContinues: true,
+  },
   sound: {
     banks: 32,
     firstMessage: 166,
@@ -1478,6 +1531,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...contentDatabaseSignatures(questionDatabaseOperations),
         ...geometrySignatures('main', mainGeometryOperations),
         {
           ids: [255],

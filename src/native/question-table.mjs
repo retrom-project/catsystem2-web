@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { NativeCompiledTable } from './compiled-table.mjs';
 import { parseNativeInteger } from './standard.mjs';
 import { sortNativeRecords } from './record-sort.mjs';
@@ -62,7 +63,7 @@ const integer = (word) => parseNativeInteger(word ?? '') ?? 0;
 function configurationTokens(line) {
   return line.split(' ');
 }
-function parseConfigurations(bytes) {
+function parseConfigurations(bytes, placeholderContinues) {
   const lines = nativeDataLines(bytes).map(nativeDataKey),
     configurations = new Map();
   let at = 0,
@@ -107,7 +108,7 @@ function parseConfigurations(bytes) {
           for (const word of words) {
             if (word.startsWith('@')) {
               state.genres[group].push(-10);
-              if (group === 0) break;
+              if (group === 0 && !placeholderContinues) break;
             } else {
               const match = /^([+-]?(?:0x[\da-f]+|\d+))(?:-([+-]?(?:0x[\da-f]+|\d+)))?/i.exec(word);
               const first = match ? integer(match[1]) | 0 : -1,
@@ -177,10 +178,10 @@ export class NativeQuestionTable {
     }
     return true;
   }
-  loadConfigurations(bytes) {
+  loadConfigurations(bytes, placeholderContinues = false) {
     this.configurations.clear();
     if (!bytes?.length) return false;
-    this.configurations = parseConfigurations(bytes);
+    this.configurations = parseConfigurations(bytes, placeholderContinues);
     return true;
   }
   configure(name) {
@@ -307,13 +308,28 @@ export async function nativeQuestionTable(id, args, machine, services) {
   else if (id === 0x2e8 || id === 0x2ee) {
     const name = nativeDataFormat(args, machine, services, 1);
     if (name === null) return value(0);
+    if (
+      id === 0x2e8 &&
+      table.files.has(filenameKey(name)) &&
+      services.profile &&
+      nativeABI(services.profile).database?.questionLoadSkipsKnownFiles
+    )
+      return value(0);
     const filename = new TextDecoder('shift_jis').decode(name),
       first = await services.read(filename, 'database');
     if (id === 0x2ee) table.configurations.clear();
     if (!first?.length) return value(0);
     const bytes = await services.read(filename, 'database');
     return value(
-      Number(id === 0x2e8 ? await table.load(name, bytes) : table.loadConfigurations(bytes)),
+      Number(
+        id === 0x2e8
+          ? await table.load(name, bytes)
+          : table.loadConfigurations(
+              bytes,
+              services.profile &&
+                nativeABI(services.profile).database?.questionGenrePlaceholderContinues,
+            ),
+      ),
     );
   } else if (id === 0x2ef) {
     const name = nativeDataFormat(args, machine, services, 1);
@@ -328,6 +344,12 @@ export async function nativeQuestionTable(id, args, machine, services) {
     } else {
       const destination = argument(id === 0x2ec ? 3 : 2);
       if (id === 0x308) {
+        if (
+          (argument(1) | 0) < 0 &&
+          services.profile &&
+          nativeABI(services.profile).database?.questionIdentitySignedIndex
+        )
+          throw new RangeError('Native question identity reads before its pool');
         if (!row) return value(-1);
         machine.writeStringBytes(nativeDataBytes(row.file), destination);
         return value(row.id);

@@ -4,6 +4,10 @@ import assert from 'node:assert/strict';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { contentFiles } from './fixtures/content-database-data.mjs';
 import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
+import { KCSMachine, readKCS, encodeCP932 } from '../src/kcs.mjs';
+import { kcsProgram } from './helpers.mjs';
+import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
   test(
     profile + ' JS content table handles restore independently of their resource files',
@@ -115,3 +119,139 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       }
     },
   );
+
+test('fixed SDK .23 question GCALL keeps parsed state, owner identity and native exports through a cold checkpoint', async () => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    files = Object.fromEntries([...contentFiles()].map(([name, bytes]) => [name + '.db', bytes])),
+    first = await dataWorld(profile, files);
+  let fresh, latestProgram;
+  async function call(world, id, args = [], strings = []) {
+    const task = world.main,
+      programBytes = kcsProgram([
+        [37, 0x36eb67a5],
+        ...args.map((word) => [37, word]),
+        [43, id, args.length * 4],
+        [59],
+      ]),
+      program = await readKCS(programBytes);
+    latestProgram = programBytes;
+    task.status = 'ready';
+    task.io = null;
+    const machine = (task.machine = new KCSMachine(
+      program,
+      { native: (number, words, vm) => world.runtime.scheduler.native(task, number, words, vm) },
+      world.runtime.scheduler.shared,
+    ));
+    for (const [address, string] of strings) machine.writeString(string, address);
+    assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+    const signature = nativeABI(profile).tables.main.entries[id].signature,
+      value = signature.resultWritten ? machine.pop() : undefined;
+    assert.equal(machine.pop(), 0x36eb67a5);
+    return value;
+  }
+  try {
+    const question = await call(first, 742),
+      second = await call(first, 742);
+    assert.equal(await call(first, 744, [question, 64], [[64, 'questions.db']]), 1);
+    assert.equal(await call(first, 750, [question, 64], [[64, 'configurations.db']]), 1);
+    assert.equal(await call(first, 751, [question, 64], [[64, 'alpha']]), 1);
+    await call(first, 764, [question]);
+    await call(first, 749, [question, 0]);
+    await call(first, 766, [question, 0]);
+    assert.equal(await call(first, 771, [question, 0]), 1);
+    assert.equal(await call(first, 745, [second]), 0);
+    const pointer = first.runtime.imageDataBuffers.process.allocate(276);
+    assert.equal(await call(first, 767, [question, pointer]), 276);
+    const saved = first.runtime.imageDataBuffers.process.read(pointer, 276).slice(),
+      view = new DataView(saved.buffer, saved.byteOffset, saved.byteLength);
+    assert.deepEqual(
+      [0, 4, 8].map((at) => view.getUint32(at, true)),
+      [12, 88, 3],
+    );
+    fresh = await dataWorld(profile, { 'case.kcs': latestProgram }, { initialize: false });
+    await fresh.restore(await deserializeCheckpoint(await serializeCheckpoint(first.snapshot())));
+    assert.equal(await call(fresh, 746, [question, 0, 512]), 1);
+    assert.equal(fresh.main.machine.string(512), 'Another question?');
+    await call(fresh, 749, [question, 0]);
+    assert.equal(await call(fresh, 771, [question, 0]), 2);
+    assert.equal(await call(first, 771, [question, 0]), 1);
+    assert.equal(await call(fresh, 768, [question, pointer]), 1);
+    assert.equal(await call(fresh, 771, [question, 0]), 1);
+    assert.deepEqual(fresh.runtime.imageDataBuffers.process.read(pointer, 276), saved);
+    await assert.rejects(() => call(fresh, 776, [question, -1, 512]), /reads before its pool/);
+    await call(fresh, 743, [question]);
+    await assert.rejects(() => call(fresh, 745, [question]), /released/);
+    assert.equal(await call(fresh, 745, [second]), 0);
+    await call(fresh, 743, [second]);
+  } finally {
+    await fresh?.close({ flushFiles: false });
+    await first.close({ flushFiles: false });
+  }
+});
+
+test('fixed SDK .23 question duplicate loads skip I/O while failed parse can retry and missing configurations clear only lookup entries', async () => {
+  const files = Object.fromEntries(contentFiles()),
+    world = await dataWorld('grisaia-jp-engine-2.6.1.23', files),
+    machine = world.main.machine,
+    call = (id, args = []) => world.runtime.native('main', id, args, machine, world.main),
+    originalRead = world.runtime.services.read,
+    reads = [];
+  world.runtime.services.read = async (name, category) => {
+    reads.push([name, category]);
+    return originalRead(name, category);
+  };
+  try {
+    const owner = (await call(742)).value;
+    machine.writeString('questions', 64);
+    assert.equal((await call(744, [owner, 64])).value, 1);
+    assert.equal(reads.length, 2);
+    assert.equal((await call(744, [owner, 64])).value, 0);
+    assert.equal(reads.length, 2);
+    machine.writeString('configurations', 64);
+    assert.equal((await call(750, [owner, 64])).value, 1);
+    machine.writeString('alpha', 64);
+    assert.equal((await call(751, [owner, 64])).value, 1);
+    machine.writeString('missing', 64);
+    assert.equal((await call(750, [owner, 64])).value, 0);
+    machine.writeString('alpha', 64);
+    assert.equal((await call(751, [owner, 64])).value, 0);
+    assert.equal((await call(752, [owner])).value, 2);
+    await call(743, [owner]);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+
+test('fixed SDK .23 first genre placeholder continues through following literals and preserves overlapping range order', async () => {
+  const files = Object.fromEntries(contentFiles());
+  files.ranges = encodeCP932(
+    '#range\n$GEN\nGENRE_A 1-2 2-2 1\nGENRE_B @\nGENRE_C @\n#extra\n$GEN\nGENRE_A @ 1\nGENRE_B @\nGENRE_C @\n#onlyextra\n$GEN\nGENRE_A @\nGENRE_B @\nGENRE_C @\n',
+  );
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23', files),
+    machine = world.main.machine,
+    call = (id, args = []) => world.runtime.native('main', id, args, machine, world.main);
+  try {
+    const owner = (await call(742)).value;
+    machine.writeString('questions', 64);
+    await call(744, [owner, 64]);
+    machine.writeString('ranges', 64);
+    await call(750, [owner, 64]);
+    for (const [name, expected] of [
+      ['range', [12, 11, 22]],
+      ['extra', [12, 11, 22]],
+      ['onlyextra', [22]],
+    ]) {
+      machine.writeString(name, 64);
+      await call(751, [owner, 64]);
+      await call(777, [owner, 0, 2]);
+      await call(764, [owner]);
+      for (let i = 0; i < expected.length; i++)
+        assert.equal((await call(776, [owner, i, 512])).value, expected[i]);
+      assert.equal((await call(776, [owner, expected.length, 512])).value, 0xffffffff);
+      await call(778, [owner]);
+    }
+    await call(743, [owner]);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
