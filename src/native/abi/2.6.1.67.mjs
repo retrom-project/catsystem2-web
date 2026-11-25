@@ -4148,9 +4148,9 @@ export default {
             'Own 2.6.1.67 Generic32–36 enter the same x87 vector functions as Main353–357. Four f32 values are added or subtracted in live address order. Length and squared length write one result word with control 1. Scale reads the factor before writing and uses the original raw NaN selection. Add, subtract and scale return control 2 without a result write.',
         },
         {
-          ids: [23, 24, 25, 26, 28, 29, 30],
+          ids: [24, 25, 26, 28, 29, 30],
           value:
-            'Own 2.6.1.67 Generic23–26 translate the guest matrix pointer and select the current matrix when it maps to null. The original routines postmultiply XYZ rotations, translation or scale and write identity. Generic28 copies sixteen live DWORDs in ascending order. Generic29 postmultiplies two mapped matrices through the default SSE2 dispatch at 0x5e89c3. Generic30 subtracts sixteen live f32 values in forward order. All seven return control 2 with the result untouched.',
+            'Own 2.6.1.67 Generic24–26 translate the guest matrix pointer and select the current matrix when it maps to null. The original routines postmultiply translation or scale and write identity. Generic28 copies sixteen live DWORDs in ascending order. Generic29 postmultiplies two mapped matrices through the default SSE2 dispatch at 0x5e89c3. Generic30 subtracts sixteen live f32 values in forward order. All six return control 2 with the result untouched.',
         },
         {
           ids: [7, 8, 10, 12],
