@@ -527,6 +527,11 @@ const mainEvidence = [
       'Own 2.6.1.23 Plane receiver 0x46a940 switches raw scale 61, bounds 70–71, matrix 53, blend 76 and live model coordinates 77',
   },
   {
+    ids: [297, 305, 306],
+    value:
+      'Own 2.6.1.23 manager removes instance keys, updates one or all start words and replaces up to 256 x87 Float32 registers through the same writer as Motion add',
+  },
+  {
     ids: [298, 299, 300, 301, 302, 303, 304, 307, 308, 535],
     value:
       'Own 2.6.1.23 Motion 0x481d70–0x482580 and 0x4828c0: owned group removal, 0x90-byte transfers, x87 elapsed frames and formatted archive add',
@@ -1136,6 +1141,7 @@ export default {
     matrixVectorUseScalarD3DX: true,
     vectorOperationsUseNativeGeometry: true,
     vectorComponentsUseX87: true,
+    registerWordsUseX87: true,
   },
   particle: {
     scriptVersionFallback: 'particle-v1',
@@ -1407,6 +1413,34 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         ...geometrySignatures('main', mainGeometryOperations),
+        ...[297, 305, 306].map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) => {
+              if (index === 0)
+                return {
+                  ...parameter,
+                  type: { kind: 'handle', handleKind: 'motion-manager', ownership: 'borrowed' },
+                };
+              if (index === 1)
+                return {
+                  ...parameter,
+                  description: id === 305 ? 'u32 motion ID or zero for all' : 'u32 motion ID',
+                  type: { kind: 'integer', bits: 32, signed: false },
+                };
+              if (parameter.type.kind !== 'pointer') return parameter;
+              return {
+                ...parameter,
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: { kind: 'float', bits: 32 },
+                },
+              };
+            }),
+          },
+        })),
         { ids: [27, 28], fields: { resultWritten: true } },
         ...rectangleOperations.map((id) => ({
           ids: [id],

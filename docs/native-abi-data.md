@@ -19,9 +19,9 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 503       | 57            | 17            | 292     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 506       | 57            | 17            | 289     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 393       | 80            | 19            | 446     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
-| 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
+| 2.6.1.67 | 938        | 506       | 80            | 19            | 333     | Generic 34 of 45, Particle 42 of 44 and 48 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51                                     |
 
@@ -705,11 +705,17 @@ Main 207 writes a 16-word identity matrix. Main 294 creates an owned motion
 manager at speed one with an empty list. Main 295 releases that owner, and
 Main 296 clears the current motions. Main 586 writes the full flag word
 used by subsequent motion instances.
-Main 298 removes the requested group. Main 299–303 transfer or commit the
+Main 297 removes the selected instance ID and Main 298 removes the requested
+group. Main 299–303 transfer or commit the
 manager's 144-byte base and working records. Main 302 allows an unmapped
 display output pointer. Main 304 and 535 read a formatted CP932 motion
 name from the `mot` archive and return a new handle or zero. Main 535 adds
-the authored delay word. Main 307 advances elapsed frames with x87 rounding,
+the authored delay word. Main 305 updates the start frame for one instance
+or for all instances when its ID is zero. Main 306 replaces up to 256
+Float32 register words, clears the remainder and activates the instance.
+The shared original x87 loader quiets signaling NaNs and preserves signed
+zero. A missing instance leaves guest memory and owned state untouched.
+Main 307 advances elapsed frames with x87 rounding,
 and Main 308 sets the speed.
 Main 309–311 query active motion instances by handle, group or manager.
 Main 312–314 apply skip in the same scopes. Main 440 finishes the motions

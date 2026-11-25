@@ -1109,6 +1109,78 @@ test('2.6.1.23 Main applies matrix operations to the mapped or current record', 
   }
 });
 
+test('2.6.1.23 KCS controls motion entries and the entire native register bank', async (t) => {
+  const motionScript = await readKCS(kcsProgram([[59]]));
+  const address = 0x80000043;
+  const word = (bits) => [37, bits];
+  const managerParam = [37, [0x13, 64]];
+  const packet = (calls) =>
+    kcsProgram([
+      word(sentinel),
+      ...calls.flatMap(([id, ...args]) => [
+        managerParam,
+        ...args.map(word),
+        [43, id, (args.length + 1) * 4],
+      ]),
+      [59],
+    ]);
+  const world = await dataWorld(profile, {
+    'set.kcs': packet([
+      [305, 0, 0xffffffff],
+      [305, 2, 73],
+      [306, 0, 0xffffffff, 5],
+      [306, 2, address, 2],
+      [297, 0],
+      [297, 1],
+    ]),
+    'protect.kcs': packet([[306, 2, 0xffffffff, 2]]),
+    'clear.kcs': packet([
+      [306, 2, 0xffffffff, 0],
+      [297, 3],
+    ]),
+    'unlink.kcs': packet([[297, 2]]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const managerHandle = world.runtime.services.motion.create(world.main.id),
+    { manager } = world.runtime.handles.get(managerHandle, 'motion-manager'),
+    calls = async (name) => {
+      const task = await world.spawnScript(name, { parent: world.main.id, initialExecute: false });
+      const { machine } = task;
+      machine.store(64, managerHandle);
+      machine.store(address, 0xff801234);
+      machine.store(address + 4, 0x80000000);
+      machine.store(address + 8, sentinel);
+      await world.runtime.scheduler.execute(task);
+      assert.equal(machine.sp, machine.floor + 4);
+      assert.equal(machine.load(machine.floor), sentinel);
+      assert.equal(machine.load(address + 8), sentinel);
+    };
+  for (let i = 1; i <= 3; i++) manager.add(motionScript, { startTick: 20 + i });
+  const second = manager.records.get(2).instance;
+  second.view.setUint32(MOTION_ABI.active, 0x38, true);
+  second.shared.fill(0x8c, MOTION_ABI.registers, MOTION_ABI.registers + 1024);
+
+  await calls('set.kcs');
+  assert.deepEqual([...manager.records.keys()], [2, 3]);
+  assert.equal(manager.records.get(2).startTick, 73);
+  assert.equal(manager.records.get(3).startTick, 0xffffffff);
+  const registers = () =>
+    Array.from({ length: 256 }, (_, i) =>
+      second.view.getUint32(MOTION_ABI.registers + 4 * i, true),
+    );
+  assert.deepEqual(registers(), [0xffc01234, 0x80000000, ...Array(254).fill(0)]);
+  assert.equal(second.activeWord, 1);
+
+  await assert.rejects(calls('protect.kcs'), /KCS memory/);
+  assert.deepEqual(registers(), [0xffc01234, 0x80000000, ...Array(254).fill(0)]);
+  await calls('clear.kcs');
+  assert.deepEqual(registers(), Array(256).fill(0));
+  assert.equal(second.activeWord, 1);
+  assert.deepEqual([...manager.records.keys()], [2]);
+  await calls('unlink.kcs');
+  assert.equal(manager.records.size, 0);
+});
+
 test('2.6.1.23 MOT retains raw arithmetic and overlapping component order', async () => {
   for (const [args, expected] of [
     [[0x40000000, 0x40400000], 0x41000000],
