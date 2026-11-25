@@ -45,7 +45,7 @@ test('fixed 2.6.1.23 screen-effect GCALLs initialize the original matrix and rec
     assert.equal(screenEffectRawMessage(profile, canonical), raw);
     assert.equal(mapABIMessage(profile, 'screen', 'canonical', raw), canonical);
   }
-  assert.throws(() => screenEffectRawMessage(profile, 382), /Unreviewed ABI message/);
+  assert.throws(() => screenEffectRawMessage(profile, 389), /Unreviewed ABI message/);
   const world = await makeWorld(profile);
   try {
     const { screen, fields } = world.configuration;
@@ -128,6 +128,45 @@ test('fixed 2.6.1.23 screen-effect GCALLs initialize the original matrix and rec
   } finally {
     await world.close({ flushFiles: false });
   }
+});
+
+test('2.6.1.23 Shade submits the padded capture with the original vertex extent', async (t) => {
+  const world = await makeWorld(profile);
+  t.after(() => world.close({ flushFiles: false }));
+  const { graphics, screenEffects, stageRenderer } = world,
+    { rendering, tasks } = screenEffects;
+  graphics.view.configure({
+    clientWidth: 13,
+    clientHeight: 7,
+    drawingRectangle: [0, 0, 13, 7],
+  });
+  stageRenderer.gpu = new ScreenVectorGPU(13, 7);
+  graphics.createLogicalDevice();
+  const id = await world.objects.create({ kind: 37, parent: world.main.id }),
+    target = world.nativeTaskID(id),
+    { state } = tasks.get(id);
+  assert.equal(screenEffectRawMessage(profile, 382), 347);
+  assert.equal(screenEffectRawMessage(profile, 383), 348);
+  await worldCall(world, 525, [target, 8, floatBits(1.25), floatBits(50)]);
+  assert.equal(state.radius, 4);
+  assert.equal(state.geometry.length, 98);
+  assert.deepEqual(
+    state.geometry[0].vertices.map(({ u, v }) => [u, v]),
+    [
+      [0, 0],
+      [13 / 16, 0],
+      [0, 7 / 8],
+    ],
+  );
+  await worldCall(world, 526, [target, 0x81300000]);
+  await rendering.render([], async () => {}, null);
+  assert.equal(await world.sendNativeEngine(target, world.main.id, 377), 0x81300000);
+  const padding = state.work[0],
+    surface = stageRenderer.surfaces.get(padding);
+  assert.deepEqual([surface.width, surface.height], [16, 8]);
+  assert.equal(stageRenderer.surfacePixels(padding).at(-1), 255);
+  await world.objects.release(id);
+  assert.ok(!stageRenderer.surfaces.records.has(padding));
 });
 
 test('fixed 2.6.1.23 mosaic and break starts preserve stopped receiver clocks', async () => {

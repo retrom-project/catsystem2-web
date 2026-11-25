@@ -1248,6 +1248,7 @@ export default {
     imageFilterRequiresLayers: true,
     screenEffectRetimesOnActiveInit: [38, 39, 50, 51, 52],
     screenEffectPreserveStoppedClockKinds: [38, 39, 50, 51, 52],
+    screenEffectFadeUsesEndClamp: true,
     screenEffectWipeBorrowsMask: true,
     screenEffectBreakUsesLogicalCapture: true,
     screenEffectMosaic: { fadeInitializerWords: 6, retainShortWipe: true },
@@ -1612,7 +1613,7 @@ export default {
         {
           ids: [525, 526, 527, 528, 529],
           value:
-            'Own 2.6.1.67 Screen kind37/38 at 0x47dca0/0x47d710 use raw371–375. They configure the shade radius, priority interval and fade duration, start the selected mode and latch its finish field. The fade in 0x47d1d0 uses unsigned 255-times-elapsed division. Active initialization retimes the fade; a stop preserves its clock. All wrappers return 2 without a guest result.',
+            'Own 2.6.1.67 Screen kind37/38 at 0x47dca0/0x47d710 use raw371–375. They configure the shade radius, priority interval and fade duration, start the selected mode and latch its finish field. The fade in 0x47d1d0 clamps the unsigned delta to the absolute end before low-word multiplication by 255 and unsigned division. Active initialization retimes the fade; a stop preserves its clock. All wrappers return 2 without a guest result.',
         },
         {
           ids: [196, 197, 198, 200, 203],

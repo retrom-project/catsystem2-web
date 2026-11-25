@@ -181,6 +181,19 @@ export class NativeScreenEffectTask {
   get paddedBreakCapture() {
     return nativeABI(this.world.profile).graphics.screenEffectBreakUsesPaddedCapture;
   }
+  get paddedShadeCapture() {
+    return nativeABI(this.world.profile).graphics.screenEffectShadeUsesPaddedCapture;
+  }
+  shadeGeometry(width, height, radius) {
+    const padded = this.paddedShadeCapture;
+    return shadeGeometry(
+      width,
+      height,
+      padded ? screenTextureSize(width) : width,
+      padded ? screenTextureSize(height) : height,
+      radius,
+    );
+  }
   get logicalBreakCapture() {
     return nativeABI(this.world.profile).graphics.screenEffectBreakUsesLogicalCapture;
   }
@@ -222,7 +235,7 @@ export class NativeScreenEffectTask {
     if (kind === 35) await this.initialize(this.state.params, {});
     if (kind === 37) {
       this.state.radius = 0;
-      this.state.geometry = shadeGeometry(width, height, width, height);
+      this.state.geometry = this.shadeGeometry(width, height);
       this.state.initialized = true;
     }
     if (kind === 52) this.state.current = [];
@@ -308,7 +321,7 @@ export class NativeScreenEffectTask {
       const preserveClock = nativeABI(
         this.world.profile,
       ).graphics.screenEffectPreserveStoppedClockKinds?.includes(kind);
-      if (state.active || !preserveClock) {
+      if (kind !== 37 && (state.active || !preserveClock)) {
         state.start = this.clock();
         state.end = (state.start + state.duration) >>> 0;
         state.lastElapsed = 0;
@@ -471,7 +484,7 @@ export class NativeScreenEffectTask {
       state.radius = Math.min(4, params[0] | 0);
       state.minimum = bitsFloat(params[1]);
       state.maximum = bitsFloat(params[2]);
-      state.geometry = shadeGeometry(width, height, width, height, state.radius);
+      state.geometry = this.shadeGeometry(width, height, state.radius);
     } else {
       state.minimum = bitsFloat(params[0]);
       state.maximum = bitsFloat(params[1]);
@@ -571,14 +584,14 @@ export class NativeScreenEffectTask {
   drawSurface(id, alpha = 255, geometry = null) {
     this.rendering.drawSurface(id, geometry, { color: (((alpha & 255) << 24) | 0xffffff) >>> 0 });
   }
-  paddedBreakSurface(id) {
+  paddedCaptureSurface(id) {
     if (!id) return id;
     const source = this.stage.surfaces.get(id),
       width = screenTextureSize(source.width),
       height = screenTextureSize(source.height);
     if (source.width === width && source.height === height) return id;
     const current = this.state.work[0],
-      previous = this.breakCaptureSource;
+      previous = this.paddedCaptureSource;
     if (previous?.id === id && previous.revision === source.revision) return current;
 
     const target = current && this.stage.surfaces.get(current),
@@ -595,7 +608,7 @@ export class NativeScreenEffectTask {
       this.releaseSurface(current);
       this.state.work[0] = next;
     }
-    this.breakCaptureSource = { id, revision: source.revision };
+    this.paddedCaptureSource = { id, revision: source.revision };
     return this.state.work[0];
   }
   async renderCapture() {
@@ -670,7 +683,9 @@ export class NativeScreenEffectTask {
       r.drawSurface(second, large);
     } else {
       r.clear(0, true);
-      r.drawSurface(capture, kind === 37 ? state.geometry : null);
+      const source =
+        kind === 37 && this.paddedShadeCapture ? this.paddedCaptureSurface(capture) : capture;
+      r.drawSurface(source, kind === 37 ? state.geometry : null);
     }
     r.clear(0, true);
     await r.drawRange(state.maximum, 1000000);
@@ -689,15 +704,14 @@ export class NativeScreenEffectTask {
     await r.drawRange(-1, -1);
     r.clear(0, true);
     if (kind === 38) {
-      if (state.active)
+      if (state.active) {
+        const delta = (this.clock() - state.start) >>> 0,
+          usesEndClamp = nativeABI(this.world.profile).graphics.screenEffectFadeUsesEndClamp,
+          elapsed = usesEndClamp ? Math.min(delta, state.end) : delta;
         state.alpha =
           255 -
-          Math.min(
-            255,
-            Math.floor(
-              ((255 * ((this.clock() - state.start) >>> 0)) >>> 0) / Math.max(state.duration, 1),
-            ),
-          );
+          Math.min(255, Math.floor((Math.imul(255, elapsed) >>> 0) / Math.max(state.duration, 1)));
+      }
       this.drawSurface(r.captures[0], state.alpha ?? 255);
     } else if (kind === 39) {
       if (state.active && state.mask)
@@ -709,7 +723,7 @@ export class NativeScreenEffectTask {
     } else if (kind === 52) {
       const padded = this.paddedBreakCapture,
         [projectionWidth, projectionHeight] = state.geometry?.projectionSize ?? [width, height],
-        capture = padded ? this.paddedBreakSurface(r.captures[0]) : r.captures[0];
+        capture = padded ? this.paddedCaptureSurface(r.captures[0]) : r.captures[0];
       if (state.active && state.initialized)
         state.current = breakFrame(
           state,
@@ -755,7 +769,7 @@ export class NativeScreenEffectTask {
   }
   restore(snapshot) {
     this.state = structuredClone(snapshot.state);
-    this.breakCaptureSource = null;
+    this.paddedCaptureSource = null;
     this.stage.restoreSurfaces(snapshot.surfaces);
   }
   async close() {

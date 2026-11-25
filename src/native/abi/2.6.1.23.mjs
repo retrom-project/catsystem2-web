@@ -882,8 +882,9 @@ const mainEvidence = [
       'Own 2.6.1.23 Main 0x48b680 scales signed integer percentages from an unsigned base; 0x48c5c0 and 0x48c5e0 use the native x87 angle constants in inverse order',
   },
   {
-    ids: [527, 528],
-    value: 'Own 2.6.1.23 Main 0x4798f0–0x479950 target the paired Fade receiver at 0x468670',
+    ids: [525, 526, 527, 528, 529],
+    value:
+      'Own 2.6.1.23 Shade 0x451640 and Draw 0x468670 receive raw347–351. Shade clamps its signed radius, initializes the exact padded-capture vertices and stores the whole active word. Draw retimes on active initialization, preserves its clocks on stop, and latches finish through raw351. All five wrappers return control 2 with untouched result words.',
   },
   {
     ids: [520, 530, 531],
@@ -1477,11 +1478,11 @@ export default {
       screen: {
         unmapped: 'reject',
         raw: [
-          ...[377, 378, 379, 380, 381, 384, 385, 387, 388].map((id) => toMessage(id, -35)),
+          { min: 377, max: 388, offset: -35 },
           ...[516, 517, 518, 519, 520, 521, 522].map((id) => toMessage(id, -69)),
         ],
         canonical: [
-          ...[342, 343, 344, 345, 346, 349, 350, 352, 353].map((id) => toMessage(id, 35)),
+          { min: 342, max: 353, offset: 35 },
           ...[447, 448, 449, 450, 451, 452, 453].map((id) => toMessage(id, 69)),
         ],
       },
@@ -1583,7 +1584,9 @@ export default {
     planeKx3UsesLegacyReceiver: true,
     planeMovieLegacy: true,
     tilePlaneRequiresEmptyOwner: true,
-    screenEffectPreserveStoppedClockKinds: [39, 50, 51, 52],
+    screenEffectPreserveStoppedClockKinds: [38, 39, 50, 51, 52],
+    screenEffectFadeUsesEndClamp: true,
+    screenEffectShadeUsesPaddedCapture: true,
     screenEffectWipeBorrowsMask: true,
     screenEffectWipeInitializerWords: 4,
     screenEffectBreakUsesPaddedCapture: true,
@@ -1594,6 +1597,11 @@ export default {
       522: [],
       523: [1, 2, 3, 4, 5, 6, 7, 8],
       524: [],
+      525: [2, 3],
+      526: [],
+      527: [2, 3],
+      528: [],
+      529: [],
       530: [2, 3],
       531: [],
       853: [2, 3],
@@ -2229,7 +2237,8 @@ export default {
         { ids: [38, 39, 42], fields: { resultWritten: true } },
         { ids: [41, 43, 44], fields: { resultWritten: false } },
         { ids: [520], fields: { resultWritten: true } },
-        { ids: [527, 528, 530, 531], fields: { resultWritten: false } },
+        { ids: [525, 526, 527, 528, 529], fields: { review: 'reviewed', resultWritten: false } },
+        { ids: [530, 531], fields: { resultWritten: false } },
         { ids: [46], fields: { resultWritten: false } },
         { ids: [62, 63], fields: { resultWritten: true } },
         { ids: [568, 858, 859], fields: { resultWritten: false } },

@@ -53,6 +53,17 @@ The shared receiver uses canonical messages 377, 387 and 388 for these
 operations. Main530 and Main905 select the gradient and threshold modes,
 respectively.
 
+Shade uses a power-of-two capture in .23 and a logical-size capture in .63 and
+.67 under the virtual device. Its vertices retain the original capture extent
+and signed radius, capped at four. Main525 initializes Shade and Main526 writes
+its raw activity word. Main529 sets the Draw finish latch. Those calls route
+through canonical messages 382, 383 and 386.
+
+Draw retimes an active fade on initialization and retains both clock words on
+stop. These three builds bound the unsigned elapsed word by the absolute end
+before multiplying it by 255. Wrapped frames can therefore retain an
+intermediate alpha at completion.
+
 ## FES projection
 
 The five FES object/resource drivers and global commands remain in domain 7.

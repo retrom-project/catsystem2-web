@@ -106,6 +106,44 @@ test('2.6.1.23 transition wrappers retain the captured fade and wipe inputs', as
   }
 });
 
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
+]) {
+  test(`${profile} Fade uses its wrapped end word and retains stopped clocks`, async (t) => {
+    const world = await makeWorld(profile);
+    t.after(() => world.close({ flushFiles: false }));
+    const { screenEffects, main } = world,
+      id = await world.objects.create({ kind: 38, parent: main.id }),
+      target = world.nativeTaskID(id),
+      { state, record } = screenEffects.tasks.get(id),
+      invoke = (slot, ...args) => world.runtime.native('main', slot, args, main.machine, main),
+      render = () => screenEffects.rendering.render([], async () => {}, null);
+    await invoke(527, target, 10, floatBits(2), floatBits(24));
+    record.effectiveFrame = 0xfffffff8;
+    await invoke(528, target, 17);
+    await invoke(529, target);
+    assert.deepEqual(
+      [state.active, state.start, state.end, state.finishFlag],
+      [17, 0xfffffff8, 2, 1],
+    );
+    record.effectiveFrame = 1;
+    await render();
+    assert.deepEqual([state.active, state.alpha], [17, 204]);
+    record.effectiveFrame = 3;
+    await render();
+    assert.deepEqual([state.active, state.alpha], [0, 204]);
+    record.effectiveFrame = 121;
+    await invoke(528, target, 7);
+    record.effectiveFrame = 126;
+    await invoke(527, target, 9, floatBits(2), floatBits(24));
+    record.effectiveFrame = 149;
+    await invoke(528, target, 0);
+    assert.deepEqual([state.active, state.start, state.end, state.finishFlag], [0, 126, 135, 1]);
+  });
+}
+
 test('command defaults, signed duration and unsigned32-to-f32 ranges are explicit', () => {
   assert.deepEqual(fesScreenEffectOptions(31, [], numbers), {
     duration: 30,
