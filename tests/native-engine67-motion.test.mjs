@@ -188,7 +188,7 @@ test('2.6.1.67 Motion matrix calls preserve native fallback, SSE2 products and f
     );
     assert.equal(machine.load(132), floatBits(35));
   }
-  const malformed = await motion(23, []),
+  const malformed = await motion(23, [64]),
     guarded = await motion(0, [64]);
   assert.throws(() => malformed.update(0), /expects 4 arguments/);
   assert.throws(() => guarded.update(0), /Unrecovered MOT native .*:0/);
@@ -743,4 +743,202 @@ test('2.6.1.67 motion playback retains unsigned timing, shift, raw active words 
   assert.equal(third.instance.activeWord, 0x81366521);
   manager.clear();
   assert.equal((await execute('finish.kcs')).load(96), 0);
+});
+
+// Full original Main GCALL words, including hardware-range and live-stack cases.
+const originalMatrixCalls = [
+  {
+    id: 204,
+    label: 'raw angle 0 5f000000',
+    args: [64, 1593835520, 0, 0],
+    initialize: [
+      [64, 1067953684],
+      [68, 1043207291],
+      [72, 3205639438],
+      [76, 1034147594],
+      [80, 1050589266],
+      [84, 1064011039],
+      [88, 3194180600],
+      [92, 1067215487],
+      [96, 3213122077],
+      [100, 1060320051],
+      [104, 3221644902],
+      [108, 1065940419],
+      [112, 3246981120],
+      [116, 1090781184],
+      [120, 1100538184],
+      [124, 1059900621],
+    ],
+    expected: [
+      2143289344, 2143289344, 2143289344, 2143289344, 2143289344, 2143289344, 2143289344,
+      2143289344, 2143289344, 2143289344, 2143289344, 2143289344, 2143289344, 2143289344,
+      2143289344, 2143289344,
+    ],
+  },
+  {
+    id: 662,
+    label: 'raw angle 0 7fc12f00',
+    args: [64, 2143366912, 0, 0],
+    initialize: [
+      [64, 1067953684],
+      [68, 1043207291],
+      [72, 3205639438],
+      [76, 1034147594],
+      [80, 1050589266],
+      [84, 1064011039],
+      [88, 3194180600],
+      [92, 1067215487],
+      [96, 3213122077],
+      [100, 1060320051],
+      [104, 3221644902],
+      [108, 1065940419],
+      [112, 3246981120],
+      [116, 1090781184],
+      [120, 1100538184],
+      [124, 1059900621],
+    ],
+    expected: [
+      2143366912, 2143366912, 2143366912, 0, 2143366912, 2143366912, 2143366912, 0, 2143366912,
+      2143366912, 2143366912, 0, 0, 0, 0, 1065353216,
+    ],
+  },
+  {
+    id: 205,
+    label: 'fallback matrix ffffffff',
+    args: [4294967295, 1050673152, 3221225472, 1063256064],
+    initialize: [
+      [4294967040, 1067953684],
+      [4294967044, 1043207291],
+      [4294967048, 3205639438],
+      [4294967052, 1034147594],
+      [4294967056, 1050589266],
+      [4294967060, 1064011039],
+      [4294967064, 3194180600],
+      [4294967068, 1067215487],
+      [4294967072, 3213122077],
+      [4294967076, 1060320051],
+      [4294967080, 3221644902],
+      [4294967084, 1065940419],
+      [4294967088, 3246981120],
+      [4294967092, 1090781184],
+      [4294967096, 1100538184],
+      [4294967100, 1059900621],
+    ],
+    expected: [
+      1068163399, 1008981776, 3204465033, 1034147594, 1060183736, 3217232494, 1062790496,
+      1067215487, 3207797408, 3216527852, 3214210498, 1065940419, 3246870528, 1088212173,
+      1100847842, 1059900621,
+    ],
+  },
+  {
+    id: 206,
+    label: 'raw parameter 1',
+    args: [64, 1, 1, 1],
+    initialize: [
+      [64, 1067953684],
+      [68, 1043207291],
+      [72, 3205639438],
+      [76, 1034147594],
+      [80, 1050589266],
+      [84, 1064011039],
+      [88, 3194180600],
+      [92, 1067215487],
+      [96, 3213122077],
+      [100, 1060320051],
+      [104, 3221644902],
+      [108, 1065940419],
+      [112, 3246981120],
+      [116, 1090781184],
+      [120, 1100538184],
+      [124, 1059900621],
+    ],
+    expected: [
+      1, 0, 2147483649, 1034147594, 0, 1, 0, 1067215487, 2147483649, 1, 2147483650, 1065940419,
+      2147483665, 8, 19, 1059900621,
+    ],
+  },
+  {
+    id: 204,
+    label: 'rotation destination aliases live GCALL arguments',
+    args: [788, 1050673152, 3199649972, 1035489772],
+    initialize: [
+      [788, 788],
+      [792, 1050673152],
+      [796, 3199649972],
+      [800, 1035489772],
+      [804, 1050589266],
+      [808, 1064011039],
+      [812, 3194180600],
+      [816, 1067215487],
+      [820, 3213122077],
+      [824, 1060320051],
+      [828, 3221644902],
+      [832, 1065940419],
+      [836, 3246981120],
+      [840, 1090781184],
+      [844, 1100538184],
+      [848, 1059900621],
+    ],
+    expected: [
+      1018413712, 1053970049, 3195149655, 1035489772, 1045060051, 1064772081, 1041480104,
+      1067215487, 3207617487, 1067491304, 3221056530, 1065940419, 3249383841, 1019687424,
+      1098884362, 1059900621,
+    ],
+  },
+];
+
+test('2.6.1.67 Main matrix calls retain original raw words and live argument aliases', async (t) => {
+  const files = Object.fromEntries(
+    originalMatrixCalls.map((row, index) => {
+      const program = motionProgram([[row.id, row.args]]);
+      if (row.label.includes('aliases')) new DataView(program.buffer).setUint32(32, 784, true);
+      return [`matrix-${index}.kcs`, program];
+    }),
+  );
+  const world = await dataWorld(profile, files);
+  t.after(() => world.close({ flushFiles: false }));
+  for (const [index, row] of originalMatrixCalls.entries()) {
+    const task = await world.spawnScript(`matrix-${index}.kcs`, { initialExecute: false }),
+      m = task.machine,
+      floor = m.sp,
+      current = new DataView(world.calculations.matrix.buffer);
+    for (const [at, word] of row.initialize)
+      if (at >= 0xffffff00) current.setUint32(at & 255, word, true);
+      else m.store(at, word);
+    await world.runtime.scheduler.execute(task);
+    assert.equal(m.sp, floor + 4);
+    assert.equal(m.pop(), 0xa0263136);
+    assert.deepEqual(
+      row.expected.map((_, i) =>
+        row.args[0] === 0xffffffff ? current.getUint32(i * 4, true) : m.load(row.args[0] + i * 4),
+      ),
+      row.expected,
+      row.label,
+    );
+  }
+});
+
+test('2.6.1.67 zero-word Motion XYZ rotation reads the live mapped stack after each axis', async () => {
+  const program = kcsProgram([[43, 23, 0], [59]]);
+  new DataView(program.buffer).setUint32(32, 788, true);
+  const instance = new MotionInstance(await readKCS(program), { profile }),
+    m = instance.machine,
+    words = [
+      788, 0x3ea00000, 0xbeb6c8b4, 0x3db851ec, 0x3e9eb852, 0x3f6b851f, 0xbe6353f8, 0x3f9c6a7f,
+      0xbf845a1d, 0x3f333333, 0xc0066666, 0x3f88f5c3, 0xc1890000, 0x41040000, 0x4198e148,
+      0x3f2ccccd,
+    ];
+  words.forEach((word, i) => m.store(788 + i * 4, word));
+  m.store(784, 0x36eb67a5);
+  assert.equal(instance.run().status, 'halted');
+  assert.equal(m.sp, 788);
+  assert.equal(m.load(784), 0x36eb67a5);
+  assert.deepEqual(
+    words.map((_, i) => m.load(788 + i * 4)),
+    [
+      0x3cb3c290, 0x3ed24e81, 0xbe721d57, 0x3db851ec, 0x3e4a59d3, 0x3f7721f1, 0x3e13b9a8,
+      0x3f9c6a7f, 0xbf305bcf, 0x3fa09fe8, 0xbffd6c12, 0x3f88f5c3, 0xc1ada9a1, 0x3cc73200,
+      0x417fa50a, 0x3f2ccccd,
+    ],
+  );
 });
