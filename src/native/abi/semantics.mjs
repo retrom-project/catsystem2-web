@@ -41255,6 +41255,33 @@ function freeze(value) {
   return value;
 }
 
+export const NATIVE_PREFERENCE_DATA_IDS = freeze([360, 582, 583, 584, 589]);
+export function nativePreferenceDataSignatures(ids = NATIVE_PREFERENCE_DATA_IDS) {
+  return ids.map((id) => {
+    const signature = NATIVE_SEMANTICS.main[id].signature;
+    return {
+      ids: [id],
+      fields: {
+        resultWritten: signature.controlCodes[0] === 1,
+        parameters: signature.parameters.map((parameter) =>
+          parameter.type.kind === 'pointer'
+            ? {
+                ...parameter,
+                type: {
+                  ...parameter.type,
+                  addressSpace: 'vm',
+                  direction: id === 360 ? 'in' : 'out',
+                  target: id === 360 ? parameter.type.target : { kind: 'bits', bits: 32 },
+                },
+              }
+            : parameter,
+        ),
+        review: 'reviewed',
+      },
+    };
+  });
+}
+
 // Shared content pointer/owner metadata; a profile must still admit each own-proved slot.
 export function nativeContentDatabaseSignatures(ids) {
   return ids.map((id) => {

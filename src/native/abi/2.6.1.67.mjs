@@ -2,6 +2,8 @@
 // Own normal data; physical executable layouts belong to the explicit oracle.
 import {
   NATIVE_SEMANTICS,
+  NATIVE_PREFERENCE_DATA_IDS as preferenceDataOperations,
+  nativePreferenceDataSignatures,
   nativeContentDatabaseSignatures,
   NATIVE_TILE_GAME_IDS as tileGameOperations,
   NATIVE_TILE_GAME_SIGNATURES,
@@ -35,7 +37,6 @@ const crossTaskSceneOperations = [233, 234];
 const historyCursorOperations = [379, 380, 381, 382, 383, 384];
 const initializedMatrixOperations = [204, 205, 206, 662];
 const sseGeometryOperations = [350, 352];
-const preferenceDataOperations = [360, 582, 583, 584, 589];
 
 const fesLocalOperations = [664, 665, 666, 667, 668];
 const fesTarget = {
@@ -2433,26 +2434,7 @@ export default {
         { ids: [361], fields: { review: 'reviewed' } },
         { ids: [533], fields: { review: 'reviewed' } },
         ...nativeContentDatabaseSignatures(compiledDatabaseOperations),
-        ...preferenceDataOperations.map((id) => ({
-          ids: [id],
-          fields: {
-            resultWritten: NATIVE_SEMANTICS.main[id].signature.controlCodes[0] === 1,
-            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) =>
-              parameter.type.kind === 'pointer'
-                ? {
-                    ...parameter,
-                    type: {
-                      ...parameter.type,
-                      addressSpace: 'vm',
-                      direction: id === 360 ? 'in' : 'out',
-                      target: id === 360 ? parameter.type.target : { kind: 'bits', bits: 32 },
-                    },
-                  }
-                : parameter,
-            ),
-            review: 'reviewed',
-          },
-        })),
+        ...nativePreferenceDataSignatures(),
         ...nativeContentDatabaseSignatures(selectionDatabaseOperations),
         ...nativeContentDatabaseSignatures(missionDatabaseOperations),
         ...nativeContentDatabaseSignatures(questionDatabaseOperations),
