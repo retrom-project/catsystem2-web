@@ -4,18 +4,18 @@
 activity, single callback slot, shared captures and private working textures.
 `NativeScreenEffectRenderer` submits their phases through `StageRenderer`.
 
-| Native task | Effect      | JS state                                                      |
-| ----------- | ----------- | ------------------------------------------------------------- |
-| 35          | Blur        | Two captures, transformed previous-frame feedback             |
-| 36          | Mosaic      | Capture, reduced target, first-initialization geometry        |
-| 37          | Shade       | The original 49-quad index collisions and radius weights      |
-| 38          | Draw        | Captured frame alpha over the live priority range             |
-| 39          | Wipe        | Shared bitmap alias and independent resized blue-channel mask |
-| 50          | Wipe mosaic | Two private captures, discrete mirrored cache                 |
-| 51          | Fade mosaic | Private capture, discrete resampling and alpha cache          |
-| 52          | Break       | Shared RNG, triangle velocities and accumulated rotations     |
-| 57          | Page flip   | Stored-f32 page mesh and curl projection                      |
-| 58          | Cube flip   | Two face meshes, sweep band and background color              |
+| Native task | Effect      | JS state                                                  |
+| ----------- | ----------- | --------------------------------------------------------- |
+| 35          | Blur        | Two captures, transformed previous-frame feedback         |
+| 36          | Mosaic      | Capture, reduced target, first-initialization geometry    |
+| 37          | Shade       | The original 49-quad index collisions and radius weights  |
+| 38          | Draw        | Captured frame alpha over the live priority range         |
+| 39          | Wipe        | Resized blue-channel mask and captured working alpha      |
+| 50          | Wipe mosaic | Two private captures, discrete mirrored cache             |
+| 51          | Fade mosaic | Private capture, discrete resampling and alpha cache      |
+| 52          | Break       | Shared RNG, triangle velocities and accumulated rotations |
+| 57          | Page flip   | Stored-f32 page mesh and curl projection                  |
+| 58          | Cube flip   | Two face meshes, sweep band and background color          |
 
 Task and sender IDs resolve through their Top namespace. SDK messages retain
 the independently mapped screen ranges. Raw activity values, untouched reply
@@ -35,6 +35,23 @@ textures and mask pixels survive a fresh World restore independently of bitmap
 aliases. A pending render/capture rejects checkpoints. The transitional device's
 creation result initializes the shared JS depth/filter context before captures.
 Original graph traversal remains the model producer until phase 6.6.
+
+The reviewed 2.6.1.23, 2.6.1.63 and 2.6.1.67 Wipe receivers borrow the 32-bit
+source long enough to make a private mask. Initialization resets working alpha
+with the gradient calculation at elapsed zero. Stopping preserves both clock
+words. The .23 receiver reads four initializer words and uses gradient mode.
+The .63 and .67 receivers read a fifth word. It selects the threshold mode that
+preserves cleared pixels across restarts.
+
+| Build    | Raw query, initialize, start | Main wrappers      |
+| -------- | ---------------------------- | ------------------ |
+| 2.6.1.23 | 342, 352, 353                | 520, 530, 531      |
+| 2.6.1.63 | 365, 375, 376                | 520, 530, 531, 905 |
+| 2.6.1.67 | 366, 376, 377                | 520, 530, 531, 905 |
+
+The shared receiver uses canonical messages 377, 387 and 388 for these
+operations. Main530 and Main905 select the gradient and threshold modes,
+respectively.
 
 ## FES projection
 

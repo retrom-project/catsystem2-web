@@ -290,15 +290,18 @@ export class NativeScreenEffectTask {
     context.nativeUnhandled = false;
     if (!state.capability) return NATIVE_UNWRITTEN_WORD;
     if (initialize) {
-      const memory =
+      const graphics = nativeABI(this.world.profile).graphics,
+        memory =
           context.payload ??
           context.machine ??
           this.world.objects.machine(context.nativeSenderWorldID ?? sender),
-        fadeWords = nativeABI(this.world.profile).graphics.screenEffectMosaic?.fadeInitializerWords,
-        size = ((kind === 51 && fadeWords) || payloadWords.get(message)) * 4,
+        wipeWords = kind === 39 && graphics.screenEffectWipeInitializerWords,
+        fadeWords = kind === 51 && graphics.screenEffectMosaic?.fadeInitializerWords,
+        size = (wipeWords || fadeWords || payloadWords.get(message)) * 4,
         bytes = memory.bytes ? memory.bytes(l, size) : memory.read(l, size),
         view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
         params = Array.from({ length: size / 4 }, (_, i) => view.getUint32(i * 4, true));
+      if (wipeWords === 4) params.push(0);
       await this.initialize(params, context);
     } else if (start) {
       state.active = l >>> 0;

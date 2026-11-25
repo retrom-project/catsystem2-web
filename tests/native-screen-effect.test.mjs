@@ -8,6 +8,7 @@ import {
   NativeScreenEffectTask,
   screenEffectRawMessage,
 } from '../oracle/screen-effect-original.mjs';
+import { KCSMachine, floatBits, readKCS } from '../src/kcs.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { nativeRectangleDefinitions } from '../src/native/windows-rectangles.mjs';
@@ -15,6 +16,8 @@ import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
+import { makeWorld } from './fixtures/fes-effect-model-world.mjs';
+import { ScreenVectorGPU } from './fixtures/screen-effects-fixture.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
 
 function sdkWorld(exe, source = '') {
@@ -69,6 +72,101 @@ test('screen effects retain their independent SDK raw message ranges', () => {
     assert.equal(screenEffectRawMessage(game, canonical), canonical);
   }
 });
+
+for (const [profile, raw, initializer, packetWords, advanced, restarted] of [
+  ['grisaia-jp-engine-2.6.1.23', [342, 352, 353], 530, 4, 128, 255],
+  ['bokutomo-engine-2.6.1.67', [366, 376, 377], 905, 5, 0, 0],
+]) {
+  test(`${profile} Wipe reads its original packet and keeps private alpha and clocks`, async (t) => {
+    const world = await makeWorld(profile);
+    t.after(() => world.close({ flushFiles: false }));
+    assert.deepEqual(
+      [377, 387, 388].map((message) => screenEffectRawMessage(profile, message)),
+      raw,
+    );
+    const { graphics, screenEffects, stageRenderer: stage } = world,
+      rendering = screenEffects.rendering;
+    graphics.view.configure({
+      clientWidth: 4,
+      clientHeight: 2,
+      drawingRectangle: [1, 0, 3, 2],
+    });
+    stage.gpu = new ScreenVectorGPU(4, 2);
+    graphics.createLogicalDevice();
+    assert.equal(rendering.prepare(1), true);
+    stage.writeSurface(
+      rendering.captures[0],
+      Uint8Array.from({ length: 32 }, (_, i) => (i % 4 === 3 ? 79 : 31)),
+    );
+    const id = await world.objects.create({ kind: 39, parent: world.main.id }),
+      target = world.nativeTaskID(id),
+      wipe = screenEffects.tasks.get(id),
+      bitmap = graphics.images.create(4, 2, world.main.id),
+      dataHandle = graphics.images.get(bitmap).dataHandle;
+    await graphics.images.get(bitmap).fill(0, 0, 4, 2, 0xff0000ff);
+
+    const marker = 0xe067c223;
+    const call = async (slot, args, result) => {
+      const code = await readKCS(
+          kcsProgram([
+            [37, marker],
+            ...args.map((arg) => [37, arg]),
+            [43, slot, args.length * 4],
+            [59],
+          ]),
+        ),
+        task = { ...world.main, io: null },
+        machine = (task.machine = new KCSMachine(code, {
+          native: (number, supplied, vm) =>
+            world.runtime.scheduler.native(task, number, supplied, vm),
+        }));
+      assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+      assert.equal(machine.sp, machine.floor + (result === undefined ? 4 : 8));
+      if (result !== undefined) assert.equal(machine.pop(), result);
+      assert.equal(machine.pop(), marker);
+    };
+    const requestSizes = [];
+    const send = world.sendNativeEngine.bind(world);
+    world.sendNativeEngine = (nativeID, sender, message, w, l, context) => {
+      if (message !== 387) return send(nativeID, sender, message, w, l, context);
+      return send(nativeID, sender, message, w, l, {
+        ...context,
+        payload: {
+          bytes(at, size) {
+            requestSizes.push(size);
+            return context.payload.bytes(at, size);
+          },
+        },
+      });
+    };
+    const alpha = () => stage.surfacePixels(wipe.state.work[0])[7];
+    const initialize = (minimum) => call(initializer, [target, 4, minimum, floatBits(100), bitmap]);
+    assert.equal(alpha(), 79);
+    await initialize(0x7f801234);
+    assert.equal(wipe.state.params[0], 0x7fc01234);
+    await initialize(floatBits(0));
+    assert.deepEqual(requestSizes, [4 * packetWords, 4 * packetWords]);
+    assert.equal(alpha(), 255);
+    assert.equal(wipe.state.maskSource, 0);
+    await graphics.images.release(bitmap);
+    assert.ok(!graphics.images.handles.records.has(dataHandle));
+
+    wipe.record.effectiveFrame = 7;
+    await call(531, [target, 1]);
+    await call(520, [target], 1);
+    wipe.record.effectiveFrame = 8;
+    await rendering.render([], async () => {}, null);
+    assert.equal(alpha(), advanced);
+    wipe.record.effectiveFrame = 9;
+    await call(531, [target, 0]);
+    await call(520, [target], 0);
+    assert.deepEqual([wipe.state.start, wipe.state.end], [7, 11]);
+    wipe.record.effectiveFrame = 18;
+    await call(531, [target, 1]);
+    await rendering.render([], async () => {}, null);
+    assert.equal(alpha(), restarted);
+  });
+}
 
 // Only the receiver/packet path is exercised here. The fields are authored
 // native records; this does not claim device initialization or visual output.

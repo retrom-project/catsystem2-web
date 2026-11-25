@@ -117,12 +117,12 @@ export class NativeEffectCommands {
         a.slice(2).forEach((word, i) => packet.store(64 + i * 4, word));
         await send(378, 0, packet);
       } else if (id === 0x212 || id === 0x389) {
-        if (a[4])
-          await send(
-            387,
-            0,
-            new NativeGraphicsPacket([a[2], a[3], a[1], a[4], Number(id === 0x389)]),
-          );
+        if (a[4]) {
+          const fields = [a[2], a[3], a[1], a[4]];
+          if (abi?.graphics.screenEffectWipeInitializerWords !== 4)
+            fields.push(Number(id === 0x389));
+          await send(387, 0, new NativeGraphicsPacket(fields));
+        }
       } else {
         const [message, fields] = initializers.get(id);
         await send(

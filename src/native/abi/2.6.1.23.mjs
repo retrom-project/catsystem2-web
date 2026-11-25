@@ -872,9 +872,13 @@ const mainEvidence = [
       'Own 2.6.1.23 Main 0x48b680 scales signed integer percentages from an unsigned base; 0x48c5c0 and 0x48c5e0 use the native x87 angle constants in inverse order',
   },
   {
-    ids: [520, 527, 528, 530, 531],
+    ids: [527, 528],
+    value: 'Own 2.6.1.23 Main 0x4798f0–0x479950 target the paired Fade receiver at 0x468670',
+  },
+  {
+    ids: [520, 530, 531],
     value:
-      'Own 2.6.1.23 Main 0x479670, 0x4798f0–0x479950 and 0x4799d0–0x479a30 target the active read and paired Fade and Wipe receivers at 0x468670 and 0x456d00',
+      'Own 2.6.1.23 wrappers 0x479670/0x4799d0/0x479a30 send Wipe raw342/352/353 to the receiver at 0x456d00. Main530 quiets two F32 priorities and sends the four-word initializer. The task copies the borrowed 32-bit mask into its private texture, resets working alpha, and preserves the two clocks on stop. Main520 returns control 1. Main530/531 return control 2 without writing a result.',
   },
   {
     ids: [38, 39, 41, 42, 43, 44],
@@ -1567,14 +1571,19 @@ export default {
     planeKx3UsesLegacyReceiver: true,
     planeMovieLegacy: true,
     tilePlaneRequiresEmptyOwner: true,
-    screenEffectPreserveStoppedClockKinds: [50, 51, 52],
+    screenEffectPreserveStoppedClockKinds: [39, 50, 51, 52],
+    screenEffectWipeBorrowsMask: true,
+    screenEffectWipeInitializerWords: 4,
     screenEffectBreakUsesPaddedCapture: true,
     screenEffectMosaic: { fadeInitializerWords: 5, retainShortWipe: true },
     screenEffectFloatArguments: {
+      520: [],
       521: [2, 3, 4, 6, 7],
       522: [],
       523: [1, 2, 3, 4, 5, 6, 7, 8],
       524: [],
+      530: [2, 3],
+      531: [],
       853: [2, 3],
       854: [],
       855: [],

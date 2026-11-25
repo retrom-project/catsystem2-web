@@ -1242,9 +1242,11 @@ export default {
     imageFilterRequiresLayers: true,
     screenEffectRetimesOnActiveInit: [38, 39, 50, 51, 52],
     screenEffectPreserveStoppedClockKinds: [38, 39, 50, 51, 52],
+    screenEffectWipeBorrowsMask: true,
     screenEffectBreakUsesLogicalCapture: true,
     screenEffectMosaic: { fadeInitializerWords: 6, retainShortWipe: true },
     screenEffectFloatArguments: {
+      520: [],
       521: [2, 3, 4, 6, 7],
       522: [],
       523: [1, 2, 3, 4, 5, 6, 7, 8],
@@ -1255,6 +1257,7 @@ export default {
       528: [],
       529: [],
       530: [2, 3],
+      531: [],
       853: [2, 3],
       854: [],
       855: [],
@@ -1653,7 +1656,7 @@ export default {
         {
           ids: [520, 530, 531, 905],
           value:
-            'Own 2.6.1.67 Screen kind39 receiver 0x47d090 reads active at raw366, initializes five words at 376, and starts/stops at 377. Main530 and 905 translate the bitmap, quiet the two F32 priorities and set gradient or threshold respectively. An active initialization retimes the effect; a stop leaves its previous clock. Main520 writes control 1 on null or active query; the other wrappers use control 2 with no result.',
+            'Own 2.6.1.67 Screen kind39 receiver 0x47d090 reads active at raw366, initializes five words at raw376, and starts/stops at raw377. Main530/905 at 0x49d3c0/0x49d430 quiet the two F32 priorities, select gradient or threshold, and borrow the 32-bit source for a private mask copy. Both modes reset work alpha on initialization. Threshold restarts preserve cleared pixels, and stop preserves the clock. Main520 returns control 1 on null or active query. Main530/531/905 return control 2 without writing a result.',
         },
         {
           ids: [111],
