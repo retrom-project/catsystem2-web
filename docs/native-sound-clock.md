@@ -1,4 +1,4 @@
-# PLV uses the system timer
+# Native sound timing and bank commands
 
 `NativeSound.now()` reads the World's shared system clock and truncates it to
 the DWORD returned by `timeGetTime`. It supplies PLV start times and sample
@@ -147,3 +147,12 @@ high-bit DWORD IDs remain independent. The original tree allocation, erasure
 and destruction chain releases every allocated group node; the shared owner
 preserves its records through a cold World restore and closes with its Sound
 task. These commands register selection data and do not start playback.
+
+Main166 packs its signed 16-bit target pan and unsigned 16-bit duration before
+storing the fade state at the Sound task's current-minus-base frame. Main167
+ignores the first distance float and stores the second as maximum distance,
+preserving minimum distance. In these three builds distance, position,
+velocity and Doppler setters require a loaded static buffer; an absent 3D output interface still preserves that buffer value.
+Absent devices, streaming backends and invalid banks retain their native
+no-change behavior. The setter proof covers control state and captured output
+arguments; subsequent fade ticks and playback remain separate checks.

@@ -3347,9 +3347,13 @@ test('63 FES sound loads, plays and closes through its own Sound receiver', asyn
   );
   assert.ok(world.sound.playing(0));
   assert.ok(world.sound.playing(2));
+  assert.equal(
+    await nativeSound.message([main.nativeID, 184, 0, 0]),
+    world.sound.device[0].pan >>> 0,
+  );
   await assert.rejects(
-    nativeSound.message([main.nativeID, 184, 0, 0]),
-    /Unreviewed ABI message .*\/sound\/canonical\/184/,
+    nativeSound.message([main.nativeID, 196, 0, 0]),
+    /Unreviewed ABI message .*\/sound\/canonical\/196/,
   );
   await world.sendEngine(id, main.id, 3, 0, 0);
   assert.deepEqual(

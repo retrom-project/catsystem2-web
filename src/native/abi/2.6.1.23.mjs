@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [166, 167],
+    value:
+      'Own Main166 and Main167 complete GCALLs preserve this build’s packed signed 16-bit target pan, unsigned 16-bit duration and control-2 stack contract. The actual Sound receiver stores the pan fade fields at its native current-minus-base frame, without changing unrelated control words. Main167 ignores its first float and stores only the second as maximum distance on a loaded static buffer, preserving minimum distance and capturing the actual DirectSound output calls. Streaming backends, absent device/backend/buffer and out-of-range banks retain their native no-change behavior. A missing 3D output interface still retains the static buffer maximum. These setter proofs do not claim a playback-device or subsequent fade-tick differential.',
+  },
+  {
     ids: [602, 603],
     value:
       'Own complete Main602/603 GCALLs reach this build’s Sound receiver and actual ordered group tree. Registration stores all five raw words, retains signed range bounds, preserves the first record on duplicate ID and does not normalize reversed ranges. Removal of an absent ID is silent; a removed ID can be registered anew. Zero, high-bit and highest unsigned IDs retain their independent records. Native tree insertion, erasure and destruction release every bounded group allocation. No audio-device playback is performed by these two commands.',
@@ -1137,8 +1142,8 @@ const mainUnobservedIds = Array.from({ length: mainCount }, (_, id) => id).filte
 const baseMessages = [1, 2, 3].map((id) => toMessage(id));
 const cursorVisibility = 21;
 const soundMessages = [
-  166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 180, 181, 182, 183, 184, 185, 187,
-  188, 190, 191, 192, 193, 194, 195, 196, 197,
+  166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184,
+  185, 187, 188, 190, 191, 192, 193, 194, 195, 196, 197,
 ];
 const toSound = (id) => toMessage(id + 13, -13);
 const tables = (count, evidence = [], stubs = {}) => {
@@ -1372,6 +1377,7 @@ export default {
   sound: {
     banks: 32,
     decoderQueryRequiresStaticBuffer: true,
+    spatialRequiresStaticBuffer: true,
     unwrittenQueryBanks: [587],
     firstMessage: 166,
     lastMessage: 197,
@@ -1657,6 +1663,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [166, 167], fields: { review: 'reviewed' } },
         { ids: [165, 349, 569, 587], fields: { review: 'reviewed' } },
         ...nativePreferenceDataSignatures([589]),
         { ids: [361, 533], fields: { review: 'reviewed' } },

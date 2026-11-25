@@ -386,6 +386,7 @@ export default {
   sound: {
     banks: 32,
     decoderQueryRequiresStaticBuffer: true,
+    spatialRequiresStaticBuffer: true,
     unwrittenQueryBanks: [587],
     mainLoadPacketBytes: 280,
     firstMessage: 174,

@@ -974,6 +974,12 @@ export class NativeSoundTask {
     }
     const control = this.controls[selected[0]],
       device = this.sound.device[selected[0]];
+    if (
+      [192, 193, 195, 196].includes(id) &&
+      this.sound.abi.sound.spatialRequiresStaticBuffer &&
+      device.sourceMode !== 'static'
+    )
+      return 0;
     switch (id) {
       case 181:
       case 183:

@@ -534,9 +534,15 @@ test('2.6.1.23 Sound groups put the selector in W and the filename in L', async 
     control: 2,
   });
   assert.deepEqual(wire.at(-1), [100, 182, 1, 0]);
-  assert.deepEqual(sound.device[1].nativeSpatial.velocity, [2, -3, 4]);
+  assert.deepEqual(sound.device[1].nativeSpatial.velocity, [0, 0, 0]);
   await call(348, [1, floatBits(0.5)]);
   assert.deepEqual(wire.at(-1), [100, 183, 1, 0]);
+  assert.equal(sound.device[1].nativeSpatial.dopplerFactor, 1);
+  await call(155, [1, 0, 'voice.wav', 2]);
+  assert.equal(sound.device[1].sourceMode, 'static');
+  await call(347, [1, floatBits(2), floatBits(-3), floatBits(4)]);
+  assert.deepEqual(sound.device[1].nativeSpatial.velocity, [2, -3, 4]);
+  await call(348, [1, floatBits(0.5)]);
   assert.equal(sound.device[1].nativeSpatial.dopplerFactor, 0.5);
   assert.deepEqual(await call(604, [2, 0, 'voice.wav', 0, 2]), {
     control: 1,
@@ -755,6 +761,7 @@ test('2.6.1.67 Sound GCALLs use compact load packets and control the actual Root
         [349, [7], 96],
         [349, [0xffffffff], 100],
       ]),
+      'sound-static.kcs': program([[155, [7, 0, 288, 2], 80]]),
       'sound-spatial.kcs': program([
         [167, range],
         [168, xyz],
@@ -830,12 +837,16 @@ test('2.6.1.67 Sound GCALLs use compact load packets and control the actual Root
   assert.equal(control.float(C.targetPan), -88);
   assert.equal(control.float(C.volumeRemaining), 19);
   assert.equal(control.float(C.panRemaining), 28);
+  const streamedSpatial = structuredClone(device.nativeSpatial);
+  await execute('sound-spatial.kcs');
+  assert.deepEqual(device.nativeSpatial, streamedSpatial);
+  await execute('sound-static.kcs');
   await execute('sound-spatial.kcs');
   assert.equal(device.nativeSpatial.maximumDistance, 72.5);
   assert.deepEqual(device.nativeSpatial.position, [1.25, 2.5, 4.5]);
   assert.deepEqual(device.nativeSpatial.velocity, [-1.5, 2.25, -3.5]);
   assert.equal(device.nativeSpatial.dopplerFactor, 0.5);
-  assert.deepEqual(spatialMessages, [190, 191, 192, 192, 192, 190, 191]);
+  assert.deepEqual(spatialMessages, [190, 191, 192, 192, 192, 190, 191, 190, 191]);
   const paused = await execute('sound-pause.kcs');
   assert.deepEqual(
     [80, 84].map((at) => paused.load(at)),
