@@ -127,17 +127,17 @@ Ordinary audio regressions and the shared owned AudioContext fixture have no
 original-engine dependency. The explicit physical-checkpoint composition test
 lives separately in the oracle group, with its original body and assertions.
 
-SDK23, SDK63 and SDK67 Main569 query the decoded-stream DWORD only for a
-loaded static buffer. Streaming backends and missing devices, backends, buffers
-or decoders return zero. Main587 returns the static buffer's full completion
-count word; it returns zero when the static backend or buffer is absent. With an
-active device, an out-of-range Main587 bank leaves the original result unwritten
-and remains diagnostic. An absent device returns zero even for that bank.
-Main165 retains signed pan readback and Main349 returns only the pending volume
-fade bit; both return zero for out-of-range banks. Their build-specific raw
-messages resolve to the same shared operations, and these query states survive
-a cold World restore. The decoded-stream virtual return port was observed as
-owned data; this query proof does not exercise audio-device playback.
+SDK23, SDK63 and SDK67 Main569 read the primary DirectSound buffer's decoded-
+stream query word. Both Main155 per-file load types use this backend owner; a
+file's streaming/static mode does not select the other global native backend.
+Absent devices, missing buffers or decoders and invalid banks return zero.
+The alternate backend has no proved browser mapping and remains an open shape.
+Main587 returns the primary buffer completion word for the proven static load;
+its actual Main155 stream creation chain is still under audit. An active-device
+out-of-range Main587 bank leaves the original result unwritten and remains
+diagnostic; an absent device returns zero. Main165 retains signed pan readback
+and Main349 returns only the pending volume fade bit. Both return zero for an
+out-of-range bank.
 
 The three older builds also retain the same Main602/603 Sound group owner:
 registration copies five raw words, preserves the first record on a duplicate
@@ -152,7 +152,8 @@ Main166 packs its signed 16-bit target pan and unsigned 16-bit duration before
 storing the fade state at the Sound task's current-minus-base frame. Main167
 ignores the first distance float and stores the second as maximum distance,
 preserving minimum distance. In these three builds distance, position,
-velocity and Doppler setters require a loaded static buffer; an absent 3D output interface still preserves that buffer value.
-Absent devices, streaming backends and invalid banks retain their native
+velocity and Doppler setters use a loaded primary-backend buffer for either per-
+file load type; an absent 3D output interface still preserves that buffer value.
+Absent devices and invalid banks retain their native
 no-change behavior. The setter proof covers control state and captured output
 arguments; subsequent fade ticks and playback remain separate checks.

@@ -53,8 +53,8 @@ for (const profile of profiles) {
       assert.equal(await invoke(world, 569, 0), 0xffffffff);
       assert.equal(await invoke(world, 587, 0), 0x80000001);
       bank.sourceMode = 'stream';
-      assert.equal(await invoke(world, 569, 0), 0);
-      assert.equal(await invoke(world, 587, 0), 0);
+      assert.equal(await invoke(world, 569, 0), 0xffffffff);
+      // Completion count for a stream created through Main155 is a separate pending proof.
       bank.sourceMode = 'static';
       const saved = structuredClone(world.snapshot());
       const cold = await dataWorld(profile, {}, { initialize: false });
@@ -92,7 +92,7 @@ for (const profile of profiles) {
       await world.close({ flushFiles: false });
     }
   });
-  test(`${profile} pan fades pack both fields and distance writes require a static buffer`, async () => {
+  test(`${profile} pan fades pack both fields and ordinary stream spatial updates remain enabled`, async () => {
     const world = await dataWorld(profile, { 'case.kcs': kcsProgram([[43, 0, 0], [59]]) });
     const output = [];
     world.sound.audio = {
@@ -125,20 +125,20 @@ for (const profile of profiles) {
       assert.equal(output.length, 1);
       device.sourceMode = 'stream';
       await invoke(world, 167, 0, floatBits(1), floatBits(25));
-      assert.ok(Object.is(device.nativeSpatial.maximumDistance, -0));
-      assert.equal(output.length, 1);
+      assert.equal(device.nativeSpatial.maximumDistance, 25);
+      assert.equal(output.length, 2);
       await invoke(world, 168, 0, floatBits(1.25), floatBits(2.5), floatBits(4.5));
       await invoke(world, 347, 0, floatBits(-1.5), floatBits(2.25), floatBits(-3.5));
       await invoke(world, 348, 0, floatBits(0.5));
-      assert.deepEqual(device.nativeSpatial.position, [0, 0, 0]);
-      assert.deepEqual(device.nativeSpatial.velocity, [0, 0, 0]);
-      assert.equal(device.nativeSpatial.dopplerFactor, 1);
-      assert.equal(output.length, 1);
+      assert.deepEqual(device.nativeSpatial.position, [1.25, 2.5, 4.5]);
+      assert.deepEqual(device.nativeSpatial.velocity, [-1.5, 2.25, -3.5]);
+      assert.equal(device.nativeSpatial.dopplerFactor, 0.5);
+      assert.equal(output.length, 5);
       device.sourceMode = 'static';
       device.loaded = false;
       await invoke(world, 167, 0, floatBits(1), floatBits(25));
       await invoke(world, 167, 32, floatBits(1), floatBits(25));
-      assert.equal(output.length, 1);
+      assert.equal(output.length, 5);
     } finally {
       await world.close({ flushFiles: false });
     }

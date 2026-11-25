@@ -385,8 +385,6 @@ export default {
   },
   sound: {
     banks: 32,
-    decoderQueryRequiresStaticBuffer: true,
-    spatialRequiresStaticBuffer: true,
     unwrittenQueryBanks: [587],
     mainLoadPacketBytes: 280,
     firstMessage: 174,
@@ -1368,7 +1366,7 @@ export default {
         {
           ids: [569, 587],
           value:
-            'Own full GCALL wrappers send raw195/196 through the actual Sound receiver into its static device buffer. Main569 retains the decoded-stream virtual +28 DWORD and returns zero for absent device, backend, buffer or decoder, for streaming backends and for an invalid bank. Main587 retains the static completion DWORD; missing/static-disabled backends return zero, while an active-device invalid-bank path leaves the result unwritten and remains diagnostic. Pan/fade query controls and every captured Sound/device byte are unchanged. This proof captures decoded-stream return data and does not claim to execute an audio device.',
+            'Own full GCALL wrappers send raw195/196 through the actual Sound receiver into its static device buffer. Main569 retains the primary DirectSound buffer’s decoded-stream virtual +28 DWORD for either per-file load type and returns zero for absent device, backend, buffer or decoder and for an invalid bank. The other native backend remains a separate open shape. Main587 retains the static completion DWORD; missing/static-disabled backends return zero, while an active-device invalid-bank path leaves the result unwritten and remains diagnostic. Pan/fade query controls and every captured Sound/device byte are unchanged. This proof captures decoded-stream return data and does not claim to execute an audio device.',
         },
         {
           ids: [361],

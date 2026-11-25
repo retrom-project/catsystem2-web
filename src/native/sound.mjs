@@ -974,12 +974,6 @@ export class NativeSoundTask {
     }
     const control = this.controls[selected[0]],
       device = this.sound.device[selected[0]];
-    if (
-      [192, 193, 195, 196].includes(id) &&
-      this.sound.abi.sound.spatialRequiresStaticBuffer &&
-      device.sourceMode !== 'static'
-    )
-      return 0;
     switch (id) {
       case 181:
       case 183:
@@ -1112,10 +1106,7 @@ export class NativeSoundTask {
         this.sound.refresh(bank);
         return 0;
       case 200:
-        return device.metadata &&
-          (!this.sound.abi.sound.decoderQueryRequiresStaticBuffer || device.sourceMode === 'static')
-          ? nativeSoundDecoderQuery(device.metadata)
-          : 0;
+        return device.metadata ? nativeSoundDecoderQuery(device.metadata) : 0;
       case 201:
         return device.sourceMode === 'static'
           ? (this.sound.channel(selected[0])?.completionCount ?? device.completionCount) >>> 0

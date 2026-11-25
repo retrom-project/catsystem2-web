@@ -336,8 +336,6 @@ export default {
   resources: { categoryCount: 64 },
   sound: {
     banks: 32,
-    decoderQueryRequiresStaticBuffer: true,
-    spatialRequiresStaticBuffer: true,
     unwrittenQueryBanks: [587],
     mainLoadPacketBytes: 280,
     firstMessage: 173,
@@ -1241,7 +1239,7 @@ export default {
         {
           ids: [166, 167],
           value:
-            'Own Main166 and Main167 complete GCALLs preserve this build’s packed signed 16-bit target pan, unsigned 16-bit duration and control-2 stack contract. The actual Sound receiver stores the pan fade fields at its native current-minus-base frame, without changing unrelated control words. Main167 ignores its first float and stores only the second as maximum distance on a loaded static buffer, preserving minimum distance and capturing the actual DirectSound output calls. Streaming backends, absent device/backend/buffer and out-of-range banks retain their native no-change behavior. A missing 3D output interface still retains the static buffer maximum. These setter proofs do not claim a playback-device or subsequent fade-tick differential.',
+            'Own Main166 and Main167 complete GCALLs preserve this build’s packed signed 16-bit target pan, unsigned 16-bit duration and control-2 stack contract. The actual Sound receiver stores the pan fade fields at its native current-minus-base frame, without changing unrelated control words. Main167 ignores its first float and stores only the second as maximum distance on a loaded primary DirectSound buffer, preserving minimum distance and capturing the actual DirectSound output calls. Absent device/backend/buffer and out-of-range banks retain their native no-change behavior. The other global native backend has no proved browser host mapping and remains open; it is independent of per-file streaming/static mode. A missing 3D output interface still retains the static buffer maximum. These setter proofs do not claim a playback-device or subsequent fade-tick differential.',
         },
         {
           ids: [602, 603],
@@ -1251,7 +1249,7 @@ export default {
         {
           ids: [165, 349, 569, 587],
           value:
-            'Own full GCALLs execute this build’s Sound receiver and static-buffer query path. Pan retains its signed raw word; fade-pending returns bit zero, including zero for invalid banks. Decoder length comes only from a loaded static buffer and its decoded-stream virtual query, with no narrowing of its DWORD result; absent devices, missing buffers, streaming backends and invalid banks return zero. Completion count retains the static buffer DWORD and returns zero for missing/static-disabled backends. Its active-device invalid-bank path leaves the native result unwritten and remains diagnostic. All captured Sound/device bytes remain unchanged.',
+            'Own full GCALLs execute this build’s Sound receiver and static-buffer query path. Pan retains its signed raw word; fade-pending returns bit zero, including zero for invalid banks. In the primary DirectSound backend, decoder length comes from the loaded buffer’s decoded-stream virtual query for either per-file load type, with no narrowing of its DWORD result; absent devices, missing buffers and invalid banks return zero. The other native backend remains a separate open shape. Completion count retains the static buffer DWORD and returns zero for missing/static-disabled backends. Its active-device invalid-bank path leaves the native result unwritten and remains diagnostic. All captured Sound/device bytes remain unchanged.',
         },
         {
           ids: preferenceDataOperations,
