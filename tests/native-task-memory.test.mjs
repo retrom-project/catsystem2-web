@@ -273,6 +273,7 @@ test('native task memory keeps one VM/shared/block arena and preserves shared-bu
     const bridge = new NativeKCSMemory(p, first, a);
     assert.equal(p.load(bridge.pointer + 20), a.memory.pointer);
     assert.equal(p.load(bridge.pointer + 40), a.shared.pointer);
+    assert.equal(p.allocations.get(p.load(bridge.pointer + 1388)), 0x2800);
     p.store(a.memory.pointer + 8, 0x12345678);
     p.store(a.blocks[0].pointer + 4, 0x89abcdef);
     bridge.close();
@@ -299,6 +300,7 @@ test('native task memory keeps one VM/shared/block arena and preserves shared-bu
     assert.equal(p.allocations.has(vm), true);
     assert.equal(p.load(vm + 20), a.memory.pointer);
     assert.equal(p.load(vm + 40), a.shared.pointer);
+    assert.equal(p.allocations.get(p.load(vm + 1388)), 0x2800);
     const head = p.load(p.load(vm + 48)),
       node = p.load(head);
     assert.equal(p.load(node + 8), a.blocks[0].pointer);

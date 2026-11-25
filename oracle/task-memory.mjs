@@ -798,7 +798,7 @@ export class NativeTaskMemory {
         pointer: allocate(1408),
         container: allocate(8),
         head: allocate(16),
-        scratch: allocate(8192),
+        scratch: allocate(0x2800),
         nodes: [],
         nodeIDs: [],
       };
