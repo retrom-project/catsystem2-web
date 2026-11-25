@@ -596,90 +596,98 @@ test('KCDB preserves an allocation exception from the decompression stage as a d
   }
 });
 
-test('fixed SDK .23 raw GCALL preserves CSS ownership across bounded exhaustion and cold reuse', async () => {
-  const profile = 'grisaia-jp-engine-2.6.1.23',
-    first = await dataWorld(profile);
-  let fresh, latestProgram;
-  async function call(world, id, args = []) {
-    const task = world.main;
-    latestProgram = kcsProgram([
-      [37, 0x36eb67a5],
-      ...args.map((word) => [37, word]),
-      [43, id, args.length * 4],
-      [59],
-    ]);
-    const program = await readKCS(latestProgram),
-      machine = (task.machine = new KCSMachine(
-        program,
-        { native: (number, words, vm) => world.runtime.scheduler.native(task, number, words, vm) },
-        world.runtime.scheduler.shared,
-      ));
-    machine.store(512, 0x93939393);
-    task.status = 'ready';
-    task.io = null;
-    assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
-    const value = nativeABI(profile).tables.main.entries[id].signature.resultWritten
-      ? machine.pop()
-      : undefined;
-    assert.equal(machine.pop(), 0x36eb67a5);
-    return value;
-  }
-  try {
-    const raw = first.runtime.imageDataBuffers.process,
-      file = await call(first, 238, [17]);
-    await assert.rejects(call(first, 836, [file, 0, 512]), /unwritten CSS record zero/);
-    raw.next = 0x7fffffe0;
-    const one = await call(first, 833, [12]),
-      two = await call(first, 833, [12]);
-    raw.write(
-      one,
-      Uint8Array.from({ length: 12 }, (_, i) => i + 1),
-    );
-    await call(first, 835, [file, 11, 12, one]);
-    assert.equal(await call(first, 833, [1]), 0);
-    assert.equal(await call(first, 836, [file, 11, 512]), 0);
-    assert.equal(first.main.machine.load(512), 0x93939393);
-    assert.equal(raw.allocations.size, 2);
-    await call(first, 834, [two]);
-    const copy = await call(first, 836, [file, 11, 512]);
-    assert.equal(copy, two);
-    assert.equal(first.main.machine.load(512), 12);
-    raw.write(one, new Uint8Array(12));
-    assert.deepEqual(
-      [...raw.read(copy, 12)],
-      Array.from({ length: 12 }, (_, i) => i + 1),
-    );
-    fresh = await dataWorld(profile, { 'case.kcs': latestProgram }, { initialize: false });
-    await fresh.restore(await deserializeCheckpoint(await serializeCheckpoint(first.snapshot())));
-    const cold = fresh.runtime.imageDataBuffers.process;
-    assert.deepEqual(
-      [...cold.read(copy, 12)],
-      Array.from({ length: 12 }, (_, i) => i + 1),
-    );
-    await call(fresh, 834, [one]);
-    const zero = await call(fresh, 833, [0]);
-    await call(fresh, 835, [file, 0, 0, zero]);
-    await call(fresh, 834, [zero]);
-    const zeroCopy = await call(fresh, 836, [file, 0, 512]);
-    assert.ok(zeroCopy);
-    assert.equal(fresh.main.machine.load(512), 0);
-    await call(fresh, 834, [zeroCopy]);
-    await call(fresh, 834, [copy]);
-    assert.equal(cold.allocations.size, 0);
-    await assert.rejects(call(fresh, 833, [0xffffffff]), /signed allocation ABI/);
-    await assert.rejects(call(fresh, 834, [0x12345678]), /Unmapped/);
-    const allocate = cold.allocate,
-      diagnostic = new Error('authored unrelated allocation diagnostic');
-    cold.allocate = () => {
-      throw diagnostic;
-    };
-    try {
-      await assert.rejects(call(fresh, 833, [1]), (error) => error === diagnostic);
-    } finally {
-      cold.allocate = allocate;
-    }
-  } finally {
-    await fresh?.close({ flushFiles: false });
-    await first.close({ flushFiles: false });
-  }
-});
+for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+  test(
+    profile + ' raw GCALL preserves CSS ownership across bounded exhaustion and cold reuse',
+    async () => {
+      const first = await dataWorld(profile);
+      let fresh, latestProgram;
+      async function call(world, id, args = []) {
+        const task = world.main;
+        latestProgram = kcsProgram([
+          [37, 0x36eb67a5],
+          ...args.map((word) => [37, word]),
+          [43, id, args.length * 4],
+          [59],
+        ]);
+        const program = await readKCS(latestProgram),
+          machine = (task.machine = new KCSMachine(
+            program,
+            {
+              native: (number, words, vm) =>
+                world.runtime.scheduler.native(task, number, words, vm),
+            },
+            world.runtime.scheduler.shared,
+          ));
+        machine.store(512, 0x93939393);
+        task.status = 'ready';
+        task.io = null;
+        assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+        const value = nativeABI(profile).tables.main.entries[id].signature.resultWritten
+          ? machine.pop()
+          : undefined;
+        assert.equal(machine.pop(), 0x36eb67a5);
+        return value;
+      }
+      try {
+        const raw = first.runtime.imageDataBuffers.process,
+          file = await call(first, 238, [17]);
+        await assert.rejects(call(first, 836, [file, 0, 512]), /unwritten CSS record zero/);
+        raw.next = 0x7fffffe0;
+        const one = await call(first, 833, [12]),
+          two = await call(first, 833, [12]);
+        raw.write(
+          one,
+          Uint8Array.from({ length: 12 }, (_, i) => i + 1),
+        );
+        await call(first, 835, [file, 11, 12, one]);
+        assert.equal(await call(first, 833, [1]), 0);
+        assert.equal(await call(first, 836, [file, 11, 512]), 0);
+        assert.equal(first.main.machine.load(512), 0x93939393);
+        assert.equal(raw.allocations.size, 2);
+        await call(first, 834, [two]);
+        const copy = await call(first, 836, [file, 11, 512]);
+        assert.equal(copy, two);
+        assert.equal(first.main.machine.load(512), 12);
+        raw.write(one, new Uint8Array(12));
+        assert.deepEqual(
+          [...raw.read(copy, 12)],
+          Array.from({ length: 12 }, (_, i) => i + 1),
+        );
+        fresh = await dataWorld(profile, { 'case.kcs': latestProgram }, { initialize: false });
+        await fresh.restore(
+          await deserializeCheckpoint(await serializeCheckpoint(first.snapshot())),
+        );
+        const cold = fresh.runtime.imageDataBuffers.process;
+        assert.deepEqual(
+          [...cold.read(copy, 12)],
+          Array.from({ length: 12 }, (_, i) => i + 1),
+        );
+        await call(fresh, 834, [one]);
+        const zero = await call(fresh, 833, [0]);
+        await call(fresh, 835, [file, 0, 0, zero]);
+        await call(fresh, 834, [zero]);
+        const zeroCopy = await call(fresh, 836, [file, 0, 512]);
+        assert.ok(zeroCopy);
+        assert.equal(fresh.main.machine.load(512), 0);
+        await call(fresh, 834, [zeroCopy]);
+        await call(fresh, 834, [copy]);
+        assert.equal(cold.allocations.size, 0);
+        await assert.rejects(call(fresh, 833, [0xffffffff]), /signed allocation ABI/);
+        await assert.rejects(call(fresh, 834, [0x12345678]), /Unmapped/);
+        const allocate = cold.allocate,
+          diagnostic = new Error('authored unrelated allocation diagnostic');
+        cold.allocate = () => {
+          throw diagnostic;
+        };
+        try {
+          await assert.rejects(call(fresh, 833, [1]), (error) => error === diagnostic);
+        } finally {
+          cold.allocate = allocate;
+        }
+      } finally {
+        await fresh?.close({ flushFiles: false });
+        await first.close({ flushFiles: false });
+      }
+    },
+  );

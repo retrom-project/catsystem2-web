@@ -360,6 +360,7 @@ export default {
   nameTable: { legacyFieldBytes: 32, fixedPairs: true, pairByteLimit: 64 * 1024 * 1024 },
   stringBank: { emptyGetResult: 0, expandUsesExistingBank: true, cssOwnerLookupOnly: true },
   database: {
+    rawHeapAllocationFailureReturnsZero: true,
     compiledFormatRequired: true,
     compiledIndexRequiresNonnegative: true,
     selectionFormatRequired: true,
@@ -1839,7 +1840,7 @@ export default {
         {
           ids: [836],
           value:
-            'Own 0x4a4190 reads an explicit CSS record, allocates a referenced native buffer, copies its bytes and writes the original byte length to a guest DWORD. Control 1 writes the owned pointer or zero. An absent record leaves the length untouched.',
+            'Own 0x4a4190 reads an explicit CSS record, allocates a referenced native buffer, copies its bytes and writes the original byte length to a guest DWORD. Control 1 writes the owned pointer or zero; bounded original HeapAlloc failure leaves the length untouched. Actual native reference helpers, independent Question/Mission state copies and author raw/CSS save/import/free calls match production GCALL and cold restoration. The original unused-capacity scan makes unwritten record zero depend on platform storage; two bounded allocation contents prove that existing exact guard, while explicit zero-byte records succeed.',
         },
         {
           ids: [869, 871, 873, 877, 878],
@@ -2378,9 +2379,14 @@ export default {
             'Own 2.6.1.67 shared stub at 0x4aaef0 returns control 1 with the supplied result word untouched.',
         },
         {
-          ids: [238, 240, 244, 245, 246, 277, 469, 833, 834, 835, 870, 872],
+          ids: [238, 240, 244, 245, 246, 277, 469, 870, 872],
           value:
             '2.6.1.67 own close-message selected CFG, complete wrappers and direct persistence/bank/raw-buffer/database callees; finite owned-address and nonnull database-export domains only. Other slots remain unknown.',
+        },
+        {
+          ids: [833, 834, 835],
+          value:
+            'Own Main833 at 0x4a4120 executes original reference allocation 0x50b5a0; Main834 at 0x4b23b0 executes signed header decrement/free at 0x50b5f0. Main835 at 0x4a4140 copies raw bytes into the actual CSS owner. Only platform HeapAlloc/HeapFree and an isolated diagnostic log are supplied for raw ownership proof. Bounded allocation failure returns zero/control1, successful allocations and explicit zero-byte records retain a reference header, and shared/nonpositive headers take their measured release branches. Question/Mission export and import use these actual author GCALL wrappers.',
         },
         {
           ids: [359],
