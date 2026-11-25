@@ -15,6 +15,21 @@ const mainConstantZero = [
 const mainUnwritten = [140, 142, 549];
 const legacyTextInitializers = [123, 418];
 const legacyTextMutators = [124, 125, 557];
+const databaseHandle = {
+  name: 'database',
+  description: 'Borrowed database handle',
+  type: { kind: 'handle', handleKind: 'database', ownership: 'borrowed' },
+};
+const databaseFormat = (name, description) => ({
+  name,
+  description,
+  type: {
+    kind: 'pointer',
+    addressSpace: 'vm',
+    direction: 'in',
+    target: { kind: 'format-string', encoding: 'CP932' },
+  },
+});
 const dictionaryHandle = {
   name: 'dictionary',
   description: 'Borrowed dictionary handle',
@@ -280,7 +295,11 @@ export default {
   resources: { categoryCount: 64 },
   nameTable: { legacyFieldBytes: 32 },
   stringBank: { emptyGetResult: 0, expandUsesExistingBank: true, cssOwnerLookupOnly: true },
-  database: { nullExportPolicy: 'reject-unwritten' },
+  database: {
+    nullExportPolicy: 'reject-unwritten',
+    nullImportPolicy: 'reject-unwritten',
+    requiresMappedFormat: true,
+  },
   sound: {
     banks: 32,
     mainLoadPacketBytes: 280,
@@ -1195,8 +1214,7 @@ export default {
           776, 777, 778, 779, 780, 781, 782, 783, 784, 786, 791, 792, 793, 794, 795, 796, 797, 798,
           799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816,
           817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 837, 838,
-          839, 840, 841, 842, 843, 845, 846, 847, 869, 871, 873, 874, 875, 877, 878, 879, 880, 881,
-          903,
+          839, 840, 841, 842, 843, 845, 846, 847, 879, 880, 881, 903,
         ],
         recovered: [
           1, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
@@ -1223,9 +1241,9 @@ export default {
           679, 680, 683, 684, 685, 689, 693, 694, 695, 696, 697, 698, 699, 700, 710, 711, 712, 713,
           714, 715, 717, 718, 719, 720, 723, 724, 726, 727, 728, 730, 731, 732, 733, 736, 737, 739,
           740, 741, 785, 787, 788, 789, 790, 833, 834, 835, 836, 844, 848, 849, 850, 851, 852, 853,
-          854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868, 870, 872, 876,
-          882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899,
-          900, 901, 902, 904, 905, 934, 935, 936, 937,
+          854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871,
+          872, 873, 874, 875, 876, 877, 878, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892,
+          893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 904, 905, 934, 935, 936, 937,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
@@ -1630,6 +1648,16 @@ export default {
           ids: [836],
           value:
             'Own 0x4a4190 reads an explicit CSS record, allocates a referenced native buffer, copies its bytes and writes the original byte length to a guest DWORD. Control 1 writes the owned pointer or zero. An absent record leaves the length untouched.',
+        },
+        {
+          ids: [869, 871, 873, 877, 878],
+          value:
+            'Own 0x4a13d0 formats four CP932 strings and constructs a 92-byte database. Loader 0x564d80 reads and parses the compiled KCDB table and selects the ordered normalized index. Own 0x4a1500 sets an indexed bit, 0x4a1570 imports 268-byte normalized flag rows, and dirty query/reset access owner +0x58. Import leaves dirty unchanged and a NULL owner leaves the import result unwritten.',
+        },
+        {
+          ids: [874, 875],
+          value:
+            'Own 0x4a2720 joins the low 16 bits of two operands and writes the resulting DWORD through control 1. Own 0x4a2740 stores signed low and high 16-bit values in that order into translated guest DWORDs and returns control 2.',
         },
         {
           ids: [255],
@@ -2182,6 +2210,86 @@ export default {
         },
       ],
       signatures: [
+        {
+          ids: [869],
+          fields: {
+            parameters: [
+              databaseFormat('filename', 'Mounted KCDB database filename'),
+              databaseFormat('lineBreak', 'Database line break format'),
+              databaseFormat('separator', 'Database separator format'),
+              databaseFormat('first', 'Database prefix format'),
+            ],
+            result: { kind: 'handle', handleKind: 'database', ownership: 'owned' },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [871],
+          fields: {
+            parameters: [
+              databaseHandle,
+              {
+                name: 'bit',
+                description: 'Bit index reduced modulo 32',
+                type: { kind: 'integer', bits: 32, signed: false },
+              },
+              databaseFormat('index', 'Database index format'),
+            ],
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [873],
+          fields: {
+            parameters: [
+              databaseHandle,
+              {
+                name: 'source',
+                description: 'Owned native buffer with row count and 268-byte flag rows',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'native',
+                  direction: 'inout',
+                  target: { kind: 'record', name: 'database-flags' },
+                },
+              },
+            ],
+            result: { kind: 'boolean', description: 'Whether a nonnull flag buffer was imported' },
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [874],
+          fields: { resultWritten: true, review: 'reviewed' },
+        },
+        {
+          ids: [875],
+          fields: {
+            parameters: [
+              NATIVE_SEMANTICS.main[875].signature.parameters[0],
+              ...['lowSigned', 'highSigned'].map((name) => ({
+                name,
+                description: 'Translated guest DWORD for the signed halfword',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'out',
+                  target: { kind: 'integer', bits: 32, signed: true },
+                },
+              })),
+            ],
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [877],
+          fields: { parameters: [databaseHandle], resultWritten: true, review: 'reviewed' },
+        },
+        {
+          ids: [878],
+          fields: { parameters: [databaseHandle], review: 'reviewed' },
+        },
         {
           ids: [74, 77],
           fields: {

@@ -114,11 +114,20 @@ export const nativeDatabaseCodec = Object.freeze({
 export async function nativeDatabase(id, args, machine, services) {
   const handle = nativeDataArgument(args, machine, 0),
     { handles } = services;
+  const format = (index) => {
+    const bytes = nativeDataFormat(args, machine, services, index);
+    if (
+      bytes === null &&
+      services.profile &&
+      nativeABI(services.profile).database.requiresMappedFormat
+    )
+      throw new Error('Native database format address is unmapped');
+    return bytes;
+  };
   if (id === 0x365) {
-    const filename = nativeDataFormat(args, machine, services, 0);
+    const filename = format(0);
     if (filename === null) return nativeReply(1, 0);
-    for (const index of [1, 2, 3])
-      if (nativeDataFormat(args, machine, services, index) === null) return nativeReply(1, 0);
+    for (const index of [1, 2, 3]) if (format(index) === null) return nativeReply(1, 0);
     const database = new NativeDatabase(),
       name = new TextDecoder('shift_jis').decode(filename),
       first = await services.read(name, 'database');
@@ -156,7 +165,7 @@ export async function nativeDatabase(id, args, machine, services) {
   }
   const database = handles.get(handle, 'database');
   if (id === 0x367) {
-    const name = nativeDataFormat(args, machine, services, 2);
+    const name = format(2);
     if (name !== null) database.set(name, nativeDataArgument(args, machine, 1));
     return nativeReply(2);
   }
