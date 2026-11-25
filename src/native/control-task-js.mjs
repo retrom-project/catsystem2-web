@@ -256,8 +256,8 @@ export class JSControlTask {
           [...config.rect].some((value) => !Number.isInteger(value))))
     )
       throw new TypeError('Control load requires complete typed geometry and priorities');
-    const oldAreas = this.resource.areas;
     const recreateAreas = this.kind === 40 || this.legacySlider;
+    const replaceAreas = this.kind === 41 && this.behavior.scroll2RangeReloadsResource;
     await this.unload(recreateAreas);
     this.config = structuredClone(config);
     this.draw;
@@ -266,13 +266,15 @@ export class JSControlTask {
     if (!bytes?.length) return false;
     this.resource.bytes = bytes.slice();
     this.image = null;
-    if (!recreateAreas) this.resource.areas = oldAreas;
+    // The older SCROLL2 constructor adds a new pair on each successful load.
+    // Earlier pairs belong to Base and are released with the whole task.
+    if (replaceAreas) this.resource.areas = {};
     try {
       if (this.kind === 40) await this.loadScroll();
       else await this.loadRectangle();
       return true;
     } catch (error) {
-      await this.unload(recreateAreas);
+      await this.unload(recreateAreas || replaceAreas);
       this.model.state.loaded = false;
       throw error;
     }
@@ -422,8 +424,9 @@ export class JSControlTask {
     );
     let minimumThumb = 0;
     if (this.kind === 41) {
+      const pieceCount = this.behavior.scroll2SkinPieces ?? 4;
       for (let state = 0; state < 4; state++)
-        for (let piece = 0; piece < 4; piece++) {
+        for (let piece = 0; piece < pieceCount; piece++) {
           const frame = await this.frame(state * 100 + piece);
           if (!frame) continue;
           const data = this.world.graphics.images.get(frame).state;
@@ -470,11 +473,13 @@ export class JSControlTask {
     const s = this.model.state,
       images = this.world.graphics.images;
     const previous = this.resource.composites;
+    const pieceCount = this.behavior.scroll2SkinPieces ?? 4;
     this.resource.composites = [];
     try {
       for (let state = 0; state < 4; state++) {
         const pieces = [];
-        for (let piece = 0; piece < 4; piece++) pieces.push(await this.frame(state * 100 + piece));
+        for (let piece = 0; piece < pieceCount; piece++)
+          pieces.push(await this.frame(state * 100 + piece));
         let cross = 0;
         for (const handle of pieces.slice(0, 3))
           if (handle) {
@@ -742,12 +747,20 @@ export class JSControlTask {
   async message(words, context = {}) {
     const [sender, id, w, l] = words;
     let message = id;
-    if (this.legacyScroll) {
+    const explicitScrollTransport =
+      this.behavior.scrollUsesRawTransport && (this.legacyScroll || this.legacyScroll2);
+    if (explicitScrollTransport && context.nativeRaw) {
+      message = mapABIMessage(this.world.profile, 'control', 'canonical', id, this.kind, {
+        required: false,
+      });
+      if (message === undefined) return this.base.message(words, context);
+    }
+    if (this.legacyScroll && !explicitScrollTransport) {
       if (id >= 353) return this.base.message(words, context);
       if ((id >= 341 && id <= 346) || id === 61 || id === 62)
         message = canonicalMessage(this.world.profile, this.kind, id);
     }
-    if (this.legacyScroll2) {
+    if (this.legacyScroll2 && !explicitScrollTransport) {
       const first = mapABIMessage(this.world.profile, 'control', 'raw', 368, this.kind);
       const last = mapABIMessage(this.world.profile, 'control', 'raw', 376, this.kind);
       if (id > last) return this.base.message(words, context);
@@ -777,14 +790,19 @@ export class JSControlTask {
         if (this.kind === 41) await model.setEnabled(l);
         else await model.setShown(l);
         return NATIVE_UNWRITTEN_WORD;
-      case 2:
+      case 2: {
         if (this.kind === 40 || this.kind === 42) {
           if (this.rawSlider) await model.skin('thumb', l ? 0 : 1);
           await model.setEnabled(l);
           return NATIVE_UNWRITTEN_WORD;
         }
-        await model.setRange(...signedWords(this.memory(senderWorld, context), l, 3));
+        const range = signedWords(this.memory(senderWorld, context), l, 3);
+        if (this.behavior.scroll2RangeReloadsResource) {
+          [state.minimum, state.maximum, state.pageSize] = range;
+          if (this.config) await this.load(this.config);
+        } else await model.setRange(...range);
         return NATIVE_UNWRITTEN_WORD;
+      }
       case 3:
         if (this.kind === 40)
           await model.setRange(...signedWords(this.memory(senderWorld, context), l, 3));
@@ -828,7 +846,7 @@ export class JSControlTask {
       message === 9 ||
       message === 10 ||
       message === 64 ||
-      (message === 65 && (!this.legacySlider || this.rawSlider))
+      (message === 65 && !explicitScrollTransport && (!this.legacySlider || this.rawSlider))
     ) {
       const previous = this.eventSender;
       this.eventSender = senderWorld;

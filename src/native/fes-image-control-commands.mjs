@@ -19,6 +19,7 @@ import { nativeDataString } from './data-text.mjs';
 import { nativeImagePathParts } from './image-file.mjs';
 import { buildNativeFESMotion } from './fes-motion.mjs';
 import { readFESToneRGB } from './fes-tone-table.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 // Object branches only: a coordinator must not use these gates to skip
 // argument evaluation, selection traversal, or the native first-target branch.
@@ -190,10 +191,14 @@ export class FESImageControlCommands {
     if (verb === 'settbl') {
       const limits = bounds(),
         slot = value(0),
-        frame = value(1);
+        frame = value(1),
+        profile = instance.runtime?.world?.profile;
       await visit(limits, true, (object) => {
         if (selectorTypes.has(object.nativeType)) setFESImageTable(object, slot, frame);
-        else if (object.nativeType === 14 || object.nativeType === 15)
+        else if (
+          (object.nativeType === 14 || object.nativeType === 15) &&
+          (!profile || nativeABI(profile).fes.controlResources?.skinTables !== false)
+        )
           setFESControlSkin(object, slot, frame);
       });
       return 0;

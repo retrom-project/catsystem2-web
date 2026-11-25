@@ -989,7 +989,7 @@ const particleInterpreterSignatures = [
   },
 ];
 const toMessage = (min, offset = 0) => ({ min, max: min, offset });
-const sliderInput = [
+const legacyControlInput = [
   [5, 6],
   [8, 9],
   [9, 10],
@@ -1358,15 +1358,27 @@ export default {
       control: {
         unmapped: 'reject',
         raw: [
+          { min: 353, max: 358, offset: -31, kinds: [40] },
+          { min: 368, max: 374, offset: -33, kinds: [41] },
+          ...legacyControlInput.map(([raw, canonical]) => ({
+            ...toMessage(canonical, raw - canonical),
+            kinds: [40, 41],
+          })),
           { min: 328, max: 334, offset: 31, kinds: [42] },
-          ...sliderInput.map(([raw, canonical]) => ({
+          ...legacyControlInput.map(([raw, canonical]) => ({
             ...toMessage(raw, canonical - raw),
             kinds: [42],
           })),
         ],
         canonical: [
+          { min: 322, max: 327, offset: 31, kinds: [40] },
+          { min: 335, max: 341, offset: 33, kinds: [41] },
+          ...legacyControlInput.map(([raw, canonical]) => ({
+            ...toMessage(raw, canonical - raw),
+            kinds: [40, 41],
+          })),
           { min: 359, max: 365, offset: -31, kinds: [42] },
-          ...sliderInput.map(([raw, canonical]) => ({
+          ...legacyControlInput.map(([raw, canonical]) => ({
             ...toMessage(canonical, raw - canonical),
             kinds: [42],
           })),
@@ -1430,7 +1442,17 @@ export default {
     objectHeadsFirst: true,
     endChildYieldsFrame: true,
     windowedCapability: true,
-    controlResources: { kinds: [42], sliderProtocol: 'legacy' },
+    controlResources: {
+      kinds: [40, 41, 42],
+      scrollProtocol: 'legacy',
+      scroll2Protocol: 'legacy',
+      scroll2RangeReloadsResource: true,
+      scroll2Skin: 'state-direct',
+      scroll2SkinPieces: 3,
+      scrollUsesRawTransport: true,
+      skinTables: false,
+      sliderProtocol: 'legacy',
+    },
     commonHeads: engine23CommonHeads,
     configurationMessage: {
       liveObjects: null,

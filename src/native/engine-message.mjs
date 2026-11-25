@@ -568,6 +568,7 @@ export class NativeEngineMessages {
     context.nativeUnhandled = false;
     context.nativeSenderWorldID = packet.senderWorldID;
     context.flags = packet[5];
+    context.nativeRaw = packet.nativeRaw === true;
     if (record.destroyRequested) return 0;
     const result = await record.implementation.message(
       [packet[1], packet[2], packet[3], packet[4]],
@@ -590,6 +591,7 @@ export class NativeEngineMessages {
       embedded[1] = packet[1];
       embedded[5] = 0;
       embedded.senderWorldID = packet.senderWorldID;
+      embedded.nativeRaw = packet.nativeRaw;
       let control = 1;
       if (packet[2] === 11 || record.flags >>> 0 === packet[3])
         control = await this.invoke(record, embedded, context, output);
@@ -708,6 +710,7 @@ export class NativeEngineMessages {
       nativeEngineWord(context.flags ?? 0),
     ];
     packet.senderWorldID = senderWorldID;
+    packet.nativeRaw = true;
     const output = { value: NATIVE_UNWRITTEN_WORD };
     context.nativeUnhandled = true;
     context.nativeSenderWorldID = senderWorldID;

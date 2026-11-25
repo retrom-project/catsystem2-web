@@ -20,6 +20,9 @@ import { fesMotionState, applyFESMotionState } from '../src/native/fes-motion-mo
 import { MOTION_ABI } from '../src/motion/abi.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
+import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
+import { controlFiles } from './fixtures/control-files.mjs';
+import { defaultFESWorld, drawPixels, loadDefaultFES } from './fixtures/default-fes-world.mjs';
 
 const originals = JSON.parse(
   await readFile(new URL('./fixtures/control-original-golden.json', import.meta.url)),
@@ -31,6 +34,67 @@ const originals = JSON.parse(
   }),
 }));
 const values = { 13: 10, 14: 30, 15: 25 };
+
+test('2.6.1.23 FES drives both original scroll owners and separates raw input messages', async (t) => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    source =
+      '#DEFINE\nSCROLL scroll\nSCROLL2 scroll2\n' +
+      '#OBJECT FILE POS VRAM PRI PRI_P TYPE DISP ENABLE\n' +
+      'scroll scroll 4,4 0,0 1002 1003 0 1 1\n' +
+      '#OBJECT FILE POS2 PRI DISP ENABLE\n' +
+      'scroll2 controls area:8 1001 1 1\n' +
+      '#START\nscroll page 0 100 20\nscroll pos 10\n' +
+      'scroll2 page 0 100 20\nscroll2 pos 30\nscroll2 settbl 1 101\n' +
+      'next WAIT\n#WAIT\nbreak\n#scroll2.SCRL_P\n\\7=\\7+1\nbreak\n',
+    files = await controlFiles(new Uint8Array(), source),
+    world = await defaultFESWorld(profile, files);
+  t.after(() => world.close({ flushFiles: false }));
+  const messages = [],
+    dispatch = world.sendNativeEngine.bind(world),
+    sequence = [322, 325, 326, 323, 324, 327, 335, 339, 337, 338, 336, 340];
+  world.sendNativeEngine = (target, sender, message, w, l, context) => {
+    if (message >= 322 && message <= 341) messages.push(message);
+    return dispatch(target, sender, message, w, l, context);
+  };
+  const { id, task, instance, surface } = await loadDefaultFES(world);
+  await task.tick();
+  assert.deepEqual(messages, sequence);
+  const scroll = instance.byKey.get('scroll'),
+    scroll2 = instance.byKey.get('scroll2'),
+    owner = world.objects.objects.get(scroll2.nativeTaskID),
+    control = owner.implementation,
+    input = world.inputFor(id);
+  assert.equal(world.objects.objects.get(scroll.nativeTaskID).kind, 40);
+  assert.deepEqual([owner.kind, owner.parent, scroll.value, scroll2.value], [41, id, 10, 30]);
+  assert.deepEqual(scroll2.skinTable, [0, 0, 2, 3]);
+  assert.ok(control.resource.frames.every(([selector]) => selector % 100 < 3));
+  assert.ok((await drawPixels(world, surface)).some(Boolean));
+
+  const previous = control.resource.areas.thumb,
+    range = new NativeGraphicsPacket([0, 100, 22]);
+  await dispatch(owner.nativeID, id, 337, 0, 0, { payload: range });
+  const thumb = control.resource.areas.thumb,
+    thumbKey = world.nativeTaskID(thumb),
+    [left, top, right, bottom] = input.get(thumb).bounds,
+    x = (left + right) >> 1,
+    y = (top + bottom) >> 1;
+  assert.notEqual(thumb, previous);
+  assert.ok(input.get(previous));
+  input.pointer(x, y, 1);
+  input.source = 2;
+  await dispatch(owner.nativeID, thumb, 8, thumbKey, 0);
+  assert.equal(control.model.state.dragging, true);
+  const move = new NativeGraphicsPacket([x, y + 24]);
+  await dispatch(owner.nativeID, thumb, 5, 0, 0, { payload: move });
+  assert.ok(control.model.state.value > 30);
+  assert.equal(instance.local(7), 1);
+  await dispatch(owner.nativeID, thumb, 9, thumbKey, 0);
+  assert.equal(control.model.state.dragging, false);
+  const adjacent = {};
+  assert.equal(await dispatch(owner.nativeID, id, 342, 0, 0, adjacent), NATIVE_UNWRITTEN_WORD);
+  assert.equal(adjacent.nativeUnhandled, true);
+});
+
 async function loaded(world, type) {
   const h = await setup(world),
     object = await defineControl(h.api, type);

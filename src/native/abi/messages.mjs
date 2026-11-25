@@ -1,7 +1,14 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from './index.mjs';
 
-export function mapABIMessage(profile, channel, direction, message, kind) {
+export function mapABIMessage(
+  profile,
+  channel,
+  direction,
+  message,
+  kind,
+  { required = true } = {},
+) {
   const definition = nativeABI(profile).messages.channels[channel],
     rules = definition?.[direction];
   if (!rules) throw new Error(`Unknown ABI message channel ${channel}/${direction}`);
@@ -14,6 +21,7 @@ export function mapABIMessage(profile, channel, direction, message, kind) {
     )
       return message + rule.offset;
   }
+  if (!required) return undefined;
   if (definition.unmapped === 'reject')
     throw new Error(`Unreviewed ABI message ${profile}/${channel}/${direction}/${message}`);
   return message;
