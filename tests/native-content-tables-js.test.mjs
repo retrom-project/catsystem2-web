@@ -19,6 +19,7 @@ import { ParticleRandom } from '../src/ppi/random.mjs';
 import { NativeCompiledTable } from '../src/native/compiled-table.mjs';
 for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
+  'bokutomo-engine-2.6.1.67',
   'sdk-4.01-engine-2.6.1.74',
   'nekopara-vol3-engine-2.6.1.76',
 ])
@@ -67,6 +68,7 @@ for (const profile of [
 
 for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
+  'bokutomo-engine-2.6.1.67',
   'sdk-4.01-engine-2.6.1.74',
   'nekopara-vol3-engine-2.6.1.76',
 ])
@@ -128,7 +130,7 @@ for (const profile of [
         assert.equal(fresh.main.machine.load(1024), 1);
         await call(fresh, 0x334, [two.mission, 10, 7, 1024]);
         assert.equal(fresh.main.machine.load(1024), 1);
-        if (profile === 'grisaia-jp-engine-2.6.1.23')
+        if (['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'].includes(profile))
           await assert.rejects(
             call(fresh, 0x334, [two.mission, 10, 9, 1024]),
             /character query dereferences an empty set/,
@@ -528,37 +530,42 @@ for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67']
     },
   );
 
-test('fixed SDK .23 compiled table protects original signed row and format boundaries without changing valid field bytes', async () => {
-  const world = await dataWorld('grisaia-jp-engine-2.6.1.23', Object.fromEntries(contentFiles())),
-    machine = world.main.machine,
-    call = (id, args = []) => world.runtime.native('main', id, args, machine, world.main);
-  try {
-    await assert.rejects(() => call(791, [0x7fffffff]), /mapped format/);
-    machine.writeString('questions', 64);
-    const table = (await call(791, [64])).value;
-    machine.writeString('ID', 64);
-    assert.equal((await call(793, [table, 64, 0])).value, 11);
-    machine.bytes(512, 16).fill(0xa5);
-    assert.equal((await call(794, [table, 64, 99, 512])).value, 0);
-    assert.deepEqual(machine.bytes(512, 16), new Uint8Array(16).fill(0xa5));
-    for (const id of [793, 794])
-      await assert.rejects(
-        () => call(id, [table, 64, 0xffffffff, ...(id === 794 ? [512] : [])]),
-        /before its rows/,
-      );
-    await assert.rejects(() => call(793, [table, 0x7fffffff, 0]), /mapped format/);
-    assert.equal((await call(794, [table, 0x7fffffff, 0, 0x7fffffff])).value, 0);
-    assert.deepEqual(machine.bytes(512, 16), new Uint8Array(16).fill(0xa5));
-    machine.writeString('Q', 64);
-    assert.equal((await call(794, [table, 64, 0, 512])).value, 256);
-    assert.equal(machine.string(512), 'First authored question?');
-    assert.equal((await call(793, [table, 64, 0])).value, 0);
-    await call(792, [table]);
-    await assert.rejects(() => call(793, [table, 64, 0]), /released/);
-  } finally {
-    await world.close({ flushFiles: false });
-  }
-});
+for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+  test(
+    profile +
+      ' compiled table protects original signed row and format boundaries without changing valid field bytes',
+    async () => {
+      const world = await dataWorld(profile, Object.fromEntries(contentFiles())),
+        machine = world.main.machine,
+        call = (id, args = []) => world.runtime.native('main', id, args, machine, world.main);
+      try {
+        await assert.rejects(() => call(791, [0x7fffffff]), /mapped format/);
+        machine.writeString('questions', 64);
+        const table = (await call(791, [64])).value;
+        machine.writeString('ID', 64);
+        assert.equal((await call(793, [table, 64, 0])).value, 11);
+        machine.bytes(512, 16).fill(0xa5);
+        assert.equal((await call(794, [table, 64, 99, 512])).value, 0);
+        assert.deepEqual(machine.bytes(512, 16), new Uint8Array(16).fill(0xa5));
+        for (const id of [793, 794])
+          await assert.rejects(
+            () => call(id, [table, 64, 0xffffffff, ...(id === 794 ? [512] : [])]),
+            /before its rows/,
+          );
+        await assert.rejects(() => call(793, [table, 0x7fffffff, 0]), /mapped format/);
+        assert.equal((await call(794, [table, 0x7fffffff, 0, 0x7fffffff])).value, 0);
+        assert.deepEqual(machine.bytes(512, 16), new Uint8Array(16).fill(0xa5));
+        machine.writeString('Q', 64);
+        assert.equal((await call(794, [table, 64, 0, 512])).value, 256);
+        assert.equal(machine.string(512), 'First authored question?');
+        assert.equal((await call(793, [table, 64, 0])).value, 0);
+        await call(792, [table]);
+        await assert.rejects(() => call(793, [table, 64, 0]), /released/);
+      } finally {
+        await world.close({ flushFiles: false });
+      }
+    },
+  );
 
 test('KCDB high declared sizes reach bounded decompression without an artificial threshold or large output allocation', async () => {
   const bytes = new Uint8Array(13),
