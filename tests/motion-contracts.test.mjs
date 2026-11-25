@@ -160,7 +160,7 @@ test('2.6.1.23 MOT interpolation pushes one float32 result and continues', () =>
   );
   assert.throws(
     () => new MotionInstance(program([[43, 13, 0], [59]]), { profile: baseProfile }).update(0),
-    /Unrecovered MOT native/,
+    /expects 2 arguments, got 0/,
   );
 });
 
