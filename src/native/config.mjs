@@ -448,24 +448,26 @@ export function installNativeConfigurationCommands(world) {
   return refresh;
 }
 
+const configurationArgumentCounts = new Map([
+  [0x167, 4],
+  [0x168, 3],
+  [0x1d1, 0],
+  [0x274, 1],
+  [0x315, 0],
+  [0x316, 4],
+  [0x3e7, 0],
+  [0x2e5, 0],
+  [0x354, 0],
+  [0x41a, 0],
+  [0x246, 1],
+  [0x247, 0],
+  [0x248, 2],
+  [0x40c, 2],
+  [0x41d, 2],
+]);
+
 export function nativeConfiguration(id, args, machine, services = {}) {
-  const count = new Map([
-    [0x167, 4],
-    [0x168, 3],
-    [0x1d1, 0],
-    [0x274, 1],
-    [0x315, 0],
-    [0x316, 4],
-    [0x3e7, 0],
-    [0x2e5, 0],
-    [0x354, 0],
-    [0x41a, 0],
-    [0x246, 1],
-    [0x247, 0],
-    [0x248, 2],
-    [0x40c, 2],
-    [0x41d, 2],
-  ]).get(id);
+  const count = configurationArgumentCounts.get(id);
   if (count === undefined) return undefined;
   if (args.length !== count)
     throw new Error(`KCS configuration native 0x${id.toString(16)} expects ${count} arguments`);
