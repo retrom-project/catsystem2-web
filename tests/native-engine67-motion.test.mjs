@@ -746,7 +746,7 @@ test('2.6.1.67 motion playback retains unsigned timing, shift, raw active words 
 });
 
 // Full original Main GCALL words, including hardware-range and live-stack cases.
-const originalMatrixCalls = [
+const originalGeometryCalls = [
   {
     id: 204,
     label: 'raw angle 0 5f000000',
@@ -885,11 +885,51 @@ const originalMatrixCalls = [
       1098884362, 1059900621,
     ],
   },
+  {
+    id: 350,
+    label: 'inverse selected current matrix',
+    args: [4294967295],
+    initialize: [
+      [4294967040, 1067953684],
+      [4294967044, 1043207291],
+      [4294967048, 3205639438],
+      [4294967052, 1034147594],
+      [4294967056, 1050589266],
+      [4294967060, 1064011039],
+      [4294967064, 3194180600],
+      [4294967068, 1067215487],
+      [4294967072, 3213122077],
+      [4294967076, 1060320051],
+      [4294967080, 3221644902],
+      [4294967084, 1065940419],
+      [4294967088, 3246981120],
+      [4294967092, 1090781184],
+      [4294967096, 1100538184],
+      [4294967100, 1059900621],
+    ],
+    expected: [
+      1054696733, 1043056867, 3193923908, 3155505612, 1073520034, 3206809266, 1057231709,
+      1037935290, 3201279126, 1052940190, 3201223167, 964616945, 3218450476, 1068097964, 3201309053,
+      3181513283,
+    ],
+  },
+  {
+    id: 352,
+    label: 'normalize boundary',
+    args: [64],
+    initialize: [
+      [64, 1065353216],
+      [68, 0],
+      [72, 0],
+      [76, 0],
+    ],
+    expected: [1065353215, 0, 0, 0],
+  },
 ];
 
-test('2.6.1.67 Main matrix calls retain original raw words and live argument aliases', async (t) => {
+test('2.6.1.67 Main geometry calls retain original raw words and live argument aliases', async (t) => {
   const files = Object.fromEntries(
-    originalMatrixCalls.map((row, index) => {
+    originalGeometryCalls.map((row, index) => {
       const program = motionProgram([[row.id, row.args]]);
       if (row.label.includes('aliases')) new DataView(program.buffer).setUint32(32, 784, true);
       return [`matrix-${index}.kcs`, program];
@@ -897,7 +937,7 @@ test('2.6.1.67 Main matrix calls retain original raw words and live argument ali
   );
   const world = await dataWorld(profile, files);
   t.after(() => world.close({ flushFiles: false }));
-  for (const [index, row] of originalMatrixCalls.entries()) {
+  for (const [index, row] of originalGeometryCalls.entries()) {
     const task = await world.spawnScript(`matrix-${index}.kcs`, { initialExecute: false }),
       m = task.machine,
       floor = m.sp,
