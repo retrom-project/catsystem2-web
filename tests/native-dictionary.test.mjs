@@ -65,6 +65,60 @@ test('dictionary handles survive a fresh runtime checkpoint and retain native by
   assert.throws(() => invoke(0x381, [handle, 64]), /released/);
 });
 
+test('2.6.1.23 GCALL dictionary formats CP932 and returns the first key for raw words', async (t) => {
+  const sentinel = 0x9031e4b2,
+    owner = [0x13, 64],
+    shared = 0x80000031,
+    address = 0x201;
+  const steps = [
+    [675, [], 64],
+    [677, [owner, 128, 21]],
+    [677, [owner, 160, 21]],
+    [677, [owner, 224, 0x7f801123]],
+    [679, [owner, 288, 0], 72],
+    [680, [owner, 21, shared], 76],
+    [678, [owner, 160]],
+    [680, [owner, 21, address], 80],
+    [679, [owner, 160, 0x80000000], 84],
+    [676, [owner]],
+  ];
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23', {
+    'ordered.kcs': kcsProgram([
+      [37, sentinel],
+      ...steps.flatMap(([id, args, target]) => [
+        ...args.map((argument) => [37, argument]),
+        [43, id, args.length * 4],
+        ...(target === undefined ? [] : [[38, target]]),
+      ]),
+      [59],
+    ]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('ordered.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    }),
+    { machine } = task;
+  machine.writeString('z', 128);
+  machine.writeString('A', 160);
+  machine.store(192, -41);
+  machine.writeString('銀猫%d[G192] 100%%', 224);
+  machine.writeString('銀猫-41 100%', 288);
+  machine.bytes(shared, 4).fill(0xa7);
+  machine.bytes(address, 4).fill(0xa7);
+  await world.runtime.scheduler.execute(task);
+
+  assert.equal(machine.sp, machine.floor + 4);
+  assert.equal(machine.pop(), sentinel);
+  assert.deepEqual(
+    [72, 76, 80, 84].map((at) => machine.load(at)),
+    [0x7f801123, 1, 1, 0x80000000],
+  );
+  assert.deepEqual([...machine.bytes(shared, 4)], [0x41, 0, 0xa7, 0xa7]);
+  assert.deepEqual([...machine.bytes(address, 4)], [0x7a, 0, 0xa7, 0xa7]);
+  assert.throws(() => world.runtime.handles.get(machine.load(64), 'dictionary'), /released/);
+});
+
 test('legacy dictionaries keep the first raw byte key, do not format it and retain -1 for missing names after restore', async () => {
   const runtime = new NativeRuntime({ profile, read: async () => null }),
     m = machine(),

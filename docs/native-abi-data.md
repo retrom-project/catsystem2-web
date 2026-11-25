@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 507       | 57            | 17            | 288     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 511       | 57            | 17            | 284     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 393       | 80            | 19            | 446     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 506       | 80            | 19            | 333     | Generic 34 of 45, Particle 42 of 44 and 48 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
@@ -752,6 +752,11 @@ Main 45 replaces bytes using the live operand buffers, and Main 540 finds
 the selected space-separated token's offset. Main 278 expands numbered
 `$str` references using the existing caller bank. Plain copies still write
 both terminators when the caller has no bank.
+Main 675/676 share creation and release with Main 515/516. Main 677–679
+format CP932 keys, replace a raw DWORD, remove a key or return the supplied
+fallback word. Main 680 compares the raw value and copies the first matching
+key in byte order with one terminating NUL. A miss leaves the destination
+untouched. This family preserves the original case-sensitive ordering.
 
 Main 434–438 clear the file-server preload queue, resolve and queue a
 formatted category path, start reading, poll progress and age the records.

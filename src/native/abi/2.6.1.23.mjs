@@ -715,6 +715,11 @@ const mainEvidence = [
     value: 'Own 2.6.1.23 dictionary slots 675/676 share the exact handlers of Main 515/516',
   },
   {
+    ids: [677, 678, 679, 680],
+    value:
+      'Own 2.6.1.23 wrappers 0x477ec0–0x478360 support the ordered CP932 dictionary, raw DWORD replacement, formatted lookup and first matching key output.',
+  },
+  {
     ids: [568, 858, 859],
     value:
       'Own 2.6.1.23 Main wrappers at 0x479ab0, 0x479c60 and 0x479c80 prepare and capture the caller priority range into a retained target',
@@ -1974,8 +1979,48 @@ export default {
         { ids: [46], fields: { resultWritten: false } },
         { ids: [62, 63], fields: { resultWritten: true } },
         { ids: [568, 858, 859], fields: { resultWritten: false } },
-        { ids: [675], fields: { resultWritten: true } },
-        { ids: [676], fields: { resultWritten: false } },
+        {
+          ids: [675],
+          fields: {
+            result: {
+              kind: 'handle',
+              handleKind: 'dictionary',
+              ownership: 'owned',
+              description: 'Owned ordered dictionary',
+            },
+            resultWritten: true,
+          },
+        },
+        ...[676, 677, 678, 679, 680].map((id) => ({
+          ids: [id],
+          fields: {
+            resultWritten: id === 679 || id === 680,
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) => {
+              if (parameter.type.kind === 'handle')
+                return {
+                  ...parameter,
+                  type: {
+                    kind: 'handle',
+                    handleKind: 'dictionary',
+                    ownership: id === 676 ? 'owned' : 'borrowed',
+                  },
+                };
+              if (parameter.type.kind !== 'pointer') return parameter;
+              return {
+                ...parameter,
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: id === 680 ? 'out' : 'in',
+                  target:
+                    id === 680
+                      ? { kind: 'character', bits: 8, encoding: 'CP932' }
+                      : { kind: 'format-string', encoding: 'CP932' },
+                },
+              };
+            }),
+          },
+        })),
         { ids: [113, 241, 251, 850, 851], fields: { resultWritten: true } },
         { ids: [674, 844], fields: { resultWritten: true } },
         { ids: [565, 566], fields: { resultWritten: true } },
