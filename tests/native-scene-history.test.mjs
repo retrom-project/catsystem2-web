@@ -87,9 +87,8 @@ test('scene persistence natives write original history bytes through the shared 
   assert.equal(nativeSceneData(0xf9, [file, 3, 42, 1], null, services).value, 0);
 });
 
-test('2.6.1.23 cross-task Scene follows Script owners and copies compact histories after interpreter removal', async (t) => {
-  const profile = 'grisaia-jp-engine-2.6.1.23',
-    files = { 'idle.kcs': kcsProgram([[59]]) },
+async function crossTaskSceneOwners(t, profile) {
+  const files = { 'idle.kcs': kcsProgram([[59]]) },
     world = await dataWorld(profile, files),
     make = async (nativeID, kind = 12) => {
       const id = await world.objects.create({ kind, nativeID, parent: world.root });
@@ -164,24 +163,27 @@ test('2.6.1.23 cross-task Scene follows Script owners and copies compact histori
   assert.equal(history.seenValue('scene01.cst'), 0x80000002);
   assert.deepEqual(history.getString(0, 53, 47).bytes, new TextEncoder().encode('changed'));
   assert.equal(world.runtime.sceneData(empty), null);
-});
+}
 
-test('2.6.1.23 raw Scene pointer query maps the actual Script kind without stopping its interpreter', async (t) => {
-  const profile = 'grisaia-jp-engine-2.6.1.23',
-    world = await dataWorld(profile, { 'idle.kcs': kcsProgram([[59]]) }),
+for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+  test(`${profile} cross-task Scene follows Script owners and copies compact histories after interpreter removal`, (t) =>
+    crossTaskSceneOwners(t, profile));
+
+async function rawScenePointerQuery(t, profile, raw) {
+  const world = await dataWorld(profile, { 'idle.kcs': kcsProgram([[59]]) }),
     caller = world.main,
     target = await world.spawnScript('idle.kcs'),
     targetID = world.nativeTaskID(target.id),
     record = world.objects.objects.get(target.id),
     m = caller.machine;
   t.after(() => world.close({ flushFiles: false }));
-  assert.equal(mapABIMessage(profile, 'taskQueries', 'raw', 162, 12), 175);
-  assert.equal(mapABIMessage(profile, 'taskQueries', 'canonical', 175, 12), 162);
+  assert.equal(mapABIMessage(profile, 'taskQueries', 'raw', raw, 12), 175);
+  assert.equal(mapABIMessage(profile, 'taskQueries', 'canonical', 175, 12), raw);
   target.machine.setExecutionMode(1);
   record.scriptEnabled = 1;
   m.bytes(256, 12).fill(0xa5);
   assert.equal(
-    await world.sendNativeEngine(targetID, caller.id, 162, 256, 260),
+    await world.sendNativeEngine(targetID, caller.id, raw, 256, 260),
     NATIVE_UNWRITTEN_WORD,
   );
   assert.deepEqual(m.bytes(256, 12), Uint8Array.of(0, 0, 0, 0, 0, 0, 0, 0, 0xa5, 0xa5, 0xa5, 0xa5));
@@ -190,7 +192,7 @@ test('2.6.1.23 raw Scene pointer query maps the actual Script kind without stopp
   await world.runtime.native('main', 219, [], target.machine, target);
   m.bytes(256, 12).fill(0xa5);
   await assert.rejects(
-    world.sendNativeEngine(targetID, caller.id, 162, 256, 260),
+    world.sendNativeEngine(targetID, caller.id, raw, 256, 260),
     /Physical CST reader\/history pointers require explicit original-engine ownership/,
   );
   assert.deepEqual(m.bytes(256, 12), new Uint8Array(12).fill(0xa5));
@@ -200,14 +202,21 @@ test('2.6.1.23 raw Scene pointer query maps the actual Script kind without stopp
     base = await world.objects.create({ kind: 17, parent: world.root });
   for (const id of [fes, base])
     await assert.rejects(
-      world.sendNativeEngine(world.nativeTaskID(id), caller.id, 162, 256, 260),
+      world.sendNativeEngine(world.nativeTaskID(id), caller.id, raw, 256, 260),
       /Unreviewed ABI message/,
     );
   assert.equal(
-    await world.sendNativeEngine(999999, caller.id, 162, 256, 260),
+    await world.sendNativeEngine(999999, caller.id, raw, 256, 260),
     NATIVE_UNWRITTEN_WORD,
   );
-});
+}
+
+for (const [profile, raw] of [
+  ['grisaia-jp-engine-2.6.1.23', 162],
+  ['bokutomo-engine-2.6.1.67', 170],
+])
+  test(`${profile} raw Scene pointer query maps the actual Script kind without stopping its interpreter`, (t) =>
+    rawScenePointerQuery(t, profile, raw));
 
 test('2.6.1.23 explicit history string GCALLs retain owner isolation and saved CP932 bytes after cold restore', async (t) => {
   const profile = 'grisaia-jp-engine-2.6.1.23',
