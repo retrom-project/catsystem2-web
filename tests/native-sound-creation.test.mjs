@@ -28,7 +28,7 @@ function wave(frames = 64000) {
   for (let i = 44; i < bytes.length; i++) bytes[i] = ((i - 44) * 17 + 23) & 255;
   return bytes;
 }
-async function invoke(world, id, args) {
+async function invoke(world, id, args, tag = null) {
   const task = world.main;
   task.status = 'ready';
   task.io = null;
@@ -38,6 +38,7 @@ async function invoke(world, id, args) {
       native: (nativeID, values, vm) => world.runtime.scheduler.native(task, nativeID, values, vm),
     },
   ));
+  if (tag) machine.writeStringBytes(tag, 512);
   machine.floor = machine.fp = 3584;
   machine.sp = 3588 + args.length * 4;
   machine.store(3584, 0x1234abcd);
@@ -407,6 +408,85 @@ for (const profile of [
         await invoke(world, 156, [0]);
         assert.equal(await invoke(world, 569, [0]), 0);
       }
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });
+
+for (const profile of ['bokutomo-engine-2.6.1.67', 'rebellions-jp-engine-2.6.1.63'])
+  test(`${profile} actual loads retain independent TAG byte keys across cold, replacement and release`, async () => {
+    const bytes = wave(64000),
+      tag = new Uint8Array(6 * 24),
+      names = [
+        [[0x65, 0x6e, 0x74, 0x72, 0x79], 1234],
+        [[0x65, 0x6e, 0x74, 0x72, 0x79], 9999],
+        [[0x45, 0x6e, 0x74, 0x72, 0x79], 4321],
+        [[], 77],
+        [[0xed, 0x40], 111],
+        [[0xfa, 0x5c], 222],
+      ];
+    names.forEach(([name, value], i) => {
+      tag.set(name, i * 24);
+      new DataView(tag.buffer).setUint32(i * 24 + 20, value, true);
+    });
+    const files = {
+      'case.kcs': kcsProgram([[43, 0, 0], [59]]),
+      'sound/owned.wav': bytes,
+      'tag/owned.tag': tag,
+    };
+    const create = async (initialize = true) => {
+      const world = await dataWorld(profile, files, { initialize }),
+        { context } = audioFixture();
+      world.game.resolveCategory = (name, category) =>
+        name === 'sound/owned.wav'
+          ? name
+          : name === 'owned' && category === 'tag'
+            ? 'tag/owned.tag'
+            : null;
+      context.decodeAudioData = async () => ({
+        sampleRate: 8000,
+        numberOfChannels: 1,
+        length: 64000,
+        duration: 8,
+        getChannelData: () => Float32Array.from(bytes.subarray(44), (n) => (n - 128) / 128),
+      });
+      world.audio = world.sound.audio = new AudioMixer(world.game, context);
+      return world;
+    };
+    let world = await create();
+    const query = (bank, key) => invoke(world, 903, [bank, 512], Uint8Array.from(key));
+    try {
+      for (const [bank, type] of [
+        [0, 1],
+        [1, 2],
+      ]) {
+        assert.equal(await invoke(world, 155, [bank, 0, 288, type]), 1);
+        assert.equal(await query(bank, names[0][0]), 1234);
+        assert.equal(await query(bank, names[2][0]), 4321);
+        assert.equal(await query(bank, []), 77);
+        assert.equal(await query(bank, [0xed, 0x40]), 111);
+        assert.equal(await query(bank, [0xfa, 0x5c]), 222);
+      }
+      await assert.rejects(query(0xffffffff, names[0][0]), /outside its bank tag table/);
+      assert.equal(await query(32, names[0][0]), 0);
+      assert.equal(await query(0, [0x45, 0x4e, 0x54, 0x52, 0x59]), 0);
+      const saved = structuredClone(world.snapshot()),
+        cold = await create(false);
+      await cold.restore(saved);
+      await world.close({ flushFiles: false });
+      world = cold;
+      assert.equal(await query(0, [0xed, 0x40]), 111);
+      assert.equal(await query(1, [0xfa, 0x5c]), 222);
+      await invoke(world, 156, [0]);
+      assert.equal(await query(0, names[0][0]), 1234);
+      assert.equal(await query(1, names[0][0]), 1234);
+      new DataView(tag.buffer).setUint32(5 * 24 + 20, 333, true);
+      assert.equal(await invoke(world, 155, [0, 0, 288, 1]), 1);
+      assert.equal(await query(0, [0xfa, 0x5c]), 333);
+      assert.equal(await query(1, [0xfa, 0x5c]), 222);
+      for (const bank of [0, 1]) await invoke(world, 156, [bank]);
+      assert.equal(world.audio.channels.size, 0);
+      assert.ok(world.sound.device.slice(0, 2).every((bank) => !bank.loaded));
     } finally {
       await world.close({ flushFiles: false });
     }

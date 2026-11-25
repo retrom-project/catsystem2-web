@@ -365,3 +365,31 @@ test('FES configuration notification marks sound dirty and preserves active moti
   assert.equal(state.get('pendingPlay'), 0);
   assert.equal(messages.length, count);
 });
+
+test('legacy sndtag compares the original argument bytes without merging CP932 aliases', () => {
+  for (const profile of ['bokutomo-engine-2.6.1.67', 'rebellions-jp-engine-2.6.1.63']) {
+    const { facade, instance, world } = fixture(),
+      sound = object();
+    world.profile = profile;
+    const state = facade.state(instance, sound);
+    state.state.tags = [
+      ['\xed\x40', 111],
+      ['\xfa\x5c', 222],
+    ];
+    state.set('startClock', 5000);
+    for (const [bytes, expected] of [
+      [[0xed, 0x40], 6],
+      [[0xfa, 0x5c], 13],
+    ])
+      assert.equal(
+        facade.command(instance, sound, 'sndtag', ['wait', 'alias'], {
+          index: 0,
+          bytes: (i) => {
+            assert.equal(i, 1);
+            return Uint8Array.from(bytes);
+          },
+        }),
+        expected,
+      );
+  }
+});

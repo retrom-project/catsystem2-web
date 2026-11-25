@@ -228,3 +228,13 @@ ring bytes agree with the production reader and scheduled output PCM. These
 are controlled output-port checks; they do not establish physical device
 playback. Host initialization-failure results and remaining tag/decoder-option
 shapes are separate from this primary stream lifecycle.
+
+SDK63 and SDK67 Main903 query a selected bank's TAG resource by its original
+CP932 bytes. Main155 loads the 24-byte records through the mounted category
+path; duplicate names retain the first record. Names remain case sensitive,
+empty names are valid, and CP932 byte aliases retain independent values.
+Cold restoration and device-bank release preserve these keys; replacement
+loads own a fresh map. Decoding happens when tags cross into a host voice UI.
+The original selector -1 branch addresses a tree outside the bank tag array,
+so it remains diagnostic instead of returning an inferred first-bank match.
+SDK23 has no raw Main903 table slot.

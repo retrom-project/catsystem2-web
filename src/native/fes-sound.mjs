@@ -15,6 +15,7 @@ import { NativeFESSoundTable } from './fes-sound-table.mjs';
 import { buildNativeFESMotion } from './fes-motion.mjs';
 import { nativeEngineWord } from './engine-message.mjs';
 import { nativeCategoryFilename } from './resource-file.mjs';
+import { nativeDataKey } from './data-text.mjs';
 
 // These original type switches exclude 9/10. They precede user SUBCOMMANDs.
 const soundNoopVerbs = new Set(
@@ -546,7 +547,10 @@ export class NativeFESSound {
         if (action === 'init') state.set('pendingTags', 1);
         if ((action !== 'wait' && action !== 'remain') || context.index === -1) return 0;
         if (args[1] === undefined || (action === 'remain' && args[2] === undefined)) return 0;
-        const tag = state.state.tags.find(([name]) => name === text(1))?.[1] ?? 0,
+        const key = nativeABI(this.world.profile).sound.tagKeysUseBytes
+            ? nativeDataKey(context.bytes ? context.bytes(1) : encodeCP932(text(1)))
+            : text(1),
+          tag = state.state.tags.find(([name]) => name === key)?.[1] ?? 0,
           elapsed = (this.world.sound.now() - state.get('startClock')) >>> 0,
           frames = elapsed >= tag ? 0 : Math.floor((Math.imul(tag - elapsed, 60) >>> 0) / 1000);
         if (action === 'remain') {

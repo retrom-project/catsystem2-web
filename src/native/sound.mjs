@@ -14,7 +14,12 @@ import {
 import { lowerSoundName } from './sound-config.mjs';
 import { readLoopPoints } from './loop-points.mjs';
 import { SceneVoicePreparation } from './scene-voice-preparation.mjs';
-import { nativeDataFormat } from './data-text.mjs';
+import {
+  nativeDataBytes,
+  nativeDataCString,
+  nativeDataFormat,
+  nativeDataKey,
+} from './data-text.mjs';
 
 const f = Math.fround;
 const cvtt = (n) =>
@@ -52,11 +57,14 @@ export class NativeSoundPacket {
       throw new Error('Native sound packet bounds');
     return this.data.subarray(address, address + size);
   }
-  string(address) {
+  stringBytes(address) {
     const bytes = this.data.subarray(address),
       end = bytes.indexOf(0);
     if (end < 0) throw new Error('Unterminated native sound packet string');
-    return decoded(bytes.subarray(0, end));
+    return bytes.subarray(0, end);
+  }
+  string(address) {
+    return decoded(this.stringBytes(address));
   }
   writeString(text, address) {
     const bytes = encodeCP932(text);
@@ -411,7 +419,12 @@ export class NativeSound {
       nativeCategory: device.category,
       tags:
         device.category === 'voice'
-          ? Object.fromEntries([...(control.tags ?? [])].map(([name, time]) => [name, time / 1000]))
+          ? Object.fromEntries(
+              [...(control.tags ?? [])].map(([name, time]) => [
+                this.abi.sound.tagKeysUseBytes ? decoded(nativeDataBytes(name)) : name,
+                time / 1000,
+              ]),
+            )
           : null,
       volume: device.volume,
       volumeFactor: this.factor(bank),
@@ -591,6 +604,11 @@ export class NativeSoundTask {
       throw new Error(`Sound task ${this.record.id} requires sender ${sender}'s memory`);
     return machine;
   }
+  tagKey(memory, address) {
+    return this.sound.abi.sound.tagKeysUseBytes
+      ? nativeDataKey(memory.stringBytes?.(address) ?? nativeDataCString(memory, address))
+      : memory.string(address);
+  }
   async auxiliaries(bank, filename, prepared = null) {
     const control = this.controls[bank];
     this.clearAux(bank);
@@ -601,7 +619,9 @@ export class NativeSoundTask {
         const record = tag.subarray(at, at + 24),
           end = record.indexOf(0);
         if (end < 0 || end > 20) throw new Error('Native sound tag name runs past its record');
-        const name = decoded(record.subarray(0, end));
+        const name = this.sound.abi.sound.tagKeysUseBytes
+          ? nativeDataKey(record.subarray(0, end))
+          : decoded(record.subarray(0, end));
         if (!control.tags.has(name)) control.tags.set(name, get32(record, 20));
       }
     const plv = await this.sound.readAux(filename, 'plv', 'sound', prepared);
@@ -976,7 +996,7 @@ export class NativeSoundTask {
       return 0;
     }
     if (id === 215) {
-      const name = memory().string(l);
+      const name = this.tagKey(memory(), l);
       return this.controls.findIndex((control) => control.tags.has(name)) >>> 0;
     }
     if (id === 209) {
@@ -991,7 +1011,9 @@ export class NativeSoundTask {
       return code < 0 ? types.length : code;
     }
     if (id === 214 && bank === 0xffffffff) {
-      const name = memory().string(l);
+      if (this.sound.abi.sound.tagAllReadsOutsideBankTable)
+        throw new Error('Native sound all-bank tag query reads outside its bank tag table');
+      const name = this.tagKey(memory(), l);
       return this.controls.find((control) => control.tags.has(name))?.tags.get(name) ?? 0;
     }
     if (id === 223) {
@@ -1205,7 +1227,7 @@ export class NativeSoundTask {
         return Math.min(80, count);
       }
       case 214:
-        return control.tags.get(memory().string(l)) ?? 0;
+        return control.tags.get(this.tagKey(memory(), l)) ?? 0;
       case 216:
         if (!control.tagHandle)
           control.tagHandle = this.world.runtime.handles.add('sound-tags', control.tags);

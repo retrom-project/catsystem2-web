@@ -336,6 +336,8 @@ export default {
   resources: { categoryCount: 64 },
   sound: {
     banks: 32,
+    tagKeysUseBytes: true,
+    tagAllReadsOutsideBankTable: true,
     load3DPositionFromPan: true,
     bufferCompletionNotifications: true,
     streamRefillUsesNativeActivity: true,
@@ -1627,7 +1629,7 @@ export default {
         {
           ids: [903],
           value:
-            '2.6.1.63 own Root Sound lookup sends the formatted tag at raw 208. It reads the selected bank or first matching bank in order for selector -1, defaulting to zero.',
+            '2.6.1.63 own Root Sound lookup sends the formatted tag at raw 208. Actual Main155 creation and original category/VFS TAG parsing confirm raw-byte keys, first duplicates, empty names, case and unsigned values for selected banks. Selector -1 reads a tree outside the bank tag array and remains diagnostic; the earlier first-matching-bank inference is superseded.',
         },
         {
           ids: [604, 935, 936],

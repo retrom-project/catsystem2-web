@@ -385,6 +385,8 @@ export default {
   },
   sound: {
     banks: 32,
+    tagKeysUseBytes: true,
+    tagAllReadsOutsideBankTable: true,
     load3DPositionFromPan: true,
     bufferCompletionNotifications: true,
     streamRefillUsesNativeActivity: true,
@@ -700,6 +702,7 @@ export default {
       sound: {
         unmapped: 'reject',
         canonical: [
+          { min: 209, max: 209, offset: 5 },
           { min: 206, max: 207, offset: 5 },
           { min: 198, max: 199, offset: 5 },
           { min: 196, max: 196, offset: 5 },
@@ -851,6 +854,7 @@ export default {
           },
         ],
         raw: [
+          { min: 214, max: 214, offset: -5 },
           { min: 211, max: 212, offset: -5 },
           { min: 203, max: 204, offset: -5 },
           { min: 201, max: 201, offset: -5 },
@@ -1316,7 +1320,7 @@ export default {
           430, 431, 433, 441, 442, 443, 444, 445, 446, 457, 460, 468, 532, 538, 558, 564, 588, 600,
           601, 622, 623, 624, 628, 629, 631, 632, 641, 648, 657, 663, 669, 681, 682, 688, 690, 691,
           692, 701, 702, 703, 704, 705, 706, 707, 708, 709, 716, 721, 722, 725, 729, 734, 735, 738,
-          837, 838, 839, 840, 841, 842, 843, 879, 880, 881, 903,
+          837, 838, 839, 840, 841, 842, 843, 879, 880, 881,
         ],
         recovered: [
           1, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
@@ -1357,12 +1361,17 @@ export default {
           828, 829, 830, 831, 832, 833, 834, 835, 836, 844, 845, 846, 847, 848, 849, 850, 851, 852,
           853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870,
           871, 872, 873, 874, 875, 876, 877, 878, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891,
-          892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 904, 905, 934, 935, 936, 937,
+          892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 934, 935, 936, 937,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: [903],
+          value:
+            'Own Main903 at 0x49c3c0 formats CP932 bytes and sends Sound raw209/shared214. Actual Main155 type1/type2 creation reaches the original category resolver and 24-byte TAG record reader. Selected banks preserve distinct byte keys, first duplicates, case, empty names and unsigned values through release/reload. Selector -1 reads a tree outside the bank tag array and remains diagnostic; no first-matching-bank behavior is inferred.',
+        },
         {
           ids: [604],
           value:
@@ -2460,6 +2469,7 @@ export default {
         },
       ],
       signatures: [
+        { ids: [903], fields: { review: 'reviewed', resultWritten: true } },
         { ids: [604], fields: { review: 'reviewed', resultWritten: true } },
         { ids: [602, 603], fields: { review: 'reviewed' } },
         { ids: [569, 587], fields: { review: 'reviewed' } },
