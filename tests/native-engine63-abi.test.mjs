@@ -2633,3 +2633,54 @@ test('fixed 2.6.1.63 Blur and Mosaic preserve native feedback and rectangle pass
     await world.close({ flushFiles: false });
   }
 });
+
+test('fixed 2.6.1.63 screen transitions retain the fade extension and stopped clocks', async () => {
+  const widths = new Map([
+    [853, 6],
+    [854, 1],
+    [855, 2],
+    [856, 7],
+    [857, 2],
+    [860, 8],
+    [861, 2],
+  ]);
+  const world = await dataWorld(
+    profile,
+    Object.fromEntries(
+      [...widths].map(([id, words]) => [`main-${id}.kcs`, mainProgram(id, words)]),
+    ),
+  );
+  try {
+    Object.assign(world.graphics.view, { clientWidth: 8, clientHeight: 6 });
+    world.stageRenderer.gpu = new ScreenVectorGPU(8, 6);
+    world.graphics.createLogicalDevice();
+    for (let native = 475; native <= 482; native++) {
+      assert.equal(mapABIMessage(profile, 'screen', 'canonical', native), native + 41);
+      assert.equal(mapABIMessage(profile, 'screen', 'raw', native + 41), native);
+    }
+    for (const [kind, initializer, start, values] of [
+      [50, 853, 855, [4, 0]],
+      [51, 856, 857, [4, 1, 0x4000abcd]],
+      [52, 860, 861, [4, 3, floatBits(2), floatBits(16)]],
+    ]) {
+      const id = await world.objects.create({ kind, parent: world.main.id });
+      const target = world.nativeTaskID(id),
+        task = world.screenEffects.tasks.get(id);
+      const { record, state } = task;
+      if (kind === 50) assert.equal(world.screenEffects.rendering.prepare(2), true);
+      await executeMain(world, start, [target, 17]);
+      record.effectiveFrame = 100;
+      record.pausedFrames = 6;
+      await executeMain(world, initializer, [target, 8, floatBits(0), floatBits(60000), ...values]);
+      if (kind === 50) await executeMain(world, 854, [target]);
+      if (kind === 51) assert.equal(state.params[5], 0x4000abcd);
+      assert.deepEqual([state.active, state.start, state.end], [17, 94, 102]);
+      record.effectiveFrame = 200;
+      await executeMain(world, start, [target, 0]);
+      assert.deepEqual([state.active, state.start, state.end], [0, 94, 102]);
+      await world.objects.release(id);
+    }
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});

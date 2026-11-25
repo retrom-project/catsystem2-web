@@ -18,43 +18,47 @@ const mainConstantZero = [
 ];
 
 const cp932TextOperations = [611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621, 695, 884];
-const screenCaptureFloats = {
-  521: [2, 3, 4, 6, 7],
-  522: [],
-  523: [1, 2, 3, 4, 5, 6, 7, 8],
-  524: [],
-};
-const screenCaptureSignatures = Object.entries(screenCaptureFloats).map(([key, floats]) => {
-  const id = Number(key);
-  return {
-    ids: [id],
-    fields: {
-      parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) => {
-        if (index === 0)
-          return {
-            name: 'task',
-            description: 'Target screen effect task ID',
-            type: { kind: 'object-id', objectKind: id <= 522 ? 'Blur' : 'Mosaic' },
-          };
-        if (id === 521 && index === 1)
-          return {
-            name: 'matrix',
-            description: 'Borrowed guest matrix with sixteen Float32 words',
-            type: {
-              kind: 'pointer',
-              addressSpace: 'vm',
-              direction: 'in',
-              target: { kind: 'record', name: '4 by 4 matrix' },
-            },
-          };
-        return floats.includes(index)
-          ? { ...parameter, description: 'Float32 parameter', type: { kind: 'float', bits: 32 } }
-          : parameter;
-      }),
-      resultWritten: false,
-    },
-  };
-});
+const screenEffectOperations = [
+  [521, 'Blur', [2, 3, 4, 6, 7]],
+  [522, 'Blur', []],
+  [523, 'Mosaic', [1, 2, 3, 4, 5, 6, 7, 8]],
+  [524, 'Mosaic', []],
+  [853, 'WipeMosaic', [2, 3]],
+  [854, 'WipeMosaic', []],
+  [855, 'WipeMosaic', []],
+  [856, 'FadeMosaic', [2, 3]],
+  [857, 'FadeMosaic', []],
+  [860, 'WBreak', [2, 3, 6, 7]],
+  [861, 'WBreak', []],
+];
+const screenEffectSignatures = screenEffectOperations.map(([id, objectKind, floats]) => ({
+  ids: [id],
+  fields: {
+    parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) => {
+      if (index === 0)
+        return {
+          name: 'task',
+          description: 'Target screen effect task ID',
+          type: { kind: 'object-id', objectKind },
+        };
+      if (id === 521 && index === 1)
+        return {
+          name: 'matrix',
+          description: 'Borrowed guest matrix with sixteen Float32 words',
+          type: {
+            kind: 'pointer',
+            addressSpace: 'vm',
+            direction: 'in',
+            target: { kind: 'record', name: '4 by 4 matrix' },
+          },
+        };
+      return floats.includes(index)
+        ? { ...parameter, description: 'Float32 parameter', type: { kind: 'float', bits: 32 } }
+        : parameter;
+    }),
+    resultWritten: false,
+  },
+}));
 
 const fesSoundReceivers = [173, 175, 176, 178, 179, 180, 183, 194, 199, 203, 204, 210, 211];
 const soundReceivers = [
@@ -593,16 +597,18 @@ export default {
       },
       screen: {
         unmapped: 'reject',
-        raw: [377, 378, 379, 380, 381, 384, 385, 387, 388].map((id) => ({
-          min: id,
-          max: id,
-          offset: -12,
-        })),
-        canonical: [365, 366, 367, 368, 369, 372, 373, 375, 376].map((id) => ({
-          min: id,
-          max: id,
-          offset: 12,
-        })),
+        raw: [
+          { min: 377, max: 381, offset: -12 },
+          { min: 384, max: 385, offset: -12 },
+          { min: 387, max: 388, offset: -12 },
+          { min: 516, max: 523, offset: -41 },
+        ],
+        canonical: [
+          { min: 365, max: 369, offset: 12 },
+          { min: 372, max: 373, offset: 12 },
+          { min: 375, max: 376, offset: 12 },
+          { min: 475, max: 482, offset: 41 },
+        ],
       },
       draw: {
         unmapped: 'reject',
@@ -1070,7 +1076,13 @@ export default {
     resizeRGB24: true,
     screenEffectBlurUsesSSE: true,
     screenEffectRectangleUsesLogicalCapture: true,
-    screenEffectFloatArguments: screenCaptureFloats,
+    screenEffectRetimesOnActiveInit: [50, 51, 52],
+    screenEffectPreserveStoppedClockKinds: [50, 51, 52],
+    screenEffectBreakUsesLogicalCapture: true,
+    screenEffectMosaic: { fadeInitializerWords: 6, retainShortWipe: true },
+    screenEffectFloatArguments: Object.fromEntries(
+      screenEffectOperations.map(([id, , floats]) => [id, floats]),
+    ),
     textureCapsPolicy: 'virtual-d3d9',
     textureReleaseUsesExistingOwner: true,
     fullPositionCoordinatesUseX87: true,
@@ -1122,7 +1134,7 @@ export default {
           780, 781, 782, 783, 784, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803,
           804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821,
           822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 837, 838, 839, 840, 841, 842, 843,
-          845, 846, 847, 853, 854, 855, 856, 857, 860, 861, 904, 905,
+          845, 846, 847, 904, 905,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
@@ -1152,9 +1164,10 @@ export default {
           675, 676, 681, 683, 684, 685, 689, 693, 694, 695, 696, 697, 698, 699, 700, 701, 702, 710,
           711, 712, 713, 714, 715, 717, 718, 719, 720, 723, 724, 726, 727, 728, 730, 731, 732, 733,
           735, 736, 737, 739, 740, 741, 785, 786, 787, 788, 789, 790, 833, 834, 835, 836, 844, 848,
-          849, 850, 851, 852, 858, 859, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873,
-          874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891,
-          892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 934, 935, 936, 937,
+          849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866,
+          867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884,
+          885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902,
+          903, 934, 935, 936, 937,
         ],
       },
       evidence: [
@@ -1559,6 +1572,16 @@ export default {
             'Own Blur and Mosaic receivers at 0x47f300 and 0x47eb20 use raw 366–369. The matrix packet copies sixteen unchanged DWORDs followed by six parameters. Mosaic scales the rectangle and builds its geometry on first initialization. The original callbacks submit SSE2 feedback vertices and two Mosaic passes, including zero reduction ratios. The starts retain the complete active word. All four wrappers return control 2 with an untouched result.',
         },
         {
+          ids: [853, 854, 855, 856, 857],
+          value:
+            'Own WipeMosaic and FadeMosaic receivers at 0x47c130 and 0x479620 use raw 475–479. They own two and one capture textures, respectively. FadeMosaic retains its sixth initializer word. Both effects retime when initialized while active and preserve their clocks on a stop. The original callbacks select the cached pixels, texture and alpha. The wrappers return control 2 without writing a result.',
+        },
+        {
+          ids: [860, 861],
+          value:
+            'Own WBreak at 0x476ea0 accepts the seven-word packet on raw 480 and the full active word on raw 481. The initialized renderer capability selects the logical capture extent. The helper at 0x4761f0 uses the shared native random stream for the shards, and callback 0x475da0 projects the original unsigned frame deltas. Reinitialization retimes an active effect. Stopping preserves the clock. Both wrappers return control 2 with no result write.',
+        },
+        {
           ids: [568, 858, 859],
           value:
             '2.6.1.63 own Main568 captures slot zero after successful one-target allocation. Main858 prepares a caller count and Main859 captures a caller slot and priority range.',
@@ -1960,7 +1983,7 @@ export default {
       ],
       signatures: [
         ...NATIVE_TILE_GAME_SIGNATURES,
-        ...screenCaptureSignatures,
+        ...screenEffectSignatures,
 
         { ids: [74, 75, 77], fields: { resultWritten: true } },
         { ids: [541], fields: { resultWritten: false } },
@@ -2230,63 +2253,6 @@ export default {
             argumentWords: 4,
             parameters: NATIVE_SEMANTICS.main[385].signature.parameters.slice(0, 4),
             resultWritten: true,
-          },
-        },
-        {
-          ids: [856],
-          fields: {
-            argumentWords: 7,
-            parameters: [
-              {
-                name: 'arg0',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-              {
-                name: 'arg1',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-              {
-                name: 'arg2',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-              {
-                name: 'arg3',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-              {
-                name: 'arg4',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-              {
-                name: 'arg5',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-              {
-                name: 'arg6',
-                description: 'Own seven-word arity; semantic/type not admitted.',
-                type: {
-                  kind: 'unknown',
-                },
-              },
-            ],
           },
         },
         {
