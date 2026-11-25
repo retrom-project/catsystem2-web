@@ -255,6 +255,144 @@ test('2.6.1.23 Script owns a narrow scene reader and path history', async (t) =>
   assert.throws(() => world.runtime.handles.get(handle, 'scene-data'), /released/);
 });
 
+test('2.6.1.23 task Scene GCALLs preserve raw names, markers and captured strings across cold restore', async (t) => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    ptr = (address) => [0x23, address],
+    steps = [
+      [220, [0x7fffffff], 0],
+      [219, []],
+      [221, [0, 0], -1],
+      [220, [ptr(256)], 1],
+      [221, [-1, 0], 1],
+      [221, [0, -1], 3],
+      [221, [0, 0], 0xf0],
+      [221, [0, 1], 0xf1],
+      [222, [ptr(1024), 0, 2], encodeCP932('本文の表示').length],
+      [235, [ptr(1088)], 33],
+      [223, [ptr(320), 0x80000002], 1],
+      [223, [ptr(384), 7], 1],
+      [227, [ptr(384)], 0x80000002],
+      [227, [ptr(448)], 0],
+      [224, [ptr(320), 2], 1],
+      [224, [ptr(384), 0x80000002], 1],
+      [228, [0xffffffff, ptr(1152), ptr(1216)], 0],
+      [231, [0, 53, ptr(512)]],
+      [276, [47, ptr(576)]],
+      [231, [0, 53, ptr(640)]],
+      [276, [47, ptr(704)]],
+      [230, [0, 53, 47, ptr(1280)], 1],
+      [232, [0, 53, ptr(768)]],
+    ],
+    files = {
+      'task-scene.kcs': kcsProgram(
+        [
+          ...steps.flatMap(([id, args, expected], index) => [
+            ...args.map((arg) => [37, arg]),
+            [43, id, 4 * args.length],
+            ...(expected === undefined ? [] : [[38, 1536 + index * 4]]),
+          ]),
+          [59],
+        ],
+        [
+          [200, 'owned'],
+          [256, '%s[G200].cst'],
+          [320, 'MiXeD.CsT'],
+          [384, 'mixed.cst'],
+          [448, 'MIXED'],
+          [512, 'no reference'],
+          [576, '保存の文字'],
+          [640, '$str47 $str999999'],
+          [704, '後の文字'],
+          [768, '始$str47/末$str5!'],
+        ],
+      ),
+      'owned.cst': cst([
+        [
+          [0xf0, '章の名前'],
+          [0xf1, '0x21'],
+          [0x20, '本文の表示'],
+        ],
+      ]),
+    },
+    world = await dataWorld(profile, files),
+    reads = [],
+    read = world.game.read;
+  t.after(() => world.close({ flushFiles: false }));
+  world.game.read = function (name, ...args) {
+    reads.push([name, ...args]);
+    return Reflect.apply(read, this, [name, ...args]);
+  };
+  const task = await world.spawnScript('task-scene.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    }),
+    m = task.machine,
+    floor = m.sp;
+  m.bytes(1024, 320).fill(0xa5);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(m.sp, floor);
+  steps.forEach(([, , expected], index) => {
+    if (expected !== undefined) assert.equal(m.load(1536 + index * 4), expected >>> 0);
+  });
+  assert.equal(m.string(1024), '本文の表示');
+  assert.equal(m.load(1024 + encodeCP932('本文の表示').length + 1, 1), 0xa5);
+  assert.equal(m.string(1088), '章の名前');
+  assert.equal(m.string(1152), 'MiXeD.CsT');
+  assert.equal(m.load(1216), 0x80000002);
+  assert.equal(m.string(1280), '保存の文字');
+  assert.equal(m.string(768), '始保存の文字/末!');
+  assert.deepEqual(
+    reads.filter(([name]) => name.endsWith('.cstl')),
+    [],
+  );
+  assert.equal(reads.filter(([name]) => name === 'owned.cst').length, 1);
+
+  const restored = await dataWorld(profile, files, { initialize: false });
+  t.after(() => restored.close({ flushFiles: false }));
+  await restored.restore(structuredClone(world.snapshot()));
+  const owner = restored.runtime.scheduler.tasks.get(task.id),
+    data = restored.runtime.sceneData(owner),
+    strings = restored.runtime.stringBank(owner, false);
+  assert.equal(data.reader.type(0, 2), 0x20);
+  assert.deepEqual(data.reader.fileNameBytes, encodeCP932('章の名前'));
+  assert.equal(data.reader.fileValue, 33);
+  assert.equal(data.history.seenValue('mixed.cst'), 0x80000002);
+  assert.equal(data.history.path[0].scene, 'MiXeD.CsT');
+  assert.deepEqual(data.history.getString(0, 53, 47).bytes, encodeCP932('保存の文字'));
+  assert.equal(strings.get(47), '後の文字');
+  strings.set(47, '復元後');
+  assert.equal(world.runtime.stringBank(task, false).get(47), '後の文字');
+});
+
+test('2.6.1.23 task Scene only dereferences an active reader and parsed string references', async () => {
+  const runtime = new NativeRuntime({
+      profile: 'grisaia-jp-engine-2.6.1.23',
+      read: async () => kcsProgram([[59]]),
+    }),
+    task = await runtime.spawn('case.kcs'),
+    m = task.machine,
+    call = (id, args) => runtime.native('main', id, args, m, task, runtime.scheduler);
+  assert.deepEqual(await call(222, [0x7fffffff, 0, 0]), { control: 1, value: 0 });
+  assert.deepEqual(await call(231, [0, 0, 0x7fffffff]), { control: 2 });
+  await call(219, []);
+  await assert.rejects(async () => call(222, [0x7fffffff, 0, 0]), /unmapped destination/);
+  m.bytes(512, 32).fill(0xa5);
+  await assert.rejects(async () => call(222, [512, 0, 0]), /no readable record/);
+  assert.deepEqual(m.bytes(512, 32), new Uint8Array(32).fill(0xa5));
+  m.writeString('no $strx lookup', 128);
+  assert.deepEqual(await call(231, [0, 53, 128]), { control: 2 });
+  assert.equal(runtime.stringBank(task, false), null);
+  m.writeString('L$str47R', 128);
+  await assert.rejects(async () => call(231, [0, 53, 128]), /null caller string bank/);
+  assert.equal(runtime.stringBank(task, false), null);
+  m.writeString('other.cst', 128);
+  await call(224, [128, 2]);
+  const old = runtime.sceneData(task);
+  await call(219, []);
+  assert.notEqual(runtime.sceneData(task), old);
+  assert.deepEqual(runtime.sceneData(task).history.path, []);
+});
+
 test('restored scene hints prepare one explicit M2 resource from the same mounted scene', async (t) => {
   const workerBefore = globalThis.Worker;
   let pending = Promise.withResolvers();

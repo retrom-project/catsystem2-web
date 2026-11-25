@@ -277,7 +277,7 @@ export class NativeRuntime {
     if (table === 'main' && [0x114, 0x115, 0x116, 0xf3, 0xfd, 0x150, 0xe7].includes(id)) {
       const abi = nativeABI(this.profile);
       const existingOnly =
-        (id === 0x150 && abi.scene?.historyCaptureUsesExistingBank) ||
+        ((id === 0x150 || id === 0xe7) && abi.scene?.historyCaptureUsesExistingBank) ||
         (id === 0x116 && abi.stringBank?.expandUsesExistingBank);
       const lookupOnly = (id === 0xf3 || id === 0xfd) && abi.stringBank?.cssOwnerLookupOnly;
       services.strings = this.stringBank(task, !(existingOnly || lookupOnly));

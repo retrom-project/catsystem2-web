@@ -95,6 +95,9 @@ const rectangleOperations = [214, 215, 216, 217];
 const mainGeometryOperations = [350, 351, 352, 353, 354, 355, 356, 357];
 const motionGeometryOperations = [27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37];
 const motionComponentOperations = [18, 19, 20, 21, 22];
+const taskSceneOperations = [
+  219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 235,
+];
 function geometrySignatures(table, ids) {
   return ids.map((id) => {
     const { name, signature } = NATIVE_SEMANTICS[table][id],
@@ -550,6 +553,11 @@ const mainEvidence = [
     ids: [323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 336, 338, 608],
     value:
       'Own 2.6.1.23 scene owner and CP932 reader at 0x480b40–0x481490; authored scene file markers and path history',
+  },
+  {
+    ids: taskSceneOperations,
+    value:
+      'Own 2.6.1.23 task Scene wrappers 0x485220–0x485d40 use the same CP932 CST reader and independent seen/path owner; text requires a mapped destination and readable descriptor, and parsed string captures dereference the existing caller bank.',
   },
   {
     ids: [385, 386],
@@ -1181,6 +1189,9 @@ export default {
     translations: false,
     legacyHistoryRecords: true,
     historyCaptureUsesExistingBank: true,
+    implicitHistoryCaptureRequiresBank: true,
+    implicitReaderUsesDirectBehavior: true,
+    implicitTextDestinationRequired: true,
     cstFileMarkers: true,
     directTextNull: 'reject',
     directPathResult: 'success',
@@ -2093,6 +2104,32 @@ export default {
         { ids: [864, 868], fields: { resultWritten: false } },
         { ids: [515, 518, 519], fields: { resultWritten: true } },
         { ids: [516, 517], fields: { resultWritten: false } },
+        ...taskSceneOperations.map((id) => ({
+          ids: [id],
+          fields: {
+            resultWritten: NATIVE_SEMANTICS.main[id].signature.controlCodes.includes(1),
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) =>
+              parameter.type.kind !== 'pointer'
+                ? parameter
+                : {
+                    ...parameter,
+                    type: {
+                      ...parameter.type,
+                      addressSpace: 'vm',
+                      direction: [222, 228, 230, 235].includes(id)
+                        ? 'out'
+                        : id === 232
+                          ? 'inout'
+                          : 'in',
+                      target:
+                        parameter.type.target.kind === 'bits'
+                          ? parameter.type.target
+                          : { ...parameter.type.target, encoding: 'CP932' },
+                    },
+                  },
+            ),
+          },
+        })),
         {
           ids: [
             6, 15, 64, 69, 70, 242, 248, 252, 294, 304, 307, 318, 319, 323, 325, 326, 327, 328, 329,

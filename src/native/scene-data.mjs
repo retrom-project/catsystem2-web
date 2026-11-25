@@ -484,7 +484,9 @@ export function nativeSceneData(id, args, machine, services = {}) {
   if (!explicit.has(id) && !implicit.has(id)) return undefined;
   const original = id;
   const direct = explicit.has(id);
-  const behavior = direct && services.profile ? nativeABI(services.profile).scene : undefined;
+  const profileBehavior = services.profile ? nativeABI(services.profile).scene : undefined,
+    behavior =
+      direct || profileBehavior?.implicitReaderUsesDirectBehavior ? profileBehavior : undefined;
   if (!direct && services.sceneData === undefined) return undefined;
   const data = direct
     ? args[0]
@@ -550,7 +552,11 @@ export function nativeSceneData(id, args, machine, services = {}) {
     return word(type);
   }
   if ([0x147, 0x409, 0x40d, 0x40e].includes(id)) {
-    if (!mapped(machine, args[1])) return word(0);
+    if (!mapped(machine, args[1])) {
+      if (!direct && behavior?.implicitTextDestinationRequired)
+        throw new Error('Native CST text dereferences an unmapped destination');
+      return word(0);
+    }
     if ([0x409, 0x40e].includes(id) && !services.format) return undefined;
     const bytes = reader.text(args[2], args[3], {
       language: [0x409, 0x40e].includes(id) ? services.format(args[4], machine) : '',
@@ -625,8 +631,11 @@ export function nativeSceneData(id, args, machine, services = {}) {
     return word(Number(entry?.found ?? false));
   }
   if (id === 0x150) {
-    if (!services.strings) return behavior?.historyCaptureUsesExistingBank ? done() : undefined;
+    if (!services.strings && (direct || !behavior?.implicitHistoryCaptureRequiresBank))
+      return behavior?.historyCaptureUsesExistingBank ? done() : undefined;
     scanReferences(cbytes(machine, args[3]), (index) => {
+      if (!services.strings)
+        throw new Error('Native scene string capture dereferences a null caller string bank');
       const value = services.strings.getBytes(index);
       if (value === undefined) return false;
       history.setString(args[1], args[2], index, value);

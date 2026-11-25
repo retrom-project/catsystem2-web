@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 512       | 57            | 17            | 283     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 527       | 57            | 17            | 268     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 423       | 80            | 19            | 416     | Generic 16 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 506       | 80            | 19            | 333     | Generic 34 of 45, Particle 42 of 44 and 48 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
@@ -735,6 +735,20 @@ The reader copies file markers from the records with types `0xf0` and
 `0xf1`. Main 338 queries those markers and Main 608 queries the block count.
 Main 328–333 update or read the independent seen and path lists. Main 336
 captures the strings referenced in a record from the caller's existing bank.
+Main 219 replaces the caller's task-local reader and both history lists.
+Main 220–232 and 235 use that owner. The task reader shares the explicit
+CP932 file-marker and CatScene behavior and does not request CSTL data.
+Missing files and unrecognized signatures retain the previous document;
+a truncated recognized CatScene clears it. Main 222 requires a mapped
+destination and readable text record once the reader exists. Task-local
+seen and path names retain their extensions, compare ASCII-folded bytes,
+and keep unsigned maxima. Path reads clamp unsigned indices and write
+the filename before the position. Main 231 scans the source before
+dereferencing the caller's existing string bank: text without a parsed
+`$str` reference succeeds without one, while a parsed reference with no
+bank retains the original failure. Captured bytes remain independent of
+later bank changes and survive a cold World restore. Main 233/234 and
+the remaining Scene families still require their own original evidence.
 The native CSS history wrappers 385 and 386 take four words. They use
 40-byte headerless records followed by 72 bytes per saved string. The
 CSS file wrappers 242, 248, 252, 389 and 390 store or extract an owned
