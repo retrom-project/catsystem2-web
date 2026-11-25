@@ -38,6 +38,12 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
     if (!a(5)) return done();
     const source = first && owners.get(first),
       target = owners.get(a(5));
+    if (
+      id === 0x2df &&
+      !source?.bitmap &&
+      nativeABI(world.profile).graphics.imageOwnerCopyRequiresBitmap
+    )
+      throw new Error('The image copy requires a source bitmap');
     if (source?.bitmap) {
       const words = Array.from({ length: 10 }, (_, i) => a(i));
       if (id === 0x2df) {

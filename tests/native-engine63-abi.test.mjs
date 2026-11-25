@@ -110,6 +110,29 @@ test('2.6.1.63 bitmap and image-owner geometry preserve raw coordinates and null
   assert.deepEqual(await source.pixels(), pixels);
 });
 
+test('2.6.1.63 image-owner copy preserves physical row order for overlapping copies', async (t) => {
+  const world = await dataWorld(profile, { 'main-735.kcs': mainProgram(735, 10) });
+  t.after(() => world.close({ flushFiles: false }));
+  const images = world.graphics.images,
+    bitmap = images.create(4, 4),
+    owner = world.imageOwners.add(bitmap, world.main.id),
+    empty = world.imageOwners.add(0, world.main.id),
+    rows = [149, 197, 245, 37];
+  images.get(bitmap).state.rgba = Uint8ClampedArray.from({ length: 64 }, (_, i) =>
+    i % 4 === 0 ? (rows[i >> 4] + ((i >> 2) & 3) * 52) & 255 : 255,
+  );
+  const call = (source, destination) =>
+    executeMain(world, 735, [source, 0, 1, 4, 3, destination, 0, 0, 4, 3]);
+  await call(owner, owner);
+  assert.deepEqual(
+    [...(await images.get(bitmap).pixels()).filter((_, index) => index % 4 === 0)],
+    [37, 89, 141, 193, 37, 89, 141, 193, 37, 89, 141, 193, 37, 89, 141, 193],
+  );
+  await call(0, 0);
+  await assert.rejects(() => call(0, owner), /requires a source bitmap/);
+  await assert.rejects(() => call(empty, owner), /requires a source bitmap/);
+});
+
 async function run(instructions, diagnostic) {
   const runtime = new NativeRuntime({
     profile,
