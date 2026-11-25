@@ -557,6 +557,11 @@ const mainEvidence = [
       'Own 2.6.1.23 four-word CSS scene history wrappers and 0x5a39e0 headerless 40-byte records',
   },
   {
+    ids: [255],
+    value:
+      'Own 2.6.1.23 wrapper 0x484be0 resolves a caller-relative CP932 CSS path, checks its four-byte magic and writes five local timestamp DWORDs.',
+  },
+  {
     ids: [242, 248, 252, 389, 390],
     value:
       'Own 2.6.1.23 CSS entries, tag, clear and clone at 0x483fc0, 0x484650, 0x484910 and 0x484c90–0x484cd0',
@@ -1120,7 +1125,12 @@ export default {
   calendar: { weekdayAlgorithm: 'century-integer' },
   rectangles: { strictArity: true },
   fileIO: { rawModeAndBoundedBuffer: true },
-  globalFile: { growthBytes: 524288, optionalTaskRecords: true },
+  globalFile: {
+    growthBytes: 524288,
+    optionalTaskRecords: true,
+    timestampMinimumBytes: 4,
+    timestampRequiresMappedOutputs: true,
+  },
   nameTable: { legacyFieldBytes: 32, fixedPairs: true, pairByteLimit: 64 * 1024 * 1024 },
   math: {
     anglesUseX87: true,
@@ -1423,6 +1433,23 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         ...geometrySignatures('main', mainGeometryOperations),
+        {
+          ids: [255],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[255].signature.parameters.map((parameter, index) => ({
+              ...parameter,
+              type: {
+                ...parameter.type,
+                addressSpace: 'vm',
+                direction: index ? 'out' : 'in',
+                target: index
+                  ? parameter.type.target
+                  : { kind: 'format-string', encoding: 'CP932' },
+              },
+            })),
+            resultWritten: true,
+          },
+        },
         ...[297, 305, 306].map((id) => ({
           ids: [id],
           fields: {

@@ -357,8 +357,8 @@ export function nativePersistence(id, args, machine, services = {}) {
     return Promise.resolve(storage.read(name)).then(async (bytes) => {
       if (bytes === null) return result(0);
       if (id === 0xff) {
-        const minimum =
-          (services.profile && nativeABI(services.profile).globalFile.timestampMinimumBytes) || 16;
+        const behavior = services.profile && nativeABI(services.profile).globalFile,
+          minimum = behavior?.timestampMinimumBytes || 16;
         if (
           bytes.length < minimum ||
           new Binary(bytes).u32(0) !== 0x00535343 /* CSS file signature  */
@@ -370,6 +370,8 @@ export function nativePersistence(id, args, machine, services = {}) {
           offset = services.localOffsetMinutes?.() ?? -new Date().getTimezoneOffset(),
           date = value === null ? null : nativeSystemTime(value + BigInt(offset) * 600000000n);
         if (!date) return result(0);
+        if (behavior?.timestampRequiresMappedOutputs)
+          for (const address of args.slice(1)) machine.bytes(address, 4);
         [date[0], date[1], date[3], date[4], date[5]].forEach((n, i) =>
           machine.store(args[i + 1], n),
         );
