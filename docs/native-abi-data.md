@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 527       | 57            | 17            | 268     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 529       | 57            | 17            | 266     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 423       | 80            | 19            | 416     | Generic 16 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 506       | 80            | 19            | 333     | Generic 34 of 45, Particle 42 of 44 and 48 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
@@ -747,8 +747,16 @@ the filename before the position. Main 231 scans the source before
 dereferencing the caller's existing string bank: text without a parsed
 `$str` reference succeeds without one, while a parsed reference with no
 bank retains the original failure. Captured bytes remain independent of
-later bank changes and survive a cold World restore. Main 233/234 and
-the remaining Scene families still require their own original evidence.
+later bank changes and survive a cold World restore.
+Main 233 expands references from a separately selected Script history;
+missing keys retain their literal source text. A missing source history
+is only dereferenced when a parsed reference is encountered. Main 234
+replaces both lists through compact serialization, keeps copied strings
+independent, and preserves the lists on self-copy. The real Script
+receiver returns its history even after its interpreter has been removed,
+so a source Script's retained context remains available to these helpers
+and after a cold World restore. FES sources without interpreters and the
+raw physical-pointer query remain separate message-level scope boundaries.
 The native CSS history wrappers 385 and 386 take four words. They use
 40-byte headerless records followed by 72 bytes per saved string. The
 CSS file wrappers 242, 248, 252, 389 and 390 store or extract an owned

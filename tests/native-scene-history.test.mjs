@@ -10,6 +10,7 @@ import { NativeHandles } from '../src/native/handles.mjs';
 import { NativeGlobalFile, createGlobalEntries } from '../src/native/persistence.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
+import { encodeCP932 } from '../src/kcs/strings.mjs';
 
 test('history encoding preserves current record fields, duplicate string keys and unused tails', () => {
   const h = new NativeSceneHistory();
@@ -82,6 +83,85 @@ test('scene persistence natives write original history bytes through the shared 
   assert.equal(nativeSceneData(0xf9, [file, 2, 42, 1], null, services).value, 1);
   assert.equal(destination.history.path[0].value, 10);
   assert.equal(nativeSceneData(0xf9, [file, 3, 42, 1], null, services).value, 0);
+});
+
+test('2.6.1.23 cross-task Scene follows Script owners and copies compact histories after interpreter removal', async (t) => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    files = { 'idle.kcs': kcsProgram([[59]]) },
+    world = await dataWorld(profile, files),
+    make = async (nativeID, kind = 12) => {
+      const id = await world.objects.create({ kind, nativeID, parent: world.root });
+      const record = world.objects.objects.get(id);
+      if (kind !== 12) return record;
+      await record.implementation.loadScript('idle.kcs');
+      return world.runtime.scheduler.tasks.get(id);
+    },
+    source = await make(73),
+    caller = await make(57),
+    empty = await make(75),
+    base = await make(81, 17),
+    call = (task, id, args) => world.runtime.native('main', id, args, task.machine, task),
+    sourceData = () => world.runtime.sceneData(source),
+    destination = () => world.runtime.sceneData(caller);
+  t.after(() => world.close({ flushFiles: false }));
+  assert.deepEqual(await call(caller, 233, [73, 0, 53, 0x7fffffff]), { control: 2 });
+  await call(source, 219, []);
+  source.machine.writeString('Scene01.cst', 256);
+  await call(source, 223, [256, 0x80000002]);
+  await call(source, 224, [256, 4]);
+  source.machine.writeString('保存の文', 256);
+  await call(source, 229, [0, 53, 47, 256]);
+  assert.deepEqual(await call(caller, 234, [73]), { control: 1, value: 0 });
+  await call(caller, 219, []);
+  for (const target of [75, 81, 999999, 0, 0xffffffff]) {
+    assert.deepEqual(await call(caller, 234, [target]), { control: 1, value: 0 });
+    caller.machine.writeString('plain $strx', 256);
+    caller.machine.bytes(256 + 13, 8).fill(0xa5);
+    assert.deepEqual(await call(caller, 233, [target, 0, 53, 256]), { control: 2 });
+    assert.equal(caller.machine.string(256), 'plain $strx');
+    assert.equal(caller.machine.load(256 + 11, 1), 0);
+    assert.equal(caller.machine.load(256 + 12, 1), 0);
+    assert.equal(caller.machine.load(256 + 13, 1), 0xa5);
+  }
+  caller.machine.writeString('A$str47 B$str5 C$strx', 256);
+  await call(caller, 233, [73, 0, 53, 256]);
+  assert.equal(caller.machine.string(256), 'A保存の文 B$str5 C$strx');
+  caller.machine.writeString('A$str47', 256);
+  await assert.rejects(async () => call(caller, 233, [75, 0, 53, 256]), /null scene context/);
+
+  await world.runtime.scheduler.execute(source);
+  assert.equal(source.status, 'finished');
+  const sourceRecord = world.objects.objects.get(source.id);
+  await sourceRecord.implementation.loadScript('missing.kcs', { nativeLoad: true });
+  assert.equal(world.runtime.scheduler.tasks.has(source.id), false);
+  assert.equal(sourceRecord.context.sceneData, source.context.sceneData);
+  assert.deepEqual(await call(caller, 234, [73]), { control: 1, value: 1 });
+  assert.deepEqual(destination().history.snapshot(), sourceData().history.snapshot());
+  const before = destination().history.snapshot();
+  assert.deepEqual(await call(caller, 234, [57]), { control: 1, value: 1 });
+  assert.deepEqual(destination().history.snapshot(), before);
+  sourceData().history.setString(0, 53, 47, new TextEncoder().encode('changed'));
+  assert.deepEqual(destination().history.getString(0, 53, 47).bytes, encodeCP932('保存の文'));
+  base.context = { sceneData: sourceRecord.context.sceneData };
+  assert.deepEqual(await call(caller, 234, [81]), { control: 1, value: 0 });
+  assert.deepEqual(destination().history.snapshot(), before);
+  delete base.context;
+
+  const restored = await dataWorld(profile, files, { initialize: false });
+  t.after(() => restored.close({ flushFiles: false }));
+  await restored.restore(structuredClone(world.snapshot()));
+  const restoredCaller = restored.runtime.scheduler.tasks.get(caller.id),
+    restoredSource = restored.objects.objects.get(source.id);
+  assert.equal(restored.runtime.scheduler.tasks.has(source.id), false);
+  assert.equal(restoredSource.context.sceneData, sourceRecord.context.sceneData);
+  assert.deepEqual(
+    await restored.runtime.native('main', 234, [73], restoredCaller.machine, restoredCaller),
+    { control: 1, value: 1 },
+  );
+  const history = restored.runtime.sceneData(restoredCaller).history;
+  assert.equal(history.seenValue('scene01.cst'), 0x80000002);
+  assert.deepEqual(history.getString(0, 53, 47).bytes, new TextEncoder().encode('changed'));
+  assert.equal(world.runtime.sceneData(empty), null);
 });
 
 test('2.6.1.67 Scene history GCALLs keep CP932 aliases and import compact save records', async (t) => {

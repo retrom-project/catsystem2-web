@@ -98,6 +98,7 @@ const motionComponentOperations = [18, 19, 20, 21, 22];
 const taskSceneOperations = [
   219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 235,
 ];
+const crossTaskSceneOperations = [233, 234];
 function geometrySignatures(table, ids) {
   return ids.map((id) => {
     const { name, signature } = NATIVE_SEMANTICS[table][id],
@@ -558,6 +559,11 @@ const mainEvidence = [
     ids: taskSceneOperations,
     value:
       'Own 2.6.1.23 task Scene wrappers 0x485220–0x485d40 use the same CP932 CST reader and independent seen/path owner; text requires a mapped destination and readable descriptor, and parsed string captures dereference the existing caller bank.',
+  },
+  {
+    ids: crossTaskSceneOperations,
+    value:
+      'Own 2.6.1.23 wrappers 0x485a30/0x485bf0 route raw 162 through the original task tree to Script 0x45377b, then expand retained strings or copy both compact history lists independently of the source interpreter.',
   },
   {
     ids: [385, 386],
@@ -2104,29 +2110,34 @@ export default {
         { ids: [864, 868], fields: { resultWritten: false } },
         { ids: [515, 518, 519], fields: { resultWritten: true } },
         { ids: [516, 517], fields: { resultWritten: false } },
-        ...taskSceneOperations.map((id) => ({
+        ...[...taskSceneOperations, ...crossTaskSceneOperations].map((id) => ({
           ids: [id],
           fields: {
             resultWritten: NATIVE_SEMANTICS.main[id].signature.controlCodes.includes(1),
             parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) =>
-              parameter.type.kind !== 'pointer'
-                ? parameter
-                : {
+              parameter.type.kind === 'handle'
+                ? {
                     ...parameter,
-                    type: {
-                      ...parameter.type,
-                      addressSpace: 'vm',
-                      direction: [222, 228, 230, 235].includes(id)
-                        ? 'out'
-                        : id === 232
-                          ? 'inout'
-                          : 'in',
-                      target:
-                        parameter.type.target.kind === 'bits'
-                          ? parameter.type.target
-                          : { ...parameter.type.target, encoding: 'CP932' },
+                    type: { kind: 'handle', handleKind: 'task', ownership: 'borrowed' },
+                  }
+                : parameter.type.kind !== 'pointer'
+                  ? parameter
+                  : {
+                      ...parameter,
+                      type: {
+                        ...parameter.type,
+                        addressSpace: 'vm',
+                        direction: [222, 228, 230, 235].includes(id)
+                          ? 'out'
+                          : id === 232 || id === 233
+                            ? 'inout'
+                            : 'in',
+                        target:
+                          parameter.type.target.kind === 'bits'
+                            ? parameter.type.target
+                            : { ...parameter.type.target, encoding: 'CP932' },
+                      },
                     },
-                  },
             ),
           },
         })),

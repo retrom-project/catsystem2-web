@@ -294,10 +294,12 @@ export class NativeRuntime {
       return this.sceneData(task, true);
     };
     services.sceneDataForTask = (id) => {
-      const owner = scheduler.tasks.get(
-        this.services.world ? this.services.world.resolveTaskID(id, task.id) : id,
-      );
-      return owner ? this.sceneData(owner) : null;
+      const world = this.services.world,
+        resolved = world ? world.resolveTaskID(id, task.id) : id,
+        record = world?.objects.objects.get(resolved);
+      const owner =
+        (scheduler ?? this.scheduler).tasks.get(resolved) ?? (record?.kind === 12 ? record : null);
+      return owner?.context ? this.sceneData(owner) : null;
     };
     services.globalEntries = createGlobalEntries(this.handles);
     services.variableBankForTask = (id) => {

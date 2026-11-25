@@ -444,10 +444,11 @@ export function nativeSceneData(id, args, machine, services = {}) {
     const source = services.sceneDataForTask(args[0]);
     const execute = (data) => {
       if (!data) return word(0);
-      const seen = data.history.encode('seen', true),
-        path = data.history.encode('path', true);
-      services.sceneData.history.decode('seen', seen, path);
-      services.sceneData.history.decode('path', path);
+      const legacy = services.profile && nativeABI(services.profile).scene?.legacyHistoryRecords,
+        seen = data.history.encode('seen', true, legacy),
+        path = data.history.encode('path', true, legacy);
+      services.sceneData.history.decode('seen', seen, path, legacy);
+      services.sceneData.history.decode('path', path, null, legacy);
       return word(1);
     };
     return source && typeof source.then === 'function' ? source.then(execute) : execute(source);
