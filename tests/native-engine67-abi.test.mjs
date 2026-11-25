@@ -1721,7 +1721,9 @@ test('2.6.1.67 Main514 queries the retained Motion names and refreshes the worki
   assert.equal(await query(handle, 200, 'PBASE.KCS'), 1);
   assert.equal(await query(handle, 0x800000c8, 'folder/pBase.kcs'), 0);
   manager.working.fill(0xa1);
-  assert.equal(await query(handle, 0xefffffff), 1);
+  await assert.rejects(query(handle, 0xefffffff), /original formatter reads NULL/);
+  assert.deepEqual(manager.working, new Uint8Array(144).fill(0xa1));
+  assert.equal(await query(handle, 200, ''), 1);
   assert.deepEqual(manager.working, manager.base);
   category.directory = 'mot';
   assert.equal(await query(handle, 200, 'pBase'), 0);
