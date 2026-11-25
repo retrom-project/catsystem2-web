@@ -324,3 +324,85 @@ for (const selectedProfile of [profile, 'sdk-4.01-engine-2.6.1.74']) {
     );
   });
 }
+
+for (const selectedProfile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+])
+  test(`${selectedProfile} World MOT handlers retain owner, current services and guarded admission across cold restore`, async () => {
+    const world = await dataWorld(selectedProfile),
+      call = (owner, id, args = []) =>
+        owner.runtime.native(
+          'main',
+          id,
+          args,
+          owner.main.machine,
+          owner.main,
+          owner.runtime.scheduler,
+        );
+    let fresh;
+    try {
+      Object.defineProperty(world.runtime.services, 'fallbackProbe', {
+        enumerable: true,
+        get() {
+          throw new Error('Registered MOT used fallback service preparation');
+        },
+      });
+      const handle = (await call(world, 294)).value;
+      assert.equal(world.runtime.handles.get(handle, 'motion-manager').owner, world.main.id);
+      assert.deepEqual(await call(world, 311, [handle]), { control: 1, value: 0 });
+      assert.deepEqual(await call(world, 319, [floatBits(3.2)]), { control: 1, value: 3 });
+      const original = world.runtime.services.motion,
+        replacement = Object.create(original);
+      let visits = 0;
+      replacement.with = (...args) => {
+        visits++;
+        return original.with(...args);
+      };
+      world.runtime.services.motion = replacement;
+      assert.deepEqual(await call(world, 310, [handle, 7]), { control: 1, value: 0 });
+      assert.equal(visits, 1);
+      world.runtime.services.motion = null;
+      assert.throws(() => call(world, 311, [handle]), /Unsupported/);
+      world.runtime.services.motion = replacement;
+      for (const key of world.runtime.handlers.keys()) {
+        const [table, number] = key.split(':'),
+          id = Number(number);
+        if (world.runtime.tables.get(table)[id].status === 'unknown')
+          assert.throws(
+            () =>
+              world.runtime.native(
+                table,
+                id,
+                [],
+                world.main.machine,
+                world.main,
+                world.runtime.scheduler,
+              ),
+            /Unsupported/,
+          );
+      }
+      fresh = await dataWorld(selectedProfile, {}, { initialize: false });
+      await fresh.restore(structuredClone(world.snapshot()));
+      assert.equal(fresh.runtime.handles.get(handle, 'motion-manager').owner, fresh.main.id);
+      const restoredRegistry = fresh.runtime.services.motion,
+        pending = call(fresh, 311, [handle]);
+      fresh.runtime.services.motion = {
+        with() {
+          throw new Error('Later calls must use the new service');
+        },
+      };
+      assert.deepEqual(await pending, { control: 1, value: 0 });
+      assert.throws(() => call(fresh, 311, [handle]), /Later calls must use the new service/);
+      fresh.runtime.services.motion = restoredRegistry;
+      assert.notEqual(fresh.runtime.services.motion, replacement);
+      const next = (await call(fresh, 294)).value;
+      assert.equal(fresh.runtime.handles.get(next, 'motion-manager').owner, fresh.main.id);
+    } finally {
+      await fresh?.close({ flushFiles: false });
+      await world.close({ flushFiles: false });
+    }
+  });

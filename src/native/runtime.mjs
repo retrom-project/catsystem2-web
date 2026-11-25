@@ -205,6 +205,9 @@ export class NativeRuntime {
         index(key) === null ? undefined : { enumerable: true, configurable: true },
     });
   }
+  // Registered handlers own their World/services through their installer and
+  // receive (args, machine, task, scheduler). Only built-in fallbacks prepare
+  // the per-call service object below.
   register(table, id, handler) {
     const entries = this.tables.get(table);
     if (
@@ -262,61 +265,61 @@ export class NativeRuntime {
     if (entry.status === 'unknown') throw unsupported();
     const key = `${table}:${id}`;
     this.calls.set(key, (this.calls.get(key) || 0) + 1);
-    const services = {
-      ...this.services,
-      profile: this.profile,
-      owner: task.id,
-      contextName: task.context.contextName ?? '',
-    };
-    services.markStringsDirty = () => {
-      const record = this.services.world?.objects.objects.get(task.id);
-      if (record) record.scriptStringDirty = 1;
-    };
-    if (table === 'main' && NATIVE_BANK_IDS.includes(id)) {
-      services.variables = this.variableBank(task, id === 0xd1);
-      services.allowVariableInitialization = task.context.allowVariableInitialization !== false;
-    }
-    if (table === 'main' && id === 0x21b) services.variables = this.variableBank(task, false);
-    if (table === 'main' && [0x114, 0x115, 0x116, 0xf3, 0xfd, 0x150, 0xe7].includes(id)) {
-      const abi = nativeABI(this.profile);
-      const existingOnly =
-        ((id === 0x150 || id === 0xe7) && abi.scene?.historyCaptureUsesExistingBank) ||
-        (id === 0x116 && abi.stringBank?.expandUsesExistingBank);
-      const lookupOnly = (id === 0xf3 || id === 0xfd) && abi.stringBank?.cssOwnerLookupOnly;
-      services.strings = this.stringBank(task, !(existingOnly || lookupOnly));
-      if (lookupOnly) services.createStrings = () => this.stringBank(task);
-    }
-    services.sceneData = this.sceneData(task);
-    services.initializeSceneData = () => {
-      if (task.context.sceneData) {
-        const previous = this.handles.release(task.context.sceneData, 'scene-data');
-        services.world?.m2?.scenePreparation?.discard(previous);
-        services.world?.graphics?.images?.scenePreparation?.discard(previous);
-        task.context.sceneData = 0;
-      }
-      return this.sceneData(task, true);
-    };
-    services.sceneDataForTask = (id) => {
-      const world = this.services.world,
-        resolved = world ? world.resolveTaskID(id, task.id) : id,
-        record = world?.objects.objects.get(resolved);
-      const owner =
-        (scheduler ?? this.scheduler).tasks.get(resolved) ?? (record?.kind === 12 ? record : null);
-      return owner?.context ? this.sceneData(owner) : null;
-    };
-    services.globalEntries = createGlobalEntries(this.handles);
-    services.variableBankForTask = (id) => {
-      const owner = scheduler.tasks.get(
-        this.services.world ? this.services.world.resolveTaskID(id, task.id) : id,
-      );
-      return owner ? this.variableBank(owner, false) : null;
-    };
     let reply;
     if (entry.status === 'reserved') reply = nativeReply(2);
     else if (entry.status === 'constant-zero') reply = nativeReply(1, 0);
-    else if (this.handlers.has(key))
-      reply = this.handlers.get(key)(args, machine, task, scheduler, services);
+    else if (this.handlers.has(key)) reply = this.handlers.get(key)(args, machine, task, scheduler);
     else if (table === 'main') {
+      const services = {
+        ...this.services,
+        profile: this.profile,
+        owner: task.id,
+        contextName: task.context.contextName ?? '',
+      };
+      services.markStringsDirty = () => {
+        const record = this.services.world?.objects.objects.get(task.id);
+        if (record) record.scriptStringDirty = 1;
+      };
+      if (table === 'main' && NATIVE_BANK_IDS.includes(id)) {
+        services.variables = this.variableBank(task, id === 0xd1);
+        services.allowVariableInitialization = task.context.allowVariableInitialization !== false;
+      }
+      if (table === 'main' && id === 0x21b) services.variables = this.variableBank(task, false);
+      if (table === 'main' && [0x114, 0x115, 0x116, 0xf3, 0xfd, 0x150, 0xe7].includes(id)) {
+        const abi = nativeABI(this.profile);
+        const existingOnly =
+          ((id === 0x150 || id === 0xe7) && abi.scene?.historyCaptureUsesExistingBank) ||
+          (id === 0x116 && abi.stringBank?.expandUsesExistingBank);
+        const lookupOnly = (id === 0xf3 || id === 0xfd) && abi.stringBank?.cssOwnerLookupOnly;
+        services.strings = this.stringBank(task, !(existingOnly || lookupOnly));
+        if (lookupOnly) services.createStrings = () => this.stringBank(task);
+      }
+      services.sceneData = this.sceneData(task);
+      services.initializeSceneData = () => {
+        if (task.context.sceneData) {
+          const previous = this.handles.release(task.context.sceneData, 'scene-data');
+          services.world?.m2?.scenePreparation?.discard(previous);
+          services.world?.graphics?.images?.scenePreparation?.discard(previous);
+          task.context.sceneData = 0;
+        }
+        return this.sceneData(task, true);
+      };
+      services.sceneDataForTask = (id) => {
+        const world = this.services.world,
+          resolved = world ? world.resolveTaskID(id, task.id) : id,
+          record = world?.objects.objects.get(resolved);
+        const owner =
+          (scheduler ?? this.scheduler).tasks.get(resolved) ??
+          (record?.kind === 12 ? record : null);
+        return owner?.context ? this.sceneData(owner) : null;
+      };
+      services.globalEntries = createGlobalEntries(this.handles);
+      services.variableBankForTask = (id) => {
+        const owner = scheduler.tasks.get(
+          this.services.world ? this.services.world.resolveTaskID(id, task.id) : id,
+        );
+        return owner ? this.variableBank(owner, false) : null;
+      };
       reply = nativeFiles(id, args, machine, services);
       if (reply === undefined) reply = nativeStandard(id, args, machine, services);
       if (reply === undefined) reply = nativeArguments(id, args, machine, services);

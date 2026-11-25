@@ -318,3 +318,91 @@ test('unknown admission precedes the main built-in fallback and resource service
   assert.deepEqual(m.bytes(args[0], 16), new Uint8Array(16).fill(0xa5));
   assertUnknownDiagnostic(error, runtime, id, args, task);
 });
+
+test('registered, reserved and constant natives do not prepare fallback services', async () => {
+  const runtime = new NativeRuntime({ profile, read: async () => compiled([[59]]) }),
+    task = await runtime.spawn('fast-path.kcs'),
+    calls = [];
+  Object.defineProperty(runtime.services, 'fallbackProbe', {
+    enumerable: true,
+    get() {
+      throw new Error('Fallback services were prepared for a self-contained native');
+    },
+  });
+  runtime.register('main', 0xd1, function (...args) {
+    calls.push(args);
+    return nativeReply(2);
+  });
+  for (const [id, args, reply] of [
+    [0, [77], nativeReply(2)],
+    [171, [], nativeReply(1, 0)],
+    [0xd1, [8], nativeReply(2)],
+  ])
+    assert.deepEqual(
+      runtime.native('main', id, args, task.machine, task, runtime.scheduler),
+      reply,
+    );
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].length, 4);
+  assert.deepEqual(calls[0], [[8], task.machine, task, runtime.scheduler]);
+  assert.equal(task.context.variableBank, undefined);
+  assert.deepEqual(
+    [...runtime.calls],
+    [
+      ['main:0', 1],
+      ['main:171', 1],
+      ['main:209', 1],
+    ],
+  );
+});
+
+test('fallback natives construct current services once per call and registered async results keep their ordering and validation', async () => {
+  const runtime = new NativeRuntime({
+      profile,
+      read: async () => compiled([[59]], [[64, 'live services']]),
+    }),
+    task = await runtime.spawn('live-services.kcs'),
+    logs = [],
+    trace = [];
+  let generation = 1,
+    preparations = 0;
+  Object.defineProperty(runtime.services, 'log', {
+    enumerable: true,
+    get() {
+      preparations++;
+      const selected = generation;
+      return (text) => logs.push([selected, text]);
+    },
+  });
+  for (generation = 1; generation <= 2; generation++)
+    assert.deepEqual(
+      runtime.native('main', 1, [64], task.machine, task, runtime.scheduler),
+      nativeReply(2),
+    );
+  assert.deepEqual(logs, [
+    [1, 'live services'],
+    [2, 'live services'],
+  ]);
+  assert.equal(preparations, 2);
+  runtime.register('main', 0x1bf, () => {
+    trace.push('handler');
+    queueMicrotask(() => trace.push('queued'));
+    return Promise.resolve().then(() => {
+      trace.push('resolved');
+      return nativeReply(2);
+    });
+  });
+  const pending = runtime.native('main', 0x1bf, [], task.machine, task, runtime.scheduler);
+  trace.push('returned');
+  await pending;
+  trace.push('awaited');
+  assert.deepEqual(trace, ['handler', 'returned', 'queued', 'resolved', 'awaited']);
+  assert.equal(preparations, 2);
+  const invalid = new NativeRuntime({ profile, read: async () => compiled([[59]]) }),
+    caller = await invalid.spawn('invalid-control.kcs');
+  invalid.register('main', 0x1bf, async () => nativeReply(1, 7));
+  await assert.rejects(
+    invalid.native('main', 0x1bf, [], caller.machine, caller, invalid.scheduler),
+    (error) => error.details.id === 0x1bf && /disagrees with the fixed ABI/.test(error.message),
+  );
+});

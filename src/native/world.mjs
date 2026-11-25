@@ -12,7 +12,7 @@ import { NativeEngineMessages } from './engine-message.mjs';
 import { NativeFileAccess, installNativeFormattedFileOutput } from './storage.mjs';
 import { installNativeVersionQuery } from './version-query.mjs';
 import { installNativeScriptMessageBox } from './script-message-box.mjs';
-import { NativeMotionRegistry } from './motion.mjs';
+import { NativeMotionRegistry, installNativeMotion } from './motion.mjs';
 import {
   NativeSoundConfiguration,
   nativeSoundConfiguration,
@@ -459,6 +459,7 @@ export class NativeWorld {
     installNativeImagePersistence(this);
     installNativeSound(this);
     installNativeMovies(this);
+    installNativeMotion(this);
     installNativeMotionPersistence(this);
     installNativeScriptReplacements(this);
     installNativePlainText(this);

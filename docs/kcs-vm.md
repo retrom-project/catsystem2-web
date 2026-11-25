@@ -42,6 +42,20 @@ GCALL 的第二个操作数规定实参字节数。回调返回值是控制码�
 不返回默认 0。浏览器异步 I/O 由 scheduler 在当前逻辑帧内等待并恢复该调用，
 操作只执行一次；这与 guest 主动暂停到下一帧不同。
 
+`NativeRuntime.register(table, id, handler)` 的内部回调接收
+`(args, machine, task, scheduler)`；installer 通过闭包持有它自己的 World 和服务。
+准入检查先拒绝 unknown 槽位，再处理已证实的 reserved/constant 和已注册回调。
+这些路径不构造内建 fallback 的临时服务对象，也不隐式选择或创建变量/字符串 bank。
+需要这些操作的回调必须通过它持有的 World/runtime 明确执行。
+
+只有进入主表内建 fallback 时才从当前 `runtime.services` 构造本次调用的服务视图，
+保留 getter 的本次读取、当前任务/上下文和 bank/scene 服务的原有选择规则。
+该对象不跨 GCALL 缓存。所有分派路径仍检查固定 ABI 的控制码，并保留同步异常、
+异步完成和 guest 暂停的原有顺序；内部回调不额外接收这个服务对象。
+普通 World 的已实现 MOT、round、lerp 和 spline 包装通过同一注册入口执行，
+每次只捕获该族实际消费的当前服务及创建调用的 `task.id`；冷加载已开始的调用保留
+自己捕获的服务，下一次调用重新读取当前 World，不跨 GCALL 复用临时视图。
+
 原 GCALL 每次将 native 的输出槽初始化为 `0xCCCCCCCC`。控制码 1/3 得到该值时，
 原生只记录诊断，随后仍将该字入栈。主表 `0x8C/8E/225` 的原处理器确实只返回 1，
 没有写输出；因此这三个已证实槽位显式返回该哨兵值，并保留 VM 诊断，不能改成 0。

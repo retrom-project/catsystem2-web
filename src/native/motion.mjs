@@ -128,7 +128,7 @@ const ids = new Set([
 ]);
 const returning = new Set([0x130, 0x133, 0x135, 0x136, 0x137, 0x13b, 0x13c, 0x1b8, 0x202, 0x217]);
 
-export function nativeMotion(id, args, machine, services = {}) {
+export function nativeMotion(id, args, machine, services = {}, owner) {
   if (services.math?.scalarArgumentsReadFrame && (id === 0x13e || id === 0x13f))
     args = scalarArgumentWords(args, machine, id === 0x13e ? 5 : 1);
   if (id === 0x13e) {
@@ -172,7 +172,7 @@ export function nativeMotion(id, args, machine, services = {}) {
     return bytes;
   };
   const registry = services.motion;
-  if (id === 0x126) return value(registry.create(services.owner));
+  if (id === 0x126) return value(registry.create(owner === undefined ? services.owner : owner));
   if (!word(0)) return returning.has(id) ? value(0) : done();
   if (id === 0x127) {
     registry.release(word(0));
@@ -328,4 +328,27 @@ export function nativeMotion(id, args, machine, services = {}) {
         throw new Error(`Missing recovered MOT dispatch ${id.toString(16)}`);
     }
   });
+}
+
+export function installNativeMotion(world) {
+  for (const id of [...ids, 0x13e, 0x13f, 0x140])
+    world.runtime.register('main', id, (args, machine, task) => {
+      const { runtime } = world,
+        current = runtime.services;
+      // These are the only services consumed by the MOT wrappers. Capture
+      // their current values once for this call, including async cold loads.
+      return nativeMotion(
+        id,
+        args,
+        machine,
+        {
+          profile: runtime.profile,
+          math: current.math,
+          motion: current.motion,
+          formatBytes: current.formatBytes,
+          format: current.format,
+        },
+        task.id,
+      );
+    });
 }
