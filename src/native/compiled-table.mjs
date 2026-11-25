@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { Binary, inflate } from '../binary.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABI } from './abi/index.mjs';
 import {
   nativeDataKey,
   nativeDataFormat,
@@ -87,10 +88,15 @@ export class NativeCompiledTable {
 export const NATIVE_COMPILED_TABLE_IDS = Object.freeze([0x317, 0x318, 0x319, 0x31a]);
 export async function nativeCompiledTable(id, args, machine, services) {
   const argument = (index) => nativeDataArgument(args, machine, index),
-    { handles } = services;
+    { handles } = services,
+    behavior = services.profile ? nativeABI(services.profile).database : null;
   if (id === 0x317) {
     const name = nativeDataFormat(args, machine, services, 0);
-    if (name === null) return nativeReply(1, 0);
+    if (name === null) {
+      if (behavior?.compiledFormatRequired)
+        throw new RangeError('Native compiled table requires a mapped format');
+      return nativeReply(1, 0);
+    }
     const table = new NativeCompiledTable(),
       bytes = await services.read(new TextDecoder('shift_jis').decode(name), 'database');
     if (!(await table.load(bytes))) return nativeReply(1, 0);
@@ -111,7 +117,13 @@ export async function nativeCompiledTable(id, args, machine, services) {
   const destination = id === 0x31a ? argument(3) : null;
   if (destination !== null && !nativeDataMapped(machine, destination)) return nativeReply(1, 0);
   const name = nativeDataFormat(args, machine, services, 1);
-  if (name === null) return nativeReply(1, 0);
+  if (name === null) {
+    if (behavior?.compiledFormatRequired)
+      throw new RangeError('Native compiled table requires a mapped format');
+    return nativeReply(1, 0);
+  }
+  if ((argument(2) | 0) < 0 && behavior?.compiledIndexRequiresNonnegative)
+    throw new RangeError('Native compiled table reads before its rows');
   const field = owner.data.field(argument(2), nativeDataKey(name));
   if (id === 0x319) return nativeReply(1, owner.data.number(argument(2), nativeDataKey(name)));
   if (!field) return nativeReply(1, 0);

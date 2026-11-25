@@ -105,6 +105,7 @@ const historyCursorOperations = [379, 380, 381, 382, 383, 384];
 const questionDatabaseOperations = Array.from({ length: 37 }, (_, i) => 742 + i).filter(
   (id) => id !== 769 && id !== 770,
 );
+const compiledDatabaseOperations = [791, 792, 793, 794];
 const selectionDatabaseOperations = [779, 780, 781, 782, 783, 784, 829, 830, 831, 832];
 const missionDatabaseOperations = Array.from({ length: 34 }, (_, i) => 795 + i);
 function contentDatabaseSignatures(ids) {
@@ -114,7 +115,7 @@ function contentDatabaseSignatures(ids) {
       ids: [id],
       fields: {
         resultWritten: signature.controlCodes.includes(1),
-        ...([742, 779, 795].includes(id)
+        ...([742, 779, 791, 795].includes(id)
           ? { result: { kind: 'handle', handleKind: 'content-database', ownership: 'owned' } }
           : {}),
         parameters: signature.parameters.map((parameter) => {
@@ -149,9 +150,11 @@ function contentDatabaseSignatures(ids) {
                   }
                 : format
                   ? { kind: 'format-string', encoding: 'CP932' }
-                  : [746, 748, 754, 757, 776, 804, 806].includes(id)
-                    ? { kind: 'character', bits: 8, encoding: 'CP932' }
-                    : { kind: 'integer', bits: 32, signed: true },
+                  : id === 794
+                    ? { kind: 'character', bits: 8, encoding: 'bytes' }
+                    : [746, 748, 754, 757, 776, 804, 806].includes(id)
+                      ? { kind: 'character', bits: 8, encoding: 'CP932' }
+                      : { kind: 'integer', bits: 32, signed: true },
             },
           };
         }),
@@ -182,6 +185,11 @@ function geometrySignatures(table, ids) {
   });
 }
 const mainEvidence = [
+  {
+    ids: compiledDatabaseOperations,
+    value:
+      'Own 2.6.1.23 Main 0x474ca0–0x474f40 owns the 16-byte KCDB parser and maps its named columns through 0x4be430/0x4be4a0. Actual native memory-file construction, size/read and destruction feed the original zlib parser; 1–4-byte numeric fields, wider numeric misses and exact raw field copies match production GCALL.',
+  },
   {
     ids: selectionDatabaseOperations,
     value:
@@ -1308,6 +1316,8 @@ export default {
     selectionFormatRequired: true,
     selectionReadSizesFirst: true,
     selectionRedistributeUsesRandom: true,
+    compiledFormatRequired: true,
+    compiledIndexRequiresNonnegative: true,
   },
   sound: {
     banks: 32,
@@ -1585,6 +1595,7 @@ export default {
         ...contentDatabaseSignatures(questionDatabaseOperations),
         ...contentDatabaseSignatures(missionDatabaseOperations),
         ...contentDatabaseSignatures(selectionDatabaseOperations),
+        ...contentDatabaseSignatures(compiledDatabaseOperations),
         ...geometrySignatures('main', mainGeometryOperations),
         {
           ids: [255],

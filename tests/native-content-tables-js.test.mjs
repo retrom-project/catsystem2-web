@@ -16,7 +16,11 @@ import { kcsProgram } from './helpers.mjs';
 import { serializeCheckpoint, deserializeCheckpoint, checkpointBytes } from '../src/checkpoint.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
-for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+])
   test(
     profile + ' JS content table handles restore independently of their resource files',
     async () => {
@@ -471,5 +475,37 @@ test('fixed SDK .23 Selection redistributes holes with the shared RNG and preser
   } finally {
     await fresh?.close({ flushFiles: false });
     await first.close({ flushFiles: false });
+  }
+});
+
+test('fixed SDK .23 compiled table protects original signed row and format boundaries without changing valid field bytes', async () => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23', Object.fromEntries(contentFiles())),
+    machine = world.main.machine,
+    call = (id, args = []) => world.runtime.native('main', id, args, machine, world.main);
+  try {
+    await assert.rejects(() => call(791, [0x7fffffff]), /mapped format/);
+    machine.writeString('questions', 64);
+    const table = (await call(791, [64])).value;
+    machine.writeString('ID', 64);
+    assert.equal((await call(793, [table, 64, 0])).value, 11);
+    machine.bytes(512, 16).fill(0xa5);
+    assert.equal((await call(794, [table, 64, 99, 512])).value, 0);
+    assert.deepEqual(machine.bytes(512, 16), new Uint8Array(16).fill(0xa5));
+    for (const id of [793, 794])
+      await assert.rejects(
+        () => call(id, [table, 64, 0xffffffff, ...(id === 794 ? [512] : [])]),
+        /before its rows/,
+      );
+    await assert.rejects(() => call(793, [table, 0x7fffffff, 0]), /mapped format/);
+    assert.equal((await call(794, [table, 0x7fffffff, 0, 0x7fffffff])).value, 0);
+    assert.deepEqual(machine.bytes(512, 16), new Uint8Array(16).fill(0xa5));
+    machine.writeString('Q', 64);
+    assert.equal((await call(794, [table, 64, 0, 512])).value, 256);
+    assert.equal(machine.string(512), 'First authored question?');
+    assert.equal((await call(793, [table, 64, 0])).value, 0);
+    await call(792, [table]);
+    await assert.rejects(() => call(793, [table, 64, 0]), /released/);
+  } finally {
+    await world.close({ flushFiles: false });
   }
 });
