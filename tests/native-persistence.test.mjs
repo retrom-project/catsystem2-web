@@ -98,6 +98,7 @@ test('2.6.1.23 CSS stores the existing caller string bank and creates one only f
 for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
   'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
   'nekopara-vol3-engine-2.6.1.76',
 ])
   test(`${profile} reads optional CSS task records through reviewed owners`, (t) =>
@@ -157,6 +158,72 @@ async function verifyOptionalTaskRecords(t, profile) {
   assert.throws(() => call(688, [handle, 13, 0]), UnsupportedKCSNative);
   assert.deepEqual(file.snapshot(), before);
 }
+
+test('2.6.1.67 KCS copies a CSS record into owned memory and restores it cold', async () => {
+  const param = (i) => [0x13, 0x100 + i * 4],
+    files = Object.fromEntries(
+      [
+        [238, 1],
+        [244, 4],
+        [834, 1],
+        [836, 3],
+      ].map(([id, words]) => [
+        `${id}.kcs`,
+        kcsProgram([
+          [37, 0x34fa6712],
+          ...Array.from({ length: words }, (_, i) => [37, param(i)]),
+          [43, id, words * 4],
+          [59],
+        ]),
+      ]),
+    ),
+    profile = 'bokutomo-engine-2.6.1.67';
+  let world = await dataWorld(profile, files);
+  const call = async (id, words, payload = []) => {
+    const task = await world.spawnScript(`${id}.kcs`, { initialExecute: false }),
+      { machine } = task;
+    try {
+      words.forEach((value, i) => machine.store(0x100 + i * 4, value));
+      machine.bytes(0x200, payload.length).set(payload);
+      machine.store(0x300, 0x67126712);
+      machine.store(0x304, 0x459c3128);
+      await world.runtime.scheduler.execute(task);
+      assert.equal(machine.sp, machine.floor + (id === 834 ? 4 : 8));
+      assert.equal(machine.load(machine.floor), 0x34fa6712);
+      assert.equal(machine.load(0x304), 0x459c3128);
+      return [id === 834 ? null : machine.load(machine.floor + 4), machine.load(0x300)];
+    } finally {
+      await world.objects.release(task.id);
+    }
+  };
+  try {
+    const [css] = await call(238, [70]);
+    assert.deepEqual(await call(836, [css, 4, 0x300]), [0, 0x67126712]);
+    await assert.rejects(call(836, [css, 0, 0x300]), /unwritten CSS record zero/);
+    const bytes = [5, 103, 0, 9];
+    assert.deepEqual(await call(244, [css, 4, bytes.length, 0x200], bytes), [1, 0x67126712]);
+    assert.deepEqual(await call(244, [css, 0, 0, 0x200]), [1, 0x67126712]);
+    const [data, size] = await call(836, [css, 4, 0x300]);
+    assert.equal(size, bytes.length);
+    let heap = world.runtime.imageDataBuffers.process;
+    assert.equal(heap.load(data - 4), 1);
+    assert.deepEqual([...heap.read(data, size)], bytes);
+    const snapshot = structuredClone(world.snapshot());
+    await world.close({ flushFiles: false });
+    world = await dataWorld(profile, files, { initialize: false });
+    await world.restore(snapshot);
+    heap = world.runtime.imageDataBuffers.process;
+    assert.deepEqual([...heap.read(data, size)], bytes);
+    const [empty, emptySize] = await call(836, [css, 0, 0x300]);
+    assert.equal(emptySize, 0);
+    assert.equal(heap.allocations.get(empty - 4), 4);
+    await call(834, [data]);
+    await call(834, [empty]);
+    assert.equal(heap.allocations.size, 0);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
 
 test('global-file clear retains its tag and restores initial capacity while clones own independent payloads', () => {
   const m = machine(),

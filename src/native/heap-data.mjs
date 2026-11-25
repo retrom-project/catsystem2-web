@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // JS-owned raw data addresses are distinct from KCS virtual addresses and handles.
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 export const NATIVE_HEAP_DATA_IDS = Object.freeze([0x341, 0x342, 0x343, 0x344]);
 export async function nativeHeapData(id, args, machine, services) {
@@ -16,7 +17,15 @@ export async function nativeHeapData(id, args, machine, services) {
   if (typeof services.imageDataBuffers !== 'function') return undefined;
   if (id === 0x344) {
     const bytes = services.handles.get(args[0], 'global-file').read(args[1]);
-    if (bytes === null) return result(0);
+    if (bytes === null) {
+      if (
+        !args[1] &&
+        services.profile &&
+        nativeABI(services.profile).globalFile.hostDataRequiresExplicitZeroRecord
+      )
+        throw new Error('Unreviewed lookup of unwritten CSS record zero');
+      return result(0);
+    }
     const heap = await services.imageDataBuffers(),
       pointer = heap.allocateData(bytes.length);
     try {
