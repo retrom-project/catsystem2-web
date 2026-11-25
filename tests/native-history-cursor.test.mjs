@@ -115,9 +115,8 @@ test('one-slot history window excludes the live final block and empty history re
   assert.equal(nativeHistoryCursor(0x17b, [], f.machine), undefined);
 });
 
-test('large history windows allocate occupied slots and round-trip real GCALL state through a checkpoint file', async () => {
-  const profile = 'grisaia-jp-engine-2.6.1.23',
-    capacity = 0x100001,
+async function largeHistoryWindow(profile) {
+  const capacity = 0x100001,
     source = [0x13, 64],
     cursor = [0x13, 68],
     f = historyCursorFixture(),
@@ -193,10 +192,15 @@ test('large history windows allocate occupied slots and round-trip real GCALL st
   assert.equal(fresh.handles.get(empty, 'history-cursor').slots.size, 0);
   assert.deepEqual(await call(380, [empty]), { control: 2 });
   assert.deepEqual(await call(324, [m.load(64)]), { control: 2 });
-});
+}
+
+for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+  test(`${profile} large history windows allocate occupied slots and round-trip real GCALL state through a checkpoint file`, () =>
+    largeHistoryWindow(profile));
 
 for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
+  'bokutomo-engine-2.6.1.67',
   'sdk-4.01-engine-2.6.1.74',
   'nekopara-vol3-engine-2.6.1.76',
 ])
@@ -238,7 +242,7 @@ for (const profile of [
     await fc(0x17c, [cursorHandle]);
     assert.equal(fresh.handles.records.has(source), true);
     await fc(0x144, [source]);
-    if (profile === 'grisaia-jp-engine-2.6.1.23') {
+    if (['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'].includes(profile)) {
       assert.ok(reads.length);
       assert.ok(reads.every(([name, category]) => !name.endsWith('.cstl') && category === 'scene'));
       const largeHandle = (await call(0x17b, [source, 0x100001])).value;
