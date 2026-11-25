@@ -1376,6 +1376,7 @@ export default {
   },
   sound: {
     banks: 32,
+    load3DPositionFromPan: true,
     unwrittenQueryBanks: [587],
     firstMessage: 166,
     lastMessage: 197,

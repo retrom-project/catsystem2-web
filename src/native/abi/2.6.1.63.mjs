@@ -336,6 +336,7 @@ export default {
   resources: { categoryCount: 64 },
   sound: {
     banks: 32,
+    load3DPositionFromPan: true,
     unwrittenQueryBanks: [587],
     mainLoadPacketBytes: 280,
     firstMessage: 173,

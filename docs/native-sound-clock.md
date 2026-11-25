@@ -133,7 +133,7 @@ file's streaming/static mode does not select the other global native backend.
 Absent devices, missing buffers or decoders and invalid banks return zero.
 The alternate backend has no proved browser mapping and remains an open shape.
 Main587 returns the primary buffer completion word for the proven static load.
-The SDK67 actual Main155 stream/static creation chains both initially return
+The SDK23, SDK63 and SDK67 actual Main155 stream/static creation chains initially return
 zero; completion progression remains under audit. An active-device
 out-of-range Main587 bank leaves the original result unwritten and remains
 diagnostic; an absent device returns zero. Main165 retains signed pan readback
@@ -159,7 +159,7 @@ Absent devices and invalid banks retain their native
 no-change behavior. The setter proof covers control state and captured output
 arguments; subsequent fade ticks and playback remain separate checks.
 
-The SDK67 owning Main155 differential uses a 64,000-frame PCM WAV so its type-1
+The SDK23, SDK63 and SDK67 owning Main155 differentials use a 64,000-frame PCM WAV so its type-1
 stream stays a stream and type 2 stays static. Both execute the same primary
 DirectSound backend; their per-file flags differ. The production Main155 path
 creates these modes through AudioMixer from the same WAV bytes. A mono 3D
