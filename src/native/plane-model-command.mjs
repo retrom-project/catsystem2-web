@@ -20,6 +20,9 @@ export class NativePlaneModelCommands {
     this.filename = '';
     const abi = world.profile && nativeABI(world.profile);
     this.trailUsesScalarWords = abi?.graphics.planeTrailUsesScalarWords;
+    this.texturedKx2CategoryCount = abi?.graphics.planeUsesLegacyTexturedKX2
+      ? abi.resources.categoryCount
+      : 0;
     this.coloredKx2CategoryCount = abi?.graphics.planeUsesLegacyColoredKX2
       ? abi.resources.categoryCount
       : 0;
@@ -29,8 +32,13 @@ export class NativePlaneModelCommands {
   }
   async apply(id, args, machine, task) {
     const world = this.world,
-      legacyColored = id === 0x52 && this.coloredKx2CategoryCount > 0;
-    if (legacyColored && args[0] !== 0 && args.length < 2)
+      kx2CategoryCount =
+        id === 0x51
+          ? this.texturedKx2CategoryCount
+          : id === 0x52
+            ? this.coloredKx2CategoryCount
+            : 0;
+    if (kx2CategoryCount && args[0] !== 0 && args.length < 2)
       throw new Error('Native KX2 requires a target and filename format');
     const target = nativeDataArgument(args, machine, 0);
     if (!target && id !== 0x18f) return nativeReply(2);
@@ -43,7 +51,7 @@ export class NativePlaneModelCommands {
     if (id === 0x51 || id === 0x52 || id === 0x15a) {
       const legacyKx3 = id === 0x15a && this.kx3CategoryCount > 0,
         category = id === 0x15a ? 'kx3' : 'kx2';
-      if (legacyKx3 || legacyColored) {
+      if (legacyKx3 || kx2CategoryCount) {
         const owner = world.resolveTaskID(target, task.id);
         if (owner !== null && ![2, 6].includes(world.objects.objects.get(owner)?.kind))
           throw new Error(
@@ -51,7 +59,7 @@ export class NativePlaneModelCommands {
           );
       }
       const name = nativeDataFormat(args, machine, world.runtime.services, 1);
-      if (legacyKx3 || legacyColored) {
+      if (legacyKx3 || kx2CategoryCount) {
         const label = category.toUpperCase();
         if (!name || name.length >= 256)
           throw new RangeError(`Native ${label} format exceeds its CP932 pathname buffer`);
@@ -59,9 +67,9 @@ export class NativePlaneModelCommands {
           world.game,
           name,
           category,
-          legacyKx3 ? this.kx3CategoryCount : this.coloredKx2CategoryCount,
+          legacyKx3 ? this.kx3CategoryCount : kx2CategoryCount,
         );
-        if (legacyColored && filename?.length > 256)
+        if (kx2CategoryCount && filename?.length > 256)
           throw new RangeError('Native KX2 resolved path exceeds its CP932 pathname buffer');
         if (filename) this.filename = filename;
       } else if (name)

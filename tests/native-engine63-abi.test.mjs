@@ -11,6 +11,8 @@ import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
+import { NativeResources } from '../src/native/resources.mjs';
+import { parseNativeXML } from '../src/native/xml.mjs';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
 import { areaPixelParameters } from './fixtures/area-effect-cases.mjs';
 import { controlFiles } from './fixtures/control-files.mjs';
@@ -162,6 +164,51 @@ async function run(instructions, diagnostic) {
   const task = await runtime.spawn('abi-probe.kcs');
   return { runtime, task, machine: task.machine };
 }
+
+test('2.6.1.63 KX2 keeps occupied Plane registrations and selects the original model type', async (t) => {
+  const model = new Uint8Array(72),
+    words = new DataView(model.buffer);
+  words.setUint32(0, 0x0032584b, true);
+  [1.25, -2.5, 5, 3].forEach((value, i) => words.setFloat32(4 + i * 4, value, true));
+  words.setUint32(20, 1, true);
+  const world = await dataWorld(profile, {
+    'main-81.kcs': mainProgram(81, 2),
+    'main-82.kcs': mainProgram(82, 2),
+    'kx2/sample.kx2': model,
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const startup = new TextEncoder().encode(
+    `<?xml version="1.0" encoding="Shift_JIS"?>
+      <document><INT><int00><name>kx2</name><int>kx2.int</int><dir>kx2</dir><ext>kx2</ext></int00></INT></document>`,
+  );
+  world.game.nativeResources = new NativeResources(parseNativeXML(startup, 'Shift_JIS'));
+  const call = (id, target, filename) =>
+    executeMain(world, id, [target, 192], (machine) => machine.writeString(filename, 192));
+
+  for (const [slot, drawType, vram] of [
+    [81, 5, true],
+    [82, 6, false],
+  ]) {
+    const id = await world.objects.create({ kind: 2, parent: world.main.id }),
+      owner = world.graphics.get(id),
+      target = owner.record.nativeID;
+    owner.state.vramType = 1;
+    await call(slot, target, 'sample');
+    assert.equal(owner.graph, null);
+    const device = world.graphics.createLogicalDevice();
+    await call(slot, target, 'sample');
+    const graph = owner.graph;
+    assert.ok(graph);
+    assert.equal(graph.vram, vram);
+    assert.equal(graph.registrationEnabled, true);
+    assert.equal(owner.state.drawType, drawType);
+    assert.deepEqual(owner.state.rect, [1.25, -2.5, 3.75, 5.5]);
+    await call(slot, target, 'missing');
+    await call(slot, target, 'sample');
+    assert.equal(owner.graph, graph);
+    device.retire();
+  }
+});
 
 test('2.6.1.63 Plane lifecycle and poses use an attached graph and the original selector', async (t) => {
   const widths = new Map([
