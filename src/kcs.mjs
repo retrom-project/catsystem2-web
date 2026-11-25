@@ -227,9 +227,7 @@ function nativeFormatField(field, machine, stringBytes) {
               ? word | 0
               : word,
         radix = type === 'o' ? 8 : /[xXp]/.test(type) ? 16 : 10,
-        minimum = pointer ? 8 : Math.max(0, precision ?? 0);
-      if (minimum >= 0x2800)
-        throw new Error('Native format field exceeds its original VM temporary');
+        minimum = pointer ? 8 : Math.min(512, Math.max(0, precision ?? 0));
       let text = precision === 0 && value === 0 && !pointer ? '' : Math.abs(value).toString(radix);
       text = text.padStart(minimum, '0');
       if (type === 'X' || pointer) text = text.toUpperCase();
@@ -241,7 +239,7 @@ function nativeFormatField(field, machine, stringBytes) {
             ? text.startsWith('0')
               ? ''
               : '0'
-            : !word
+            : !value
               ? ''
               : type === 'x'
                 ? '0x'

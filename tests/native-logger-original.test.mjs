@@ -323,3 +323,72 @@ test('logger diagnostics preserve the original terminated buffer and missing var
   assert.throws(() => formatNativeAt(128, m), /Unsupported native format/);
   assert.equal(m.load(512), 0x12345678);
 });
+
+const integerGolden = JSON.parse(
+  await readFile(new URL('./fixtures/native-format-integer-golden.json', import.meta.url)),
+);
+for (const build of integerGolden.builds) {
+  test(`${build.profile} corrected integer fields reach real Main1 and preserve logger boundaries`, async () => {
+    const files = { 'integer-log.kcs': program({}, 1) },
+      world = await dataWorld(build.profile, files);
+    try {
+      for (const input of integerGolden.cases) {
+        const task = await world.spawnScript('integer-log.kcs', {
+            parent: world.main.id,
+            initialExecute: false,
+          }),
+          messages = [],
+          expected = Buffer.from(input.expected, 'base64');
+        world.runtime.services.log = (text) => messages.push(text);
+        seed(task.machine, input, 1024);
+        if (expected.length >= 500) {
+          await assert.rejects(world.runtime.scheduler.execute(task), /terminated 500-byte/);
+          assert.deepEqual(messages, []);
+        } else {
+          await world.runtime.scheduler.execute(task);
+          assert.equal(task.machine.pop(), 0x36eb67a5, input.name);
+          assert.deepEqual(messages, [decoder.decode(expected)], input.name);
+        }
+        await world.objects.release(task.id);
+      }
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });
+  if (['74', '76'].includes(build.version)) {
+    test(`${build.profile} corrected integer fields pass real Generic and both Particle loggers`, async () => {
+      for (const family of ['generic', 'particle-v1', 'particle-v2'])
+        for (const input of integerGolden.cases) {
+          const code = await readKCS(program({}, 0)),
+            messages = [];
+          code.scriptVersion = family === 'particle-v2' ? 0x20000 : 0x10000;
+          const owner =
+            family === 'generic'
+              ? new MotionInstance(code, {
+                  profile: build.profile,
+                  onDebug: (text) => messages.push(text),
+                })
+              : new ParticleScriptInstance(code, {
+                  profile: build.profile,
+                  count: 1,
+                  width: 1,
+                  height: 1,
+                  screenWidth: 800,
+                  screenHeight: 600,
+                  onDebug: (text) => messages.push(text),
+                });
+          seed(owner.machine, input, 1024);
+          const expected = Buffer.from(input.expected, 'base64');
+          if (expected.length >= 500) {
+            assert.throws(() => owner.machine.run(), /terminated 500-byte/);
+            assert.deepEqual(messages, []);
+          } else {
+            observe(owner, input);
+            owner.machine.run();
+            assert.equal(owner.machine.pop(), 0x36eb67a5, input.name);
+            assert.deepEqual(messages, [decoder.decode(expected)], input.name);
+          }
+        }
+    });
+  }
+}

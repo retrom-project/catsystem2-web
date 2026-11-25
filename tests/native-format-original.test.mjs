@@ -138,3 +138,85 @@ test('formatting diagnoses actual temporary overflows and cyclic sources', () =>
   vm.writeString('%s[G128]', 128);
   assert.throws(() => formatNativeAt(128, vm), /cyclic string/);
 });
+
+const integerGolden = JSON.parse(
+  await readFile(new URL('./fixtures/native-format-integer-golden.json', import.meta.url)),
+);
+for (const { profile } of integerGolden.builds) {
+  test(`${profile} integer prefix/precision matches own Main14 including alias and cold`, async () => {
+    const files = {
+        'integer.kcs': kcsProgram([
+          [37, 0x36eb67a5],
+          [37, [0x13, 64]],
+          [37, 128],
+          [43, 14, 8],
+          [59],
+        ]),
+      },
+      world = await dataWorld(profile, files);
+    try {
+      for (const input of integerGolden.cases) {
+        const task = await world.spawnScript('integer.kcs', {
+            parent: world.main.id,
+            initialExecute: false,
+          }),
+          vm = task.machine,
+          expected = Uint8Array.from(Buffer.from(input.expected, 'base64')),
+          allocation = vm.allocate(expected.length + 8),
+          destination = input.destination ?? allocation;
+        vm.bytes(allocation, expected.length + 8).fill(0xa5);
+        seed(vm, input);
+        vm.store(64, destination);
+        assert.deepEqual(formatNativeAt(128, vm), expected, input.name);
+        const check = async (target, current) => {
+          const original = target.runtime.native.bind(target.runtime);
+          target.runtime.native = (...args) => {
+            const machine = args[3],
+              before = [
+                machine.memory.slice(),
+                machine.shared.slice(),
+                ...machine.blocks.map((_, i) => machine.blockBytes(i).slice()),
+              ],
+              [region, offset] = machine.region(destination),
+              index = region === machine.memory ? 0 : region === machine.shared ? 1 : 2,
+              reply = original(...args);
+            before[index].set([...expected, 0, 0], offset);
+            assert.deepEqual(
+              [
+                machine.memory.slice(),
+                machine.shared.slice(),
+                ...machine.blocks.map((_, i) => machine.blockBytes(i).slice()),
+              ],
+              before,
+              input.name,
+            );
+            assert.equal(reply.control, 1, input.name);
+            assert.equal(reply.value, destination, input.name);
+            return reply;
+          };
+          try {
+            await target.runtime.scheduler.execute(current);
+            assert.equal(current.machine.pop(), destination, input.name);
+            assert.equal(current.machine.pop(), 0x36eb67a5, input.name);
+          } finally {
+            target.runtime.native = original;
+          }
+        };
+        if (['short-zero-p0-x', 'integer-p513', 'short-negative-min'].includes(input.name)) {
+          const state = await deserializeCheckpoint(await serializeCheckpoint(world.snapshot())),
+            fresh = await dataWorld(profile, files, { initialize: false });
+          try {
+            await fresh.restore(state);
+            await check(fresh, fresh.runtime.scheduler.tasks.get(task.id));
+          } finally {
+            await fresh.close({ flushFiles: false });
+          }
+        }
+        await check(world, task);
+        await world.objects.release(task.id);
+      }
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });
+}
