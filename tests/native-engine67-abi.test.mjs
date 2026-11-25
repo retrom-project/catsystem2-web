@@ -1483,6 +1483,41 @@ for (const version of [1, 2]) {
       assert.equal(stale.machine.load(64), marker);
     });
 
+    test('2.6.1.67 particle-v2 returns the full live model registration word', async () => {
+      const marker = 0xe6f13918;
+      for (const word of [0, 1, 0x81234567, 0xffffffff]) {
+        const instance = await particle([[37, marker], ...particleCall(47, [], 64), [59]], {
+          attachPlane: 101,
+          attachmentDevicePresent: () => true,
+          attachment: () => ({ registrationWord: word, disp: Number(!word) }),
+        });
+        instance.machine.store(68, marker);
+        instance.update(0);
+        assert.equal(instance.machine.load(64), word);
+        assert.equal(instance.machine.load(68), marker);
+        assert.equal(instance.machine.pop(), marker);
+        assert.equal(instance.machine.sp, instance.machine.floor);
+      }
+      for (const options of [
+        { attachPlane: -1 },
+        { attachPlane: 101, attachmentDevicePresent: () => false },
+        { attachPlane: 101, attachment: () => null },
+      ]) {
+        const instance = await particle([[37, marker], ...particleCall(47, [], 64), [59]], {
+          attachment: () => assert.fail('An absent attachment does not resolve a model'),
+          ...options,
+        });
+        instance.update(0);
+        assert.equal(instance.machine.load(64), 0);
+        assert.equal(instance.machine.pop(), marker);
+      }
+      const unowned = await particle([...particleCall(47), [59]], {
+        attachPlane: 101,
+        attachment: () => ({ disp: 1 }),
+      });
+      assert.throws(() => unowned.update(0), /registration word is unavailable/);
+    });
+
     test('2.6.1.67 particle-v2 validates the complete blend-mode DWORD', async () => {
       for (const mode of [0, 1, 2, 3, 4, 5, 6, 0x80000000, 0xffffffff]) {
         const marker = 0xeadbac34,

@@ -286,6 +286,7 @@ export default {
     projectionBoundsUseX87: true,
     projectionBoundsUseSSE: true,
     attachmentPositionRequiresOwner: true,
+    attachmentReadsRegistrationWord: true,
   },
   motion: {
     currentMatrixFallback: true,
@@ -4054,8 +4055,8 @@ export default {
     'particle-v2': {
       count: 51,
       slots: {
-        unknown: [0, 29, 47],
-        recovered: [...particleRecoveredSlots, 44, 45, 46, 48, 49, 50],
+        unknown: [0, 29],
+        recovered: [...particleRecoveredSlots, 44, 45, 46, 47, 48, 49, 50],
       },
       evidence: [
         { ids: [18], value: powerEvidence },
@@ -4076,6 +4077,11 @@ export default {
         {
           ids: [46],
           value: 'Own v2 wrapper returns the attachment graph DWORD unchanged under control 1.',
+        },
+        {
+          ids: [47],
+          value:
+            'Own v2 wrapper at 0x499860 resolves the renderer group and live model and returns the model registration DWORD unchanged under control 1. An unattached graph, absent device, unmatched owner or group, or missing model writes zero.',
         },
         {
           ids: [48, 49],
@@ -4113,7 +4119,7 @@ export default {
             parameters: { kind: 'ignored', description: 'The wrapper reads no input words.' },
           },
         },
-        { ids: [46], fields: { resultWritten: true } },
+        { ids: [46, 47], fields: { resultWritten: true } },
         ...[48, 49].map((id) => ({
           ids: [id],
           fields: {
