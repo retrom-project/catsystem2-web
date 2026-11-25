@@ -158,8 +158,12 @@ the upper bank bound and, when full, reuses a releasing bank, a finishing bank,
 or the first bank. SDK63 and SDK23 scan a half-open range and otherwise reuse a
 releasing bank. The SDK63/67 packet wrapper leaves the separate type selector
 zero; SDK23 sends its selector directly. Missing groups return -1. The owning
-load/selection differential and final native manager unload are distinct from
-the still-open deferred task-frame release fade.
+load/selection differential includes the actual native Sound frame callback:
+an allocated release finishes its ten-frame fade before the following frame
+unloads the decoder and buffer. A playing member marked to end after playback
+is reusable by SDK67's finishing-bank scan; the two half-open allocators leave
+that full group unavailable. Final native manager unload closes every retained
+decoder, mounted-file owner and captured COM interface.
 
 Main166 packs its signed 16-bit target pan and unsigned 16-bit duration before
 storing the fade state at the Sound task's current-minus-base frame. Main167

@@ -107,6 +107,20 @@ for (const profile of [
       await invoke(world, 156, [0]);
       assert.equal(await invoke(world, 604, [7, 0, 288, 1, 1]), 0);
       await assert.rejects(invoke(world, 604, [7, 0, 288, 1, 9]), /result uninitialized/);
+      await invoke(world, 156, [0]);
+      const receiver = world.sound.primary(world.main.id);
+      await receiver.tick(11);
+      assert.equal(await invoke(world, 569, [0]), 64000);
+      await receiver.tick(12);
+      assert.equal(await invoke(world, 569, [0]), 0);
+      assert.equal(await invoke(world, 604, [7, 0, 288, 1, 1]), 0);
+      await invoke(world, 157, [1, 1]);
+      const raw = profile.includes('.67') ? 205 : profile.includes('.63') ? 204 : 197;
+      await receiver.message([world.nativeTaskID(world.main.id), raw, 1, 0]);
+      assert.equal(
+        await invoke(world, 604, [7, 0, 288, 1, 1]),
+        profile.includes('.67') ? 1 : 0xffffffff,
+      );
     } finally {
       await world.close({ flushFiles: false });
     }
