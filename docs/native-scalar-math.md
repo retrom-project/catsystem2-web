@@ -57,6 +57,14 @@ sin(f32(1e30)) writes `0xbf6919a5` on both pinned oracles. Hardware equivalence
 for these extreme arguments is not established by this backend. The evidence
 and instruction trace are retained in ignored `.local/phase3/` storage.
 
+The fixed 2.6.1.23 profile uses the physical x86 results for sine, cosine and
+tangent after the original CRT initializer selects SSE2. Above each routine's
+small-angle SSE2 branch, the original falls back to the x87 range reduction.
+The Core applies the full extended CRT period when necessary and reduces with
+the x87 processor's 66-bit pi constant. Main 50–52, Generic 1–3, both Particle
+6–8 aliases and vector rotation use the same reduction. Physical x86 also
+confirms the quiet NaN word for a signaling power base raised to signed zero.
+
 Run `npm run test:differential` with both reviewed EXEs, or `npm run test:js`
 without private resources. Existing generic math cases remain independent too.
 Reproduce the checked-in scalar golden with

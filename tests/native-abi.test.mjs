@@ -47,10 +47,10 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 502);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 503);
   assert.equal(base.main.entries.filter(({ status }) => status === 'reserved').length, 57);
   assert.equal(base.main.entries.filter(({ status }) => status === 'constant-zero').length, 17);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 293);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 292);
   assert.equal(base.main.entries.filter((entry) => entry.observedArgumentWords.length).length, 435);
   assert.deepEqual(base.main.entries[464].observedArgumentWords, []);
   assert.deepEqual(base.main.entries[543].observedArgumentWords, [3]);
@@ -177,8 +177,8 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
   assert.deepEqual(
     base.generic.entries.filter(({ status }) => status === 'recovered').map(({ id }) => id),
     [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 23, 26, 27, 28, 29, 30, 31, 32, 33, 34,
-      35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+      27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
     ],
   );
   assert.equal(base.generic.entries[17].signature.resultWritten, true);
@@ -292,7 +292,7 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     assert.equal(signature.resultWritten, control === 1);
     assert.deepEqual(signature.controlCodes, [control]);
   }
-  for (const id of [52, 287, 288, 629]) assert.equal(base.main.entries[id].status, 'unknown');
+  for (const id of [287, 288, 629]) assert.equal(base.main.entries[id].status, 'unknown');
   const unknown = nativeABI('sdk-4.01-engine-2.6.1.74').tables.main.entries[0x52];
   assert.equal(unknown.name, null);
   assert.equal(unknown.signature.parameters, null);

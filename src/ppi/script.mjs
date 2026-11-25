@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { KCSMachine, nativeReply, floatBits, bitsFloat, formatNative } from '../kcs.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
-import { nativeScalarMath } from '../native/scalar-math.mjs';
+import { nativeScalarMath, nativeTrigWord } from '../native/scalar-math.mjs';
 import { PTCL_ABI, initialParticle, readPTCLQuad, writePTCLQuad } from './abi.mjs';
 import { particleNativeContract } from './contracts.mjs';
 import { ParticleRandom } from './random.mjs';
@@ -216,6 +216,7 @@ export class ParticleScriptInstance {
         this.interpreterMath.anglesUseX87,
         this.interpreterMath.atan2UsesX87,
         this.interpreterMath.powUsesSSE2Identities,
+        this.interpreterMath.trigUsesNativeReduction,
       );
     if (scalarReply) return scalarReply;
     if (scalarMath.has(id)) return real(scalarMath.get(id)(bitsFloat(args[0])));
@@ -252,9 +253,8 @@ export class ParticleScriptInstance {
       case 23:
       case 24: {
         if (this.quadUsesX87) {
-          const angle = [args[1]],
-            sine = nativeScalarMath('sin', angle, null, 1).value,
-            cosine = nativeScalarMath('cos', angle, null, 1).value;
+          const sine = nativeTrigWord('sin', args[1], this.math?.trigUsesNativeReduction),
+            cosine = nativeTrigWord('cos', args[1], this.math?.trigUsesNativeReduction);
           updatePTCLQuadWords(machine, args[0], 4, (words) =>
             x87RotateVectorWords(words, id - 22, sine, cosine),
           );

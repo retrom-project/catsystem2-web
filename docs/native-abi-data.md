@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 502       | 57            | 17            | 293     | Generic 36 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 503       | 57            | 17            | 292     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 393       | 80            | 19            | 446     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
@@ -43,8 +43,8 @@ handler or impose arity on the ignored operand lists.
 Main 140, 142 and 549 use a separate control-1 body at `0x487a50`. The
 body leaves the result unwritten. GCALL pushes its fresh `0xcccccccc` scratch
 word and reports the unwritten result. Main 6 copies its input word, Main 65
-yields and Main 453 sets the caller's exit word. Main 50, 51 and 54 return
-single-precision sine, cosine and arccosine. Main 57 takes a floating-point
+yields and Main 453 sets the caller's exit word. Main 50–52 and 54 return
+single-precision sine, cosine, tangent and arccosine. Main 57 takes a floating-point
 absolute value, quieting a signaling NaN and clearing the sign. Main 397 uses
 the same y, x operand order and x87 CRT
 result as Generic 7 and Particle 12. Main 64 and Generic 16 take the signed
@@ -58,9 +58,18 @@ All publish one float32 result word. Physical x86 confirms the original
 remainder, including signed zero from nonzero dividends and NaN operand
 selection. The triangle wave uses the Core x87 PC24 baseline. PC53 and
 PC64 can differ by one float32 ULP on subnormal results. Both Particle
-power entries follow the same initialized SSE2 CRT selection as Main 61.
-Main 52 remains guarded. The existing Generic 3 and Particle 8 tangent
-coverage has a known numerical difference for very large finite angles.
+power entries and Generic 13 follow the same initialized SSE2 CRT selection
+as Main 61. The hardware quiets a signaling NaN even when its exponent is
+signed zero. Main 50–52, Generic 1–3 and Particle 6–8 use the initialized
+CRT's trigonometric ranges. Large arguments use the original CRT period
+and the x87 processor's 66-bit pi for reduction, including finite inputs
+above the x87 instruction range.
+
+Generic 18–20 snapshot three writable component DWORDs before rotation.
+Generic 21/22 instead read and write each mapped component in order, so
+overlapping pointers preserve the original live values. Both validate all
+three pointed words before writing. Generic 24/25 use the current matrix
+fallback shared with Main 205/206.
 
 Main 350–358 and Generic 27–37 share mapped matrix and vector layouts.
 Inverse uses the current matrix when the destination fails address

@@ -97,10 +97,10 @@ test('2.6.1.23 MOT and PTCL trigonometry preserve the original exceptional resul
   for (const [mot, ptcl, args, expected] of [
     [2, 7, [0x80000000], 0x3f800000],
     [2, 7, [0x40490fdb], 0xbf800000],
-    [2, 7, [0x7149f2ca], 0x3ed3a9bb],
+    [2, 7, [0x7149f2ca], 0x3e87e35a],
     [2, 7, [0x7f800000], 0xffc00000],
     [3, 8, [0x80000000], 0x80000000],
-    [3, 8, [0x7149f2ca], 0xc00cf6bc],
+    [3, 8, [0x7149f2ca], 0xc0687dd4],
     [3, 8, [0xff800000], 0xffc00000],
     [4, 9, [0xbf800000], 0xbfc90fdb],
     [4, 9, [0x80000000], 0x80000000],
@@ -129,6 +129,12 @@ test('2.6.1.23 MOT and PTCL trigonometry preserve the original exceptional resul
 
 test('2.6.1.23 Main and both PTCL versions publish the words of their shared scalar handlers', async (t) => {
   const cases = [
+    [50, 6, [0x5f000000], 0x3f780bd8],
+    [51, 7, [0x5f000000], 0x3e7d44ae],
+    [52, 8, [0x80000000], 0x80000000],
+    [52, 8, [0x5f000000], 0x407ab8bf],
+    [52, 8, [0x7f7fffff], 0xc087d565],
+    [52, 8, [0xff800000], 0xffc00000],
     [53, 9, [0x3f800000], 0x3fc90fdb],
     [53, 9, [0x80000000], 0x80000000],
     [53, 9, [0x40000000], 0xffc00000],
@@ -186,10 +192,6 @@ test('2.6.1.23 Main and both PTCL versions publish the words of their shared sca
     assert.throws(() => badWidth.instance.update(27), /PTCL pow requires 2 arguments/);
     assert.equal(badWidth.instance.calls.size, 0);
   }
-  assert.throws(
-    () => world.runtime.native('main', 52, [0x5f000000], machine, world.main),
-    /Unsupported .*\/main native 0x34/,
-  );
 });
 
 test('2.6.1.23 Main and Particle report the owning task frame rate as a full word', async (t) => {
@@ -212,7 +214,7 @@ test('2.6.1.23 Main sound geometry helpers preserve x87 result words through GCA
   const cases = [
     [51, [0x80000000], 0x3f800000],
     [51, [0x40490fdb], 0xbf800000],
-    [51, [0x7149f2ca], 0x3ed3a9bb],
+    [51, [0x7149f2ca], 0x3e87e35a],
     [51, [0x7f800000], 0xffc00000],
     [54, [0xbf800000], 0x40490fdb],
     [54, [0], 0x3fc90fdb],
@@ -1107,6 +1109,45 @@ test('2.6.1.23 Main applies matrix operations to the mapped or current record', 
   }
 });
 
+test('2.6.1.23 MOT retains raw arithmetic and overlapping component order', async () => {
+  for (const [args, expected] of [
+    [[0x40000000, 0x40400000], 0x41000000],
+    [[0xff801234, 0x80000000], 0xffc01234],
+  ]) {
+    const power = await guest('generic', 13, args);
+    power.run(1, expected);
+  }
+
+  const rotation = await guest('generic', 19, [64, 68, 72, 0x5f000000]);
+  rotation.machine.store(64, floatBits(1));
+  rotation.run(2);
+  assert.deepEqual(
+    [64, 68, 72].map((address) => rotation.machine.load(address)),
+    [0x3e7d44ae, 0, 0x3f780bd8],
+  );
+
+  for (const [id, factors, expected] of [
+    [21, [4, 5, 6], 18],
+    [22, [2, -1, 4], -24],
+  ]) {
+    const alias = await guest('generic', id, [64, 64, 64, ...factors.map(floatBits)]);
+    alias.machine.store(64, floatBits(3));
+    alias.machine.store(68, sentinel);
+    alias.run(2);
+    assert.equal(alias.machine.load(64), floatBits(expected));
+    assert.equal(alias.machine.load(68), sentinel);
+  }
+
+  const invalid = await guest('generic', 21, [64, 68, 0xffffffff, ...[1, 2, 3].map(floatBits)]);
+  invalid.machine.store(64, sentinel);
+  invalid.machine.store(68, sentinel);
+  assert.throws(() => invalid.run(2), /KCS memory/);
+  assert.deepEqual(
+    [64, 68].map((address) => invalid.machine.load(address)),
+    [sentinel, sentinel],
+  );
+});
+
 test('2.6.1.23 both interpreters use the original matrix and vector memory contracts', async (t) => {
   const world = await dataWorld(profile, {}, { initialize: false });
   t.after(() => world.close({ flushFiles: false }));
@@ -1145,6 +1186,27 @@ test('2.6.1.23 both interpreters use the original matrix and vector memory contr
   assert.deepEqual(
     inverted.map((_, i) => matrix.getUint32(i * 4, true)),
     inverted,
+  );
+
+  const translated = await guest('generic', 24, [0xffffffff, ...[2, -3, 4].map(floatBits)], {
+    calculations: world.calculations,
+  });
+  const identityWords = Array.from({ length: 16 }, (_, i) => floatBits(Number(i % 5 === 0)));
+  identityWords.forEach((word, i) => matrix.setUint32(i * 4, word, true));
+  translated.run(2);
+  assert.deepEqual(
+    [12, 13, 14, 15].map((i) => matrix.getUint32(i * 4, true)),
+    [2, -3, 4, 1].map(floatBits),
+  );
+
+  const scaled = await guest('generic', 25, [97, ...[-2, 3, 0.5].map(floatBits)], {
+    calculations: world.calculations,
+  });
+  identityWords.forEach((word, i) => scaled.machine.store(97 + i * 4, word));
+  scaled.run(2);
+  assert.deepEqual(
+    [0, 5, 10, 15].map((i) => scaled.machine.load(97 + i * 4)),
+    [-2, 3, 0.5, 1].map(floatBits),
   );
 
   const lengths = await guest('generic', 34, [96]);

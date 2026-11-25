@@ -65,6 +65,46 @@ function trigInput(value) {
     ? nativeRemainder(value, Number(0xc90fdaa22168c235n), true)
     : value;
 }
+const x87AngleUnit = 2 ** 65;
+const x87HalfPi = 0x3243f6a8885a308d3n;
+const crtAnglePeriod = 0xc90fdaa22168c235n << 65n;
+function nativeReducedTrig(name, value) {
+  const magnitude = Math.abs(value),
+    x87Limit = name === 'tan' ? 12800 : 90112;
+  if (magnitude < x87Limit) return unary[name](value);
+
+  // The initialized CRT dispatches large inputs to x87. FPREM1 first
+  // uses the CRT's extended period when the argument exceeds x87's range.
+  let scaled = BigInt(magnitude * x87AngleUnit);
+  if (magnitude >= 2 ** 63) {
+    scaled %= crtAnglePeriod;
+    if (scaled * 2n > crtAnglePeriod) scaled -= crtAnglePeriod;
+  }
+
+  // Reduce to the nearest quadrant with the processor's 66-bit pi constant
+  // before passing a small angle to the portable trigonometric functions.
+  const half = x87HalfPi >> 1n,
+    turns = (scaled + (scaled < 0n ? -half : half)) / x87HalfPi,
+    angle = Number(scaled - turns * x87HalfPi) / x87AngleUnit;
+  if (name === 'tan') {
+    const tangent = Math.tan(angle),
+      result = turns & 1n ? -1 / tangent : tangent;
+    return value < 0 ? -result : result;
+  }
+
+  const quadrant = Number(turns & 3n) + Number(name === 'cos'),
+    result = quadrant & 1 ? Math.cos(angle) : Math.sin(angle),
+    negative = Boolean(quadrant & 2) !== (name === 'sin' && value < 0);
+  return negative ? -result : result;
+}
+export function nativeTrigWord(name, word, trigUsesNativeReduction = false) {
+  if (nan(word)) return quiet(word);
+  const value = bitsFloat(word);
+  if (!Number.isFinite(value)) return indefinite;
+  return floatBits(
+    trigUsesNativeReduction ? nativeReducedTrig(name, value) : unary[name](trigInput(value)),
+  );
+}
 function triangle(value, period) {
   const n = Math.abs(value),
     quarter = f(Math.abs(period) * 0.25),
@@ -84,6 +124,7 @@ export function nativeScalarMath(
   anglesUseX87 = false,
   atan2UsesX87 = false,
   powUsesSSE2Identities = false,
+  trigUsesNativeReduction = false,
 ) {
   const name = operation?.replace(/^math\./, '');
   if (!names.has(name)) return undefined;
@@ -99,6 +140,8 @@ export function nativeScalarMath(
   if (name === 'integerAbs') return nativeReply(1, Math.abs(a | 0));
   if (name === 'abs') return nativeReply(1, (nan(a) ? quiet(a) : a) & 0x7fffffff);
   if (name === 'atan2' && atan2UsesX87) return nativeReply(1, x87Atan2Word(a, b));
+  if (name === 'sin' || name === 'cos' || name === 'tan')
+    return nativeReply(1, nativeTrigWord(name, a, trigUsesNativeReduction));
   const x = bitsFloat(a),
     y = bitsFloat(b);
   if (name !== 'triangleWave') {
@@ -121,7 +164,7 @@ export function nativeScalarMath(
   else if (name === 'radianToDegree')
     result = anglesUseX87 ? x87AngleConversion(x, false) : radianToDegree(x);
   else if (name === 'triangleWave') result = triangle(x, y);
-  else result = unary[name](['sin', 'cos', 'tan'].includes(name) ? trigInput(x) : x);
+  else result = unary[name](x);
   return nativeReply(
     1,
     Number.isNaN(result)
@@ -154,6 +197,7 @@ export function installNativeScalarMath(world) {
         abi.math?.anglesUseX87,
         abi.math?.atan2UsesX87,
         abi.math?.powUsesSSE2Identities,
+        abi.math?.trigUsesNativeReduction,
       ),
     );
   }

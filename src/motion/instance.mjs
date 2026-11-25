@@ -6,7 +6,7 @@ import { floatBytes, floats } from '../native/calculation-memory.mjs';
 import { multiplyNativeMatrix } from '../native/calculation-math.mjs';
 import { nativeGeometry } from '../native/geometry.mjs';
 import { nativeMatrix } from '../native/matrix.mjs';
-import { nativeScalarMath } from '../native/scalar-math.mjs';
+import { nativeScalarMath, nativeTrigWord } from '../native/scalar-math.mjs';
 import { ParticleRandom } from '../ppi/random.mjs';
 import {
   degreeToRadian,
@@ -20,6 +20,10 @@ import {
   roundInteger,
   triangleWave,
   rotateVector,
+  quietFloat32Bits,
+  x87AddWords,
+  x87MultiplyWords,
+  x87RotateVectorWords,
 } from '../ppi/numeric.mjs';
 import { MOTION_ABI, initialMotionObject } from './abi.mjs';
 import { rotateRelativeX87, yawPitchRollX87 } from './native-rotation.mjs';
@@ -83,6 +87,7 @@ export class MotionInstance {
     this.matrixMemoryOperationsUseNativeOrder = abi.motion?.matrixMemoryOperationsUseNativeOrder;
     this.matrixVectorUseScalarD3DX = abi.motion?.matrixVectorUseScalarD3DX;
     this.vectorOperationsUseNativeGeometry = abi.motion?.vectorOperationsUseNativeGeometry;
+    this.vectorComponentsUseX87 = abi.motion?.vectorComponentsUseX87;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
     this.currentMatrixFallback = abi.motion?.currentMatrixFallback;
     this.calculations = calculations;
@@ -214,6 +219,9 @@ export class MotionInstance {
         machine,
         contract.argumentWords,
         this.interpreterMath.anglesUseX87,
+        this.interpreterMath.atan2UsesX87,
+        this.interpreterMath.powUsesSSE2Identities,
+        this.interpreterMath.trigUsesNativeReduction,
       );
     if (scalarReply) return scalarReply;
     if (id === 14 && this.math?.anglesUseX87)
@@ -241,6 +249,16 @@ export class MotionInstance {
       case 18:
       case 19:
       case 20: {
+        if (this.vectorComponentsUseX87) {
+          const addresses = args.slice(0, 3),
+            vector = addresses.map((address) => quietFloat32Bits(machine.load(address))),
+            sine = nativeTrigWord('sin', args[3], this.math?.trigUsesNativeReduction),
+            cosine = nativeTrigWord('cos', args[3], this.math?.trigUsesNativeReduction);
+          x87RotateVectorWords(vector, id - 18, sine, cosine).forEach((word, index) =>
+            machine.store(addresses[index], word),
+          );
+          return done();
+        }
         const vector = args.slice(0, 3).map((address) => bitsFloat(machine.load(address)));
         const rotated = rotateVector(vector, ['x', 'y', 'z'][id - 18], bitsFloat(args[3]));
         args.slice(0, 3).forEach((address, i) => machine.store(address, floatBits(rotated[i])));
@@ -248,6 +266,24 @@ export class MotionInstance {
       }
       case 21:
       case 22: {
+        if (this.vectorComponentsUseX87) {
+          const components = args.slice(0, 3).map((address) => {
+              const bytes = machine.bytes(address, 4);
+              return new DataView(bytes.buffer, bytes.byteOffset, 4);
+            }),
+            operation = id === 21 ? x87AddWords : x87MultiplyWords;
+          // Translation and scaling read each component after the previous write.
+          components.forEach((view, index) => {
+            const component = view.getUint32(0, true),
+              factor = quietFloat32Bits(args[index + 3]),
+              result =
+                index === 2
+                  ? operation(component, factor, true)
+                  : operation(factor, component, true);
+            view.setUint32(0, result, true);
+          });
+          return done();
+        }
         const vector = args.slice(0, 3).map((address) => bitsFloat(machine.load(address)));
         args
           .slice(0, 3)

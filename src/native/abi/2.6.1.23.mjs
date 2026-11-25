@@ -94,6 +94,7 @@ const legacyTaskWordOperations = [126, 127, 128, 129, 131, 132, 138, 139];
 const rectangleOperations = [214, 215, 216, 217];
 const mainGeometryOperations = [350, 351, 352, 353, 354, 355, 356, 357];
 const motionGeometryOperations = [27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37];
+const motionComponentOperations = [18, 19, 20, 21, 22];
 function geometrySignatures(table, ids) {
   return ids.map((id) => {
     const { name, signature } = NATIVE_SEMANTICS[table][id],
@@ -410,9 +411,9 @@ const mainEvidence = [
     value: 'Own 2.6.1.23 Main 0x47bdc0 applies the signed integer calendar helper at 0x4b18d0',
   },
   {
-    ids: [51, 54],
+    ids: [51, 52, 54],
     value:
-      'Own 2.6.1.23 Main 0x481510/0x481570 read one f32 and use the same CRT cosine and arccosine as Generic 2/5 and Particle 7/10',
+      'Own 2.6.1.23 Main 0x481510/0x481540/0x481570 share the initialized CRT cosine, tangent and arccosine with the Generic and Particle wrappers',
   },
   {
     ids: [57, 397],
@@ -1110,6 +1111,7 @@ export default {
     anglesUseX87: true,
     atan2UsesX87: true,
     powUsesSSE2Identities: true,
+    trigUsesNativeReduction: true,
     remainderUsesX87: true,
     randomFloatUsesX87: true,
     interpreterUsesNativeScalarMath: true,
@@ -1133,6 +1135,7 @@ export default {
     matrixMemoryOperationsUseNativeOrder: true,
     matrixVectorUseScalarD3DX: true,
     vectorOperationsUseNativeGeometry: true,
+    vectorComponentsUseX87: true,
   },
   particle: {
     scriptVersionFallback: 'particle-v1',
@@ -1862,7 +1865,7 @@ export default {
             resultWritten: true,
           },
         },
-        { ids: [51, 54, 57, 397], fields: { resultWritten: true } },
+        { ids: [51, 52, 54, 57, 397], fields: { resultWritten: true } },
         { ids: [76, 536], fields: { resultWritten: true } },
         { ids: [80, 81, 149, 196, 197, 203, 862], fields: { resultWritten: false } },
         {
@@ -2017,14 +2020,24 @@ export default {
             'Own 2.6.1.23 MOT and PTCL remainder share 0x5736da, the CRT classification and FPREM loop',
         },
         {
+          ids: [13],
+          value:
+            'Own 2.6.1.23 MOT 0x595670 invokes the Main 61 initialized CRT power body with the same result and domain words',
+        },
+        {
+          ids: motionComponentOperations,
+          value:
+            'Own 2.6.1.23 MOT 0x595f50–0x596150 map three writable DWORDs; rotate snapshots the vector and translate/scale read the overlapping words in write order',
+        },
+        {
           ids: [14, 15],
           value: 'Own 2.6.1.23 MOT 0x595470/0x595450 match the Main/Particle x87 angle bodies',
         },
         { ids: [16], value: 'Own 2.6.1.23 Generic 0x595650 writes the signed absolute value word' },
         {
-          ids: [23, 26],
+          ids: [23, 24, 25, 26],
           value:
-            'Own 2.6.1.23 MOT 0x595f00 and 0x595de0 share the Main XYZ rotation and identity helpers and the current matrix',
+            'Own 2.6.1.23 MOT 0x595de0–0x595f00 share the Main XYZ rotation, translation, scale and identity helpers and the current matrix',
         },
         { ids: [17, 38, 41], value: 'Own 2.6.1.23 MOT handlers and fixed-base logo motion calls' },
         {
@@ -2045,8 +2058,21 @@ export default {
       ]),
       signatures: [
         ...geometrySignatures('generic', motionGeometryOperations),
+        ...[...motionComponentOperations, 24, 25].map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.generic[id].signature.parameters.map((parameter) =>
+              parameter.type.kind === 'pointer'
+                ? {
+                    ...parameter,
+                    type: { ...parameter.type, addressSpace: 'vm', direction: 'inout' },
+                  }
+                : parameter,
+            ),
+          },
+        })),
         {
-          ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 39, 40, 41, 42],
+          ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 39, 40, 41, 42],
           fields: { resultWritten: true },
         },
         ...[43, 44].map((id) => ({
