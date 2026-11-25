@@ -284,8 +284,8 @@ export function nativeMotion(id, args, machine, services = {}) {
         manager.working.set(manager.base);
         if (registry.library.nativeFilenameQuery) {
           const nameBytes = nativeDataFormat(args, machine, services, 1);
-          if (nameBytes === null) return value(0);
-          const filename = registry.library.nativeFilename(nameBytes);
+          if (nameBytes === null && !behavior?.queryFormatsUnmappedAsEmpty) return value(0);
+          const filename = registry.library.nativeFilename(nameBytes ?? new Uint8Array());
           if (filename === null) return value(0);
           const key = cFilenameKey(filename);
           return value(

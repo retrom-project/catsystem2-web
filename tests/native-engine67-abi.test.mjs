@@ -1523,6 +1523,56 @@ test('2.6.1.67 Script load GCALL binds shared memory and only suspends for immed
   }
 });
 
+test('2.6.1.67 Main514 queries the retained Motion names and refreshes the working bank', async (t) => {
+  const marker = 0xa1e63b55,
+    program = kcsProgram([[59]]),
+    files = {
+      'query.kcs': kcsProgram([
+        [37, marker],
+        [37, [0x13, 32]],
+        [37, [0x13, 36]],
+        [43, 514, 8],
+        [59],
+      ]),
+      'pbase.kcs': program,
+      '.kcs': program,
+    };
+  const world = await dataWorld(profile, files),
+    category = { name: 'mot', directory: '', extension: 'kcs' },
+    registry = world.runtime.services.motion,
+    handle = registry.create(world.main.id),
+    manager = registry.get(handle);
+  t.after(() => world.close({ flushFiles: false }));
+  world.motionLibrary.game.nativeResources = { entries: [category] };
+  for (const name of ['pBase', '.kcs']) manager.add(await world.motionLibrary.load(name));
+  manager.base.fill(0x9b);
+  const query = async (owner, address, name) => {
+    const task = await world.spawnScript('query.kcs', { initialExecute: false }),
+      m = task.machine,
+      floor = m.sp;
+    try {
+      m.store(32, owner);
+      m.store(36, address);
+      if (name !== undefined) m.writeString(name, address);
+      await world.runtime.scheduler.execute(task);
+      assert.equal(m.sp, floor + 8);
+      const result = m.pop();
+      assert.equal(m.pop(), marker);
+      return result;
+    } finally {
+      await world.objects.release(task.id);
+    }
+  };
+  assert.equal(await query(handle, 200, 'PBASE.KCS'), 1);
+  assert.equal(await query(handle, 0x800000c8, 'folder/pBase.kcs'), 0);
+  manager.working.fill(0xa1);
+  assert.equal(await query(handle, 0xefffffff), 1);
+  assert.deepEqual(manager.working, manager.base);
+  category.directory = 'mot';
+  assert.equal(await query(handle, 200, 'pBase'), 0);
+  assert.equal(await query(0, 0xefffffff), 0);
+});
+
 test('2.6.1.67 Motion mutates mapped components in native x87 order', async () => {
   const marker = 0xd1058137;
   for (const [id, addresses, expected] of [
