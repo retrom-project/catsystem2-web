@@ -20,6 +20,7 @@ export class NativePlaneModelCommands {
     this.filename = '';
     const abi = world.profile && nativeABI(world.profile);
     this.trailUsesScalarWords = abi?.graphics.planeTrailUsesScalarWords;
+    this.clearsPathOnMissingCategory = abi?.graphics.planeModelPathClearsOnMissingCategory;
     this.texturedKx2CategoryCount = abi?.graphics.planeUsesLegacyTexturedKX2
       ? abi.resources.categoryCount
       : 0;
@@ -72,6 +73,7 @@ export class NativePlaneModelCommands {
         if (kx2CategoryCount && filename?.length > 256)
           throw new RangeError('Native KX2 resolved path exceeds its CP932 pathname buffer');
         if (filename) this.filename = filename;
+        else if (this.clearsPathOnMissingCategory) this.filename = '';
       } else if (name)
         this.filename = nativeCategoryFilename(
           world.game,
