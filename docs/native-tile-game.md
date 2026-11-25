@@ -25,6 +25,8 @@ replay and the complete dealt hand resume in a fresh JS World.
 SDK 2.6.1.67 emits a pre-action ability notification only when the automatic
 activation helper activates an ability. An already pending explicit human
 ability does not insert that notification into the ordinary discard sequence.
+Its ready-hand query also accepts a complete hand with a positive evaluated
+score, including a fourteen-tile self-drawn winning hand.
 
 The implementation is split into the native interface, canonical rule record,
 hand evaluator, action/AI rules, round driver and special/deal policies. Resource

@@ -53,6 +53,7 @@ const styleFlags = [0, 3, 1, 3, 1, 1, 7, 0, 1, 3, 0, 1, 3, 3, 39, 3, 3, 3, 7, 3]
 export class NativeTileModel {
   constructor(randomSeed = 4357, options = {}) {
     this.preActionNotificationUsesResult = options.preActionNotificationUsesResult ?? false;
+    this.readyIncludesScoredHand = options.readyIncludesScoredHand ?? false;
     this.random = new NativeMT19937();
     let seed = randomSeed >>> 0;
     for (let index = 0; index < 624; index++) {
@@ -641,7 +642,14 @@ export class NativeTileModel {
             ]
           : null;
       case 14:
-        return this.validPlayer(player) ? [this.hands.waits(player)?.length ? -1 : 0] : [0];
+        return this.validPlayer(player)
+          ? [
+              this.hands.waits(player)?.length ||
+              (this.readyIncludesScoredHand && this.hands.score(player).score > 0)
+                ? -1
+                : 0,
+            ]
+          : [0];
       case 15:
         return this.validPlayer(player) ? this.hands.score(player).patterns : null;
       case 16: {
