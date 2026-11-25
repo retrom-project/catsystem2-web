@@ -211,18 +211,20 @@ export class MotionInstance {
         this.calculations,
         this.math,
       );
-    const scalarReply =
-      this.interpreterMath &&
-      nativeScalarMath(
-        contract.name,
-        args,
-        machine,
-        contract.argumentWords,
-        this.interpreterMath.anglesUseX87,
-        this.interpreterMath.atan2UsesX87,
-        this.interpreterMath.powUsesSSE2Identities,
-        this.interpreterMath.trigUsesNativeReduction,
-      );
+    const scalarMath =
+        this.interpreterMath ?? (id === 13 && this.math?.powUsesSSE2Identities ? this.math : null),
+      scalarReply =
+        scalarMath &&
+        nativeScalarMath(
+          contract.name,
+          args,
+          machine,
+          contract.argumentWords,
+          scalarMath.anglesUseX87,
+          scalarMath.atan2UsesX87,
+          scalarMath.powUsesSSE2Identities,
+          scalarMath.trigUsesNativeReduction,
+        );
     if (scalarReply) return scalarReply;
     if (id === 14 && this.math?.anglesUseX87)
       return real(x87AngleConversion(bitsFloat(args[0]), true));

@@ -2,8 +2,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { openImage } from '../src/formats/hg3.mjs';
+import { readKCS } from '../src/kcs.mjs';
 import { floatBits, NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { MOTION_ABI } from '../src/motion/abi.mjs';
+import { MotionInstance } from '../src/motion/instance.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { mapABIMessage } from '../src/native/abi/messages.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
@@ -1203,6 +1205,31 @@ test('2.6.1.63 dictionary aliases and F32/word packing use the same live KCS own
   } finally {
     await world.close();
   }
+});
+
+test('2.6.1.63 Main and Motion return the initialized CRT power words', async (t) => {
+  const world = await dataWorld(profile, {
+    'main-61.kcs': mainProgram(61, 2),
+    'main-461.kcs': mainProgram(461, 1),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  for (const [argv, expected] of [
+    [[0x43feac31, 0xc0507131], 0x30d1b5a5],
+    [[0x7f801234, 0x80000000], 0x7fc01234],
+    [[0xbf800000, 0x7f800000], 0x3f800000],
+  ]) {
+    await executeMain(world, 61, argv, undefined, expected);
+    const motion = new MotionInstance(
+      await readKCS(
+        kcsProgram([[37, 0x82345678], [37, argv[0]], [37, argv[1]], [43, 13, 8], [59]]),
+      ),
+      { profile, calculations: world.calculations },
+    );
+    motion.machine.run(80);
+    assert.equal(motion.machine.pop(), expected);
+    assert.equal(motion.machine.pop(), 0x82345678);
+  }
+  await executeMain(world, 461, [floatBits(1000)], undefined, floatBits(3));
 });
 
 test('2.6.1.63 scalar calls use the original integer RNG, weekday and signed words', async () => {
