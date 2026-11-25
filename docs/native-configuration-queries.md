@@ -25,6 +25,15 @@ This explicit save does not flush a separate SoundConfiguration file or clear
 the pending refresh latch. The native application-data directory is represented
 by the existing isolated per-game storage root.
 
+The independently checked SDK 2.6.1.63 and 2.6.1.23 save and refresh entries use
+the same shared owners. SDK63 additionally omits `FULL_SCREEN/no_full_res` from
+its saved XML. SDK23 also omits `KEY/enable_joypad`, `ETC/waitd3dcommand` and
+`ETC/disablepixelshader`. A key group with no persisted bindings is absent.
+SDK23's original Root uses raw enclosure 10 and embedded event 18; its actual
+Script receiver queues `FFFF0011`, the same event produced by the shared
+canonical configuration notification 19. Its Sound receiver retains the same
+device-dependent zero/one result without changing playback state.
+
 Main 533 requests a configuration refresh. Repeated requests merge into one
 pending latch. After the active Root finishes its update, the World broadcasts
 event 19 with a zero sender, requests a redraw of the actual client rectangle,
@@ -34,6 +43,11 @@ absent Root retains the request. A paused or inactive renderer preserves its
 dirty rectangle while the notification still completes. The pending latch and
 renderer rectangles survive a cold World checkpoint. This operation does not
 mark preferences dirty or save a file.
+
+Run `node --test tests/native-configuration-refresh.test.mjs
+tests/native-preference-save.test.mjs` for the three configuration command
+families, including cold World restore and rejected storage I/O. File cold-read
+integration remains a separate check from a World snapshot restore.
 
 All six operations query live JS configuration, sound and resource state.
 Formatting and comparisons retain narrow bytes and ABI-specific XML encodings.

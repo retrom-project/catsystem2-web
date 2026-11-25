@@ -257,7 +257,12 @@ function serialize(node, depth = 0, omitted = new Set(), path = '') {
   if (omitted.has(path)) return '';
   const indent = '  '.repeat(depth);
   if (!node.children.length) return `${indent}<${node.name}>${node.text}</${node.name}>\r\n`;
-  return `${indent}<${node.name}>\r\n${node.children.map((child) => serialize(child, depth + 1, omitted, path ? `${path}/${child.name}` : child.name)).join('')}${indent}</${node.name}>\r\n`;
+  const children = node.children
+    .map((child) =>
+      serialize(child, depth + 1, omitted, path ? `${path}/${child.name}` : child.name),
+    )
+    .join('');
+  return children ? `${indent}<${node.name}>\r\n${children}${indent}</${node.name}>\r\n` : '';
 }
 
 export function serializeNativePreferences(configuration, { flags = 3 } = {}) {

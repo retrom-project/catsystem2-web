@@ -179,6 +179,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [361, 533],
+    value:
+      'Own Main361 at 0x47d730 saves both preference groups through the actual XML tree and captured file writer, irrespective of dirty state, retaining signed words, CP932 font/key data and the eight profile-listed omissions. Creation failure or a partial write does not change control 2, and all temporary owners are released. Main533 at 0x47d770 sets the manager refresh latch. The actual Root callback at 0x4184f0 updates the Root before broadcasting raw10 with embedded raw18, requests the client rectangle, and then clears the latch. Its Script raw18 receiver queues 0xffff0011, matching shared canonical event19. Sound raw18 returns zero without a device and one with a device. Requests merge, absent Root retains them, and paused/inactive rendering skips the dirty write.',
+  },
+  {
     ids: tileGameOperations,
     value:
       'Own 2.6.1.23 Main470–513 have independently verified word counts and controls through the full GCALL bridge. All registered Tile initializers construct one process-wide model and auxiliary rules scratch, then seed its independent stream from local calendar fields. Contexts own four vectors and retain event/choice/result caches while sharing the model. Standard two/four-player rounds, all seventeen command codes, eight deal policies, abilities, preserved-inventory reference swaps, winning score/payment/result decoding, historical choices/melds, cached replay, mapped local/shared/aliased outputs and release isolation match the original. Original pre-action notifications use the automatic activation return, and ready queries also accept a positive scored complete hand. Six native AI profiles additionally verify automatic pre-action, declaration cancellation/refund, score protection and late-wall abilities. Cold JS checkpoints retain the shared model/RNG and independent contexts.',
@@ -1224,6 +1229,16 @@ export default {
     blockSizes: [2856, 56, 28, 12],
     keyHide: false,
     extendedPreferences: false,
+    preferenceOmittedFields: [
+      'GAME/autoselect',
+      'MESSAGE/read_color',
+      'MESSAGE/enable_read',
+      'KEY/enable_joypad',
+      'FULL_SCREEN/no_full_res',
+      'ETC/waitd3dcommand',
+      'ETC/disablepixelshader',
+      'ETC/imgimport',
+    ],
     systemVoiceRows: 32,
     defaults: {
       font: 'ＭＳ ゴシック',
@@ -1459,6 +1474,7 @@ export default {
       sound: {
         unmapped: 'reject',
         canonical: [
+          toMessage(19),
           ...baseMessages,
           toMessage(cursorVisibility, 22 - cursorVisibility),
           ...soundMessages.map((id) => toMessage(id, 13)),
@@ -1475,7 +1491,7 @@ export default {
     cursorVisibility,
     soundBaseOnly: [22],
     areaQueriesRequireReply: true,
-    scriptForward: [9, 10, cursorVisibility, 64],
+    scriptForward: [9, 10, 19, cursorVisibility, 64],
     screenEvent: 18,
     tilePlaneCommand: 42,
     windowClosePreparation: false,
@@ -1604,6 +1620,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [361, 533], fields: { review: 'reviewed' } },
         ...NATIVE_TILE_GAME_SIGNATURES,
 
         ...rawDataSignatures(),

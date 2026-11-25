@@ -3,7 +3,7 @@
 Native meanings live once in
 [semantics.mjs](../src/native/abi/semantics.mjs), indexed by table namespace and
 numeric ID. Main, generic/MOT and the two particle namespaces remain separate.
-The catalog contains 928 reviewed main meanings and 45/44/51 auxiliary meanings.
+The catalog contains 932 reviewed main meanings and 45/44/51 auxiliary meanings.
 These are the union of the registered engines' recovered declarations, not a
 list of functions enabled in every engine. Project descriptive names do not
 claim to recover the compiler's original symbols.
@@ -19,9 +19,9 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 672       | 57            | 17            | 123     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.63 | 938        | 610       | 80            | 19            | 229     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.67 | 938        | 712       | 80            | 19            | 127     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 674       | 57            | 17            | 121     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.63 | 938        | 613       | 80            | 19            | 226     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.67 | 938        | 713       | 80            | 19            | 126     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51                                     |
 
