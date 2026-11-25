@@ -27,7 +27,7 @@ import {
 } from '../ppi/numeric.mjs';
 import { MOTION_ABI, initialMotionObject } from './abi.mjs';
 import { rotateRelativeX87, yawPitchRollX87 } from './native-rotation.mjs';
-import { transformSSEWords } from './native-sse.mjs';
+import { normalizeSSEWords, transformSSEWords } from './native-sse.mjs';
 import {
   identity,
   inverse,
@@ -88,6 +88,7 @@ export class MotionInstance {
     this.matrixMemoryOperationsUseNativeOrder = abi.motion?.matrixMemoryOperationsUseNativeOrder;
     this.matrixVectorUseScalarD3DX = abi.motion?.matrixVectorUseScalarD3DX;
     this.vectorTransformUsesSSEWords = abi.motion?.vectorTransformUsesSSEWords;
+    this.vectorNormalizeUsesSSEWords = abi.motion?.vectorNormalizeUsesSSEWords;
     this.vectorOperationsUseNativeGeometry = abi.motion?.vectorOperationsUseNativeGeometry;
     this.vectorComponentsUseX87 = abi.motion?.vectorComponentsUseX87;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
@@ -204,13 +205,20 @@ export class MotionInstance {
       return word(x87TriangleWaveWord(...args));
     if (this.currentMatrixFallback && id >= 23 && id <= 26)
       return nativeMatrix(contract.name, args, machine, this.calculations);
-    if (id === 37 && this.vectorTransformUsesSSEWords) {
+    if (
+      (id === 31 && this.vectorNormalizeUsesSSEWords) ||
+      (id === 37 && this.vectorTransformUsesSSEWords)
+    ) {
       const [target, source] = args;
       machine.bytes(target, 16);
-      machine.bytes(source, 64);
       const read = (address, count) =>
-          Array.from({ length: count }, (_, i) => machine.load((address + i * 4) >>> 0)),
+        Array.from({ length: count }, (_, i) => machine.load((address + i * 4) >>> 0));
+      let result;
+      if (id === 31) result = normalizeSSEWords(read(target, 4));
+      else {
+        machine.bytes(source, 64);
         result = transformSSEWords(read(target, 4), read(source, 16));
+      }
       result.forEach((value, i) => machine.store((target + i * 4) >>> 0, value));
       return done();
     }

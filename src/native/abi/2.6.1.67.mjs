@@ -299,6 +299,7 @@ export default {
     matrixMemoryOperationsUseNativeOrder: true,
     vectorOperationsUseNativeGeometry: true,
     vectorTransformUsesSSEWords: true,
+    vectorNormalizeUsesSSEWords: true,
     vectorComponentsUseX87: true,
     nativeFilenameQuery: true,
     queryFormatsUnmappedAsEmpty: true,
@@ -3922,13 +3923,18 @@ export default {
     generic: {
       count: 45,
       slots: {
-        unknown: [0, 27, 31, 43, 44],
+        unknown: [0, 27, 43, 44],
         recovered: [
           1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-          26, 28, 29, 30, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+          26, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
         ],
       },
       evidence: [
+        {
+          ids: [31],
+          value:
+            'Own MOT wrapper 0x55e070 calls 0x52fdc0 and the initialized selector-2 Vec4Normalize at 0x5e8cf0. It sums XY and ZW squared pairs, applies the SSE reciprocal-square-root seed and one Newton correction in single precision, and multiplies all four original words. Physical cases retain the unit-vector rounding, zero-vector indefinite values and NaN payload ordering. Control 2 leaves the result unwritten.',
+        },
         {
           ids: [37],
           value:
@@ -4001,17 +4007,17 @@ export default {
         { ids: [39, 40], fields: { resultWritten: true } },
         { ids: [11], fields: { resultWritten: true } },
         { ids: [32, 33, 36], fields: { resultWritten: false } },
-        {
-          ids: [37],
+        ...[31, 37].map((id) => ({
+          ids: [id],
           fields: {
-            parameters: NATIVE_SEMANTICS.generic[37].signature.parameters.map((parameter, i) => ({
+            parameters: NATIVE_SEMANTICS.generic[id].signature.parameters.map((parameter, i) => ({
               ...parameter,
               type: { ...parameter.type, addressSpace: 'vm', direction: i === 0 ? 'inout' : 'in' },
             })),
             resultWritten: false,
             review: 'reviewed',
           },
-        },
+        })),
         { ids: [34, 35], fields: { resultWritten: true } },
         { ids: [23, 24, 25, 26, 28, 29, 30], fields: { resultWritten: false } },
         { ids: [7, 8, 10, 12], fields: { resultWritten: true } },

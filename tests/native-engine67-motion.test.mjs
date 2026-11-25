@@ -265,6 +265,43 @@ test('2.6.1.67 Motion vector calls preserve x87 result words and native operand 
   }
 });
 
+test('2.6.1.67 MOT normalization preserves the native SSE seed correction and special words', async () => {
+  const cases = [
+    [
+      [0x3f800000, 0, 0, 0],
+      [0x3f7fffff, 0, 0, 0],
+    ],
+    [[1, 2, 3, 4].map(floatBits), [0x3e3af4b9, 0x3ebaf4b9, 0x3f0c378b, 0x3f3af4b9]],
+    [[0, 0x80000000, 0, 0x80000000], Array(4).fill(0xffc00000)],
+    [[1, 2, 3, 4], Array(4).fill(0xffc00000)],
+    [[0x7f7fffff, 0, 0, 0], Array(4).fill(0xffc00000)],
+    [
+      [0x7fc12345, 0xff801234, 0, 0],
+      [0x7fc12345, 0xffc01234, 0x7fc12345, 0x7fc12345],
+    ],
+  ];
+  for (const address of [64, 0x80000001]) {
+    for (const [before, after] of cases) {
+      const instance = new MotionInstance(await readKCS(motionProgram([[31, [address]]])), {
+          profile,
+        }),
+        { machine } = instance;
+      before.forEach((word, i) => machine.store(address + i * 4, word));
+      machine.bytes(address - 1, 1)[0] = 0x91;
+      machine.bytes(address + 16, 1)[0] = 0x7a;
+      assert.equal(instance.update(0).status, 'halted');
+      assert.equal(machine.pop(), 0xa0263136);
+      assert.equal(machine.sp, machine.floor);
+      assert.deepEqual(
+        after.map((_, i) => machine.load(address + i * 4)),
+        after,
+      );
+      assert.equal(machine.bytes(address - 1, 1)[0], 0x91);
+      assert.equal(machine.bytes(address + 16, 1)[0], 0x7a);
+    }
+  }
+});
+
 test('2.6.1.67 MOT vector transforms preserve physical SSE2 NaNs and aliased source words', async () => {
   const matrix = [1, 1, 1, 1, 33554432, 0, 0, 0, 1, 0, 0, 0, -33554432, 0, 0, 0].map(floatBits),
     samples = [
