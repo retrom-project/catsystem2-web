@@ -67,6 +67,57 @@ function observe(owner, input) {
   };
 }
 for (const build of golden.builds) {
+  test(`${build.profile} default count-output diagnostic leaves a real owned target and copy destination unchanged`, async () => {
+    const files = Object.fromEntries(
+        [1, 14].map((id) => [
+          'count' + id + '.kcs',
+          kcsProgram([
+            [37, 16],
+            [43, 833, 4],
+            [38, [0x13, 512]],
+            ...(id === 14 ? [[37, 8256]] : []),
+            [37, 128],
+            [43, id, id === 14 ? 8 : 4],
+            [59],
+          ]),
+        ]),
+      ),
+      world = await dataWorld(build.profile, files),
+      actual = world.runtime.native.bind(world.runtime);
+    try {
+      for (const id of [1, 14]) {
+        const task = await world.spawnScript('count' + id + '.kcs', {
+            parent: world.main.id,
+            initialExecute: false,
+          }),
+          vm = task.machine;
+        vm.allocate(32768);
+        vm.blockBytes(0).fill(0xa5);
+        vm.writeString('%n[G512]', 128);
+        let pointer, before, heapBefore;
+        world.runtime.native = (...args) => {
+          if (args[1] === id) {
+            pointer = args[3].load(512);
+            world.runtime.imageDataBuffers.process.write(pointer, new Uint8Array(16).fill(0x5a));
+            before = memory(args[3]);
+            heapBefore = world.runtime.imageDataBuffers.snapshot();
+          }
+          return actual(...args);
+        };
+        await assert.rejects(world.runtime.scheduler.execute(task), /Unsupported native format/);
+        assert.deepEqual(memory(vm), before);
+        assert.deepEqual(world.runtime.imageDataBuffers.snapshot(), heapBefore);
+        assert.deepEqual(
+          world.runtime.imageDataBuffers.process.read(pointer, 16),
+          new Uint8Array(16).fill(0x5a),
+        );
+        await world.objects.release(task.id);
+      }
+    } finally {
+      world.runtime.native = actual;
+      await world.close({ flushFiles: false });
+    }
+  });
   test(`${build.profile} Main debug/copy reject an actually unmapped fixed argv word`, async () => {
     const files = {
         'log.kcs': kcsProgram([[43, 1, 0], [59]]),
