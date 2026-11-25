@@ -11,7 +11,7 @@ import { surveyContainer } from './survey-native-corpus.mjs';
 
 const tables = ['main', 'generic', 'particle-v1', 'particle-v2'];
 const receiptKinds = new Set(['original', 'vm', 'guard', 'product']);
-const guardScopes = [
+const sdkScopes = [
   'ordinary-runtime',
   'original-undefined-input',
   'desktop-author-or-export',
@@ -338,7 +338,7 @@ function validateGuardedShapes(shapes, receipts, key) {
   const seen = new Set();
   for (const shape of shapes) {
     if (
-      !guardScopes.includes(shape?.sdkScope) ||
+      !sdkScopes.includes(shape?.sdkScope) ||
       typeof shape.shape !== 'string' ||
       !shape.shape.trim() ||
       seen.has(shape.shape)
@@ -393,7 +393,7 @@ function collectRows(image, abi, scripts, reviews, receipts) {
       !['guarded', 'implemented', 'original-stub'].includes(disposition)
     )
       throw new Error(`Review and current ABI declaration disagree at ${key}`);
-    if (review.sdkScope !== undefined && (!guard || !guardScopes.includes(review.sdkScope)))
+    if (review.sdkScope !== undefined && (!guard || !sdkScopes.includes(review.sdkScope)))
       throw new Error(`Invalid SDK scope for ${key}`);
     assertReviewReceipts(review, receipts, ['original', guard ? 'guard' : 'vm']);
     validateGuardedShapes(review.guardedShapes, receipts, key);
@@ -422,10 +422,13 @@ function collectRows(image, abi, scripts, reviews, receipts) {
   };
 }
 
-export function summarizeSDKCoverage({ tables }, works, receipts) {
-  const guarded = Object.fromEntries(guardScopes.map((scope) => [scope, []])),
-    guardedShapes = Object.fromEntries(guardScopes.map((scope) => [scope, []])),
+export function summarizeSDKCoverage({ tables }, works, receipts, secondary = []) {
+  const guarded = Object.fromEntries(sdkScopes.map((scope) => [scope, []])),
+    guardedShapes = Object.fromEntries(sdkScopes.map((scope) => [scope, []])),
+    secondaryOpen = Object.fromEntries(sdkScopes.map((scope) => [scope, []])),
     originalStubs = [];
+  for (const { name, sdkScope } of secondary)
+    if (sdkScope !== undefined) secondaryOpen[sdkScope].push(name);
   for (const [table, { slots }] of Object.entries(tables))
     for (const { id, declaration, evidence } of slots) {
       for (const { sdkScope, shape } of evidence?.guardedShapes ?? [])
@@ -442,18 +445,28 @@ export function summarizeSDKCoverage({ tables }, works, receipts) {
   const ordinaryOpen = guarded['ordinary-runtime'].length,
     unclassified = guarded['unclassified-evidence'].length,
     ordinaryOpenShapes = guardedShapes['ordinary-runtime'].length,
-    unclassifiedShapes = guardedShapes['unclassified-evidence'].length;
+    unclassifiedShapes = guardedShapes['unclassified-evidence'].length,
+    ordinaryOpenSecondary = secondaryOpen['ordinary-runtime'].length,
+    unclassifiedSecondary = secondaryOpen['unclassified-evidence'].length;
   return {
     ordinaryRuntime:
-      ordinaryOpen || unclassified || ordinaryOpenShapes || unclassifiedShapes
+      ordinaryOpen ||
+      unclassified ||
+      ordinaryOpenShapes ||
+      unclassifiedShapes ||
+      ordinaryOpenSecondary ||
+      unclassifiedSecondary
         ? 'incomplete'
         : 'no-identified-open-slot',
     ordinaryOpen,
     unclassified,
     ordinaryOpenShapes,
     unclassifiedShapes,
+    ordinaryOpenSecondary,
+    unclassifiedSecondary,
     guarded,
     guardedShapes,
+    secondaryOpen,
     originalStubs,
     productReceiptsByWork: works.map(({ id, contentIdentity }) => ({
       work: id,
@@ -512,7 +525,19 @@ export async function collectNativeABIAcceptance(input) {
       abi.executableSha256 ? abi.particle?.scriptVersionFallback : undefined,
     );
   const receipts = await collectReceipts(receiptInputs, build, works);
-  for (const review of secondary) assertReviewReceipts(review, receipts, ['original']);
+  const scopedSecondary = new Set();
+  for (const review of secondary) {
+    assertReviewReceipts(review, receipts, ['original']);
+    if (review.sdkScope === undefined) continue;
+    if (
+      !sdkScopes.includes(review.sdkScope) ||
+      typeof review.name !== 'string' ||
+      !review.name.trim() ||
+      scopedSecondary.has(review.name)
+    )
+      throw new Error('Open SDK secondary reviews require a unique name and valid scope');
+    scopedSecondary.add(review.name);
+  }
   const secondaryABI = Object.fromEntries(Object.entries(abi).filter(([key]) => key !== 'tables'));
   const rows = collectRows(image, abi, scripts, reviews, receipts);
   return {
@@ -528,7 +553,7 @@ export async function collectNativeABIAcceptance(input) {
     scripts,
     scriptDelta: scriptDelta(works, scripts, receipts),
     ...rows,
-    sdkCoverage: summarizeSDKCoverage(rows, works, receipts),
+    sdkCoverage: summarizeSDKCoverage(rows, works, receipts, secondary),
     secondaryABI,
     secondary,
     receipts: Object.fromEntries(receipts),

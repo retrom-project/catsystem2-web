@@ -82,6 +82,20 @@ test('a tested work and guards still leave ordinary SDK coverage incomplete', ()
   assert.deepEqual(shapeCoverage.guardedShapes['ordinary-runtime'], [
     { table: 'main', id: 6, shape: 'two owned resources and a valid selector' },
   ]);
+  const secondaryCoverage = summarizeSDKCoverage({ tables: {} }, works, receipts, [
+    { name: 'FES control resource', sdkScope: 'ordinary-runtime' },
+    { name: 'Task message receiver', sdkScope: 'unclassified-evidence' },
+    { name: 'Native save layout sampled by this work' },
+  ]);
+  assert.equal(secondaryCoverage.ordinaryRuntime, 'incomplete');
+  assert.equal(secondaryCoverage.ordinaryOpen, 0);
+  assert.equal(secondaryCoverage.ordinaryOpenShapes, 0);
+  assert.equal(secondaryCoverage.ordinaryOpenSecondary, 1);
+  assert.equal(secondaryCoverage.unclassifiedSecondary, 1);
+  assert.deepEqual(secondaryCoverage.secondaryOpen['ordinary-runtime'], ['FES control resource']);
+  assert.deepEqual(secondaryCoverage.secondaryOpen['unclassified-evidence'], [
+    'Task message receiver',
+  ]);
 });
 
 test('static GCALL decoding distinguishes immediate, memory and stack operands', async () => {

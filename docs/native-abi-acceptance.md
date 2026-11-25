@@ -52,10 +52,16 @@ to an implemented slot with an outstanding valid shape. Each entry has
 evidence. A guard on an undefined operand should leave the slot classified
 as ordinary or unresolved when its valid calls still need review.
 
-The report's `sdkCoverage` lists guarded slots, guarded shapes and the
-admitted original stubs separately. An ordinary or unclassified guard at
-either level keeps `ordinaryRuntime` incomplete. `no-identified-open-slot`
-describes the reviewed scope. The separate `productReceiptsByWork` lists
+Use `secondary[].sdkScope` for an outstanding FES, task-message or layout
+review. Give the review a unique `name`, the exact open behavior in
+`reason` and its original evidence. Link a guard receipt when production
+rejection has also been reproduced.
+
+The report's `sdkCoverage` lists guarded slots, guarded shapes, open secondary
+reviews and admitted original stubs. An ordinary or unclassified entry in
+any of the three open lists keeps `ordinaryRuntime` incomplete.
+`no-identified-open-slot` describes the reviewed scope.
+The separate `productReceiptsByWork` lists
 product evidence for each included content identity. Runtime rejection
 receipts establish the guard behavior. Product receipts establish the paths
 exercised in the corresponding work.
