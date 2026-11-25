@@ -169,6 +169,7 @@ export default {
     nativeFilenameQuery: true,
     splineUsesX87: true,
     elapsedUsesX87: true,
+    zeroWidthRotationReadsStack: true,
     skipBypassesDelay: false,
   },
   movie: { alwaysUseBgmVolume: true },
@@ -1986,14 +1987,19 @@ export default {
             'Own Motion wrapper uses the same initialized pow target, ordered float32 input words and control 1 as Main61. Both original table entries were independently run on physical x86.',
         },
         {
+          ids: [23],
+          value:
+            'Own MOT row-vector XYZ rotation uses the normal SSE matrix product. For zero explicit bytes, the original GCALL still forwards a live stack cursor. Six original Motion scripts run this shape. Rotation reads from that cursor and writes each axis before reading the next angle.',
+        },
+        {
           ids: [1, 2, 5, 7, 9, 14, 16, 42],
           value:
             '2.6.1.63 own MOT table scalar wrappers and the signed quarter-period triangle wave.',
         },
         {
-          ids: [23, 26, 43, 44],
+          ids: [26, 43, 44],
           value:
-            '2.6.1.63 own MOT row-vector matrix operations use identity, successive XYZ rotations, yaw/pitch/roll, and axes from a reference transform. The normal SSE matrix product reduces the first and fourth rows in pairs.',
+            '2.6.1.63 own MOT row-vector matrix operations use identity, yaw/pitch/roll, and axes from a reference transform. The normal SSE matrix product reduces the first and fourth rows in pairs.',
         },
         {
           ids: [17, 38, 41],

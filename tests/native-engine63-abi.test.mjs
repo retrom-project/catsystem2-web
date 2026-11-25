@@ -1310,6 +1310,20 @@ test('2.6.1.63 Main and Motion return the initialized CRT power words', async (t
   await executeMain(world, 461, [floatBits(1000)], undefined, floatBits(3));
 });
 
+test('2.6.1.63 zero-width MOT rotation reads each angle from the live aliasing stack', async () => {
+  const values = [128, ...[0.8, -0.5, 0.6].map(floatBits)],
+    program = kcsProgram([[49, 128], ...values.map((word) => [37, word]), [60], [43, 23, 0], [59]]);
+  new DataView(program.buffer).setUint32(32, 0, true);
+  const motion = new MotionInstance(await readKCS(program), { profile });
+  motion.run();
+  assert.equal(motion.machine.sp, 128);
+  assert.equal(motion.calls.get(23), 1);
+  assert.deepEqual(
+    Array.from({ length: 4 }, (_, index) => motion.machine.load(128 + 4 * index)),
+    [3203629921, 1061738072, 1046550657, 1058642330],
+  );
+});
+
 test('2.6.1.63 scalar calls use the original integer RNG, weekday and signed words', async () => {
   const world = await dataWorld(profile, {
     'main-33.kcs': mainProgram(33, 0),

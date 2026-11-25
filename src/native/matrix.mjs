@@ -29,6 +29,17 @@ function rotation(axis, word) {
 }
 export function nativeMatrix(operation, args, machine, state, multiply = multiplyNativeMatrix) {
   const count = operation === 'matrix.identity' ? 1 : 4;
+  if (operation === 'matrix.rotateXYZ' && args.length === 0) {
+    const storage = matrixStorage(machine, machine.nativeArgument(0), state);
+    // An original MOT handler can still read the live stack after a zero-byte GCALL.
+    // A rotation can alias the following angles, so write each axis before reading the next.
+    for (let axis = 0; axis < 3; axis++) {
+      const angle = machine.nativeArgument(axis + 1);
+      const matrix = multiply(floats(storage.read()), rotation(axis, angle));
+      storage.write(floatBytes(matrix));
+    }
+    return nativeReply(2);
+  }
   if (args.length !== count) throw new Error(`${operation} expects ${count} arguments`);
   if (operation === 'matrix.setYawPitchRoll') {
     const output = machine.bytes(args[0], 64);

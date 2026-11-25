@@ -90,6 +90,7 @@ export class MotionInstance {
     this.vectorComponentsUseX87 = abi.motion?.vectorComponentsUseX87;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
     this.currentMatrixFallback = abi.motion?.currentMatrixFallback;
+    this.zeroWidthRotationReadsStack = abi.motion?.zeroWidthRotationReadsStack;
     this.calculations = calculations;
     this.shared = new Uint8Array(MOTION_ABI.sharedSize);
     this.view = new DataView(this.shared.buffer);
@@ -179,7 +180,8 @@ export class MotionInstance {
     const contract = this.contracts[id];
     if (!contract || contract.status === 'unknown' || !contract.parameters)
       throw new Error(`Unrecovered MOT native ${this.profile}:${id.toString(16)}`);
-    if (id !== 0 && args.length !== contract.argumentWords)
+    const stackRotation = id === 23 && this.zeroWidthRotationReadsStack && args.length === 0;
+    if (id !== 0 && !stackRotation && args.length !== contract.argumentWords)
       throw new Error(
         `MOT ${contract.name} expects ${contract.argumentWords} arguments, got ${args.length}`,
       );
@@ -192,6 +194,8 @@ export class MotionInstance {
     const put = (address, numbers) =>
       numbers.forEach((value, i) => machine.store(address + i * 4, floatBits(value)));
     this.calls.set(id, (this.calls.get(id) || 0) + 1);
+    if (stackRotation)
+      return nativeMatrix(contract.name, args, machine, this.calculations, this.multiplyMatrix);
     if (this.interpreterMath && id === 7) return word(x87Atan2Word(...args));
     if (this.interpreterMath && id === 11) return word(x87RemainderWord(...args));
     if (this.interpreterMath?.triangleWaveUsesX87 && id === 42)
