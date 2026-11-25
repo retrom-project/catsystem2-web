@@ -491,3 +491,123 @@ for (const profile of ['bokutomo-engine-2.6.1.67', 'rebellions-jp-engine-2.6.1.6
       await world.close({ flushFiles: false });
     }
   });
+
+for (const profile of ['bokutomo-engine-2.6.1.67', 'rebellions-jp-engine-2.6.1.63'])
+  test(`${profile} decoder options own initial silence, static padding and stopped reader state`, async () => {
+    const bytes = wave(),
+      second = wave();
+    second[44] = 87;
+    const files = {
+      'case.kcs': kcsProgram([[43, 0, 0], [59]]),
+      'sound/owned.wav': bytes,
+      'sound/second.wav': second,
+    };
+    const create = async (initialize = true) => {
+      const world = await dataWorld(profile, files, { initialize }),
+        { context } = audioFixture();
+      world.game.resolveCategory = (name) => (Object.hasOwn(files, name) ? name : null);
+      context.sampleRate = 8000;
+      context.decodeAudioData = async (data) => ({
+        sampleRate: 8000,
+        numberOfChannels: 1,
+        length: 64000,
+        duration: 8,
+        getChannelData: () =>
+          Float32Array.from(new Uint8Array(data).subarray(44), (n) => (n - 128) / 128),
+      });
+      world.audio = world.sound.audio = new AudioMixer(world.game, context);
+      return { world, context };
+    };
+    let { world, context } = await create();
+    try {
+      assert.equal(await invoke(world, 935, [0, 0, 288, 1, 15]), 1);
+      assert.equal(await invoke(world, 569, [0]), 64000);
+      const resolve = world.game.resolveCategory;
+      world.audio.buffers.clear();
+      world.game.resolveCategory = () => null;
+      await invoke(world, 157, [0, 1]);
+      world.game.resolveCategory = resolve;
+      let channel = world.sound.channel(0);
+      assert.equal(channel.source.when, 0.25);
+      assert.ok(channel.nativeStreamQueue.ring.subarray(0, 2000).every((n) => n === 128));
+      assert.equal(channel.nativeStreamQueue.ring[2000], 23);
+      context.advance(0.125);
+      await invoke(world, 158, [0]);
+      const saved = structuredClone(world.snapshot()),
+        next = await create(false);
+      await next.world.restore(saved);
+      await world.close({ flushFiles: false });
+      ({ world, context } = next);
+      assert.equal(context.sources.length, 0);
+      await invoke(world, 157, [0, 1]);
+      channel = world.sound.channel(0);
+      assert.equal(channel.source.when, 0.125);
+      context.advance(0.125);
+      assert.equal(await invoke(world, 160, [0]), 1);
+      await invoke(world, 159, [0]);
+      await invoke(world, 157, [0, 1]);
+      assert.equal(world.sound.channel(0).source.when, context.currentTime);
+      assert.equal(world.sound.channel(0).nativeStreamQueue.ring[0], 23);
+      await invoke(world, 156, [0]);
+      assert.equal(await invoke(world, 935, [0, 0, 288, 2, 15]), 1);
+      await invoke(world, 157, [0, 2]);
+      channel = world.sound.channel(0);
+      assert.equal(channel.buffer.duration, 8.25);
+      assert.equal(channel.buffer.getChannelData(0)[0], 0);
+      assert.equal(channel.buffer.getChannelData(0)[2000], (23 - 128) / 128);
+      context.advance(8.25);
+      assert.equal(await invoke(world, 587, [0]), 1);
+      assert.equal(await invoke(world, 160, [0]), 1);
+      assert.equal(world.sound.channel(0).source.buffer.getChannelData(0)[0], 0);
+      await invoke(world, 159, [0]);
+      await invoke(world, 157, [0, 1]);
+      channel = world.sound.channel(0);
+      assert.equal(channel.buffer.duration, 8.25);
+      assert.equal(channel.buffer.getChannelData(0)[0], (23 - 128) / 128);
+      assert.equal(channel.buffer.getChannelData(0)[64000], 0);
+      const invalid = structuredClone(world.audio.snapshot());
+      invalid.channels[0].nativeDecoderBuffer.prefixBytes = -1;
+      await assert.rejects(world.audio.restore(invalid), /decoder buffer checkpoint/);
+      assert.equal(world.sound.channel(0), channel);
+      const invalidDevice = structuredClone(world.sound.snapshot());
+      invalidDevice.device[0].nativeDecoderBuffer.capacity = 0;
+      await assert.rejects(world.sound.restore(invalidDevice), /decoder buffer checkpoint/);
+      assert.equal(world.sound.channel(0), channel);
+      await invoke(world, 156, [0]);
+      assert.equal(world.audio.nativeDecoderBuffers.size, 0);
+      await invoke(world, 935, [0, 0, 288, 1, 301]);
+      await invoke(world, 157, [0, 1]);
+      context.advance(1.5);
+      await invoke(world, 158, [0]);
+      assert.equal(world.sound.channel(0).nativeStreamQueue.prefixRemaining, 0);
+      const longPrefix = structuredClone(world.snapshot()),
+        afterPrefix = await create(false);
+      await afterPrefix.world.restore(longPrefix);
+      await world.close({ flushFiles: false });
+      ({ world, context } = afterPrefix);
+      await invoke(world, 159, [0]);
+      await invoke(world, 157, [0, 1]);
+      assert.equal(world.sound.channel(0).source.when, context.currentTime);
+      assert.equal(world.sound.channel(0).nativeStreamQueue.ring[0], 23);
+      await invoke(world, 156, [0]);
+      await invoke(world, 935, [0, 0, 288, 1, 15]);
+      await invoke(world, 935, [1, 0, 512, 2, 61], new TextEncoder().encode('sound/second.wav'));
+      const decoderA = world.audio.nativeDecoderBuffers.get('native:0'),
+        decoderB = world.audio.nativeDecoderBuffers.get('native:1');
+      await world.sound.swap(0, 1);
+      assert.equal(world.audio.nativeDecoderBuffers.get('native:0'), decoderB);
+      assert.equal(world.audio.nativeDecoderBuffers.get('native:1'), decoderA);
+      await invoke(world, 159, [0]);
+      await invoke(world, 157, [0, 1]);
+      assert.equal(world.sound.channel(0).buffer.getChannelData(0)[0], (87 - 128) / 128);
+      for (const bank of [0, 1]) await invoke(world, 156, [bank]);
+      assert.equal(world.audio.nativeDecoderBuffers.size, 0);
+      const unloaded = structuredClone(world.sound.snapshot());
+      await invoke(world, 935, [0, 0, 288, 1, 15]);
+      assert.equal(world.audio.nativeDecoderBuffers.size, 1);
+      await world.sound.restore(unloaded);
+      assert.equal(world.audio.nativeDecoderBuffers.size, 0);
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });

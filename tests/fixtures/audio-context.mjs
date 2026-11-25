@@ -1,6 +1,17 @@
 // SPDX-License-Identifier: MPL-2.0
 import { AudioMixer } from '../../src/audio.mjs';
 
+export function fixtureAudioBuffer(channels, length, sampleRate) {
+  const planes = Array.from({ length: channels }, () => new Float32Array(length));
+  return {
+    numberOfChannels: channels,
+    length,
+    sampleRate,
+    duration: length / sampleRate,
+    getChannelData: (i) => planes[i],
+  };
+}
+
 export function audioFixture() {
   const context = {
     currentTime: 0,
@@ -14,6 +25,7 @@ export function audioFixture() {
       length: 120,
       getChannelData: () => new Float32Array(120).fill(0.25),
     }),
+    createBuffer: fixtureAudioBuffer,
     createBufferSource() {
       const node = {
         loop: false,

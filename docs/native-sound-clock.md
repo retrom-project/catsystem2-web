@@ -238,3 +238,18 @@ loads own a fresh map. Decoding happens when tags cross into a host voice UI.
 The original selector -1 branch addresses a tree outside the bank tag array,
 so it remains diagnostic instead of returning an inferred first-bank match.
 SDK23 has no raw Main903 table slot.
+
+SDK63/SDK67 Main935 and Main936 convert unsigned 60Hz ticks to a DWORD count
+of whole milliseconds, then let the owning PCM decoder prepend silent whole
+frames. This changes real buffer contents. The source sample-count query
+continues to report the original file frames. A stream keeps its bounded
+four-second ring, consumes initial silence once, and uses the native refill
+and termination counters; a long silent prefix does not allocate a matching
+AudioBuffer. Static buffers include the prefix in their capacity and repeat
+that stored buffer. Stop rewinds the decoder without restoring consumed
+silence, preserving static capacity by filling its remaining tail with silence.
+Pause retains the reader and cursor; cold restore retains the same ring,
+remaining prefix and output scheduling. Release discards the bank's decoded
+buffer owner. The new path covers PCM WAVE 8/16-bit source bytes; nonzero
+options for other codecs require their owning implementations and remain
+diagnostic. SDK23 has no raw Main935/936 slots.

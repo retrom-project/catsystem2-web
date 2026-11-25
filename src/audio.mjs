@@ -48,10 +48,36 @@ const validNativeQueue = (channel) => {
       ].every((field) => Number.isSafeInteger(queue[field]) && queue[field] >= 0) &&
       queue.count <= 0xffffffff &&
       queue.lastCursor < queue.ring.length &&
+      (queue.prefixRemaining === undefined ||
+        (Number.isSafeInteger(queue.prefixRemaining) && queue.prefixRemaining >= 0)) &&
       channel.pcmState?.values instanceof Uint32Array &&
       channel.pcmState.values.length === 80 &&
       Number.isFinite(channel.pcmState.progress) &&
       channel.pcmState.progress >= 0)
+  );
+};
+const validNativeDecoderBuffer = (channel) => {
+  const state = channel.nativeDecoderBuffer;
+  return (
+    state === undefined ||
+    state === null ||
+    (state.mode === channel.sourceMode &&
+      ['stream', 'static'].includes(state.mode) &&
+      Number.isSafeInteger(state.capacity) &&
+      state.capacity > 0 &&
+      state.capacity <= 0xffffffff &&
+      Number.isSafeInteger(state.prefixBytes) &&
+      state.prefixBytes >= 0 &&
+      Number.isSafeInteger(state.remainingPrefix) &&
+      state.remainingPrefix >= 0 &&
+      state.activity instanceof Uint32Array &&
+      state.activity.length === 80 &&
+      (state.mode !== 'stream' ||
+        validNativeQueue({
+          ...channel,
+          pcmState: { values: state.activity, progress: 0 },
+          nativeStreamQueue: state.queue,
+        })))
   );
 };
 const validTags = (tags) => {
@@ -112,6 +138,7 @@ export class AudioMixer {
     this.sourceRates = new WeakMap();
     this.sourceMetadata = new WeakMap();
     this.pcmSources = new WeakMap();
+    this.nativeDecoderBuffers = new Map();
   }
   loadLoopPoints(bytes) {
     for (const record of readLoopPoints(bytes)) {
@@ -182,9 +209,137 @@ export class AudioMixer {
     const buffer = await this.buffer(name);
     return buffer ? { buffer, metadata: this.sourceMetadata.get(buffer) } : null;
   }
+  createNativeDecoderBuffer(key, buffer, pcm, state, file) {
+    const windows = new NativePCMWindows(pcm);
+    let prepared = buffer;
+    if (state.mode === 'stream') {
+      if (!state.queue) {
+        const queue = new NativePCMQueue(pcm, windows, {
+          progress: 0,
+          origin: 0,
+          refills: 0,
+          count: 1,
+          loopStart: 0,
+          prefixBytes: state.prefixBytes,
+        });
+        state.queue = queue.snapshot();
+        state.remainingPrefix = queue.prefixRemaining ?? 0;
+        state.activity = windows.snapshot();
+      }
+    } else {
+      const stride = pcm.channels * (pcm.bitsPerSample >>> 3),
+        frames = state.capacity / stride;
+      prepared = this.context.createBuffer(pcm.channels, frames, pcm.sampleRate);
+      const data = new Uint8Array(state.capacity),
+        prefix = Math.min(data.length, state.prefixBytes);
+      if (pcm.bitsPerSample === 8) data.fill(128);
+      data.set(pcm.pcm.subarray(0, data.length - prefix), prefix);
+      const view = new DataView(data.buffer);
+      for (let c = 0; c < pcm.channels; c++) {
+        const plane = prepared.getChannelData(c);
+        for (let i = 0; i < frames; i++)
+          plane[i] =
+            pcm.bitsPerSample === 8
+              ? (data[i * stride + c] - 128) / 128
+              : view.getInt16(i * stride + c * 2, true) / 32768;
+      }
+      const projected = { ...pcm, pcm: data };
+      this.pcmSources.set(prepared, projected);
+      this.sourceRates.set(prepared, pcm.sampleRate);
+      windows.fill(0, data.subarray(0, windows.halfSecondBytes * 8), { initial: true });
+      state.remainingPrefix = state.prefixBytes - prefix;
+      state.activity = windows.snapshot();
+    }
+    this.nativeDecoderBuffers.set(key, {
+      sourceBuffer: buffer,
+      pcm,
+      buffer: prepared,
+      state,
+      file,
+    });
+    return state;
+  }
+  validNativeDecoderState(state, mode) {
+    return validNativeDecoderBuffer({
+      nativeDecoderBuffer: state,
+      sourceMode: mode,
+      nativeBufferPlayback: true,
+    });
+  }
+  async prepareNativeDecoderBuffer(key, file, mode, milliseconds, saved = null) {
+    if (
+      saved &&
+      !validNativeDecoderBuffer({
+        nativeDecoderBuffer: saved,
+        sourceMode: mode,
+        nativeBufferPlayback: true,
+      })
+    )
+      throw new Error('Invalid native decoder buffer checkpoint');
+    const owner = this.nativeDecoderBuffers.get(key),
+      buffer = owner?.file === file.toLowerCase() ? owner.sourceBuffer : await this.buffer(file);
+    if (!buffer) return null;
+    const metadata = this.sourceMetadata.get(buffer),
+      pcm = this.pcmSources.get(buffer);
+    if (
+      metadata.codec !== 'wav' ||
+      metadata.formatTag !== 1 ||
+      ![8, 16].includes(metadata.bitsPerSample) ||
+      pcm.precision !== 'source-pcm'
+    )
+      throw new Error('Native decoder option requires its owning codec implementation');
+    const stride = pcm.channels * (pcm.bitsPerSample >>> 3),
+      prefixBytes = Number((BigInt(milliseconds >>> 0) * BigInt(pcm.sampleRate)) / 1000n) * stride,
+      state = saved ?? {
+        mode,
+        capacity:
+          mode === 'stream'
+            ? Math.floor((pcm.sampleRate * stride) / 2) * 8
+            : Number((BigInt(pcm.pcm.length) + BigInt(prefixBytes)) & 0xffffffffn),
+        prefixBytes,
+      },
+      previous = this.nativeDecoderBuffers.get(key);
+    if (state.capacity % stride) throw new Error('Native decoder buffer splits a PCM frame');
+    if (
+      previous &&
+      previous.sourceBuffer === buffer &&
+      previous.state.mode === state.mode &&
+      previous.state.capacity === state.capacity &&
+      previous.state.prefixBytes === state.prefixBytes
+    ) {
+      previous.state = state;
+      return state;
+    }
+    try {
+      return this.createNativeDecoderBuffer(key, buffer, pcm, state, file.toLowerCase());
+    } catch (error) {
+      if (error instanceof RangeError || error?.name === 'NotSupportedError') return null;
+      throw error;
+    }
+  }
+  resetNativeDecoderBuffer(key, state, channel) {
+    const record = this.nativeDecoderBuffers.get(key);
+    if (!record) throw new Error('Native decoder buffer has no loaded owner');
+    return this.createNativeDecoderBuffer(
+      key,
+      record.sourceBuffer,
+      record.pcm,
+      {
+        mode: state.mode,
+        capacity: state.capacity,
+        prefixBytes: channel?.nativeStreamQueue?.prefixRemaining ?? state.remainingPrefix,
+      },
+      record.file,
+    );
+  }
+  releaseNativeDecoderBuffer(key) {
+    this.nativeDecoderBuffers.delete(key);
+  }
   async play(sound) {
     if (!validNativeDrain(sound)) throw new Error('Invalid native audio drain checkpoint');
     if (!validNativeQueue(sound)) throw new Error('Invalid native PCM queue checkpoint');
+    if (!validNativeDecoderBuffer(sound))
+      throw new Error('Invalid native decoder buffer checkpoint');
     const key = sound.channel,
       generation = (this.generations.get(key) || 0) + 1;
     this.generations.set(key, generation);
@@ -227,12 +382,26 @@ export class AudioMixer {
     // Reserve the bank before decoding so later guest commands can affect it
     // while browser I/O is pending inside this logical frame.
     this.channels.set(key, channel);
-    const buffer = await this.buffer(sound.file);
+    const owner = sound.nativeDecoderBuffer ? this.nativeDecoderBuffers.get(key) : null;
+    let buffer =
+      owner?.file === sound.file.toLowerCase() ? owner.sourceBuffer : await this.buffer(sound.file);
     if (!buffer) {
       if (this.channels.get(key) === channel) this.channels.delete(key);
       return;
     }
     if (this.generations.get(key) !== generation || this.context.state === 'closed') return;
+    if (sound.nativeDecoderBuffer) {
+      const state = await this.prepareNativeDecoderBuffer(
+        key,
+        sound.file,
+        sound.sourceMode,
+        0,
+        structuredClone(sound.nativeDecoderBuffer),
+      );
+      if (!state) throw new Error('Native decoder buffer allocation failed during playback');
+      channel.nativeDecoderBuffer = state;
+      buffer = this.nativeDecoderBuffers.get(key).buffer;
+    }
     channel.buffer = buffer;
     channel.duration = buffer.duration;
     channel.loading = false;
@@ -253,9 +422,12 @@ export class AudioMixer {
         pcm.pcm.subarray(pcmFrom, pcmFrom + channel.pcmWindows.halfSecondBytes * 8),
         { initial: true },
       );
+    if (channel.nativeDecoderBuffer)
+      channel.pcmWindows.restore(channel.nativeDecoderBuffer.activity);
     if (sound.pcmState) channel.pcmWindows.restore(sound.pcmState.values);
     this.configureLoop(channel);
-    if (sound.nativeStreamQueue || (channel.nativeDraining && channel.loopCount !== 1)) {
+    const initialQueue = sound.nativeStreamQueue ?? channel.nativeDecoderBuffer?.queue;
+    if (initialQueue || (channel.nativeDraining && channel.loopCount !== 1)) {
       const bytesPerSecond = pcm.sampleRate * pcm.channels * (pcm.bitsPerSample >>> 3);
       channel.nativeStreamQueue = new NativePCMQueue(
         pcm,
@@ -267,7 +439,7 @@ export class AudioMixer {
           count: channel.loopCount,
           loopStart: Math.round(channel.loopStart * bytesPerSecond),
         },
-        sound.nativeStreamQueue,
+        initialQueue,
       );
       channel.nativeDraining = false;
       channel.remainingDuration = null;
@@ -569,6 +741,8 @@ export class AudioMixer {
     if (first === second) return;
     const a = this.channels.get(first),
       b = this.channels.get(second);
+    const firstDecoder = this.nativeDecoderBuffers.get(first),
+      secondDecoder = this.nativeDecoderBuffers.get(second);
     if (a?.loading || b?.loading)
       throw new Error('Native bank swap requires completed sound loading');
     this.channels.delete(first);
@@ -581,6 +755,10 @@ export class AudioMixer {
       b.channel = first;
       this.channels.set(first, b);
     }
+    this.nativeDecoderBuffers.delete(first);
+    this.nativeDecoderBuffers.delete(second);
+    if (firstDecoder) this.nativeDecoderBuffers.set(second, firstDecoder);
+    if (secondDecoder) this.nativeDecoderBuffers.set(first, secondDecoder);
     this.generations.set(first, (this.generations.get(first) || 0) + 1);
     this.generations.set(second, (this.generations.get(second) || 0) + 1);
   }
@@ -1010,6 +1188,25 @@ export class AudioMixer {
   resetNativePCM(key) {
     const channel = this.channels.get(key);
     if (!channel?.pcmWindows) return;
+    if (channel.nativeDecoderBuffer) {
+      const state = this.resetNativeDecoderBuffer(key, channel.nativeDecoderBuffer, channel);
+      channel.nativeDecoderBuffer = state;
+      channel.buffer = this.nativeDecoderBuffers.get(key).buffer;
+      channel.pcmWindows.restore(state.activity);
+      channel.nativeStreamQueue = state.queue
+        ? new NativePCMQueue(
+            this.pcmSources.get(channel.buffer),
+            channel.pcmWindows,
+            { progress: 0, origin: 0, refills: 0, count: 1, loopStart: 0 },
+            state.queue,
+          )
+        : null;
+      channel.pcmOrigin = channel.pcmProgress = channel.pcmRefills = 0;
+      channel.nativeDraining = false;
+      channel.nativeStreamEnd = channel.nativeDrainEnd = null;
+      channel.pcmClock = this.context.currentTime;
+      return;
+    }
     const pcm = this.pcmSources.get(channel.buffer);
     channel.pcmOrigin = channel.pcmProgress = channel.pcmRefills = 0;
     channel.nativeDraining = false;
@@ -1081,6 +1278,9 @@ export class AudioMixer {
       nativeDrainEnd: c.nativeDrainEnd,
       nativeDraining: c.nativeDraining,
       nativeStreamQueue: c.nativeStreamQueue?.snapshot() ?? null,
+      ...(c.nativeDecoderBuffer
+        ? { nativeDecoderBuffer: structuredClone(c.nativeDecoderBuffer) }
+        : {}),
       completionCount: c.completionCount,
       loopStartFrame: c.loopStartFrame,
       loopEndFrame: c.loopEndFrame,
@@ -1110,6 +1310,8 @@ export class AudioMixer {
       throw new Error('Invalid native audio drain checkpoint');
     if (state.channels.some((channel) => !validNativeQueue(channel)))
       throw new Error('Invalid native PCM queue checkpoint');
+    if (state.channels.some((channel) => !validNativeDecoderBuffer(channel)))
+      throw new Error('Invalid native decoder buffer checkpoint');
     if (
       state.channels.some(
         (channel) =>
@@ -1139,6 +1341,7 @@ export class AudioMixer {
   async dispose() {
     this.stopAll();
     this.buffers.clear();
+    this.nativeDecoderBuffers.clear();
     await this.context.close();
   }
 }

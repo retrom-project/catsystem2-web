@@ -337,6 +337,7 @@ export default {
   resources: { categoryCount: 64 },
   sound: {
     banks: 32,
+    decoderOptionAddsSilence: true,
     tagKeysUseBytes: true,
     tagAllReadsOutsideBankTable: true,
     load3DPositionFromPan: true,
@@ -1635,7 +1636,7 @@ export default {
         {
           ids: [604, 935, 936],
           value:
-            '2.6.1.63 own 280-byte Sound load packets use fixed banks via raw 173/174 and allocated Sound groups via raw 199–202. Allocation scans the half-open group and falls back to a releasing bank. Option forms convert the unsigned ticks to milliseconds.',
+            '2.6.1.63 own 280-byte Sound load packets use fixed banks via raw 173/174 and allocated Sound groups via raw 199–202. Allocation scans the half-open group and falls back to a releasing bank. Option forms convert unsigned 60Hz ticks to truncated milliseconds and then to a whole-frame PCM silence prefix in the original WAV decoder. Real Main935/936 creation, group selection, initial COM buffer bytes, repeat/pause/stop/release and unsigned-long stream silence agree with production. Static buffers retain their allocated prefix-sized capacity after Stop replaces the prefix with a silent tail; stream refills consume the prefix once. Other owning codecs remain guarded.',
         },
         {
           ids: [347, 348],
@@ -2113,6 +2114,7 @@ export default {
         },
       ],
       signatures: [
+        { ids: [935, 936], fields: { review: 'reviewed', resultWritten: true } },
         { ids: [166, 167], fields: { review: 'reviewed' } },
         { ids: [602, 603], fields: { review: 'reviewed' } },
         { ids: [165, 349, 569, 587], fields: { review: 'reviewed' } },
@@ -2328,7 +2330,7 @@ export default {
         { ids: [639, 640], fields: { resultWritten: true } },
         { ids: [565, 566, 903], fields: { resultWritten: true } },
         { ids: [567], fields: { resultWritten: false } },
-        { ids: [604, 935, 936], fields: { resultWritten: true } },
+        { ids: [604], fields: { resultWritten: true } },
         { ids: [347, 348], fields: { resultWritten: false } },
         { ids: [606, 607, 844], fields: { resultWritten: true } },
         { ids: [616, 884], fields: { resultWritten: true } },

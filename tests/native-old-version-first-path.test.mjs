@@ -20,6 +20,7 @@ import { kif, kcsProgram, memoryGame, hg3 } from './helpers.mjs';
 import { StartupCanvas, startupEnvironment } from './fixtures/ordinary-startup.mjs';
 import { checkpointDifference } from './browser/checkpoint-observation.mjs';
 import { AudioMixer } from '../src/audio.mjs';
+import { fixtureAudioBuffer } from './fixtures/audio-context.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
 import { MOTION_ABI, motionVector } from '../src/motion/abi.mjs';
 import { NativeDatabase } from '../src/native/database.mjs';
@@ -1040,6 +1041,7 @@ test('67 first-title entry GCALLs preserve VM zero and real task identity', asyn
 
 function oldTitleAudio() {
   return {
+    createBuffer: fixtureAudioBuffer,
     currentTime: 0,
     state: 'running',
     decodeAudioData: async () => ({
@@ -3097,7 +3099,7 @@ test('63 Sound bank allocation keeps the group end exclusive and its decoder opt
     control.tags.set('sample', 42);
     machine.writeString('sample', 256);
     assert.deepEqual(await call(903, [8, 256]), { control: 1, value: 42 });
-    assert.deepEqual(await call(903, [0xffffffff, 256]), { control: 1, value: 42 });
+    await assert.rejects(call(903, [0xffffffff, 256]), /outside its bank tag table/);
     assert.deepEqual(await call(903, [0, 256]), { control: 1, value: 0 });
     assert.deepEqual(await call(903, [8, 0xffffffff]), { control: 1, value: 0 });
   } finally {

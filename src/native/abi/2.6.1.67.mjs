@@ -386,6 +386,7 @@ export default {
   },
   sound: {
     banks: 32,
+    decoderOptionAddsSilence: true,
     tagKeysUseBytes: true,
     tagAllReadsOutsideBankTable: true,
     load3DPositionFromPan: true,
@@ -1722,7 +1723,7 @@ export default {
         {
           ids: [935, 936],
           value:
-            "Own 2.6.1.67 Main0x49c480 and 0x49c5d0 resolve Sound through Root raw 33. They build a zeroed 280-byte CP932 packet with loop marker at +272 and the low DWORD of unsigned frames×1000/60 at +276. Main935 uses raw 174/175. Main936 picks raw 200/201 by numeric group or raw 202/203 by the packet's zero type word. The original Sound owner uses the inclusive bank range and returns the allocated bank or -1 through control 1. Uninitialized invalid load types remain rejected.",
+            "Own 2.6.1.67 Main0x49c480 and 0x49c5d0 resolve Sound through Root raw 33. They build a zeroed 280-byte CP932 packet with loop marker at +272 and the low DWORD of unsigned frames×1000/60 at +276. Main935 uses raw 174/175. Main936 picks raw 200/201 by numeric group or raw 202/203 by the packet's zero type word. The original Sound owner uses the inclusive bank range and returns the allocated bank or -1 through control 1. Real Main935/936 creation reaches the original WAV decoder silence counter and COM prefill. PCM prefixes, native stream notifications, repeated/static playback, pause, Stop/refill and allocated group ownership agree with production; static capacity stays fixed when Stop moves the silence to the tail. Other owning codecs remain guarded. Uninitialized invalid load types remain rejected.",
         },
         {
           ids: [304, 535],
@@ -2470,6 +2471,7 @@ export default {
         },
       ],
       signatures: [
+        { ids: [935, 936], fields: { review: 'reviewed', resultWritten: true } },
         { ids: [903], fields: { review: 'reviewed', resultWritten: true } },
         { ids: [604], fields: { review: 'reviewed', resultWritten: true } },
         { ids: [602, 603], fields: { review: 'reviewed' } },

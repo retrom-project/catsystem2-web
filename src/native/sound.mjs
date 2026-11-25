@@ -295,6 +295,8 @@ export class NativeSound {
     if (this.abi.sound.bufferCompletionNotifications)
       device.completionCount = this.channel(bank)?.completionCount ?? device.completionCount;
     this.audio?.stop(this.key(bank));
+    this.audio?.releaseNativeDecoderBuffer?.(this.key(bank));
+    delete device.nativeDecoderBuffer;
     device.loaded = false;
     device.file = '';
     device.metadata = null;
@@ -310,7 +312,14 @@ export class NativeSound {
       if (this.abi.sound.bufferCompletionNotifications) {
         channel.completionCount = 0;
         this.audio.resetNativePCM?.(this.key(bank));
+        if (channel.nativeDecoderBuffer)
+          this.device[bank].nativeDecoderBuffer = structuredClone(channel.nativeDecoderBuffer);
       }
+    } else if (this.device[bank].nativeDecoderBuffer) {
+      this.device[bank].nativeDecoderBuffer = this.audio.resetNativeDecoderBuffer(
+        this.key(bank),
+        this.device[bank].nativeDecoderBuffer,
+      );
     }
     this.device[bank].completionCount = 0;
   }
@@ -387,7 +396,31 @@ export class NativeSound {
       m.pcmBytes !== undefined
     ) {
       const halfSecond = Math.floor((m.sampleRate * m.channels * (m.bitsPerSample >>> 3)) / 2);
-      if (8 * halfSecond >= m.pcmBytes) device.sourceMode = 'static';
+      const decodedBytes =
+        this.abi.sound.decoderOptionAddsSilence && decoderOption
+          ? Number(
+              (BigInt(m.pcmBytes) +
+                BigInt(Math.floor(((decoderOption >>> 0) * m.sampleRate) / 1000)) *
+                  BigInt(m.channels * (m.bitsPerSample >>> 3))) &
+                0xffffffffn,
+            )
+          : m.pcmBytes;
+      if (8 * halfSecond >= decodedBytes) device.sourceMode = 'static';
+    }
+    if (this.abi.sound.decoderOptionAddsSilence && decoderOption) {
+      if (typeof this.audio.prepareNativeDecoderBuffer !== 'function')
+        throw new Error('Native decoder prefix service is unavailable');
+      const state = await this.audio.prepareNativeDecoderBuffer(
+        this.key(bank),
+        file,
+        device.sourceMode,
+        decoderOption,
+      );
+      if (!state) {
+        this.release(bank);
+        return false;
+      }
+      device.nativeDecoderBuffer = state;
     }
     device.nativeSpatial.enabled =
       !!this.world.configuration.soundOptions.use3d && m.channels === 1;
@@ -399,6 +432,11 @@ export class NativeSound {
     const device = this.device[bank];
     if (!device.loaded) return false;
     const previous = this.channel(bank);
+    if (device.nativeDecoderBuffer) {
+      if (previous?.playing) this.stop(bank);
+      if (previous?.nativeDecoderBuffer)
+        device.nativeDecoderBuffer = structuredClone(previous.nativeDecoderBuffer);
+    }
     const retained =
       previous?.paused && (previous.nativeDraining || previous.nativeStreamQueue)
         ? this.audio.channelState(this.key(bank), previous)
@@ -436,6 +474,9 @@ export class NativeSound {
       nativeBufferPlayback: !!this.abi.sound.bufferCompletionNotifications,
       nativeStreamActivity: !!this.abi.sound.streamRefillUsesNativeActivity,
       nativeLevelProperty: device.property,
+      ...(device.nativeDecoderBuffer
+        ? { nativeDecoderBuffer: structuredClone(device.nativeDecoderBuffer) }
+        : {}),
       nativeSpatial: structuredClone(device.nativeSpatial),
       ...(retained
         ? {
@@ -470,7 +511,12 @@ export class NativeSound {
   async swap(a, b) {
     const first = this.channel(a),
       second = this.channel(b);
-    if (first || second) {
+    if (
+      first ||
+      second ||
+      this.device[a].nativeDecoderBuffer ||
+      this.device[b].nativeDecoderBuffer
+    ) {
       if (typeof this.audio.swapNativeBanks !== 'function')
         throw new Error('Native audio bank-swap service is unavailable');
       this.audio.swapNativeBanks(this.key(a), this.key(b));
@@ -478,14 +524,18 @@ export class NativeSound {
     [this.device[a], this.device[b]] = [this.device[b], this.device[a]];
   }
   snapshot(audioTime = this.audio?.context?.currentTime) {
+    const channels = this.device.map((_device, bank) => {
+      const channel = this.channel(bank);
+      return channel ? this.audio.channelState(this.key(bank), channel, audioTime) : null;
+    });
+    for (let bank = 0; bank < this.bankCount; bank++)
+      if (channels[bank]?.nativeDecoderBuffer)
+        this.device[bank].nativeDecoderBuffer = structuredClone(channels[bank].nativeDecoderBuffer);
     return {
       master: this.master,
       volumeGroups: [...this.volumeGroups],
       device: structuredClone(this.device),
-      channels: this.device.map((_device, bank) => {
-        const channel = this.channel(bank);
-        return channel ? this.audio.channelState(this.key(bank), channel, audioTime) : null;
-      }),
+      channels,
     };
   }
   async restore(state) {
@@ -503,15 +553,35 @@ export class NativeSound {
       )
     )
       throw new Error('Native sound playback category projections differ');
+    if (
+      state.device.some(
+        (device) =>
+          device.nativeDecoderBuffer &&
+          !this.audio?.validNativeDecoderState?.(device.nativeDecoderBuffer, device.sourceMode),
+      )
+    )
+      throw new Error('Invalid native decoder buffer checkpoint');
     this.master = state.master;
     this.volumeGroups = new Map(state.volumeGroups);
     this.device = structuredClone(state.device);
     for (let bank = 0; bank < this.bankCount; bank++) {
       this.audio?.stop(this.key(bank));
       const device = this.device[bank];
+      if (!device.loaded || !device.nativeDecoderBuffer)
+        this.audio?.releaseNativeDecoderBuffer?.(this.key(bank));
       if (device.loaded) {
         const loaded = await this.audio.preload(device.file);
         if (!loaded) throw new Error(`Native checkpoint audio is missing: ${device.file}`);
+        if (device.nativeDecoderBuffer) {
+          const prepared = await this.audio.prepareNativeDecoderBuffer(
+            this.key(bank),
+            device.file,
+            device.sourceMode,
+            0,
+            device.nativeDecoderBuffer,
+          );
+          if (!prepared) throw new Error('Native checkpoint decoder buffer allocation failed');
+        }
       }
       if (state.channels[bank])
         await this.audio.play({

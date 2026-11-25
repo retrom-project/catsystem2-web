@@ -151,7 +151,12 @@ export class NativePCMWindows {
 // its repeat count after EOF starts decoding into the next reusable region;
 // those bytes become audible only when the play cursor reaches that region.
 export class NativePCMQueue {
-  constructor(source, windows, { progress, origin, refills, count, loopStart }, saved) {
+  constructor(
+    source,
+    windows,
+    { progress, origin, refills, count, loopStart, prefixBytes },
+    saved,
+  ) {
     this.source = source;
     this.windows = windows;
     const half = windows.halfSecondBytes,
@@ -169,7 +174,18 @@ export class NativePCMQueue {
         'outputStart',
       ])
         this[field] = structuredClone(saved[field]);
-    else {
+    else if (prefixBytes !== undefined) {
+      this.ring = new Uint8Array(capacity);
+      if (source.bitsPerSample === 8) this.ring.fill(128);
+      this.decoderByte = 0;
+      this.prefixRemaining = prefixBytes;
+      const bytes = this.read(capacity, source.pcm.length);
+      this.ring.set(bytes);
+      windows.fill(0, bytes, { initial: true });
+      this.playedBytes = this.lastCursor = this.restarts = 0;
+      this.outputByte = prefixBytes;
+      this.outputStart = 0;
+    } else {
       this.ring = new Uint8Array(capacity);
       if (source.bitsPerSample === 8) this.ring.fill(128);
       const first = Math.max(0, refills - 8);
@@ -187,15 +203,37 @@ export class NativePCMQueue {
       this.outputByte = Math.round(origin * bytesPerSecond) + (refills + 8) * half;
       this.outputStart = loopStart;
     }
+    if (saved) this.prefixRemaining = saved.prefixRemaining ?? 0;
     if (
       !(this.ring instanceof Uint8Array) ||
       this.ring.length !== capacity ||
       this.lastCursor >= capacity ||
       this.decoderByte > source.pcm.length ||
+      (this.prefixRemaining !== undefined &&
+        (!Number.isSafeInteger(this.prefixRemaining) || this.prefixRemaining < 0)) ||
       !Number.isFinite(progress)
     )
       throw new Error('Invalid native PCM queue checkpoint');
     this.count = count;
+  }
+  read(length, end) {
+    if (!this.prefixRemaining) {
+      const bytes = this.source.pcm.subarray(
+        this.decoderByte,
+        Math.min(end, this.decoderByte + length),
+      );
+      this.decoderByte += bytes.length;
+      return bytes;
+    }
+    const prefix = Math.min(length, this.prefixRemaining ?? 0),
+      data = this.source.pcm.subarray(this.decoderByte, this.decoderByte + length - prefix),
+      count = Math.min(data.length, Math.max(0, end - this.decoderByte)),
+      bytes = new Uint8Array(prefix + count);
+    if (this.source.bitsPerSample === 8) bytes.fill(128);
+    bytes.set(data.subarray(0, count), prefix);
+    this.prefixRemaining = (this.prefixRemaining ?? 0) - prefix;
+    this.decoderByte += count;
+    return bytes;
   }
   refill(index, cursor, { loopStart, loopEnd, activity, property }) {
     const half = this.windows.halfSecondBytes,
@@ -204,8 +242,11 @@ export class NativePCMQueue {
     if (activity) this.windows.values[index % 8] = 0;
     let written = 0;
     while (written < half) {
-      const length = Math.min(half - written, Math.max(0, loopEnd - this.decoderByte)),
-        bytes = this.source.pcm.subarray(this.decoderByte, this.decoderByte + length);
+      const length = Math.min(
+          half - written,
+          Math.max(0, loopEnd - this.decoderByte) + (this.prefixRemaining ?? 0),
+        ),
+        bytes = this.read(length, loopEnd);
       this.ring.fill(silence, offset + written, offset + half);
       this.ring.set(bytes, offset + written);
       if (activity)
@@ -215,7 +256,6 @@ export class NativePCMQueue {
           nativeRefill: true,
         });
       written += bytes.length;
-      this.decoderByte += bytes.length;
       if (written === half || this.count === 1) break;
       if (loopStart >= loopEnd) throw new Error('Native PCM queue has an empty loop');
       if (this.count) this.count--;
@@ -241,6 +281,7 @@ export class NativePCMQueue {
       restarts: this.restarts,
       outputByte: this.outputByte,
       outputStart: this.outputStart,
+      ...(this.prefixRemaining ? { prefixRemaining: this.prefixRemaining } : {}),
     });
   }
 }

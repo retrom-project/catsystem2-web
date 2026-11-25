@@ -631,7 +631,7 @@ for (const profile of [gameProfile, sdkProfile])
     }
   });
 
-test('2.6.1.67 KCS Sound offset loads use the original timing packet and both group selectors', async (t) => {
+test('2.6.1.67 KCS Sound option packets retain milliseconds and both group selectors', async (t) => {
   const profile = 'bokutomo-engine-2.6.1.67',
     calls = [
       [935, [7, 0xffffffff, 288, 1, 67]],
@@ -659,6 +659,13 @@ test('2.6.1.67 KCS Sound offset loads use the original timing packet and both gr
     });
   t.after(() => world.close({ flushFiles: false }));
   world.sound.audio = fixture(profile).audio;
+  // This fixture captures the decoder service boundary; actual prefixed PCM
+  // and cold playback use AudioMixer in the creation/differential fixtures.
+  const prefixRequests = [];
+  world.sound.audio.prepareNativeDecoderBuffer = async (key, file, mode, milliseconds) => {
+    prefixRequests.push([key, file, mode, milliseconds]);
+    return { capturedDecoderService: true };
+  };
   const receiver = world.sound.primary(world.main.id),
     dispatch = receiver.message.bind(receiver),
     packets = [];
@@ -687,6 +694,10 @@ test('2.6.1.67 KCS Sound offset loads use the original timing packet and both gr
   assert.deepEqual(
     calls.map((_, index) => task.machine.load(outputs(index))),
     [1, 1, 10, 11, 13, 14, 0xffffffff],
+  );
+  assert.deepEqual(
+    prefixRequests.map((request) => request[3]),
+    [1116, 16, 316, 383, 616, 683],
   );
   assert.deepEqual(packets, [
     [174, 280, 0, 0, 1, 1116],
