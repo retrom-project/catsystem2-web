@@ -147,7 +147,14 @@ test('2.6.1.63 Particle keeps the desktop debug slot guarded', async () => {
 });
 
 test('2.6.1.63 Main and Particle read the owning Top frame rate after restore', async (t) => {
-  const emitter = kcsProgram([...call(3, [60]), [38, 64], ...call(4), [38, 68], [59]]);
+  const emitter = kcsProgram([
+    ...call(3, [60]),
+    [38, 64],
+    ...call(4),
+    [38, 68],
+    ...call(48, [72, 76]),
+    [59],
+  ]);
   new DataView(emitter.buffer).setUint16(8, 2, true);
   const files = { 'ptcl/rate.kcs': emitter, 'rate.kcs': kcsProgram([...call(7), [38, 64], [59]]) };
   const world = await dataWorld(profile, files);
@@ -158,12 +165,17 @@ test('2.6.1.63 Main and Particle read the owning Top frame rate after restore', 
   assert.equal(main.machine.load(64), 47);
   const emitterID = await world.objects.create({ kind: 16, parent: owner });
   const task = world.particles.get(emitterID);
+  world.graphics.createLogicalDevice();
   await task.load({ family: 'script', program: 'rate', count: 1, priority: 0 });
+  await world.sendEngine(emitterID, main.id, 0x141, 0, 1234);
   world.particles.host.start(task.key);
+  assert.equal(task.bank.instance.attachPlane, 1234);
+  assert.equal(world.graphics.attachment(1234), null);
+  for (const at of [72, 76]) task.bank.instance.machine.store(at, 0xf511638d);
   task.tick(0);
   assert.deepEqual(
-    [64, 68].map((at) => task.bank.instance.machine.load(at)),
-    [47, 47],
+    [64, 68, 72, 76].map((at) => task.bank.instance.machine.load(at)),
+    [47, 47, 0, 0],
   );
 
   const restored = await dataWorld(profile, files, { initialize: false });
@@ -244,6 +256,30 @@ test('2.6.1.63 Particle v2 copies complete quad banks and queries the renderer o
     [101, 0x81234567, 0x3fa40000, 0x80000000, 0x80000000, 0x71936db1],
   );
   assert.equal(ptcl.machine.sp, ptcl.machine.floor);
+});
+
+test('2.6.1.63 Particle distinguishes a missing renderer group from an unwritten model', async () => {
+  const inputs = [...call(48, [64, 68]), ...call(49, [72, 76, 80])];
+  const addresses = [64, 68, 72, 76, 80],
+    marker = 0x913e72f4;
+  const options = { count: 1, attachPlane: 101, attachmentDevicePresent: () => true };
+  const absent = await particle(2, inputs, { ...options, attachment: () => null });
+  for (const at of addresses) absent.machine.store(at, marker);
+  absent.update(0);
+  assert.deepEqual(
+    addresses.map((at) => absent.machine.load(at)),
+    Array(5).fill(0),
+  );
+  const missingModel = await particle(2, inputs, {
+    ...options,
+    attachment: () => ({ registrationWord: 0 }),
+  });
+  for (const at of addresses) missingModel.machine.store(at, marker);
+  assert.throws(() => missingModel.update(0), /Particle position requires a live attachment graph/);
+  assert.deepEqual(
+    addresses.map((at) => missingModel.machine.load(at)),
+    Array(5).fill(marker),
+  );
 });
 
 test('2.6.1.63 both Particle tables use the original initialized scalar words', async () => {

@@ -76,7 +76,7 @@ export class ParticleScriptInstance {
       near,
       registers = [],
       attachPlane = -1,
-      attachment = () => null,
+      attachment = () => undefined,
       attachmentDevicePresent,
       random = new ParticleRandom(),
       shared = new Uint8Array(0),
@@ -103,6 +103,7 @@ export class ParticleScriptInstance {
     this.projectionBoundsUseSSE = abi?.particle?.projectionBoundsUseSSE;
     this.attachmentPositionRequiresOwner = abi?.particle?.attachmentPositionRequiresOwner;
     this.attachmentReadsRegistrationWord = abi?.particle?.attachmentReadsRegistrationWord;
+    this.missingAttachmentGroupWritesZero = abi?.particle?.missingAttachmentGroupWritesZero;
     this.count = count;
     this.width = f(width);
     this.height = f(height);
@@ -417,8 +418,12 @@ export class ParticleScriptInstance {
         let position;
         if (this.attachmentPositionRequiresOwner) {
           if (this.attachPlane !== -1 && this.attachmentDevicePresent?.() !== false) {
-            position = this.currentAttachment()?.[field];
-            if (!position) throw new Error('Particle position requires a live attachment graph');
+            const attachment = this.currentAttachment();
+            position = attachment?.[field];
+            // The native owner lookup reports null for a missing group. A
+            // resolved group can still lack its model and leave scratch unwritten.
+            if (!position && !(this.missingAttachmentGroupWritesZero && attachment === null))
+              throw new Error('Particle position requires a live attachment graph');
           }
           args.forEach((address) => machine.region(address, 4));
         } else position = this.currentAttachment()?.[field];

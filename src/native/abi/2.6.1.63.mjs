@@ -217,6 +217,7 @@ export default {
     scriptUsesTaskFrameRate: true,
     textureCoordinatesUseX87: true,
     attachmentReadsRegistrationWord: true,
+    missingAttachmentGroupWritesZero: true,
     distanceUsesX87: true,
     attachmentPositionRequiresOwner: true,
   },
@@ -2228,7 +2229,7 @@ export default {
         {
           ids: [47, 48],
           value:
-            'Own v2 query reads the registration word from the registered group-one model and writes just two VM positions for base XY. Unattached, disabled and detached paths return zero. A group-one entry with no model leaves original scratch undefined.',
+            'Own v2 query reads the registration word from the registered group-one model and writes just two VM positions for base XY. Unattached, disabled, detached and failed group lookups return zero. A group-one entry with no model leaves original scratch undefined.',
         },
         {
           ids: [8, 9, 10, 11, 13, 14, 15, 17, 18, 20, 37, 42, 43],
