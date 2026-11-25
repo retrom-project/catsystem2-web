@@ -457,7 +457,11 @@ for (const profile of [
     },
   );
 
-for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+])
   test(
     profile +
       ' Selection redistributes holes with the shared RNG and preserves its work and name owners on cold restore',

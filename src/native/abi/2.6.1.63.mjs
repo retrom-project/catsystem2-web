@@ -20,6 +20,7 @@ const mainConstantZero = [
 
 const questionDatabaseOperations = Array.from({ length: 37 }, (_, i) => 742 + i);
 const missionDatabaseOperations = Array.from({ length: 34 }, (_, i) => 795 + i);
+const selectionDatabaseOperations = [779, 780, 781, 782, 783, 784, 829, 830, 831, 832];
 const cp932TextOperations = [611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621, 695, 884];
 const screenEffectOperations = [
   [521, 'Blur', [2, 3, 4, 6, 7]],
@@ -284,6 +285,9 @@ export default {
   nameTable: { legacyFieldBytes: 32 },
   stringBank: { emptyGetResult: 1, cssOwnerLookupOnly: true },
   database: {
+    selectionFormatRequired: true,
+    selectionReadSizesFirst: true,
+    selectionRedistributeUsesRandom: true,
     missionCharacterQueryRequiresEntry: true,
     missionFilenameRequired: true,
     questionIdentitySignedIndex: true,
@@ -1137,9 +1141,8 @@ export default {
           462, 463, 467, 468, 525, 526, 529, 532, 533, 538, 558, 564, 569, 570, 582, 583, 584, 585,
           587, 588, 589, 599, 600, 601, 602, 603, 622, 623, 624, 628, 629, 631, 632, 641, 648, 650,
           655, 657, 658, 659, 663, 664, 665, 666, 667, 668, 669, 677, 678, 679, 680, 682, 688, 690,
-          691, 692, 703, 704, 705, 706, 707, 708, 709, 716, 721, 722, 725, 729, 734, 738, 779, 780,
-          781, 782, 783, 784, 791, 792, 793, 794, 829, 830, 831, 832, 837, 838, 839, 840, 841, 842,
-          843, 845, 846, 847, 904, 905,
+          691, 692, 703, 704, 705, 706, 707, 708, 709, 716, 721, 722, 725, 729, 734, 738, 791, 792,
+          793, 794, 837, 838, 839, 840, 841, 842, 843, 845, 846, 847, 904, 905,
         ],
 
         reserved: mainReserved,
@@ -1171,16 +1174,21 @@ export default {
           711, 712, 713, 714, 715, 717, 718, 719, 720, 723, 724, 726, 727, 728, 730, 731, 732, 733,
           735, 736, 737, 739, 740, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753,
           754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771,
-          772, 773, 774, 775, 776, 777, 778, 785, 786, 787, 788, 789, 790, 795, 796, 797, 798, 799,
-          800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817,
-          818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 833, 834, 835, 836, 844, 848, 849,
-          850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867,
-          868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885,
-          886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903,
-          934, 935, 936, 937,
+          772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789,
+          790, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811,
+          812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829,
+          830, 831, 832, 833, 834, 835, 836, 844, 848, 849, 850, 851, 852, 853, 854, 855, 856, 857,
+          858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875,
+          876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893,
+          894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 934, 935, 936, 937,
         ],
       },
       evidence: [
+        {
+          ids: selectionDatabaseOperations,
+          value:
+            'Own 2.6.1.63 Main779–784/829–832 constructs a 12-byte Selection owner at0x4bb860, loads at0x4bb940 and destroys at0x4bba20. Original CP932 name/first-duplicate tables, failed and empty reloads, signed markers and work moves match production GCALL. Hole redistribution at indices at least two makes1000 swaps with2000 shared integer MT draws; the actual0x80c798 index/0x847a08 bank and the following Main33 agree with production. Unmapped formats and invalid vector elements reach CRT5aca58 before valid work/RNG mutation. Cold owners retain independent names, tables, work and shared RNG.',
+        },
         {
           ids: missionDatabaseOperations,
           value:
@@ -2002,6 +2010,7 @@ export default {
         },
       ],
       signatures: [
+        ...nativeContentDatabaseSignatures(selectionDatabaseOperations),
         ...nativeContentDatabaseSignatures(missionDatabaseOperations),
         ...nativeContentDatabaseSignatures(questionDatabaseOperations),
         ...NATIVE_TILE_GAME_SIGNATURES,
