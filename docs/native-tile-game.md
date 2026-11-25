@@ -1,6 +1,7 @@
 # Built-in mahjong rules
 
-Main natives `0x1D6..0x201` expose 44 operations in both reviewed ABIs. The
+Main natives `0x1D6..0x201` expose 44 operations in the independently reviewed
+SDK 2.6.1.67, 2.6.1.74 and 2.6.1.76 ABIs. The
 136-tile wall, dice, seats, two/four-player configuration, hand patterns and
 point settlement identify an independent mahjong module. The semantic names
 are recovered project descriptions.
@@ -107,6 +108,13 @@ have independent two-ABI sequences. The hand fixtures initialize a real round
 before applying their authored records so AI pointer setup is valid in the
 oracle. Comparisons cover observable results without requiring matching
 internal layouts.
+
+The 2.6.1.67 audit runs the complete original GCALL bridge after all registered
+tile initializers. Public reference swaps preserve the deck while preparing a
+standard winning hand and a historical meld. These paths also compare nonempty
+result and choice caches, explicit point payments, all seventeen command codes,
+eight deal policies and mapped local/shared/aliased VM outputs. Production
+tests restore nonempty caches in a fresh World and continue both branches.
 
 The pure Node World test restores two contexts and a pending event, advances
 600 events independently, compares complete JS model/RNG snapshots and VM

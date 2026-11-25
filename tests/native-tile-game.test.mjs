@@ -4,8 +4,14 @@ import assert from 'node:assert/strict';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { prepareTileGame, tileGameEventReply } from './fixtures/tile-game-fixture.mjs';
 
-for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
-  test(`${profile} JS tile contexts share one model and restore independent event caches`, async () => {
+for (const profile of [
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+  'bokutomo-engine-2.6.1.67',
+]) {
+  test(`${profile} JS tile contexts share one model and restore independent event caches`, async (t) => {
+    if (profile === 'bokutomo-engine-2.6.1.67')
+      t.mock.method(Date, 'now', () => new Date(2026, 10, 25, 12, 34, 56).getTime());
     const first = await dataWorld(profile);
     let fresh;
     const invoke = async (world, id, args) =>
