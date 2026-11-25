@@ -109,6 +109,7 @@ export class MotionInstance {
     this.vectorComponentsUseX87 = abi.motion?.vectorComponentsUseX87;
     this.vectorComponentsUseSSEWords = abi.motion?.vectorComponentsUseSSEWords;
     this.geometryArgumentsReadFrame = abi.motion?.geometryArgumentsReadFrame;
+    this.controlIgnoresArgumentTail = abi.motion?.controlIgnoresArgumentTail;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
     this.currentMatrixFallback = abi.motion?.currentMatrixFallback;
     this.zeroWidthRotationReadsStack = abi.motion?.zeroWidthRotationReadsStack;
@@ -210,6 +211,7 @@ export class MotionInstance {
       !stackRotation &&
       !scalarFrame &&
       !geometryFrame &&
+      !(this.controlIgnoresArgumentTail && id >= 38 && id <= 40) &&
       args.length !== contract.argumentWords
     )
       throw new Error(

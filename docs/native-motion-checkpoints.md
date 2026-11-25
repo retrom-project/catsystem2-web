@@ -49,3 +49,13 @@ profile**. MOT manager restoration is an explicit boundary in that wrapper
 probe, separate from the serializer and replay evidence above. Public tests
 also round-trip compressed CTS files, release the original manager, restore
 into another manager and continue after a fresh handle-space restore.
+
+现代两个构建的 Generic38–40 都不读取 argv word，因此 GCALL 的额外尾字被忽略。
+退出会清除原 Motion 接收者的 active 字段并以 control 4 停止本次 KCS 执行，
+既不压入结果，也不执行后继写入；此前的写入保留。普通 return 不清除 active。
+独立原件台架实际运行 Motion 内存构造器，确认 VM shared 为 receiver+8、长度 1192，
+VM callback 也指向该接收者，并核对整个共享记录、VM 数据和原析构分配释放。
+这项构造证据只覆盖 Motion；Particle task 的 owner 布局仍由其独立证据约束。
+
+随机数入口复用每版已封的整数/浮点 MT19937 完整状态向量，
+新增真实 KCS 的零尾字、一尾字、两尾字及冷恢复对照，不重跑物理大向量。

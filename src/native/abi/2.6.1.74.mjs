@@ -48,6 +48,7 @@ export default {
     vectorTransformUsesSSEWords: true,
   },
   motion: {
+    controlIgnoresArgumentTail: true,
     geometryArgumentsReadFrame: true,
     currentMatrixFallback: true,
     matrixMemoryOperationsUseNativeOrder: true,
@@ -1875,7 +1876,7 @@ export default {
         {
           ids: [38, 39, 40],
           value:
-            'historical-forced-scalar-direct-native-motion-audit-not-current-initialized-KCS-acceptance',
+            'Own actual Motion memory constructor binds its1192-byte shared record at receiver+8 and registers this same receiver on its live VM. Generic38 writes only receiver+9c zero and returns control4 without storing a result; actual KCS stops before later writes, preserves earlier writes, and accepts ignored argv tails. Normal return retains the active word. Actual destructor releases the VM/actor allocations. Generic39/40 read no argv words and retain the independently proved integer/real MT19937 streams and complete state; current real KCS tail and cold cases reuse the own random goldens. See tests/fixtures/modern-motion-control-golden.json and docs/native-motion-checkpoints.md.',
         },
       ],
     },
