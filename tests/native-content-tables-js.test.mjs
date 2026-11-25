@@ -598,6 +598,8 @@ for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
   'bokutomo-engine-2.6.1.67',
   'rebellions-jp-engine-2.6.1.63',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
 ])
   test(
     profile + ' raw GCALL preserves CSS ownership across bounded exhaustion and cold reuse',
@@ -634,7 +636,9 @@ for (const profile of [
       try {
         const raw = first.runtime.imageDataBuffers.process,
           file = await call(first, 238, [17]);
-        await assert.rejects(call(first, 836, [file, 0, 512]), /unwritten CSS record zero/);
+        // Only the three legacy builds have this separately proved unused-storage guard.
+        if (nativeABI(profile).globalFile?.hostDataRequiresExplicitZeroRecord)
+          await assert.rejects(call(first, 836, [file, 0, 512]), /unwritten CSS record zero/);
         raw.next = 0x7fffffe0;
         const one = await call(first, 833, [12]),
           two = await call(first, 833, [12]);
