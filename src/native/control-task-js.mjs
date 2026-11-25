@@ -9,6 +9,7 @@ import { openImage } from '../formats/hg3.mjs';
 import { floatBits } from '../kcs.mjs';
 import { NATIVE_UNWRITTEN_WORD, nativeEngineWord } from './engine-message.mjs';
 import { nativeABIBehavior } from './abi/index.mjs';
+import { mapABIMessage } from './abi/messages.mjs';
 import { canonicalMessage } from './control-task.mjs';
 
 export function controlTaskBehavior(profile) {
@@ -747,8 +748,10 @@ export class JSControlTask {
         message = canonicalMessage(this.world.profile, this.kind, id);
     }
     if (this.legacyScroll2) {
-      if (id >= 366) return this.base.message(words, context);
-      if ((id >= 357 && id <= 365) || id === 61 || id === 62)
+      const first = mapABIMessage(this.world.profile, 'control', 'raw', 368, this.kind);
+      const last = mapABIMessage(this.world.profile, 'control', 'raw', 376, this.kind);
+      if (id > last) return this.base.message(words, context);
+      if ((id >= first && id <= last) || id === 61 || id === 62)
         message = canonicalMessage(this.world.profile, this.kind, id);
     }
     if (this.rawSlider) {

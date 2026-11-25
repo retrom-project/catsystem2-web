@@ -453,15 +453,17 @@ export default {
         unmapped: 'reject',
         raw: [
           { min: 353, max: 358, offset: -12, kinds: [40] },
+          { min: 368, max: 376, offset: -12, kinds: [41] },
           { min: 359, max: 367, offset: -12, kinds: [42] },
-          ...[6, 9, 10].map((id) => ({ min: id, max: id, offset: 0, kinds: [40, 42] })),
-          { min: 64, max: 65, offset: -3, kinds: [40, 42] },
+          ...[6, 9, 10].map((id) => ({ min: id, max: id, offset: 0, kinds: [40, 41, 42] })),
+          { min: 64, max: 65, offset: -3, kinds: [40, 41, 42] },
         ],
         canonical: [
           { min: 341, max: 346, offset: 12, kinds: [40] },
+          { min: 356, max: 364, offset: 12, kinds: [41] },
           { min: 347, max: 355, offset: 12, kinds: [42] },
-          ...[6, 9, 10].map((id) => ({ min: id, max: id, offset: 0, kinds: [40, 42] })),
-          { min: 61, max: 62, offset: 3, kinds: [40, 42] },
+          ...[6, 9, 10].map((id) => ({ min: id, max: id, offset: 0, kinds: [40, 41, 42] })),
+          { min: 61, max: 62, offset: 3, kinds: [40, 41, 42] },
         ],
       },
       area: {
@@ -895,8 +897,10 @@ export default {
     macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
     trailingIntegerAfterCurrent: true,
     controlResources: {
-      kinds: [40, 42],
+      kinds: [40, 41, 42],
       scrollProtocol: 'legacy',
+      scroll2Protocol: 'legacy',
+      scroll2Skin: 'state-direct',
       sliderProtocol: 'legacy',
       sliderRawMessages: true,
     },

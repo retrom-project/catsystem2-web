@@ -818,10 +818,6 @@ test('2.6.1.63 FES SCROLL sends its original packet and owns its actual children
     assert.equal(await send(355, 0, 0, unreviewed), NATIVE_UNWRITTEN_WORD);
     assert.equal(unreviewed.nativeUnhandled, true);
     assert.equal(state.enabled, true);
-    await assert.rejects(
-      world.objects.create({ kind: 41, parent: id }),
-      /controlResources kind 41/,
-    );
   } finally {
     await world.close();
   }
@@ -931,6 +927,94 @@ test('2.6.1.63 FES SLIDER drives its raw packet, Input flags and Draw skin', asy
   assert.equal(state.dragging, false);
   const unreviewed = {};
   assert.equal(await send(359, 0, 0, unreviewed), NATIVE_UNWRITTEN_WORD);
+  assert.equal(unreviewed.nativeUnhandled, true);
+});
+
+test('2.6.1.63 FES SCROLL2 updates its vertical Draw skin and shares its range with Input', async (t) => {
+  const { 'area.hg2': area, 'controls.hg2': skin } = await controlFiles(new Uint8Array());
+  const source = new TextEncoder().encode(
+    '#DEFINE\nPLANE panel\nSCROLL2 sample\n#OBJECT SIZE VRAM DISP\n' +
+      'panel 128,96 2,3 1\n#OBJECT FILE PL POS2 PRI DISP ENABLE\n' +
+      'sample controls panel[0] area:8 81 1 1\n' +
+      '#START\nsample page 0 100 20\nsample pos 30\nsample blend 129\nnext WAIT\n#WAIT\nbreak\n' +
+      '#sample.SCRL_P\n\\7=\\7+1\nbreak\n',
+  );
+  const world = await defaultFESWorld(profile, {
+    'area.hg2': area,
+    'controls.hg2': skin,
+    'screen.fes': source,
+  });
+  t.after(() => world.close());
+  const outgoing = [],
+    dispatch = world.sendNativeEngine.bind(world);
+  world.sendNativeEngine = (target, sender, message, w, l, context) => {
+    if (message >= 356 && message <= 364)
+      outgoing.push({
+        target,
+        sender,
+        message,
+        w,
+        l,
+        flags: context.flags,
+        bytes: context.payload?.data.slice(),
+      });
+    return dispatch(target, sender, message, w, l, context);
+  };
+  const { id, task, instance, surface } = await loadDefaultFES(world);
+  await task.tick();
+  const object = instance.byKey.get('sample'),
+    control = world.objects.objects.get(object.nativeTaskID).implementation,
+    target = world.nativeTaskID(object.nativeTaskID),
+    state = control.model.state,
+    input = world.inputFor(id),
+    { thumb, track } = control.resource.areas;
+  assert.ok(
+    outgoing.every(
+      (message) => message.target === target && message.sender === id && message.flags === 1,
+    ),
+  );
+  const [load] = outgoing,
+    packet = new DataView(load.bytes.buffer),
+    range = new DataView(outgoing.find(({ message }) => message === 358).bytes.buffer);
+  assert.equal(load.message, 356);
+  assert.equal(load.bytes.length, 292);
+  assert.equal(packet.getUint32(0, true), world.nativeTaskID(surface));
+  assert.equal(
+    new TextDecoder().decode(load.bytes.subarray(4, load.bytes.indexOf(0, 4))),
+    '@cat/image/controls',
+  );
+  assert.deepEqual(
+    Array.from({ length: 7 }, (_, i) => packet.getInt32(264 + i * 4, true)),
+    [101, 104, 12, 116, 76, 2, 3],
+  );
+  assert.deepEqual(
+    outgoing.slice(0, 7).map(({ message }) => message),
+    [356, 360, 358, 359, 362, 357, 361],
+  );
+  assert.deepEqual(
+    [0, 4, 8].map((offset) => range.getInt32(offset, true)),
+    [0, 100, 20],
+  );
+  assert.deepEqual([state.direction, state.value, state.alpha, state.pageSize], [1, 30, 129, 20]);
+  assert.equal(control.record.parent, id);
+  assert.ok(input.get(thumb) && input.get(track));
+  assert.ok((await drawPixels(world, surface)).some((byte) => byte !== 0));
+  const send = (message, w = 0, l = 0, context = {}) =>
+    dispatch(target, id, message, w, l, context);
+  assert.equal(await send(360), 1);
+  assert.equal(await send(357, 0, 0x80002000), NATIVE_UNWRITTEN_WORD);
+  assert.equal(input.get(thumb).enabled, 0x80002000);
+  assert.equal(input.get(track).enabled, 0x80002000);
+  assert.equal(await send(359, 1, 120), NATIVE_UNWRITTEN_WORD);
+  assert.equal(state.value, 80);
+  assert.equal(instance.scrollPosition, object.handle);
+  assert.equal(object.value, 80);
+  assert.equal(instance.local(7), 1);
+  assert.equal(await send(363, 0, 2), NATIVE_UNWRITTEN_WORD);
+  assert.equal(await send(364), NATIVE_UNWRITTEN_WORD);
+  assert.equal(state.skinTable[0], 2);
+  const unreviewed = {};
+  assert.equal(await send(365, 0, 0, unreviewed), NATIVE_UNWRITTEN_WORD);
   assert.equal(unreviewed.nativeUnhandled, true);
 });
 

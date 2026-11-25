@@ -437,7 +437,7 @@ test('finite old ABI normal requirements reject missing data and do not invent u
       assert.throws(() => nativeABIBehavior(profile, path), /Unreviewed ABI behavior/);
     assert.deepEqual(
       nativeABIBehavior(profile, 'fes.controlResources').kinds,
-      abi.engineVersion === '2.6.1.63' ? [40, 42] : [41],
+      abi.engineVersion === '2.6.1.63' ? [40, 41, 42] : [41],
     );
     for (const mutate of [
       (data) => {
