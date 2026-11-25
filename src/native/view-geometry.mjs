@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
+import { multiplyX87Integer, roundX87Single } from '../ppi/x87.mjs';
 export const NATIVE_VIEW_GEOMETRY_OPERATIONS = Object.freeze([
   'view.dimensions',
   'view.setCameraNear',
@@ -13,20 +14,37 @@ const cvtt = (value) =>
   Number.isFinite(value) && value >= -2147483648 && value < 2147483648
     ? Math.trunc(value) | 0
     : -2147483648;
-function convert(machine, addresses, view) {
+function convert(machine, addresses, view, useX87 = false) {
   // Read each output only immediately before its conversion: aliases see X's write.
   for (const [axis, address] of addresses.entries()) {
-    const shifted = f(f(machine.load(address) | 0) - view.deviceOffset[axis]);
-    const device = cvtt(f(shifted * f(1 / view.deviceScale)));
+    const input = machine.load(address) | 0,
+      offset = view.deviceOffset[axis],
+      inverse = 1 / view.deviceScale,
+      shifted = useX87 ? f(roundX87Single(input - offset)) : f(f(input) - offset),
+      device = cvtt(
+        useX87 ? roundX87Single(shifted * f(roundX87Single(inverse))) : f(shifted * f(inverse)),
+      );
     const ratio =
       view.ratios?.[axis] ??
       f(
         [view.virtualWidth, view.virtualHeight][axis] / [view.clientWidth, view.clientHeight][axis],
       );
-    machine.store(address, cvtt(f(f((device - view.windowShift[axis]) | 0) * ratio)));
+    const adjusted = (device - view.windowShift[axis]) | 0;
+    machine.store(
+      address,
+      cvtt(useX87 ? multiplyX87Integer(adjusted, ratio) : f(f(adjusted) * ratio)),
+    );
   }
 }
-export function nativeViewGeometry(operation, args, machine, argumentWords, graphics, screen) {
+export function nativeViewGeometry(
+  operation,
+  args,
+  machine,
+  argumentWords,
+  graphics,
+  screen,
+  fullPositionUsesX87,
+) {
   const words = Array.from(args);
   while (words.length < argumentWords) words.push(machine.nativeArgument(words.length));
   const [x, y] = words,
@@ -60,12 +78,13 @@ export function nativeViewGeometry(operation, args, machine, argumentWords, grap
       );
     else if (mode === 1) machine.store(y, screen.fullHeight);
     else if (mode === 2) machine.store(y, screen.virtualHeight);
-    if (mode < 2) convert(machine, [x, y], view);
+    if (mode < 2) convert(machine, [x, y], view, fullPositionUsesX87);
   }
   return nativeReply(2);
 }
 export function installNativeViewGeometry(world) {
-  for (const entry of nativeABI(world.profile).tables.main.entries)
+  const abi = nativeABI(world.profile);
+  for (const entry of abi.tables.main.entries)
     if (NATIVE_VIEW_GEOMETRY_OPERATIONS.includes(entry.name))
       world.runtime.register('main', entry.id, (args, machine) =>
         nativeViewGeometry(
@@ -75,6 +94,7 @@ export function installNativeViewGeometry(world) {
           entry.signature.argumentWords,
           world.graphics,
           world.configuration.screen,
+          abi.graphics?.fullPositionCoordinatesUseX87,
         ),
       );
 }

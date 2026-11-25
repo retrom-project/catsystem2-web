@@ -52,6 +52,82 @@ async function executeMain(world, id, argv, setup = () => {}, result) {
   }
 }
 
+test('2.6.1.63 Main541 releases existing intersecting texture pages only with an active owner', async (t) => {
+  const world = await dataWorld(
+    profile,
+    { 'main-541.kcs': mainProgram(541, 4), 'main-542.kcs': mainProgram(542, 0) },
+    { initialize: false },
+  );
+  t.after(() => world.close({ flushFiles: false }));
+  const texture = world.configuration.fields.texture;
+  texture.size.set([8, 8]);
+  texture.grid.set([2, 2]);
+  texture.bppY.set([0, 1]);
+  for (const area of texture.areas) area.fill(0xffffffff);
+  texture.areas[0].set([0, 0, 2, 2]);
+  await world.initialize('case.kcs');
+  const { graphics } = world,
+    pages = graphics.texturePages;
+  const prior = [0, 1, 2, 3].map((i) => pages.frame(i));
+  const release = () => executeMain(world, 541, [7, 0, 2, 1]);
+
+  await release();
+  assert.equal(pages.pages.size, 4);
+  const device = graphics.createLogicalDevice();
+  try {
+    graphics.view.configure({ active: false });
+    await release();
+    assert.equal(pages.pages.size, 4);
+    graphics.view.configure({ active: true });
+    await release();
+    assert.equal(pages.pages.has(0), false);
+    assert.equal(pages.pages.has(1), false);
+    assert.equal(pages.frame(2), prior[2]);
+    assert.equal(pages.frame(3), prior[3]);
+    await release();
+    await executeMain(world, 542, []);
+    assert.notEqual(pages.frame(0), prior[0]);
+    assert.notEqual(pages.frame(1), prior[1]);
+    assert.equal(pages.frame(2), prior[2]);
+  } finally {
+    device.retire();
+  }
+});
+
+test('2.6.1.63 Main740 converts overlapping viewport words using the original integer input', async (t) => {
+  const world = await dataWorld(profile, { 'main-740.kcs': mainProgram(740, 2) });
+  t.after(() => world.close({ flushFiles: false }));
+  const { screen } = world.configuration;
+  Object.assign(screen, {
+    fullPosition: 0,
+    currentHeight: 677,
+    fullHeight: 467,
+    virtualHeight: 433,
+  });
+  world.graphics.view.configure({
+    active: false,
+    deviceOffset: [0, 0],
+    deviceScale: 1,
+    ratios: [0.51123, 2.1112],
+    windowShift: [3, -19],
+    drawingRectangle: [0, 0, 1080, 1820],
+  });
+  const seed = (machine) =>
+    [0x95ec52a1, 0x7acd62a1, 0xab144a9c, 0x6425bab3].forEach((word, i) =>
+      machine.store(60 + i * 4, word),
+    );
+  const read = (machine) => [60, 64, 68, 72].map((at) => machine.load(at));
+  const overlap = await executeMain(world, 740, [64, 66], seed);
+  assert.deepEqual(read(overlap), [0x95ec52a1, 0x03021a4a, 0xab140000, 0x6425bab3]);
+
+  screen.fullPosition = 2;
+  const virtual = await executeMain(world, 740, [64, 68], seed);
+  assert.deepEqual(read(virtual), [0x95ec52a1, 0, 433, 0x6425bab3]);
+  screen.fullPosition = 3;
+  const other = await executeMain(world, 740, [64, 68], seed);
+  assert.deepEqual(read(other), [0x95ec52a1, 0, 0xab144a9c, 0x6425bab3]);
+});
+
 test('2.6.1.63 bitmap multiply preserves native BGRA factors and lower depths', async (t) => {
   const world = await dataWorld(profile, { 'main-369.kcs': mainProgram(369, 2) });
   t.after(() => world.close({ flushFiles: false }));

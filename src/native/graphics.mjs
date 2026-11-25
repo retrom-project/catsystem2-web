@@ -1824,7 +1824,10 @@ export async function nativeGraphics(id, args, machine, task, world) {
     done = () => nativeReply(2),
     value = (v) => nativeReply(1, v >>> 0);
   if (id === 0x21d || id === 0x21e) {
-    graphics.initializeTextures();
+    if (id === 0x21d && abi?.graphics.textureReleaseUsesExistingOwner) {
+      if (!graphics.device.attachment || !graphics.view.active || !graphics.texturePages)
+        return done();
+    } else graphics.initializeTextures();
     if (id === 0x21d) await graphics.texturePages.releaseRectangle(...args.map((n) => n | 0));
     else await graphics.texturePages.allocateMissing(world.configuration.fields.texture);
     return done();

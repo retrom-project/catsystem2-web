@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Single-precision operation order recovered from native particle handlers.
 import { bitsFloat, floatBits } from '../kcs/vm.mjs';
-import { roundX87Single } from './x87.mjs';
+import { multiplyX87Integer, roundX87Single } from './x87.mjs';
 const f = Math.fround;
 const pi = f(Math.PI);
 const quietNaNBit = 1 << 22;
@@ -58,20 +58,6 @@ export function x87RemainderWord(dividend, divisor) {
   return a === 0 ? 0 : floatBits(a % b);
 }
 
-function scaleFrameX87(frame, rate) {
-  // FILD keeps the integer exact until FMUL. A wider product can fall on the
-  // wrong side of a float32 midpoint if it is rounded to double first.
-  if (frame < 2 ** 29 || rate === 0) return f(frame * rate);
-  const unit = 2 ** (Math.floor(Math.log2(rate)) - 23);
-  const exactProduct = BigInt(frame) * BigInt(rate / unit);
-  const shift = BigInt(exactProduct.toString(2).length - 24);
-  const significand = exactProduct >> shift;
-  const remainder = exactProduct - (significand << shift);
-  const halfway = 1n << (shift - 1n);
-  const roundUp = remainder > halfway || (remainder === halfway && (significand & 1n) !== 0n);
-  return Number(significand + BigInt(roundUp)) * unit * 2 ** Number(shift);
-}
-
 export function calcFrame(frame, fps, scale) {
   frame >>>= 0;
   if (!frame || frame & 0x80000000) return frame;
@@ -79,7 +65,7 @@ export function calcFrame(frame, fps, scale) {
   if (scale === 'x87-uint32') {
     // The unsigned rate uses x87 FADD before FDIV when its high bit is set.
     const unsignedRate = rate & 0x80000000 ? f(rate) : rate;
-    const frames = scaleFrameX87(frame, f(unsignedRate / 60));
+    const frames = multiplyX87Integer(frame, f(unsignedRate / 60));
     return Math.max(1, frames >>> 0);
   }
   return Math.max(1, Math.trunc(f(f(rate / 60) * f(frame)))) >>> 0;
