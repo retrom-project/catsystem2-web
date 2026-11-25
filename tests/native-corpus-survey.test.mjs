@@ -65,6 +65,23 @@ test('a tested work and guards still leave ordinary SDK coverage incomplete', ()
   assert.equal(summarize([main[4]]).ordinaryRuntime, 'incomplete');
   assert.equal(summarize([main[1]]).ordinaryRuntime, 'incomplete');
   assert.equal(summarize([main[2], main[3]]).ordinaryRuntime, 'no-identified-open-slot');
+  const implemented = {
+    id: 6,
+    declaration: { status: 'recovered' },
+    evidence: {
+      guardedShapes: [
+        { sdkScope: 'ordinary-runtime', shape: 'two owned resources and a valid selector' },
+        { sdkScope: 'original-undefined-input', shape: 'released resource' },
+      ],
+    },
+  };
+  const shapeCoverage = summarize([implemented]);
+  assert.equal(shapeCoverage.ordinaryRuntime, 'incomplete');
+  assert.equal(shapeCoverage.ordinaryOpen, 0);
+  assert.equal(shapeCoverage.ordinaryOpenShapes, 1);
+  assert.deepEqual(shapeCoverage.guardedShapes['ordinary-runtime'], [
+    { table: 'main', id: 6, shape: 'two owned resources and a valid selector' },
+  ]);
 });
 
 test('static GCALL decoding distinguishes immediate, memory and stack operands', async () => {

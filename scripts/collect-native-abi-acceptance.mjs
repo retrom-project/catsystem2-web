@@ -332,6 +332,23 @@ function assertReviewReceipts(review, receipts, expectedKinds) {
     throw new Error('Review requires a reason and receipts of the relevant kinds');
 }
 
+function validateGuardedShapes(shapes, receipts, key) {
+  if (shapes === undefined) return;
+  if (!Array.isArray(shapes)) throw new Error(`Invalid guarded SDK shapes for ${key}`);
+  const seen = new Set();
+  for (const shape of shapes) {
+    if (
+      !guardScopes.includes(shape?.sdkScope) ||
+      typeof shape.shape !== 'string' ||
+      !shape.shape.trim() ||
+      seen.has(shape.shape)
+    )
+      throw new Error(`Invalid guarded SDK shape for ${key}`);
+    seen.add(shape.shape);
+    assertReviewReceipts(shape, receipts, ['original', 'guard']);
+  }
+}
+
 function collectRows(image, abi, scripts, reviews, receipts) {
   const sites = new Map(),
     unresolvedCalls = [];
@@ -379,6 +396,7 @@ function collectRows(image, abi, scripts, reviews, receipts) {
     if (review.sdkScope !== undefined && (!guard || !guardScopes.includes(review.sdkScope)))
       throw new Error(`Invalid SDK scope for ${key}`);
     assertReviewReceipts(review, receipts, ['original', guard ? 'guard' : 'vm']);
+    validateGuardedShapes(review.guardedShapes, receipts, key);
     reviewMap.set(key, review);
   }
   return {
@@ -406,9 +424,12 @@ function collectRows(image, abi, scripts, reviews, receipts) {
 
 export function summarizeSDKCoverage({ tables }, works, receipts) {
   const guarded = Object.fromEntries(guardScopes.map((scope) => [scope, []])),
+    guardedShapes = Object.fromEntries(guardScopes.map((scope) => [scope, []])),
     originalStubs = [];
   for (const [table, { slots }] of Object.entries(tables))
     for (const { id, declaration, evidence } of slots) {
+      for (const { sdkScope, shape } of evidence?.guardedShapes ?? [])
+        guardedShapes[sdkScope].push({ table, id, shape });
       if (declaration.status === 'unknown') {
         const scope = evidence?.sdkScope ?? 'unclassified-evidence';
         guarded[scope].push({ table, id });
@@ -419,12 +440,20 @@ export function summarizeSDKCoverage({ tables }, works, receipts) {
         originalStubs.push({ table, id });
     }
   const ordinaryOpen = guarded['ordinary-runtime'].length,
-    unclassified = guarded['unclassified-evidence'].length;
+    unclassified = guarded['unclassified-evidence'].length,
+    ordinaryOpenShapes = guardedShapes['ordinary-runtime'].length,
+    unclassifiedShapes = guardedShapes['unclassified-evidence'].length;
   return {
-    ordinaryRuntime: ordinaryOpen || unclassified ? 'incomplete' : 'no-identified-open-slot',
+    ordinaryRuntime:
+      ordinaryOpen || unclassified || ordinaryOpenShapes || unclassifiedShapes
+        ? 'incomplete'
+        : 'no-identified-open-slot',
     ordinaryOpen,
     unclassified,
+    ordinaryOpenShapes,
+    unclassifiedShapes,
     guarded,
+    guardedShapes,
     originalStubs,
     productReceiptsByWork: works.map(({ id, contentIdentity }) => ({
       work: id,

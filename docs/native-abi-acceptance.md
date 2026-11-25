@@ -46,13 +46,19 @@ the slot and its observed call shapes.
 | `desktop-author-or-export` | The original hands off to an author tool or platform export capability. Record the receiver, platform action and signature.                                     |
 | `unclassified-evidence`    | The original callable scope still lacks enough evidence for a classification. The collector uses this scope when a guarded slot has no explicit classification. |
 
-The report's `sdkCoverage` lists every guarded slot and the admitted original
-stubs. An ordinary guard or an unclassified guard keeps `ordinaryRuntime`
-incomplete. `no-identified-open-slot` reports the slot review scope. Review
-shape guards inside implemented slots through their facts and receipts. The
-separate `productReceiptsByWork` lists product evidence for each included
-content identity. Runtime rejection receipts establish the guard behavior and
-product receipts establish the paths exercised in the corresponding work.
+Place individual guarded calls in `reviews[].guardedShapes`, including calls
+to an implemented slot with an outstanding valid shape. Each entry has
+`shape`, `sdkScope`, `reason` and `receipts` with original and guard
+evidence. A guard on an undefined operand should leave the slot classified
+as ordinary or unresolved when its valid calls still need review.
+
+The report's `sdkCoverage` lists guarded slots, guarded shapes and the
+admitted original stubs separately. An ordinary or unclassified guard at
+either level keeps `ordinaryRuntime` incomplete. `no-identified-open-slot`
+describes the reviewed scope. The separate `productReceiptsByWork` lists
+product evidence for each included content identity. Runtime rejection
+receipts establish the guard behavior. Product receipts establish the paths
+exercised in the corresponding work.
 
 GCALL scripts are grouped by the bytes of the decoded archive member and by
 their table. FES scripts with identical member bytes can produce different
