@@ -120,7 +120,7 @@ test('MOT initialization registers and extra data are actual VM memory, preserve
   assert.deepEqual(restored.snapshot().shared, saved.shared);
 });
 
-test('MOT math natives execute float32 results and reject unknown or mismatched native contracts', () => {
+test('MOT math natives execute float32 results, read mapped argv and reject unknown contracts', () => {
   const args = [10, 30, 0, 4, 1].map((value) => [37, floatBits(value)]);
   const script = program([...args, [43, 41, 20], [38, [3, shared(0)]], [59]]);
   const motion = new MotionInstance(script, { profile });
@@ -130,10 +130,9 @@ test('MOT math natives execute float32 results and reject unknown or mismatched 
     () => new MotionInstance(program([[43, 45, 0], [59]]), { profile }).update(0),
     /Unrecovered MOT native/,
   );
-  assert.throws(
-    () => new MotionInstance(program([[43, 41, 0], [59]]), { profile }).update(0),
-    /expects 5 arguments/,
-  );
+  const mapped = new MotionInstance(program([[43, 41, 0], [59]]), { profile });
+  mapped.update(0);
+  assert.equal(mapped.machine.pop(), 0);
 });
 
 test('2.6.1.23 MOT interpolation pushes one float32 result and continues', () => {

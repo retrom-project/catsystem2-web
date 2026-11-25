@@ -116,6 +116,11 @@ function triangle(value, period) {
   if (f(quarter * 3) > phase) return -wave;
   return f(wave - 1);
 }
+export function scalarArgumentWords(args, machine, count) {
+  return Array.from({ length: count }, (_, index) =>
+    index < args.length ? args[index] : machine.nativeArgument(index),
+  );
+}
 export function nativeScalarMath(
   operation,
   args,
@@ -179,12 +184,24 @@ export function installNativeScalarMath(world) {
   for (const entry of abi.tables.main.entries) {
     if (!names.has(entry.name?.replace(/^math\./, ''))) continue;
     if (abi.math?.remainderUsesX87 && entry.name === 'math.fmod') {
-      world.runtime.register('main', entry.id, (args) => nativeReply(1, x87RemainderWord(...args)));
+      world.runtime.register('main', entry.id, (args, machine) =>
+        nativeReply(
+          1,
+          x87RemainderWord(
+            ...(abi.math.scalarArgumentsReadFrame ? scalarArgumentWords(args, machine, 2) : args),
+          ),
+        ),
+      );
       continue;
     }
     if (abi.math?.triangleWaveUsesX87 && entry.name === 'math.triangleWave') {
-      world.runtime.register('main', entry.id, (args) =>
-        nativeReply(1, x87TriangleWaveWord(...args)),
+      world.runtime.register('main', entry.id, (args, machine) =>
+        nativeReply(
+          1,
+          x87TriangleWaveWord(
+            ...(abi.math.scalarArgumentsReadFrame ? scalarArgumentWords(args, machine, 2) : args),
+          ),
+        ),
       );
       continue;
     }

@@ -8,8 +8,26 @@ export function sseFloat32Arithmetic(operation, left, right) {
   if ((right & 0x7fffffff) > 0x7f800000) return (right | quietNaNBit) >>> 0;
   const a = bitsFloat(left),
     b = bitsFloat(right),
-    value = operation === 'multiply' ? a * b : operation === 'subtract' ? a - b : a + b;
+    value =
+      operation === 'multiply'
+        ? a * b
+        : operation === 'subtract'
+          ? a - b
+          : operation === 'divide'
+            ? a / b
+            : a + b;
   return Number.isNaN(value) ? 0xffc00000 : floatBits(value);
+}
+
+export function linearInterpolateSSEWords(first, last, start, end, current) {
+  // COMISS branches preserve a selected endpoint's raw word, including sNaN.
+  if (bitsFloat(start) >= bitsFloat(current)) return first >>> 0;
+  if (bitsFloat(current) >= bitsFloat(end)) return last >>> 0;
+  const phase = sseFloat32Arithmetic('subtract', current, start),
+    span = sseFloat32Arithmetic('subtract', end, start),
+    difference = sseFloat32Arithmetic('subtract', last, first),
+    fraction = sseFloat32Arithmetic('divide', phase, span);
+  return sseFloat32Arithmetic('add', sseFloat32Arithmetic('multiply', fraction, difference), first);
 }
 
 // The selected SSE2 helpers use quantized midpoint seeds, then one Newton

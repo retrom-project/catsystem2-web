@@ -24,12 +24,15 @@ import { viewRectangleOracle } from '../tests/fixtures/view-rectangle-oracle.mjs
 import { randomOracle } from '../tests/fixtures/random-oracle.mjs';
 import { sdkStandardOracle } from '../tests/fixtures/sdk-standard-oracle.mjs';
 import { unicodeOutputOracle } from '../tests/fixtures/unicode-output-oracle.mjs';
-import { nativeGolden } from '../tests/fixtures/native-golden.mjs';
+import {
+  nativeGolden,
+  physicalScalarObservation,
+  scalarGoldenScope,
+} from '../tests/fixtures/native-golden.mjs';
 const families = {
   scalar: {
     cases: nativeScalarCases,
-    scope:
-      'Authored scalar GCALLs through unmodified original handlers at FPCW 0x007f/MXCSR 0x1f80 on the pinned backend. Declared floating memory words are retained explicitly; all other bytes hash exactly. Results use the fixed per-operation budget.',
+    scope: scalarGoldenScope,
   },
   geometry: {
     cases: nativeGeometryCases,
@@ -111,8 +114,11 @@ for (const name of selected.length ? selected : Object.keys(families)) {
       try {
         const cases = {};
         for (const input of inputs) {
+          const observation = await observeNativeCase(input, engine, family.adapter);
           cases[input.name] = nativeGolden(
-            await observeNativeCase(input, engine, family.adapter),
+            name === 'scalar'
+              ? physicalScalarObservation(observation, input, fixture.sha256)
+              : observation,
             input.policy,
           );
           count++;
@@ -132,6 +138,14 @@ for (const name of selected.length ? selected : Object.keys(families)) {
   else if ((await readFile(url, 'utf8')) !== text) {
     differs = true;
     console.error(name + ' golden differs; inspect oracle evidence before --write');
+    const previous = JSON.parse(await readFile(url, 'utf8'));
+    if (previous.scope !== output.scope) console.error(name + ': scope differs');
+    for (const [profile, record] of Object.entries(output.profiles ?? {}))
+      for (const [input, observation] of Object.entries(record.cases))
+        if (
+          JSON.stringify(previous.profiles?.[profile]?.cases[input]) !== JSON.stringify(observation)
+        )
+          console.error(`${name}: ${profile}/${input} differs`);
   }
   console.log(name + ': ' + count + ' authored inputs');
 }

@@ -1,0 +1,3801 @@
+{
+  "scope": "Own-PE physical IA32 scalar words, exact complete wrapper/callee bridges to Main/Generic/two Particle tables. Seeded initialization and platform service boundaries are retained in the hash-linked raw receipts. Authored finite/domain/raw-NaN/endpoint inputs; pure math only, no blanket auxiliary-family acceptance.",
+  "profiles": {
+    "sdk-4.01-engine-2.6.1.74": {
+      "executableSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "receipts": [
+        {
+          "file": "ORIGINAL-PHYSICAL-GENERIC-SCALARS-74.json",
+          "sha256": "9e012636711b52cb9f18974aa7b02ee61af0eca009070f2442e3d7beece1cbd0",
+          "inputs": 181,
+          "seed": {
+            "file": "PHYSICAL-SEED-74.json",
+            "sha256": "d15e4a3b9fd400860773579de8cbf771302c25d970fbcc77870bfedcc2fda227"
+          },
+          "harness": {
+            "file": "physical-scalar-74",
+            "sha256": "d85a22e742db609a62a78101770eb7f4065beac0ba7821de0139a40bb9eda95f"
+          }
+        },
+        {
+          "file": "ORIGINAL-PHYSICAL-SCALAR-EDGES-74.json",
+          "sha256": "4a80452d523a8234696073f03c0750312e5f058c4e9d22ff5cec600dfb8cf622",
+          "inputs": 52,
+          "seed": {
+            "file": "PHYSICAL-SEED-74.json",
+            "sha256": "d15e4a3b9fd400860773579de8cbf771302c25d970fbcc77870bfedcc2fda227"
+          },
+          "harness": {
+            "file": "physical-scalar-74",
+            "sha256": "d85a22e742db609a62a78101770eb7f4065beac0ba7821de0139a40bb9eda95f"
+          }
+        }
+      ],
+      "wrapperBridgeSHA256": "94dc21b6b74c723586e1b7ce252ae686a5a8408f8d8f2b2deacc1690c754f684",
+      "cases": [
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 1056274244
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 3210177188
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 1063831479
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 3212235176
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 1065353216
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 1065353216
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 1063299392
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 1057640768
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 3201634611
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 1049092954
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 1057741435
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 3217512739
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 3222001585
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 3228073428
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 1057360530
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 3217625051
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 1070141403
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 1070141403
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 1065749138
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 1078530011
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 1055744824
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 3209236443
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 1066252045
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 1070141403
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 1070141403
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 1048239024
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 3203228472
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 1061752795
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 1070141403
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 1070141403
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4290847557
+        },
+        {
+          "name": "binary words 7fc12345/0",
+          "args": [2143363909, 0],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 2143363909
+        },
+        {
+          "name": "binary words 3f800000/ffc23456",
+          "args": [1065353216, 4290917462],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4290917462
+        },
+        {
+          "name": "binary words 3f800000/7f800000",
+          "args": [1065353216, 2139095040],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 0
+        },
+        {
+          "name": "binary words bf800000/3f000000",
+          "args": [3212836864, 1056964608],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 3213735693
+        },
+        {
+          "name": "binary words 7149f2ca/406ccccd",
+          "args": [1900671690, 1080872141],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 1070141403
+        },
+        {
+          "name": "binary words 80000000/40000000",
+          "args": [2147483648, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 1065353216
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 3212836864
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 1073741824
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 1900671690
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 0
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 1056964608
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 1065353216
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 1073741824
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 1900671690
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 2143363909
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 0
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 3212836864
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 1073741824
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 1900671690
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 0
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 1056964608
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 3212836864
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 0
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 0
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290847557
+        },
+        {
+          "name": "binary words 7fc12345/0",
+          "args": [2143363909, 0],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 2143363909
+        },
+        {
+          "name": "binary words 3f800000/ffc23456",
+          "args": [1065353216, 4290917462],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290917462
+        },
+        {
+          "name": "binary words 3f800000/7f800000",
+          "args": [1065353216, 2139095040],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290772992
+        },
+        {
+          "name": "binary words bf800000/3f000000",
+          "args": [3212836864, 1056964608],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 2147483648
+        },
+        {
+          "name": "binary words 7149f2ca/406ccccd",
+          "args": [1900671690, 1080872141],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 1077979076
+        },
+        {
+          "name": "binary words 80000000/40000000",
+          "args": [2147483648, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 0
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 1060439283
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 1068827891
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 1482907561
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 0
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 1048576000
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 1065353216
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 1082130432
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 4290847557
+        },
+        {
+          "name": "binary words 7fc12345/0",
+          "args": [2143363909, 0],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2143363909
+        },
+        {
+          "name": "binary words 3f800000/ffc23456",
+          "args": [1065353216, 4290917462],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 4290917462
+        },
+        {
+          "name": "binary words 3f800000/7f800000",
+          "args": [1065353216, 2139095040],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 1065353216
+        },
+        {
+          "name": "binary words bf800000/3f000000",
+          "args": [3212836864, 1056964608],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 4290772992
+        },
+        {
+          "name": "binary words 7149f2ca/406ccccd",
+          "args": [1900671690, 1080872141],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2139095040
+        },
+        {
+          "name": "binary words 80000000/40000000",
+          "args": [2147483648, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 0
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 1007614517
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 3163486773
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 1024391733
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 1851888667
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 1105538784
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 3261411040
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 1122316000
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 1949616937
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 16,
+          "main": 64,
+          "particle": 21,
+          "value": 0
+        },
+        {
+          "name": "scalar word 1",
+          "args": [1],
+          "generic": 16,
+          "main": 64,
+          "particle": 21,
+          "value": 1
+        },
+        {
+          "name": "scalar word ffffffff",
+          "args": [4294967295],
+          "generic": 16,
+          "main": 64,
+          "particle": 21,
+          "value": 1
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 16,
+          "main": 64,
+          "particle": 21,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 7fffffff",
+          "args": [2147483647],
+          "generic": 16,
+          "main": 64,
+          "particle": 21,
+          "value": 2147483647
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 0
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 1
+        },
+        {
+          "name": "scalar word bf000000",
+          "args": [3204448256],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 0
+        },
+        {
+          "name": "scalar word 3fc00000",
+          "args": [1069547520],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 2
+        },
+        {
+          "name": "scalar word bfc00000",
+          "args": [3217031168],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 4294967295
+        },
+        {
+          "name": "scalar word 4f000000",
+          "args": [1325400064],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 7fc12345",
+          "args": [2143363909],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 2147483648
+        },
+        {
+          "name": "interpolation 0/41200000/0/41200000/40600000",
+          "args": [0, 1092616192, 0, 1092616192, 1080033280],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 1080033280
+        },
+        {
+          "name": "interpolation c0400000/40e00000/bf800000/3f800000/bf800000",
+          "args": [3225419776, 1088421888, 3212836864, 1065353216, 3212836864],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 3225419776
+        },
+        {
+          "name": "interpolation 7f800001/40000000/0/3f800000/0",
+          "args": [2139095041, 1073741824, 0, 1065353216, 0],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2139095041
+        },
+        {
+          "name": "interpolation 80000000/0/0/3f800000/0",
+          "args": [2147483648, 0, 0, 1065353216, 0],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2147483648
+        },
+        {
+          "name": "interpolation 40000000/40800000/0/3f800000/7f800000",
+          "args": [1073741824, 1082130432, 0, 1065353216, 2139095040],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 1082130432
+        },
+        {
+          "name": "triangle 0/40800000",
+          "args": [0, 1082130432],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 0
+        },
+        {
+          "name": "triangle 80000000/40800000",
+          "args": [2147483648, 1082130432],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 0
+        },
+        {
+          "name": "triangle 3f800000/40800000",
+          "args": [1065353216, 1082130432],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 1065353216
+        },
+        {
+          "name": "triangle c0b00000/40800000",
+          "args": [3232759808, 1082130432],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 1056964608
+        },
+        {
+          "name": "triangle 7149f2ca/406ccccd",
+          "args": [1900671690, 1080872141],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 3208570199
+        },
+        {
+          "name": "triangle 3f800000/7fc12345",
+          "args": [1065353216, 2143363909],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2143363909
+        },
+        {
+          "name": "triangle 7f800000/40800000",
+          "args": [2139095040, 1082130432],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 3212836864
+        },
+        {
+          "name": "triangle 3f800000/0",
+          "args": [1065353216, 0],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 4290772992
+        },
+        {
+          "name": "lerp NaN slot 0/7fc12345",
+          "args": [2143363909, 1082130432, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143363909
+        },
+        {
+          "name": "lerp NaN slot 0/7f800001",
+          "args": [2139095041, 1082130432, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143289345
+        },
+        {
+          "name": "lerp NaN slot 0/ffc23456",
+          "args": [4290917462, 1082130432, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4290917462
+        },
+        {
+          "name": "lerp NaN slot 0/ffa00001",
+          "args": [4288675841, 1082130432, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4292870145
+        },
+        {
+          "name": "lerp NaN slot 1/7fc12345",
+          "args": [1073741824, 2143363909, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143363909
+        },
+        {
+          "name": "lerp NaN slot 1/7f800001",
+          "args": [1073741824, 2139095041, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143289345
+        },
+        {
+          "name": "lerp NaN slot 1/ffc23456",
+          "args": [1073741824, 4290917462, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4290917462
+        },
+        {
+          "name": "lerp NaN slot 1/ffa00001",
+          "args": [1073741824, 4288675841, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4292870145
+        },
+        {
+          "name": "lerp NaN slot 2/7fc12345",
+          "args": [1073741824, 1082130432, 2143363909, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143363909
+        },
+        {
+          "name": "lerp NaN slot 2/7f800001",
+          "args": [1073741824, 1082130432, 2139095041, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143289345
+        },
+        {
+          "name": "lerp NaN slot 2/ffc23456",
+          "args": [1073741824, 1082130432, 4290917462, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4290917462
+        },
+        {
+          "name": "lerp NaN slot 2/ffa00001",
+          "args": [1073741824, 1082130432, 4288675841, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4292870145
+        },
+        {
+          "name": "lerp NaN slot 3/7fc12345",
+          "args": [1073741824, 1082130432, 0, 2143363909, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143363909
+        },
+        {
+          "name": "lerp NaN slot 3/7f800001",
+          "args": [1073741824, 1082130432, 0, 2139095041, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143289345
+        },
+        {
+          "name": "lerp NaN slot 3/ffc23456",
+          "args": [1073741824, 1082130432, 0, 4290917462, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4290917462
+        },
+        {
+          "name": "lerp NaN slot 3/ffa00001",
+          "args": [1073741824, 1082130432, 0, 4288675841, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4292870145
+        },
+        {
+          "name": "lerp NaN slot 4/7fc12345",
+          "args": [1073741824, 1082130432, 0, 1065353216, 2143363909],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143363909
+        },
+        {
+          "name": "lerp NaN slot 4/7f800001",
+          "args": [1073741824, 1082130432, 0, 1065353216, 2139095041],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143289345
+        },
+        {
+          "name": "lerp NaN slot 4/ffc23456",
+          "args": [1073741824, 1082130432, 0, 1065353216, 4290917462],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4290917462
+        },
+        {
+          "name": "lerp NaN slot 4/ffa00001",
+          "args": [1073741824, 1082130432, 0, 1065353216, 4288675841],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4292870145
+        },
+        {
+          "name": "lerp endpoint 0/-1",
+          "args": [2139095041, 1082130432, 0, 1065353216, 3212836864],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2139095041
+        },
+        {
+          "name": "lerp endpoint 1/-1",
+          "args": [1073741824, 2139095041, 0, 1065353216, 3212836864],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 1073741824
+        },
+        {
+          "name": "lerp endpoint 0/0",
+          "args": [2139095041, 1082130432, 0, 1065353216, 0],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2139095041
+        },
+        {
+          "name": "lerp endpoint 1/0",
+          "args": [1073741824, 2139095041, 0, 1065353216, 0],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 1073741824
+        },
+        {
+          "name": "lerp endpoint 0/1",
+          "args": [2139095041, 1082130432, 0, 1065353216, 1065353216],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 1082130432
+        },
+        {
+          "name": "lerp endpoint 1/1",
+          "args": [1073741824, 2139095041, 0, 1065353216, 1065353216],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2139095041
+        },
+        {
+          "name": "lerp endpoint 0/2",
+          "args": [2139095041, 1082130432, 0, 1065353216, 1073741824],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 1082130432
+        },
+        {
+          "name": "lerp endpoint 1/2",
+          "args": [1073741824, 2139095041, 0, 1065353216, 1073741824],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2139095041
+        },
+        {
+          "name": "two NaN 7fc12345/ffc23456",
+          "args": [2143363909, 4290917462],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN 7fc12345/ffc23456",
+          "args": [2143363909, 4290917462],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN 7fc12345/ffc23456",
+          "args": [2143363909, 4290917462],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2143363909
+        },
+        {
+          "name": "two NaN 7fc12345/ffc23456",
+          "args": [2143363909, 4290917462],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2143433814
+        },
+        {
+          "name": "two NaN 7f800001/ffc23456",
+          "args": [2139095041, 4290917462],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN 7f800001/ffc23456",
+          "args": [2139095041, 4290917462],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN 7f800001/ffc23456",
+          "args": [2139095041, 4290917462],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2143289345
+        },
+        {
+          "name": "two NaN 7f800001/ffc23456",
+          "args": [2139095041, 4290917462],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2143433814
+        },
+        {
+          "name": "two NaN 7fc12345/ffa00001",
+          "args": [2143363909, 4288675841],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN 7fc12345/ffa00001",
+          "args": [2143363909, 4288675841],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN 7fc12345/ffa00001",
+          "args": [2143363909, 4288675841],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2143363909
+        },
+        {
+          "name": "two NaN 7fc12345/ffa00001",
+          "args": [2143363909, 4288675841],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2145386497
+        },
+        {
+          "name": "two NaN 7f800001/ffa00001",
+          "args": [2139095041, 4288675841],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN 7f800001/ffa00001",
+          "args": [2139095041, 4288675841],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN 7f800001/ffa00001",
+          "args": [2139095041, 4288675841],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2143289345
+        },
+        {
+          "name": "two NaN 7f800001/ffa00001",
+          "args": [2139095041, 4288675841],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2145386497
+        },
+        {
+          "name": "two NaN ffc23456/7fc12345",
+          "args": [4290917462, 2143363909],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN ffc23456/7fc12345",
+          "args": [4290917462, 2143363909],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN ffc23456/7fc12345",
+          "args": [4290917462, 2143363909],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN ffc23456/7fc12345",
+          "args": [4290917462, 2143363909],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2143363909
+        },
+        {
+          "name": "two NaN ffa00001/7f800001",
+          "args": [4288675841, 2139095041],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN ffa00001/7f800001",
+          "args": [4288675841, 2139095041],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN ffa00001/7f800001",
+          "args": [4288675841, 2139095041],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN ffa00001/7f800001",
+          "args": [4288675841, 2139095041],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2143289345
+        }
+      ]
+    },
+    "nekopara-vol3-engine-2.6.1.76": {
+      "executableSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "receipts": [
+        {
+          "file": "ORIGINAL-PHYSICAL-GENERIC-SCALARS-76.json",
+          "sha256": "629bbd2fd0ca712a354ef69e7717fd70b1e313f93696cec6d65faae8c685e38b",
+          "inputs": 181,
+          "seed": {
+            "file": "PHYSICAL-SEED-76.json",
+            "sha256": "60c56e30a3245f19572d63009fbe00121548da754c2e006ddf170f1c59a846d5"
+          },
+          "harness": {
+            "file": "physical-scalar-76",
+            "sha256": "6cddb4a07220095cb97ac47e448e00a0b7fa9caadca8efd5a0b44af3405583a1"
+          }
+        },
+        {
+          "file": "ORIGINAL-PHYSICAL-SCALAR-EDGES-76.json",
+          "sha256": "0775cd4abd918e401b7639c50193582eecbca0d35c6639d7bc0b3bff1922ed6e",
+          "inputs": 52,
+          "seed": {
+            "file": "PHYSICAL-SEED-76.json",
+            "sha256": "60c56e30a3245f19572d63009fbe00121548da754c2e006ddf170f1c59a846d5"
+          },
+          "harness": {
+            "file": "physical-scalar-76",
+            "sha256": "6cddb4a07220095cb97ac47e448e00a0b7fa9caadca8efd5a0b44af3405583a1"
+          }
+        }
+      ],
+      "wrapperBridgeSHA256": "94dc21b6b74c723586e1b7ce252ae686a5a8408f8d8f2b2deacc1690c754f684",
+      "cases": [
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 1056274244
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 3210177188
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 1063831479
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 3212235176
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 1,
+          "main": 50,
+          "particle": 6,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 1065353216
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 1065353216
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 1063299392
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 1057640768
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 3201634611
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 1049092954
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 2,
+          "main": 51,
+          "particle": 7,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 1057741435
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 3217512739
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 3222001585
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 3228073428
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 3,
+          "main": 52,
+          "particle": 8,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 1057360530
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 3217625051
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 4,
+          "main": 53,
+          "particle": 9,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 1070141403
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 1070141403
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 1065749138
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 1078530011
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 5,
+          "main": 54,
+          "particle": 10,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 1055744824
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 3209236443
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 1066252045
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 1070141403
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 1070141403
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 6,
+          "main": 55,
+          "particle": 11,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 1048239024
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 3203228472
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 1061752795
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 1070141403
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 1070141403
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4290847557
+        },
+        {
+          "name": "binary words 7fc12345/0",
+          "args": [2143363909, 0],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 2143363909
+        },
+        {
+          "name": "binary words 3f800000/ffc23456",
+          "args": [1065353216, 4290917462],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4290917462
+        },
+        {
+          "name": "binary words 3f800000/7f800000",
+          "args": [1065353216, 2139095040],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 0
+        },
+        {
+          "name": "binary words bf800000/3f000000",
+          "args": [3212836864, 1056964608],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 3213735693
+        },
+        {
+          "name": "binary words 7149f2ca/406ccccd",
+          "args": [1900671690, 1080872141],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 1070141403
+        },
+        {
+          "name": "binary words 80000000/40000000",
+          "args": [2147483648, 1073741824],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 1065353216
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 3212836864
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 1073741824
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 1900671690
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 8,
+          "main": 56,
+          "particle": 13,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 0
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 1056964608
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 1065353216
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 1073741824
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 1900671690
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 9,
+          "main": 57,
+          "particle": 14,
+          "value": 2143363909
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 0
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 3212836864
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 1073741824
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 1900671690
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 10,
+          "main": 58,
+          "particle": 15,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 0
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 1056964608
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 3212836864
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 0
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 0
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290847557
+        },
+        {
+          "name": "binary words 7fc12345/0",
+          "args": [2143363909, 0],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 2143363909
+        },
+        {
+          "name": "binary words 3f800000/ffc23456",
+          "args": [1065353216, 4290917462],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290917462
+        },
+        {
+          "name": "binary words 3f800000/7f800000",
+          "args": [1065353216, 2139095040],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290772992
+        },
+        {
+          "name": "binary words bf800000/3f000000",
+          "args": [3212836864, 1056964608],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 2147483648
+        },
+        {
+          "name": "binary words 7149f2ca/406ccccd",
+          "args": [1900671690, 1080872141],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 1077979076
+        },
+        {
+          "name": "binary words 80000000/40000000",
+          "args": [2147483648, 1073741824],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 0
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 1060439283
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 4290772992
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 1068827891
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 1482907561
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 12,
+          "main": 60,
+          "particle": 17,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 0
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 1048576000
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 1065353216
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 1082130432
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 4290847557
+        },
+        {
+          "name": "binary words 7fc12345/0",
+          "args": [2143363909, 0],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2143363909
+        },
+        {
+          "name": "binary words 3f800000/ffc23456",
+          "args": [1065353216, 4290917462],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 4290917462
+        },
+        {
+          "name": "binary words 3f800000/7f800000",
+          "args": [1065353216, 2139095040],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 1065353216
+        },
+        {
+          "name": "binary words bf800000/3f000000",
+          "args": [3212836864, 1056964608],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 4290772992
+        },
+        {
+          "name": "binary words 7149f2ca/406ccccd",
+          "args": [1900671690, 1080872141],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2139095040
+        },
+        {
+          "name": "binary words 80000000/40000000",
+          "args": [2147483648, 1073741824],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 0
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 1007614517
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 3163486773
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 1024391733
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 1851888667
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 14,
+          "main": 62,
+          "particle": 19,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 1105538784
+        },
+        {
+          "name": "scalar word bf800000",
+          "args": [3212836864],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 3261411040
+        },
+        {
+          "name": "scalar word 40000000",
+          "args": [1073741824],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 1122316000
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 1949616937
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 2139095040
+        },
+        {
+          "name": "scalar word 7f800001",
+          "args": [2139095041],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 2143289345
+        },
+        {
+          "name": "scalar word ffc12345",
+          "args": [4290847557],
+          "generic": 15,
+          "main": 63,
+          "particle": 20,
+          "value": 4290847557
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 16,
+          "main": 64,
+          "particle": 21,
+          "value": 0
+        },
+        {
+          "name": "scalar word 1",
+          "args": [1],
+          "generic": 16,
+          "main": 64,
+          "particle": 21,
+          "value": 1
+        },
+        {
+          "name": "scalar word ffffffff",
+          "args": [4294967295],
+          "generic": 16,
+          "main": 64,
+          "particle": 21,
+          "value": 1
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 16,
+          "main": 64,
+          "particle": 21,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 7fffffff",
+          "args": [2147483647],
+          "generic": 16,
+          "main": 64,
+          "particle": 21,
+          "value": 2147483647
+        },
+        {
+          "name": "scalar word 0",
+          "args": [0],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 0
+        },
+        {
+          "name": "scalar word 80000000",
+          "args": [2147483648],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 0
+        },
+        {
+          "name": "scalar word 3f000000",
+          "args": [1056964608],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 1
+        },
+        {
+          "name": "scalar word bf000000",
+          "args": [3204448256],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 0
+        },
+        {
+          "name": "scalar word 3fc00000",
+          "args": [1069547520],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 2
+        },
+        {
+          "name": "scalar word bfc00000",
+          "args": [3217031168],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 4294967295
+        },
+        {
+          "name": "scalar word 4f000000",
+          "args": [1325400064],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 7149f2ca",
+          "args": [1900671690],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 7f800000",
+          "args": [2139095040],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 2147483648
+        },
+        {
+          "name": "scalar word 7fc12345",
+          "args": [2143363909],
+          "generic": 17,
+          "main": 319,
+          "particle": 42,
+          "value": 2147483648
+        },
+        {
+          "name": "interpolation 0/41200000/0/41200000/40600000",
+          "args": [0, 1092616192, 0, 1092616192, 1080033280],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 1080033280
+        },
+        {
+          "name": "interpolation c0400000/40e00000/bf800000/3f800000/bf800000",
+          "args": [3225419776, 1088421888, 3212836864, 1065353216, 3212836864],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 3225419776
+        },
+        {
+          "name": "interpolation 7f800001/40000000/0/3f800000/0",
+          "args": [2139095041, 1073741824, 0, 1065353216, 0],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2139095041
+        },
+        {
+          "name": "interpolation 80000000/0/0/3f800000/0",
+          "args": [2147483648, 0, 0, 1065353216, 0],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2147483648
+        },
+        {
+          "name": "interpolation 40000000/40800000/0/3f800000/7f800000",
+          "args": [1073741824, 1082130432, 0, 1065353216, 2139095040],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 1082130432
+        },
+        {
+          "name": "triangle 0/40800000",
+          "args": [0, 1082130432],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 0
+        },
+        {
+          "name": "triangle 80000000/40800000",
+          "args": [2147483648, 1082130432],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 0
+        },
+        {
+          "name": "triangle 3f800000/40800000",
+          "args": [1065353216, 1082130432],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 1065353216
+        },
+        {
+          "name": "triangle c0b00000/40800000",
+          "args": [3232759808, 1082130432],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 1056964608
+        },
+        {
+          "name": "triangle 7149f2ca/406ccccd",
+          "args": [1900671690, 1080872141],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 3208570199
+        },
+        {
+          "name": "triangle 3f800000/7fc12345",
+          "args": [1065353216, 2143363909],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2143363909
+        },
+        {
+          "name": "triangle 7f800000/40800000",
+          "args": [2139095040, 1082130432],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 3212836864
+        },
+        {
+          "name": "triangle 3f800000/0",
+          "args": [1065353216, 0],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 4290772992
+        },
+        {
+          "name": "lerp NaN slot 0/7fc12345",
+          "args": [2143363909, 1082130432, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143363909
+        },
+        {
+          "name": "lerp NaN slot 0/7f800001",
+          "args": [2139095041, 1082130432, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143289345
+        },
+        {
+          "name": "lerp NaN slot 0/ffc23456",
+          "args": [4290917462, 1082130432, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4290917462
+        },
+        {
+          "name": "lerp NaN slot 0/ffa00001",
+          "args": [4288675841, 1082130432, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4292870145
+        },
+        {
+          "name": "lerp NaN slot 1/7fc12345",
+          "args": [1073741824, 2143363909, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143363909
+        },
+        {
+          "name": "lerp NaN slot 1/7f800001",
+          "args": [1073741824, 2139095041, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143289345
+        },
+        {
+          "name": "lerp NaN slot 1/ffc23456",
+          "args": [1073741824, 4290917462, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4290917462
+        },
+        {
+          "name": "lerp NaN slot 1/ffa00001",
+          "args": [1073741824, 4288675841, 0, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4292870145
+        },
+        {
+          "name": "lerp NaN slot 2/7fc12345",
+          "args": [1073741824, 1082130432, 2143363909, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143363909
+        },
+        {
+          "name": "lerp NaN slot 2/7f800001",
+          "args": [1073741824, 1082130432, 2139095041, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143289345
+        },
+        {
+          "name": "lerp NaN slot 2/ffc23456",
+          "args": [1073741824, 1082130432, 4290917462, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4290917462
+        },
+        {
+          "name": "lerp NaN slot 2/ffa00001",
+          "args": [1073741824, 1082130432, 4288675841, 1065353216, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4292870145
+        },
+        {
+          "name": "lerp NaN slot 3/7fc12345",
+          "args": [1073741824, 1082130432, 0, 2143363909, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143363909
+        },
+        {
+          "name": "lerp NaN slot 3/7f800001",
+          "args": [1073741824, 1082130432, 0, 2139095041, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143289345
+        },
+        {
+          "name": "lerp NaN slot 3/ffc23456",
+          "args": [1073741824, 1082130432, 0, 4290917462, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4290917462
+        },
+        {
+          "name": "lerp NaN slot 3/ffa00001",
+          "args": [1073741824, 1082130432, 0, 4288675841, 1056964608],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4292870145
+        },
+        {
+          "name": "lerp NaN slot 4/7fc12345",
+          "args": [1073741824, 1082130432, 0, 1065353216, 2143363909],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143363909
+        },
+        {
+          "name": "lerp NaN slot 4/7f800001",
+          "args": [1073741824, 1082130432, 0, 1065353216, 2139095041],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2143289345
+        },
+        {
+          "name": "lerp NaN slot 4/ffc23456",
+          "args": [1073741824, 1082130432, 0, 1065353216, 4290917462],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4290917462
+        },
+        {
+          "name": "lerp NaN slot 4/ffa00001",
+          "args": [1073741824, 1082130432, 0, 1065353216, 4288675841],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 4292870145
+        },
+        {
+          "name": "lerp endpoint 0/-1",
+          "args": [2139095041, 1082130432, 0, 1065353216, 3212836864],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2139095041
+        },
+        {
+          "name": "lerp endpoint 1/-1",
+          "args": [1073741824, 2139095041, 0, 1065353216, 3212836864],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 1073741824
+        },
+        {
+          "name": "lerp endpoint 0/0",
+          "args": [2139095041, 1082130432, 0, 1065353216, 0],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2139095041
+        },
+        {
+          "name": "lerp endpoint 1/0",
+          "args": [1073741824, 2139095041, 0, 1065353216, 0],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 1073741824
+        },
+        {
+          "name": "lerp endpoint 0/1",
+          "args": [2139095041, 1082130432, 0, 1065353216, 1065353216],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 1082130432
+        },
+        {
+          "name": "lerp endpoint 1/1",
+          "args": [1073741824, 2139095041, 0, 1065353216, 1065353216],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2139095041
+        },
+        {
+          "name": "lerp endpoint 0/2",
+          "args": [2139095041, 1082130432, 0, 1065353216, 1073741824],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 1082130432
+        },
+        {
+          "name": "lerp endpoint 1/2",
+          "args": [1073741824, 2139095041, 0, 1065353216, 1073741824],
+          "generic": 41,
+          "main": 318,
+          "particle": 41,
+          "value": 2139095041
+        },
+        {
+          "name": "two NaN 7fc12345/ffc23456",
+          "args": [2143363909, 4290917462],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN 7fc12345/ffc23456",
+          "args": [2143363909, 4290917462],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN 7fc12345/ffc23456",
+          "args": [2143363909, 4290917462],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2143363909
+        },
+        {
+          "name": "two NaN 7fc12345/ffc23456",
+          "args": [2143363909, 4290917462],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2143433814
+        },
+        {
+          "name": "two NaN 7f800001/ffc23456",
+          "args": [2139095041, 4290917462],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN 7f800001/ffc23456",
+          "args": [2139095041, 4290917462],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN 7f800001/ffc23456",
+          "args": [2139095041, 4290917462],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2143289345
+        },
+        {
+          "name": "two NaN 7f800001/ffc23456",
+          "args": [2139095041, 4290917462],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2143433814
+        },
+        {
+          "name": "two NaN 7fc12345/ffa00001",
+          "args": [2143363909, 4288675841],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN 7fc12345/ffa00001",
+          "args": [2143363909, 4288675841],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN 7fc12345/ffa00001",
+          "args": [2143363909, 4288675841],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2143363909
+        },
+        {
+          "name": "two NaN 7fc12345/ffa00001",
+          "args": [2143363909, 4288675841],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2145386497
+        },
+        {
+          "name": "two NaN 7f800001/ffa00001",
+          "args": [2139095041, 4288675841],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN 7f800001/ffa00001",
+          "args": [2139095041, 4288675841],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN 7f800001/ffa00001",
+          "args": [2139095041, 4288675841],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 2143289345
+        },
+        {
+          "name": "two NaN 7f800001/ffa00001",
+          "args": [2139095041, 4288675841],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2145386497
+        },
+        {
+          "name": "two NaN ffc23456/7fc12345",
+          "args": [4290917462, 2143363909],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN ffc23456/7fc12345",
+          "args": [4290917462, 2143363909],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN ffc23456/7fc12345",
+          "args": [4290917462, 2143363909],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 4290917462
+        },
+        {
+          "name": "two NaN ffc23456/7fc12345",
+          "args": [4290917462, 2143363909],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2143363909
+        },
+        {
+          "name": "two NaN ffa00001/7f800001",
+          "args": [4288675841, 2139095041],
+          "generic": 7,
+          "main": 397,
+          "particle": 12,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN ffa00001/7f800001",
+          "args": [4288675841, 2139095041],
+          "generic": 11,
+          "main": 59,
+          "particle": 16,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN ffa00001/7f800001",
+          "args": [4288675841, 2139095041],
+          "generic": 13,
+          "main": 61,
+          "particle": 18,
+          "value": 4292870145
+        },
+        {
+          "name": "two NaN ffa00001/7f800001",
+          "args": [4288675841, 2139095041],
+          "generic": 42,
+          "main": 321,
+          "particle": 43,
+          "value": 2143289345
+        }
+      ]
+    }
+  }
+}

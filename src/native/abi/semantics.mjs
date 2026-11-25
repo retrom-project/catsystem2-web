@@ -41391,3 +41391,28 @@ export function nativeRawCSSSignatures({ sourceTarget } = {}) {
     }),
   ];
 }
+
+const particleScalarIDs = freeze([
+  6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 41, 42, 43,
+]);
+export const NATIVE_INTERPRETER_SCALAR_IDS = freeze({
+  main: [50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 318, 319, 321, 397, 461],
+  generic: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 41, 42],
+  'particle-v1': particleScalarIDs,
+  'particle-v2': particleScalarIDs,
+});
+
+// Metadata only: each profile must separately prove and admit these wrappers.
+export function nativeInterpreterScalarSignatures(table) {
+  return [
+    {
+      ids: NATIVE_INTERPRETER_SCALAR_IDS[table],
+      fields: {
+        resultWritten: true,
+        review: 'reviewed',
+        reviewReason:
+          'Fixed wrapper argv reads are independent of the VM-declared GCALL word count. Mapped short frames and ignored tail words are proved separately; unmapped reads remain diagnostic.',
+      },
+    },
+  ];
+}

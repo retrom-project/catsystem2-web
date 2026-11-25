@@ -1,0 +1,517 @@
+{
+  "scope": "Authored scalar GCALLs. VM-independent arithmetic uses own-PE physical IA32 calibration at FPCW0x007f/MXCSR0x1f80; unchanged packing/unpacking retains its separately captured original VM evidence. Declared floating words remain explicit and other bytes hash exactly. The precise saved backend discrepancies are checked against both raw original-backend and physical receipts; they are not ordinary runtime exemptions.",
+  "previousGoldenSha256": "dfd446e8d063fcd1eb7c0dcd8dd968381d2a9a90fc91fe95a2715ba01c0d79b0",
+  "scopeBoundary": "Only the exact own-PE profile, operation, word vector and verified wrapper aliases listed here. Raw emulator observations must still match the saved backend result; all other cases remain direct comparisons. Physical seed/code/caller scope is hash-linked per profile.",
+  "profiles": {
+    "sdk-4.01-engine-2.6.1.74": {
+      "executableSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "physicalReceipt": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PHYSICAL-MAIN-SCALARS-74.json",
+        "sha256": "33007b3bf6458e3aba7d8444fae1103826b6f86d92816038af130d1ee1c6d2ed"
+      },
+      "seed": {
+        "file": "PHYSICAL-SEED-74.json",
+        "sha256": "d15e4a3b9fd400860773579de8cbf771302c25d970fbcc77870bfedcc2fda227"
+      },
+      "wrapperBridge": {
+        "path": ".local/phase11/modern-auxiliary-tables/OWN-WRAPPER-BRIDGES.json",
+        "sha256": "94dc21b6b74c723586e1b7ce252ae686a5a8408f8d8f2b2deacc1690c754f684"
+      },
+      "cases": {
+        "math.sin/2139095039": {
+          "name": "sin 7f7fffff",
+          "operation": "math.sin",
+          "args": [2139095039],
+          "aliases": [
+            { "table": "main", "id": 50 },
+            { "table": "generic", "id": 1 },
+            { "table": "particle-v2", "id": 6 },
+            { "table": "particle-v1", "id": 6 }
+          ],
+          "backendValue": 3212734718,
+          "physicalValue": 1064906180,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3212734718,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3212734718] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 1064906180,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [1064906180] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 7
+        },
+        "math.sin/1900671690": {
+          "name": "sin 7149f2ca",
+          "operation": "math.sin",
+          "args": [1900671690],
+          "aliases": [
+            { "table": "main", "id": 50 },
+            { "table": "generic", "id": 1 },
+            { "table": "particle-v2", "id": 6 },
+            { "table": "particle-v1", "id": 6 }
+          ],
+          "backendValue": 3211336101,
+          "physicalValue": 3212235176,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3211336101,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3211336101] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3212235176,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3212235176] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 8
+        },
+        "math.cos/2139095039": {
+          "name": "cos 7f7fffff",
+          "operation": "math.cos",
+          "args": [2139095039],
+          "aliases": [
+            { "table": "main", "id": 51 },
+            { "table": "generic", "id": 2 },
+            { "table": "particle-v2", "id": 7 },
+            { "table": "particle-v1", "id": 7 }
+          ],
+          "backendValue": 1038198315,
+          "physicalValue": 3194670844,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 1038198315,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [1038198315] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3194670844,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3194670844] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 20
+        },
+        "math.cos/1900671690": {
+          "name": "cos 7149f2ca",
+          "operation": "math.cos",
+          "args": [1900671690],
+          "aliases": [
+            { "table": "main", "id": 51 },
+            { "table": "generic", "id": 2 },
+            { "table": "particle-v2", "id": 7 },
+            { "table": "particle-v1", "id": 7 }
+          ],
+          "backendValue": 1054058939,
+          "physicalValue": 1049092954,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 1054058939,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [1054058939] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 1049092954,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [1049092954] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 21
+        },
+        "math.tan/2139095039": {
+          "name": "tan 7f7fffff",
+          "operation": "math.tan",
+          "args": [2139095039],
+          "aliases": [
+            { "table": "main", "id": 52 },
+            { "table": "generic", "id": 3 },
+            { "table": "particle-v2", "id": 8 },
+            { "table": "particle-v1", "id": 8 }
+          ],
+          "backendValue": 3239073054,
+          "physicalValue": 3230127461,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3239073054,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3239073054] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3230127461,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3230127461] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 33
+        },
+        "math.tan/1900671690": {
+          "name": "tan 7149f2ca",
+          "operation": "math.tan",
+          "args": [1900671690],
+          "aliases": [
+            { "table": "main", "id": 52 },
+            { "table": "generic", "id": 3 },
+            { "table": "particle-v2", "id": 8 },
+            { "table": "particle-v1", "id": 8 }
+          ],
+          "backendValue": 3222075068,
+          "physicalValue": 3228073428,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3222075068,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3222075068] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3228073428,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3228073428] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 34
+        },
+        "math.fmod/3212836864,1056964608": {
+          "name": "fmod bf800000/3f000000",
+          "operation": "math.fmod",
+          "args": [3212836864, 1056964608],
+          "aliases": [
+            { "table": "main", "id": 59 },
+            { "table": "generic", "id": 11 },
+            { "table": "particle-v2", "id": 16 },
+            { "table": "particle-v1", "id": 16 }
+          ],
+          "backendValue": 0,
+          "physicalValue": 2147483648,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 0,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [0] }],
+            "memory": {
+              "memory": "08051912b8e0abf8c809ab9db3f81d4ccddcd14a28bda644721686a806a005c9",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 2147483648,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [2147483648] }],
+            "memory": {
+              "memory": "08051912b8e0abf8c809ab9db3f81d4ccddcd14a28bda644721686a806a005c9",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 184
+        }
+      }
+    },
+    "nekopara-vol3-engine-2.6.1.76": {
+      "executableSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "physicalReceipt": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PHYSICAL-MAIN-SCALARS-76.json",
+        "sha256": "89e5447cadb9a935cf83597c9759fcb58d348cf14b98a9c56188d543def1f795"
+      },
+      "seed": {
+        "file": "PHYSICAL-SEED-76.json",
+        "sha256": "60c56e30a3245f19572d63009fbe00121548da754c2e006ddf170f1c59a846d5"
+      },
+      "wrapperBridge": {
+        "path": ".local/phase11/modern-auxiliary-tables/OWN-WRAPPER-BRIDGES.json",
+        "sha256": "94dc21b6b74c723586e1b7ce252ae686a5a8408f8d8f2b2deacc1690c754f684"
+      },
+      "cases": {
+        "math.sin/2139095039": {
+          "name": "sin 7f7fffff",
+          "operation": "math.sin",
+          "args": [2139095039],
+          "aliases": [
+            { "table": "main", "id": 50 },
+            { "table": "generic", "id": 1 },
+            { "table": "particle-v2", "id": 6 },
+            { "table": "particle-v1", "id": 6 }
+          ],
+          "backendValue": 3212734718,
+          "physicalValue": 1064906180,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3212734718,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3212734718] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 1064906180,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [1064906180] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 7
+        },
+        "math.sin/1900671690": {
+          "name": "sin 7149f2ca",
+          "operation": "math.sin",
+          "args": [1900671690],
+          "aliases": [
+            { "table": "main", "id": 50 },
+            { "table": "generic", "id": 1 },
+            { "table": "particle-v2", "id": 6 },
+            { "table": "particle-v1", "id": 6 }
+          ],
+          "backendValue": 3211336101,
+          "physicalValue": 3212235176,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3211336101,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3211336101] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3212235176,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3212235176] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 8
+        },
+        "math.cos/2139095039": {
+          "name": "cos 7f7fffff",
+          "operation": "math.cos",
+          "args": [2139095039],
+          "aliases": [
+            { "table": "main", "id": 51 },
+            { "table": "generic", "id": 2 },
+            { "table": "particle-v2", "id": 7 },
+            { "table": "particle-v1", "id": 7 }
+          ],
+          "backendValue": 1038198315,
+          "physicalValue": 3194670844,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 1038198315,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [1038198315] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3194670844,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3194670844] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 20
+        },
+        "math.cos/1900671690": {
+          "name": "cos 7149f2ca",
+          "operation": "math.cos",
+          "args": [1900671690],
+          "aliases": [
+            { "table": "main", "id": 51 },
+            { "table": "generic", "id": 2 },
+            { "table": "particle-v2", "id": 7 },
+            { "table": "particle-v1", "id": 7 }
+          ],
+          "backendValue": 1054058939,
+          "physicalValue": 1049092954,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 1054058939,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [1054058939] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 1049092954,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [1049092954] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 21
+        },
+        "math.tan/2139095039": {
+          "name": "tan 7f7fffff",
+          "operation": "math.tan",
+          "args": [2139095039],
+          "aliases": [
+            { "table": "main", "id": 52 },
+            { "table": "generic", "id": 3 },
+            { "table": "particle-v2", "id": 8 },
+            { "table": "particle-v1", "id": 8 }
+          ],
+          "backendValue": 3239073054,
+          "physicalValue": 3230127461,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3239073054,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3239073054] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3230127461,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3230127461] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 33
+        },
+        "math.tan/1900671690": {
+          "name": "tan 7149f2ca",
+          "operation": "math.tan",
+          "args": [1900671690],
+          "aliases": [
+            { "table": "main", "id": 52 },
+            { "table": "generic", "id": 3 },
+            { "table": "particle-v2", "id": 8 },
+            { "table": "particle-v1", "id": 8 }
+          ],
+          "backendValue": 3222075068,
+          "physicalValue": 3228073428,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3222075068,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3222075068] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 3228073428,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [3228073428] }],
+            "memory": {
+              "memory": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 34
+        },
+        "math.fmod/3212836864,1056964608": {
+          "name": "fmod bf800000/3f000000",
+          "operation": "math.fmod",
+          "args": [3212836864, 1056964608],
+          "aliases": [
+            { "table": "main", "id": 59 },
+            { "table": "generic", "id": 11 },
+            { "table": "particle-v2", "id": 16 },
+            { "table": "particle-v1", "id": 16 }
+          ],
+          "backendValue": 0,
+          "physicalValue": 2147483648,
+          "backendGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 0,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [0] }],
+            "memory": {
+              "memory": "08051912b8e0abf8c809ab9db3f81d4ccddcd14a28bda644721686a806a005c9",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalGolden": {
+            "control": 1,
+            "resultWritten": true,
+            "value": 2147483648,
+            "floatingMemory": [{ "region": "memory", "offset": 4096, "words": [2147483648] }],
+            "memory": {
+              "memory": "08051912b8e0abf8c809ab9db3f81d4ccddcd14a28bda644721686a806a005c9",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58"
+            }
+          },
+          "physicalRow": 184
+        }
+      }
+    }
+  }
+}

@@ -14,6 +14,8 @@ import {
 import { floatBits } from '../kcs.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { nativeDataFormat, nativeDataKey, nativeDataMapped } from './data-text.mjs';
+import { linearInterpolateSSEWords } from '../motion/native-sse.mjs';
+import { scalarArgumentWords } from './scalar-math.mjs';
 
 const cp932 = new TextDecoder('shift_jis');
 const cFilenameKey = (bytes) =>
@@ -127,7 +129,11 @@ const ids = new Set([
 const returning = new Set([0x130, 0x133, 0x135, 0x136, 0x137, 0x13b, 0x13c, 0x1b8, 0x202, 0x217]);
 
 export function nativeMotion(id, args, machine, services = {}) {
+  if (services.math?.scalarArgumentsReadFrame && (id === 0x13e || id === 0x13f))
+    args = scalarArgumentWords(args, machine, id === 0x13e ? 5 : 1);
   if (id === 0x13e) {
+    if (services.profile && nativeABI(services.profile).math?.lerpUsesSSEWords)
+      return value(linearInterpolateSSEWords(...args));
     const interpolate =
       services.profile && nativeABI(services.profile).math?.lerpUsesX87
         ? x87LinearInterpolate

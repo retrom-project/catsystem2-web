@@ -6,6 +6,7 @@ import { engineFixtureSet } from '../fixtures/oracle-fixtures.mjs';
 import { nativeScalarCases } from '../fixtures/scalar-cases.mjs';
 import { observeNativeCase } from '../fixtures/native-differential.mjs';
 import { compareNativeObservations } from '../fixtures/native-observations.mjs';
+import { physicalScalarObservation } from '../fixtures/native-golden.mjs';
 for (const fixture of await engineFixtureSet())
   test(
     `${fixture.profile} all scalar operations JS/original GCALL`,
@@ -20,7 +21,11 @@ for (const fixture of await engineFixtureSet())
           await t.test(input.name, async () => {
             compareNativeObservations(
               await observeNativeCase(input),
-              await observeNativeCase(input, engine),
+              physicalScalarObservation(
+                await observeNativeCase(input, engine),
+                input,
+                fixture.sha256,
+              ),
               input.policy,
             );
           });

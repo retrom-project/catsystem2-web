@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 import { KCSMachine, nativeReply, floatBits, bitsFloat, formatNative } from '../kcs.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
-import { nativeScalarMath, nativeTrigWord } from '../native/scalar-math.mjs';
+import { nativeScalarMath, nativeTrigWord, scalarArgumentWords } from '../native/scalar-math.mjs';
 import { PTCL_ABI, initialParticle, readPTCLQuad, writePTCLQuad } from './abi.mjs';
 import { particleNativeContract } from './contracts.mjs';
 import { ParticleRandom } from './random.mjs';
 import { roundX87Single } from './x87.mjs';
+import { linearInterpolateSSEWords } from '../motion/native-sse.mjs';
 import {
   calcFrame,
   degreeToRadian,
@@ -188,10 +189,13 @@ export class ParticleScriptInstance {
       throw new Error(`Unreviewed PTCL native ${this.profile}/${this.table}/${id}`);
     const contract = entry ?? particleNativeContract(this.script.scriptVersion, id),
       argumentWords = entry ? entry.signature.argumentWords : contract.parameters.length;
-    if (argumentWords !== null && args.length !== argumentWords)
+    const scalarFrame =
+      this.math?.scalarArgumentsReadFrame && ((id >= 6 && id <= 21) || (id >= 41 && id <= 43));
+    if (argumentWords !== null && !scalarFrame && args.length !== argumentWords)
       throw new Error(
         `PTCL ${contract.name} requires ${argumentWords} arguments, received ${args.length}`,
       );
+    if (scalarFrame) args = scalarArgumentWords(args, machine, argumentWords);
     this.calls.set(id, (this.calls.get(id) || 0) + 1);
     const scalar = (value) => nativeReply(1, value >>> 0);
     const real = (value) => scalar(floatBits(value));
@@ -207,6 +211,7 @@ export class ParticleScriptInstance {
     if (this.interpreterMath && id === 16) return scalar(x87RemainderWord(...args));
     if (this.interpreterMath?.triangleWaveUsesX87 && id === 43)
       return scalar(x87TriangleWaveWord(...args));
+    if (this.math?.lerpUsesSSEWords && id === 41) return scalar(linearInterpolateSSEWords(...args));
     const scalarReply =
       this.interpreterMath &&
       nativeScalarMath(

@@ -1,5 +1,5 @@
 {
-  "scope": "Authored scalar GCALLs through unmodified original handlers at FPCW 0x007f/MXCSR 0x1f80 on the pinned backend. Declared floating memory words are retained explicitly; all other bytes hash exactly. Results use the fixed per-operation budget.",
+  "scope": "Authored scalar GCALLs. VM-independent arithmetic uses own-PE physical IA32 calibration at FPCW0x007f/MXCSR0x1f80; unchanged packing/unpacking retains its separately captured original VM evidence. Declared floating words remain explicit and other bytes hash exactly. The precise saved backend discrepancies are checked against both raw original-backend and physical receipts; they are not ordinary runtime exemptions.",
   "profiles": {
     "sdk-4.01-engine-2.6.1.74": {
       "sha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
@@ -119,12 +119,12 @@
         "sin 7f7fffff": {
           "control": 1,
           "resultWritten": true,
-          "value": 3212734718,
+          "value": 1064906180,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [3212734718]
+              "words": [1064906180]
             }
           ],
           "memory": {
@@ -135,12 +135,12 @@
         "sin 7149f2ca": {
           "control": 1,
           "resultWritten": true,
-          "value": 3211336101,
+          "value": 3212235176,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [3211336101]
+              "words": [3212235176]
             }
           ],
           "memory": {
@@ -327,12 +327,12 @@
         "cos 7f7fffff": {
           "control": 1,
           "resultWritten": true,
-          "value": 1038198315,
+          "value": 3194670844,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [1038198315]
+              "words": [3194670844]
             }
           ],
           "memory": {
@@ -343,12 +343,12 @@
         "cos 7149f2ca": {
           "control": 1,
           "resultWritten": true,
-          "value": 1054058939,
+          "value": 1049092954,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [1054058939]
+              "words": [1049092954]
             }
           ],
           "memory": {
@@ -535,12 +535,12 @@
         "tan 7f7fffff": {
           "control": 1,
           "resultWritten": true,
-          "value": 3239073054,
+          "value": 3230127461,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [3239073054]
+              "words": [3230127461]
             }
           ],
           "memory": {
@@ -551,12 +551,12 @@
         "tan 7149f2ca": {
           "control": 1,
           "resultWritten": true,
-          "value": 3222075068,
+          "value": 3228073428,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [3222075068]
+              "words": [3228073428]
             }
           ],
           "memory": {
@@ -2951,12 +2951,12 @@
         "fmod bf800000/3f000000": {
           "control": 1,
           "resultWritten": true,
-          "value": 0,
+          "value": 2147483648,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [0]
+              "words": [2147483648]
             }
           ],
           "memory": {
@@ -3722,12 +3722,12 @@
         "sin 7f7fffff": {
           "control": 1,
           "resultWritten": true,
-          "value": 3212734718,
+          "value": 1064906180,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [3212734718]
+              "words": [1064906180]
             }
           ],
           "memory": {
@@ -3738,12 +3738,12 @@
         "sin 7149f2ca": {
           "control": 1,
           "resultWritten": true,
-          "value": 3211336101,
+          "value": 3212235176,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [3211336101]
+              "words": [3212235176]
             }
           ],
           "memory": {
@@ -3930,12 +3930,12 @@
         "cos 7f7fffff": {
           "control": 1,
           "resultWritten": true,
-          "value": 1038198315,
+          "value": 3194670844,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [1038198315]
+              "words": [3194670844]
             }
           ],
           "memory": {
@@ -3946,12 +3946,12 @@
         "cos 7149f2ca": {
           "control": 1,
           "resultWritten": true,
-          "value": 1054058939,
+          "value": 1049092954,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [1054058939]
+              "words": [1049092954]
             }
           ],
           "memory": {
@@ -4138,12 +4138,12 @@
         "tan 7f7fffff": {
           "control": 1,
           "resultWritten": true,
-          "value": 3239073054,
+          "value": 3230127461,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [3239073054]
+              "words": [3230127461]
             }
           ],
           "memory": {
@@ -4154,12 +4154,12 @@
         "tan 7149f2ca": {
           "control": 1,
           "resultWritten": true,
-          "value": 3222075068,
+          "value": 3228073428,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [3222075068]
+              "words": [3228073428]
             }
           ],
           "memory": {
@@ -6554,12 +6554,12 @@
         "fmod bf800000/3f000000": {
           "control": 1,
           "resultWritten": true,
-          "value": 0,
+          "value": 2147483648,
           "floatingMemory": [
             {
               "region": "memory",
               "offset": 4096,
-              "words": [0]
+              "words": [2147483648]
             }
           ],
           "memory": {

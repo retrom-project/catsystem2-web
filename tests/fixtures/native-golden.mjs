@@ -1,7 +1,44 @@
 // SPDX-License-Identifier: MPL-2.0
 import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import { compareFloatWord } from './native-observations.mjs';
+const scalarCalibration = JSON.parse(
+  await readFile(new URL('./scalar-backend-calibration.json', import.meta.url)),
+);
+export const scalarGoldenScope = scalarCalibration.scope;
+
+// This private capture boundary never changes a runtime result. Check the raw
+// backend observation first, then retain the separately observed physical word.
+export function physicalScalarObservation(observation, input, executableSha256) {
+  const profile = scalarCalibration.profiles[input.profile],
+    calibration = profile?.cases[input.operation + '/' + input.args.join(',')];
+  if (!calibration || input.table !== 'main') return observation;
+  assert.equal(executableSha256, profile.executableSha256, 'scalar calibration own PE');
+  assert.ok(
+    calibration.aliases.some(({ table, id }) => table === input.table && id === input.id),
+    'scalar calibration exact wrapper',
+  );
+  assert.deepEqual(
+    nativeGolden(observation, input.policy),
+    calibration.backendGolden,
+    `${input.name} raw backend observation changed; inspect before recalibrating`,
+  );
+  const result = {
+    ...observation,
+    value: calibration.physicalValue,
+    memory: Object.fromEntries(
+      Object.entries(observation.memory).map(([name, bytes]) => [name, bytes.slice()]),
+    ),
+  };
+  for (const range of calibration.physicalGolden.floatingMemory) {
+    const bytes = result.memory[range.region],
+      view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    range.words.forEach((word, i) => view.setUint32(range.offset + i * 4, word, true));
+  }
+  assert.deepEqual(nativeGolden(result, input.policy), calibration.physicalGolden);
+  return result;
+}
 export function nativeGolden(observation, policy = {}) {
   const regions = structuredClone(observation.memory);
   for (const range of policy.memory ?? [])

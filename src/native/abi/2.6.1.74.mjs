@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 // Reviewed per-version declarations and script-visible behavior.
 import { FES_COMMON_HEAD_REGISTRATIONS } from './fes-common-heads.mjs';
-import { nativeRawCSSSignatures, nativeContentDatabaseSignatures } from './semantics.mjs';
+import {
+  nativeRawCSSSignatures,
+  nativeContentDatabaseSignatures,
+  NATIVE_INTERPRETER_SCALAR_IDS,
+  nativeInterpreterScalarSignatures,
+} from './semantics.mjs';
 
 const contentDatabaseSlots = [
   742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760,
@@ -11,10 +16,23 @@ const contentDatabaseSlots = [
   824, 825, 826, 827, 828, 829, 830, 831, 832,
 ];
 
+const scalarEvidence =
+  'Own fixed 2.6.1.74 unmodified physical IA32 scalar wrappers/callees: 222 Main samples plus 233 Generic vectors and exact own-body/callee bridges to the 19 common scalar entries. Current real KCS verifies raw NaN/domain/signed-zero/endpoints, complete caller and owner state, fixed mapped argv prefixes, ignored tail words, actual unmapped diagnostics and independent cold interpreter continuation. Original initialization seed and platform boundaries remain explicit. This is finite-case functional evidence, not completion of all numeric shapes or other auxiliary entries. See tests/fixtures/modern-interpreter-scalar-golden.json and docs/native-scalar-math.md.';
+
 export default {
   id: 'cs2-2.6.1.74',
   profile: 'sdk-4.01-engine-2.6.1.74',
   engineVersion: '2.6.1.74',
+  math: {
+    interpreterUsesNativeScalarMath: true,
+    scalarArgumentsReadFrame: true,
+    atan2UsesX87: true,
+    remainderUsesX87: true,
+    triangleWaveUsesX87: true,
+    powUsesSSE2Identities: true,
+    trigUsesNativeReduction: true,
+    lerpUsesSSEWords: true,
+  },
   xmlEncoding: 'Shift_JIS',
   text: {
     freeTypeCharacterEncoding: 'cp932',
@@ -1031,6 +1049,7 @@ export default {
         ],
       },
       signatures: [
+        ...nativeInterpreterScalarSignatures('main'),
         ...nativeRawCSSSignatures(),
         ...nativeContentDatabaseSignatures(contentDatabaseSlots).map((group) => ({
           ...group,
@@ -1392,6 +1411,7 @@ export default {
         },
       ],
       evidence: [
+        { ids: NATIVE_INTERPRETER_SCALAR_IDS.main, value: scalarEvidence },
         {
           ids: contentDatabaseSlots,
           value:
@@ -1697,31 +1717,31 @@ export default {
             156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 192, 193, 194, 195,
             204, 205, 206, 207, 214, 215, 216, 217, 218, 237, 241, 244, 246, 251, 265, 266, 267,
             268, 269, 270, 284, 285, 286, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304,
-            305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321,
-            343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359,
-            360, 362, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377,
-            378, 379, 380, 381, 382, 383, 384, 387, 388, 389, 390, 391, 392, 394, 395, 396, 397,
-            398, 399, 401, 402, 403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415,
-            416, 417, 418, 430, 431, 433, 434, 435, 436, 437, 438, 440, 441, 444, 445, 446, 456,
-            460, 461, 464, 465, 466, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479,
-            480, 481, 482, 483, 484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496,
-            497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513,
-            514, 515, 516, 517, 518, 519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530,
-            531, 532, 535, 536, 537, 538, 539, 540, 541, 542, 557, 558, 564, 565, 566, 567, 568,
-            569, 570, 571, 572, 577, 582, 583, 584, 586, 587, 588, 589, 594, 595, 596, 597, 598,
-            602, 603, 604, 605, 606, 607, 611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621,
-            622, 623, 624, 625, 628, 630, 631, 632, 641, 645, 646, 647, 649, 650, 651, 653, 654,
-            655, 658, 659, 664, 665, 666, 667, 668, 674, 675, 676, 677, 678, 679, 680, 681, 683,
-            684, 685, 694, 695, 696, 697, 698, 699, 700, 703, 704, 705, 706, 707, 708, 709, 710,
-            711, 712, 713, 714, 715, 716, 717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727,
-            728, 729, 730, 731, 732, 733, 734, 735, 736, 737, 738, 739, 740, 741, 785, 786, 787,
-            788, 789, 790, 844, 845, 846, 847, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859,
-            860, 861, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877,
-            878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894,
-            895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 935, 936, 937, 938, 939, 940,
-            941, 942, 943, 944, 945, 946, 947, 948, 949, 950, 951, 952, 953, 954, 955, 956, 957,
-            958, 959, 960, 961, 962, 963, 964, 967, 968, 969, 970, 971, 972, 977, 991, 992, 994,
-            995, 996, 997, 998, 999, 1000, 1001, 1002,
+            305, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 320, 343, 344, 345,
+            346, 347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 362, 363,
+            364, 365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380,
+            381, 382, 383, 384, 387, 388, 389, 390, 391, 392, 394, 395, 396, 398, 399, 401, 402,
+            403, 404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 430,
+            431, 433, 434, 435, 436, 437, 438, 440, 441, 444, 445, 446, 456, 460, 464, 465, 466,
+            468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484,
+            485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501,
+            502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518,
+            519, 520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 532, 535, 536, 537,
+            538, 539, 540, 541, 542, 557, 558, 564, 565, 566, 567, 568, 569, 570, 571, 572, 577,
+            582, 583, 584, 586, 587, 588, 589, 594, 595, 596, 597, 598, 602, 603, 604, 605, 606,
+            607, 611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621, 622, 623, 624, 625, 628,
+            630, 631, 632, 641, 645, 646, 647, 649, 650, 651, 653, 654, 655, 658, 659, 664, 665,
+            666, 667, 668, 674, 675, 676, 677, 678, 679, 680, 681, 683, 684, 685, 694, 695, 696,
+            697, 698, 699, 700, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715,
+            716, 717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727, 728, 729, 730, 731, 732,
+            733, 734, 735, 736, 737, 738, 739, 740, 741, 785, 786, 787, 788, 789, 790, 844, 845,
+            846, 847, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 863, 864, 865,
+            866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882,
+            883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899,
+            900, 901, 902, 903, 904, 905, 935, 936, 937, 938, 939, 940, 941, 942, 943, 944, 945,
+            946, 947, 948, 949, 950, 951, 952, 953, 954, 955, 956, 957, 958, 959, 960, 961, 962,
+            963, 964, 967, 968, 969, 970, 971, 972, 977, 991, 992, 994, 995, 996, 997, 998, 999,
+            1000, 1001, 1002,
           ],
           value: 'pinned-2.6.1.74-wrapper-and-subsystem-contract',
         },
@@ -1743,10 +1763,6 @@ export default {
           ],
           value:
             'reviewed-SDK-2.6.1.74-main-table-wrapper-body-and-normal-JS-dispatch; docs/native-domain4-review.md',
-        },
-        {
-          ids: [50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64],
-          value: 'both-pinned-scalar-wrappers-and-28524-full-fpu-differential-comparisons',
         },
         {
           ids: [196, 197, 198, 199, 200, 201, 202, 203],
@@ -1812,29 +1828,35 @@ export default {
           25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
         ],
       },
+      signatures: nativeInterpreterScalarSignatures('generic'),
       evidence: [
+        { ids: NATIVE_INTERPRETER_SCALAR_IDS['generic'], value: scalarEvidence },
         {
           ids: [
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-            24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
+            0, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+            39, 40, 43, 44,
           ],
-          value: 'both-pinned-generic-wrappers-and-2160-native-differential-cases',
+          value:
+            'historical-forced-scalar-direct-native-motion-audit-not-current-initialized-KCS-acceptance',
         },
       ],
     },
     'particle-v1': {
       count: 44,
       slots: {
+        recovered: NATIVE_INTERPRETER_SCALAR_IDS['particle-v1'],
         declared: [
-          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-          25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
+          0, 1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+          40,
         ],
       },
+      signatures: nativeInterpreterScalarSignatures('particle-v1'),
       evidence: [
+        { ids: NATIVE_INTERPRETER_SCALAR_IDS['particle-v1'], value: scalarEvidence },
         {
           ids: [
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-            24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
+            0, 1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+            39, 40,
           ],
           value: 'sdk-4.01-header-and-pinned-game-wrapper',
         },
@@ -1843,18 +1865,19 @@ export default {
     'particle-v2': {
       count: 51,
       slots: {
+        recovered: NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'],
         declared: [
-          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
-          25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46,
-          47, 48, 49, 50,
+          0, 1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+          40, 44, 45, 46, 47, 48, 49, 50,
         ],
       },
+      signatures: nativeInterpreterScalarSignatures('particle-v2'),
       evidence: [
+        { ids: NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'], value: scalarEvidence },
         {
           ids: [
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
-            24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45,
-            46, 47, 48, 49, 50,
+            0, 1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
+            39, 40, 44, 45, 46, 47, 48, 49, 50,
           ],
           value: 'sdk-4.01-header-and-pinned-game-wrapper',
         },

@@ -46,16 +46,37 @@ Public tests use the checked-in oracle golden words and exact hashes of VM
 bytes outside the declared floating result slot. Missing private EXEs produce
 an explicit per-ABI skip in differential mode; strict full mode requires them.
 
-Large-angle and remainder results also expose a limitation of the pinned
-Unicorn oracle, not hardware x87 accuracy. Its FPREM/FPREM1 helpers perform
-partial reductions with double arithmetic. CRT trigonometry at magnitude
-2^63 and above first reduces by its extended 2*pi*2^61 constant, then evaluates
-the reduced argument. Cancellation can differ greatly from direct `Math.sin`.
-`nativeRemainder` reproduces this currently script-visible path, including the
-partial-reduction steps, rather than widening the ULP limit. For example,
-sin(f32(1e30)) writes `0xbf6919a5` on both pinned oracles. Hardware equivalence
-for these extreme arguments is not established by this backend. The evidence
-and instruction trace are retained in ignored `.local/phase3/` storage.
+The modern 2.6.1.74 and 2.6.1.76 profiles now use the original physical IA32
+scalar results. Each own PE's executable sections are checked byte for byte.
+CRT/D3DX and thread data are initialized in the explicitly isolated PE host,
+then that data seed is used with unmodified arithmetic/CRT code on the physical
+CPU. Only the named TLS, last-error and pointer-encoding platform services are
+supplied. This does not claim a physical WinMain or Windows startup sample.
+FPCW and MXCSR are checked before and after every physical call.
+
+The physical corpus contains 222 Main inputs and 233 Generic inputs per build,
+including 52 directed raw-NaN and interpolation endpoint extensions. Complete
+own-wrapper bytes, argument conversion and exact callee targets bridge the 19
+common scalar functions to Main and both Particle tables. Current real KCS
+checks those functions through each table, including control/result words,
+complete caller/owner state, and independent cold interpreter continuation.
+Wrappers read a fixed number of argv words independently of the GCALL-declared
+length. Mapped zero/short frames and ignored tail words are accepted; actual
+unmapped reads remain diagnostic. This evidence covers the listed finite cases;
+other Generic and Particle functions remain a separate acceptance scope.
+
+Seven saved Main observations per build expose exact limitations of the pinned
+Unicorn backend: large-angle reduction and a signed-zero remainder. The old
+raw observations remain archived. `scalar-backend-calibration.json` identifies
+each own PE, operation, raw argument vector, verified alias, old backend word
+and independent physical word, with source hashes and FP context. The private
+capture tool first requires the raw backend observation to match its saved
+record, then selects the separately observed physical result for that exact
+input. Other inputs still compare directly; no NaN or large-value class is
+excluded. For example, sin(f32(1e30)) is physically `0xbf76d1a8`; the old
+backend's `0xbf6919a5` is retained as backend evidence and is not a runtime
+contract. `nativeRemainder` remains an explicitly scoped older backend helper;
+modern remainder and triangle-wave dispatch use the proven physical semantics.
 
 The fixed 2.6.1.23 profile uses the physical x86 results for sine, cosine and
 tangent after the original CRT initializer selects SSE2. Above each routine's

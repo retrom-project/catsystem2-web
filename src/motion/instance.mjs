@@ -6,7 +6,7 @@ import { floatBytes, floats, floatWords, matrixStorage } from '../native/calcula
 import { multiplyNativeMatrix } from '../native/calculation-math.mjs';
 import { nativeGeometry } from '../native/geometry.mjs';
 import { nativeMatrix } from '../native/matrix.mjs';
-import { nativeScalarMath, nativeTrigWord } from '../native/scalar-math.mjs';
+import { nativeScalarMath, nativeTrigWord, scalarArgumentWords } from '../native/scalar-math.mjs';
 import { ParticleRandom } from '../ppi/random.mjs';
 import {
   degreeToRadian,
@@ -27,7 +27,12 @@ import {
 } from '../ppi/numeric.mjs';
 import { MOTION_ABI, initialMotionObject } from './abi.mjs';
 import { rotateRelativeSSEWords, rotateRelativeX87, yawPitchRollX87 } from './native-rotation.mjs';
-import { inverseSSEWords, normalizeSSEWords, transformSSEWords } from './native-sse.mjs';
+import {
+  inverseSSEWords,
+  normalizeSSEWords,
+  transformSSEWords,
+  linearInterpolateSSEWords,
+} from './native-sse.mjs';
 import {
   identity,
   inverse,
@@ -186,10 +191,12 @@ export class MotionInstance {
     if (!contract || contract.status === 'unknown' || !contract.parameters)
       throw new Error(`Unrecovered MOT native ${this.profile}:${id.toString(16)}`);
     const stackRotation = id === 23 && this.zeroWidthRotationReadsStack && args.length === 0;
-    if (id !== 0 && !stackRotation && args.length !== contract.argumentWords)
+    const scalarFrame = this.math?.scalarArgumentsReadFrame && contract.name.startsWith('math.');
+    if (id !== 0 && !stackRotation && !scalarFrame && args.length !== contract.argumentWords)
       throw new Error(
         `MOT ${contract.name} expects ${contract.argumentWords} arguments, got ${args.length}`,
       );
+    if (scalarFrame) args = scalarArgumentWords(args, machine, contract.argumentWords);
     const word = (value) => nativeReply(1, value >>> 0),
       real = (value) => word(floatBits(f(value))),
       done = () => nativeReply(2),
@@ -205,6 +212,7 @@ export class MotionInstance {
     if (this.interpreterMath && id === 11) return word(x87RemainderWord(...args));
     if (this.interpreterMath?.triangleWaveUsesX87 && id === 42)
       return word(x87TriangleWaveWord(...args));
+    if (this.math?.lerpUsesSSEWords && id === 41) return word(linearInterpolateSSEWords(...args));
     if (
       (this.currentMatrixFallback && id >= 23 && id <= 26) ||
       (id === 43 && this.math?.yawPitchRollUsesSSEWords)
