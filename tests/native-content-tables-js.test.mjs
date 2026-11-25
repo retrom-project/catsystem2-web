@@ -6,7 +6,7 @@ import { contentFiles } from './fixtures/content-database-data.mjs';
 import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
 import { KCSMachine, readKCS, encodeCP932 } from '../src/kcs.mjs';
 import { kcsProgram } from './helpers.mjs';
-import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
+import { serializeCheckpoint, deserializeCheckpoint, checkpointBytes } from '../src/checkpoint.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
   test(
@@ -253,5 +253,69 @@ test('fixed SDK .23 first genre placeholder continues through following literals
     await call(743, [owner]);
   } finally {
     await world.close({ flushFiles: false });
+  }
+});
+
+test('fixed SDK .23 large legal genre ranges visit only occupied question keys and cold restore their current configuration', async () => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    owner = [0x13, 64],
+    steps = [
+      [744, [owner, 256], 80],
+      [750, [owner, 512], 84],
+      [751, [owner, 768], 88],
+      [764, [owner]],
+      [776, [owner, 0, 1024], 92],
+      [776, [owner, 1, 1088], 96],
+      [776, [owner, 2, 1152], 100],
+      [765, [owner], 104],
+    ],
+    program = kcsProgram(
+      [
+        [43, 742, 0],
+        [38, 64],
+        ...steps.flatMap(([id, args, at]) => [
+          ...args.map((argument) => [37, argument]),
+          [43, id, args.length * 4],
+          ...(at === undefined ? [] : [[38, at]]),
+        ]),
+        [59],
+      ],
+      [
+        [256, 'questions'],
+        [512, 'wide'],
+        [768, 'wide'],
+      ],
+    ),
+    files = Object.fromEntries(contentFiles());
+  files.wide = encodeCP932('#wide\n$GEN\nGENRE_A 0-2147483647\nGENRE_B @\nGENRE_C @\n');
+  const first = await dataWorld(profile, { ...files, 'case.kcs': program });
+  let fresh;
+  try {
+    assert.equal((await first.runtime.scheduler.execute(first.main)).status, 'halted');
+    const machine = first.main.machine,
+      handle = machine.load(64),
+      table = first.runtime.handles.get(handle, 'content-database').data;
+    assert.deepEqual(
+      [80, 84, 88, 92, 96, 100].map((at) => machine.load(at)),
+      [1, 1, 1, 12, 11, 22],
+    );
+    assert.deepEqual(table.configuration.genres[0], [{ first: 0, last: 2147483647 }]);
+    assert.equal(table.pool.length, 3);
+    assert.ok(checkpointBytes(table.snapshot()) < 50000);
+    fresh = await dataWorld(profile, { 'case.kcs': program }, { initialize: false });
+    await fresh.restore(await deserializeCheckpoint(await serializeCheckpoint(first.snapshot())));
+    const restored = fresh.runtime.handles.get(handle, 'content-database').data;
+    assert.deepEqual(restored.snapshot(), table.snapshot());
+    assert.notEqual(restored.pool[0], table.pool[0]);
+    assert.equal(restored.pool[0], restored.files.get('QUESTIONS').get(restored.pool[0].id));
+    const call = (id, args) =>
+      fresh.runtime.native('main', id, args, fresh.main.machine, fresh.main);
+    await call(764, [handle]);
+    assert.equal((await call(776, [handle, 0, 1024])).value, 12);
+    assert.equal((await call(745, [handle])).value, 3);
+    await call(743, [handle]);
+  } finally {
+    await fresh?.close({ flushFiles: false });
+    await first.close({ flushFiles: false });
   }
 });

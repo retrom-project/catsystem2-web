@@ -113,9 +113,8 @@ function parseConfigurations(bytes, placeholderContinues) {
               const match = /^([+-]?(?:0x[\da-f]+|\d+))(?:-([+-]?(?:0x[\da-f]+|\d+)))?/i.exec(word);
               const first = match ? integer(match[1]) | 0 : -1,
                 last = match?.[2] ? integer(match[2]) | 0 : first;
-              if (last - first > 0x100000)
-                throw new RangeError('Native genre range exceeds its resource limit');
-              for (let value = first; value <= last; value++) state.genres[group].push(value);
+              if (first === last) state.genres[group].push(first);
+              else if (first < last) state.genres[group].push({ first, last });
             }
           }
         } else if (option === 'DISABLE')
@@ -200,7 +199,15 @@ export class NativeQuestionTable {
       }
       const keys =
         depth < 3 && filters[depth].length
-          ? [...new Set(filters[depth])].sort((a, b) => a - b)
+          ? [...node.keys()]
+              .filter((key) =>
+                filters[depth].some((value) =>
+                  typeof value === 'number'
+                    ? key === value
+                    : key !== -10 && key >= value.first && key <= value.last,
+                ),
+              )
+              .sort((a, b) => a - b)
           : [...node.keys()].reverse();
       for (const key of keys) if (node.has(key)) visit(node.get(key), depth + 1);
     };
@@ -209,7 +216,13 @@ export class NativeQuestionTable {
   }
   rebuild() {
     const filters = this.configuration.genres.map((values, index) =>
-      values.flatMap((value) => (value === -10 ? this.extraGenres[index] : [value])),
+      values.flatMap((value) =>
+        value === -10
+          ? this.extraGenres[index]
+          : typeof value !== 'number' && value.first <= -10 && value.last >= -10
+            ? [value, ...this.extraGenres[index]]
+            : [value],
+      ),
     );
     this.pool = this.orderedRecords(filters);
     for (const row of this.pool) {
