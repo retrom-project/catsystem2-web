@@ -206,6 +206,38 @@ test('2.6.1.63 Plane lifecycle and poses use an attached graph and the original 
   await assert.rejects(() => call(86, [156, 160, 0]), /initialized 32-bit output word/);
 });
 
+test('2.6.1.63 tile creation owns its row-major child planes and preserves an existing graph', async (t) => {
+  const world = await dataWorld(profile, { 'main-433.kcs': mainProgram(433, 5) });
+  t.after(() => world.close({ flushFiles: false }));
+  const id = await world.objects.create({ kind: 2, parent: world.main.id }),
+    plane = world.graphics.get(id),
+    command = [world.nativeTaskID(id), floatBits(7.625), floatBits(3.8125), 2, 3],
+    call = () => executeMain(world, 433, command);
+  await call();
+  assert.equal(plane.graph, null);
+  world.graphics.createLogicalDevice();
+  await call();
+  const parent = world.objects.objects.get(id),
+    children = world.objects.children(parent);
+  assert.equal(plane.state.drawType, 8);
+  assert.equal(children.length, 6);
+  assert.deepEqual(
+    children.map((child) => world.graphics.get(child.id).state.parentOffset.slice(0, 2)),
+    [
+      [0, 0],
+      [7.625, 0],
+      [0, 3.8125],
+      [7.625, 3.8125],
+      [0, 7.625],
+      [7.625, 7.625],
+    ],
+  );
+  const graph = plane.graph;
+  await call();
+  assert.equal(plane.graph, graph);
+  assert.deepEqual(world.objects.children(parent), children);
+});
+
 test('2.6.1.63 Plane Input registers its own graph and preserves the full active word', async (t) => {
   const widths = new Map([
     [95, 2],
