@@ -5,7 +5,13 @@ import { blendPackedRow, packedBitmapWords } from './raster-kernel.mjs';
 export function rasterTextGlyph(
   parser,
   r,
-  { image = null, sourceRect = null, padding = 1, legacyImageAtlas = false } = {},
+  {
+    image = null,
+    sourceRect = null,
+    padding = 1,
+    legacyImageAtlas = false,
+    legacyKeepsTransparentRgb = false,
+  } = {},
 ) {
   const font = parser.rasterFont?.(r) ?? parser.font(r),
     ft = Boolean(font.backend);
@@ -69,7 +75,7 @@ export function rasterTextGlyph(
       const out = (py * width + px) * 4,
         source = (yy * glyph.width + xx) * 4;
       let alpha = image ? glyph.rgba[source + 3] : glyph.alpha[yy * glyph.width + xx];
-      if (image && legacyImageAtlas && !alpha) continue;
+      if (image && legacyImageAtlas && !legacyKeepsTransparentRgb && !alpha) continue;
       if (!image && !ft) {
         alpha = Math.floor((Math.round((alpha * 64) / 255) * 255) / 64);
         if (font.weight === 700) alpha = Math.min(255, alpha * 2);

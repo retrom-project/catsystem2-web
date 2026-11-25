@@ -82,6 +82,7 @@ export class NativeLegacyTextRuntime {
     this.initializerBitmapBpp = text?.legacyInitializerBitmapBpp;
     this.initializerSlots = text?.legacyInitializerSlots ?? [0x7b];
     this.glyphAtlas = text?.legacyGlyphAtlas;
+    this.glyphKeepsTransparentRgb = text?.legacyGlyphKeepsTransparentRgb;
   }
   async create(record) {
     const task = new NativeLegacyTextTask(this, record);
@@ -336,6 +337,7 @@ export class NativeLegacyTextTask {
         sourceRect: rect ? { x: rect[0], y: rect[1], width: rect[2], height: rect[3] } : null,
         padding: 2,
         legacyImageAtlas: this.owner.glyphAtlas,
+        legacyKeepsTransparentRgb: this.owner.glyphKeepsTransparentRgb,
       });
       compositeTextGlyph(pixels, shape, r[2], r[3], this.owner.glyphAtlas && Boolean(image));
       r[9] = 1;

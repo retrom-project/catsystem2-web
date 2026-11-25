@@ -39,8 +39,8 @@ import { KCSMachine, readKCS } from '../src/kcs.mjs';
 import { memoryGame, u32, translation, kcsProgram } from './helpers.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 
-test('2.6.1.23 legacy Text controls preserve receiver words, rows and query ownership', async (t) => {
-  const world = await dataWorld('grisaia-jp-engine-2.6.1.23', {}, { glyphs }),
+async function checkLegacyTextControls(t, profile, renderedDigest) {
+  const world = await dataWorld(profile, {}, { glyphs }),
     textID = await world.objects.create({ kind: 8, parent: world.root }),
     text = world.legacyText.tasks.get(textID).text,
     target = world.nativeTaskID(textID),
@@ -205,8 +205,26 @@ test('2.6.1.23 legacy Text controls preserve receiver words, rows and query owne
   const digest = createHash('sha256')
     .update(await world.graphics.images.get(painted).pixels())
     .digest('hex');
-  assert.equal(digest, '7817dcc9b6c71b7a12ec8fcae273b0870658bd2d5f06845cbb6bdecb903b0ce7');
-});
+  assert.equal(digest, renderedDigest);
+
+  const fresh = await dataWorld(profile, {}, { glyphs, initialize: false });
+  t.after(() => fresh.close({ flushFiles: false }));
+  await fresh.restore(structuredClone(world.snapshot()));
+  const restored = fresh.legacyText.tasks.get(paintOwner);
+  assert.deepEqual([...restored.glyphMap], [[65, [1, 1, 3, 3]]]);
+  assert.deepEqual(restored.imageFont, world.legacyText.tasks.get(paintOwner).imageFont);
+}
+
+for (const [profile, digest] of [
+  [
+    'grisaia-jp-engine-2.6.1.23',
+    '7817dcc9b6c71b7a12ec8fcae273b0870658bd2d5f06845cbb6bdecb903b0ce7',
+  ],
+  ['bokutomo-engine-2.6.1.67', '1e7e9d3d0ce03630f57d3546de33a5936e761dbe03d36e0ba15e39d0b0aa75c2'],
+]) {
+  test(`${profile.slice(-8)} legacy Text controls preserve receiver words, rows and glyph pixels`, (t) =>
+    checkLegacyTextControls(t, profile, digest));
+}
 
 const glyphs = {
   measure: (_font, text) => ({
