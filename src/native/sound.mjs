@@ -375,6 +375,8 @@ export class NativeSound {
     }
     device.nativeSpatial.enabled =
       !!this.world.configuration.soundOptions.use3d && m.channels === 1;
+    if (device.nativeSpatial.enabled && this.abi.sound.load3DPositionFromPan)
+      device.nativeSpatial.position = nativeSoundPanPosition(device.pan);
     return true;
   }
   async play(bank, count, control) {

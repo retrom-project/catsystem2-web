@@ -385,6 +385,7 @@ export default {
   },
   sound: {
     banks: 32,
+    load3DPositionFromPan: true,
     unwrittenQueryBanks: [587],
     mainLoadPacketBytes: 280,
     firstMessage: 174,
@@ -2012,7 +2013,7 @@ export default {
         {
           ids: [155],
           value:
-            'Own 2.6.1.67 Main155 resolves Sound through Root raw 33, formats the CP932 resource, clears a 280-byte packet, and sends bank and loop policy through raw 174/175 for streaming or static load. The packet branches write the result through control 1. Other types leave the result unwritten and are rejected.',
+            'Own 2.6.1.67 Main155 resolves Sound through Root raw 33, formats the CP932 resource, clears a 280-byte packet, and sends bank and loop policy through raw 174/175 for streaming or static load. The packet branches write the result through control 1. Own actual Main155 calls with both file types create real WAV decoder and DirectSound buffer owners under the same primary backend; the per-file flags remain separate from the two global backend-owner fields. The 3D buffer reapplies its retained pan during creation, so its initial position derives from that pan. Subsequent decoder/completion queries, spatial writes and release match through this actual creation chain. Other types leave the result unwritten and are rejected.',
         },
         {
           ids: [156, 157, 158, 159, 160, 161, 162],
