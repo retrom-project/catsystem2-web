@@ -17,11 +17,7 @@ import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 import { nativeStartupCode } from '../src/native/startup-author.mjs';
 import { kif, kcsProgram, memoryGame, hg3 } from './helpers.mjs';
-import {
-  StartupCanvas,
-  startupEnvironment,
-  startupVersionImage,
-} from './fixtures/ordinary-startup.mjs';
+import { StartupCanvas, startupEnvironment } from './fixtures/ordinary-startup.mjs';
 import { checkpointDifference } from './browser/checkpoint-observation.mjs';
 import { AudioMixer } from '../src/audio.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
@@ -82,11 +78,13 @@ async function ownedGame(
     '<v00><head>bgm</head><group>17</group>' +
     voiceExtra +
     '</v00></VOICE>';
+  // Explicit authoring fixture: no synthetic PE enters production selection.
   const entries = {
     'startup.xml': bytes(
-      '<?xml version="1.0" encoding="shift_jis"?><document>' + xml + '</document>',
+      `<?xml version="1.0" encoding="${abiForEngineVersion(version).xmlEncoding}"?><document>` +
+        xml +
+        '</document>',
     ),
-    'owned.exe': startupVersionImage(version),
     'scripts.int': kif([['main.kcs', program], ...scripts]),
     'ui.int': kif([['first.fes', bytes('/* owned empty START block */\n#START\n')]]),
   };
@@ -341,7 +339,7 @@ test('old ABI Runtime binds only present slots and preserves unknown dispatch', 
     assert.equal(runtime.handlers.get('main:359'), callback);
     const machine = { pc: 16, debug: null },
       task = { id: 1, name: 'owned-runtime-control' };
-    const unknown = version === '2.6.1.67' ? [[629, 3]] : [[856, 7]];
+    const unknown = version === '2.6.1.67' ? [[629, 3]] : [[239, 5]];
     for (const [id, words] of unknown) {
       assert.equal(runtime.register('main', id, callback), true);
       assert.throws(
@@ -3920,7 +3918,7 @@ async function verifyCloseBoundaries(profile, emptyStringResult) {
     assert.deepEqual(world.runtime.handles.snapshot(), before);
     const entries = nativeABI(profile).tables.main.entries;
     for (const id of [836, 869, 871, 873]) assert.equal(entries[id].status, 'recovered');
-    for (const id of profile === title67Profile ? [629] : [239, 856])
+    for (const id of profile === title67Profile ? [629] : [239])
       assert.equal(entries[id].status, 'unknown');
   } finally {
     await source.world.close();
