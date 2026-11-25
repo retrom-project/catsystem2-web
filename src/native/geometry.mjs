@@ -10,6 +10,9 @@ import {
   inverseSSEWords,
   multiplyMatrixSSEWords,
   normalizeSSEWords,
+  sseFloat32Arithmetic,
+  lengthSquaredSSEWord,
+  transformSSEWords,
 } from '../motion/native-sse.mjs';
 const f = Math.fround;
 export const NATIVE_GEOMETRY_OPERATIONS = Object.freeze([
@@ -79,9 +82,11 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
       const target = (a + i * 4) >>> 0,
         x = machine.load(target),
         y = machine.load((b + i * 4) >>> 0);
-      const value = math?.vectorWordArithmeticUsesX87
-        ? x87Float32Arithmetic(addition ? 'add' : 'subtract', x, y)
-        : floatBits(addition ? bitsFloat(x) + bitsFloat(y) : bitsFloat(x) - bitsFloat(y));
+      const value = math?.vectorWordArithmeticUsesSSEWords
+        ? sseFloat32Arithmetic(addition ? 'add' : 'subtract', x, y)
+        : math?.vectorWordArithmeticUsesX87
+          ? x87Float32Arithmetic(addition ? 'add' : 'subtract', x, y)
+          : floatBits(addition ? bitsFloat(x) + bitsFloat(y) : bitsFloat(x) - bitsFloat(y));
       machine.store(target, value);
     }
     return nativeReply(2);
@@ -90,6 +95,15 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
   const v = read(machine, a, 4);
   let output;
   if (operation === 'vector4.length' || operation === 'vector4.lengthSquared') {
+    if (math?.vectorWordArithmeticUsesSSEWords) {
+      const squared = lengthSquaredSSEWord(floatWords(machine.bytes(a, 16)));
+      return nativeReply(
+        1,
+        operation === 'vector4.lengthSquared' || (squared & 0x7fffffff) > 0x7f800000
+          ? squared
+          : floatBits(Math.sqrt(bitsFloat(squared))),
+      );
+    }
     const nan = math?.vectorWordArithmeticUsesX87 ? x87DotNaN(machine, a) : undefined;
     if (nan !== undefined) return nativeReply(1, nan);
     const squared = math?.vectorLengthUsesX87 ? x87Dot(v) : dot(v);
@@ -107,6 +121,13 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     output = squared > 2 ** -126 ? v.map((n) => f(r(n * inverse))) : v.map(() => 0);
   } else if (operation === 'vector4.scale') {
     const factorWord = machine.load(b);
+    if (math?.vectorWordArithmeticUsesSSEWords) {
+      for (let i = 0; i < 4; i++) {
+        const target = (a + i * 4) >>> 0;
+        machine.store(target, sseFloat32Arithmetic('multiply', machine.load(target), factorWord));
+      }
+      return nativeReply(2);
+    }
     if (math?.vectorWordArithmeticUsesX87) {
       for (let i = 0; i < 4; i++) {
         const target = (a + i * 4) >>> 0;
@@ -118,6 +139,16 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     output = v.map((n) => f(n * factor));
   } else {
     machine.bytes(b, 64);
+    if (math?.vectorTransformUsesSSEWords) {
+      const result = transformSSEWords(
+          floatWords(machine.bytes(a, 16)),
+          floatWords(machine.bytes(b, 64)),
+        ),
+        bytes = machine.bytes(a, 16),
+        view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      result.forEach((word, i) => view.setUint32(i * 4, word, true));
+      return nativeReply(2);
+    }
     const m = read(machine, b, 16);
     if (
       math?.vectorTransformRequiresFinite &&

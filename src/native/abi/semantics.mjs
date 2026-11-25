@@ -41416,3 +41416,57 @@ export function nativeInterpreterScalarSignatures(table) {
     },
   ];
 }
+
+export const NATIVE_INTERPRETER_GEOMETRY_IDS = freeze({
+  main: [204, 205, 206, 207, 350, 351, 352, 353, 354, 355, 356, 357, 358, 662],
+  generic: [18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 43, 44],
+});
+
+export function nativeInterpreterGeometrySignatures(table) {
+  return NATIVE_INTERPRETER_GEOMETRY_IDS[table].map((id) => {
+    const entry = NATIVE_SEMANTICS[table][id],
+      operation = entry.name;
+    return {
+      ids: [id],
+      fields: {
+        resultWritten: entry.signature.controlCodes.includes(1),
+        review: 'reviewed',
+        reviewReason:
+          'Own initialized wrapper and callee, full raw VM regions, fixed argv reads and ordered alias writes; argumentWords is the read footprint, independent of GCALL declared length.',
+        parameters: entry.signature.parameters.map((parameter, index) => {
+          if (parameter.type.kind !== 'pointer') return parameter;
+          const component = operation.startsWith('vector.') && !operation.startsWith('vector4.'),
+            readOnly =
+              ['vector4.length', 'vector4.lengthSquared'].includes(operation) ||
+              (!component && index > 0),
+            writeOnly =
+              index === 0 &&
+              ['matrix.identity', 'matrix.copy', 'matrix.setYawPitchRoll'].includes(operation),
+            scalar = component || (operation === 'vector4.scale' && index === 1),
+            matrix =
+              (operation.startsWith('matrix.') &&
+                !(operation === 'matrix.rotateRelative' && index === 2)) ||
+              (operation === 'vector4.transform' && index === 1);
+          return {
+            ...parameter,
+            type: {
+              kind: 'pointer',
+              addressSpace: 'vm',
+              direction: readOnly ? 'in' : writeOnly ? 'out' : 'inout',
+              target: scalar
+                ? { kind: 'float', bits: 32 }
+                : {
+                    kind: 'record',
+                    name: matrix
+                      ? 'row-major f32 matrix (64 bytes)'
+                      : operation === 'matrix.rotateRelative'
+                        ? 'three f32 words (12 bytes)'
+                        : 'four f32 words (16 bytes)',
+                  },
+            },
+          };
+        }),
+      },
+    };
+  });
+}

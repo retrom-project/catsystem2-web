@@ -28,6 +28,8 @@ import {
   nativeGolden,
   physicalScalarObservation,
   scalarGoldenScope,
+  physicalGeometryObservation,
+  geometryGoldenScope,
 } from '../tests/fixtures/native-golden.mjs';
 const families = {
   scalar: {
@@ -37,8 +39,7 @@ const families = {
   geometry: {
     cases: nativeGeometryCases,
     adapter: calculationOracle,
-    scope:
-      'Authored main matrix/vector inputs, original table handlers and semantic current-matrix RAM, normal FPCW 0x007f/MXCSR 0x1f80. Declared f32 words retained explicitly; all other bytes hashed exactly.',
+    scope: geometryGoldenScope,
   },
   'view-rectangle': {
     cases: nativeViewRectangleCases,
@@ -118,7 +119,9 @@ for (const name of selected.length ? selected : Object.keys(families)) {
           cases[input.name] = nativeGolden(
             name === 'scalar'
               ? physicalScalarObservation(observation, input, fixture.sha256)
-              : observation,
+              : name === 'geometry'
+                ? physicalGeometryObservation(observation, input, fixture.sha256)
+                : observation,
             input.policy,
           );
           count++;

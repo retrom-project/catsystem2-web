@@ -9,7 +9,7 @@ import {
 } from '../motion/native-rotation.mjs';
 import { multiplyNativeMatrix } from './calculation-math.mjs';
 import { matrixStorage, floats, floatBytes, floatWords } from './calculation-memory.mjs';
-import { nativeTrigWord } from './scalar-math.mjs';
+import { nativeTrigWord, scalarArgumentWords } from './scalar-math.mjs';
 import { multiplyMatrixSSEWords } from '../motion/native-sse.mjs';
 export const NATIVE_MATRIX_OPERATIONS = Object.freeze([
   'matrix.rotateXYZ',
@@ -43,6 +43,7 @@ export function nativeMatrix(operation, args, machine, state, math) {
   const rotateXYZ = operation === 'matrix.rotateXYZ',
     implicit = rotateXYZ && args.length === 0,
     count = operation === 'matrix.identity' ? 1 : 4;
+  if (math?.geometryArgumentsReadFrame) args = scalarArgumentWords(args, machine, count);
   if (!implicit && args.length !== count)
     throw new Error(`${operation} expects ${count} arguments`);
   if (rotateXYZ) {

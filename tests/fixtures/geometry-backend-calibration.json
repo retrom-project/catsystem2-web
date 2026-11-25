@@ -1,0 +1,1686 @@
+{
+  "scope": "Authored Main matrix/vector GCALLs through own physical IA32 wrappers/callees after original CRT CPU and D3DX SSE2 initialization. PC24/MXCSR1f80; explicit seeded initialization and supplied platform service boundaries. Declared f32 words retained; other VM/current-matrix bytes hash exactly. Only individually listed initialized-backend discrepancies use separately verified physical calibration.",
+  "previousGoldenSha256": "5a3dacc5f73b3b8164027caaaf53f38b904aac3ff5dd4e16a322067b8b7325a1",
+  "previousGoldenSourceCore": "cdbf93ea1b0374fe7294caee432a7ecc3dd58311",
+  "scopeBoundary": "Only exact full fixture inputs under the own initialized backend and PE SHA may be calibrated. All raw observations must still match their saved backend Golden before the independent physical words are selected. No numeric/NaN/large-value class is skipped.",
+  "profiles": {
+    "sdk-4.01-engine-2.6.1.74": {
+      "executableSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "physicalReceipt": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PHYSICAL-MAIN-GEOMETRY-74.json",
+        "sha256": "b5410d138a786e4c380e3bbd92c3c62cb040c65b6909c22b2305b96880885379"
+      },
+      "initializedBackendReceipt": {
+        "path": ".local/phase11/modern-auxiliary-tables/INITIALIZED-GEOMETRY-BACKEND-74.json",
+        "sha256": "8256a6552477d27e95a01181a3b66ffd2c68b572f6f7717318ee8ecf5b4c3a21"
+      },
+      "backendAdapter": {
+        "path": ".local/phase11/modern-auxiliary-tables/calculation-oracle-INITIALIZED-CAPTURE.mjs",
+        "sha256": "dabd88c0b5ac6fbb89fabf9666de13f1ac30affa32345318a8169307b51e0f6e"
+      },
+      "cases": {
+        "inverse affine": {
+          "input": {
+            "profile": "sdk-4.01-engine-2.6.1.74",
+            "table": "main",
+            "id": 350,
+            "domain": "matrix",
+            "operation": "matrix.inverse",
+            "name": "inverse affine",
+            "args": [64],
+            "initial": {
+              "words": [
+                [
+                  64,
+                  [
+                    1073741824, 0, 0, 0, 0, 1082130432, 0, 0, 0, 0, 1090519040, 0, 1084227584,
+                    3225419776, 1088421888, 1065353216
+                  ]
+                ]
+              ]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "memory",
+                  "offset": 64,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1056964608, 0, 0, 0, 0, 1048576000, 0, 0, 0, 0, 1040187392, 0, 3223322624,
+                  1061158912, 3210739712, 1065353216
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1056964607, 0, 0, 0, 0, 1048575999, 0, 0, 0, 0, 1040187391, 0, 3223322623,
+                  1061158911, 3210739711, 1065353215
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 32,
+          "backendRow": 32
+        },
+        "inverse affine current": {
+          "input": {
+            "profile": "sdk-4.01-engine-2.6.1.74",
+            "table": "main",
+            "id": 350,
+            "domain": "matrix",
+            "operation": "matrix.inverse",
+            "name": "inverse affine current",
+            "args": [4294967295],
+            "initial": {
+              "matrixWords": [
+                1073741824, 0, 0, 0, 0, 1082130432, 0, 0, 0, 0, 1090519040, 0, 1084227584,
+                3225419776, 1088421888, 1065353216
+              ]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [
+                  1056964608, 0, 0, 0, 0, 1048576000, 0, 0, 0, 0, 1040187392, 0, 3223322624,
+                  1061158912, 3210739712, 1065353216
+                ]
+              }
+            ],
+            "memory": {
+              "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [
+                  1056964607, 0, 0, 0, 0, 1048575999, 0, 0, 0, 0, 1040187391, 0, 3223322623,
+                  1061158911, 3210739711, 1065353215
+                ]
+              }
+            ],
+            "memory": {
+              "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 33,
+          "backendRow": 33
+        },
+        "inverse dense": {
+          "input": {
+            "profile": "sdk-4.01-engine-2.6.1.74",
+            "table": "main",
+            "id": 350,
+            "domain": "matrix",
+            "operation": "matrix.inverse",
+            "name": "inverse dense",
+            "args": [64],
+            "initial": {
+              "words": [
+                [
+                  64,
+                  [
+                    1065353216, 1073741824, 1077936128, 0, 1073741824, 1084227584, 1088421888, 0,
+                    1077936128, 1088421888, 1093664768, 0, 1084227584, 3225419776, 1088421888,
+                    1065353216
+                  ]
+                ]
+              ]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "memory",
+                  "offset": 64,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1086324736, 3212836864, 3212836864, 0, 3212836864, 1073741824, 3212836864, 0,
+                  3212836864, 3212836864, 1065353216, 0, 3251634176, 1099956224, 3231711232,
+                  1065353216
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1086324735, 3212836863, 3212836863, 0, 3212836863, 1073741823, 3212836863, 0,
+                  3212836863, 3212836863, 1065353215, 0, 3251634175, 1099956223, 3231711231,
+                  1065353215
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 34,
+          "backendRow": 34
+        },
+        "inverse dense current": {
+          "input": {
+            "profile": "sdk-4.01-engine-2.6.1.74",
+            "table": "main",
+            "id": 350,
+            "domain": "matrix",
+            "operation": "matrix.inverse",
+            "name": "inverse dense current",
+            "args": [4294967295],
+            "initial": {
+              "matrixWords": [
+                1065353216, 1073741824, 1077936128, 0, 1073741824, 1084227584, 1088421888, 0,
+                1077936128, 1088421888, 1093664768, 0, 1084227584, 3225419776, 1088421888,
+                1065353216
+              ]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [
+                  1086324736, 3212836864, 3212836864, 0, 3212836864, 1073741824, 3212836864, 0,
+                  3212836864, 3212836864, 1065353216, 0, 3251634176, 1099956224, 3231711232,
+                  1065353216
+                ]
+              }
+            ],
+            "memory": {
+              "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [
+                  1086324735, 3212836863, 3212836863, 0, 3212836863, 1073741823, 3212836863, 0,
+                  3212836863, 3212836863, 1065353215, 0, 3251634175, 1099956223, 3231711231,
+                  1065353215
+                ]
+              }
+            ],
+            "memory": {
+              "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 35,
+          "backendRow": 35
+        },
+        "vector4.normalize 3,4,0,0": {
+          "input": {
+            "profile": "sdk-4.01-engine-2.6.1.74",
+            "table": "main",
+            "id": 352,
+            "domain": "matrix",
+            "operation": "vector4.normalize",
+            "name": "vector4.normalize 3,4,0,0",
+            "args": [64],
+            "initial": {
+              "words": [[64, [1077936128, 1082130432, 0, 0]]]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "memory",
+                  "offset": 64,
+                  "words": 4,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [1058642329, 1061997772, 0, 0]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [1058642330, 1061997773, 0, 0]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 46,
+          "backendRow": 46
+        },
+        "vector4.normalize 1,0,0,0": {
+          "input": {
+            "profile": "sdk-4.01-engine-2.6.1.74",
+            "table": "main",
+            "id": 352,
+            "domain": "matrix",
+            "operation": "vector4.normalize",
+            "name": "vector4.normalize 1,0,0,0",
+            "args": [64],
+            "initial": {
+              "words": [[64, [1065353216, 0, 0, 0]]]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "memory",
+                  "offset": 64,
+                  "words": 4,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [1065353216, 0, 0, 0]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [1065353215, 0, 0, 0]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 47,
+          "backendRow": 47
+        },
+        "normalize heap": {
+          "input": {
+            "profile": "sdk-4.01-engine-2.6.1.74",
+            "table": "main",
+            "id": 352,
+            "domain": "matrix",
+            "operation": "vector4.normalize",
+            "name": "normalize heap",
+            "args": [8200],
+            "initial": {
+              "blocks": [48],
+              "words": [[8200, [1077936128, 1082130432, 0, 0]]]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "block:1",
+                  "offset": 8,
+                  "words": 4,
+                  "ulp": 1
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "block:1",
+                "offset": 8,
+                "words": [1058642329, 1061997772, 0, 0]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "1d13ffc6adda38ddb6fbbcab785e1870cc3ebbd97058f48dc29b6bff34d7e480",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "block:1": "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "block:1",
+                "offset": 8,
+                "words": [1058642330, 1061997773, 0, 0]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "1d13ffc6adda38ddb6fbbcab785e1870cc3ebbd97058f48dc29b6bff34d7e480",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "block:1": "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 79,
+          "backendRow": 79
+        },
+        "matrix.inverse fractional": {
+          "input": {
+            "profile": "sdk-4.01-engine-2.6.1.74",
+            "table": "main",
+            "id": 350,
+            "domain": "matrix",
+            "operation": "matrix.inverse",
+            "name": "matrix.inverse fractional",
+            "args": [64],
+            "initial": {
+              "words": [
+                [
+                  64,
+                  [
+                    1066192077, 3207803699, 1045220557, 1022739087, 1050253722, 1077516698,
+                    3216192307, 3164854026, 3206125978, 1053609165, 1063675494, 1036831949,
+                    1080872141, 3221644902, 1082759578, 1065353216
+                  ]
+                ]
+              ]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "memory",
+                  "offset": 64,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1067973533, 1045870988, 1053206338, 3180822798, 1059855940, 1051144987,
+                  1062189330, 3183615067, 1072365194, 1007836608, 1072695750, 3195551498,
+                  3241503033, 3187905606, 3237573584, 1074233037
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1067973532, 1045870987, 1053206337, 3180822797, 1059855939, 1051144986,
+                  1062189329, 3183615066, 1072365192, 1007836607, 1072695748, 3195551497,
+                  3241503032, 3187905605, 3237573582, 1074233036
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 83,
+          "backendRow": 83
+        },
+        "rotate large argument": {
+          "input": {
+            "profile": "sdk-4.01-engine-2.6.1.74",
+            "table": "main",
+            "id": 204,
+            "domain": "matrix",
+            "operation": "matrix.rotateXYZ",
+            "name": "rotate large argument",
+            "args": [64, 1900671690, 0, 0],
+            "initial": {
+              "words": [
+                [
+                  64,
+                  [
+                    1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0,
+                    1065353216
+                  ]
+                ]
+              ]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "memory",
+                  "offset": 64,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1065353216, 0, 0, 0, 0, 1900671690, 0, 0, 0, 0, 1900671690, 0, 0, 0, 0, 1065353216
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "3083fae4e83cb18f243050f920b18e9a2abbc55fe2e2bde7dcf2892fd2da246a",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  2143289344, 2143289344, 2143289344, 2143289344, 2143289344, 2143289344,
+                  2143289344, 2143289344, 2143289344, 2143289344, 2143289344, 2143289344,
+                  2143289344, 2143289344, 2143289344, 2143289344
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "3083fae4e83cb18f243050f920b18e9a2abbc55fe2e2bde7dcf2892fd2da246a",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 85,
+          "backendRow": 85
+        }
+      }
+    },
+    "nekopara-vol3-engine-2.6.1.76": {
+      "executableSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "physicalReceipt": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PHYSICAL-MAIN-GEOMETRY-76.json",
+        "sha256": "27de5af9380ffe3999fcc16cc2a4380a1e94d30ba9f48c8f4096f8da81550a21"
+      },
+      "initializedBackendReceipt": {
+        "path": ".local/phase11/modern-auxiliary-tables/INITIALIZED-GEOMETRY-BACKEND-76.json",
+        "sha256": "597aeace460a41ca80486ec0e12fa695130d21c4657a246bda42f7e15db50de0"
+      },
+      "backendAdapter": {
+        "path": ".local/phase11/modern-auxiliary-tables/calculation-oracle-INITIALIZED-CAPTURE.mjs",
+        "sha256": "dabd88c0b5ac6fbb89fabf9666de13f1ac30affa32345318a8169307b51e0f6e"
+      },
+      "cases": {
+        "inverse affine": {
+          "input": {
+            "profile": "nekopara-vol3-engine-2.6.1.76",
+            "table": "main",
+            "id": 350,
+            "domain": "matrix",
+            "operation": "matrix.inverse",
+            "name": "inverse affine",
+            "args": [64],
+            "initial": {
+              "words": [
+                [
+                  64,
+                  [
+                    1073741824, 0, 0, 0, 0, 1082130432, 0, 0, 0, 0, 1090519040, 0, 1084227584,
+                    3225419776, 1088421888, 1065353216
+                  ]
+                ]
+              ]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "memory",
+                  "offset": 64,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1056964608, 0, 0, 0, 0, 1048576000, 0, 0, 0, 0, 1040187392, 0, 3223322624,
+                  1061158912, 3210739712, 1065353216
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1056964607, 0, 0, 0, 0, 1048575999, 0, 0, 0, 0, 1040187391, 0, 3223322623,
+                  1061158911, 3210739711, 1065353215
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 32,
+          "backendRow": 32
+        },
+        "inverse affine current": {
+          "input": {
+            "profile": "nekopara-vol3-engine-2.6.1.76",
+            "table": "main",
+            "id": 350,
+            "domain": "matrix",
+            "operation": "matrix.inverse",
+            "name": "inverse affine current",
+            "args": [4294967295],
+            "initial": {
+              "matrixWords": [
+                1073741824, 0, 0, 0, 0, 1082130432, 0, 0, 0, 0, 1090519040, 0, 1084227584,
+                3225419776, 1088421888, 1065353216
+              ]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [
+                  1056964608, 0, 0, 0, 0, 1048576000, 0, 0, 0, 0, 1040187392, 0, 3223322624,
+                  1061158912, 3210739712, 1065353216
+                ]
+              }
+            ],
+            "memory": {
+              "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [
+                  1056964607, 0, 0, 0, 0, 1048575999, 0, 0, 0, 0, 1040187391, 0, 3223322623,
+                  1061158911, 3210739711, 1065353215
+                ]
+              }
+            ],
+            "memory": {
+              "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 33,
+          "backendRow": 33
+        },
+        "inverse dense": {
+          "input": {
+            "profile": "nekopara-vol3-engine-2.6.1.76",
+            "table": "main",
+            "id": 350,
+            "domain": "matrix",
+            "operation": "matrix.inverse",
+            "name": "inverse dense",
+            "args": [64],
+            "initial": {
+              "words": [
+                [
+                  64,
+                  [
+                    1065353216, 1073741824, 1077936128, 0, 1073741824, 1084227584, 1088421888, 0,
+                    1077936128, 1088421888, 1093664768, 0, 1084227584, 3225419776, 1088421888,
+                    1065353216
+                  ]
+                ]
+              ]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "memory",
+                  "offset": 64,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1086324736, 3212836864, 3212836864, 0, 3212836864, 1073741824, 3212836864, 0,
+                  3212836864, 3212836864, 1065353216, 0, 3251634176, 1099956224, 3231711232,
+                  1065353216
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1086324735, 3212836863, 3212836863, 0, 3212836863, 1073741823, 3212836863, 0,
+                  3212836863, 3212836863, 1065353215, 0, 3251634175, 1099956223, 3231711231,
+                  1065353215
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 34,
+          "backendRow": 34
+        },
+        "inverse dense current": {
+          "input": {
+            "profile": "nekopara-vol3-engine-2.6.1.76",
+            "table": "main",
+            "id": 350,
+            "domain": "matrix",
+            "operation": "matrix.inverse",
+            "name": "inverse dense current",
+            "args": [4294967295],
+            "initial": {
+              "matrixWords": [
+                1065353216, 1073741824, 1077936128, 0, 1073741824, 1084227584, 1088421888, 0,
+                1077936128, 1088421888, 1093664768, 0, 1084227584, 3225419776, 1088421888,
+                1065353216
+              ]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [
+                  1086324736, 3212836864, 3212836864, 0, 3212836864, 1073741824, 3212836864, 0,
+                  3212836864, 3212836864, 1065353216, 0, 3251634176, 1099956224, 3231711232,
+                  1065353216
+                ]
+              }
+            ],
+            "memory": {
+              "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [
+                  1086324735, 3212836863, 3212836863, 0, 3212836863, 1073741823, 3212836863, 0,
+                  3212836863, 3212836863, 1065353215, 0, 3251634175, 1099956223, 3231711231,
+                  1065353215
+                ]
+              }
+            ],
+            "memory": {
+              "memory": "e5c459094045033288ddefbd8b393e985c5082ad33a866bdf8b3b70f0913b2c8",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 35,
+          "backendRow": 35
+        },
+        "vector4.normalize 3,4,0,0": {
+          "input": {
+            "profile": "nekopara-vol3-engine-2.6.1.76",
+            "table": "main",
+            "id": 352,
+            "domain": "matrix",
+            "operation": "vector4.normalize",
+            "name": "vector4.normalize 3,4,0,0",
+            "args": [64],
+            "initial": {
+              "words": [[64, [1077936128, 1082130432, 0, 0]]]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "memory",
+                  "offset": 64,
+                  "words": 4,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [1058642329, 1061997772, 0, 0]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [1058642330, 1061997773, 0, 0]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 46,
+          "backendRow": 46
+        },
+        "vector4.normalize 1,0,0,0": {
+          "input": {
+            "profile": "nekopara-vol3-engine-2.6.1.76",
+            "table": "main",
+            "id": 352,
+            "domain": "matrix",
+            "operation": "vector4.normalize",
+            "name": "vector4.normalize 1,0,0,0",
+            "args": [64],
+            "initial": {
+              "words": [[64, [1065353216, 0, 0, 0]]]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "memory",
+                  "offset": 64,
+                  "words": 4,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [1065353216, 0, 0, 0]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [1065353215, 0, 0, 0]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 47,
+          "backendRow": 47
+        },
+        "normalize heap": {
+          "input": {
+            "profile": "nekopara-vol3-engine-2.6.1.76",
+            "table": "main",
+            "id": 352,
+            "domain": "matrix",
+            "operation": "vector4.normalize",
+            "name": "normalize heap",
+            "args": [8200],
+            "initial": {
+              "blocks": [48],
+              "words": [[8200, [1077936128, 1082130432, 0, 0]]]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "block:1",
+                  "offset": 8,
+                  "words": 4,
+                  "ulp": 1
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "block:1",
+                "offset": 8,
+                "words": [1058642329, 1061997772, 0, 0]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "1d13ffc6adda38ddb6fbbcab785e1870cc3ebbd97058f48dc29b6bff34d7e480",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "block:1": "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "block:1",
+                "offset": 8,
+                "words": [1058642330, 1061997773, 0, 0]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "1d13ffc6adda38ddb6fbbcab785e1870cc3ebbd97058f48dc29b6bff34d7e480",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "block:1": "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 79,
+          "backendRow": 79
+        },
+        "matrix.inverse fractional": {
+          "input": {
+            "profile": "nekopara-vol3-engine-2.6.1.76",
+            "table": "main",
+            "id": 350,
+            "domain": "matrix",
+            "operation": "matrix.inverse",
+            "name": "matrix.inverse fractional",
+            "args": [64],
+            "initial": {
+              "words": [
+                [
+                  64,
+                  [
+                    1066192077, 3207803699, 1045220557, 1022739087, 1050253722, 1077516698,
+                    3216192307, 3164854026, 3206125978, 1053609165, 1063675494, 1036831949,
+                    1080872141, 3221644902, 1082759578, 1065353216
+                  ]
+                ]
+              ]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "memory",
+                  "offset": 64,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1067973533, 1045870988, 1053206338, 3180822798, 1059855940, 1051144987,
+                  1062189330, 3183615067, 1072365194, 1007836608, 1072695750, 3195551498,
+                  3241503033, 3187905606, 3237573584, 1074233037
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1067973532, 1045870987, 1053206337, 3180822797, 1059855939, 1051144986,
+                  1062189329, 3183615066, 1072365192, 1007836607, 1072695748, 3195551497,
+                  3241503032, 3187905605, 3237573582, 1074233036
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "fd0680f05647a221a409f36f91a4490f07c7d0a5c5c263fca10108fcd4668ca2",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 83,
+          "backendRow": 83
+        },
+        "rotate large argument": {
+          "input": {
+            "profile": "nekopara-vol3-engine-2.6.1.76",
+            "table": "main",
+            "id": 204,
+            "domain": "matrix",
+            "operation": "matrix.rotateXYZ",
+            "name": "rotate large argument",
+            "args": [64, 1900671690, 0, 0],
+            "initial": {
+              "words": [
+                [
+                  64,
+                  [
+                    1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0, 1065353216, 0, 0, 0, 0,
+                    1065353216
+                  ]
+                ]
+              ]
+            },
+            "policy": {
+              "memory": [
+                {
+                  "region": "memory",
+                  "offset": 64,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                },
+                {
+                  "region": "state:current-matrix",
+                  "offset": 0,
+                  "words": 16,
+                  "ulp": 1,
+                  "atol": 0,
+                  "rtol": 0
+                }
+              ]
+            },
+            "oracle": {
+              "boundaries": [
+                "kernel32.dll!GetLastError",
+                "kernel32.dll!SetLastError",
+                "kernel32.dll!TlsGetValue",
+                "kernel32.dll!TlsSetValue"
+              ]
+            }
+          },
+          "backendGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  1065353216, 0, 0, 0, 0, 1900671690, 0, 0, 0, 0, 1900671690, 0, 0, 0, 0, 1065353216
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "3083fae4e83cb18f243050f920b18e9a2abbc55fe2e2bde7dcf2892fd2da246a",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalGolden": {
+            "control": 2,
+            "resultWritten": false,
+            "floatingMemory": [
+              {
+                "region": "memory",
+                "offset": 64,
+                "words": [
+                  2143289344, 2143289344, 2143289344, 2143289344, 2143289344, 2143289344,
+                  2143289344, 2143289344, 2143289344, 2143289344, 2143289344, 2143289344,
+                  2143289344, 2143289344, 2143289344, 2143289344
+                ]
+              },
+              {
+                "region": "state:current-matrix",
+                "offset": 0,
+                "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+              }
+            ],
+            "memory": {
+              "memory": "3083fae4e83cb18f243050f920b18e9a2abbc55fe2e2bde7dcf2892fd2da246a",
+              "shared": "30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58",
+              "state:current-matrix": "f5a5fd42d16a20302798ef6ed309979b43003d2320d9f0e8ea9831a92759fb4b"
+            }
+          },
+          "physicalRow": 85,
+          "backendRow": 85
+        }
+      }
+    }
+  }
+}

@@ -30,6 +30,30 @@ export function linearInterpolateSSEWords(first, last, start, end, current) {
   return sseFloat32Arithmetic('add', sseFloat32Arithmetic('multiply', fraction, difference), first);
 }
 
+export function rotateVectorSSEWords(vector, axis, sine, cosine) {
+  const [first, second] = axis === 0 ? [1, 2] : axis === 1 ? [0, 2] : [0, 1],
+    a = vector[first],
+    b = vector[second],
+    ac = sseFloat32Arithmetic('multiply', a, cosine),
+    bs = sseFloat32Arithmetic('multiply', b, sine),
+    bc = sseFloat32Arithmetic('multiply', b, cosine),
+    as = sseFloat32Arithmetic('multiply', a, sine),
+    result = vector.slice();
+  result[first] =
+    axis === 0
+      ? sseFloat32Arithmetic('add', bs, ac)
+      : sseFloat32Arithmetic(axis === 1 ? 'subtract' : 'add', ac, bs);
+  result[second] = sseFloat32Arithmetic(axis === 1 ? 'add' : 'subtract', bc, as);
+  return result;
+}
+
+export function lengthSquaredSSEWord(vector) {
+  const squares = vector.map((word) => sseFloat32Arithmetic('multiply', word, word));
+  return squares
+    .slice(1)
+    .reduce((sum, square) => sseFloat32Arithmetic('add', sum, square), squares[0]);
+}
+
 // The selected SSE2 helpers use quantized midpoint seeds, then one Newton
 // correction. Keep that seed precision and the unconditional denormal flush.
 function approximate(word, squareRoot) {

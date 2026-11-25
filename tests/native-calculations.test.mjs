@@ -14,6 +14,9 @@ import { observeNativeCase } from './fixtures/native-differential.mjs';
 const golden = JSON.parse(
   await readFile(new URL('./fixtures/geometry-golden.json', import.meta.url)),
 );
+const initializedGeometry = JSON.parse(
+  await readFile(new URL('./fixtures/modern-interpreter-geometry-golden.json', import.meta.url)),
+);
 for (const [profile, record] of Object.entries(golden.profiles)) {
   test(`${profile} main matrix/vector golden GCALL without an EXE`, async () => {
     for (const input of nativeGeometryCases(profile))
@@ -80,7 +83,11 @@ for (const [profile, record] of Object.entries(golden.profiles)) {
         [12, 13, 14].map((i) =>
           bitsFloat(new DataView(world.calculations.matrix.buffer).getUint32(i * 4, true)),
         );
-      assert.deepEqual(read(fresh), [-3, -4, -5]);
+      assert.deepEqual(
+        read(fresh),
+        initializedGeometry.profiles[profile].coldInverse.outputWords.slice(12, 15).map(bitsFloat),
+        'cold current-matrix inverse retains the original SSE reciprocal result words',
+      );
       assert.deepEqual(read(original), [3, 4, 5]);
     } finally {
       await fresh.close({ flushFiles: false });

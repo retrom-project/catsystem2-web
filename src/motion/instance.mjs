@@ -32,6 +32,8 @@ import {
   normalizeSSEWords,
   transformSSEWords,
   linearInterpolateSSEWords,
+  rotateVectorSSEWords,
+  sseFloat32Arithmetic,
 } from './native-sse.mjs';
 import {
   identity,
@@ -98,6 +100,8 @@ export class MotionInstance {
     this.relativeRotationUsesSSEWords = abi.motion?.relativeRotationUsesSSEWords;
     this.vectorOperationsUseNativeGeometry = abi.motion?.vectorOperationsUseNativeGeometry;
     this.vectorComponentsUseX87 = abi.motion?.vectorComponentsUseX87;
+    this.vectorComponentsUseSSEWords = abi.motion?.vectorComponentsUseSSEWords;
+    this.geometryArgumentsReadFrame = abi.motion?.geometryArgumentsReadFrame;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
     this.currentMatrixFallback = abi.motion?.currentMatrixFallback;
     this.zeroWidthRotationReadsStack = abi.motion?.zeroWidthRotationReadsStack;
@@ -192,11 +196,20 @@ export class MotionInstance {
       throw new Error(`Unrecovered MOT native ${this.profile}:${id.toString(16)}`);
     const stackRotation = id === 23 && this.zeroWidthRotationReadsStack && args.length === 0;
     const scalarFrame = this.math?.scalarArgumentsReadFrame && contract.name.startsWith('math.');
-    if (id !== 0 && !stackRotation && !scalarFrame && args.length !== contract.argumentWords)
+    const geometryFrame =
+      this.geometryArgumentsReadFrame && ((id >= 18 && id <= 37) || id === 43 || id === 44);
+    if (
+      id !== 0 &&
+      !stackRotation &&
+      !scalarFrame &&
+      !geometryFrame &&
+      args.length !== contract.argumentWords
+    )
       throw new Error(
         `MOT ${contract.name} expects ${contract.argumentWords} arguments, got ${args.length}`,
       );
-    if (scalarFrame) args = scalarArgumentWords(args, machine, contract.argumentWords);
+    if (scalarFrame || geometryFrame)
+      args = scalarArgumentWords(args, machine, contract.argumentWords);
     const word = (value) => nativeReply(1, value >>> 0),
       real = (value) => word(floatBits(f(value))),
       done = () => nativeReply(2),
@@ -300,6 +313,16 @@ export class MotionInstance {
       case 18:
       case 19:
       case 20: {
+        if (this.vectorComponentsUseSSEWords) {
+          const addresses = args.slice(0, 3),
+            vector = addresses.map((address) => machine.load(address)),
+            sine = nativeTrigWord('sin', args[3], this.math?.trigUsesNativeReduction),
+            cosine = nativeTrigWord('cos', args[3], this.math?.trigUsesNativeReduction);
+          rotateVectorSSEWords(vector, id - 18, sine, cosine).forEach((word, index) =>
+            machine.store(addresses[index], word),
+          );
+          return done();
+        }
         if (this.vectorComponentsUseX87) {
           const addresses = args.slice(0, 3),
             vector = addresses.map((address) => quietFloat32Bits(machine.load(address))),
@@ -317,6 +340,20 @@ export class MotionInstance {
       }
       case 21:
       case 22: {
+        if (this.vectorComponentsUseSSEWords) {
+          const operation = id === 21 ? 'add' : 'multiply';
+          args.slice(0, 3).forEach((address, i) => {
+            const component = machine.load(address),
+              factor = args[i + 3];
+            machine.store(
+              address,
+              i === 2
+                ? sseFloat32Arithmetic(operation, component, factor)
+                : sseFloat32Arithmetic(operation, factor, component),
+            );
+          });
+          return done();
+        }
         if (this.vectorComponentsUseX87) {
           const components = args.slice(0, 3).map((address) => {
               const bytes = machine.bytes(address, 4);

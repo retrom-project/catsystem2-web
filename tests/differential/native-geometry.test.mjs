@@ -6,6 +6,7 @@ import { nativeGeometryCases } from '../fixtures/geometry-cases.mjs';
 import { calculationOracle } from '../fixtures/calculation-oracle.mjs';
 import { observeNativeCase } from '../fixtures/native-differential.mjs';
 import { compareNativeObservations } from '../fixtures/native-observations.mjs';
+import { physicalGeometryObservation } from '../fixtures/native-golden.mjs';
 for (const fixture of await engineFixtureSet())
   test(
     `${fixture.profile} independent matrix/vector GCALL`,
@@ -20,7 +21,11 @@ for (const fixture of await engineFixtureSet())
           await t.test(input.name, async () => {
             compareNativeObservations(
               await observeNativeCase(input),
-              await observeNativeCase(input, engine, calculationOracle),
+              physicalGeometryObservation(
+                await observeNativeCase(input, engine, calculationOracle),
+                input,
+                fixture.sha256,
+              ),
               input.policy,
             );
           });

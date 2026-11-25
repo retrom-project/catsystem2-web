@@ -6,7 +6,11 @@ import { compareFloatWord } from './native-observations.mjs';
 const scalarCalibration = JSON.parse(
   await readFile(new URL('./scalar-backend-calibration.json', import.meta.url)),
 );
+const geometryCalibration = JSON.parse(
+  await readFile(new URL('./geometry-backend-calibration.json', import.meta.url)),
+);
 export const scalarGoldenScope = scalarCalibration.scope;
+export const geometryGoldenScope = geometryCalibration.scope;
 
 // This private capture boundary never changes a runtime result. Check the raw
 // backend observation first, then retain the separately observed physical word.
@@ -19,6 +23,19 @@ export function physicalScalarObservation(observation, input, executableSha256) 
     calibration.aliases.some(({ table, id }) => table === input.table && id === input.id),
     'scalar calibration exact wrapper',
   );
+  return physicalObservation(observation, input, calibration);
+}
+
+export function physicalGeometryObservation(observation, input, executableSha256) {
+  const profile = geometryCalibration.profiles[input.profile],
+    calibration = profile?.cases[input.name];
+  if (!calibration) return observation;
+  assert.equal(executableSha256, profile.executableSha256, 'geometry calibration own PE');
+  assert.deepEqual(input, calibration.input, 'geometry calibration exact input and VM context');
+  return physicalObservation(observation, input, calibration);
+}
+
+function physicalObservation(observation, input, calibration) {
   assert.deepEqual(
     nativeGolden(observation, input.policy),
     calibration.backendGolden,
@@ -26,7 +43,7 @@ export function physicalScalarObservation(observation, input, executableSha256) 
   );
   const result = {
     ...observation,
-    value: calibration.physicalValue,
+    value: calibration.physicalGolden.value,
     memory: Object.fromEntries(
       Object.entries(observation.memory).map(([name, bytes]) => [name, bytes.slice()]),
     ),
