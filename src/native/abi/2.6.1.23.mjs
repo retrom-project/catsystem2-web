@@ -91,7 +91,18 @@ export const engine23CommonHeads = {
 };
 
 const legacyTaskWordOperations = [126, 127, 128, 129, 131, 132, 138, 139];
+const rectangleOperations = [214, 215, 216, 217];
 const mainEvidence = [
+  {
+    ids: [11],
+    value:
+      'Own 2.6.1.23 wrapper 0x47b580 translates seven VM destinations before GetLocalTime. It writes year, month, weekday, day, hour, minute and second as DWORDs in that order.',
+  },
+  {
+    ids: rectangleOperations,
+    value:
+      'Own 2.6.1.23 wrappers 0x486000–0x4861b0 use signed Win32 RECT records, ordered alias-safe union and physical bitmap dimensions.',
+  },
   {
     ids: [26, 37],
     value:
@@ -1062,6 +1073,7 @@ export default {
     extendedQueries: null,
   },
   calendar: { weekdayAlgorithm: 'century-integer' },
+  rectangles: { strictArity: true },
   fileIO: { rawModeAndBoundedBuffer: true },
   globalFile: { growthBytes: 524288, optionalTaskRecords: true },
   nameTable: { legacyFieldBytes: 32, fixedPairs: true, pairByteLimit: 64 * 1024 * 1024 },
@@ -1355,6 +1367,31 @@ export default {
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
         { ids: [27, 28], fields: { resultWritten: true } },
+        ...rectangleOperations.map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) => {
+              if (parameter.type.kind === 'handle')
+                return {
+                  ...parameter,
+                  type: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' },
+                };
+              if (parameter.type.kind !== 'pointer') return parameter;
+              const direction =
+                parameter.name !== 'destination' ? 'in' : id === 214 ? 'out' : 'inout';
+              return {
+                ...parameter,
+                type: {
+                  kind: 'pointer',
+                  direction,
+                  addressSpace: 'vm',
+                  target: { kind: 'record', name: 'signed 16-byte RECT' },
+                },
+              };
+            }),
+            resultWritten: id === 217,
+          },
+        })),
         {
           ids: [289],
           fields: {

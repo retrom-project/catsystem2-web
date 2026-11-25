@@ -328,6 +328,7 @@ export function nativeStandard(id, args, m, services = {}) {
       return done();
     case 11: {
       requireArguments(7);
+      for (const address of args) m.bytes(address, 4);
       const date = services.date ? services.date() : new Date();
       [
         date.getFullYear(),

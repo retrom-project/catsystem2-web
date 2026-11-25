@@ -8,12 +8,81 @@ import { NativeRectangles } from '../oracle/rectangles.mjs';
 import { rectangleFixture } from './fixtures/rectangle-fixture.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { KCSMachine, readKCS } from '../src/kcs.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 const put = (machine, at, values) => values.forEach((value, i) => machine.store(at + i * 4, value)),
   get = (machine, at) => Array.from({ length: 4 }, (_, i) => machine.load(at + i * 4) | 0);
+
+test('fixed SDK 2.6.1.23 publishes signed rectangles and ordered local date words through GCALL', async (t) => {
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23'),
+    target = 256,
+    shared = 0x80000080,
+    dateWords = 784,
+    stackMarker = 0x0d37c456;
+  t.after(() => world.close({ flushFiles: false }));
+  const bitmap = world.graphics.images.create(7, 9, world.main.id);
+  Object.assign(world.graphics.images.get(bitmap).state, { canvasWidth: 512, canvasHeight: 600 });
+  world.runtime.services.date = () => new Date(2024, 1, 29, 10, 11, 12, 543);
+  async function prepare(instructions) {
+    const task = { ...world.main, io: null },
+      script = await readKCS(kcsProgram(instructions));
+    task.machine = new KCSMachine(
+      script,
+      { native: (id, args, m) => world.runtime.scheduler.native(task, id, args, m) },
+      world.runtime.scheduler.shared,
+    );
+    return task;
+  }
+  const gc = (id, args) => [...args.map((value) => [37, value]), [43, id, args.length * 4]];
+  const task = await prepare([
+    [37, stackMarker],
+    ...gc(214, [target]),
+    ...gc(215, [target, shared]),
+    ...gc(216, [target, bitmap, -11, -20]),
+    ...gc(217, [target]),
+    ...gc(217, [shared + 32]),
+    ...gc(11, [
+      dateWords,
+      dateWords + 4,
+      shared + 24,
+      dateWords + 8,
+      dateWords + 12,
+      shared + 24,
+      dateWords + 16,
+    ]),
+    [59],
+  ]);
+  const m = task.machine,
+    stack = m.sp;
+  put(m, target, [-200, -200, 200, 200]);
+  put(m, shared, [-2, -5, 8, 10]);
+  put(m, shared + 32, [4, 0, 4, 1]);
+  m.store(target - 4, stackMarker);
+  m.store(target + 16, stackMarker);
+  assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+  assert.equal(m.sp, stack + 12);
+  assert.equal(m.pop(), 1);
+  assert.equal(m.pop(), 0);
+  assert.equal(m.pop(), stackMarker);
+  assert.deepEqual(get(m, target), [-11, -20, 8, 10]);
+  assert.deepEqual([m.load(target - 4), m.load(target + 16)], [stackMarker, stackMarker]);
+  assert.deepEqual(
+    [...get(m, dateWords), m.load(dateWords + 16), m.load(shared + 24)],
+    [2024, 2, 29, 10, 12, 11],
+  );
+
+  const rejected = await prepare([
+    ...gc(11, [target, target + 4, target + 8, target + 12, dateWords, shared, 0xffffffff]),
+    [59],
+  ]);
+  rejected.machine.bytes(target, 16).fill(0xba);
+  await assert.rejects(world.runtime.scheduler.execute(rejected), /KCS memory/);
+  assert.deepEqual(rejected.machine.bytes(target, 16), new Uint8Array(16).fill(0xba));
+});
 
 test('shared rectangle platform services match 748 pinned Wine signed, empty and aliased cases', async () => {
   const golden = JSON.parse(

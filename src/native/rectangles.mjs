@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeRectangleUnion } from './windows-rectangles.mjs';
 export const NATIVE_RECTANGLE_OPERATIONS = Object.freeze([
   'rectangle.clear',
   'rectangle.union',
@@ -10,27 +11,22 @@ export const NATIVE_RECTANGLE_OPERATIONS = Object.freeze([
 ]);
 const empty = (r) => r[0] >= r[2] || r[1] >= r[3];
 const read = (m, a) => Array.from({ length: 4 }, (_, i) => m.load((a + i * 4) >>> 0) | 0);
-const union = (a, b) =>
-  empty(a)
-    ? empty(b)
-      ? [0, 0, 0, 0]
-      : b
-    : empty(b)
-      ? a
-      : [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[2], b[2]), Math.max(a[3], b[3])];
 export function nativeRectangle(operation, args, machine, argumentWords, images) {
   const words = Array.from(args);
   while (words.length < argumentWords) words.push(machine.nativeArgument(words.length));
   const [address, b, x, y, z] = words;
+  machine.bytes(address, 16);
   if (operation === 'rectangle.isEmpty')
     return nativeReply(1, Number(empty(read(machine, address))));
   let result = [0, 0, 0, 0];
   if (operation !== 'rectangle.clear') {
     const a = read(machine, address);
-    if (operation === 'rectangle.union') result = union(a, read(machine, b));
-    else if (operation === 'rectangle.unionBitmap') {
+    if (operation === 'rectangle.union') {
+      machine.bytes(b, 16);
+      result = nativeRectangleUnion(a, read(machine, b));
+    } else if (operation === 'rectangle.unionBitmap') {
       const bitmap = b ? images.get(b) : null;
-      result = union(a, [
+      result = nativeRectangleUnion(a, [
         x | 0,
         y | 0,
         (x + (bitmap?.width ?? 0)) | 0,
@@ -50,15 +46,20 @@ export function nativeRectangle(operation, args, machine, argumentWords, images)
   return nativeReply(2);
 }
 export function installNativeRectangles(world) {
-  for (const entry of nativeABI(world.profile).tables.main.entries)
+  const abi = nativeABI(world.profile);
+  for (const entry of abi.tables.main.entries)
     if (NATIVE_RECTANGLE_OPERATIONS.includes(entry.name))
-      world.runtime.register('main', entry.id, (args, machine) =>
-        nativeRectangle(
+      world.runtime.register('main', entry.id, (args, machine) => {
+        if (abi.rectangles?.strictArity && args.length !== entry.signature.argumentWords)
+          throw new Error(
+            `Native rectangle ${entry.id} expects ${entry.signature.argumentWords} argument words`,
+          );
+        return nativeRectangle(
           entry.name,
           args,
           machine,
           entry.signature.argumentWords,
           world.graphics.images,
-        ),
-      );
+        );
+      });
 }
