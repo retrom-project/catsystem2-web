@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { openImage } from '../src/formats/hg3.mjs';
-import { KCSMachine, readKCS } from '../src/kcs.mjs';
+import { encodeCP932, KCSMachine, readKCS } from '../src/kcs.mjs';
 import { floatBits, NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { MOTION_ABI } from '../src/motion/abi.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
@@ -119,6 +119,44 @@ test('2.6.1.63 task queries preserve route keys, receiver flags and cold restora
   } finally {
     await world.close({ flushFiles: false });
   }
+});
+
+test('2.6.1.63 Main655 routes a bounded CP932 Plane notification through its caller Top', async (t) => {
+  const world = await dataWorld(profile, { 'main-655.kcs': mainProgram(655, 2) });
+  t.after(() => world.close({ flushFiles: false }));
+  const plane = await world.objects.create({ kind: 2, parent: world.root });
+  const target = world.nativeTaskID(plane);
+  const receiver = world.objects.objects.get(plane).implementation;
+  const state = structuredClone(receiver.snapshot());
+  const send = world.sendNativeEngine.bind(world);
+  const sent = [];
+  world.sendNativeEngine = (nativeID, sender, message, w, l, context) => {
+    if (message === 86) {
+      const packet = context.payload.bytes(l, 256);
+      const length = packet.indexOf(0);
+      assert.ok(length >= 0);
+      sent.push([nativeID, w, l, context.flags, ...packet.subarray(0, length)]);
+    }
+    return send(nativeID, sender, message, w, l, context);
+  };
+  const call = (nativeID, address, value) =>
+    executeMain(world, 655, [nativeID, address], (machine) => {
+      if (value !== undefined) {
+        const bytes = encodeCP932(value);
+        machine.bytes(address, bytes.length + 1).set([...bytes, 0]);
+        machine.store(352, -17);
+      }
+    });
+  await call(target, 256, '画像%d[G352]');
+  await call(target, 0x80000100, '前景%%');
+  await call(0, 256, '');
+  await assert.rejects(call(target, 0xffffffff), /KCS memory ffffffff\+1/);
+  assert.deepEqual(sent, [
+    [target, 0, 0, 0, ...encodeCP932('画像-17')],
+    [target, 0, 0, 0, ...encodeCP932('前景%')],
+    [0, 0, 0, 0],
+  ]);
+  assert.deepEqual(receiver.snapshot(), state);
 });
 
 test('2.6.1.63 Main541 releases existing intersecting texture pages only with an active owner', async (t) => {
