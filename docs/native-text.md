@@ -63,6 +63,14 @@ does not consume the previous measurement's mutable FreeType slot. Font bytes,
 layout records, raster pixels and the existing checkpoint fields stay owned
 by their original producers.
 
+Ordinary owned native glyphs also reuse the pure color and shadow raster.
+Every call still obtains the current glyph and checks all alpha bytes, metrics,
+colors and shadow settings. Shared or resizable buffers, accessor metrics and
+unknown providers keep the ordinary compositor path. Returned pixels and
+rectangles remain independent copies. Each font owner retains at most 512
+rasters and 4 MiB of logical array/key content; eviction recomputes a complete
+glyph, and close or cold restore discards the cache.
+
 Build the font backends with:
 
 ```sh

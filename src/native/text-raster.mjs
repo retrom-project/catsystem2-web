@@ -1,6 +1,75 @@
 // SPDX-License-Identifier: MPL-2.0
 import { blendBitmapPixel, resampleBitmap } from './image.mjs';
 import { blendPackedRow, packedBitmapWords } from './raster-kernel.mjs';
+import { nativeGlyphRasterCache } from './font-backend.mjs';
+
+const MAX_RASTER_BYTES = 4 * 1024 * 1024,
+  MAX_RASTER_ENTRIES = 512,
+  typedArray = Object.getPrototypeOf(Uint8Array.prototype),
+  typedBuffer = Object.getOwnPropertyDescriptor(typedArray, 'buffer').get,
+  typedLength = Object.getOwnPropertyDescriptor(typedArray, 'length').get,
+  resizable = Object.getOwnPropertyDescriptor(ArrayBuffer.prototype, 'resizable')?.get;
+function ordinaryBuffer(view) {
+  const buffer = typedBuffer.call(view);
+  return buffer instanceof ArrayBuffer && !resizable?.call(buffer);
+}
+function rasterIdentity(glyph, r, padding) {
+  if (
+    !ArrayBuffer.isView(r) ||
+    Object.getPrototypeOf(r) !== Int32Array.prototype ||
+    !ordinaryBuffer(r)
+  )
+    return null;
+  const metrics = ['width', 'height', 'originX', 'originY', 'advanceX'];
+  if (
+    metrics.some(
+      (key) => !Object.hasOwn(Object.getOwnPropertyDescriptor(glyph, key) ?? {}, 'value'),
+    )
+  )
+    return null;
+  const values = [...metrics.map((key) => glyph[key]), r[2], r[3], r[7], r[13], r[14], padding];
+  if (!values.every(Number.isFinite)) return null;
+  const alpha = Object.getOwnPropertyDescriptor(glyph, 'alpha')?.value;
+  if (
+    !ArrayBuffer.isView(alpha) ||
+    Object.getPrototypeOf(alpha) !== Uint8Array.prototype ||
+    !ordinaryBuffer(alpha) ||
+    typedLength.call(alpha) !== glyph.width * glyph.height
+  )
+    return null;
+  return { alpha, values, length: typedLength.call(alpha) };
+}
+function sameRaster(cached, current) {
+  if (
+    !cached ||
+    cached.alpha.length !== current.length ||
+    cached.values.some((value, index) => !Object.is(value, current.values[index]))
+  )
+    return false;
+  for (let i = 0; i < current.length; i++) if (cached.alpha[i] !== current.alpha[i]) return false;
+  return true;
+}
+function keepRaster(cache, glyph, identity, shape) {
+  const bytes = shape.rgba.byteLength + identity.alpha.byteLength + identity.values.length * 8 + 32,
+    previous = cache.entries.get(glyph);
+  if (previous) {
+    cache.bytes -= previous.bytes;
+    cache.entries.delete(glyph);
+  }
+  if (bytes > MAX_RASTER_BYTES) return;
+  cache.entries.set(glyph, {
+    values: identity.values,
+    alpha: Uint8Array.prototype.slice.call(identity.alpha),
+    shape: { ...shape, rgba: shape.rgba.slice(), rect: [...shape.rect] },
+    bytes,
+  });
+  cache.bytes += bytes;
+  while (cache.bytes > MAX_RASTER_BYTES || cache.entries.size > MAX_RASTER_ENTRIES) {
+    const key = cache.entries.keys().next().value;
+    cache.bytes -= cache.entries.get(key).bytes;
+    cache.entries.delete(key);
+  }
+}
 // GDI gray64, FreeType gray256 and image-font cells share the integer compositor.
 export function rasterTextGlyph(
   parser,
@@ -50,6 +119,13 @@ export function rasterTextGlyph(
     glyph = parser.glyphs.glyph(font, parser.character(r));
     metric = parser.glyphs.measure(font, 'Hg');
   }
+  // Native lookup still runs on every invocation. Reuse only the pure shape
+  // after checking all live alpha bytes, metrics, colors and shadow inputs.
+  const cache = !image && ft ? nativeGlyphRasterCache(parser.glyphs, glyph) : null,
+    identity = cache && rasterIdentity(glyph, r, padding),
+    cached = identity && cache.entries.get(glyph);
+  if (identity && sameRaster(cached, identity))
+    return { ...cached.shape, rgba: cached.shape.rgba.slice(), rect: [...cached.shape.rect] };
   const fixed = !ft && font.fixed && r[6] > glyph.advanceX,
     x = image
       ? 1
@@ -120,7 +196,9 @@ export function rasterTextGlyph(
       blendPackedRow(rgba, 0, main, 0, base.length, outputWords, inputWords, 255);
     else for (let i = 0; i < base.length; i++) blendBitmapPixel(rgba, i * 4, main, i * 4);
   }
-  return { width, height, rgba, rect: [0, 0, width, height] };
+  const shape = { width, height, rgba, rect: [0, 0, width, height] };
+  if (identity) keepRaster(cache, glyph, identity, shape);
+  return shape;
 }
 function empty() {
   return { width: 0, height: 0, rgba: new Uint8ClampedArray(), rect: [0, 0, 0, 0] };

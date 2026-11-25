@@ -3,7 +3,29 @@ import { nativeABI } from './abi/index.mjs';
 import { NativeTextParser } from './text-parser.mjs';
 import { nativeCategoryFilename, readNativeResource } from './resource-file.mjs';
 const pending = new Map(),
-  verifiedAdvance = new WeakMap();
+  verifiedAdvance = new WeakMap(),
+  rasterOwners = new WeakMap();
+
+// Only ordinary owned native glyphs can enter the pure raster cache. Keep
+// provider checks as descriptors so checking an accessor never invokes it.
+export function nativeGlyphRasterCache(owner, glyph) {
+  const state = rasterOwners.get(owner),
+    source = state?.glyphs.get(glyph);
+  if (!source) return null;
+  const provider =
+      Object.getOwnPropertyDescriptor(owner, 'glyphNative') ??
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(owner), 'glyphNative'),
+    module = Object.getOwnPropertyDescriptor(owner, 'module')?.value;
+  if (source.module !== module || provider?.value !== ordinaryGlyphNative) return null;
+  const verified = verifiedAdvance.get(module);
+  if (
+    !verified ||
+    Object.getOwnPropertyDescriptor(module, '_cs2_font_advance')?.value !== verified.advance ||
+    Object.getOwnPropertyDescriptor(module, '_cs2_font_glyph')?.value !== verified.glyph
+  )
+    return null;
+  return state.cache;
+}
 export function loadNativeFreeType(version) {
   const filename = version === '2.4.8' ? 'native_freetype_248.mjs' : 'native_freetype.mjs';
   if (!pending.has(version))
@@ -156,6 +178,14 @@ export class NativeTextFonts {
                     : 0
                   : m.HEAPU8[pointer + y * pitch + x];
           glyph = { width, height, originX, originY, advanceX, alpha };
+          if (this.ownedFonts.has(f)) {
+            let state = rasterOwners.get(this);
+            if (!state) {
+              state = { glyphs: new WeakMap(), cache: { entries: new Map(), bytes: 0 } };
+              rasterOwners.set(this, state);
+            }
+            state.glyphs.set(glyph, { module: m });
+          }
         }
       } finally {
         m._free(out);
@@ -181,5 +211,7 @@ export class NativeTextFonts {
     this.glyphs.clear();
     this.advances = new WeakMap();
     this.ownedFonts = new WeakSet();
+    rasterOwners.delete(this);
   }
 }
+const ordinaryGlyphNative = NativeTextFonts.prototype.glyphNative;
