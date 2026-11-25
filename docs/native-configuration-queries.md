@@ -49,6 +49,15 @@ tests/native-preference-save.test.mjs` for the three configuration command
 families, including cold World restore and rejected storage I/O. File cold-read
 integration remains a separate check from a World snapshot restore.
 
+Preference files use `NativeFileStorage` independently of the completed native
+progress slots in `GAME_SAVE`. A fresh Core opens that persistent store before
+creating its World, then reads saved `setup.xml` before the first KCS executes.
+Independent instances under the same browser storage origin and host-supplied
+namespace share these preferences. Selecting an older progress slot leaves the
+current preferences intact; another namespace has separate preferences. Mounted
+read-only `setup.xml` is not treated as an existing user preference. The
+`GAME_SAVE` file selection continues to exclude this configuration file.
+
 All six operations query live JS configuration, sound and resource state.
 Formatting and comparisons retain narrow bytes and ABI-specific XML encodings.
 The implementation lives in [configuration-query.mjs](../src/native/configuration-query.mjs).
