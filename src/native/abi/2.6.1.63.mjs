@@ -138,6 +138,7 @@ export default {
   },
   xmlEncoding: 'Shift_JIS',
   text: {
+    debugPrintByteLimit: 500,
     freeTypeCharacterEncoding: 'cp932',
     freeTypeVersion: '2.4.8',
     characterLengthPairs: 'wide',

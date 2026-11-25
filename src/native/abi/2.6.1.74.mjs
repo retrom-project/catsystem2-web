@@ -58,6 +58,7 @@ export default {
     relativeRotationUsesSSEWords: true,
     vectorComponentsUseSSEWords: true,
   },
+  particle: { debugUsesNativeLogger: true },
   xmlEncoding: 'Shift_JIS',
   text: {
     freeTypeCharacterEncoding: 'cp932',
@@ -1864,10 +1865,15 @@ export default {
         ...nativeInterpreterGeometrySignatures('generic'),
       ],
       evidence: [
+        {
+          ids: [0],
+          value:
+            'Own unchanged physical IA32 formatter and actual CRT logger retain CP932 bytes through both stages, mapped first argv word and ignored tails, exact 499-byte terminated logs and control2 without a result store. Current real KCS compares complete VM/owner state and cold continuation against each own-PE input; native 500-byte unterminated output and unprovided logger variadic conversions remain diagnosed. See tests/fixtures/native-logger-golden.json and docs/kcs-vm.md.',
+        },
         { ids: NATIVE_INTERPRETER_GEOMETRY_IDS.generic, value: geometryEvidence },
         { ids: NATIVE_INTERPRETER_SCALAR_IDS['generic'], value: scalarEvidence },
         {
-          ids: [0, 38, 39, 40],
+          ids: [38, 39, 40],
           value:
             'historical-forced-scalar-direct-native-motion-audit-not-current-initialized-KCS-acceptance',
         },
@@ -1876,19 +1882,23 @@ export default {
     'particle-v1': {
       count: 44,
       slots: {
-        recovered: NATIVE_INTERPRETER_SCALAR_IDS['particle-v1'],
+        recovered: [0, ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v1']],
         declared: [
-          0, 1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-          40,
+          1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
         ],
       },
       signatures: nativeInterpreterScalarSignatures('particle-v1'),
       evidence: [
+        {
+          ids: [0],
+          value:
+            'Own unchanged physical IA32 formatter and actual CRT logger retain CP932 bytes through both stages, mapped first argv word and ignored tails, exact 499-byte terminated logs and control2 without a result store. Current real KCS compares complete VM/owner state and cold continuation against each own-PE input; native 500-byte unterminated output and unprovided logger variadic conversions remain diagnosed. See tests/fixtures/native-logger-golden.json and docs/kcs-vm.md. The two own Particle tables select the same exact receiver, which reads no owner field and uses the same formatter/logger bodies as Generic0; eight actual Particle entry calls verify the bridge with full writable .data snapshots.',
+        },
         { ids: NATIVE_INTERPRETER_SCALAR_IDS['particle-v1'], value: scalarEvidence },
         {
           ids: [
-            0, 1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
-            39, 40,
+            1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+            40,
           ],
           value: 'sdk-4.01-header-and-pinned-game-wrapper',
         },
@@ -1897,19 +1907,24 @@ export default {
     'particle-v2': {
       count: 51,
       slots: {
-        recovered: NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'],
+        recovered: [0, ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v2']],
         declared: [
-          0, 1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-          40, 44, 45, 46, 47, 48, 49, 50,
+          1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+          44, 45, 46, 47, 48, 49, 50,
         ],
       },
       signatures: nativeInterpreterScalarSignatures('particle-v2'),
       evidence: [
+        {
+          ids: [0],
+          value:
+            'Own unchanged physical IA32 formatter and actual CRT logger retain CP932 bytes through both stages, mapped first argv word and ignored tails, exact 499-byte terminated logs and control2 without a result store. Current real KCS compares complete VM/owner state and cold continuation against each own-PE input; native 500-byte unterminated output and unprovided logger variadic conversions remain diagnosed. See tests/fixtures/native-logger-golden.json and docs/kcs-vm.md. The two own Particle tables select the same exact receiver, which reads no owner field and uses the same formatter/logger bodies as Generic0; eight actual Particle entry calls verify the bridge with full writable .data snapshots.',
+        },
         { ids: NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'], value: scalarEvidence },
         {
           ids: [
-            0, 1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
-            39, 40, 44, 45, 46, 47, 48, 49, 50,
+            1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+            40, 44, 45, 46, 47, 48, 49, 50,
           ],
           value: 'sdk-4.01-header-and-pinned-game-wrapper',
         },

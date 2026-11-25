@@ -79,8 +79,24 @@ GCALL 的第二个操作数规定实参字节数。回调返回值是控制码�
 超过实际缓冲或形成循环引用的输入继续诊断，不使用 JavaScript `toFixed` 的边界代替原约束。
 
 公共 `native-format-golden.json` 保存五版原始物理结果已逐字节相同的作者输入。
-完整原字节、控制码、内存和宿主边界收据单独封存；VM 格式器对照不表示二次 logger、
-宽/64 位转换或整个 SDK 已完成。
+`native-logger-golden.json` 另外保存真实 Main1/Main14、Generic debug 和现代两个 Particle 表
+经过实际 CRT logger 的字节结果；第一层格式器结果不能代替调用方容量证明。
+Main1 按原循环转义百分号，Generic/Particle 直接交给第二层 logger。
+logger 的 500 字节局部区必须容纳终止 NUL：499 字节正例通过，原 500 字节不终止形态继续诊断。
+未提供 native variadic 参数而遗留的有效 CRT 转换也继续诊断。
+
+五版 Main1/Main14 包装读取固定的一个/两个 argv word，独立于 GCALL 声明长度；
+已映射短帧和额外尾字按原版读取，未映射 word 仍报实际地址诊断。
+Main14 先完成格式化再复制，支持源目标重叠，写两个终止 NUL 并返回原 VM 目标地址。
+其共享全局 scratch 的 1024 字节及更长输出仍是单独容量/布局审计边界，
+现代原版 4096 字节例会覆盖后邻矩阵索引；直接格式器的 10KiB 临时区证明不关闭这个边界。
+
+五版原 CRT 的 `%n` 默认关闭。有效目标指针也进入 invalid-parameter 路径，
+设置 errno 22 并走原终止诊断；当前实现保留诊断且不写目标。
+原 getter/初始化和 OS 叶捕获与未绑定宿主叶的失败记录分开封存。
+未证明的 count-output 启用状态、宽/64 位布局不准入；底层 owned buffer 的可写能力本身不启用 `%n`。
+旧三版 Generic0 的原版捕获保留，但其原有未准入状态未因共享 formatter 修复而改变。
+完整原字节、控制码、内存和宿主边界收据单独封存，整个 SDK 仍未完成。
 
 ## 固定切点
 

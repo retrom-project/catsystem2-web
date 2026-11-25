@@ -1,5 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
-import { KCSMachine, nativeReply, floatBits, bitsFloat, formatNative } from '../kcs.mjs';
+import {
+  KCSMachine,
+  nativeReply,
+  floatBits,
+  bitsFloat,
+  formatNativeAt,
+  nativeLogBytes,
+} from '../kcs.mjs';
 import { nativeCatalog } from '../native/catalog.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
 import { floatBytes, floats, floatWords, matrixStorage } from '../native/calculation-memory.mjs';
@@ -293,7 +300,9 @@ export class MotionInstance {
     if (unary.has(id)) return real(unary.get(id)(bitsFloat(args[0])));
     switch (id) {
       case 0: {
-        const text = formatNative(machine.string(args[0]), machine);
+        const text = new TextDecoder('shift_jis').decode(
+          nativeLogBytes(formatNativeAt(args[0] ?? machine.nativeArgument(0), machine)),
+        );
         this.messages.push({ frame: this.frame, text });
         this.onDebug?.(text);
         return done();

@@ -1,5 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
-import { KCSMachine, nativeReply, floatBits, bitsFloat, formatNative } from '../kcs.mjs';
+import {
+  KCSMachine,
+  nativeReply,
+  floatBits,
+  bitsFloat,
+  formatNative,
+  formatNativeAt,
+  nativeLogBytes,
+} from '../kcs.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
 import { nativeScalarMath, nativeTrigWord, scalarArgumentWords } from '../native/scalar-math.mjs';
 import { PTCL_ABI, initialParticle, readPTCLQuad, writePTCLQuad } from './abi.mjs';
@@ -97,6 +105,7 @@ export class ParticleScriptInstance {
     this.math = abi?.math;
     this.interpreterMath = this.math?.interpreterUsesNativeScalarMath ? this.math : null;
     this.frameScale = abi?.particle?.frameScale;
+    this.debugUsesNativeLogger = abi?.particle?.debugUsesNativeLogger;
     this.quadUsesX87 = abi?.particle?.quadUsesX87;
     this.textureCoordinatesUseX87 = abi?.particle?.textureCoordinatesUseX87;
     this.distanceUsesX87 = abi?.particle?.distanceUsesX87;
@@ -191,7 +200,12 @@ export class ParticleScriptInstance {
       argumentWords = entry ? entry.signature.argumentWords : contract.parameters.length;
     const scalarFrame =
       this.math?.scalarArgumentsReadFrame && ((id >= 6 && id <= 21) || (id >= 41 && id <= 43));
-    if (argumentWords !== null && !scalarFrame && args.length !== argumentWords)
+    if (
+      argumentWords !== null &&
+      !scalarFrame &&
+      !(id === 0 && this.debugUsesNativeLogger) &&
+      args.length !== argumentWords
+    )
       throw new Error(
         `PTCL ${contract.name} requires ${argumentWords} arguments, received ${args.length}`,
       );
@@ -228,7 +242,11 @@ export class ParticleScriptInstance {
     if (scalarMath.has(id)) return real(scalarMath.get(id)(bitsFloat(args[0])));
     switch (id) {
       case 0: {
-        const text = formatNative(machine.string(args[0]), machine);
+        const text = this.debugUsesNativeLogger
+          ? new TextDecoder('shift_jis').decode(
+              nativeLogBytes(formatNativeAt(args[0] ?? machine.nativeArgument(0), machine)),
+            )
+          : formatNative(machine.string(args[0]), machine);
         this.messages.push({ frame: this.frame, particle: this.now, text });
         this.onDebug?.(text);
         return voidReply();

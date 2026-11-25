@@ -356,3 +356,33 @@ export function formatNativeBytes(source, machine) {
 export function formatNativeAt(address, machine) {
   return formatNativeBytes(nativeFormatCString(machine, address), machine);
 }
+
+// The SDK debug receiver passes the first formatter's C string through its
+// own CRT logger. Main1 first duplicates a percent whose next byte differs;
+// Generic/PTCL debug passes that string directly to the logger.
+export function nativeLogBytes(bytes, { escapePercent = false, limit = 500 } = {}) {
+  const end = bytes.indexOf(0),
+    source = end < 0 ? bytes : bytes.subarray(0, end),
+    format = [];
+  for (let i = 0; i < source.length; i++) {
+    format.push(source[i]);
+    if (escapePercent && source[i] === 37 && source[i + 1] !== 37) format.push(37);
+  }
+  const output = [];
+  for (let i = 0; i < format.length; i++) {
+    if (format[i] !== 37) output.push(format[i]);
+    else {
+      const next = format[++i];
+      if (next === undefined) break;
+      // A conversion here would read native variadic words that the SDK
+      // caller did not provide. The original CRT's unknown bare conversion
+      // instead emits its character, as does the measured "%b" case.
+      if (next !== 37 && /[-+ #0-9.*hlIwdiuoxXcCsSpnfFeEgGaAZ]/.test(String.fromCharCode(next)))
+        throw new Error('Native logger conversion reads unprovided variadic arguments');
+      output.push(next);
+    }
+    if (output.length >= limit)
+      throw new Error('Native logger exceeds its original terminated 500-byte buffer');
+  }
+  return Uint8Array.from(output);
+}

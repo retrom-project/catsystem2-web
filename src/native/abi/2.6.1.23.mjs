@@ -1173,6 +1173,7 @@ export default {
   executableSha256: '9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67',
   xmlEncoding: 'Shift_JIS',
   text: {
+    debugPrintByteLimit: 500,
     legacyConfigurationBytes: 1128,
     legacyClearPublishes: true,
     legacyTaskWordOperations,

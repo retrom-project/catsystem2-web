@@ -7,6 +7,7 @@ import { nativeCalendar } from './calendar.mjs';
 import { nativeCommaFields, parseNativeResourceSelection } from './resource-selection.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { nativeDataMapped, nativeDataPair } from './data-text.mjs';
+import { nativeLogBytes } from '../kcs.mjs';
 
 const value = (n) => {
   if (!Number.isInteger(n)) throw new TypeError('A native result must be a 32-bit integer');
@@ -64,25 +65,7 @@ function formattedCString(services, m, address) {
   return end >= 0 ? bytes.subarray(0, end) : bytes;
 }
 function sdkDebugMessage(bytes, limit) {
-  const output = new Uint8Array(Math.min(bytes.length, limit));
-  let written = 0;
-  for (let at = 0; at < bytes.length && written < output.length; ) {
-    if (bytes[at] !== 37) {
-      output[written++] = bytes[at++];
-      continue;
-    }
-    let end = at + 1;
-    while (bytes[end] === 37) end++;
-    const run = end - at;
-    // A remaining CRT conversion has no guest variadic arguments. Keep that
-    // run literal in the host diagnostic.
-    const literal = run % 2 === 0 && end < bytes.length ? run : Math.ceil(run / 2);
-    const next = Math.min(output.length, written + literal);
-    output.fill(37, written, next);
-    written = next;
-    at = end;
-  }
-  return new TextDecoder('shift_jis').decode(output.subarray(0, written));
+  return new TextDecoder('shift_jis').decode(nativeLogBytes(bytes, { escapePercent: true, limit }));
 }
 function doubleByte(bytes, at) {
   const lead = bytes[at],
@@ -274,6 +257,10 @@ function indexOfLiveCString(machine, source, needle) {
 // Services are synchronous host operations. A host that needs asynchronous I/O
 // must suspend/retry the GCALL before invoking this dispatcher.
 export function nativeStandard(id, args, m, services = {}) {
+  if (services.profile && (id === 1 || id === 14))
+    args = Array.from({ length: id === 1 ? 1 : 2 }, (_, i) =>
+      i < args.length ? args[i] : m.nativeArgument(i),
+    );
   const calendar = nativeCalendar(id, args, services.profile);
   if (calendar !== undefined) return calendar;
   const requireArguments = (count) => {

@@ -167,6 +167,7 @@ export default {
   rectangles: { strictArity: true },
   calendar: { weekdayAlgorithm: 'century-integer' },
   text: {
+    debugPrintByteLimit: 500,
     freeTypeCharacterEncoding: 'cp932',
     freeTypeVersion: '2.4.8',
     settingsCharacterBytes: 1,
