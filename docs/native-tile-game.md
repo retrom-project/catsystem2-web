@@ -13,9 +13,12 @@ pending actions and event continuations. Contexts own their event, choice and
 result caches. Starting through one context changes the model queried through
 its peers. Releasing a context only releases that context.
 
-The model's third MT19937 stream starts at 4357 and initializes subsequent
-words with `69069 * previous`. The main/generic streams have a different
-initializer. A World checkpoint stores this tile stream and shared model once,
+The model's independent MT19937 stream initializes subsequent words with
+`69069 * previous`; its default seed is 4357. SDK 2.6.1.67 supplies the seed
+from the owning World's initial local clock: year since 1900, month, day, hour,
+minute and second are packed with DWORD shifts of 4, 5, 5, 6 and 6 bits. This
+matches that build's registered C++ time-seed initializer. The main/generic
+streams have a different initializer. A World checkpoint stores this tile stream and shared model once,
 then stores independent context caches through the handle codec. Pending event
 replay and the complete dealt hand resume in a fresh JS World.
 

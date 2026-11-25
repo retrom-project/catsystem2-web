@@ -28,7 +28,20 @@ function actionWords(action, extended = true) {
 export class NativeTileGame {
   constructor(world) {
     this.world = world;
-    this.model = new NativeTileModel();
+    let seed;
+    if (nativeABI(world.profile).tileGame?.seedFromLocalClock) {
+      const date = new Date(world.clock.utcNow());
+      seed = date.getFullYear() - 1900;
+      for (const [width, part] of [
+        [4, date.getMonth()],
+        [5, date.getDate()],
+        [5, date.getHours()],
+        [6, date.getMinutes()],
+        [6, date.getSeconds()],
+      ])
+        seed = (seed << width) | part;
+    }
+    this.model = new NativeTileModel(seed);
   }
   apply(id, args, machine) {
     if (!NATIVE_TILE_GAME_IDS.includes(id)) return undefined;

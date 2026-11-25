@@ -326,6 +326,7 @@ export default {
     registerWordsUseX87: true,
     splineUsesX87: true,
   },
+  tileGame: { seedFromLocalClock: true },
   movie: { alwaysUseBgmVolume: true, redrawRequiresRunning: true },
   task: { childQueryUsesRouteEntries: true, kindQueryRejectsRetiringOwner: true },
   globalFile: {

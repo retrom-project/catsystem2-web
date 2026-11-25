@@ -51,9 +51,9 @@ const field = Object.freeze({
 });
 const styleFlags = [0, 3, 1, 3, 1, 1, 7, 0, 1, 3, 0, 1, 3, 3, 39, 3, 3, 3, 7, 3];
 export class NativeTileModel {
-  constructor() {
+  constructor(randomSeed = 4357) {
     this.random = new NativeMT19937();
-    let seed = 4357;
+    let seed = randomSeed >>> 0;
     for (let index = 0; index < 624; index++) {
       this.random.words[index] = seed;
       seed = Math.imul(seed, 69069) >>> 0;
