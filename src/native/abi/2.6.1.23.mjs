@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [602, 603],
+    value:
+      'Own complete Main602/603 GCALLs reach this build’s Sound receiver and actual ordered group tree. Registration stores all five raw words, retains signed range bounds, preserves the first record on duplicate ID and does not normalize reversed ranges. Removal of an absent ID is silent; a removed ID can be registered anew. Zero, high-bit and highest unsigned IDs retain their independent records. Native tree insertion, erasure and destruction release every bounded group allocation. No audio-device playback is performed by these two commands.',
+  },
+  {
     ids: [165, 349, 569, 587],
     value:
       'Own full GCALLs execute this build’s Sound receiver and static-buffer query path. Pan retains its signed raw word; fade-pending returns bit zero, including zero for invalid banks. Decoder length comes only from a loaded static buffer and its decoded-stream virtual query, with no narrowing of its DWORD result; absent devices, missing buffers, streaming backends and invalid banks return zero. Completion count retains the static buffer DWORD and returns zero for missing/static-disabled backends. Its active-device invalid-bank path leaves the native result unwritten and remains diagnostic. All captured Sound/device bytes remain unchanged.',
@@ -818,7 +823,7 @@ const mainEvidence = [
       'Own 2.6.1.23 narrow character helpers 0x48b3c0 and 0x48b710–0x48b87a use the standard pair classifier at 0x4b1220',
   },
   {
-    ids: [347, 348, 602, 603, 604],
+    ids: [347, 348, 604],
     value:
       'Own 2.6.1.23 spatial and sound group wrappers 0x47e2f0–0x47e3be and 0x47e880–0x47ea9c; receiver 0x44bf20 uses raw 182–183 and 190–195',
   },
@@ -2275,7 +2280,8 @@ export default {
         { ids: [565, 566], fields: { resultWritten: true } },
         { ids: [567], fields: { resultWritten: false } },
         { ids: [605, 606, 607], fields: { resultWritten: true } },
-        { ids: [347, 348, 602, 603], fields: { resultWritten: false } },
+        { ids: [347, 348], fields: { resultWritten: false } },
+        { ids: [602, 603], fields: { resultWritten: false, review: 'reviewed' } },
         { ids: [604], fields: { resultWritten: true } },
         { ids: [40, 47, 48, 49], fields: { resultWritten: true } },
         { ids: [16, 17, 18, 19, 20, 22, 23, 24], fields: { resultWritten: true } },

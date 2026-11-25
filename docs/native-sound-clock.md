@@ -138,3 +138,12 @@ fade bit; both return zero for out-of-range banks. Their build-specific raw
 messages resolve to the same shared operations, and these query states survive
 a cold World restore. The decoded-stream virtual return port was observed as
 owned data; this query proof does not exercise audio-device playback.
+
+The three older builds also retain the same Main602/603 Sound group owner:
+registration copies five raw words, preserves the first record on a duplicate
+ID, and keeps signed or reversed bank ranges without normalization. Removal of
+an absent ID is silent, and a removed ID can be registered again. Zero and
+high-bit DWORD IDs remain independent. The original tree allocation, erasure
+and destruction chain releases every allocated group node; the shared owner
+preserves its records through a cold World restore and closes with its Sound
+task. These commands register selection data and do not start playback.
