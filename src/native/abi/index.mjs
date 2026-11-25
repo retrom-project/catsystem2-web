@@ -230,6 +230,18 @@ function validateBehavior(abi) {
   if (Object.hasOwn(abi.sound, 'loadMessageFormat') && abi.sound.loadMessageFormat !== 'filename')
     throw new Error(`Invalid ABI Sound load message format ${abi.id}`);
   if (
+    Object.hasOwn(abi.configuration, 'systemVoiceIncludesPreferenceBlocks') &&
+    typeof abi.configuration.systemVoiceIncludesPreferenceBlocks !== 'boolean'
+  )
+    throw new Error(`Invalid ABI system-voice preference bank policy ${abi.id}`);
+  if (
+    Object.hasOwn(abi.configuration, 'systemVoiceQueryWordIndex') &&
+    (!Number.isInteger(abi.configuration.systemVoiceQueryWordIndex) ||
+      abi.configuration.systemVoiceQueryWordIndex < -0x80000000 ||
+      abi.configuration.systemVoiceQueryWordIndex > 0x7fffffff)
+  )
+    throw new Error(`Invalid ABI system-voice query-word index ${abi.id}`);
+  if (
     Object.hasOwn(abi.sound, 'fesPlaybackUpdates') &&
     typeof abi.sound.fesPlaybackUpdates !== 'boolean'
   )

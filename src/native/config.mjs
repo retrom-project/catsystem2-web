@@ -451,16 +451,35 @@ export function nativeConfiguration(id, args, machine, services = {}) {
     return nativeReply(2);
   }
   if (id === 0x246 || id === 0x248) {
-    // The native wrappers do not clamp the index. Neighboring system-voice
-    // strings share this same mapped byte region, including negative indices.
-    const bytes = config.fields.systemVoice,
-      offset = config.fields.sysplay.byteOffset + Math.imul(args[0], 4);
-    if (offset < 0 || offset + 4 > bytes.length)
-      throw new Error('Native system voice word is outside recovered mapped configuration');
-    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-    if (id === 0x246) return nativeReply(1, view.getUint32(offset, true));
-    view.setUint32(offset, args[1], true);
-    return nativeReply(2);
+    // Native indices also address neighboring strings and, in reviewed builds,
+    // the four preceding preference blocks. Keep each canonical owner live.
+    const policy = nativeABI(config.profile).configuration,
+      includeBlocks = policy.systemVoiceIncludesPreferenceBlocks,
+      banks = includeBlocks
+        ? [...config.blocks, config.fields.systemVoice]
+        : [config.fields.systemVoice];
+    const queryOffset = Math.imul(args[0] - policy.systemVoiceQueryWordIndex, 4);
+    if (
+      policy.systemVoiceQueryWordIndex !== undefined &&
+      queryOffset >= 0 &&
+      queryOffset < config.queryWords.byteLength
+    ) {
+      if (id === 0x246) return nativeReply(1, config.queryWords[queryOffset / 4]);
+      config.queryWords[queryOffset / 4] = args[1];
+      return nativeReply(2);
+    }
+    let offset = config.fields.sysplay.byteOffset + Math.imul(args[0], 4);
+    if (includeBlocks) offset += config.blocks.reduce((size, block) => size + block.length, 0);
+    for (const bytes of banks) {
+      if (offset >= 0 && offset + 4 <= bytes.length) {
+        const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        if (id === 0x246) return nativeReply(1, view.getUint32(offset, true));
+        view.setUint32(offset, args[1], true);
+        return nativeReply(2);
+      }
+      offset -= bytes.length;
+    }
+    throw new Error('Native system voice word is outside recovered mapped configuration');
   }
   if (id === 0x247) {
     const enabled = Array.from(config.fields.sysplay, (value, index) =>

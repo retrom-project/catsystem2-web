@@ -1,5 +1,21 @@
 # Native configuration queries
 
+SDK 2.6.1.67 Main 360 copies the 5,628-byte voice, 60-byte message and 28-byte
+effect inputs into the live configuration. It preserves the fourth window
+block and skips unmapped inputs. Main 582/584 retain full word values across
+the contiguous preference and system-voice banks, including signed aliases
+into the preceding voice, message, effect and window blocks. These are live
+views of the canonical owners and survive a cold World restore.
+
+Main 583 returns `FFFFFFFF` when every system-voice channel is disabled and
+consumes no random value. Otherwise it uses one value from the same integer
+stream as Main 33. Main 589 writes both Settings words in order, including
+aliased destinations. Its live words are also read and written through the
+indexed system-voice view, including after a cold restore. Unrepresented native
+configuration fields remain diagnostic; the overall SDK remains incomplete.
+Preference serialization through Main 361 and the Main 533 latch are separate
+contracts and are not enabled by this data group.
+
 All six operations query live JS configuration, sound and resource state.
 Formatting and comparisons retain narrow bytes and ABI-specific XML encodings.
 The implementation lives in [configuration-query.mjs](../src/native/configuration-query.mjs).
