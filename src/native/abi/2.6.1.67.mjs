@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MPL-2.0
 // Own normal data; physical executable layouts belong to the explicit oracle.
-import { NATIVE_SEMANTICS } from './semantics.mjs';
+import {
+  NATIVE_SEMANTICS,
+  NATIVE_TILE_GAME_IDS as tileGameOperations,
+  NATIVE_TILE_GAME_SIGNATURES,
+} from './semantics.mjs';
 
 const mainReserved = [
   0, 2, 3, 141, 169, 170, 172, 173, 180, 182, 184, 185, 187, 188, 189, 190, 191, 429, 439, 543, 544,
@@ -26,53 +30,7 @@ const crossTaskSceneOperations = [233, 234];
 const historyCursorOperations = [379, 380, 381, 382, 383, 384];
 const initializedMatrixOperations = [204, 205, 206, 662];
 const sseGeometryOperations = [350, 352];
-const tileGamePrototypes = [
-  [0, 1],
-  [1, 2],
-  [9, 2],
-  [1, 1],
-  [2, 2],
-  [1, 1],
-  [1, 1],
-  [3, 1],
-  [3, 1],
-  [3, 1],
-  [2, 1],
-  [1, 1],
-  [5, 2],
-  [3, 2],
-  [1, 1],
-  [2, 1],
-  [3, 1],
-  [4, 1],
-  [2, 2],
-  [4, 2],
-  [4, 1],
-  [3, 1],
-  [1, 1],
-  [2, 1],
-  [7, 2],
-  [2, 1],
-  [5, 2],
-  [2, 1],
-  [3, 1],
-  [1, 1],
-  [1, 1],
-  [1, 2],
-  [2, 1],
-  [2, 1],
-  [1, 1],
-  [4, 1],
-  [2, 1],
-  [2, 1],
-  [1, 1],
-  [3, 1],
-  [4, 1],
-  [2, 1],
-  [2, 1],
-  [2, 1],
-];
-const tileGameOperations = tileGamePrototypes.map((_, index) => 470 + index);
+
 const fesLocalOperations = [664, 665, 666, 667, 668];
 const fesTarget = {
   name: 'fes',
@@ -2405,40 +2363,7 @@ export default {
         },
       ],
       signatures: [
-        ...tileGameOperations.map((id, index) => ({
-          ids: [id],
-          fields: {
-            argumentWords: tileGamePrototypes[index][0],
-            controlCodes: [tileGamePrototypes[index][1]],
-            resultWritten: tileGamePrototypes[index][1] === 1,
-            ...(id === 470
-              ? { result: { kind: 'handle', handleKind: 'tile-game', ownership: 'owned' } }
-              : {}),
-            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) =>
-              parameter.type.kind === 'handle'
-                ? {
-                    ...parameter,
-                    type: {
-                      kind: 'handle',
-                      handleKind: 'tile-game',
-                      ownership: id === 471 ? 'owned' : 'borrowed',
-                    },
-                  }
-                : parameter.type.kind === 'pointer'
-                  ? {
-                      ...parameter,
-                      type: {
-                        kind: 'pointer',
-                        addressSpace: 'vm',
-                        direction: [472, 503, 505].includes(id) ? 'in' : 'out',
-                        target: { kind: 'bits', bits: 32 },
-                      },
-                    }
-                  : parameter,
-            ),
-            review: 'reviewed',
-          },
-        })),
+        ...NATIVE_TILE_GAME_SIGNATURES,
         ...sseGeometryOperations.map((id) => ({
           ids: [id],
           fields: {

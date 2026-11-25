@@ -41181,6 +41181,48 @@ export const NATIVE_SLOT_DEFAULTS = freeze({
   },
 });
 
+// Shared reviewed contract; profiles still register their own presence and evidence.
+export const NATIVE_TILE_GAME_IDS = freeze(Array.from({ length: 44 }, (_, index) => 470 + index));
+export const NATIVE_TILE_GAME_SIGNATURES = freeze(
+  NATIVE_TILE_GAME_IDS.map((id) => {
+    const signature = NATIVE_SEMANTICS.main[id].signature;
+    return {
+      ids: [id],
+      fields: {
+        argumentWords: signature.argumentWords,
+        controlCodes: signature.controlCodes,
+        resultWritten: signature.controlCodes[0] === 1,
+        ...(id === 470
+          ? { result: { kind: 'handle', handleKind: 'tile-game', ownership: 'owned' } }
+          : {}),
+        parameters: signature.parameters.map((parameter) =>
+          parameter.type.kind === 'handle'
+            ? {
+                ...parameter,
+                type: {
+                  kind: 'handle',
+                  handleKind: 'tile-game',
+                  ownership: id === 471 ? 'owned' : 'borrowed',
+                },
+              }
+            : parameter.type.kind === 'pointer'
+              ? {
+                  ...parameter,
+                  type: {
+                    kind: 'pointer',
+                    addressSpace: 'vm',
+                    direction: [472, 503, 505].includes(id) ? 'in' : 'out',
+                    target: { kind: 'bits', bits: 32 },
+                  },
+                }
+              : parameter,
+        ),
+        review: 'reviewed',
+      },
+    };
+  }),
+);
+
 function freeze(value) {
   if (value && typeof value === 'object') {
     Object.values(value).forEach(freeze);
