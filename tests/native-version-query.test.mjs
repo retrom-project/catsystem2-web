@@ -378,7 +378,7 @@ test('ordinary main module cold restore rejects a different selected source befo
 for (const profile of Object.keys(handlers)) {
   test(`executable-free explicit authoring restores a Core without inventing module authority: ${profile}`, async () => {
     const environment = startupEnvironment();
-    let first, fresh;
+    let first, fresh, automatic;
     try {
       const game = await ordinaryStartupGame(profile, { sound: false }),
         options = {
@@ -390,9 +390,23 @@ for (const profile of Object.keys(handlers)) {
       first = new CatSystem2({ ...options, canvas: new StartupCanvas() });
       await first.initialize();
       const saved = await first.snapshot();
+      automatic = new CatSystem2({
+        ...options,
+        nativeProfile: undefined,
+        canvas: new StartupCanvas(),
+      });
+      await assert.rejects(
+        automatic.initialize({ checkpoint: structuredClone(saved) }),
+        /unique reviewed/,
+      );
+      assert.equal(automatic.world, undefined);
       fresh = new CatSystem2({ ...options, canvas: new StartupCanvas() });
       await fresh.initialize({ checkpoint: structuredClone(saved) });
       assert.equal(fresh.nativeModule, null);
+      assert.deepEqual(fresh.world.snapshot(), saved.world);
+      const before = fresh.world;
+      await fresh.restore(structuredClone(saved));
+      assert.notEqual(fresh.world, before);
       assert.deepEqual(fresh.world.snapshot(), saved.world);
       const wrong = {
         ...saved,
@@ -407,6 +421,7 @@ for (const profile of Object.keys(handlers)) {
       await assert.rejects(fresh.restore(wrong), /current reviewed executable/);
       assert.deepEqual(fresh.world.snapshot(), saved.world);
     } finally {
+      await automatic?.dispose();
       await fresh?.dispose();
       await first?.dispose();
       environment.restore();

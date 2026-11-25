@@ -167,8 +167,10 @@ export async function selectNativeCheckpointProfile(game, state, explicit) {
   const profile = nativeABI(state.configuration?.profile).profile;
   if (explicit && nativeABI(explicit).profile !== profile)
     throw new Error('Checkpoint does not match the requested native profile');
-  const selected = await selectNativeProfile(game, profile),
-    saved = nativeModuleMetadata(profile, state.nativeModule),
+  const selected = await selectNativeProfile(game, explicit);
+  if (selected.profile !== profile)
+    throw new Error('Checkpoint does not match the current native profile');
+  const saved = nativeModuleMetadata(profile, state.nativeModule),
     current = selected.module;
   if (
     Boolean(saved) !== Boolean(current) ||

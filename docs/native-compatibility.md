@@ -46,7 +46,10 @@ supply another module's key or verification resource. Only the selected module
 name and version-resource data enter the World checkpoint; PE bytes, mappings,
 processes and heaps do not. Cold initialization and live restore both recheck
 current executable bytes and the saved module metadata before constructing a
-replacement World. A rejected restore retains its existing owners. Startup
+replacement World. The saved profile is a consistency constraint and never grants
+explicit authoring authority. Only this Core caller's requested profile can permit
+executable-free authoring, including live restore; an automatically selected
+profile does not become that authorization. A rejected restore retains its existing owners. Startup
 cipher/credential checks and RNG draws are not replayed by checkpoint restore.
 
 Explicit executable-free authoring remains available to controlled callers, as

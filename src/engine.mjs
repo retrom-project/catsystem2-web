@@ -819,8 +819,10 @@ export class CatSystem2 {
       const selected = await selectNativeCheckpointProfile(
         this.game,
         saved.world,
-        this.nativeProfile,
+        this.requestedNativeProfile,
       );
+      if (selected.profile !== this.nativeProfile)
+        throw new Error('Checkpoint does not match the current native profile');
       const previous = this.world,
         previousAudio = this.audio,
         audio = new AudioMixer(this.game, this.audio.context, { deferPlayback: true }),
