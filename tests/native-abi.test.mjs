@@ -37,10 +37,7 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     assert.equal(abi.tables.main.entries[0x181].signature.argumentWords, 4);
     assert.equal(abi.tables.main.entries[0x181].status, 'recovered');
     assert.equal(abi.tables.main.entries[0x358].signature.argumentWords, 7);
-    assert.equal(
-      abi.tables.main.entries[0x358].status,
-      version === '2.6.1.67' ? 'recovered' : 'unknown',
-    );
+    assert.equal(abi.tables.main.entries[0x358].status, 'recovered');
   }
   const base = abiForEngineVersion('2.6.1.23').tables;
   assert.deepEqual(
