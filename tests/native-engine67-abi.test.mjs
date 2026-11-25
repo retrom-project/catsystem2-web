@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { bitsFloat, encodeCP932, floatBits, readKCS } from '../src/kcs.mjs';
+import { bitsFloat, encodeCP932, floatBits, KCSMachine, readKCS } from '../src/kcs.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
@@ -73,6 +73,68 @@ test('2.6.1.67 Main stubs preserve their original three result behaviors', async
     }
     assert.equal(diagnostics.length, 3);
     assert.ok(diagnostics.every((event) => event.type === 'native-result-sentinel'));
+  }
+});
+
+test('2.6.1.67 task queries enumerate branch keys and follow owner teardown', async () => {
+  const files = { 'child.kcs': kcsProgram([[59]]) };
+  let world = await dataWorld(profile, files);
+  const word = 0xcd34e26a;
+  const call = async (id, args, ownerID = world.main.id) => {
+    const script = await readKCS(
+        kcsProgram([[37, word], ...args.map((arg) => [37, arg]), [43, id, args.length * 4], [59]]),
+      ),
+      owner = { context: {}, ...world.runtime.scheduler.tasks.get(ownerID), id: ownerID, abi: 'main', io: null },
+      machine = (owner.machine = new KCSMachine(
+        script,
+        {
+          native: (number, supplied, caller) =>
+            world.runtime.scheduler.native(owner, number, supplied, caller),
+        },
+        world.runtime.scheduler.shared,
+      ));
+    machine.writeString('child.kcs', 0x200);
+    await world.runtime.scheduler.execute(owner);
+    assert.equal(machine.sp, machine.floor + (id === 67 ? 4 : 8));
+    const response = id === 67 ? null : machine.pop();
+    assert.equal(machine.pop(), word);
+    return response;
+  };
+  try {
+    const parent = world.main.id,
+      parentID = world.nativeTaskID(parent),
+      first = 0xdf20be12,
+      nested = 0xe4decaa1,
+      firstAt = await world.objects.create({ kind: 12, parent, nativeID: first }),
+      nestedAt = await world.objects.create({ kind: 12, parent: firstAt, nativeID: nested }),
+      fresh = await call(66, [12, parentID, 0x200]);
+    assert.ok(fresh && fresh !== 0xffffffff);
+    const created = world.resolveTaskID(fresh, parent);
+    assert.equal(world.objects.objects.get(created).kind, 12);
+    for (const [index, key] of [first, nested, fresh, 0xffffffff].entries())
+      assert.equal(await call(75, [index]), key);
+    assert.equal(await call(75, [0xffffffff]), 0xffffffff);
+    assert.equal(await call(76, [], nestedAt), first);
+    assert.equal(await call(76, [], firstAt), parentID);
+    assert.equal(await call(74, [fresh]), 12);
+    assert.equal(await call(74, [0x7364cafa]), 0xffffffff);
+    assert.equal(await call(77, [0]), 0);
+    assert.equal(await call(77, [nested]), 1);
+    await assert.rejects(call(74, [0]), /Root query caller pointer/);
+    await call(67, [fresh]);
+    await assert.rejects(call(74, [fresh]), /retiring owner/);
+    assert.equal(await call(77, [fresh]), 1);
+    const checkpoint = structuredClone(world.snapshot());
+    await world.close({ flushFiles: false });
+    world = await dataWorld(profile, files, { initialize: false });
+    await world.restore(checkpoint);
+    assert.equal(await call(75, [1]), nested);
+    assert.equal(await call(77, [fresh]), 1);
+    await world.objects.release(created);
+    assert.equal(await call(75, [2]), 0xffffffff);
+    assert.equal(await call(77, [fresh]), 1, 'base destruction retains the root registry key');
+  } finally {
+    await world.close({ flushFiles: false });
   }
 });
 
