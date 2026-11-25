@@ -144,6 +144,27 @@ test('2.6.1.63 Particle v1 still refuses an unreviewed same-image alias', async 
   assert.equal(ptcl.calls.size, 0);
 });
 
+test('2.6.1.63 both Particle tables use the original initialized scalar words', async () => {
+  const cases = [
+    [8, [0xe258d727], 0xbf38a998],
+    [18, [0x7f801234, 0], 0x7fc01234],
+    [37, [0xc3e61996, 0xc44e2c85, 0x446be2e0, 0xc381f7c9, 0xc4444dfd, 0xc1d19b8b], 0x4477bfae],
+    [42, [0xe258d727], 0],
+    [43, [0x3f800000, 0x40400000], 0x3f2aaaaa],
+  ];
+  const first = 32;
+  for (const version of [1, 2]) {
+    const program = cases.flatMap(([id, args], i) => [...call(id, args), [38, first + i * 4]]);
+    const ptcl = await particle(version, program, { count: 1 });
+    ptcl.update(1);
+    assert.deepEqual(
+      cases.map((_, i) => ptcl.machine.load(first + i * 4)),
+      cases.map(([, , expected]) => expected),
+    );
+    assert.equal(ptcl.machine.sp, ptcl.machine.floor);
+  }
+});
+
 test('2.6.1.63 Particle v2 returns the original x87 atan2 and interpolation words', async () => {
   const ptcl = await particle(
     2,

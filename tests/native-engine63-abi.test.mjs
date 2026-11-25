@@ -1503,6 +1503,37 @@ test('2.6.1.63 Main and Motion return the initialized CRT power words', async (t
   await executeMain(world, 461, [floatBits(1000)], undefined, floatBits(3));
 });
 
+test('2.6.1.63 Main and MOT use the initialized scalar precision and range reduction', async (t) => {
+  const cases = [
+    [52, 3, [0xe258d727], 0xbf38a998],
+    [53, 4, [0x3f000000], 0x3f060a92],
+    [59, 11, [0xbf800000, 1], 0x80000000],
+    [321, 42, [0x3f800000, 0x40400000], 0x3f2aaaaa],
+  ];
+  const world = await dataWorld(
+    profile,
+    Object.fromEntries(
+      cases.map(([id, , args]) => [`main-${id}.kcs`, mainProgram(id, args.length)]),
+    ),
+  );
+  t.after(() => world.close({ flushFiles: false }));
+  const marker = 0x82345678;
+  for (const [mainId, motionId, args, expected] of cases) {
+    await executeMain(world, mainId, args, undefined, expected);
+    const program = kcsProgram([
+      [37, marker],
+      ...args.map((word) => [37, word]),
+      [43, motionId, args.length * 4],
+      [59],
+    ]);
+    const { machine } = new MotionInstance(await readKCS(program), { profile });
+    machine.run({ budget: 80 });
+    assert.equal(machine.sp, machine.floor + 8);
+    assert.equal(machine.pop(), expected);
+    assert.equal(machine.pop(), marker);
+  }
+});
+
 test('2.6.1.63 zero-width MOT rotation reads each angle from the live aliasing stack', async () => {
   const values = [128, ...[0.8, -0.5, 0.6].map(floatBits)],
     program = kcsProgram([[49, 128], ...values.map((word) => [37, word]), [60], [43, 23, 0], [59]]);
