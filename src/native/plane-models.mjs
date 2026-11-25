@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // File-backed triangles and retained Plane history are renderer-owned JS data.
 import { MOTION_ABI, motionVector, setMotionVector } from '../motion/abi.mjs';
-import { multiply, rotation } from '../motion/matrix.mjs';
+import { multiply, multiplySSE, rotation } from '../motion/matrix.mjs';
 import { linearInterpolate, x87AddWords } from '../ppi/numeric.mjs';
 import { bitsFloat, floatBits } from '../kcs/vm.mjs';
 const f = Math.fround;
@@ -51,9 +51,16 @@ function sample(graph, scalarWords) {
   return bytes;
 }
 export class NativePlaneTrail {
-  constructor(task, scalarWords) {
+  constructor(task, graphicsABI) {
     this.task = task;
-    this.scalarWords = scalarWords;
+    this.scalarWords = graphicsABI?.planeTrailUsesScalarWords;
+    this.usesShapeWords = graphicsABI?.planeTrailUsesShapeWords;
+    this.multiplyMatrix = graphicsABI?.planeTrailMatrixMultiplySSE ? multiplySSE : multiply;
+  }
+  dimension(axis) {
+    return this.usesShapeWords
+      ? bitsFloat(this.task.state.shapeWords?.[axis + 3] ?? 0)
+      : this.task.planeBounds()[axis + 2];
   }
   get state() {
     return this.task.state.trail;
@@ -118,7 +125,7 @@ export class NativePlaneTrail {
     const state = this.state,
       task = this.task,
       axis = state.mode === 4 ? 1 : 0,
-      dimension = task.planeBounds()[axis + 2],
+      dimension = this.dimension(axis),
       integer = Math.trunc(dimension),
       strip = integer % 2 ? 1 : 2,
       half = Math.trunc(integer / 2) - (strip === 2 ? 1 : 0),
@@ -195,7 +202,7 @@ export class NativePlaneTrail {
           ) - f(Math.PI / 2),
         ),
         matrix = Array.from({ length: 16 }, (_, j) => head.getFloat32(60 + j * 4, true));
-      multiply(matrix, rotation('z', angle)).forEach((n, j) =>
+      this.multiplyMatrix(matrix, rotation('z', angle)).forEach((n, j) =>
         new DataView(this.task.graph.kx2.buffer).setFloat32(MOTION_ABI.matrix + j * 4, n, true),
       );
       this.task.graph.matrixExplicit = true;
@@ -234,8 +241,8 @@ export class NativePlaneTrail {
           ),
           angle = f(f(Math.atan2(delta[1], delta[0])) - (state.mode >= 4 ? f(Math.PI / 2) : 0)),
           matrix = Array.from({ length: 16 }, (_, j) => view.getFloat32(60 + j * 4, true)),
-          transformed = multiply(matrix, rotation('z', angle)),
-          width = this.task.planeBounds()[2],
+          transformed = this.multiplyMatrix(matrix, rotation('z', angle)),
+          width = this.dimension(0),
           squared = f(f(f(delta[0] * delta[0]) + f(delta[1] * delta[1])) + f(delta[2] * delta[2])),
           distance = f(Math.sqrt(squared)),
           length = state.mode === 2 ? f(distance * 0.5) : distance;

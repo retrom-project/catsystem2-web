@@ -572,7 +572,7 @@ export class NativeGraphicTask {
     };
     this.bindState(this.state);
     this.pointer = 0;
-    this.trail = new NativePlaneTrail(this, abi?.planeTrailUsesScalarWords);
+    this.trail = new NativePlaneTrail(this, abi);
   }
   get graphKey() {
     return [2, 6].includes(this.record.kind)

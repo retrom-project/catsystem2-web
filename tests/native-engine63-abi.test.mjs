@@ -210,6 +210,77 @@ test('2.6.1.63 KX2 keeps occupied Plane registrations and selects the original m
   }
 });
 
+test('2.6.1.63 Plane trail uses retained rectangle dimensions and native matrix rounding', async (t) => {
+  const world = await dataWorld(profile, {
+    'main-398.kcs': mainProgram(398, 12),
+    'main-399.kcs': mainProgram(399, 7),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const graphics = world.graphics,
+    id = await world.objects.create({ kind: 2, parent: world.main.id }),
+    owner = graphics.get(id),
+    target = owner.record.nativeID;
+  graphics.createLogicalDevice();
+  owner.state.vramType = 1;
+  owner.state.shapeWords = [0, 0, 0, floatBits(131), floatBits(18)];
+  owner.makeGraph({ type: 6, width: 792, height: 587, vram: true, registrationEnabled: true });
+  const display = (graph, word) =>
+    new DataView(graph.kx2.buffer).setUint32(MOTION_ABI.display, word, true);
+  display(owner.graph, 0);
+  const configure = (data) => executeMain(world, 398, [target, ...data]);
+  await configure([
+    2,
+    4,
+    ...[0.825, 0.375, 0.625].map(floatBits),
+    0x7fbf3aa5,
+    ...[3.5, -0.25, 5.75].map(floatBits),
+    4,
+    -2,
+  ]);
+  assert.equal(owner.state.trail.strip, 2);
+  const matrix = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2.25, -7, 0, 1];
+  const addresses = [256, 280, 304, 360];
+  for (const [data, color, shown] of [
+    [
+      [
+        [39.1, 15, -0],
+        [-13, 7.25, 1e-35],
+        [0.35, 1.15, 6.5],
+      ],
+      0xaba521ff,
+      0x102a,
+    ],
+    [
+      [
+        [104.25, 3, -2],
+        [26, 19.75, -0],
+        [0.25, 0.75, 1.125],
+      ],
+      0xa3b82ee1,
+      0x10b,
+    ],
+  ])
+    await executeMain(world, 399, [target, ...addresses, color, shown], (machine) => {
+      [...data, matrix].forEach((words, i) =>
+        words.forEach((word, j) => machine.store(addresses[i] + j * 4, floatBits(word))),
+      );
+    });
+  owner.state.renderPaused = false;
+  display(owner.graph, 1);
+  owner.trail.tick();
+  const [leading, trailing] = owner.state.trail.graphs.map(
+    (graph) => new DataView(graph.kx2.buffer),
+  );
+  assert.equal(leading.getUint32(MOTION_ABI.base + 4, true), 0x3f800000);
+  assert.equal(leading.getUint32(MOTION_ABI.scale + 4, true), 0x40ff1343);
+  assert.deepEqual(
+    [48, 52].map((at) => trailing.getUint32(MOTION_ABI.matrix + at, true)),
+    [0x40bfb1e0, 0x40886e08],
+  );
+  await configure(new Array(11).fill(0));
+  assert.equal(owner.state.trail, null);
+});
+
 test('2.6.1.63 Plane lifecycle and poses use an attached graph and the original selector', async (t) => {
   const widths = new Map([
     [80, 1],
