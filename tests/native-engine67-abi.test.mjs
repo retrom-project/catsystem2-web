@@ -1076,6 +1076,31 @@ test('2.6.1.67 Main scalar GCALLs write the original x87 and integer words', asy
   assertScalarOutput(world.main.machine);
 });
 
+test('2.6.1.67 Main786 returns the signed century calendar remainder', async (t) => {
+  const dates = [
+      [1900, 3, 1],
+      [2000, 2, 28],
+      [0, -1, -2147483648],
+    ],
+    program = kcsProgram([
+      [37, 0x83217bac],
+      ...dates.flatMap((args, index) => [
+        ...args.map((word) => [37, word]),
+        [43, 786, 12],
+        [38, 64 + index * 4],
+      ]),
+      [59],
+    ]),
+    world = await dataWorld(profile, { 'case.kcs': program });
+  t.after(() => world.close({ flushFiles: false }));
+  const m = world.main.machine;
+  assert.deepEqual(
+    dates.map((_, index) => m.load(64 + index * 4)),
+    [0xfffffffd, 1, 0xffffffff],
+  );
+  assert.equal(m.pop(), 0x83217bac);
+});
+
 test('2.6.1.67 Main log10 retains the initialized CRT result words', async (t) => {
   const samples = [
       [0x3f800000, 0],
