@@ -429,10 +429,7 @@ for (const [version, count, waitReview] of [
       lookupFESCommonHead(abi.fes.commonHeads, bytes('wait')).entry.waitPolicy,
       FES_COMMON_HEAD_BINDING_REVIEWS[waitReview],
     );
-    assert.equal(
-      abi.tables.main.entries[0x181].status,
-      version === '2.6.1.63' ? 'recovered' : 'unknown',
-    );
-    assert.equal(abi.tables.main.entries[0x358].status, 'unknown');
+    assert.equal(abi.tables.main.entries[0x181].status, 'recovered');
+    assert.equal(abi.tables.main.entries[629].status, 'unknown');
   });
 }
