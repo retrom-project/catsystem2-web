@@ -32,6 +32,7 @@ export class NativeParticles {
     this.tasks = new Map();
     this.textures = new NativeParticleTextures(world);
     this.projection = new NativeParticleProjection();
+    this.scriptUsesTaskFrameRate = nativeABI(world.profile).particle?.scriptUsesTaskFrameRate;
     this.host = new Particles(world.graphics.stage, {
       game: world.game,
       images: world.images,
@@ -73,9 +74,11 @@ export class NativeParticles {
     this.host.close();
     this.textures.restore(state.textures);
     await this.host.restore(state);
-    for (const bank of this.host.banks.values())
-      if (![...this.tasks.values()].some((task) => task.key === bank.key))
-        throw new Error(`Particle checkpoint has no native task for ${bank.key}`);
+    for (const bank of this.host.banks.values()) {
+      const task = [...this.tasks.values()].find((task) => task.key === bank.key);
+      if (!task) throw new Error(`Particle checkpoint has no native task for ${bank.key}`);
+      task.bindScriptFrameRate(bank);
+    }
   }
   close() {
     this.host.close();
@@ -97,6 +100,10 @@ export class NativeParticleTask {
   get active() {
     return this.bank ? this.owner.host.busy(this.key) : this.state.active;
   }
+  bindScriptFrameRate(bank) {
+    if (this.owner.scriptUsesTaskFrameRate && bank.family === 'script')
+      bank.instance.fps = this.record.frameRate;
+  }
   async load(spec) {
     const active = this.active;
     const bank = await this.owner.host.load(this.key, {
@@ -107,6 +114,7 @@ export class NativeParticleTask {
       autoStart: false,
       autoRelease: false,
     });
+    this.bindScriptFrameRate(bank);
     // Native 13A resets clocks and resources but retains the active DWORD.
     // It does not implicitly call Init on a replacement DLL.
     this.state.active = active;

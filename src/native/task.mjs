@@ -32,6 +32,11 @@ export function nativeTask(id, args, machine, task, services) {
   const resolve = (nativeID) => (world ? world.resolveTaskID(nativeID, task.id) : nativeID);
   const nativeID = (worldID) => (world ? world.nativeTaskID(worldID) : worldID);
   switch (id) {
+    case 0x07: {
+      check(0);
+      const frameRate = world?.objects.objects.get(task.id)?.frameRate;
+      return frameRate === undefined ? undefined : result(frameRate);
+    }
     case 0x42:
       check(3);
       if (!objects?.create || !services.format) return undefined;

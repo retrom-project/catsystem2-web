@@ -645,6 +645,9 @@ export class Particles {
           random: this.random,
           screenBounds: this.scriptBounds,
           attachment: () => bank.attachment,
+          attachmentDevicePresent: this.stage.nativeGraphics
+            ? () => Boolean(this.stage.nativeGraphics.device.attachment)
+            : undefined,
         });
         bank.instance.restore(saved.script);
       }

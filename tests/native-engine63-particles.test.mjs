@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { bitsFloat, floatBits, readKCS } from '../src/kcs.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 
 const profile = 'rebellions-jp-engine-2.6.1.63';
@@ -110,38 +111,139 @@ test('2.6.1.63 Particle v1 aliases transform and replace the original 112-byte q
   assert.equal(m.sp, m.floor);
 });
 
-test('2.6.1.63 Particle v2 visibility uses unsigned slot bounds and raw DWORD flags', async () => {
-  const ptcl = await particle(2, [
-    ...call(39, [0, 0x8899aabb]),
-    ...call(39, [1, 7]),
-    ...call(39, [2, 0]),
-    ...call(39, [0xffffffff, 0xfeed1234]),
-    ...call(40),
-    [38, 20],
-    ...call(21, [0x80000000]),
-    [38, 24],
-  ]);
-  const m = ptcl.machine;
-  const count = ptcl.count;
-  ptcl.update(250);
-  assert.deepEqual(
-    [...ptcl.visibility].map((word) => word >>> 0),
-    [0x8899aabb, 7],
-  );
-  assert.equal(m.load(20), count - 1);
-  assert.equal(m.load(24), 0x80000000);
-  assert.equal(m.sp, m.floor);
-  // Invoke the original zero-count query directly through its own KCS call.
-  const empty = await particle(2, [...call(40)], { count: 0 });
-  empty.machine.step();
-  assert.equal(empty.machine.pop(), 0xffffffff);
-});
+for (const version of [1, 2])
+  test(`2.6.1.63 Particle v${version} visibility uses unsigned slot bounds and raw DWORD flags`, async () => {
+    const ptcl = await particle(version, [
+      ...call(39, [0, 0x8899aabb]),
+      ...call(39, [1, 7]),
+      ...call(39, [2, 0]),
+      ...call(39, [0xffffffff, 0xfeed1234]),
+      ...call(40),
+      [38, 20],
+      ...call(21, [0x80000000]),
+      [38, 24],
+    ]);
+    const m = ptcl.machine;
+    const count = ptcl.count;
+    ptcl.update(250);
+    assert.deepEqual(
+      [...ptcl.visibility].map((word) => word >>> 0),
+      [0x8899aabb, 7],
+    );
+    assert.equal(m.load(20), count - 1);
+    assert.equal(m.load(24), 0x80000000);
+    assert.equal(m.sp, m.floor);
+    // Invoke the original zero-count query directly through its own KCS call.
+    const empty = await particle(version, [...call(40)], { count: 0 });
+    empty.machine.step();
+    assert.equal(empty.machine.pop(), 0xffffffff);
+  });
 
-test('2.6.1.63 Particle v1 still refuses an unreviewed same-image alias', async () => {
-  const ptcl = await particle(1, [...call(39, [0, 0])]);
-  assert.throws(() => ptcl.update(0), /Unreviewed PTCL native .*\/particle-v1\/39/);
+test('2.6.1.63 Particle keeps the desktop debug slot guarded', async () => {
+  const ptcl = await particle(1, [...call(0, [0])]);
+  assert.throws(() => ptcl.update(0), /Unreviewed PTCL native .*\/particle-v1\/0/);
   assert.deepEqual([...ptcl.visibility], [1, 1]);
   assert.equal(ptcl.calls.size, 0);
+});
+
+test('2.6.1.63 Main and Particle read the owning Top frame rate after restore', async (t) => {
+  const emitter = kcsProgram([...call(3, [60]), [38, 64], ...call(4), [38, 68], [59]]);
+  new DataView(emitter.buffer).setUint16(8, 2, true);
+  const files = { 'ptcl/rate.kcs': emitter, 'rate.kcs': kcsProgram([...call(7), [38, 64], [59]]) };
+  const world = await dataWorld(profile, files);
+  t.after(() => world.close({ flushFiles: false }));
+  const owner = await world.objects.create({ kind: 1, name: '47Hz Top', frameRate: 47 });
+  const main = await world.spawnScript('rate.kcs', { parent: owner });
+  await world.runtime.scheduler.execute(main);
+  assert.equal(main.machine.load(64), 47);
+  const emitterID = await world.objects.create({ kind: 16, parent: owner });
+  const task = world.particles.get(emitterID);
+  await task.load({ family: 'script', program: 'rate', count: 1, priority: 0 });
+  world.particles.host.start(task.key);
+  task.tick(0);
+  assert.deepEqual(
+    [64, 68].map((at) => task.bank.instance.machine.load(at)),
+    [47, 47],
+  );
+
+  const restored = await dataWorld(profile, files, { initialize: false });
+  t.after(() => restored.close({ flushFiles: false }));
+  await restored.restore(world.snapshot());
+  const after = restored.particles.get(emitterID);
+  after.tick(1);
+  assert.deepEqual(
+    [64, 68].map((at) => after.bank.instance.machine.load(at)),
+    [47, 47],
+  );
+});
+
+test('2.6.1.63 Particle UV preserves untouched quad words and exit stops the script', async () => {
+  for (const version of [1, 2]) {
+    const ptcl = await particle(
+      version,
+      [
+        ...call(29, [floatBits(1.75), 0x7f802004, floatBits(36), 0x7f801234]),
+        ...call(32),
+        [37, 1],
+        [38, 64],
+      ],
+      { count: 2, width: 32, height: 64 },
+    );
+    const before = ptcl.vertices(0);
+    ptcl.machine.store(64, 0xa51d3e77);
+    assert.equal(ptcl.update(0).active, false);
+    assert.equal(ptcl.calls.get(29), 2);
+    assert.equal(ptcl.calls.get(32), 2);
+    const uv = [
+      [1.25, 1.25],
+      [35.5, 1.25],
+      [1.25, 35.5],
+      [35.5, 35.5],
+    ];
+    for (let i = 0; i < 2; i++)
+      assert.deepEqual(
+        ptcl.vertices(i),
+        before.map((vertex, j) => ({ ...vertex, u: uv[j][0] / 32, v: uv[j][1] / 64 })),
+      );
+    assert.equal(ptcl.machine.load(64), 0xa51d3e77);
+    assert.equal(ptcl.machine.sp, ptcl.machine.floor);
+    assert.equal(ptcl.update(1).executed, 0);
+  }
+});
+
+test('2.6.1.63 Particle v2 copies complete quad banks and queries the renderer owner', async () => {
+  const ptcl = await particle(
+    2,
+    [
+      ...call(44),
+      ...call(45, [0x91a6b874]),
+      ...call(46),
+      [38, 64],
+      ...call(47),
+      [38, 68],
+      ...call(48, [72, 76]),
+      ...call(48, [80, 80]),
+    ],
+    {
+      attachPlane: 101,
+      attachmentDevicePresent: () => true,
+      attachment: (id) => {
+        assert.equal(id, 101);
+        return { registrationWord: 0x81234567, base: [1.28125, -0] };
+      },
+    },
+  );
+  const backup = Uint8Array.from(ptcl.quads, (_, at) => at & 255);
+  ptcl.backupQuads.set(backup);
+  ptcl.machine.store(84, 0x71936db1);
+  ptcl.update(0);
+  assert.deepEqual(ptcl.quads, backup);
+  assert.deepEqual(ptcl.backupQuads, backup);
+  assert.deepEqual(
+    [64, 68, 72, 76, 80, 84].map((at) => ptcl.machine.load(at)),
+    [101, 0x81234567, 0x3fa40000, 0x80000000, 0x80000000, 0x71936db1],
+  );
+  assert.equal(ptcl.machine.sp, ptcl.machine.floor);
 });
 
 test('2.6.1.63 both Particle tables use the original initialized scalar words', async () => {

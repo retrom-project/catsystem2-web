@@ -39,6 +39,24 @@ const databaseHandle = {
   type: { kind: 'handle', handleKind: 'database', ownership: 'borrowed' },
 };
 
+const particleTextureSignature = {
+  ids: [29],
+  fields: {
+    parameters: NATIVE_SEMANTICS['particle-v1'][29].signature.parameters.map((parameter, i) => ({
+      ...parameter,
+      description: i % 2 ? 'Unused input word' : 'Float32 diagonal texture coordinate',
+      type: i % 2 ? { kind: 'ignored' } : { kind: 'float', bits: 32 },
+    })),
+    resultWritten: false,
+  },
+};
+
+const particleStateEvidence = {
+  ids: [3, 4, 29, 32, 33],
+  value:
+    'Own Particle v1 and v2 share the task-rate and x87 unsigned scaling entries, four-word UV entry, exit control, and Main integer RNG body. Both original tables were called with physical owners.',
+};
+
 export default {
   id: 'cs2-2.6.1.63',
   profile: 'rebellions-jp-engine-2.6.1.63',
@@ -163,6 +181,7 @@ export default {
     remainderUsesX87: true,
     triangleWaveUsesX87: true,
     interpreterUsesNativeScalarMath: true,
+    randomFloatUsesX87: true,
     lerpUsesX87: true,
     vectorTransformPairwise: true,
     motionMatrixMultiplySSE: true,
@@ -179,6 +198,10 @@ export default {
   movie: { alwaysUseBgmVolume: true },
   particle: {
     deferGraphAttachment: true,
+    frameScale: 'x87-uint32',
+    scriptUsesTaskFrameRate: true,
+    textureCoordinatesUseX87: true,
+    attachmentReadsRegistrationWord: true,
     distanceUsesX87: true,
     attachmentPositionRequiresOwner: true,
   },
@@ -990,7 +1013,7 @@ export default {
       count: 938,
       slots: {
         unknown: [
-          7, 11, 12, 18, 20, 22, 26, 27, 28, 31, 34, 37, 39, 40, 48, 65, 74, 75, 77, 89, 90, 91, 96,
+          11, 12, 18, 20, 22, 26, 27, 28, 31, 34, 37, 39, 40, 48, 65, 74, 75, 77, 89, 90, 91, 96,
           97, 98, 99, 102, 103, 110, 120, 121, 122, 126, 127, 128, 129, 130, 131, 132, 133, 134,
           135, 136, 137, 138, 139, 144, 145, 146, 147, 148, 151, 152, 153, 154, 165, 166, 167, 192,
           193, 194, 195, 199, 202, 208, 214, 215, 216, 217, 219, 220, 221, 222, 223, 224, 225, 226,
@@ -1016,10 +1039,10 @@ export default {
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
         recovered: [
-          1, 4, 5, 6, 8, 9, 10, 13, 14, 15, 16, 17, 19, 21, 23, 24, 25, 29, 30, 32, 33, 35, 36, 38,
-          41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
-          64, 66, 67, 68, 69, 70, 71, 72, 73, 76, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 92,
-          93, 94, 95, 100, 101, 104, 105, 106, 107, 108, 109, 111, 112, 113, 114, 115, 116, 117,
+          1, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15, 16, 17, 19, 21, 23, 24, 25, 29, 30, 32, 33, 35, 36,
+          38, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62,
+          63, 64, 66, 67, 68, 69, 70, 71, 72, 73, 76, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88,
+          92, 93, 94, 95, 100, 101, 104, 105, 106, 107, 108, 109, 111, 112, 113, 114, 115, 116, 117,
           118, 119, 123, 124, 125, 140, 142, 143, 149, 150, 155, 156, 157, 158, 159, 160, 161, 162,
           163, 164, 168, 196, 197, 198, 200, 201, 203, 204, 205, 206, 207, 209, 210, 211, 212, 213,
           218, 238, 240, 241, 242, 243, 244, 245, 246, 247, 248, 250, 251, 252, 253, 254, 256, 257,
@@ -1043,6 +1066,11 @@ export default {
         ],
       },
       evidence: [
+        {
+          ids: [7],
+          value:
+            'Own Main7 and both Particle FPS entries read the calling task frame-rate word at +0x48 and return it with control 1.',
+        },
         {
           ids: [52, 53, 55, 56, 58, 59, 60, 64, 321],
           value:
@@ -1788,6 +1816,7 @@ export default {
         },
       ],
       signatures: [
+        { ids: [7], fields: { resultWritten: true } },
         { ids: [52, 53, 55, 56, 58, 59, 60, 64, 321], fields: { resultWritten: true } },
         {
           ids: [81, 82],
@@ -2102,13 +2131,19 @@ export default {
     'particle-v1': {
       count: 44,
       slots: {
-        unknown: [0, 3, 4, 29, 32, 33, 39, 40],
+        unknown: [0],
         recovered: [
-          1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-          27, 28, 30, 31, 34, 35, 36, 37, 38, 41, 42, 43,
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+          26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
         ],
       },
       evidence: [
+        particleStateEvidence,
+        {
+          ids: [39, 40],
+          value:
+            'The original v1 entries use the same unsigned owner count and indexed raw visibility writes as the v2 entries. The last index wraps to -1 for a zero count.',
+        },
         {
           ids: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 37, 41, 42, 43],
           value:
@@ -2121,6 +2156,9 @@ export default {
         },
       ],
       signatures: [
+        particleTextureSignature,
+        { ids: [3, 4, 33, 40], fields: { resultWritten: true } },
+        { ids: [32, 39], fields: { resultWritten: false } },
         {
           ids: [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 37, 41, 42, 43],
           fields: { resultWritten: true },
@@ -2132,13 +2170,25 @@ export default {
     'particle-v2': {
       count: 51,
       slots: {
-        unknown: [0, 3, 4, 29, 32, 33, 44, 45, 46, 47, 48],
+        unknown: [0],
         recovered: [
-          1, 2, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-          27, 28, 30, 31, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 49, 50,
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+          26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+          48, 49, 50,
         ],
       },
       evidence: [
+        particleStateEvidence,
+        {
+          ids: [44, 45, 46],
+          value:
+            'Own v2 backup and restore copy the complete count times 112 bytes regardless of the current index. The attachment handle returns its stored DWORD unchanged.',
+        },
+        {
+          ids: [47, 48],
+          value:
+            'Own v2 query reads the registration word from the registered group-one model and writes just two VM positions for base XY. Unattached, disabled and detached paths return zero. A group-one entry with no model leaves original scratch undefined.',
+        },
         {
           ids: [8, 9, 10, 11, 13, 14, 15, 17, 18, 20, 37, 42, 43],
           value:
@@ -2170,6 +2220,33 @@ export default {
         },
       ],
       signatures: [
+        particleTextureSignature,
+        { ids: [3, 4, 33, 46, 47], fields: { resultWritten: true } },
+        { ids: [32], fields: { resultWritten: false } },
+        {
+          ids: [44, 45],
+          fields: {
+            argumentWords: null,
+            parameters: {
+              kind: 'ignored',
+              description: 'The original copy reads only owner fields.',
+            },
+            resultWritten: false,
+          },
+        },
+        {
+          ids: [48],
+          fields: {
+            parameters: NATIVE_SEMANTICS['particle-v2'][48].signature.parameters.map(
+              (parameter) => ({
+                ...parameter,
+                type: { ...parameter.type, addressSpace: 'vm', direction: 'out' },
+              }),
+            ),
+            result: { description: 'void', kind: 'void' },
+            resultWritten: false,
+          },
+        },
         {
           ids: [8, 9, 10, 11, 13, 14, 15, 17, 18, 20, 37, 42, 43],
           fields: { resultWritten: true },
