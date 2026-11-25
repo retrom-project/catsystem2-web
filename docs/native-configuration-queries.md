@@ -18,7 +18,9 @@ file even without a dirty request. It writes both system and user groups as
 CP932 XML, including signed raw words, font and key bindings. The native writer
 omits `GAME/autoselect`, `MESSAGE/read_color`, `MESSAGE/enable_read` and
 `ETC/imgimport`; the live fields remain available to their other consumers.
-Creation failure or an incomplete write does not change its control-2 reply.
+Creation, write and close failures do not change its control-2 reply. A rejected
+browser storage write retains a host diagnostic and the same reply; missing
+file services and serialization errors remain errors.
 This explicit save does not flush a separate SoundConfiguration file or clear
 the pending refresh latch. The native application-data directory is represented
 by the existing isolated per-game storage root.

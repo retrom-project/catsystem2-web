@@ -435,10 +435,14 @@ export function installNativeConfigurationCommands(world) {
       throw new Error('Native preference save requires its file service');
     // This explicit save is unconditional and independent of automatic dirty
     // flushing. The original wrapper does not expose the file writer's result.
-    await world.storage.write(
-      world.preferencesName,
-      serializeNativePreferences(world.configuration),
-    );
+    const bytes = serializeNativePreferences(world.configuration);
+    try {
+      await world.storage.write(world.preferencesName, bytes);
+    } catch (error) {
+      world.host.nativeLog?.(
+        `Native preference save failed: ${world.preferencesName}: ${error?.message ?? error}`,
+      );
+    }
     return nativeReply(2);
   });
   return refresh;

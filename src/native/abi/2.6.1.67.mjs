@@ -1351,7 +1351,7 @@ export default {
         {
           ids: [361],
           value:
-            'Own Main361 calls the actual configuration XML tree builder, both system and user preference serializers, and captured file writer even without a dirty request. It saves CP932 Shift_JIS XML in native insertion order, preserving raw signed words, font and key data. The four profile-listed paths are not persisted. File creation failure and partial writes are ignored by this zero-word control-2 wrapper, and all temporary XML owners are released. The ordinary live configuration manager is the portable World owner; no additional sound preferences file is saved by this entry.',
+            'Own Main361 calls the actual configuration XML tree builder, both system and user preference serializers, and captured file writer even without a dirty request. It saves CP932 Shift_JIS XML in native insertion order, preserving raw signed words, font and key data. The four profile-listed paths are not persisted. File creation failure, partial writes, failed WriteFile and failed CloseHandle results do not change this zero-word control-2 wrapper; temporary XML owners are released. Rejected browser storage I/O retains a diagnostic and the same reply. The ordinary live configuration manager is the portable World owner; no additional sound preferences file is saved by this entry.',
         },
         {
           ids: [533],

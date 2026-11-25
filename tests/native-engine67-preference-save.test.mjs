@@ -5,6 +5,7 @@ import { dataWorld } from './fixtures/data-world.mjs';
 import { serializeNativePreferences } from '../src/native/preferences.mjs';
 import { parseNativeXML, findNativeXML } from '../src/native/xml.mjs';
 import { nativeABI, validateABI } from '../src/native/abi/index.mjs';
+import { NativeFileStorage } from '../src/native/storage.mjs';
 
 const profile = 'bokutomo-engine-2.6.1.67';
 const call = (world, args = []) =>
@@ -72,4 +73,22 @@ test('2.6.1.67 save retains native omissions and separate volume/mute words afte
       }),
     /omitted preference fields/,
   );
+});
+
+test('2.6.1.67 explicit save diagnoses rejected browser I/O and still returns control 2', async (t) => {
+  const world = await dataWorld(profile),
+    files = new NativeFileStorage(world.game, 'preference-failure-test'),
+    logs = [];
+  t.after(() => world.close({ flushFiles: false }));
+  t.after(() => files.close());
+  files.store.put = async () => {
+    throw new DOMException('full', 'QuotaExceededError');
+  };
+  world.storage = files;
+  world.host.nativeLog = (message) => logs.push(message);
+  assert.equal((await call(world)).control, 2);
+  assert.deepEqual(logs, ['Native preference save failed: setup.xml: full']);
+  assert.equal(world.configurationDirty, false);
+  world.storage = {};
+  await assert.rejects(() => call(world), /requires its file service/);
 });
