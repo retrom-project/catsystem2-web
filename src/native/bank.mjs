@@ -2,6 +2,7 @@
 import { nativeReply } from '../kcs/vm.mjs';
 import { evaluateNativeExpression } from './expression.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 export const NATIVE_BANK_IDS = Object.freeze([
   0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0x261, 0x262, 0x292, 0x293,
@@ -22,6 +23,7 @@ export class NativeVariableBank {
   constructor() {
     this.words = null;
     this.backupBytes = null;
+    this.backupReady = false;
     this.contextValue = 0;
     this.dirty = false;
     this.contexts = new Map();
@@ -103,6 +105,7 @@ export class NativeVariableBank {
     if (!this.words) return;
     // The original copies capacity bytes, although allocation is capacity words.
     this.backupBytes.set(new Uint8Array(this.words.buffer, this.words.byteOffset, this.capacity));
+    this.backupReady = true;
   }
   restoreBackup() {
     if (!this.words) return;
@@ -114,6 +117,7 @@ export class NativeVariableBank {
     return {
       words: this.words?.slice() ?? null,
       backupBytes: this.backupBytes?.slice() ?? null,
+      backupReady: this.backupReady,
       contextValue: this.contextValue,
       dirty: this.dirty,
       contexts: [...this.contexts].map(([key, context]) => [
@@ -134,6 +138,7 @@ export class NativeVariableBank {
       throw new Error('Invalid native variable bank checkpoint');
     this.words = state.words?.slice() ?? null;
     this.backupBytes = state.backupBytes?.slice() ?? null;
+    this.backupReady = state.backupReady === true;
     this.contextValue = state.contextValue >>> 0;
     this.dirty = Boolean(state.dirty);
     const contexts = new Map();
@@ -197,6 +202,15 @@ export function nativeBank(id, args, machine, services = {}) {
   else if (id === 0xd4) {
     if (bank.words) bank.contextValue = args[0] >>> 0;
   } else if (id === 0x261) bank.backup();
-  else bank.restoreBackup();
+  else {
+    if (
+      bank.capacity &&
+      !bank.backupReady &&
+      services.profile &&
+      nativeABI(services.profile).variableBank?.restoreRequiresBackup
+    )
+      throw new Error('Native variable restore requires a completed backup');
+    bank.restoreBackup();
+  }
   return nativeReply(2);
 }

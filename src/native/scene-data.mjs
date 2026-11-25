@@ -403,6 +403,8 @@ const implicit = new Map([
 ]);
 
 export function nativeSceneData(id, args, machine, services = {}) {
+  if (id === 0x260 && args.length !== 1)
+    throw new Error('Native scene block count requires one scene owner word');
   if (id === 0xdb) {
     if (!services.initializeSceneData) return undefined;
     services.initializeSceneData();
@@ -660,7 +662,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
     else machine.writeString(reader.filename, args[1]);
     return word(reader.fileValue);
   }
-  if (id === 0x260) return word(reader.info(4));
+  if (id === 0x260) return word(reader?.info(4) ?? 0);
   if (id === 0x3d4) return word(reader.messageCount());
   if (id === 0x3d6) return word(history.path.length - 1);
   if (id === 0x3d2) {

@@ -2441,3 +2441,43 @@ test('2.6.1.63 KCS routes cursor, Top and exit words through the true local owne
     await world.close();
   }
 });
+
+test('2.6.1.63 scene count and Script backup preserve native ownership and byte widths', async () => {
+  const world = await dataWorld(profile, {
+    'main-608.kcs': mainProgram(608, 1),
+  });
+  let cold;
+  try {
+    const { main } = world,
+      call = (id, args) => world.runtime.native('main', id, args, main.machine, main),
+      { value: scene } = await call(323, []);
+    await executeMain(world, 608, [0], undefined, 0);
+    await executeMain(world, 608, [scene], undefined, 0xffffffff);
+    await call(324, [scene]);
+    await assert.rejects(executeMain(world, 608, [scene], undefined, 0), /released/);
+    assert.deepEqual(await call(610, []), { control: 2 });
+
+    await call(209, [5]);
+    const bank = world.runtime.variableBank(main, false);
+    bank.set(0, 0x12345678);
+    bank.set(1, 0xfedcbacc);
+    assert.throws(() => call(610, []), /requires a completed backup/);
+    assert.equal(bank.get(0), 0x12345678);
+    assert.deepEqual(await call(609, []), { control: 2 });
+    bank.set(0, 0x87654321);
+    bank.set(1, 0xabcdef00);
+
+    cold = await dataWorld(profile, {}, { initialize: false });
+    await cold.restore(world.snapshot());
+    const caller = cold.main;
+    assert.deepEqual(await cold.runtime.native('main', 610, [], caller.machine, caller), {
+      control: 2,
+    });
+    const restored = cold.runtime.variableBank(caller, false);
+    assert.deepEqual([restored.get(0), restored.get(1)], [0x12345678, 0xabcdefcc]);
+    assert.deepEqual([bank.get(0), bank.get(1)], [0x87654321, 0xabcdef00]);
+  } finally {
+    await cold?.close();
+    await world.close();
+  }
+});
