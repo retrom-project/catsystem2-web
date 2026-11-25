@@ -11,6 +11,8 @@ import { NativeGlobalFile, createGlobalEntries } from '../src/native/persistence
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { mapABIMessage } from '../src/native/abi/messages.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 
 test('history encoding preserves current record fields, duplicate string keys and unused tails', () => {
   const h = new NativeSceneHistory();
@@ -162,6 +164,49 @@ test('2.6.1.23 cross-task Scene follows Script owners and copies compact histori
   assert.equal(history.seenValue('scene01.cst'), 0x80000002);
   assert.deepEqual(history.getString(0, 53, 47).bytes, new TextEncoder().encode('changed'));
   assert.equal(world.runtime.sceneData(empty), null);
+});
+
+test('2.6.1.23 raw Scene pointer query maps the actual Script kind without stopping its interpreter', async (t) => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    world = await dataWorld(profile, { 'idle.kcs': kcsProgram([[59]]) }),
+    caller = world.main,
+    target = await world.spawnScript('idle.kcs'),
+    targetID = world.nativeTaskID(target.id),
+    record = world.objects.objects.get(target.id),
+    m = caller.machine;
+  t.after(() => world.close({ flushFiles: false }));
+  assert.equal(mapABIMessage(profile, 'taskQueries', 'raw', 162, 12), 175);
+  assert.equal(mapABIMessage(profile, 'taskQueries', 'canonical', 175, 12), 162);
+  target.machine.setExecutionMode(1);
+  record.scriptEnabled = 1;
+  m.bytes(256, 12).fill(0xa5);
+  assert.equal(
+    await world.sendNativeEngine(targetID, caller.id, 162, 256, 260),
+    NATIVE_UNWRITTEN_WORD,
+  );
+  assert.deepEqual(m.bytes(256, 12), Uint8Array.of(0, 0, 0, 0, 0, 0, 0, 0, 0xa5, 0xa5, 0xa5, 0xa5));
+  assert.equal(target.machine.executionMode, 1);
+  assert.equal(record.scriptEnabled, 1);
+  await world.runtime.native('main', 219, [], target.machine, target);
+  m.bytes(256, 12).fill(0xa5);
+  await assert.rejects(
+    world.sendNativeEngine(targetID, caller.id, 162, 256, 260),
+    /Physical CST reader\/history pointers require explicit original-engine ownership/,
+  );
+  assert.deepEqual(m.bytes(256, 12), new Uint8Array(12).fill(0xa5));
+  assert.equal(target.machine.executionMode, 1);
+  assert.equal(record.scriptEnabled, 1);
+  const fes = await world.objects.create({ kind: 34, parent: world.root }),
+    base = await world.objects.create({ kind: 17, parent: world.root });
+  for (const id of [fes, base])
+    await assert.rejects(
+      world.sendNativeEngine(world.nativeTaskID(id), caller.id, 162, 256, 260),
+      /Unreviewed ABI message/,
+    );
+  assert.equal(
+    await world.sendNativeEngine(999999, caller.id, 162, 256, 260),
+    NATIVE_UNWRITTEN_WORD,
+  );
 });
 
 test('2.6.1.67 Scene history GCALLs keep CP932 aliases and import compact save records', async (t) => {

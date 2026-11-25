@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalOperation, originalOwner, originalView } from './original-adapter.mjs';
 import { nativeABI } from './abi/index.mjs';
+import { mapABIMessage } from './abi/messages.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 
 export const NATIVE_UNWRITTEN_WORD = Symbol('native engine output word was not written');
@@ -688,6 +689,16 @@ export class NativeEngineMessages {
       this.world.dispatchContext.executorID(context.executorEntry);
     const origin = this.records.get(senderWorldID);
     if (!origin) throw new Error(`Native message origin ${senderWorldID} is absent`);
+    const queries = nativeABI(this.world.profile).messages.channels.taskQueries;
+    if (
+      queries?.raw.some(
+        ({ min, max }) => (min === null || message >= min) && (max === null || message <= max),
+      )
+    ) {
+      const target = this.records.get(this.resolve(senderWorldID, targetNativeID));
+      if (target)
+        message = mapABIMessage(this.world.profile, 'taskQueries', 'raw', message, target.kind);
+    }
     const packet = [
       nativeEngineWord(targetNativeID),
       nativeEngineWord(context.nativeSender ?? idOf(origin)),

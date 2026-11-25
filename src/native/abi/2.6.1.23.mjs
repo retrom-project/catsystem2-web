@@ -1269,6 +1269,11 @@ export default {
   },
   messages: {
     channels: {
+      taskQueries: {
+        unmapped: 'reject',
+        raw: [{ ...toMessage(162, 13), kinds: [12] }],
+        canonical: [{ ...toMessage(175, -13), kinds: [12] }],
+      },
       base: {
         unmapped: 'reject',
         raw: [...baseMessages, ...[13, 23, 24, 29].map((id) => toMessage(id, -1))],

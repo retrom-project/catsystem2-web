@@ -757,6 +757,13 @@ receiver returns its history even after its interpreter has been removed,
 so a source Script's retained context remains available to these helpers
 and after a cold World restore. FES sources without interpreters and the
 raw physical-pointer query remain separate message-level scope boundaries.
+The raw task-message entry maps `.23` query 162 to shared Script semantic
+175 only after resolving the actual kind-12 target. Its inverse mapping
+also remains explicit in ABI data. An empty Script writes two zero words
+without changing its execution mode. A live Scene owner keeps the existing
+physical-pointer guard before writing output. Other actual receiver kinds,
+including FES, retain an explicit query guard until independently reviewed;
+the raw query cannot execute shared Script action 162 by numeric coincidence.
 The native CSS history wrappers 385 and 386 take four words. They use
 40-byte headerless records followed by 72 bytes per saved string. The
 CSS file wrappers 242, 248, 252, 389 and 390 store or extract an owned
