@@ -23,12 +23,12 @@ export class NativeCompiledTable {
     const file = new Binary(bytes, 'Native KCDB');
     if (!file.magic('KCDB')) return false;
     const size = file.u32(8);
-    if (size > 0x10000000) throw new RangeError('Native KCDB exceeds its resource limit');
     const compressed = file.range(12, file.u32(4));
     let unpacked;
     try {
-      unpacked = await inflate(compressed, size);
-    } catch {
+      unpacked = await inflate(compressed, size, size);
+    } catch (error) {
+      if (error instanceof RangeError) throw error;
       return false;
     }
     const body = new Binary(unpacked, 'Native KCDB body'),

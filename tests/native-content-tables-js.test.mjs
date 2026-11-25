@@ -16,6 +16,7 @@ import { kcsProgram } from './helpers.mjs';
 import { serializeCheckpoint, deserializeCheckpoint, checkpointBytes } from '../src/checkpoint.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
+import { NativeCompiledTable } from '../src/native/compiled-table.mjs';
 for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
   'sdk-4.01-engine-2.6.1.74',
@@ -507,5 +508,34 @@ test('fixed SDK .23 compiled table protects original signed row and format bound
     await assert.rejects(() => call(793, [table, 64, 0]), /released/);
   } finally {
     await world.close({ flushFiles: false });
+  }
+});
+
+test('KCDB high declared sizes reach bounded decompression without an artificial threshold or large output allocation', async () => {
+  const bytes = new Uint8Array(13),
+    header = new DataView(bytes.buffer);
+  bytes.set([75, 67, 68, 66]);
+  header.setUint32(4, 1, true);
+  for (const size of [0x10000000, 0x10000001, 0x7fffffff]) {
+    header.setUint32(8, size, true);
+    assert.equal(await new NativeCompiledTable().load(bytes), false);
+  }
+});
+
+test('KCDB preserves an allocation exception from the decompression stage as a diagnostic', async () => {
+  const original = globalThis.DecompressionStream,
+    failure = new RangeError('authored storage allocation failure');
+  globalThis.DecompressionStream = class {
+    constructor() {
+      throw failure;
+    }
+  };
+  try {
+    await assert.rejects(
+      new NativeCompiledTable().load(contentFiles().get('questions')),
+      (error) => error === failure,
+    );
+  } finally {
+    globalThis.DecompressionStream = original;
   }
 });

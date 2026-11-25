@@ -19,19 +19,31 @@ is described in [native-databases.md](native-databases.md).
 Resources use the existing JS `database` category. KCDB contains a compressed
 schema and fixed-width rows. Raw text bytes retain their encodings. The general
 reader zero-initializes numeric fields up to four bytes and returns zero for
-wider fields. Byte reads copy the declared width and return it.
+wider fields. Byte reads copy the declared width and return it. Decompression
+uses the file's declared unsigned size as its output bound and requires an exact
+match. There is no separate 256 MiB KCDB limit. Corrupt compressed data returns
+a load failure; storage allocation exceptions remain diagnostics rather than
+being converted into a successful or ordinary failed parse.
 
 Selection tables retain the first registered name and the first duplicate table
 ID. Selecting a table copies its nineteen values into the mutable work list.
-The recovered missing-slot helper appends those slots' indexes. `30F` reports
-the table-ID count. Moves and consumption preserve their high-bit markers.
+Profiles with the legacy append behavior append missing slots' indexes.
+The fixed .23 implementation instead shuffles the missing slots at indexes
+two and above with 1,000 pairs of shared integer RNG draws, marks the source
+and relocates its value into the first shuffled hole. With no hole, 33F
+marks the source while 340 preserves it; the same distinction applies to
+negative source values. 30F reports the table-ID count. Moves retain their
+high-bit markers.
 The implementation lives in [selection-table.mjs](../src/native/selection-table.mjs).
 
 Question keys use CP932-aware uppercase basenames. The tree preserves reverse
 insertion traversal. Configuration loading and active-pool rebuilding remain
 separate operations. Byte-space tokens include literal quote bytes. Genre lists,
 member/partner sets, counters, output padding and null behavior follow the
-recovered operations. `307` reports a nonempty partner set, while `308` returns
+recovered operations. Configuration ranges retain their endpoints and match
+only the occupied question keys; overlapping ranges preserve numeric key order
+without materializing absent genres. The fixed .23 first-group placeholder
+continues through following literals. `307` reports a nonempty partner set, while `308` returns
 the selected question ID and copies its database key. Record sorting preserves
 observable ties through the recovered insertion, partition and heap algorithms.
 Selection consumes the canonical integer MT stream. The implementation lives in
@@ -45,9 +57,11 @@ in signed table-ID order. The recovered fourth question-table field overlaps
 the PT word array, including its query result. The implementation lives in
 [mission-table.mjs](../src/native/mission-table.mjs).
 
-Mission `334` selector 9 requires a nonempty character set. The original empty
-set path reads an uninitialized tree-sentinel word. Private oracle observations
-are retained locally. JS raises an explicit error at this undefined boundary.
+Mission 334 selector 9 requires a nonempty character set in the fixed .23
+build: its checked native iterator rejects an empty set, and JS protects that
+boundary. The separately reviewed modern builds read an uninitialized sentinel
+payload in this case and continue; JS writes zero for that unspecified word.
+Private observations remain scoped to each executable fingerprint.
 
 ## Raw data, CSS and snapshots
 
