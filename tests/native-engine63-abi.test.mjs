@@ -20,6 +20,7 @@ import { dataWorld } from './fixtures/data-world.mjs';
 import { defaultFESWorld, drawPixels, loadDefaultFES } from './fixtures/default-fes-world.mjs';
 import { glyphs } from './fixtures/fes-text-log-world.mjs';
 import { imageOwnerFiles } from './fixtures/image-files.mjs';
+import { ScreenVectorGPU } from './fixtures/screen-effects-fixture.mjs';
 import { hg3, kcsProgram } from './helpers.mjs';
 
 const profile = 'rebellions-jp-engine-2.6.1.63';
@@ -2545,5 +2546,90 @@ test('2.6.1.63 String owns the image-font source and registers independent glyph
   } finally {
     await cold?.close();
     await world.close();
+  }
+});
+
+test('fixed 2.6.1.63 Blur and Mosaic preserve native feedback and rectangle passes', async () => {
+  const widths = new Map([
+    [520, 1],
+    [521, 8],
+    [522, 2],
+    [523, 10],
+    [524, 2],
+  ]);
+  const world = await dataWorld(
+    profile,
+    Object.fromEntries(
+      [...widths].map(([id, words]) => [`main-${id}.kcs`, mainProgram(id, words)]),
+    ),
+  );
+  try {
+    const { view } = world.graphics,
+      gpu = new ScreenVectorGPU(16, 16);
+    Object.assign(view, { clientWidth: 16, clientHeight: 16 });
+    Object.assign(world.configuration.screen, {
+      width: 16,
+      height: 16,
+      currentWidth: 16,
+      currentHeight: 16,
+    });
+    world.stageRenderer.gpu = gpu;
+    world.graphics.createLogicalDevice();
+    const create = async (kind) =>
+      world.nativeTaskID(await world.objects.create({ kind, parent: world.main.id }));
+    const draw = async () => {
+      gpu.draws.length = 0;
+      await world.screenEffects.rendering.render([], async () => {}, null);
+      return gpu.draws;
+    };
+
+    const blur = await create(35);
+    const matrix = [
+      1.2, 2.1, -0.4, 1.11, -1.91, 0.85, 0.5, 3.2, 1.9, 2.84, 0.23, -0.45, 0.9, 3.17, -0.55, 1,
+    ].map(floatBits);
+    await executeMain(
+      world,
+      521,
+      [
+        blur,
+        0x80000108,
+        floatBits(1.59375),
+        floatBits(0.7),
+        floatBits(-3.125),
+        0x814020fa,
+        floatBits(8),
+        floatBits(50000),
+      ],
+      (machine) => matrix.forEach((word, index) => machine.store(0x80000108 + index * 4, word)),
+    );
+    await executeMain(world, 522, [blur, 0x80000011]);
+    await executeMain(world, 520, [blur], undefined, 0x80000011);
+    assert.equal((await draw()).length, 1);
+    const feedback = (await draw())[0][0];
+    assert.deepEqual(
+      [feedback.x, feedback.y, feedback.z, feedback.w].map(floatBits),
+      [1099682939, 3241971546, 3230473912, 3255791780],
+    );
+    assert.equal(feedback.color, 0x814020fa);
+
+    const mosaic = await create(36);
+    await executeMain(world, 524, [mosaic, 17]);
+    assert.deepEqual(await draw(), []);
+    const rectangle = [1.125, 1.375, 5.25, 4.9375, 0, -0, 1, 1080].map(floatBits);
+    await executeMain(world, 523, [mosaic, ...rectangle, 0xf0604020]);
+    const [small, large] = await draw();
+    assert.deepEqual(
+      small.map(({ x, y }) => [x, y]),
+      Array.from({ length: 6 }, () => [0, 0]),
+    );
+    assert.deepEqual(
+      [large[0].x, large[0].y, large[0].u, large[0].v, large[0].color],
+      [0.625, 0.875, 0, 0, 0xf0604020],
+    );
+    await executeMain(world, 524, [mosaic, 0]);
+    await executeMain(world, 520, [mosaic], undefined, 0);
+    assert.deepEqual(await draw(), []);
+  } finally {
+    await world.close({ flushFiles: false });
   }
 });

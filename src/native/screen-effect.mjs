@@ -3,6 +3,7 @@ import { mapABIMessage } from './abi/messages.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { bitsFloat, floatBits } from '../kcs.mjs';
 import { identity } from '../motion/matrix.mjs';
+import { transformSSEWords } from '../motion/native-sse.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { NativeScreenEffectRenderer, screenQuad } from './screen-effect-render.mjs';
@@ -166,6 +167,15 @@ export class NativeScreenEffectTask {
   }
   get rendering() {
     return this.owner.rendering;
+  }
+  get callbackActive() {
+    const { kind } = this.record;
+    if (!this.state.capability) return false;
+    if (kind === 36 && this.rectangleUsesLogicalCapture && !this.state.initialized) return false;
+    return ![35, 36, 37].includes(kind) || this.state.active;
+  }
+  get rectangleUsesLogicalCapture() {
+    return nativeABI(this.world.profile).graphics.screenEffectRectangleUsesLogicalCapture;
   }
   get paddedBreakCapture() {
     return nativeABI(this.world.profile).graphics.screenEffectBreakUsesPaddedCapture;
@@ -364,15 +374,18 @@ export class NativeScreenEffectTask {
       state.maximum = bitsFloat(params[7]);
       if (!state.geometry) {
         const [x, y, w, h] = scaled,
-          tw = screenTextureSize(width),
-          th = screenTextureSize(height),
+          logical = this.rectangleUsesLogicalCapture,
+          tw = logical ? width : screenTextureSize(width),
+          th = logical ? height : screenTextureSize(height),
           color = params[8],
           vertices = screenQuad(w, h, tw, th, color)[0].vertices;
         vertices.forEach((v, i) => {
-          v.x = f(v.x + x);
-          v.y = f(v.y + y);
-          v.u = i % 2 ? f(f(x + w) / tw) : 0;
-          v.v = i > 1 ? f(f(y + h) / th) : 0;
+          const right = i % 2,
+            bottom = i > 1;
+          v.x = logical ? f((right ? f(x + w) : x) - 0.5) : f(v.x + x);
+          v.y = logical ? f((bottom ? f(y + h) : y) - 0.5) : f(v.y + y);
+          v.u = right ? f(f(x + w) / tw) : 0;
+          v.v = bottom ? f(f(y + h) / th) : 0;
         });
         state.geometry = [{ vertices }];
       }
@@ -557,18 +570,20 @@ export class NativeScreenEffectTask {
     if (kind === 35 && !state.firstFrame) {
       const target = stage.surfaceTarget(current),
         source = r.captures[1 - state.index],
-        matrix = state.params.slice(0, 16).map(bitsFloat),
+        sse = nativeABI(this.world.profile).graphics.screenEffectBlurUsesSSE,
+        words = state.params.slice(0, 16),
+        matrix = sse ? words : words.map(bitsFloat),
         offset = state.params.slice(16, 19).map(bitsFloat),
         center = [width >>> 1, height >>> 1],
         geometry = screenQuad(width, height, width, height, state.params[19]);
+      const transform = sse
+        ? (position) => transformSSEWords(position.map(floatBits), matrix).map(bitsFloat)
+        : (position) => transformNativeVector(position, matrix, roundX87Single);
+      const round = sse ? roundX87Single : f;
       for (const v of geometry[0].vertices) {
-        const p = transformNativeVector(
-          [f(v.x - center[0]), f(v.y - center[1]), v.z, v.w],
-          matrix,
-          roundX87Single,
-        );
-        v.x = f(f(offset[0] + p[0]) + center[0]);
-        v.y = f(f(offset[1] + p[1]) + center[1]);
+        const p = transform([f(v.x - center[0]), f(v.y - center[1]), v.z, v.w]);
+        v.x = f(round(offset[0] + p[0]) + center[0]);
+        v.y = f(round(offset[1] + p[1]) + center[1]);
         v.z = f(p[2] + offset[2]);
         v.w = p[3];
       }
@@ -587,11 +602,12 @@ export class NativeScreenEffectTask {
         ratio = state.params.slice(4, 6).map(bitsFloat),
         small = structuredClone(state.geometry ?? []),
         large = structuredClone(state.geometry ?? []),
-        tw = screenTextureSize(width),
-        th = screenTextureSize(height);
+        logical = this.rectangleUsesLogicalCapture,
+        tw = logical ? width : screenTextureSize(width),
+        th = logical ? height : screenTextureSize(height);
       (small[0]?.vertices ?? []).forEach((v) => {
-        v.x = f(v.x / ratio[0]);
-        v.y = f(v.y / ratio[1]);
+        v.x = logical && ratio[0] === 0 ? 0 : f(v.x / ratio[0]);
+        v.y = logical && ratio[1] === 0 ? 0 : f(v.y / ratio[1]);
         v.color = 0xffffffff;
       });
       (large[0]?.vertices ?? []).forEach((v, i) => {

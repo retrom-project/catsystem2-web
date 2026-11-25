@@ -330,12 +330,8 @@ export class NativeScreenEffectRenderer {
       await this.gpu.withRenderTargetAsync(
         this.gpu.primaryTarget,
         async () => {
-          const effect = this.effects.tasks.get(this.effects.callback),
-            callback =
-              effect &&
-              effect.state.capability &&
-              (![35, 36, 37].includes(effect.record.kind) || effect.state.active);
-          if (!callback) {
+          const effect = this.effects.tasks.get(this.effects.callback);
+          if (!effect?.callbackActive) {
             this.clear(0xff000000);
             await this.drawRange(minimum, maximum);
           } else {
