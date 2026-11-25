@@ -65,6 +65,15 @@ test('scalar and array zero share an exact CP932 C-string key while case, bytes 
   const byte = c.create('STRING8', Uint8Array.of(0x82, 0xa0), 1)[0];
   assert.strictEqual(c.lookup('あ', 0), byte);
   assert.strictEqual(c.create('IMAGE', Uint8Array.of(0x82, 0xa0, 0, 0x41), 1)[0], byte);
+  const raw = Uint8Array.of(0x82, 0, 0x41),
+    incomplete = c.create('IMAGE', raw, 1)[0],
+    other = c.create('STRING', Uint8Array.of(0x83), 1)[0];
+  assert.notEqual(incomplete, other);
+  assert.strictEqual(c.lookup(raw), incomplete);
+  raw[0] = 0x83;
+  assert.strictEqual(c.lookup(raw), other, 'each visit reads the current raw key');
+  assert.strictEqual(c.lookup(Uint8Array.of(0x82)), incomplete);
+  assert.throws(() => c.lookup(new Uint8Array(32).fill(0x61)), /31-byte/);
   assert.throws(() => c.create('IMAGE', 'あ'.repeat(16), 1), /31-byte/);
   assert.equal(
     c.lookup('History', 0x100000000),

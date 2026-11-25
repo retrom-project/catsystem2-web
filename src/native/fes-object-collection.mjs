@@ -16,14 +16,16 @@ function signed(value, label) {
     throw new RangeError(`FES ${label} must be an int32`);
   return value;
 }
+function boundedNameBytes(source) {
+  const nul = source.indexOf(0),
+    end = nul < 0 ? source.length : nul;
+  if (end > 31) throw new RangeError('FES object name exceeds the defined 31-byte CP932 boundary');
+  return end === source.length ? source : source.subarray(0, end);
+}
 function nameValue(name) {
   if (typeof name !== 'string' && !(name instanceof Uint8Array))
     throw new TypeError('FES object name must be text or CP932 bytes');
-  const source = typeof name === 'string' ? encodeCP932(name) : name,
-    end = source.indexOf(0),
-    bytes = source.slice(0, end < 0 ? source.length : end);
-  if (bytes.length > 31)
-    throw new RangeError('FES object name exceeds the defined 31-byte CP932 boundary');
+  const bytes = boundedNameBytes(typeof name === 'string' ? encodeCP932(name) : name).slice();
   return {
     bytes,
     token: String.fromCharCode(...bytes),
@@ -95,7 +97,11 @@ export class FESObjectCollection {
     return this.groups.get(this.name(name).token)?.count ?? 0;
   }
   lookup(name, index = 0) {
-    return this.entries.get(this.name(name).token)?.get(index | 0) ?? null;
+    const token =
+      name instanceof Uint8Array
+        ? String.fromCharCode(...boundedNameBytes(name))
+        : this.name(name).token;
+    return this.entries.get(token)?.get(index | 0) ?? null;
   }
   reference(object) {
     const identity = this.identities.get(object);

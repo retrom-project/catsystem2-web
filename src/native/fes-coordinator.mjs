@@ -79,7 +79,18 @@ const textSelectionCommands = new Set([
   'endpos',
 ]);
 const clone = (state) => structuredClone(state);
-const decoder = new TextDecoder('shift_jis');
+const decoder = new TextDecoder('shift_jis'),
+  topObjectName = '_TOPOBJ_';
+
+function isTopObjectName(name) {
+  if (typeof name === 'string') return name === topObjectName;
+  if (
+    name instanceof Uint8Array &&
+    (name.length !== topObjectName.length || name[0] !== topObjectName.charCodeAt(0))
+  )
+    return false;
+  return decoder.decode(name) === topObjectName;
+}
 
 export class FESCoordinator {
   constructor(world, instance, cache) {
@@ -101,8 +112,7 @@ export class FESCoordinator {
     });
     const ordinaryLookup = this.collection.lookup.bind(this.collection);
     this.collection.lookup = (name, index = 0) => {
-      const text = typeof name === 'string' ? name : decoder.decode(name);
-      if (text === '_TOPOBJ_' && index === 0) return this.topObject();
+      if (isTopObjectName(name) && index === 0) return this.topObject();
       return ordinaryLookup(name, index);
     };
     Object.assign(instance, {

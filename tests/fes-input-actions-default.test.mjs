@@ -354,6 +354,10 @@ for (const profile of profiles) {
         argument = h.instance.argumentBytes,
         command = h.instance.runtime.command;
       assert.equal(top.nativeType, 0);
+      assert.equal(h.instance.collection.lookup('_TOPOBJ_'), top);
+      assert.equal(h.instance.collection.lookup(utf8('_TOPOBJ_').buffer), top);
+      assert.equal(h.instance.collection.lookup(Uint8Array.of(...utf8('_TOPOBJ_'), 0)), null);
+      assert.equal(h.instance.collection.lookup(utf8('_TOPOBJ_'), 1), null);
       assert.equal(h.instance.collection.graph.get(top.handle), top);
       h.instance.argumentBytes = function (token, ...args) {
         topGetters.push(typeof token === 'string' ? token : string(token));
