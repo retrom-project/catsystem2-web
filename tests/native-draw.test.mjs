@@ -284,6 +284,80 @@ test('a partial forced raster matches a full paint and still overwrites VRAM out
   assert.deepEqual(borrowed, exact);
 });
 
+test('a forced Draw reuses published texture rows through an ordinary partial output', async () => {
+  const world = fixture(),
+    { graphics } = world,
+    texture = world.configuration.fields.texture;
+  texture.size.set([256, 256]);
+  texture.grid.set([1, 4]);
+  texture.bppY.set([0, 4]);
+  texture.areas[0].set([0, 0, 1, 4]);
+  texture.bpp = 32;
+  const id = await surface(world, 256, 1024),
+    task = graphics.drawTasks.get(id),
+    moving = graphics.images.create(1, 1),
+    retained = graphics.images.create(1, 1),
+    force = () => task.message([99, 292, 0, 0]);
+  await graphics.images.get(moving).fill(0, 0, 1, 1, 0xffaabbcc);
+  await graphics.images.get(retained).fill(0, 0, 1, 1, 0xff112233);
+  await draw(world, id, 7, moving, { position: [2, 30] });
+  await draw(world, id, 8, retained, { position: [5, 700] });
+  await force();
+  task.state.renderer.dirtyRects = [];
+  await graphics.images.get(moving).fill(0, 0, 1, 1, 0xff102030);
+  await task.render([0, 30, 256, 31]);
+  const { texturePages: pages } = graphics,
+    revisions = () => [0, 1, 2, 3].map((index) => pages.frame(index).revision),
+    rgba = (x, y) => [
+      ...pages
+        .frame(Math.floor(y / 256))
+        .rgba.subarray(((y % 256) * 256 + x) * 4, ((y % 256) * 256 + x) * 4 + 4),
+    ];
+  const initial = revisions();
+  pages.clearDirty();
+  await draw(world, id, 7, moving, { position: [2, 40] });
+  await force();
+  assert.deepEqual(revisions(), [initial[0] + 1, ...initial.slice(1)]);
+  assert.deepEqual([...pages.dirtyFlags], [1, 1, 1, 1]);
+  assert.deepEqual(rgba(2, 30), [0, 0, 0, 0]);
+  assert.deepEqual(rgba(2, 40), [16, 32, 48, 255]);
+  assert.deepEqual(rgba(5, 700), [17, 34, 51, 255]);
+
+  task.state.renderer.dirtyRects = [];
+  await graphics.fill(5, 700, 1, 1);
+  const mutated = revisions();
+  await draw(world, id, 7, moving, { position: [2, 44] });
+  await force();
+  assert.deepEqual(
+    revisions(),
+    mutated.map((revision) => revision + 1),
+  );
+  assert.deepEqual(rgba(5, 700), [17, 34, 51, 255]);
+  assert.deepEqual(rgba(2, 40), [0, 0, 0, 0]);
+  assert.deepEqual(rgba(2, 44), [16, 32, 48, 255]);
+
+  task.state.renderer.dirtyRects = [];
+  const unchanged = revisions();
+  pages.clearDirty();
+  await force();
+  assert.deepEqual(
+    revisions(),
+    unchanged.map((revision) => revision + 1),
+  );
+  assert.deepEqual([...pages.dirtyFlags], [1, 1, 1, 1]);
+
+  pages.restore(pages.snapshot());
+  await draw(world, id, 7, moving, { position: [2, 48] });
+  const restored = revisions();
+  await force();
+  assert.deepEqual(
+    revisions(),
+    restored.map((revision) => revision + 1),
+  );
+  assert.deepEqual(rgba(2, 44), [0, 0, 0, 0]);
+  assert.deepEqual(rgba(2, 48), [16, 32, 48, 255]);
+});
+
 test('a cleared pending Draw preserves borrowed rows, touching transparent borders and clipped pixels', async (t) => {
   const world = fixture(),
     id = await surface(world, 10, 6),

@@ -90,6 +90,8 @@ export function textureDitherThreshold(x, y) {
   ];
 }
 export class NativeTexturePages {
+  #pageIdentities = new WeakMap();
+
   constructor(layout, { release = () => {}, stage = null, trackDirty = false } = {}) {
     this.layout = structuredClone(layout);
     this.releaseFrame = release;
@@ -170,18 +172,70 @@ export class NativeTexturePages {
         this.pages.delete(index);
       }
   }
-  async upload(bitmap, rectangle = null) {
+  #capturePublication(rectangle, input) {
+    const [left, top, right, bottom] = rectangle;
+    if (
+      !rectangle.every(Number.isInteger) ||
+      left < 0 ||
+      top < 0 ||
+      right > input.width ||
+      bottom > input.height ||
+      left >= right ||
+      top >= bottom
+    )
+      return null;
+    const pages = [];
+    for (const page of this.pages.values()) {
+      const { frame } = page;
+      if (
+        page.x >= right ||
+        page.y >= bottom ||
+        page.x + frame.width <= left ||
+        page.y + frame.height <= top
+      )
+        continue;
+      if (page.bpp !== 32 && (page.bpp !== 16 || this.layout.dither)) return null;
+      let identity = this.#pageIdentities.get(page);
+      if (!identity) {
+        identity = Symbol();
+        this.#pageIdentities.set(page, identity);
+      }
+      pages.push({ identity, revision: frame.revision });
+    }
+    return pages.length ? { rectangle, pages } : null;
+  }
+  async upload(bitmap, rectangle = null, retained = null) {
     const dither = Boolean(this.layout.dither);
     const input = await bitmap.frame(),
-      [sx, sy, right, bottom] = rectangle ?? [0, 0, input.width, input.height];
+      region = rectangle ?? [0, 0, input.width, input.height],
+      [sx, sy, right, bottom] = region,
+      previous = retained?.previous,
+      current = retained && this.#capturePublication(retained.footprint, input),
+      ownsFootprint =
+        current &&
+        previous?.rectangle.every((value, i) => value === current.rectangle[i]) &&
+        previous.pages.length === current.pages.length &&
+        previous.pages.every(({ identity, revision }, i) => {
+          const page = current.pages[i];
+          return identity === page.identity && revision === page.revision;
+        }),
+      full = current && region.every((value, i) => value === current.rectangle[i]),
+      changed = ownsFootprint && full && retained.changed;
     for (const [index, page] of this.pages) {
       const { frame } = page,
-        left = Math.max(0, sx, page.x),
-        top = Math.max(0, sy, page.y),
-        endX = Math.min(input.width, right, page.x + frame.width),
-        endY = Math.min(input.height, bottom, page.y + frame.height);
-      if (left >= endX || top >= endY) continue;
+        fullLeft = Math.max(0, sx, page.x),
+        fullTop = Math.max(0, sy, page.y),
+        fullRight = Math.min(input.width, right, page.x + frame.width),
+        fullBottom = Math.min(input.height, bottom, page.y + frame.height);
+      if (fullLeft >= fullRight || fullTop >= fullBottom) continue;
+      // The original force call marks the full texture footprint dirty even
+      // when the existing page bytes need no further write.
       if (this.dirtyFlags) this.dirtyFlags[index] = 1;
+      const left = changed ? Math.max(fullLeft, changed[0]) : fullLeft,
+        top = changed ? Math.max(fullTop, changed[1]) : fullTop,
+        endX = changed ? Math.min(fullRight, changed[2]) : fullRight,
+        endY = changed ? Math.min(fullBottom, changed[3]) : fullBottom;
+      if (left >= endX || top >= endY) continue;
       for (let y = top; y < endY; y++) {
         const row = input.rgba.subarray((y * input.width + left) * 4, (y * input.width + endX) * 4),
           at = ((y - page.y) * frame.width + left - page.x) * 4;
@@ -200,6 +254,7 @@ export class NativeTexturePages {
       frame.revision++;
       if (page.surface) this.stage.surfaces.get(page.surface).revision = frame.revision;
     }
+    if (full || ownsFootprint) return this.#capturePublication(current.rectangle, input);
   }
   clear(x, y, width, height) {
     const right = (x + width) | 0,

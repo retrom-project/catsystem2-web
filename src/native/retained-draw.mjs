@@ -619,7 +619,8 @@ export class NativeRetainedDraw {
       rows.set(bitmapPixels.subarray(end), end);
     }
     let publication = null,
-      revision;
+      revision,
+      texturePublication;
     try {
       if (hasArea) {
         if (!renderer.externalPaint && (!(replaceRows || band) || renderer.clearColor !== 0)) {
@@ -692,7 +693,9 @@ export class NativeRetainedDraw {
         const frame = publication
           ? outputState(bitmap.state, pixels)
           : { ...bitmap.state, rgba: pixels };
-        await graphics.output(
+        const tracksTexture =
+          forceSources || (prior && reuse && !forceOutput && remembered.texturePublication);
+        texturePublication = await graphics.output(
           {
             state: frame,
             width: frame.width,
@@ -702,7 +705,12 @@ export class NativeRetainedDraw {
           },
           draw.state.offset,
           forceOutput || (!areas.length && draw.state.pending) ? null : area,
-          { flipY: true },
+          {
+            flipY: true,
+            retained: tracksTexture
+              ? { previous: prior ? remembered.texturePublication : null, changed: band }
+              : null,
+          },
         );
       }
     } finally {
@@ -726,6 +734,7 @@ export class NativeRetainedDraw {
             clearColor,
             sources: forceSources,
             touched: [renderer.height, 0],
+            texturePublication,
           };
           return;
         }
@@ -733,6 +742,7 @@ export class NativeRetainedDraw {
           remembered.revision = revision;
           remembered.touched[0] = Math.min(remembered.touched[0], area[1]);
           remembered.touched[1] = Math.max(remembered.touched[1], area[3]);
+          remembered.texturePublication = texturePublication;
           return;
         }
       }

@@ -241,7 +241,7 @@ export class NativeGraphics {
   get hasOrdinaryBitmapOutput() {
     return this.output === nativeBitmapOutput && this.ensureVRAM === nativeEnsureVRAM;
   }
-  async output(bitmap, offset, region = null, { upload = true, flipY = false } = {}) {
+  async output(bitmap, offset, region = null, { upload = true, flipY = false, retained } = {}) {
     const [x, y] = offset,
       area = region || [0, 0, bitmap.width, bitmap.height];
     const vram = await this.ensureVRAM(
@@ -259,8 +259,15 @@ export class NativeGraphics {
       flipY,
     });
     this.initializeTextures();
-    if (upload && this.view.active)
-      await this.texturePages.upload(vram, [x + area[0], y + area[1], x + area[2], y + area[3]]);
+    if (upload && this.view.active) {
+      const translated = ([left, top, right, bottom]) => [x + left, y + top, x + right, y + bottom],
+        publication = retained && {
+          previous: retained.previous,
+          footprint: [x, y, x + bitmap.width, y + bitmap.height],
+          changed: retained.changed && translated(retained.changed),
+        };
+      return this.texturePages.upload(vram, translated(area), publication);
+    }
   }
   async prepareRender() {
     for (const [id, players] of this.fesSurfaces) {
