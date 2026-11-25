@@ -85,6 +85,15 @@ records, twenty indexed 28-byte character records and a final total word.
 Imports preserve existing resource models and update their progress. A failed
 raw CSS output releases its allocation before propagating the write error.
 
+All five fixed builds return zero from `341` and `344` when their native raw
+allocation fails; `344` leaves the caller's output length unchanged. The JS
+allocator maps only its validated allocation-failure type to that result. Invalid
+sizes, invalid addresses and unrelated errors remain diagnostic. Small bounded
+exhaustion tests cover retry, release and cold ownership without large buffers.
+Explicitly written zero-byte CSS records have a nonzero owned output. Unwritten
+record zero is separately protected for the three legacy builds; its modern
+behavior remains unproved.
+
 Pure JS World tests export through `341/343/F5`, open the CSS in a fresh World
 through `F7/344`, and import both progress formats. They reject EXE loading.
 The existing private World cases continue to cover mixed-runtime integration.
