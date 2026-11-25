@@ -10,6 +10,11 @@ for (const op of [
   operandCounts[op] = 1;
 for (const op of [0, 45, 51, 58, 59, 60]) operandCounts[op] = 0;
 operandCounts[53] = 3;
+const compoundArithmetic = [5, 6, 3, 1, 2, 4, 10, 11, 9, 7];
+const isTypedStore = (mode) => {
+  const type = mode & 15;
+  return type >= 1 && type <= 4;
+};
 const view = new DataView(new ArrayBuffer(4));
 let nextMemoryID = 1;
 export const NATIVE_RESULT_SENTINEL = 0xcccccccc;
@@ -212,19 +217,20 @@ export class KCSMachine {
     const op = b.u8(at);
     if (op >= operandCounts.length || op === 63 || op === 64)
       throw new Error(`KCS unknown opcode ${op} at ${at}`);
-    const size = 1 + operandCounts[op] * 5,
+    const count = operandCounts[op],
+      size = 1 + count * 5,
       end = at + size;
     if (end > this.script.codeSize) throw new Error(`KCS instruction exceeds code at ${at}`);
-    const args = [];
-    for (let p = at + 1; p < end; p += 5) {
+    const args = new Array(count);
+    for (let i = 0, p = at + 1; i < count; i++, p += 5) {
       const mode = b.u8(p);
-      args.push({
+      args[i] = {
         mode,
         value: b.u32(p + 1),
         width: mode & 0x80 ? 4 : (mode & 15) === 1 ? 1 : (mode & 15) === 2 ? 2 : 4,
         float: Boolean(mode & 4),
         signed: Boolean(mode & 0x20),
-      });
+      };
     }
     return { op, args, size };
   }
@@ -448,25 +454,22 @@ export class KCSMachine {
     }
     let next = this.pc + size;
     this.steps++;
-    const read = (i) => this.read(o[i]);
     if (op > 0 && op <= 20 && op !== 8 && op !== 12) {
-      const a = read(0),
-        b = read(1);
+      const a = this.read(o[0]),
+        b = this.read(o[1]);
       this.push(arithmetic(op, a, b, o[0].mode, o[1].mode));
-    } else if (op === 8) this.push(~read(0));
-    else if (op === 12) this.push(Number(!read(0)));
+    } else if (op === 8) this.push(~this.read(o[0]));
+    else if (op === 12) this.push(Number(!this.read(o[0])));
     else if (op === 26) {
-      const value = read(0);
+      const value = this.read(o[0]);
       this.push(o[0].float ? floatBits(-bitsFloat(value)) : -value);
     } else if (op === 21 || (op >= 27 && op <= 36)) {
       const address = this.raw(o[0]),
-        b = read(1);
+        b = this.read(o[1]);
       let value = b;
       if (op !== 21) {
         const a = this.load(address);
-        const alias = { 27: 5, 28: 6, 29: 3, 30: 1, 31: 2, 32: 4, 33: 10, 34: 11, 35: 9, 36: 7 }[
-          op
-        ];
+        const alias = compoundArithmetic[op - 27];
         if (op === 34)
           value = (o[0].mode | o[1].mode) & 0x20 ? (a | 0) >> (b & 31) : a >>> (b & 31);
         // The original unsigned /= handler stores the DIV remainder (EDX).
@@ -483,7 +486,7 @@ export class KCSMachine {
         old = this.load(address);
       if (op >= 24) this.push(old);
       const delta = op === 22 || op === 24 ? 1 : -1;
-      if ([1, 2, 3, 4].includes(o[0].mode & 15)) {
+      if (isTypedStore(o[0].mode)) {
         const width = (o[0].mode & 15) === 1 ? 1 : (o[0].mode & 15) === 2 ? 2 : 4;
         const previous = this.load(address, width);
         this.store(
@@ -502,19 +505,19 @@ export class KCSMachine {
     } else if (op === 38) {
       const address = this.raw(o[0]),
         value = this.pop();
-      if ([1, 2, 3, 4].includes(o[0].mode & 15))
+      if (isTypedStore(o[0].mode))
         this.store(address, value, (o[0].mode & 15) === 1 ? 1 : (o[0].mode & 15) === 2 ? 2 : 4);
     } else if (op === 39 || op === 40) {
-      const address = read(0),
+      const address = this.read(o[0]),
         condition = this.pop();
       if ((condition === 0) === (op === 39)) next = address;
       this.sp = this.floor;
     } else if (op === 41) {
-      next = read(0);
+      next = this.read(o[0]);
       this.sp = this.floor;
     } else if (op === 42) {
-      const address = read(0),
-        count = read(1),
+      const address = this.read(o[0]),
+        count = this.read(o[1]),
         frame = this.sp - count;
       if (count % 4 || count > this.sp) throw new Error('KCS bad call frame');
       this.debug.scopes.push(this.debug.locals.length);
@@ -530,8 +533,8 @@ export class KCSMachine {
       this.depth++;
       next = address;
     } else if (op === 43) {
-      const id = read(0),
-        count = read(1);
+      const id = this.read(o[0]),
+        count = this.read(o[1]);
       if (count % 4 || count > this.sp) throw new Error('KCS invalid native arguments');
       this.sp -= count;
       this.nativeArgumentBase = this.sp;
@@ -540,8 +543,8 @@ export class KCSMachine {
       const reply = this.host.native(id, args, this);
       next = this.completeNative(reply, instructionPC, next, count, { id, args });
     } else if (op === 44) {
-      const size = read(0),
-        count = read(1);
+      const size = this.read(o[0]),
+        count = this.read(o[1]);
       if (size > this.sp || this.fp + count + 12 > this.memory.length)
         throw new Error('KCS invalid return frame');
       const result = this.bytes(this.sp - size, size).slice();
@@ -561,28 +564,28 @@ export class KCSMachine {
     else if (op === 47) this.push(this.load(this.raw(o[0])));
     else if (op === 48) {
       const address = this.raw(o[0]),
-        count = read(1);
+        count = this.read(o[1]);
       if (count > this.sp) throw new Error('KCS invalid stack copy');
       this.bytes(address, count).set(this.bytes(this.sp - count, count).slice());
     } else if (op === 49 || op === 50) {
-      const count = read(0),
+      const count = this.read(o[0]),
         floor = this.floor + (op === 49 ? count : -count);
       if (floor < 0 || floor >= this.memory.length) throw new Error('KCS stack overflow/underflow');
       this.floor = this.sp = floor;
     } else if (op === 51) this.switchValue = this.pop();
     else if (op === 52) {
-      const value = read(0),
-        address = read(1);
+      const value = this.read(o[0]),
+        address = this.read(o[1]);
       if (this.switchValue === value) next = address;
     } else if (op === 53) {
-      const a = read(0),
-        b = read(1),
-        address = read(2);
+      const a = this.read(o[0]),
+        b = this.read(o[1]),
+        address = this.read(o[2]);
       if (this.switchValue >= Math.min(a, b) && this.switchValue <= Math.max(a, b)) next = address;
     } else if (op === 54 || op === 55)
-      this.push(floatBits(op === 54 ? read(0) >>> 0 : read(0) | 0));
+      this.push(floatBits(op === 54 ? this.read(o[0]) >>> 0 : this.read(o[0]) | 0));
     else if (op === 56 || op === 57) {
-      const value = bitsFloat(read(0));
+      const value = bitsFloat(this.read(o[0]));
       this.push(
         op === 56
           ? Number.isFinite(value) && value >= -(2 ** 63) && value < 2 ** 63
@@ -597,25 +600,25 @@ export class KCSMachine {
       this.push(value);
       this.push(value);
     } else if (op === 60) this.sp = this.floor;
-    else if (op === 61) this.push(this.fp + read(0));
+    else if (op === 61) this.push(this.fp + this.read(o[0]));
     else if (op === 62) {
       const raw = this.raw(o[0]),
         a = o[0].mode & 0x10 ? this.load(raw) : raw,
-        b = read(1);
+        b = this.read(o[1]);
       this.push(a + b);
     } else if (op === 65) {
-      this.debug.line = read(0);
-      this.debug.file = this.string(read(1));
+      this.debug.line = this.read(o[0]);
+      this.debug.file = this.string(this.read(o[1]));
       this.debug.sourceInitialized = true;
     } else if (op === 66) {
       if (this.debug.functions.length >= 256) throw new Error('KCS debug function stack overflow');
-      this.debug.functions.push(read(0));
+      this.debug.functions.push(this.read(o[0]));
     } else if (op === 67) {
-      const first = read(0),
-        count = read(1);
+      const first = this.read(o[0]),
+        count = this.read(o[1]);
       for (let i = 0; i < count; i++) this.debug.locals.push(first + i);
     } else if (op === 68) {
-      const count = read(0);
+      const count = this.read(o[0]);
       if (count > this.debug.locals.length) throw new Error('KCS debug scope underflow');
       this.debug.locals.length -= count;
     }

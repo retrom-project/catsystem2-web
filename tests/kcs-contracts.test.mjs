@@ -60,6 +60,21 @@ test('native argument reads retain mapped adjacent stack words beyond the declar
   assert.equal(vm.pop(), 0x12345678);
 });
 
+test('KCS executes current code bytes and public operand descriptions remain independent', () => {
+  const vm = machine([[43, 7, 0], [37, 11], [59]], (_id, _args, current) => {
+    // The running interpreter can see a host's edit to the following operand.
+    current.script.body.view.setUint32(13, 0xaabbccdd, true);
+    return nativeReply(2);
+  });
+  const before = vm.instruction(11);
+  assert.equal(before.args[0].value, 11);
+  before.args[0].value = 23;
+  assert.equal(vm.instruction(11).args[0].value, 11);
+  assert.equal(vm.run().status, 'halted');
+  assert.equal(vm.pop(), 0xaabbccdd);
+  assert.deepEqual(vm.instruction(17).args, []);
+});
+
 test('KCS header keeps the native ABI major/minor and container offsets independently', async () => {
   const body = Uint8Array.from([59]),
     header = new Uint32Array([0x0053434b, 2, 0x00020001, 52, 1, 53, 0, 0, 32, 64, 53, 0, 2]);
