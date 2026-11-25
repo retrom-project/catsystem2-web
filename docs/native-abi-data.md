@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 506       | 57            | 17            | 289     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 507       | 57            | 17            | 288     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 393       | 80            | 19            | 446     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 506       | 80            | 19            | 333     | Generic 34 of 45, Particle 42 of 44 and 48 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
@@ -146,6 +146,9 @@ unmapped, local and shared addresses return 0. Releasing a block compacts
 later virtual addresses while keeping their bytes. A stale address can
 therefore resolve to the start of another block.
 Both wrappers return control 1 with a written result.
+Main 237 performs the same release. Its wrapper writes the release result
+into the original native scratch word, and control 2 leaves the guest stack
+without a result.
 
 Main 26 consumes the decimal prefix of the formatted CP932 input and
 returns the float32 word through control 1. Its exponent accepts E or D,

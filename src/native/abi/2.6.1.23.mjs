@@ -139,6 +139,11 @@ const mainEvidence = [
       'Own 2.6.1.23 0x48ae30 formats and parses a narrow float32 value, and 0x48b080 writes grouped signed DWORD digits with two trailing zeros.',
   },
   {
+    ids: [237],
+    value:
+      'Own 2.6.1.23 Main 0x485d50 uses the Main 28 VM block release helper, writes its scratch result and returns control 2',
+  },
+  {
     ids: [27, 28],
     value:
       'Own 2.6.1.23 wrappers 0x48ae70 and 0x48ae90 allocate zeroed VM blocks and release only the mapped block start, compacting the guest addresses.',
@@ -1442,6 +1447,24 @@ export default {
           },
         })),
         { ids: [27, 28], fields: { resultWritten: true } },
+        {
+          ids: [237],
+          fields: {
+            parameters: [
+              {
+                description: 'VMptr block',
+                name: 'block',
+                type: {
+                  kind: 'pointer',
+                  direction: 'in',
+                  addressSpace: 'vm',
+                  target: { kind: 'integer', bits: 8, signed: false },
+                },
+              },
+            ],
+            resultWritten: true,
+          },
+        },
         ...rectangleOperations.map((id) => ({
           ids: [id],
           fields: {

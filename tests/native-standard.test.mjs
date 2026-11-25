@@ -69,6 +69,38 @@ test('VM allocations retain zero-sized nodes and free translated block identitie
   assert.equal(m.blocks.length, 1);
 });
 
+test('2.6.1.23 GCALL releases a block without publishing the original scratch word', async (t) => {
+  const marker = 0x297be903,
+    block = [0x13, 64],
+    steps = [
+      [37, marker],
+      [37, 4],
+      [43, 27, 4],
+      [38, 64],
+      [37, block],
+      [43, 237, 4],
+      [37, block],
+      [43, 237, 4],
+      [37, block],
+      [43, 28, 4],
+      [59],
+    ];
+  const world = await dataWorld('grisaia-jp-engine-2.6.1.23', {
+    'owned-free.kcs': kcsProgram(steps),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('owned-free.kcs', {
+      parent: world.main.id,
+      initialExecute: true,
+    }),
+    { machine } = task;
+  assert.equal(machine.load(64), machine.memory.length);
+  assert.equal(machine.blocks.length, 0);
+  assert.equal(machine.sp, machine.floor + 8);
+  assert.equal(machine.pop(), 0);
+  assert.equal(machine.pop(), marker);
+});
+
 test('native copy/append return a flat VM pointer and preserve two terminator bytes', () => {
   const m = machine();
   put(m, 100, '猫A');
