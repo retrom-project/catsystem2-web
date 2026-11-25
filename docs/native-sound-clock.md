@@ -182,3 +182,17 @@ creates these modes through AudioMixer from the same WAV bytes. A mono 3D
 buffer reapplies its retained pan at creation and derives its initial position
 from that pan. The captured backend fields, file modes and this projection are
 kept separate in the evidence manifest.
+
+The three legacy stream paths also retain counted playback through native
+half-second refill notifications. Finite counts one and two, unbounded zero,
+partial final reads, mono 8-bit PCM and stereo 16-bit PCM agree through the
+owning creation, refill, query, stop and release chain. Completion and Stop
+rewind the retained buffer. Browser refill addresses use integer PCM bytes;
+floating-point times must not duplicate or skip samples.
+
+SDK63/67 activity capture preserves the native 80-word ring, including its
+segment-slot clear and the original partial/empty-read clearing order. The
+separate version policy applies that refill behavior only to those proved
+builds. SDK23 has no corresponding Sound activity-capture message; its message
+boundary remains intact. Cold restore retains both the ring and the remaining
+playback duration.

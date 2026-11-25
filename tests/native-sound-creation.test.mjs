@@ -9,8 +9,8 @@ import { dataWorld } from './fixtures/data-world.mjs';
 import { audioFixture } from './fixtures/audio-context.mjs';
 import { kcsProgram } from './helpers.mjs';
 
-function wave() {
-  const bytes = new Uint8Array(64044),
+function wave(frames = 64000) {
+  const bytes = new Uint8Array(44 + frames),
     view = new DataView(bytes.buffer);
   const text = (at, value) => bytes.set(new TextEncoder().encode(value), at);
   text(0, 'RIFF');
@@ -24,7 +24,7 @@ function wave() {
   view.setUint16(32, 1, true);
   view.setUint16(34, 8, true);
   text(36, 'data');
-  view.setUint32(40, 64000, true);
+  view.setUint32(40, frames, true);
   for (let i = 44; i < bytes.length; i++) bytes[i] = ((i - 44) * 17 + 23) & 255;
   return bytes;
 }
@@ -120,6 +120,68 @@ for (const profile of [
       assert.equal(
         await invoke(world, 604, [7, 0, 288, 1, 1]),
         profile.includes('.67') ? 1 : 0xffffffff,
+      );
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });
+
+for (const [profile, rawProperty, rawLevel] of [
+  ['bokutomo-engine-2.6.1.67', 206, 207],
+  ['rebellions-jp-engine-2.6.1.63', 205, 206],
+])
+  test(`${profile} stream refill preserves native partial-EOF activity through cold restore`, async () => {
+    const bytes = wave(64500),
+      files = {
+        'case.kcs': kcsProgram([[43, 0, 0], [59]]),
+        'sound/owned.wav': bytes,
+      };
+    const create = async (initialize = true) => {
+      const world = await dataWorld(profile, files, { initialize }),
+        { context } = audioFixture();
+      world.game.resolveCategory = (name) => (name === 'sound/owned.wav' ? name : null);
+      context.decodeAudioData = async () => ({
+        sampleRate: 8000,
+        numberOfChannels: 1,
+        length: 64500,
+        duration: 64500 / 8000,
+        getChannelData: () => Float32Array.from(bytes.subarray(44), (value) => (value - 128) / 128),
+      });
+      world.audio = world.sound.audio = new AudioMixer(world.game, context);
+      return { world, context };
+    };
+    let { world, context } = await create();
+    const send = (raw, value = 0) =>
+      world.sound
+        .primary(world.main.id)
+        .message([world.nativeTaskID(world.main.id), raw, 0, value]);
+    try {
+      await invoke(world, 155, [0, 0, 288, 1]);
+      await send(rawProperty, 96);
+      await invoke(world, 157, [0, 2]);
+      for (let i = 0; i < 9; i++) {
+        context.advance(0.5);
+        await send(rawLevel);
+      }
+      assert.deepEqual(
+        [...world.sound.channel(0).pcmWindows.values.subarray(0, 12)],
+        [8035, 8035, 8177, 8035, 8177, 8035, 8177, 8035, 8035, 8126, 8177, 8035],
+      );
+      const saved = structuredClone(world.snapshot()),
+        cold = await create(false);
+      await cold.world.restore(saved);
+      await world.close({ flushFiles: false });
+      ({ world, context } = cold);
+      context.advance(0.5);
+      assert.equal(await send(rawLevel), 8035);
+      assert.equal(world.sound.channel(0).pcmWindows.values[1], 0);
+      context.advance(11.5);
+      assert.equal(await invoke(world, 160, [0]), 0);
+      assert.equal(world.sound.channel(0).offset, 0);
+      assert.equal(await invoke(world, 587, [0]), 0);
+      assert.deepEqual(
+        [...world.sound.channel(0).pcmWindows.values.subarray(0, 4)],
+        [8035, 8177, 8035, 8177],
       );
     } finally {
       await world.close({ flushFiles: false });

@@ -317,6 +317,10 @@ export class AudioMixer {
     source.start(channel.scheduled, channel.offset);
     this.scheduleEnd(channel);
     source.onended = () => {
+      if (channel.nativeBufferPlayback && channel.sourceMode === 'stream') {
+        this.syncNativePCM(channel);
+        this.resetNativePCM(channel.channel);
+      }
       source.onended = null;
       source.disconnect();
       gain.disconnect();
@@ -326,7 +330,7 @@ export class AudioMixer {
       merger.disconnect();
       channel.spatialNode?.disconnect();
       channel.spatialNode = null;
-      if (channel.nativeStaticCompletion && channel.sourceMode === 'static') {
+      if (channel.nativeBufferPlayback && channel.sourceMode === 'static') {
         channel.completionCount = (channel.completionCount + 1) >>> 0;
         if (channel.loopCount !== 1) {
           if (channel.loopCount) channel.loopCount--;
@@ -337,12 +341,11 @@ export class AudioMixer {
           return;
         }
       }
-      channel.offset =
-        channel.nativeStaticCompletion && channel.sourceMode === 'static'
-          ? 0
-          : channel.loop
-            ? channel.loopEnd
-            : channel.duration;
+      channel.offset = channel.nativeBufferPlayback
+        ? 0
+        : channel.loop
+          ? channel.loopEnd
+          : channel.duration;
       channel.playing = false;
       channel.ended = true;
       this.events.push({ channel: channel.channel, reason: 'ended', frame: this.frame });
@@ -776,29 +779,68 @@ export class AudioMixer {
       channel.pcmRefills = consumed;
       return;
     }
+    const remaining = this.remaining(channel, now),
+      endByte =
+        remaining === null || remaining === undefined
+          ? Infinity
+          : Math.round((channel.pcmOrigin + channel.pcmProgress + remaining) * bytesPerSecond),
+      origin = Math.floor(channel.pcmOrigin * bytesPerSecond),
+      loopStart = Math.round(channel.loopStart * bytesPerSecond),
+      loopEnd = Math.round(channel.loopEnd * bytesPerSecond);
     while (channel.pcmRefills < consumed) {
       const next = channel.pcmRefills++,
         data = new Uint8Array(state.halfSecondBytes);
       if (pcm.bitsPerSample === 8) data.fill(128);
-      for (let at = 0; at < data.length; at += stride) {
-        const time =
-          channel.pcmOrigin +
-          ((next + 8) * state.halfSecondBytes) / bytesPerSecond +
-          at / bytesPerSecond;
-        if (!channel.loop && time >= channel.duration) break;
-        const source = Math.floor(this.wrapPosition(channel, time) * pcm.sampleRate) * stride;
-        data.set(
-          pcm.pcm.subarray(
-            source,
-            Math.min(pcm.pcm.length, source + Math.min(stride, data.length - at)),
+      const offset = (next % 8) * state.halfSecondBytes,
+        refill = (at, bytes) => {
+          if (channel.nativeStreamActivity)
+            state.fill(offset + at, bytes, {
+              enabled: !!channel.nativeLevelProperty,
+              regionBytes: data.length - at,
+              nativeRefill: true,
+            });
+        };
+      if (channel.nativeStreamActivity) state.values[next % 8] = 0;
+      let written = 0;
+      while (written < data.length) {
+        const logical = origin + (next + 8) * state.halfSecondBytes + written;
+        if (logical >= endByte || (!channel.loop && logical >= pcm.pcm.length)) {
+          if (!written) refill(0, data.subarray(0, 0));
+          break;
+        }
+        let source = logical;
+        if (channel.loop && logical >= loopEnd) {
+          if (!written && (logical - loopEnd) % (loopEnd - loopStart) === 0)
+            refill(0, data.subarray(0, 0));
+          source = loopStart + ((logical - loopEnd) % (loopEnd - loopStart));
+        }
+        const size = Math.min(
+            data.length - written,
+            endByte - logical,
+            pcm.pcm.length - source,
+            channel.loop ? loopEnd - source : Infinity,
           ),
-          at,
-        );
+          values = pcm.pcm.subarray(source, source + size);
+        refill(written, values);
+        data.set(values, written);
+        written += values.length;
       }
-      state.fill((next % 8) * state.halfSecondBytes, data, {
-        enabled: !!channel.nativeLevelProperty,
-      });
+      if (!channel.nativeStreamActivity)
+        state.fill(offset, data.subarray(0, written), {
+          enabled: !!channel.nativeLevelProperty,
+          regionBytes: data.length,
+        });
     }
+  }
+  resetNativePCM(key) {
+    const channel = this.channels.get(key);
+    if (!channel?.pcmWindows) return;
+    const pcm = this.pcmSources.get(channel.buffer);
+    channel.pcmOrigin = channel.pcmProgress = channel.pcmRefills = 0;
+    channel.pcmClock = this.context.currentTime;
+    channel.pcmWindows.fill(0, pcm.pcm.subarray(0, channel.pcmWindows.halfSecondBytes * 8), {
+      initial: true,
+    });
   }
   pcmCursors(channel) {
     const pcm = this.pcmSources.get(channel.buffer),
@@ -855,7 +897,8 @@ export class AudioMixer {
       volumeFactor: c.volumeFactor,
       nativeSpatial: structuredClone(c.nativeSpatial),
       loopCount: c.loopCount,
-      nativeStaticCompletion: c.nativeStaticCompletion,
+      nativeBufferPlayback: c.nativeBufferPlayback,
+      nativeStreamActivity: c.nativeStreamActivity,
       completionCount: c.completionCount,
       loopStartFrame: c.loopStartFrame,
       loopEndFrame: c.loopEndFrame,

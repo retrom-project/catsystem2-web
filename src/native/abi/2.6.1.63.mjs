@@ -338,6 +338,7 @@ export default {
     banks: 32,
     load3DPositionFromPan: true,
     bufferCompletionNotifications: true,
+    streamRefillUsesNativeActivity: true,
     unwrittenQueryBanks: [587],
     mainLoadPacketBytes: 280,
     firstMessage: 173,
@@ -1251,7 +1252,7 @@ export default {
         {
           ids: [165, 349, 569, 587],
           value:
-            'Own full GCALLs execute this build’s Sound receiver and static-buffer query path. Pan retains its signed raw word; fade-pending returns bit zero, including zero for invalid banks. In the primary DirectSound backend, decoder length comes from the loaded buffer’s decoded-stream virtual query for either per-file load type, with no narrowing of its DWORD result; absent devices, missing buffers and invalid banks return zero. The other native backend remains a separate open shape. The primary buffer completion DWORD counts actual static playback notifications, including finite repeats and repeat-count zero. Pause preserves it; Play and Stop clear it; release and a later stream load retain it until playback resets it. Own Main155 creation, original notification callbacks and Main157/158/159/160/587 full-GCALL chains confirm these transitions. Absent global backends return zero. Its active-device invalid-bank path leaves the native result unwritten and remains diagnostic. All captured Sound/device bytes remain unchanged.',
+            'Own full GCALLs execute this build’s Sound receiver and static-buffer query path. Pan retains its signed raw word; fade-pending returns bit zero, including zero for invalid banks. In the primary DirectSound backend, decoder length comes from the loaded buffer’s decoded-stream virtual query for either per-file load type, with no narrowing of its DWORD result; absent devices, missing buffers and invalid banks return zero. The other native backend remains a separate open shape. Own real stream creation and refill notifications also confirm the activity property and level read, all 80 activity words, finite and unbounded playback, partial EOF clearing and buffer rewind. The byte-indexed production refill and this build’s native activity ordering match the owning callback. The primary buffer completion DWORD counts actual static playback notifications, including finite repeats and repeat-count zero. Pause preserves it; Play and Stop clear it; release and a later stream load retain it until playback resets it. Own Main155 creation, original notification callbacks and Main157/158/159/160/587 full-GCALL chains confirm these transitions. Absent global backends return zero. Its active-device invalid-bank path leaves the native result unwritten and remains diagnostic. All captured Sound/device bytes remain unchanged.',
         },
         {
           ids: preferenceDataOperations,

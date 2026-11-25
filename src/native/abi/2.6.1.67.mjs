@@ -387,6 +387,7 @@ export default {
     banks: 32,
     load3DPositionFromPan: true,
     bufferCompletionNotifications: true,
+    streamRefillUsesNativeActivity: true,
     unwrittenQueryBanks: [587],
     mainLoadPacketBytes: 280,
     firstMessage: 174,
@@ -699,6 +700,7 @@ export default {
       sound: {
         unmapped: 'reject',
         canonical: [
+          { min: 206, max: 207, offset: 5 },
           { min: 198, max: 199, offset: 5 },
           { min: 196, max: 196, offset: 5 },
           { min: 19, max: 19, offset: 0 },
@@ -849,6 +851,7 @@ export default {
           },
         ],
         raw: [
+          { min: 211, max: 212, offset: -5 },
           { min: 203, max: 204, offset: -5 },
           { min: 201, max: 201, offset: -5 },
           {
@@ -1373,7 +1376,7 @@ export default {
         {
           ids: [569, 587],
           value:
-            'Own full GCALL wrappers send raw195/196 through the actual Sound receiver into its static device buffer. Main569 retains the primary DirectSound buffer’s decoded-stream virtual +28 DWORD for either per-file load type and returns zero for absent device, backend, buffer or decoder and for an invalid bank. The other native backend remains a separate open shape. The primary buffer completion DWORD counts actual static playback notifications, including finite repeats and repeat-count zero. Pause preserves it; Play and Stop clear it; release and a later stream load retain it until playback resets it. Own Main155 creation, original notification callbacks and Main157/158/159/160/587 full-GCALL chains confirm these transitions. Absent global backends return zero. An active-device invalid-bank path leaves the result unwritten and remains diagnostic. Pan/fade query controls and every captured Sound/device byte are unchanged. This proof captures decoded-stream return data and does not claim to execute an audio device.',
+            'Own full GCALL wrappers send raw195/196 through the actual Sound receiver into its static device buffer. Main569 retains the primary DirectSound buffer’s decoded-stream virtual +28 DWORD for either per-file load type and returns zero for absent device, backend, buffer or decoder and for an invalid bank. The other native backend remains a separate open shape. Own real stream creation and refill notifications also confirm the activity property and level read, all 80 activity words, finite and unbounded playback, partial EOF clearing and buffer rewind. The byte-indexed production refill and this build’s native activity ordering match the owning callback. The primary buffer completion DWORD counts actual static playback notifications, including finite repeats and repeat-count zero. Pause preserves it; Play and Stop clear it; release and a later stream load retain it until playback resets it. Own Main155 creation, original notification callbacks and Main157/158/159/160/587 full-GCALL chains confirm these transitions. Absent global backends return zero. An active-device invalid-bank path leaves the result unwritten and remains diagnostic. Pan/fade query controls and every captured Sound/device byte are unchanged. This proof captures decoded-stream return data and does not claim to execute an audio device.',
         },
         {
           ids: [361],

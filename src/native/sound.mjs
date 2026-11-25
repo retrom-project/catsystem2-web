@@ -297,7 +297,10 @@ export class NativeSound {
       channel.offset = 0;
       channel.paused = false;
       channel.ended = true;
-      if (this.abi.sound.bufferCompletionNotifications) channel.completionCount = 0;
+      if (this.abi.sound.bufferCompletionNotifications) {
+        channel.completionCount = 0;
+        this.audio.resetNativePCM?.(this.key(bank));
+      }
     }
     this.device[bank].completionCount = 0;
   }
@@ -411,7 +414,8 @@ export class NativeSound {
       loopStartFrame: device.loopStart,
       loopEndFrame: device.loopEnd,
       sourceMode: device.sourceMode,
-      nativeStaticCompletion: !!this.abi.sound.bufferCompletionNotifications,
+      nativeBufferPlayback: !!this.abi.sound.bufferCompletionNotifications,
+      nativeStreamActivity: !!this.abi.sound.streamRefillUsesNativeActivity,
       nativeLevelProperty: device.property,
       nativeSpatial: structuredClone(device.nativeSpatial),
     });
@@ -488,7 +492,8 @@ export class NativeSound {
           loopCount: this.abi.sound.bufferCompletionNotifications
             ? state.channels[bank].loopCount
             : device.loopCount,
-          nativeStaticCompletion: !!this.abi.sound.bufferCompletionNotifications,
+          nativeBufferPlayback: !!this.abi.sound.bufferCompletionNotifications,
+          nativeStreamActivity: !!this.abi.sound.streamRefillUsesNativeActivity,
           loopStartFrame: device.loopStart,
           loopEndFrame: device.loopEnd,
           sourceMode: device.sourceMode,

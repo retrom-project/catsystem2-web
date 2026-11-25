@@ -3058,7 +3058,10 @@ test('63 spatial bank positioning uses its four-vector reduction and a live enab
     assert.deepEqual(await call(155, [4, 0, 256, 1]), { control: 1, value: 1 });
     world.configuration.soundOptions.use3d = 0;
     await call(168, position);
-    assert.deepEqual(world.sound.device[4].nativeSpatial.position, [0, 0, 0]);
+    assert.deepEqual(
+      world.sound.device[4].nativeSpatial.position.map(floatBits),
+      [0xb33bbd2e, 0, 0xbf800000],
+    );
     world.configuration.soundOptions.use3d = 1;
     assert.deepEqual(await call(168, position), { control: 2 });
     assert.deepEqual(world.sound.device[4].nativeSpatial.position, [3, 4, 5]);

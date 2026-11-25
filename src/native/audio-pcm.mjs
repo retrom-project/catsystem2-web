@@ -78,10 +78,40 @@ export class NativePCMWindows {
     if (!this.windowBytes) throw new Error('Native PCM activity window has zero size');
     this.values = new Uint32Array(80);
   }
-  fill(offset, pcm, { initial = false, enabled = false, regionBytes = pcm.length } = {}) {
+  fill(
+    offset,
+    pcm,
+    { initial = false, enabled = false, regionBytes = pcm.length, nativeRefill = false } = {},
+  ) {
     if (!initial && !enabled) return;
     const frameBytes = this.channels * (this.bitsPerSample >>> 3);
     let index = initial ? 0 : Math.floor(offset / this.windowBytes);
+    if (!initial && nativeRefill) {
+      // The owning refill clears the rest of a short locked region after its
+      // first window. A zero-byte decode starts clearing with zero consumed,
+      // so it also clears the next ring slot after a complete empty region.
+      let consumed = 0;
+      for (; index < 80; index++) {
+        if (pcm.length) {
+          const size = Math.min(this.windowBytes, pcm.length - consumed);
+          this.values[index] = nativePCMLevel(
+            pcm.subarray(consumed, consumed + size),
+            this.channels,
+            this.bitsPerSample,
+          );
+          consumed += size;
+        } else this.values[index] = 0;
+        if (pcm.length < regionBytes) {
+          consumed = pcm.length ? this.windowBytes : 0;
+          for (let next = index + 1; next < 80 && consumed < regionBytes; next++) {
+            consumed += this.windowBytes;
+            this.values[next] = 0;
+          }
+        }
+        if (pcm.length <= consumed) break;
+      }
+      return;
+    }
     for (let at = 0; index < 80 && at < regionBytes; at += this.windowBytes, index++) {
       const end = Math.min(pcm.length, at + this.windowBytes);
       // The device's byte-sized windows can split a frame at the end of a clip.
