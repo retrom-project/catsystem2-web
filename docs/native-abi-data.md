@@ -19,8 +19,8 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 679       | 57            | 17            | 116     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.63 | 938        | 625       | 80            | 19            | 214     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 684       | 57            | 17            | 111     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.63 | 938        | 630       | 80            | 19            | 209     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.67 | 938        | 717       | 80            | 19            | 122     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51                                     |
@@ -30,6 +30,14 @@ The older registrations retain unknown auxiliary slots and unadmitted stub
 observations. The counts reflect the classified slots in each registration.
 SDK74/Game76 auxiliary generic entries retain `recovered` and particle entries
 retain `declared`.
+
+These registration counts do not count SDK acceptance. Every table entry also
+needs a link to its own executable fingerprint or a proved equivalence bridge,
+and to an actual test of that behavior. A `recovered` label or static wrapper
+survey alone is insufficient. In particular, the 95 declared particle entries
+per modern build remain subject to that evidence review; choosing the correct
+particle table does not prove its individual functions. Functional cases,
+original stub behavior and guarded shapes are recorded separately.
 
 ## 2.6.1.23 startup and title
 

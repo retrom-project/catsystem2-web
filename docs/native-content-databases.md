@@ -11,8 +11,13 @@ The installers are composed in [content-databases.mjs](../src/native/content-dat
 | General KCDB           | 317..31A           | Raw schema and fixed-width fields                            |
 | Mission/conditions     | 31B..33C           | Progress, conditions, selection and twenty character records |
 
-These expose 85 operations per ABI. The independent `365..` index/flag model
-is described in [native-databases.md](native-databases.md).
+These expose 85 table entries per ABI, including the two empty original
+`301/302` operations. In the four builds after `.23`, those wrappers still read
+and resolve their optional owner before calling an empty member and returning
+control 2. The fixed `.23` uses an operand-ignoring wrapper stub instead. These
+two entries are original stub behavior, separate from 83 effective operations.
+The independent `365..` index/flag model is described in
+[native-databases.md](native-databases.md).
 
 ## Resources and observable state
 
@@ -35,8 +40,8 @@ large valid-file and whole-OS exhaustion behavior is not claimed.
 
 Selection tables retain the first registered name and the first duplicate table
 ID. Selecting a table copies its nineteen values into the mutable work list.
-Profiles with the legacy append behavior append missing slots' indexes.
-The fixed .23 implementation instead shuffles the missing slots at indexes
+The fixed `.74/.76` builds append missing slots' indexes without advancing
+either MT stream. The fixed `.23/.63/.67` builds shuffle missing slots at indexes
 two and above with 1,000 pairs of shared integer RNG draws, marks the source
 and relocates its value into the first shuffled hole. With no hole, 33F
 marks the source while 340 preserves it; the same distinction applies to
@@ -99,6 +104,16 @@ through `F7/344`, and import both progress formats. They reject EXE loading.
 The existing private World cases continue to cover mixed-runtime integration.
 
 ## Differential evidence
+
+The modern database evidence pairs 535 own-build wrapper calls per executable
+with production KCS GCALL execution, including all 85 database entries. The
+authored GCALL caller frame is excluded from comparison with the direct native
+wrapper bridge. Complete data/shared/block bytes, raw ranges, owners and both MT
+states remain compared. The older 2,117-call original facade audit is retained as
+original-engine evidence; it is separate from this JS comparison. Cold tests
+cover Question, Mission, Selection and KCDB owners, CSS progress and independent
+resources. The three actual modern works declare absent `qdb.int`/`qdb` resource
+roots, so these database inputs are authored legal fixtures.
 
 Both ABI sequence tests execute normal JS dispatch and the actual EXE native
 table independently. They compare control, result, VM writes and canaries, raw
