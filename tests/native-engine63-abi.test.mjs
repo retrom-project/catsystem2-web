@@ -18,8 +18,9 @@ import { areaPixelParameters } from './fixtures/area-effect-cases.mjs';
 import { controlFiles } from './fixtures/control-files.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { defaultFESWorld, drawPixels, loadDefaultFES } from './fixtures/default-fes-world.mjs';
+import { glyphs } from './fixtures/fes-text-log-world.mjs';
 import { imageOwnerFiles } from './fixtures/image-files.mjs';
-import { kcsProgram } from './helpers.mjs';
+import { hg3, kcsProgram } from './helpers.mjs';
 
 const profile = 'rebellions-jp-engine-2.6.1.63';
 
@@ -2476,6 +2477,71 @@ test('2.6.1.63 scene count and Script backup preserve native ownership and byte 
     const restored = cold.runtime.variableBank(caller, false);
     assert.deepEqual([restored.get(0), restored.get(1)], [0x12345678, 0xabcdefcc]);
     assert.deepEqual([bank.get(0), bank.get(1)], [0x87654321, 0xabcdef00]);
+  } finally {
+    await cold?.close();
+    await world.close();
+  }
+});
+
+test('2.6.1.63 String owns the image-font source and registers independent glyphs', async () => {
+  const color = Uint8Array.of(18, 53, 162, 224, 125, 93, 31, 255),
+    files = { 'font.hg3': hg3(2, 1, color) },
+    world = await dataWorld(profile, files, { glyphs });
+  let cold;
+  try {
+    world.graphics.createLogicalDevice();
+    const nativeID = 48,
+      at = 608,
+      code = 0x8740,
+      taskID = await world.objects.create({ kind: 48, parent: world.main.id, nativeID }),
+      task = world.objects.objects.get(taskID).implementation,
+      { main, runtime } = world,
+      { imageDataBuffers: images } = runtime,
+      call = (id, ...inputs) =>
+        runtime.native('main', id, [nativeID, ...inputs], main.machine, main),
+      source = await images.load('font.hg3', main.id),
+      pointer = images.pointer(source);
+
+    main.machine.store(at, 200);
+    await call(611, at);
+    assert.deepEqual([main.machine.load(at), main.machine.load(at + 8)], [200, 800]);
+    main.machine.store(at + 8, 64);
+    main.machine.store(at + 12, 48);
+    main.machine.store(at + 188, -12);
+    main.machine.store(at + 192, -23);
+    await call(612, at);
+    assert.deepEqual(task.text.vram, [-12, -23]);
+
+    await call(620, source);
+    assert.equal(images.pointer(source), pointer);
+    await assert.rejects(call(620, source), /requires a separate reference/);
+    const another = images.alias(source);
+    await call(620, another);
+    assert.equal(images.words(pointer)[3], 1);
+
+    await call(621, 0xa5c10000 + code, 0);
+    const writer = await task.writer(),
+      glyph = writer.fontImages.get(code);
+    assert.deepEqual(Uint8Array.from(glyph.rgba), color);
+    await call(621, code + 1, 99);
+    assert.equal(writer.fontImages.get(code + 1), null);
+    await call(620, 0);
+    assert.equal(images.owns(pointer), true);
+
+    cold = await dataWorld(profile, files, { initialize: false, glyphs });
+    await cold.restore(world.snapshot());
+    const restored = cold.objects.objects.get(taskID).implementation,
+      restoredWriter = await restored.writer(),
+      restoredImages = cold.runtime.imageDataBuffers;
+    assert.equal(restoredImages.pointer(another), pointer);
+    await cold.sendNativeEngine(nativeID, cold.main.id, 439, 0, 0);
+    assert.equal(restoredImages.owns(pointer), false);
+    assert.deepEqual(restoredWriter.fontImages.get(code), glyph);
+
+    main.machine.store(at + 184, 1);
+    await call(613, at);
+    assert.equal(images.owns(pointer), false);
+    assert.equal(writer.fontImages.size, 0);
   } finally {
     await cold?.close();
     await world.close();

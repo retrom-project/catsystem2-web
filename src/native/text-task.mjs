@@ -173,6 +173,14 @@ export class NativeTextTask {
     this.text.elapsed = (this.text.elapsed + now - this.text.lastFrame) >>> 0;
     this.text.lastFrame = now;
   }
+  setImageFontBuffer(pointer) {
+    const previous = this.text.imageFontBuffer,
+      buffers = this.world.runtime.imageDataBuffers;
+    if (previous && previous === pointer && buffers.words(pointer)[3] <= 1)
+      throw new Error('Native text image font replacement requires a separate reference');
+    if (previous) buffers.releasePointer(previous);
+    this.text.imageFontBuffer = pointer;
+  }
   async message(words, context = {}) {
     if (context.fromHost) {
       const runtime = await this.service.runtime();
@@ -213,14 +221,24 @@ export class NativeTextTask {
         this.text.source = '';
       }
       if (memory.load(l) !== packetSize) return reply;
-      this.text.config = memory.bytes(l, packetSize).slice();
+      const packet = memory.bytes(l, packetSize).slice(),
+        view = new DataView(packet.buffer);
+      if (nativeCP932 && resourceMessages.cp932RetainsImageFontBuffer && this.text.config) {
+        const backend = configEnd - 4,
+          previous = new DataView(this.text.config.buffer);
+        if (Boolean(view.getUint32(backend, true)) !== Boolean(previous.getUint32(backend, true))) {
+          this.setImageFontBuffer(0);
+          writer.fontImages.clear();
+          await writer.userFont(null);
+        }
+      }
+      this.text.config = packet;
       const config = unpackTextConfiguration(
-          bindings,
-          this.text.config,
-          bindings.nativeConfig &&
-            textConfig(this.world.profile, this.mode, this.world.configuration),
-        ),
-        view = new DataView(this.text.config.buffer);
+        bindings,
+        packet,
+        bindings.nativeConfig &&
+          textConfig(this.world.profile, this.mode, this.world.configuration),
+      );
       this.text.vram = [view.getInt32(configEnd, true), view.getInt32(configEnd + 4, true)];
       this.text.output = view.getUint32(configEnd + 8, true);
       await writer.configure(config);
@@ -305,6 +323,15 @@ export class NativeTextTask {
         await this.restart();
         return reply;
       case 9:
+        if (nativeCP932 && resourceMessages.cp932RetainsImageFontBuffer && !context.nativePointer) {
+          if (!context.resourceBytes) {
+            const buffers = this.world.runtime.imageDataBuffers;
+            this.setImageFontBuffer(l ? buffers.pointer(l) : 0);
+            await writer.userFont(null);
+            return reply;
+          }
+          this.setImageFontBuffer(0);
+        }
         if (context.resourceBytes) {
           await writer.userFont(context.resourceBytes);
           context.consumeResource?.();
@@ -319,7 +346,11 @@ export class NativeTextTask {
         } else throw new Error('Native text image font requires a mounted image-data resource');
         return reply;
       case 10:
-        if (!nativeCP932 || writer.imageFont)
+        if (this.text.imageFontBuffer) {
+          const buffers = this.world.runtime.imageDataBuffers,
+            frame = await buffers.decode(this.text.imageFontBuffer, l);
+          writer.setCharacterImage(w & 0xffff, frame);
+        } else if (!nativeCP932 || writer.imageFont)
           await writer.resourceMessage(10, nativeCP932 ? w & 0xffff : w, l);
         return reply;
       case 11: {
@@ -371,6 +402,8 @@ export class NativeTextTask {
   async restore(state) {
     await this.plane.restore(state.plane);
     this.text = structuredClone(state.text);
+    if (this.text.imageFontBuffer)
+      this.world.runtime.imageDataBuffers.require(this.text.imageFontBuffer);
     if (this.text.writer !== null) await this.writer();
   }
   async close({ fromHost = false } = {}) {
@@ -381,6 +414,7 @@ export class NativeTextTask {
     const runtime = await this.service.runtime(),
       close = async () => {
         const writer = await this.writer();
+        if (this.text.imageFontBuffer) this.setImageFontBuffer(0);
         if (writer) await writer.close();
         await this.plane.close();
       };

@@ -13,6 +13,8 @@ const mainConstantZero = [
   171, 174, 175, 176, 177, 178, 179, 181, 183, 186, 236, 432, 551, 554, 555, 575, 580, 909, 925,
 ];
 
+const cp932TextOperations = [611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621, 695, 884];
+
 const fesSoundReceivers = [173, 175, 176, 178, 179, 180, 183, 194, 199, 203, 204, 210, 211];
 const soundReceivers = [
   ...fesSoundReceivers,
@@ -138,6 +140,10 @@ export default {
       },
       clearCategory: false,
       maxOperation: 17,
+      cp932UsesNativeMessages: true,
+      cp932SignedVramPosition: true,
+      cp932DrawUsesPageLimit: true,
+      cp932RetainsImageFontBuffer: true,
     },
     nvResetKeepsView: true,
   },
@@ -1049,16 +1055,15 @@ export default {
           484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501,
           502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 521, 522, 523, 524, 525, 526,
           529, 532, 533, 538, 558, 564, 569, 570, 582, 583, 584, 585, 587, 588, 589, 599, 600, 601,
-          602, 603, 611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621, 622, 623, 624, 628, 629,
-          631, 632, 641, 648, 650, 655, 657, 658, 659, 663, 664, 665, 666, 667, 668, 669, 677, 678,
-          679, 680, 682, 688, 690, 691, 692, 695, 703, 704, 705, 706, 707, 708, 709, 716, 721, 722,
-          725, 729, 734, 738, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755,
-          756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773,
-          774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 791, 792, 793, 794, 795, 796, 797,
-          798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815,
-          816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 837,
-          838, 839, 840, 841, 842, 843, 845, 846, 847, 853, 854, 855, 856, 857, 860, 861, 884, 904,
-          905,
+          602, 603, 622, 623, 624, 628, 629, 631, 632, 641, 648, 650, 655, 657, 658, 659, 663, 664,
+          665, 666, 667, 668, 669, 677, 678, 679, 680, 682, 688, 690, 691, 692, 703, 704, 705, 706,
+          707, 708, 709, 716, 721, 722, 725, 729, 734, 738, 742, 743, 744, 745, 746, 747, 748, 749,
+          750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767,
+          768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 791,
+          792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809,
+          810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827,
+          828, 829, 830, 831, 832, 837, 838, 839, 840, 841, 842, 843, 845, 846, 847, 853, 854, 855,
+          856, 857, 860, 861, 904, 905,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
@@ -1080,14 +1085,15 @@ export default {
           437, 438, 440, 445, 447, 448, 449, 450, 451, 452, 453, 454, 455, 458, 459, 461, 464, 465,
           466, 469, 514, 515, 516, 517, 518, 519, 520, 527, 528, 530, 531, 534, 535, 536, 537, 539,
           540, 541, 542, 549, 557, 565, 566, 567, 568, 571, 572, 576, 577, 586, 590, 591, 592, 593,
-          594, 595, 596, 597, 598, 604, 605, 606, 607, 608, 609, 610, 625, 630, 633, 634, 635, 636,
-          637, 638, 639, 640, 645, 646, 647, 649, 651, 653, 654, 662, 674, 675, 676, 681, 683, 684,
-          685, 689, 693, 694, 696, 697, 698, 699, 700, 701, 702, 710, 711, 712, 713, 714, 715, 717,
-          718, 719, 720, 723, 724, 726, 727, 728, 730, 731, 732, 733, 735, 736, 737, 739, 740, 741,
-          785, 786, 787, 788, 789, 790, 833, 834, 835, 836, 844, 848, 849, 850, 851, 852, 858, 859,
-          862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 879,
-          880, 881, 882, 883, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898,
-          899, 900, 901, 902, 903, 934, 935, 936, 937,
+          594, 595, 596, 597, 598, 604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616,
+          617, 618, 619, 620, 621, 625, 630, 633, 634, 635, 636, 637, 638, 639, 640, 645, 646, 647,
+          649, 651, 653, 654, 662, 674, 675, 676, 681, 683, 684, 685, 689, 693, 694, 695, 696, 697,
+          698, 699, 700, 701, 702, 710, 711, 712, 713, 714, 715, 717, 718, 719, 720, 723, 724, 726,
+          727, 728, 730, 731, 732, 733, 735, 736, 737, 739, 740, 741, 785, 786, 787, 788, 789, 790,
+          833, 834, 835, 836, 844, 848, 849, 850, 851, 852, 858, 859, 862, 863, 864, 865, 866, 867,
+          868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885,
+          886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903,
+          934, 935, 936, 937,
         ],
       },
       evidence: [
@@ -1675,6 +1681,11 @@ export default {
             '2.6.1.63 own two-member scene owner, CP932 CatScene reader, unsigned history lists and file metadata records.',
         },
         {
+          ids: cp932TextOperations,
+          value:
+            'Own kind-48 CP932 STRING constructor 0x442670 and raw receiver 0x441fc0 use messages 430–440, 442 and 447. They read the 200-byte configuration, copy signed VRAM positions, retain the signed page limit, and reflow the text without prior explicit page marks on reconfiguration. Raw439 owns the data-buffer reference; raw440 uses the low 16-bit character and eagerly registers an independent graphic from the selected frame. Main616 and Main884 write one signed word, and the other wrappers return control 2 with no result write.',
+        },
+        {
           ids: [608],
           value:
             'Own 2.6.1.63 wrapper 0x49cc40 returns zero for a missing scene owner or reader, minus one for an empty reader, or the full block count through the original CST selector 4 at 0x504370. It writes one signed word with control 1.',
@@ -2001,6 +2012,52 @@ export default {
         { ids: [604, 935, 936], fields: { resultWritten: true } },
         { ids: [347, 348], fields: { resultWritten: false } },
         { ids: [606, 607, 844], fields: { resultWritten: true } },
+        { ids: [616, 884], fields: { resultWritten: true } },
+        ...[
+          [611, 'inout'],
+          [612, 'in'],
+          [613, 'in'],
+        ].map(([id, direction]) => ({
+          ids: [id],
+          fields: {
+            parameters: [
+              NATIVE_SEMANTICS.main[id].signature.parameters[0],
+              {
+                name: 'record',
+                description: '200-byte CP932 String task configuration with a 4-byte size word',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction,
+                  target: { kind: 'record', name: 'cp932-string-configuration' },
+                },
+              },
+            ],
+            resultWritten: false,
+          },
+        })),
+        {
+          ids: [614, 615, 617, 618, 619, 621, 695],
+          fields: { resultWritten: false },
+        },
+        {
+          ids: [620],
+          fields: {
+            parameters: [
+              {
+                name: 'task',
+                description: 'Borrowed CP932 String task',
+                type: { kind: 'handle', handleKind: 'task', ownership: 'borrowed' },
+              },
+              {
+                name: 'nativeImageData',
+                description: 'Transferred ImageData reference, or zero for no update',
+                type: { kind: 'handle', handleKind: 'image-data', ownership: 'owned' },
+              },
+            ],
+            resultWritten: false,
+          },
+        },
         { ids: [168, 358], fields: { resultWritten: false } },
         { ids: [284], fields: { resultWritten: true } },
         { ids: [111, 118], fields: { resultWritten: true } },

@@ -222,7 +222,8 @@ export class JSTextWriter {
   }
   shape(parser, record) {
     const selector = this.fontImages.get(record[1]),
-      image = selector === undefined ? null : this.decodedFonts?.find((f) => f.id === selector);
+      image =
+        typeof selector === 'number' ? this.decodedFonts?.find((f) => f.id === selector) : selector;
     if (selector !== undefined && (!image || image.bpp !== 4)) {
       const space = record.slice();
       space[1] =
@@ -232,7 +233,11 @@ export class JSTextWriter {
       if (!parser.font(record).backend) space[1] = 0x8140;
       return rasterTextGlyph(parser, space);
     }
-    return rasterTextGlyph(parser, record, { image });
+    return rasterTextGlyph(parser, record, {
+      image,
+      legacyImageAtlas: image != null && typeof selector === 'object',
+      legacyKeepsTransparentRgb: true,
+    });
   }
   raster(record, parser = this.parser, offset = [0, 0]) {
     if (!this.pixels) return;
@@ -358,6 +363,30 @@ export class JSTextWriter {
             (this.completePixels[at + 3] * (256 - Math.floor((relative * 255) / wipe))) >>> 8;
       }
     this.touch([r[4], r[5], r[4] + r[18], r[5] + r[19]]);
+  }
+  setCharacterImage(code, frame) {
+    if (!frame) {
+      this.fontImages.set(code, null);
+      return;
+    }
+    const width = frame.canvasWidth || frame.width,
+      height = frame.canvasHeight || frame.height;
+    if (width < 1 || height < 1 || !Number.isSafeInteger(width * height * 4))
+      throw new RangeError('Native text image font has invalid canvas dimensions');
+    const x = frame.offsetX | 0,
+      y = height - frame.height - (frame.offsetY | 0),
+      sourceX = Math.max(0, -x),
+      sourceY = Math.max(0, -y),
+      count = Math.min(frame.width, width - x) - sourceX,
+      rows = Math.min(frame.height, height - y),
+      rgba = new Uint8ClampedArray(width * height * 4);
+    if (count > 0)
+      for (let row = sourceY; row < rows; row++) {
+        const from = (row * frame.width + sourceX) * 4,
+          to = ((row + y) * width + sourceX + x) * 4;
+        rgba.set(frame.rgba.subarray(from, from + count * 4), to);
+      }
+    this.fontImages.set(code, { width, height, bpp: 4, rgba });
   }
   async userFont(bytes) {
     this.imageFont = bytes?.slice() ?? null;
