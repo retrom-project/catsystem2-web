@@ -77,6 +77,89 @@ test('2.6.1.67 Main stubs preserve their original three result behaviors', async
   }
 });
 
+test('2.6.1.67 name pairs preserve owned CP932 rows across a cold restore', async () => {
+  const marker = 0xc461789a,
+    text = 0x80000300,
+    output = 0x80000340;
+  let world = await dataWorld(profile);
+  const call = async (id, args, name, callback) => {
+    const program = await readKCS(
+        kcsProgram([
+          [37, marker],
+          ...args.map((arg) => [37, arg]),
+          [43, id, args.length * 4],
+          [59],
+        ]),
+      ),
+      task = { ...world.main, io: null },
+      machine = (task.machine = new KCSMachine(
+        program,
+        {
+          native: (number, words, caller) =>
+            world.runtime.scheduler.native(task, number, words, caller),
+        },
+        world.runtime.scheduler.shared,
+      ));
+    if (name) machine.writeStringBytes(name, text);
+    machine.bytes(output - 1, 16).fill(0xc5);
+    await world.runtime.scheduler.execute(task);
+    const result = machine.sp === machine.floor + 8 ? machine.pop() : undefined;
+    assert.equal(machine.pop(), marker);
+    callback?.(machine);
+    return result;
+  };
+  try {
+    const handle = await call(289, [3, 1, 1]);
+    const bytes = world.runtime.handles.get(handle, 'name-pairs');
+    assert.equal(bytes.length, 120);
+    assert.equal(
+      await call(291, [handle, text, 0x12345678, 0xabcdef01], Uint8Array.of(0x81, 0x72)),
+      undefined,
+    );
+    await call(291, [handle, text, 1, 2], encodeCP932('黒猫'));
+    assert.equal(
+      await call(292, [handle, text, output, output], Uint8Array.of(0x81, 0x52), (machine) => {
+        assert.equal(machine.load(output), 0xabcdef01);
+      }),
+      1,
+    );
+    assert.equal(
+      await call(293, [handle, 2, 1, output], undefined, (machine) => {
+        assert.deepEqual(machine.bytes(output - 1, 16), new Uint8Array(16).fill(0xc5));
+      }),
+      0,
+    );
+    assert.equal(await call(292, [0, 0, 0, 0]), undefined);
+    const snapshot = structuredClone(world.snapshot());
+    await world.close({ flushFiles: false });
+    world = await dataWorld(profile, {}, { initialize: false });
+    await world.restore(snapshot);
+    assert.deepEqual(world.runtime.handles.get(handle, 'name-pairs'), bytes);
+    assert.notEqual(world.runtime.handles.get(handle, 'name-pairs'), bytes);
+    assert.equal(
+      await call(293, [handle, 1, 2, output], undefined, (machine) => {
+        assert.deepEqual(
+          machine.bytes(output - 1, 7),
+          Uint8Array.of(0xc5, ...encodeCP932('黒猫'), 0, 0xc5),
+        );
+      }),
+      1,
+    );
+    await call(290, [handle]);
+    await assert.rejects(call(293, [handle, 1, 2, output]), /released native name-pairs/);
+    const full = await call(289, [1, 1, 1]);
+    await call(291, [full, text, 1, 2], encodeCP932('first'));
+    await assert.rejects(
+      call(291, [full, text, 3, 4], encodeCP932('extra')),
+      /end of its allocation/,
+    );
+    assert.equal(world.runtime.handles.get(full, 'name-pairs')[0], 102);
+    await call(290, [full]);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+
 test('2.6.1.67 task queries enumerate branch keys and follow owner teardown', async () => {
   const files = { 'child.kcs': kcsProgram([[59]]) };
   let world = await dataWorld(profile, files);
