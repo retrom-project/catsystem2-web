@@ -146,3 +146,101 @@ export class NativePCMWindows {
     this.values.set(state);
   }
 }
+
+// A paused stream keeps its decoder and output ring. In particular, changing
+// its repeat count after EOF starts decoding into the next reusable region;
+// those bytes become audible only when the play cursor reaches that region.
+export class NativePCMQueue {
+  constructor(source, windows, { progress, origin, refills, count, loopStart }, saved) {
+    this.source = source;
+    this.windows = windows;
+    const half = windows.halfSecondBytes,
+      capacity = half * 8,
+      bytesPerSecond = source.sampleRate * source.channels * (source.bitsPerSample >>> 3);
+    if (saved)
+      for (const field of [
+        'ring',
+        'decoderByte',
+        'count',
+        'playedBytes',
+        'lastCursor',
+        'restarts',
+        'outputByte',
+        'outputStart',
+      ])
+        this[field] = structuredClone(saved[field]);
+    else {
+      this.ring = new Uint8Array(capacity);
+      if (source.bitsPerSample === 8) this.ring.fill(128);
+      const first = Math.max(0, refills - 8);
+      for (let slot = 0; slot < 8; slot++) {
+        const latest = first + ((slot - (first % 8) + 8) % 8),
+          from =
+            Math.round(origin * bytesPerSecond) + (latest < refills ? latest + 8 : slot) * half,
+          bytes = source.pcm.subarray(from, from + half);
+        this.ring.set(bytes, slot * half);
+      }
+      this.decoderByte = source.pcm.length;
+      this.playedBytes = (refills * half) >>> 0;
+      this.lastCursor = (refills % 8) * half;
+      this.restarts = 0;
+      this.outputByte = Math.round(origin * bytesPerSecond) + (refills + 8) * half;
+      this.outputStart = loopStart;
+    }
+    if (
+      !(this.ring instanceof Uint8Array) ||
+      this.ring.length !== capacity ||
+      this.lastCursor >= capacity ||
+      this.decoderByte > source.pcm.length ||
+      !Number.isFinite(progress)
+    )
+      throw new Error('Invalid native PCM queue checkpoint');
+    this.count = count;
+  }
+  refill(index, cursor, { loopStart, loopEnd, activity, property }) {
+    const half = this.windows.halfSecondBytes,
+      offset = (index % 8) * half,
+      silence = this.source.bitsPerSample === 8 ? 128 : 0;
+    if (activity) this.windows.values[index % 8] = 0;
+    let written = 0;
+    while (written < half) {
+      const length = Math.min(half - written, Math.max(0, loopEnd - this.decoderByte)),
+        bytes = this.source.pcm.subarray(this.decoderByte, this.decoderByte + length);
+      this.ring.fill(silence, offset + written, offset + half);
+      this.ring.set(bytes, offset + written);
+      if (activity)
+        this.windows.fill(offset + written, bytes, {
+          enabled: !!property,
+          regionBytes: half - written,
+          nativeRefill: true,
+        });
+      written += bytes.length;
+      this.decoderByte += bytes.length;
+      if (written === half || this.count === 1) break;
+      if (loopStart >= loopEnd) throw new Error('Native PCM queue has an empty loop');
+      if (this.count) this.count--;
+      this.decoderByte = loopStart;
+      this.restarts = (this.restarts + 1) >>> 0;
+    }
+    this.playedBytes =
+      (this.playedBytes + ((cursor - this.lastCursor + this.ring.length) % this.ring.length)) >>> 0;
+    this.lastCursor = cursor;
+    if (this.restarts && this.playedBytes >= this.source.pcm.length) {
+      this.playedBytes -= this.source.pcm.length;
+      this.restarts--;
+    }
+    return written === 0 && this.playedBytes >= this.source.pcm.length;
+  }
+  snapshot() {
+    return structuredClone({
+      ring: this.ring,
+      decoderByte: this.decoderByte,
+      count: this.count,
+      playedBytes: this.playedBytes,
+      lastCursor: this.lastCursor,
+      restarts: this.restarts,
+      outputByte: this.outputByte,
+      outputStart: this.outputStart,
+    });
+  }
+}

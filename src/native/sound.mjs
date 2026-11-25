@@ -391,10 +391,10 @@ export class NativeSound {
     const device = this.device[bank];
     if (!device.loaded) return false;
     const previous = this.channel(bank);
-    const draining = previous?.paused && previous.nativeDraining;
-    if (draining && count !== 1)
-      throw new Error('Native drained-stream repeat changes are not represented');
-    const retained = draining ? this.audio.channelState(this.key(bank), previous) : null;
+    const retained =
+      previous?.paused && (previous.nativeDraining || previous.nativeStreamQueue)
+        ? this.audio.channelState(this.key(bank), previous)
+        : null;
     // Playback resets a running buffer through Stop, while a paused buffer's
     // hardware cursor is retained when DirectSound Play is issued again.
     const offset = previous?.paused ? previous.offset : 0;
@@ -429,8 +429,9 @@ export class NativeSound {
             pcmState: retained.pcmState,
             nativeStreamEnd: retained.nativeStreamEnd,
             nativeDrainEnd: retained.nativeDrainEnd,
-            nativeDraining: true,
-            remainingDuration: 0,
+            nativeDraining: retained.nativeDraining,
+            nativeStreamQueue: retained.nativeStreamQueue,
+            remainingDuration: retained.remainingDuration,
           }
         : {}),
     });

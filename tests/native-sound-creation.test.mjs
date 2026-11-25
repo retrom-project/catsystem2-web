@@ -89,7 +89,6 @@ for (const profile of [
       assert.equal(context.sources.length, 0);
       context.advance(0.125);
       assert.equal(await invoke(world, 160, [0]), 0);
-      await assert.rejects(invoke(world, 157, [0, 2]), /drained-stream repeat changes/);
       assert.equal(world.sound.channel(0).paused, true);
       await invoke(world, 157, [0, 1]);
       assert.equal(context.sources.length, 0);
@@ -321,6 +320,93 @@ for (const profile of [
       assert.equal(await invoke(world, 587, [1]), 0);
       await invoke(world, 159, [1]);
       assert.equal(await invoke(world, 587, [1]), 0);
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });
+
+for (const profile of [
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+  'grisaia-jp-engine-2.6.1.23',
+])
+  test(`${profile} repeat changes retain drained PCM queues through cold restore`, async () => {
+    const bytes = wave(64500),
+      files = {
+        'case.kcs': kcsProgram([[43, 0, 0], [59]]),
+        'sound/owned.wav': bytes,
+      };
+    const create = async (initialize = true) => {
+      const world = await dataWorld(profile, files, { initialize }),
+        { context } = audioFixture();
+      world.game.resolveCategory = (name) => (name === 'sound/owned.wav' ? name : null);
+      context.decodeAudioData = async () => ({
+        sampleRate: 8000,
+        numberOfChannels: 1,
+        length: 64500,
+        duration: 64500 / 8000,
+        getChannelData: () => Float32Array.from(bytes.subarray(44), (value) => (value - 128) / 128),
+      });
+      world.audio = world.sound.audio = new AudioMixer(world.game, context);
+      return { world, context };
+    };
+    let { world, context } = await create();
+    try {
+      for (const repeat of [0, 2, 3]) {
+        await invoke(world, 155, [0, 0, 288, 1]);
+        await invoke(world, 157, [0, 1]);
+        context.advance(8.125);
+        assert.equal(await invoke(world, 160, [0]), 1);
+        await invoke(world, 158, [0]);
+        await invoke(world, 157, [0, repeat]);
+        let channel = world.sound.channel(0);
+        assert(channel.nativeStreamQueue);
+        assert.equal(context.sources.at(-1).when - context.currentTime, 3.875);
+        assert.equal(context.sources.at(-1).offset, 0);
+        const saved = structuredClone(world.snapshot()),
+          cold = await create(false);
+        await cold.world.restore(saved);
+        await world.close({ flushFiles: false });
+        ({ world, context } = cold);
+        channel = world.sound.channel(0);
+        assert.equal(context.sources.at(-1).when, 3.875);
+        const invalid = structuredClone(world.audio.snapshot());
+        invalid.channels[0].nativeStreamQueue.count = -1;
+        await assert.rejects(world.audio.restore(invalid), /PCM queue checkpoint/);
+        assert.equal(world.sound.channel(0), channel);
+        for (let n = 1; n <= 36; n++) {
+          context.advance(0.5);
+          const playing = await invoke(world, 160, [0]);
+          if (repeat === 2 && n === 10) {
+            await invoke(world, 158, [0]);
+            assert.equal(await invoke(world, 160, [0]), 0);
+            const paused = structuredClone(world.snapshot()),
+              next = await create(false);
+            await next.world.restore(paused);
+            await world.close({ flushFiles: false });
+            ({ world, context } = next);
+            assert.equal(context.sources.length, 0);
+            context.advance(0.25);
+            await invoke(world, 157, [0, 2]);
+            assert.equal(await invoke(world, 160, [0]), 1);
+          }
+          // Own PE callbacks retain the queued stream at the first partial
+          // notification after its final decoded refill, then stop at the next.
+          if (repeat === 2 && n === 33) assert.equal(playing, 1);
+          if (repeat === 2 && n === 34) assert.equal(playing, 0);
+        }
+        assert.equal(await invoke(world, 160, [0]), Number(repeat === 0));
+        if (repeat === 0) {
+          await invoke(world, 155, [0, 0, 288, 2]);
+          await invoke(world, 157, [0, 1]);
+          context.advance(0.25);
+          assert.equal(await invoke(world, 160, [0]), 1);
+          assert.equal(world.sound.channel(0).nativeStreamQueue, null);
+        }
+        await invoke(world, 159, [0]);
+        await invoke(world, 156, [0]);
+        assert.equal(await invoke(world, 569, [0]), 0);
+      }
     } finally {
       await world.close({ flushFiles: false });
     }

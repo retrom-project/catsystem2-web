@@ -205,8 +205,19 @@ state, a one-count resume finishes it without starting another decoded source,
 and Stop, Release or a new load discards it. Cold restore preserves the same
 pending endpoint and starts no output node for the silent remainder.
 
-Changing the repeat count of a paused, already-draining stream is still guarded.
-The native can append newly decoded PCM to that existing ring; this additional
-queued-output shape needs its own continuation proof before admission. The
-alternate global backend and remaining tag/decoder-option shapes are also
-separate from the proved primary stream lifecycle.
+Changing the repeat count of a paused, already-draining stream preserves its
+decoder, ring cursor and refill reader. A later refill appends newly decoded
+PCM behind that cursor; the output source waits until the cursor reaches those
+bytes. Zero repeats indefinitely, while finite counts retain the original
+decoder-restart and empty-refill stopping order. The same PCM ring, decoder
+position and pending output position survive a cold World restore without
+replaying the silent prefix or discarding queued samples. Stop, Release and
+replacement loads discard the old queue and its scheduled output.
+
+Own Main155/157 creation chains in SDK23, SDK63 and SDK67 cover repeat changes
+to zero, two and three, two nonaligned EOF tails, mono 8-bit and stereo 16-bit
+PCM, and cold restores before and after queued output begins. Captured native
+ring bytes agree with the production reader and scheduled output PCM. These
+are controlled output-port checks; they do not establish physical device
+playback. The alternate global backend and remaining tag/decoder-option shapes
+are separate from this primary stream lifecycle.

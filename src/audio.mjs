@@ -6,7 +6,7 @@ import { nativeSoundGain, nativeLoopFrames } from './native/sound-math.mjs';
 import { readAudioSource } from './native/audio-source.mjs';
 import { nativeSoundPanGains, nativeSoundPositionPan } from './native/sound-values.mjs';
 import { spatialPlaybackRate } from './native/audio-spatial.mjs';
-import { sourcePCM, NativePCMWindows } from './native/audio-pcm.mjs';
+import { sourcePCM, NativePCMWindows, NativePCMQueue } from './native/audio-pcm.mjs';
 
 const isVoice = (channel) =>
   channel.group === 'voice' || (channel.group === 'native' && channel.nativeCategory === 'voice');
@@ -26,6 +26,34 @@ const validNativeDrain = (channel) =>
     channel.pcmState.values.length === 80 &&
     Number.isFinite(channel.pcmState.progress) &&
     channel.pcmState.progress >= 0);
+const validNativeQueue = (channel) => {
+  const queue = channel.nativeStreamQueue;
+  return (
+    queue === undefined ||
+    queue === null ||
+    (channel.nativeBufferPlayback === true &&
+      channel.sourceMode === 'stream' &&
+      channel.nativeDraining !== true &&
+      queue.ring instanceof Uint8Array &&
+      queue.ring.length >= 8 &&
+      queue.ring.length % 8 === 0 &&
+      [
+        'decoderByte',
+        'count',
+        'playedBytes',
+        'lastCursor',
+        'restarts',
+        'outputByte',
+        'outputStart',
+      ].every((field) => Number.isSafeInteger(queue[field]) && queue[field] >= 0) &&
+      queue.count <= 0xffffffff &&
+      queue.lastCursor < queue.ring.length &&
+      channel.pcmState?.values instanceof Uint32Array &&
+      channel.pcmState.values.length === 80 &&
+      Number.isFinite(channel.pcmState.progress) &&
+      channel.pcmState.progress >= 0)
+  );
+};
 const validTags = (tags) => {
   if (tags === null) return true;
   if (!tags || Object.getPrototypeOf(tags) !== Object.prototype) return false;
@@ -156,6 +184,7 @@ export class AudioMixer {
   }
   async play(sound) {
     if (!validNativeDrain(sound)) throw new Error('Invalid native audio drain checkpoint');
+    if (!validNativeQueue(sound)) throw new Error('Invalid native PCM queue checkpoint');
     const key = sound.channel,
       generation = (this.generations.get(key) || 0) + 1;
     this.generations.set(key, generation);
@@ -226,6 +255,23 @@ export class AudioMixer {
       );
     if (sound.pcmState) channel.pcmWindows.restore(sound.pcmState.values);
     this.configureLoop(channel);
+    if (sound.nativeStreamQueue || (channel.nativeDraining && channel.loopCount !== 1)) {
+      const bytesPerSecond = pcm.sampleRate * pcm.channels * (pcm.bitsPerSample >>> 3);
+      channel.nativeStreamQueue = new NativePCMQueue(
+        pcm,
+        channel.pcmWindows,
+        {
+          progress: channel.pcmProgress,
+          origin: channel.pcmOrigin,
+          refills: channel.pcmRefills,
+          count: channel.loopCount,
+          loopStart: Math.round(channel.loopStart * bytesPerSecond),
+        },
+        sound.nativeStreamQueue,
+      );
+      channel.nativeDraining = false;
+      channel.remainingDuration = null;
+    } else channel.nativeStreamQueue = null;
     channel.offset = this.wrapPosition(channel, channel.offset);
     if (channel.nativeDraining)
       channel.playbackRate = channel.nativeSpatial?.enabled
@@ -300,7 +346,7 @@ export class AudioMixer {
       panRight = this.context.createGain(),
       merger = this.context.createChannelMerger(2);
     source.buffer = channel.buffer;
-    source.loop = !!channel.loop;
+    source.loop = !!channel.nativeStreamQueue || !!channel.loop;
     source.loopStart = channel.loopStart;
     source.loopEnd = channel.loopEnd;
     source.connect(gain);
@@ -325,18 +371,30 @@ export class AudioMixer {
     channel.playbackRate = 1;
     channel.pcmClock = channel.scheduled;
     gain.gain.value = this.volume(channel);
-    const remaining =
-      channel.remainingDuration ??
-      (!channel.loop
-        ? channel.duration - channel.offset
-        : channel.loopCount
-          ? channel.loopEnd -
-            channel.offset +
-            (channel.loopCount - 1) * (channel.loopEnd - channel.loopStart)
-          : null);
+    const remaining = channel.nativeStreamQueue
+      ? null
+      : (channel.remainingDuration ??
+        (!channel.loop
+          ? channel.duration - channel.offset
+          : channel.loopCount
+            ? channel.loopEnd -
+              channel.offset +
+              (channel.loopCount - 1) * (channel.loopEnd - channel.loopStart)
+            : null));
     channel.remainingDuration = remaining;
     this.setNativeSpatial(channel.channel, { ...channel.nativeSpatial, pan: channel.pan || 0 });
-    source.start(channel.scheduled, channel.offset);
+    if (channel.nativeStreamQueue) {
+      const pcm = this.pcmSources.get(channel.buffer),
+        bytesPerSecond = pcm.sampleRate * pcm.channels * (pcm.bitsPerSample >>> 3),
+        queue = channel.nativeStreamQueue,
+        elapsed = channel.pcmOrigin + channel.pcmProgress - queue.outputByte / bytesPerSecond,
+        start = queue.outputStart / bytesPerSecond,
+        length = channel.loopEnd - start;
+      source.start(
+        channel.scheduled + Math.max(0, -elapsed) / channel.playbackRate,
+        start + (Math.max(0, elapsed) % length),
+      );
+    } else source.start(channel.scheduled, channel.offset);
     this.scheduleEnd(channel);
     source.onended = () => {
       if (channel.nativeBufferPlayback && channel.sourceMode === 'stream') {
@@ -464,7 +522,8 @@ export class AudioMixer {
     if (
       channel.nativeBufferPlayback &&
       channel.sourceMode === 'stream' &&
-      !channel.nativeDraining
+      !channel.nativeDraining &&
+      !channel.nativeStreamQueue
     ) {
       const pcm = this.pcmSources.get(channel.buffer),
         bytesPerSecond = pcm.sampleRate * pcm.channels * (pcm.bitsPerSample >>> 3);
@@ -828,6 +887,33 @@ export class AudioMixer {
       stride = pcm.channels * (pcm.bitsPerSample >>> 3),
       bytesPerSecond = pcm.sampleRate * stride,
       consumed = Math.floor((channel.pcmProgress * bytesPerSecond) / state.halfSecondBytes);
+    if (channel.nativeStreamQueue) {
+      const queue = channel.nativeStreamQueue;
+      while (channel.pcmRefills < consumed) {
+        const next = channel.pcmRefills++,
+          cursor =
+            channel.pcmRefills === consumed
+              ? Math.floor(channel.pcmProgress * bytesPerSecond) % queue.ring.length
+              : (channel.pcmRefills * state.halfSecondBytes) % queue.ring.length,
+          ended = queue.refill(next, cursor, {
+            loopStart: Math.round(channel.loopStart * bytesPerSecond),
+            loopEnd: Math.round(channel.loopEnd * bytesPerSecond),
+            activity: channel.nativeStreamActivity,
+            property: channel.nativeLevelProperty,
+          });
+        channel.loopCount = queue.count;
+        if (ended) {
+          this.detach(channel);
+          this.resetNativePCM(channel.channel);
+          channel.offset = 0;
+          channel.playing = false;
+          channel.ended = true;
+          this.events.push({ channel: channel.channel, reason: 'ended', frame: this.frame });
+          break;
+        }
+      }
+      return;
+    }
     if (!channel.nativeLevelProperty) {
       channel.pcmRefills = consumed;
       this.settleNativeStream(channel);
@@ -927,6 +1013,7 @@ export class AudioMixer {
     const pcm = this.pcmSources.get(channel.buffer);
     channel.pcmOrigin = channel.pcmProgress = channel.pcmRefills = 0;
     channel.nativeDraining = false;
+    channel.nativeStreamQueue = null;
     channel.nativeStreamEnd = channel.nativeDrainEnd = null;
     channel.pcmClock = this.context.currentTime;
     channel.pcmWindows.fill(0, pcm.pcm.subarray(0, channel.pcmWindows.halfSecondBytes * 8), {
@@ -993,6 +1080,7 @@ export class AudioMixer {
       nativeStreamEnd: c.nativeStreamEnd,
       nativeDrainEnd: c.nativeDrainEnd,
       nativeDraining: c.nativeDraining,
+      nativeStreamQueue: c.nativeStreamQueue?.snapshot() ?? null,
       completionCount: c.completionCount,
       loopStartFrame: c.loopStartFrame,
       loopEndFrame: c.loopEndFrame,
@@ -1020,6 +1108,8 @@ export class AudioMixer {
   async restore(state) {
     if (state.channels.some((channel) => !validNativeDrain(channel)))
       throw new Error('Invalid native audio drain checkpoint');
+    if (state.channels.some((channel) => !validNativeQueue(channel)))
+      throw new Error('Invalid native PCM queue checkpoint');
     if (
       state.channels.some(
         (channel) =>
