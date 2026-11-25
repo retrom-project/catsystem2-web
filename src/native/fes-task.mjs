@@ -84,6 +84,14 @@ export function createNativeFESTask(world, record) {
         bank?.selectContext(instance.nativeVariableContextKey);
         return bank?.context(instance.nativeVariableContextKey) ?? null;
       };
+      if (nativeABI(world.profile).fes.localAccessUsesNativeTypes)
+        this.player.nativeNamedVariable = (instance, name, index) => {
+          const bytes = typeof name === 'string' ? encodeCP932(name) : name,
+            bank = this.variableBank();
+          if (bytes.length > 32 || !bank?.selectContext(instance.nativeVariableContextKey ?? key))
+            return undefined;
+          return bank.findName(bytes, index);
+        };
     },
     async initialize(variableBank) {
       const runtime = world.runtime;
@@ -451,8 +459,23 @@ export function createNativeFESTask(world, record) {
         if (this.player) {
           const memory = world.engineMessages.memory(words[0], context),
             bank = this.variableBank();
-          this.privateContext();
-          bank?.setName(memory.string(wParam), 0, lParam);
+          if (bank) {
+            if (nativeABI(world.profile).fes.localAccessUsesNativeTypes) {
+              const name = labelBytes(memory, wParam);
+              // The original scratch has four extra bytes for the index word.
+              // Writing index zero terminates the stored 32-byte key.
+              if (
+                name.length > 35 &&
+                (bank.context(this.variableContextKey()) || bank.privateNames)
+              )
+                throw new RangeError('Native FES local name exceeds its 36-byte key scratch');
+              this.privateContext();
+              bank.setName(name.subarray(0, 32), 0, lParam);
+            } else {
+              this.privateContext();
+              bank.setName(memory.string(wParam), 0, lParam);
+            }
+          }
         }
         return NATIVE_UNWRITTEN_WORD;
       }

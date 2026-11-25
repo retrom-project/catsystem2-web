@@ -2148,6 +2148,106 @@ test('2.6.1.67 string expansion uses the existing Script bank and writes two ter
   assert.equal(machine.string(352), '猫');
 });
 
+test('2.6.1.67 KCS copies only FES private words, preserves raw names and queries the live result', async (t) => {
+  const target = 34,
+    marker = 0x8cc9a31e,
+    key = 'k'.repeat(32),
+    call = (id, ...args) => [...args.map((word) => [37, word]), [43, id, args.length * 4]],
+    files = {
+      'bank.fes': encodeCP932('#START\nresult named\nnext HOLD\n#HOLD\n\n#LOOKUP\nresult ' + key),
+      'start.kcs': kcsProgram([...call(447, target, 128), [59]], [[128, 'bank']]),
+      'from.kcs': kcsProgram([
+        [37, marker],
+        ...call(664, target, 112, 0x89ca3216),
+        ...call(664, target, 176, 0xaa123491),
+        ...call(664, target, 184, 0x8bb25fcd),
+        ...call(664, target, 192, 0xeb43a0c1),
+        ...call(665, target),
+        [59],
+      ]),
+      'to.kcs': kcsProgram([[37, marker], ...call(666, target), [59]]),
+      'read.kcs': kcsProgram([[37, marker], ...call(667, target), [59]]),
+      'clear.kcs': kcsProgram([[37, marker], ...call(668, target), ...call(667, target), [59]]),
+      'missing.kcs': kcsProgram([...call(667, 0x1a823456), [59]]),
+      'long.kcs': kcsProgram([...call(664, target, 128, 2), [59]], [[128, 'L'.repeat(36)]]),
+    },
+    world = await dataWorld(profile, files),
+    parent = world.main.id,
+    bank = world.runtime.variableBank(world.main);
+  t.after(() => world.close({ flushFiles: false }));
+  bank.initialize(32);
+  bank.words.set([7, 8, 9]);
+  const fesID = await world.objects.create({ kind: 34, parent, nativeID: target }),
+    fes = world.objects.objects.get(fesID).implementation;
+  const spawn = (name, w = world) =>
+    w.spawnScript(name + '.kcs', { parent, initialExecute: false });
+  await world.runtime.scheduler.execute(await spawn('start'));
+  const from = await spawn('from'),
+    local = bank.context(from.id),
+    destinationKey = fes.variableContextKey(),
+    destination = bank.context(destinationKey),
+    words = Uint32Array.from({ length: 512 }, (_, index) => (0xe0ca9d12 + 0x68416 * index) >>> 0);
+  local.words.set(words);
+  bank.setName('callerOwned', 0, 0xb34);
+  from.machine.writeString('named', 112);
+  from.machine.writeStringBytes(Uint8Array.of(0xee, 0xf9), 176);
+  from.machine.writeStringBytes(Uint8Array.of(0xfa, 0x54), 184);
+  from.machine.writeString(key + '尾Z', 192);
+  await world.runtime.scheduler.execute(from);
+  assert.equal(from.machine.pop(), marker);
+  assert.deepEqual(destination.words, words);
+  assert.equal(bank.selectedContext, destinationKey);
+  assert.equal(bank.getName('named'), 0x89ca3216);
+  assert.equal(bank.getName(Uint8Array.of(0xee, 0xf9)), 0xaa123491);
+  assert.equal(bank.getName(Uint8Array.of(0xfa, 0x54)), 0x8bb25fcd);
+  assert.equal(bank.getName(encodeCP932(key)), 0xeb43a0c1);
+  assert.equal(bank.getName('callerOwned'), 0);
+  assert.equal(local.names.size, 1);
+  assert.deepEqual(bank.words.slice(0, 3), Uint32Array.of(7, 8, 9));
+
+  await fes.tick();
+  const read = await spawn('read');
+  await world.runtime.scheduler.execute(read);
+  assert.deepEqual([read.machine.pop(), read.machine.pop()], [0x89ca3216, marker]);
+  const to = await spawn('to');
+  await world.runtime.scheduler.execute(to);
+  assert.deepEqual(bank.context(to.id).words, words);
+  assert.equal(bank.context(to.id).names.size, 0);
+  assert.equal(bank.selectedContext, to.id);
+  await assert.rejects(
+    world.runtime.scheduler.execute(await spawn('long')),
+    /FES local name exceeds its 36-byte key scratch/,
+  );
+
+  const restored = await dataWorld(profile, files, { initialize: false });
+  t.after(() => restored.close({ flushFiles: false }));
+  await restored.restore(structuredClone(world.snapshot()));
+  const restoredFes = restored.objects.objects.get(fesID).implementation,
+    restoredBank = restored.runtime.variableBank(restored.main);
+  assert.deepEqual(restoredBank.context(destinationKey).words, words);
+  assert.deepEqual(restoredBank.context(destinationKey).names, destination.names);
+  const restoredRead = await spawn('read', restored);
+  await restored.runtime.scheduler.execute(restoredRead);
+  assert.deepEqual([restoredRead.machine.pop(), restoredRead.machine.pop()], [0x89ca3216, marker]);
+  await restoredFes.player.notify('LOOKUP');
+  await restoredFes.player.flush();
+  const lookup = await spawn('read', restored);
+  await restored.runtime.scheduler.execute(lookup);
+  assert.deepEqual([lookup.machine.pop(), lookup.machine.pop()], [0xeb43a0c1, marker]);
+  const clear = await spawn('clear', restored);
+  await restored.runtime.scheduler.execute(clear);
+  assert.deepEqual([clear.machine.pop(), clear.machine.pop()], [0, marker]);
+  await assert.rejects(
+    restored.runtime.scheduler.execute(await spawn('missing', restored)),
+    /FES native 0x29b has no initialized 32-bit output word/,
+  );
+  await restoredFes.closeInterpreter();
+  await assert.rejects(
+    restored.runtime.scheduler.execute(await spawn('read', restored)),
+    /FES result access requires its interpreter/,
+  );
+});
+
 test('2.6.1.67 Draw GCALLs copy, clear and force the owned pixel surface', async (t) => {
   const target = [0x13, 80];
   const pixels = [23, 47, 89, 255];

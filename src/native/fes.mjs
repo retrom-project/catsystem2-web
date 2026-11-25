@@ -126,6 +126,12 @@ export function nativeFES(id, args, machine, task, world) {
     send = (message, w = 0, l = 0, context = {}) =>
       world.sendNativeEngine(args[0], task.id, message, w, l, context),
     format = (index) => world.runtime.services.format(args[index], machine);
+  const localAccessUsesNativeTypes = nativeABI(world.profile).fes.localAccessUsesNativeTypes;
+  if (localAccessUsesNativeTypes && id >= 0x298 && id <= 0x29c) {
+    const target = world.objects.objects.get(world.resolveTaskID(args[0], task.id));
+    if (target && target.kind !== 34)
+      throw new Error('Native FES local access requires a FES task');
+  }
   if (id === 0x1c5) {
     own.exitCode = args[0] | 0;
     return done();
@@ -191,7 +197,15 @@ export function nativeFES(id, args, machine, task, world) {
       ),
     ).then((result) => (id === 0x286 ? value(result) : done()));
   if (id === 0x298 || id === 0x2e2) {
-    const packet = stringsPacket([format(1)]);
+    if (id === 0x298 && localAccessUsesNativeTypes && !nativeDataMapped(machine, args[1]))
+      throw new RangeError('Native FES local name has no mapped guest address');
+    const name =
+      id === 0x298 && localAccessUsesNativeTypes
+        ? world.runtime.services.formatBytes(args[1], machine)
+        : format(1);
+    if (id === 0x298 && localAccessUsesNativeTypes && name.length > 255)
+      throw new RangeError('Native FES local name exceeds its 256-byte format buffer');
+    const packet = stringsPacket([name]);
     return Promise.resolve(
       send(id === 0x298 ? 345 : 350, packet.addresses[0], args[2], { payload: packet.memory }),
     ).then(done);

@@ -137,7 +137,11 @@ function evaluateTokens(tokens, text, context, depth, operand) {
       if (operand) return context.valueLookup(node.nameBytes, node.index ? run(node.index) : 0) | 0;
       const macro = context.macro?.(node.name);
       if (macro !== undefined) return evaluate(macro, context, depth + 1);
-      const handle = context.objectHandle?.(node.name, node.index ? run(node.index) : undefined);
+      const lookup = context.player?.nativeNamedVariable,
+        index = node.index && (lookup || context.objectHandle) ? run(node.index) : undefined,
+        variable = lookup?.(context, node.name, index ?? 0);
+      if (variable !== undefined) return variable | 0;
+      const handle = context.objectHandle?.(node.name, index);
       if (handle === undefined || handle === null)
         throw new Error(`Unexpected FES expression identifier '${node.name}' in ${text}`);
       return handle | 0;

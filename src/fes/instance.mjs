@@ -302,7 +302,11 @@ export class FESInstance {
   valueLookup(nameBytes, index) {
     if (!this.runtime || !(nameBytes instanceof Uint8Array))
       throw new TypeError('FES numeric lookup requires a normal raw-name reference');
-    return this.collection.lookup(nameBytes, index)?.handle ?? 0;
+    return (
+      this.player.nativeNamedVariable?.(this, nameBytes, index) ??
+      this.collection.lookup(nameBytes, index)?.handle ??
+      0
+    );
   }
   objectHandle(name, index) {
     if (this.runtime) return this.collection.lookup(name, index ?? 0)?.handle;
@@ -1107,7 +1111,13 @@ export class FESInstance {
         this.finished = args.length ? p(0) : 0;
         return { action: 'stop' };
       case 'result':
-        this.resultValue = args.length ? p(0) : 0;
+        this.resultValue = !args.length
+          ? 0
+          : fesBehavior?.localAccessUsesNativeTypes
+            ? this.runtime.evaluateBankExpression(this.argumentBytes(args[0]), {
+                systemNames: true,
+              })
+            : p(0);
         return { action: 'flush' };
       case 'execfes':
         this.player.requestFES(

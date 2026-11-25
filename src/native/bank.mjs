@@ -7,10 +7,12 @@ export const NATIVE_BANK_IDS = Object.freeze([
   0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0x261, 0x262, 0x292, 0x293,
 ]);
 function nameKey(name, index) {
-  let bytes = encodeCP932(name);
+  const rawName = name instanceof Uint8Array;
+  let bytes = rawName ? name : encodeCP932(name);
   const nul = bytes.indexOf(0);
   if (nul !== -1) bytes = bytes.subarray(0, nul);
-  if (bytes.length >= 32) throw new RangeError('Native variable name exceeds its 32-byte key');
+  if (bytes.length > (rawName ? 32 : 31))
+    throw new RangeError('Native variable name exceeds its 32-byte key');
   return (
     Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('') + ':' + (index >>> 0)
   );
@@ -89,7 +91,10 @@ export class NativeVariableBank {
     this.privateNames?.set(nameKey(name, index), value >>> 0);
   }
   getName(name, index = 0) {
-    return this.privateNames?.get(nameKey(name, index)) ?? 0;
+    return this.findName(name, index) ?? 0;
+  }
+  findName(name, index = 0) {
+    return this.privateNames?.get(nameKey(name, index));
   }
   deleteName(name, index = 0) {
     return this.privateNames?.delete(nameKey(name, index)) ?? false;
