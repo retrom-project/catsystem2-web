@@ -2,6 +2,7 @@
 // Main 17B..180 browse the live scene-history path with rotating reader slots.
 import { NativeSceneData, NativeSceneReader } from './scene-data.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 export const NATIVE_HISTORY_CURSOR_IDS = Object.freeze([0x17b, 0x17c, 0x17d, 0x17e, 0x17f, 0x180]);
 const word = (value) => nativeReply(1, value >>> 0);
@@ -59,7 +60,9 @@ export class NativeHistoryCursor {
     if (fold(basename(row.reader.filename)) === fold(entry.scene)) return true;
     const data = new NativeSceneData();
     data.reader = row.reader;
-    return data.load(entry.scene, services.read, services.diagnostic);
+    const translations =
+      !services.profile || nativeABI(services.profile).scene?.translations !== false;
+    return data.load(entry.scene, services.read, services.diagnostic, translations);
   }
   async text(row, services, message, speaker) {
     if (!(await this.refresh(row, services))) return 0;

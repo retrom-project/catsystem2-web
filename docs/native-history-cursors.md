@@ -19,7 +19,10 @@ log manager's separate formatted rows.
 | 180  | cursor, slot, path-index destination, block destination | Boolean                                                |
 
 The create wrapper is game `64F390` / SDK `51AA30`; move is `64F590` /
-`51ABF0`. The complete address lists live in `src/native/history-cursor.mjs`.
+`51ABF0`. The original reference address lists live in
+`oracle/history-cursor-handlers.mjs`. The fixed `.23` registration separately
+reviews its own `47C860`–`47CD44` wrappers and uses its original CP932 reader
+without CSTL access.
 
 Each 20-byte native slot stores path index, block index, that path's last block,
 its reader pointer and a valid word. Window movement rotates the whole record,
@@ -63,6 +66,10 @@ before that load and counted separately in the private reports. Negative slot
 indices, allocation failure and a nonempty history with zero allocated slots
 would access invalid native storage; the browser implementation diagnoses them.
 An empty history can retain a zero-slot descriptor and release it normally.
+The browser currently rejects positive slot counts above `0x100000` before
+allocation. Those counts may be valid in an original process with sufficient
+memory. They remain an ordinary SDK shape requiring further implementation
+or resource-budget work, rather than an original undefined-input claim.
 
 Five public tests cover rotation, command/text results, single-slot behavior,
 ownership and both profiles' dispatcher/fresh-runtime restoration. The authored

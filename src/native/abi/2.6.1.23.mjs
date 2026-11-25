@@ -101,6 +101,7 @@ const taskSceneOperations = [
 const crossTaskSceneOperations = [233, 234];
 const explicitHistoryStringOperations = [334, 335, 337];
 const taskSceneCSSOperations = [239, 249];
+const historyCursorOperations = [379, 380, 381, 382, 383, 384];
 function geometrySignatures(table, ids) {
   return ids.map((id) => {
     const { name, signature } = NATIVE_SEMANTICS[table][id],
@@ -581,6 +582,11 @@ const mainEvidence = [
     ids: [322],
     value:
       'Own 2.6.1.23 wrapper 0x485d70 formats the guest CP932 name, resolves the scene category and reports whether the virtual-file open succeeds; an existing empty file succeeds without parsing CatScene data.',
+  },
+  {
+    ids: historyCursorOperations,
+    value:
+      'Own 2.6.1.23 wrappers 0x47c860–0x47cd44 retain the borrowed Scene history, rotating 20-byte reader slots, single-slot endpoint rule, CP932 text/commands, conditional mapped outputs and owned cursor destruction without CSTL reads.',
   },
   {
     ids: [385, 386],
@@ -2132,6 +2138,39 @@ export default {
         { ids: [864, 868], fields: { resultWritten: false } },
         { ids: [515, 518, 519], fields: { resultWritten: true } },
         { ids: [516, 517], fields: { resultWritten: false } },
+        ...historyCursorOperations.map((id) => ({
+          ids: [id],
+          fields: {
+            resultWritten: id !== 380,
+            ...(id === 379
+              ? { result: { kind: 'handle', handleKind: 'history-cursor', ownership: 'owned' } }
+              : {}),
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) => {
+              if (parameter.type.kind === 'handle')
+                return {
+                  ...parameter,
+                  type: {
+                    kind: 'handle',
+                    handleKind: id === 379 ? 'scene-data' : 'history-cursor',
+                    ownership: id === 380 ? 'owned' : 'borrowed',
+                  },
+                };
+              if (parameter.type.kind !== 'pointer') return parameter;
+              return {
+                ...parameter,
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'out',
+                  target:
+                    id === 384
+                      ? { kind: 'bits', bits: 32 }
+                      : { kind: 'character', bits: 8, encoding: 'CP932' },
+                },
+              };
+            }),
+          },
+        })),
         {
           ids: [322],
           fields: {

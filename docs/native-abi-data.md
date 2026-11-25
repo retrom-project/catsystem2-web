@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 535       | 57            | 17            | 260     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 541       | 57            | 17            | 254     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 423       | 80            | 19            | 416     | Generic 16 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 506       | 80            | 19            | 333     | Generic 34 of 45, Particle 42 of 44 and 48 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
@@ -735,6 +735,12 @@ Main 322 formats a CP932 name and uses the scene category's default extension
 before checking whether the file can be opened. An existing empty or
 unrecognized file still succeeds; the query does not initialize a reader
 or parse the scene document.
+Main 379–384 borrow the explicit Scene resource and browse its live path
+through independent rotating reader slots. They preserve the single-slot
+endpoint rule, raw CP932 text and command bytes, conditional text outputs,
+required position outputs, and reader identity across rotation. These old
+readers do not request CSTL. [History-window contracts](native-history-cursors.md)
+also record the retained large-capacity and invalid-lifetime boundaries.
 The reader copies file markers from the records with types `0xf0` and
 `0xf1`. Main 338 queries those markers and Main 608 queries the block count.
 Main 328–333 update or read the independent seen and path lists. Main 336

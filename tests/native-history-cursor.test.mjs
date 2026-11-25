@@ -111,14 +111,23 @@ test('one-slot history window excludes the live final block and empty history re
   assert.equal(nativeHistoryCursor(0x17b, [], f.machine), undefined);
 });
 
-for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+])
   test(`${profile} native dispatch and fresh runtime restore share the original scene handle`, async () => {
     const f = historyCursorFixture(),
       program = kcsProgram([[59]]),
+      reads = [],
       make = () =>
         new NativeRuntime({
           profile,
-          read: async (name) => (name === 'main.kcs' ? program : f.services.read(name)),
+          read: async (name, category) => {
+            if (name === 'main.kcs') return program;
+            reads.push([name, category]);
+            return f.services.read(name);
+          },
         }),
       runtime = make(),
       task = await runtime.spawn('main.kcs'),
@@ -145,4 +154,9 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
     await fc(0x17c, [cursorHandle]);
     assert.equal(fresh.handles.records.has(source), true);
     await fc(0x144, [source]);
+    if (profile === 'grisaia-jp-engine-2.6.1.23') {
+      assert.ok(reads.length);
+      assert.ok(reads.every(([name, category]) => !name.endsWith('.cstl') && category === 'scene'));
+      await assert.rejects(async () => call(0x17b, [source, 0x100001]), /no mapped reader slots/);
+    }
   });
