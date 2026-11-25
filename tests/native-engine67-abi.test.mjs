@@ -1523,6 +1523,43 @@ test('2.6.1.67 Script load GCALL binds shared memory and only suspends for immed
   }
 });
 
+test('2.6.1.67 Motion mutates mapped components in native x87 order', async () => {
+  const marker = 0xd1058137;
+  for (const [id, addresses, expected] of [
+    [18, [64, 68, 72], [0x3fa00000, 0x4048f5c3, 0x40066665]],
+    [19, [64, 68, 72], [0xc048f5c3, 0xc0066666, 0x3f9fffff]],
+    [20, [64, 68, 72], [0xc0066666, 0xbf9fffff, 0x4048f5c3]],
+    [21, [0x80000040, 0x80000040, 0x80000040], [0x40905872, 0x40905872, 0x40905872]],
+    [22, [0x80000040, 0x80000040, 0x80000040], [0xbf3d667d, 0xbf3d667d, 0xbf3d667d]],
+  ]) {
+    const factors = id <= 20 ? [Math.PI / 2] : [Math.PI / 2, 0.3, -0.5],
+      args = [...addresses, ...factors.map(floatBits)],
+      script = await readKCS(
+        kcsProgram([
+          [37, marker],
+          ...args.map((value) => [37, value]),
+          [43, id, args.length * 4],
+          [59],
+        ]),
+      ),
+      motion = new MotionInstance(script, { profile }),
+      m = motion.machine;
+    for (const [index, coordinate] of [1.25, -2.1, 3.14].entries()) {
+      m.store(addresses[index], floatBits(coordinate));
+    }
+    const floor = m.floor;
+    m.store(addresses[0] - 4, marker);
+    m.run(32);
+    assert.deepEqual(
+      addresses.map((address) => m.load(address)),
+      expected,
+    );
+    assert.equal(m.load(addresses[0] - 4), marker);
+    assert.equal(m.sp, floor + 4);
+    assert.equal(m.pop(), marker);
+  }
+});
+
 test('2.6.1.67 existing MOT triangle GCALL follows the four ordered x87 quarters', async () => {
   const args = [
     [0, 0],

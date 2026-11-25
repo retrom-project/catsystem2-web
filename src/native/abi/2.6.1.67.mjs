@@ -282,6 +282,7 @@ export default {
     currentMatrixFallback: true,
     matrixMemoryOperationsUseNativeOrder: true,
     vectorOperationsUseNativeGeometry: true,
+    vectorComponentsUseX87: true,
     elapsedUsesX87: true,
     skipBypassesDelay: false,
     activeQueryUsesRawWord: true,
@@ -3808,13 +3809,18 @@ export default {
     generic: {
       count: 45,
       slots: {
-        unknown: [0, 18, 19, 20, 21, 22, 27, 31, 37, 43, 44],
+        unknown: [0, 27, 31, 37, 43, 44],
         recovered: [
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 23, 24, 25, 26, 28, 29, 30, 32,
-          33, 34, 35, 36, 38, 39, 40, 41, 42,
+          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+          26, 28, 29, 30, 32, 33, 34, 35, 36, 38, 39, 40, 41, 42,
         ],
       },
       evidence: [
+        {
+          ids: [18, 19, 20, 21, 22],
+          value:
+            'Own MOT 0x55db10–0x55dd90 resolves three mapped single-precision component pointers. The rotation body snapshots all three coordinates and evaluates the initialized CRT sine and cosine in x87 order. Translation and scaling read each coordinate after the preceding write. The native result stays unwritten under control 2.',
+        },
         { ids: [13], value: powerEvidence },
         { ids: [39, 40], value: randomEvidence },
         {
@@ -3853,6 +3859,26 @@ export default {
         },
       ],
       signatures: [
+        ...[18, 19, 20, 21, 22].map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.generic[id].signature.parameters.map((param, index) =>
+              index < 3
+                ? {
+                    ...param,
+                    type: {
+                      kind: 'pointer',
+                      addressSpace: 'vm',
+                      direction: 'inout',
+                      target: { kind: 'float', bits: 32 },
+                    },
+                  }
+                : param,
+            ),
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        })),
         { ids: [13], fields: { resultWritten: true, review: 'reviewed' } },
         { ids: [39, 40], fields: { resultWritten: true } },
         { ids: [11], fields: { resultWritten: true } },
