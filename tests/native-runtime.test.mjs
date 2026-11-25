@@ -280,27 +280,23 @@ test('unknown admission precedes registered handlers and service preparation', a
 });
 
 test('unknown admission precedes the main built-in fallback and resource services', async () => {
-  let registryReads = 0,
+  let releases = 0,
     preparation = 0,
     error;
-  const id = 0x4d,
-    args = [7],
-    records = new Map();
-  const runtime = new NativeRuntime({
-    profile: 'bokutomo-engine-2.6.1.67',
-    read: async () => compiled([[59]]),
-    services: {
-      objects: {
-        get objects() {
-          registryReads++;
-          return records;
-        },
-      },
-    },
-  });
-  const task = await runtime.spawn('fallback.kcs');
-  records.set(task.id, { kind: 1, parent: null });
-  records.set(args[0], { kind: 7, parent: task.id });
+  const id = 0xed,
+    runtime = new NativeRuntime({
+      profile: 'bokutomo-engine-2.6.1.67',
+      read: async () => compiled([[59]]),
+    }),
+    task = await runtime.spawn('fallback.kcs'),
+    m = task.machine,
+    args = [m.allocate(16)],
+    free = m.free.bind(m);
+  m.bytes(args[0], 16).fill(0xa5);
+  m.free = (pointer) => {
+    releases++;
+    return free(pointer);
+  };
   Object.defineProperty(runtime.services, 'admissionProbe', {
     enumerable: true,
     get() {
@@ -311,13 +307,14 @@ test('unknown admission precedes the main built-in fallback and resource service
   assert.equal(runtime.tables.get('main')[id].status, 'unknown');
   assert.equal(runtime.handlers.has(`main:${id}`), false);
   try {
-    runtime.native('main', id, args, task.machine, task, runtime.scheduler);
+    runtime.native('main', id, args, m, task, runtime.scheduler);
   } catch (failure) {
     error = failure;
   }
   assert.deepEqual(
-    { rejected: error?.name, preparation, registryReads },
-    { rejected: 'UnsupportedKCSNative', preparation: 0, registryReads: 0 },
+    { rejected: error?.name, preparation, releases },
+    { rejected: 'UnsupportedKCSNative', preparation: 0, releases: 0 },
   );
+  assert.deepEqual(m.bytes(args[0], 16), new Uint8Array(16).fill(0xa5));
   assertUnknownDiagnostic(error, runtime, id, args, task);
 });
