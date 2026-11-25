@@ -126,3 +126,15 @@ retained metadata never represents continuing playback.
 Ordinary audio regressions and the shared owned AudioContext fixture have no
 original-engine dependency. The explicit physical-checkpoint composition test
 lives separately in the oracle group, with its original body and assertions.
+
+SDK23, SDK63 and SDK67 Main569 query the decoded-stream DWORD only for a
+loaded static buffer. Streaming backends and missing devices, backends, buffers
+or decoders return zero. Main587 returns the static buffer's full completion
+count word; it returns zero when the static backend or buffer is absent. With an
+active device, an out-of-range Main587 bank leaves the original result unwritten
+and remains diagnostic. An absent device returns zero even for that bank.
+Main165 retains signed pan readback and Main349 returns only the pending volume
+fade bit; both return zero for out-of-range banks. Their build-specific raw
+messages resolve to the same shared operations, and these query states survive
+a cold World restore. The decoded-stream virtual return port was observed as
+owned data; this query proof does not exercise audio-device playback.

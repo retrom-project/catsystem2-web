@@ -1106,7 +1106,10 @@ export class NativeSoundTask {
         this.sound.refresh(bank);
         return 0;
       case 200:
-        return device.metadata ? nativeSoundDecoderQuery(device.metadata) : 0;
+        return device.metadata &&
+          (!this.sound.abi.sound.decoderQueryRequiresStaticBuffer || device.sourceMode === 'static')
+          ? nativeSoundDecoderQuery(device.metadata)
+          : 0;
       case 201:
         return device.sourceMode === 'static'
           ? (this.sound.channel(selected[0])?.completionCount ?? device.completionCount) >>> 0
@@ -1291,6 +1294,12 @@ export async function nativeSound(id, args, machine, task, world) {
     0x24b: 201,
   };
   if (simple[id]) {
+    if (
+      sound.audio &&
+      sound.abi.sound.unwrittenQueryBanks?.includes(id) &&
+      !receiver.valid(argument(0))
+    )
+      throw new Error('Native sound bank query leaves its result uninitialized for this bank');
     const result = await send(
       simple[id],
       argument(0),

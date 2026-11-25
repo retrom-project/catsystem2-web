@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [165, 349, 569, 587],
+    value:
+      'Own full GCALLs execute this build’s Sound receiver and static-buffer query path. Pan retains its signed raw word; fade-pending returns bit zero, including zero for invalid banks. Decoder length comes only from a loaded static buffer and its decoded-stream virtual query, with no narrowing of its DWORD result; absent devices, missing buffers, streaming backends and invalid banks return zero. Completion count retains the static buffer DWORD and returns zero for missing/static-disabled backends. Its active-device invalid-bank path leaves the native result unwritten and remains diagnostic. All captured Sound/device bytes remain unchanged.',
+  },
+  {
     ids: [589],
     value:
       'Own Main589 at 0x47ba70 translates both VM destinations before writing the two queryWords from this build, in order and without a result. Local, shared, aliased destinations and outputs over argument words agree through full GCALLs and cold restore. Independently observed Main582/584 shapes retain mapped raw words across this compact build’s canonical preference/system-voice banks and earlier queryWords aliases -2555/-2554, including DWORD index multiplication wrap. The existing input-block and random-selection contracts remain enabled; unrepresented configuration fields remain diagnostic.',
@@ -1126,8 +1131,8 @@ const mainUnobservedIds = Array.from({ length: mainCount }, (_, id) => id).filte
 const baseMessages = [1, 2, 3].map((id) => toMessage(id));
 const cursorVisibility = 21;
 const soundMessages = [
-  166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 180, 181, 182, 183, 185, 187, 190, 191,
-  192, 193, 194, 195, 196, 197,
+  166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 180, 181, 182, 183, 184, 185, 187,
+  188, 190, 191, 192, 193, 194, 195, 196, 197,
 ];
 const toSound = (id) => toMessage(id + 13, -13);
 const tables = (count, evidence = [], stubs = {}) => {
@@ -1360,6 +1365,8 @@ export default {
   },
   sound: {
     banks: 32,
+    decoderQueryRequiresStaticBuffer: true,
+    unwrittenQueryBanks: [587],
     firstMessage: 166,
     lastMessage: 197,
     delegateFrom: 198,
@@ -1637,6 +1644,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [165, 349, 569, 587], fields: { review: 'reviewed' } },
         ...nativePreferenceDataSignatures([589]),
         { ids: [361, 533], fields: { review: 'reviewed' } },
         ...NATIVE_TILE_GAME_SIGNATURES,
