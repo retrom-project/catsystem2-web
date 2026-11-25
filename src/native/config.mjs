@@ -384,6 +384,48 @@ export class NativeConfiguration {
   }
 }
 
+export class NativeConfigurationRefresh {
+  constructor(world) {
+    this.world = world;
+    this.pending = false;
+    this.available = nativeABI(world.profile).tables.main.entries[533]?.status === 'recovered';
+    world.runtime.register('main', 533, (args) => {
+      if (args.length) throw new Error('Native configuration refresh expects no arguments');
+      this.pending = true;
+      return nativeReply(2);
+    });
+  }
+  snapshot() {
+    return { pending: this.pending };
+  }
+  restore(state) {
+    if (typeof state?.pending !== 'boolean' || (state.pending && !this.available))
+      throw new Error('Invalid native configuration refresh checkpoint');
+    this.pending = state.pending;
+  }
+  async consume(dispatch) {
+    const world = this.world;
+    if (!this.pending || !world.objects.objects.has(world.root)) return false;
+    const data = new Uint8Array(24),
+      view = new DataView(data.buffer);
+    view.setUint32(8, 19, true);
+    await world.sendEngine(world.root, 0, 11, 0, 0, {
+      ...dispatch,
+      fromHost: true,
+      flags: 0,
+      payload: {
+        load: (at) => view.getUint32(at, true),
+        bytes: (at, size) => data.subarray(at, at + size),
+      },
+    });
+    world.screenEffects.rendering.requestRedraw();
+    // The original clears after notification and redraw, including a request
+    // made by a receiver during this same notification.
+    this.pending = false;
+    return true;
+  }
+}
+
 export function nativeConfiguration(id, args, machine, services = {}) {
   const count = new Map([
     [0x167, 4],

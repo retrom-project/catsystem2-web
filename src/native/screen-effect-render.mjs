@@ -114,6 +114,15 @@ export class NativeScreenEffectRenderer {
   paused() {
     return this.world.graphics.view.paused;
   }
+  requestRedraw(rectangle = null) {
+    if (this.paused() || !this.world.graphics.view.active) return false;
+    if (rectangle === null) this.dirtyCurrent.set([0, 0, ...this.size()]);
+    else {
+      if (!validRectangle(rectangle)) throw new Error('Invalid native redraw rectangle');
+      this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, rectangle));
+    }
+    return true;
+  }
   prepare(count) {
     count |= 0;
     const maximum = this.world.configuration.fields.general.renderTargetCount | 0;

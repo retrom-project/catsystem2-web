@@ -19448,6 +19448,18 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    533: {
+      name: 'configuration.requestRefresh',
+      family: 'configuration',
+      signature: {
+        argumentWords: 0,
+        controlCodes: [2],
+        parameters: [],
+        result: { description: 'void', kind: 'void' },
+        resultWritten: false,
+        review: 'declared',
+      },
+    },
     534: {
       name: 'draw.setDirty',
       family: 'draw',

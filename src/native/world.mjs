@@ -5,6 +5,7 @@ import { findNativeFileEntries } from './file-search.mjs';
 import { nativeVirtualFilePath } from './file-path.mjs';
 import { StageRenderer } from '../render/stage.mjs';
 import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
+import { NativeConfigurationRefresh } from './config.mjs';
 import { NativeRuntime } from './runtime.mjs';
 import { NativeObjects } from './objects.mjs';
 import { NativeEngineMessages } from './engine-message.mjs';
@@ -481,6 +482,7 @@ export class NativeWorld {
     installNativeScreenCapture(this);
     installNativeImageCommands(this);
     installNativeConfigurationQueries(this);
+    this.configurationRefresh = new NativeConfigurationRefresh(this);
     installNativeScalarMath(this);
     installNativeInputCommands(this);
     installNativeRegistry(this);
@@ -989,6 +991,7 @@ export class NativeWorld {
       if (this.quitRequested || this.disposalRequested) return;
       await this.movies.settle();
       await this.objects.tick(this.frame, dispatch);
+      await this.configurationRefresh.consume(dispatch);
       await this.objects.drawTick(this.frame, dispatch);
     } finally {
       this.runtime.scheduler.running = false;
@@ -1011,6 +1014,7 @@ export class NativeWorld {
       windowMessages: structuredClone(this.windowMessages),
       window: this.window.snapshot(),
       configurationDirty: this.configurationDirty,
+      configurationRefresh: this.configurationRefresh.snapshot(),
       runtime: this.runtime.snapshot(),
       graphics: this.graphics.snapshot(),
       calculations: { matrix: this.calculations.matrix.slice() },
@@ -1062,6 +1066,7 @@ export class NativeWorld {
     this.calculations.matrix.set(state.calculations.matrix);
     this.tileGame.restore(state.tileGame);
     this.configuration.restore(state.configuration);
+    this.configurationRefresh.restore(state.configurationRefresh);
     await this.text.restore(state.text);
     this.globalStrings.restore(state.globalStrings);
     this.soundConfiguration.restore(state.soundConfiguration);

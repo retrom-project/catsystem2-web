@@ -13,8 +13,17 @@ stream as Main 33. Main 589 writes both Settings words in order, including
 aliased destinations. Its live words are also read and written through the
 indexed system-voice view, including after a cold restore. Unrepresented native
 configuration fields remain diagnostic; the overall SDK remains incomplete.
-Preference serialization through Main 361 and the Main 533 latch are separate
-contracts and are not enabled by this data group.
+Preference serialization through Main 361 remains a separate, guarded contract.
+
+Main 533 requests a configuration refresh. Repeated requests merge into one
+pending latch. After the active Root finishes its update, the World broadcasts
+event 19 with a zero sender, requests a redraw of the actual client rectangle,
+and clears the latch. A request made during update is consumed in that frame;
+one made by a notification receiver is cleared with the current request. An
+absent Root retains the request. A paused or inactive renderer preserves its
+dirty rectangle while the notification still completes. The pending latch and
+renderer rectangles survive a cold World checkpoint. This operation does not
+mark preferences dirty or save a file.
 
 All six operations query live JS configuration, sound and resource state.
 Formatting and comparisons retain narrow bytes and ABI-specific XML encodings.
