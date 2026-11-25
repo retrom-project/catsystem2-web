@@ -160,6 +160,49 @@ test('2.6.1.67 name pairs preserve owned CP932 rows across a cold restore', asyn
   }
 });
 
+test('2.6.1.67 signed rectangles preserve shared aliases and intersect in place', async (t) => {
+  const marker = 0x0d37c456,
+    shared = 0x80000110,
+    local = 256,
+    instructions = (id, args) => [...args.map((word) => [37, word]), [43, id, args.length * 4]],
+    program = kcsProgram([
+      [37, marker],
+      ...instructions(214, [shared]),
+      ...instructions(215, [shared, local]),
+      ...instructions(215, [shared, shared]),
+      ...instructions(218, [shared, -2, -12, 20, 18]),
+      ...instructions(217, [shared]),
+      [38, 120],
+      ...instructions(218, [shared, 100, 100, 151, 153]),
+      ...instructions(217, [shared]),
+      [38, 124],
+      [59],
+    ]),
+    world = await dataWorld(profile, { 'rect.kcs': program });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('rect.kcs', { initialExecute: false }),
+    m = task.machine;
+  const edges = [-20, -3, 8, 44];
+  edges.forEach((edge, i) => m.store(local + i * 4, edge));
+  m.store(shared - 4, marker);
+  m.store(shared + 16, marker);
+  const floor = m.floor;
+  await world.runtime.scheduler.execute(task);
+  assert.equal(m.sp, floor + 4);
+  assert.equal(m.pop(), marker);
+  assert.deepEqual([m.load(120), m.load(124)], [0, 1]);
+  assert.deepEqual(
+    edges.map((_, i) => m.load(local + i * 4) | 0),
+    edges,
+  );
+  assert.deepEqual(
+    edges.map((_, i) => m.load(shared + i * 4)),
+    [0, 0, 0, 0],
+  );
+  assert.equal(m.load(shared - 4), marker);
+  assert.equal(m.load(shared + 16), marker);
+});
+
 test('2.6.1.67 task queries enumerate branch keys and follow owner teardown', async () => {
   const files = { 'child.kcs': kcsProgram([[59]]) };
   let world = await dataWorld(profile, files);
