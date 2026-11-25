@@ -20,6 +20,7 @@ import { NativeCompiledTable } from '../src/native/compiled-table.mjs';
 for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
   'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
   'sdk-4.01-engine-2.6.1.74',
   'nekopara-vol3-engine-2.6.1.76',
 ])
@@ -69,6 +70,7 @@ for (const profile of [
 for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
   'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
   'sdk-4.01-engine-2.6.1.74',
   'nekopara-vol3-engine-2.6.1.76',
 ])
@@ -130,7 +132,13 @@ for (const profile of [
         assert.equal(fresh.main.machine.load(1024), 1);
         await call(fresh, 0x334, [two.mission, 10, 7, 1024]);
         assert.equal(fresh.main.machine.load(1024), 1);
-        if (['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'].includes(profile))
+        if (
+          [
+            'grisaia-jp-engine-2.6.1.23',
+            'bokutomo-engine-2.6.1.67',
+            'rebellions-jp-engine-2.6.1.63',
+          ].includes(profile)
+        )
           await assert.rejects(
             call(fresh, 0x334, [two.mission, 10, 9, 1024]),
             /character query dereferences an empty set/,
@@ -546,7 +554,11 @@ for (const profile of [
     },
   );
 
-for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+])
   test(
     profile +
       ' compiled table protects original signed row and format boundaries without changing valid field bytes',
