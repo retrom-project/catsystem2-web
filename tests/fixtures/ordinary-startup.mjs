@@ -486,7 +486,7 @@ export async function saveStartupPreferences(game, entries) {
 }
 
 // Authored PE metadata with no executable code. The resource tree contains
-// only public fixture bytes and a fixed version record for ABI selection.
+// only public fixture bytes and a version record for low-level resource tests.
 export function startupVersionImage(version, resources = []) {
   const bytes = new Uint8Array(8192),
     view = new DataView(bytes.buffer),
@@ -566,4 +566,19 @@ export function startupVersionImage(version, resources = []) {
   u32(392, bytes.length - base);
   u32(396, base);
   return bytes;
+}
+
+// Resource-contract fixtures deliberately use executable-free explicit authoring.
+// Their synthetic PE bytes enter only the already constructed low-level World,
+// never production profile selection or the reviewed fingerprint registry.
+export async function authoredStartupResources(player, game, name = 'authored.exe') {
+  const bytes = await game.require(name),
+    names = game.names.bind(game);
+  game.names = (extension) => (extension === 'exe' ? [] : names(extension));
+  const create = player.createNativeWorld.bind(player);
+  player.createNativeWorld = (options) => {
+    const world = create(options);
+    world.bootstrapOwner.executable = { name, bytes };
+    return world;
+  };
 }

@@ -19,6 +19,7 @@ import {
   saveStartupPreferences,
   startupXML,
   startupVersionImage,
+  authoredStartupResources,
 } from './fixtures/ordinary-startup.mjs';
 
 const vectors = JSON.parse(
@@ -64,6 +65,7 @@ async function run(t, profile, { code, resources = [], files = {}, before, after
         },
       },
     });
+    await authoredStartupResources(player, game);
     await before?.(player, game);
     if (reject) {
       await assert.rejects(player.initialize(), reject);
@@ -361,6 +363,7 @@ for (const profile of startupProfiles)
           },
         };
       player = new CatSystem2(options);
+      await authoredStartupResources(player, game);
       await player.initialize();
       player.random.rand();
       player.random.frand();
@@ -618,6 +621,7 @@ for (const [profile, reviewedDefault] of [
           },
         },
       });
+      await authoredStartupResources(player, game, 'authored-default.exe');
       if (reviewedDefault === null)
         await assert.rejects(player.initialize(), /Startup code default is not reviewed/);
       else {

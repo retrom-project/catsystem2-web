@@ -144,58 +144,37 @@ function versionImage(version) {
   return bytes;
 }
 
-test('ABI selection is exact and reports unknown, missing and conflicting engine candidates', async () => {
+test('production ABI selection requires reviewed PE bytes even with an explicit profile', async () => {
   const sdk = versionImage('2.6.1.74'),
-    game = versionImage('2.6.1.76'),
-    unknown = versionImage('2.6.1.99');
+    unknown = versionImage('2.6.1.99'),
+    source = (records) => ({
+      names: () => Object.keys(records),
+      require: async (name) => records[name],
+    }),
+    profile = 'sdk-4.01-engine-2.6.1.74';
   assert.equal(readEngineVersion(sdk), '2.6.1.74');
-  const source = (records) => ({
-    names: () => Object.keys(records),
-    require: async (name) => records[name],
-  });
-  const sdkProfile = 'sdk-4.01-engine-2.6.1.74';
-  const selected = await selectNativeProfile(
-    source({ 'cs2_open.exe': sdk, 'StView.exe': versionImage('1.0.0.0') }),
-  );
-  assert.equal(selected.profile, sdkProfile);
-  assert.equal(selected.module.name, 'cs2_open.exe');
-  assert.deepEqual(selected.module.resource, sdk.subarray(600, 692));
-  await assert.rejects(
-    selectNativeProfile(source({ 'unknown.exe': unknown })),
-    /unknown.exe.*2.6.1.99.*reviewed per-version ABI data/,
-  );
-  await assert.rejects(selectNativeProfile(source({})), /unique supported/);
-  await assert.rejects(
-    selectNativeProfile(source({ 'a.exe': sdk, 'b.exe': game })),
-    /a.exe.*b.exe/,
-  );
-  await assert.rejects(
-    selectNativeProfile(source({ 'a.exe': sdk, 'copy.exe': sdk })),
-    /a.exe.*copy.exe/,
-  );
-  await assert.rejects(selectNativeProfile(source({}), 'unregistered'), /Unregistered.*ABI/);
-  assert.deepEqual(await selectNativeProfile(source({}), sdkProfile), {
-    profile: sdkProfile,
-    module: null,
-  });
-  assert.deepEqual(await selectNativeProfile({}, sdkProfile), {
-    profile: sdkProfile,
-    module: null,
-  });
-  assert.equal(
-    (await selectNativeProfile(source({ 'cs2_open.exe': sdk }), sdkProfile)).module.name,
-    'cs2_open.exe',
-  );
-  assert.deepEqual(
-    await selectNativeProfile(source({ 'a.exe': sdk, 'copy.exe': sdk }), sdkProfile),
-    { profile: sdkProfile, module: null },
-  );
-  assert.deepEqual(await selectNativeProfile(source({ 'unknown.exe': unknown }), sdkProfile), {
-    profile: sdkProfile,
-    module: null,
-  });
-  for (const name of ['toString', 'constructor', '__proto__'])
+  for (const explicit of [undefined, profile]) {
+    await assert.rejects(
+      selectNativeProfile(source({ 'authored.exe': sdk }), explicit),
+      /authored.exe.*2.6.1.74.*SHA-256 [0-9a-f]{64}.*unreviewed/,
+    );
+    await assert.rejects(
+      selectNativeProfile(source({ 'unknown.exe': unknown }), explicit),
+      /unknown.exe.*2.6.1.99.*sha256.*unreviewed/,
+    );
+    await assert.rejects(
+      selectNativeProfile(source({ 'broken.exe': new Uint8Array([77, 90]) }), explicit),
+      /broken.exe.*version unreadable.*SHA-256/,
+    );
+  }
+  await assert.rejects(selectNativeProfile(source({})), /unique reviewed/);
+  for (const name of ['unregistered', 'toString', 'constructor', '__proto__'])
     await assert.rejects(selectNativeProfile(source({}), name), /Unregistered.*ABI/);
+  assert.deepEqual(await selectNativeProfile(source({}), profile), {
+    profile,
+    module: null,
+    executable: null,
+  });
 });
 
 test('reviewed ABI services expose independent capabilities and serializable layouts', () => {

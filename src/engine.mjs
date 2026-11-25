@@ -14,7 +14,7 @@ import { parseXML, XMLNode } from './xml.mjs';
 import { EngineHost } from './host.mjs';
 import { Particles } from './particles.mjs';
 import { Transition } from './render/transition.mjs';
-import { nativeModuleMetadata, selectNativeProfile } from './native/profile.mjs';
+import { selectNativeCheckpointProfile, selectNativeProfile } from './native/profile.mjs';
 import { MotionLibrary } from './motion/library.mjs';
 import { ParticleRandom } from './ppi/random.mjs';
 import { CHECKPOINT_LIMIT, checkpointBytes } from './checkpoint.mjs';
@@ -150,13 +150,15 @@ export class CatSystem2 {
         !checkpoint.world
       )
         throw new Error('Checkpoint does not match the current game or format');
-      const profile = nativeABI(checkpoint.world.configuration?.profile).profile;
-      if (this.requestedNativeProfile && nativeABI(this.requestedNativeProfile).profile !== profile)
-        throw new Error('Checkpoint does not match the requested native profile');
-      selected = { profile, module: nativeModuleMetadata(profile, checkpoint.world.nativeModule) };
+      selected = await selectNativeCheckpointProfile(
+        this.game,
+        checkpoint.world,
+        this.requestedNativeProfile,
+      );
     } else selected = await selectNativeProfile(this.game, this.requestedNativeProfile);
     this.nativeProfile = selected.profile;
     this.nativeModule = selected.module;
+    this.nativeExecutable = selected.executable;
     const abi = nativeABI(selected.profile),
       loosePath = abi.startup.loosePath,
       startupBytes = await (loosePath
@@ -238,7 +240,11 @@ export class CatSystem2 {
     signal?.throwIfAborted();
     return this.nativeStorage?.exportGameSave({ signal }) ?? null;
   }
-  createNativeWorld({ audio = this.audio } = {}) {
+  createNativeWorld({
+    audio = this.audio,
+    nativeModule = this.nativeModule,
+    executable = this.nativeExecutable,
+  } = {}) {
     const { startup, gamedef } = this.nativeDocuments,
       game = Object.create(this.game),
       uiLanguage = this.requestedUILanguage ?? browserWindowsLanguageID(),
@@ -254,8 +260,9 @@ export class CatSystem2 {
       host: this.host,
       profile: this.nativeProfile,
       startupDocument: startup,
-      nativeModule: this.nativeModule,
+      nativeModule,
       bootstrapOwner: {
+        executable,
         executableResources: true,
         embeddedJavaScript: nativeABI(this.nativeProfile).capabilities.embeddedJavaScript,
         seedFromClock: this.randomSeed === undefined,
@@ -809,10 +816,19 @@ export class CatSystem2 {
         throw new Error('Checkpoint does not match the current game or format');
       requireCheckpointRestoreOwner(saved.world, this.transitionalExe);
       this.checkpointSize(saved);
+      const selected = await selectNativeCheckpointProfile(
+        this.game,
+        saved.world,
+        this.nativeProfile,
+      );
       const previous = this.world,
         previousAudio = this.audio,
         audio = new AudioMixer(this.game, this.audio.context, { deferPlayback: true }),
-        next = this.createNativeWorld({ audio });
+        next = this.createNativeWorld({
+          audio,
+          nativeModule: selected.module,
+          executable: selected.executable,
+        });
       try {
         await next.restore(saved.world);
         await audio.restore(saved.audio);
@@ -834,6 +850,7 @@ export class CatSystem2 {
       }
       previousAudio.stopAll();
       this.world = next;
+      this.nativeExecutable = selected.executable;
       if (preserveInput) next.inputBindings.adopt(previous.inputBindings);
       this.nativeRuntime = next.runtime;
       this.nativeFES.clear();

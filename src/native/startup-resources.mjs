@@ -2,7 +2,6 @@
 // Inspect data directories only. No native image is mapped or executed here.
 import { Binary } from '../binary.mjs';
 import { nativeABI } from './abi/index.mjs';
-import { readEngineVersion } from './profile.mjs';
 import { StartupBlowfish } from './startup-blowfish.mjs';
 import { checkNativeStartupAuthor, nativeStartupCode } from './startup-author.mjs';
 
@@ -86,13 +85,13 @@ function cString(bytes) {
 }
 
 export async function checkNativeStartupResources(world) {
-  const { game, profile } = world,
+  const { profile } = world,
     abi = nativeABI(profile),
     code = nativeStartupCode(world.startupDocument, abi.startup.verification),
     author = await checkNativeStartupAuthor(world, code);
-  for (const file of game.names?.('exe') ?? []) {
-    const bytes = await game.require(file);
-    if (readEngineVersion(bytes) !== abi.engineVersion) continue;
+  const executable = world.bootstrapOwner?.executable;
+  if (executable) {
+    const { name: file, bytes } = executable;
     const resource = (type, name) =>
         findNativeStartupResource(bytes, type, name, world.configuration.fields.uiLanguage ?? 0),
       keyResource = resource('KEY_CODE', 'KEY');

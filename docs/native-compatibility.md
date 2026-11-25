@@ -31,19 +31,30 @@ ranges. These records contain JSON-serializable data and are deeply frozen.
 `NATIVE_EXE_PROFILES` identifies the catalog's remaining EXE fingerprints and
 table locations. Runtime declarations use `NATIVE_ABIS` and `nativeABI`.
 
-Automatic selection requires one executable with an exactly registered engine
-version. Unknown-only, missing and multiple matching candidates report the
-observed filenames and versions. A utility executable with an unrelated version
-can coexist with the selected engine. An explicit profile must also be registered.
-Selection returns that profile together with the selected module name and its
-version-resource bytes. Engine and World carry this same data through cold
-checkpoints; no executable mapping, original process or heap is introduced.
-Cold Core initialization validates the saved source identity and registered
-profile, then reuses this metadata without rereading the executable, cipher
-resources or startup credentials.
-Explicit profiles can still initialize owned games without an executable. If
-there is no uniquely identified matching module, only a query that requires
-that module reports its absence.
+Production automatic selection requires one executable whose actual bytes have a
+reviewed SHA-256 in the private build registry in `src/native/profile.mjs`. The
+version resource must agree with that registration. A same-version executable
+with different bytes cannot enable a profile or its four tables. An explicit
+profile with mounted executables undergoes the same check. Missing, ambiguous,
+unreviewed and mismatched inputs report filename, actual version, fingerprint
+and reason through the ordinary initialization error path. A utility with an
+unrelated version can coexist with the single reviewed engine.
+
+Selection owns a temporary copy of those exact PE bytes. Startup resource
+verification consumes this copy, so a second same-version executable cannot
+supply another module's key or verification resource. Only the selected module
+name and version-resource data enter the World checkpoint; PE bytes, mappings,
+processes and heaps do not. Cold initialization and live restore both recheck
+current executable bytes and the saved module metadata before constructing a
+replacement World. A rejected restore retains its existing owners. Startup
+cipher/credential checks and RNG draws are not replayed by checkpoint restore.
+
+Explicit executable-free authoring remains available to controlled callers, as
+does direct NativeWorld/minimal VM construction. These are separate low-level
+boundaries, and module-dependent queries diagnose missing authority. The
+production Runtime adapter does not supply an explicit profile or a registry
+override from content metadata. Synthetic resource fixtures exercise that
+low-level boundary and never enter the production fingerprint registry.
 
 Unresolved semantic names retain their explicit review state. Registration
 preserves every existing declaration and does not infer a contract from another

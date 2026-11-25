@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { NATIVE_ABIS, nativeABI } from './abi/index.mjs';
 import { Binary } from '../binary.mjs';
+import { binaryIdentity } from '../identity.mjs';
 
 export function readPEVersionResource(bytes) {
   const b = new Binary(bytes, 'PE version');
@@ -98,47 +99,84 @@ export function nativeModuleMetadata(profile, module) {
   return { name: module.name, resource: module.resource.slice() };
 }
 
+// Only exact, independently reviewed executable bytes enable these tables.
+// Content metadata and caller options cannot extend this registry.
+const reviewedBuilds = Object.freeze({
+  '0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f': 'sdk-4.01-engine-2.6.1.74',
+  ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0: 'nekopara-vol3-engine-2.6.1.76',
+  '9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67': 'grisaia-jp-engine-2.6.1.23',
+  c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a: 'rebellions-jp-engine-2.6.1.63',
+  d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010: 'bokutomo-engine-2.6.1.67',
+});
+
 export async function selectNativeProfile(game, explicit) {
-  if (explicit) {
-    const profile = nativeABI(explicit).profile,
-      names = typeof game.names === 'function' ? game.names('exe') : [];
-    let module = null;
-    // Explicit profiles still support owned games with no executable. Do not
-    // guess among multiple modules or scan unrelated files to establish one.
-    if (names.length === 1) {
-      const bytes = await game.require(names[0]);
-      try {
-        if (readEngineVersion(bytes) === nativeABI(profile).engineVersion)
-          module = nativeModuleMetadata(profile, {
-            name: names[0],
-            resource: readPEVersionResource(bytes),
-          });
-      } catch {
-        // An unrelated/malformed module does not revoke the explicit profile.
-        // 1BC will report that its actual main-module authority is unavailable.
-      }
-    }
-    return { profile, module };
-  }
+  const requested = explicit ? nativeABI(explicit).profile : null,
+    names = typeof game.names === 'function' ? game.names('exe') : [];
+  // Explicit executable-free authoring is a separate low-level boundary.
+  // Production automatic content loading always requires a reviewed PE.
+  if (requested && !names.length) return { profile: requested, module: null, executable: null };
   const found = [],
     observed = [];
-  for (const name of game.names('exe')) {
-    const bytes = await game.require(name),
+  for (const name of names) {
+    const bytes = Uint8Array.from(await game.require(name)),
+      sha256 = await binaryIdentity(bytes);
+    let version;
+    try {
       version = readEngineVersion(bytes);
-    observed.push({ name, version });
-    const abi = Object.values(NATIVE_ABIS).find((candidate) => candidate.engineVersion === version);
-    if (abi) found.push({ name, abi, resource: readPEVersionResource(bytes) });
+    } catch (cause) {
+      throw new Error(
+        `Native executable ${name}: version unreadable, SHA-256 ${sha256}: ${cause.message}`,
+        { cause },
+      );
+    }
+    const profile = Object.hasOwn(reviewedBuilds, sha256) ? reviewedBuilds[sha256] : null,
+      abi = profile && nativeABI(profile),
+      knownVersion = Object.values(NATIVE_ABIS).some(
+        (candidate) => candidate.engineVersion === version,
+      );
+    observed.push({
+      name,
+      version,
+      sha256,
+      reason: profile ? 'reviewed build' : 'unreviewed executable fingerprint',
+    });
+    if (knownVersion && !profile)
+      throw new Error(
+        `Native executable ${name}: version ${version}, SHA-256 ${sha256}: unreviewed executable fingerprint`,
+      );
+    if (!profile) continue;
+    if (version !== abi.engineVersion || (requested && requested !== profile))
+      throw new Error(
+        `Native executable ${name}: version ${version}, SHA-256 ${sha256}: does not match requested profile ${requested ?? profile}`,
+      );
+    found.push({ profile, bytes, name });
   }
   if (found.length !== 1)
     throw new Error(
-      `A unique supported CatSystem2 executable version is required. Found ${JSON.stringify(observed)}. Provide an explicit registered ABI or reviewed per-version ABI data.`,
+      `A unique reviewed CatSystem2 executable fingerprint is required. Found ${JSON.stringify(observed)}.`,
     );
-  const selected = found[0];
+  const { profile, name, bytes } = found[0];
   return {
-    profile: selected.abi.profile,
-    module: nativeModuleMetadata(selected.abi.profile, {
-      name: selected.name,
-      resource: selected.resource,
-    }),
+    profile,
+    module: nativeModuleMetadata(profile, { name, resource: readPEVersionResource(bytes) }),
+    executable: { name, bytes },
   };
+}
+
+export async function selectNativeCheckpointProfile(game, state, explicit) {
+  const profile = nativeABI(state.configuration?.profile).profile;
+  if (explicit && nativeABI(explicit).profile !== profile)
+    throw new Error('Checkpoint does not match the requested native profile');
+  const selected = await selectNativeProfile(game, profile),
+    saved = nativeModuleMetadata(profile, state.nativeModule),
+    current = selected.module;
+  if (
+    Boolean(saved) !== Boolean(current) ||
+    (saved &&
+      (saved.name !== current.name ||
+        saved.resource.length !== current.resource.length ||
+        saved.resource.some((byte, i) => byte !== current.resource[i])))
+  )
+    throw new Error('Checkpoint main module differs from the current reviewed executable');
+  return selected;
 }

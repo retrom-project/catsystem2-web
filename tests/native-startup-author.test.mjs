@@ -17,6 +17,7 @@ import {
   ordinaryStartupGame,
   saveStartupPreferences,
   startupVersionImage,
+  authoredStartupResources,
 } from './fixtures/ordinary-startup.mjs';
 
 const fixtures = JSON.parse(
@@ -188,6 +189,7 @@ async function open(
         },
       },
     });
+    await authoredStartupResources(player, game);
     if (reject) {
       await assert.rejects(player.initialize(), reject);
       assert.equal(player.world.frame, 0);

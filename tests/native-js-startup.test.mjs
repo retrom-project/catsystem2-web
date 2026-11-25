@@ -19,6 +19,7 @@ import {
   saveStartupPreferences,
   startupXML,
   startupVersionImage,
+  authoredStartupResources,
 } from './fixtures/ordinary-startup.mjs';
 
 for (const profile of startupProfiles) {
@@ -311,24 +312,22 @@ for (const profile of startupProfiles) {
     }
   });
 
-  test(`ordinary ABI selection accepts authored version-only resources without opening PE: ${profile}`, async () => {
+  test(`production ABI selection rejects an authored version-only PE before creating a World: ${profile}`, async () => {
     const environment = startupEnvironment();
     let player;
     try {
       const game = await ordinaryStartupGame(profile, {
         files: { 'authored.exe': startupVersionImage(nativeABI(profile).engineVersion) },
       });
-      player = startupPlayer(game, undefined, {
-        transitionalExe: {
-          open() {
-            throw new Error('unexpected PE execution');
-          },
-        },
-      });
-      await player.initialize();
-      assert.equal(player.nativeProfile, profile);
-      assert.equal(player.world.frame, 1);
-      assert.equal(player.world.runtime.variableBank(player.world.main, false).get(7), 0x12345678);
+      for (const nativeProfile of [undefined, profile]) {
+        player = startupPlayer(game, nativeProfile);
+        await assert.rejects(
+          player.initialize(),
+          /version .*SHA-256 .*unreviewed executable fingerprint/,
+        );
+        assert.equal(player.world, undefined);
+        await player.dispose();
+      }
     } finally {
       await player?.dispose();
       environment.restore();
@@ -348,7 +347,7 @@ for (const profile of startupProfiles) {
           ]),
         },
       });
-      player = startupPlayer(game, undefined, {
+      player = startupPlayer(game, profile, {
         transitionalExe: {
           open() {
             opens++;
@@ -356,6 +355,7 @@ for (const profile of startupProfiles) {
           },
         },
       });
+      await authoredStartupResources(player, game);
       await assert.rejects(player.initialize(), /does not match startup v_code/);
       assert.equal(opens, 0);
       assert.equal(player.world.root, undefined);
@@ -378,7 +378,8 @@ for (const profile of startupProfiles) {
           ]),
         },
       });
-      player = startupPlayer(game, undefined);
+      player = startupPlayer(game, profile);
+      await authoredStartupResources(player, game);
       await player.initialize();
       assert.equal(player.world.frame, 1);
       assert.equal(player.world.nativeEngine, undefined);

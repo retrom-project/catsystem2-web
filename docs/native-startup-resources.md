@@ -3,7 +3,11 @@
 The ordinary `CatSystem2.initialize` path uses the existing World/configuration,
 NativeFileStorage and integer/real MT owners. PE input is data only; it never
 opens a native process. Each registered ABI has its own finite startup domain;
-unknown defaults and services stay unadmitted. See [ABI data](native-abi-data.md).
+unknown defaults and services stay unadmitted. Production selection first checks
+the current executable SHA-256 against its reviewed build registration. Resource
+lookup uses the temporary copy of that same selected PE, without rescanning
+other executables by version. Explicit World resource fixtures are a separate
+low-level boundary. See [ABI data](native-abi-data.md).
 
 | Input               | Current behavior                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |

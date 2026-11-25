@@ -10,7 +10,7 @@ import { NativeGlobalStringsBridge } from '../oracle/global-strings-bridge.mjs';
 import { NATIVE_VERSION_QUERY } from '../oracle/version-query-original.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeWorld as OrdinaryWorld } from '../src/native/world.mjs';
-import { selectNativeProfile } from '../src/native/profile.mjs';
+import { nativeModuleMetadata, readPEVersionResource } from '../src/native/profile.mjs';
 import { CatSystem2 } from '../src/engine.mjs';
 import {
   StartupCanvas,
@@ -203,7 +203,13 @@ async function ordinaryVersionFixture(profile, text, translated = true) {
     reads.push(['require', args[0]]);
     return originalRequire.apply(this, args);
   };
-  const selected = await selectNativeProfile(game),
+  const selected = {
+      profile,
+      module: nativeModuleMetadata(profile, {
+        name: 'owned_engine.exe',
+        resource: readPEVersionResource(await game.require('owned_engine.exe')),
+      }),
+    },
     configuration = new NativeConfiguration({ profile }),
     random = new ParticleRandom(7, 11),
     world = new OrdinaryWorld({
@@ -370,137 +376,39 @@ test('ordinary main module cold restore rejects a different selected source befo
 });
 
 for (const profile of Object.keys(handlers)) {
-  test(`cold Core initialization keeps saved module authority without reading the executable in ${profile}`, async (t) => {
+  test(`executable-free explicit authoring restores a Core without inventing module authority: ${profile}`, async () => {
     const environment = startupEnvironment();
-    t.mock.method(NativeEngineProcess, 'open', () => {
-      throw new Error('Cold module restore attempted original CPU');
-    });
+    let first, fresh;
     try {
-      for (const withModule of [true, false]) {
-        const game = await ordinaryStartupGame(profile, {
-            sound: false,
-            files: withModule
-              ? {
-                  'owned_engine.exe': ownedVersionImage(profile, '7,8,9,65546'),
-                  'main.kcs': program,
-                }
-              : {},
-          }),
-          options = {
-            game,
-            canvas: new StartupCanvas(),
-            audioContext: { currentTime: 0, close: async () => {} },
-            randomSeed: 77,
+      const game = await ordinaryStartupGame(profile, { sound: false }),
+        options = {
+          game,
+          nativeProfile: profile,
+          audioContext: { currentTime: 0, close: async () => {} },
+          randomSeed: 77,
+        };
+      first = new CatSystem2({ ...options, canvas: new StartupCanvas() });
+      await first.initialize();
+      const saved = await first.snapshot();
+      fresh = new CatSystem2({ ...options, canvas: new StartupCanvas() });
+      await fresh.initialize({ checkpoint: structuredClone(saved) });
+      assert.equal(fresh.nativeModule, null);
+      assert.deepEqual(fresh.world.snapshot(), saved.world);
+      const wrong = {
+        ...saved,
+        world: {
+          ...saved.world,
+          nativeModule: {
+            name: 'unmounted.exe',
+            resource: readPEVersionResource(ownedVersionImage(profile, '7,8,9,10')),
           },
-          first = new CatSystem2({ ...options, nativeProfile: profile });
-        let fresh;
-        try {
-          await first.initialize();
-          const gpu = first.world.stageRenderer.gpu,
-            { width, height } = gpu.primaryTarget;
-          gpu.uploadRenderTarget(gpu.primaryTarget, {
-            width,
-            height,
-            rgba: new Uint8Array(width * height * 4).fill(0x62),
-          });
-          const saved = await first.snapshot(),
-            required = [],
-            read = game.read.bind(game),
-            require = game.require.bind(game),
-            reads = [];
-          t.mock.method(game, 'read', (...args) => {
-            reads.push(args[0]);
-            return read(...args);
-          });
-          t.mock.method(game, 'require', (...args) => {
-            required.push(args[0]);
-            assert.equal(
-              args[0].endsWith('.exe'),
-              false,
-              'Cold module selection must not reread EXE data',
-            );
-            return require(...args);
-          });
-          // An invalid source is rejected before configuration/resource IO;
-          // a saved profile is checked, never inferred from a missing module.
-          for (const [checkpoint, nativeProfile, reason] of [
-            [{ ...saved, sourceIdentity: 'different-source' }, undefined, /current game or format/],
-            [
-              {
-                ...saved,
-                world: {
-                  ...saved.world,
-                  configuration: { ...saved.world.configuration, profile: 'unregistered' },
-                },
-              },
-              undefined,
-              /Unregistered.*ABI/,
-            ],
-            [
-              saved,
-              profile === 'sdk-4.01-engine-2.6.1.74'
-                ? 'nekopara-vol3-engine-2.6.1.76'
-                : 'sdk-4.01-engine-2.6.1.74',
-              /requested native profile/,
-            ],
-          ]) {
-            const invalid = new CatSystem2({
-                ...options,
-                canvas: new StartupCanvas(),
-                nativeProfile,
-              }),
-              before = reads.slice();
-            try {
-              await assert.rejects(invalid.initialize({ checkpoint }), reason);
-              assert.deepEqual(reads, before);
-            } finally {
-              await invalid.dispose();
-            }
-          }
-          fresh = new CatSystem2({ ...options, canvas: new StartupCanvas() });
-          await fresh.initialize({ checkpoint: structuredClone(saved) });
-          assert.equal(fresh.nativeProfile, profile);
-          assert.deepEqual(fresh.nativeModule, saved.world.nativeModule);
-          // Cold initialization restores the saved device, including pending
-          // contacts and events. A live Core.restore has a separate owner.
-          assert.deepEqual(fresh.inputBindings.snapshot(), saved.world.inputBindings);
-          assert.deepEqual(fresh.world.snapshot(), saved.world);
-          assert.notEqual(
-            first.world.closed,
-            true,
-            'a separate Core has not released the original owner',
-          );
-          assert.equal(first.world.objects.objects.has(first.world.main.id), true);
-          assert.equal(
-            required.some((name) => name.endsWith('.exe')),
-            false,
-          );
-          if (withModule) {
-            assert.equal(fresh.nativeModule.name, 'owned_engine.exe');
-            assert.notEqual(fresh.nativeModule.resource, first.nativeModule.resource);
-            assert.deepEqual(
-              [256, 260, 264, 268].map((at) => fresh.world.main.machine.load(at)),
-              [7, 8, 9, 10],
-            );
-          } else {
-            assert.equal(fresh.nativeModule, null);
-            await assert.rejects(
-              fresh.world.runtime.native(
-                'main',
-                id,
-                [256, 260, 264, 268],
-                fresh.world.main.machine,
-                fresh.world.main,
-              ),
-              /actual uniquely selected main module/,
-            );
-          }
-        } finally {
-          await fresh?.dispose();
-          await first.dispose();
-        }
-      }
+        },
+      };
+      await assert.rejects(fresh.restore(wrong), /current reviewed executable/);
+      assert.deepEqual(fresh.world.snapshot(), saved.world);
     } finally {
+      await fresh?.dispose();
+      await first?.dispose();
       environment.restore();
     }
   });
