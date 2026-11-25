@@ -234,6 +234,16 @@ function validateBehavior(abi) {
     typeof abi.configuration.systemVoiceIncludesPreferenceBlocks !== 'boolean'
   )
     throw new Error(`Invalid ABI system-voice preference bank policy ${abi.id}`);
+  const omittedPreferences = abi.configuration.preferenceOmittedFields;
+  if (
+    omittedPreferences !== undefined &&
+    (!Array.isArray(omittedPreferences) ||
+      new Set(omittedPreferences).size !== omittedPreferences.length ||
+      omittedPreferences.some(
+        (path) => typeof path !== 'string' || !/^[A-Za-z_][\w]*(\/[A-Za-z_][\w]*)+$/.test(path),
+      ))
+  )
+    throw new Error(`Invalid ABI omitted preference fields ${abi.id}`);
   if (
     Object.hasOwn(abi.configuration, 'systemVoiceQueryWordIndex') &&
     (!Number.isInteger(abi.configuration.systemVoiceQueryWordIndex) ||

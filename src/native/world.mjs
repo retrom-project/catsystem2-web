@@ -5,7 +5,7 @@ import { findNativeFileEntries } from './file-search.mjs';
 import { nativeVirtualFilePath } from './file-path.mjs';
 import { StageRenderer } from '../render/stage.mjs';
 import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
-import { NativeConfigurationRefresh } from './config.mjs';
+import { installNativeConfigurationCommands } from './config.mjs';
 import { NativeRuntime } from './runtime.mjs';
 import { NativeObjects } from './objects.mjs';
 import { NativeEngineMessages } from './engine-message.mjs';
@@ -482,7 +482,7 @@ export class NativeWorld {
     installNativeScreenCapture(this);
     installNativeImageCommands(this);
     installNativeConfigurationQueries(this);
-    this.configurationRefresh = new NativeConfigurationRefresh(this);
+    this.configurationRefresh = installNativeConfigurationCommands(this);
     installNativeScalarMath(this);
     installNativeInputCommands(this);
     installNativeRegistry(this);

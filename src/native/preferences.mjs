@@ -253,10 +253,11 @@ function objects(configuration, extended) {
   ];
 }
 
-function serialize(node, depth = 0) {
+function serialize(node, depth = 0, omitted = new Set(), path = '') {
+  if (omitted.has(path)) return '';
   const indent = '  '.repeat(depth);
   if (!node.children.length) return `${indent}<${node.name}>${node.text}</${node.name}>\r\n`;
-  return `${indent}<${node.name}>\r\n${node.children.map((child) => serialize(child, depth + 1)).join('')}${indent}</${node.name}>\r\n`;
+  return `${indent}<${node.name}>\r\n${node.children.map((child) => serialize(child, depth + 1, omitted, path ? `${path}/${child.name}` : child.name)).join('')}${indent}</${node.name}>\r\n`;
 }
 
 export function serializeNativePreferences(configuration, { flags = 3 } = {}) {
@@ -268,7 +269,8 @@ export function serializeNativePreferences(configuration, { flags = 3 } = {}) {
   ]);
   // Both original serializers write string contents verbatim, including XML
   // punctuation. Escaping these strings would change the native file format.
-  const text = `<?xml version="1.0" encoding="${abi.xmlEncoding}"?>\r\n${serialize(document)}`;
+  const omitted = new Set(abi.configuration.preferenceOmittedFields);
+  const text = `<?xml version="1.0" encoding="${abi.xmlEncoding}"?>\r\n${serialize(document, 0, omitted)}`;
   return abi.xmlEncoding === 'UTF-8' ? new TextEncoder().encode(text) : encodeCP932(text);
 }
 

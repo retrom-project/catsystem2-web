@@ -13,7 +13,15 @@ stream as Main 33. Main 589 writes both Settings words in order, including
 aliased destinations. Its live words are also read and written through the
 indexed system-voice view, including after a cold restore. Unrepresented native
 configuration fields remain diagnostic; the overall SDK remains incomplete.
-Preference serialization through Main 361 remains a separate, guarded contract.
+Main 361 saves the current configuration to the existing per-game preference
+file even without a dirty request. It writes both system and user groups as
+CP932 XML, including signed raw words, font and key bindings. The native writer
+omits `GAME/autoselect`, `MESSAGE/read_color`, `MESSAGE/enable_read` and
+`ETC/imgimport`; the live fields remain available to their other consumers.
+Creation failure or an incomplete write does not change its control-2 reply.
+This explicit save does not flush a separate SoundConfiguration file or clear
+the pending refresh latch. The native application-data directory is represented
+by the existing isolated per-game storage root.
 
 Main 533 requests a configuration refresh. Repeated requests merge into one
 pending latch. After the active Root finishes its update, the World broadcasts

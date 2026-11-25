@@ -31,7 +31,7 @@ test('2.6.1.67 preference data uses its own reviewed word and pointer contracts'
   }
   assert.equal(abi.tables.main.entries[360].signature.parameters[0].type.direction, 'in');
   assert.equal(abi.tables.main.entries[589].signature.parameters[0].type.direction, 'out');
-  assert.equal(abi.tables.main.entries[361].status, 'unknown');
+  assert.equal(abi.tables.main.entries[361].status, 'recovered');
   assert.equal(abi.tables.main.entries[533].status, 'recovered');
   assert.throws(
     () =>

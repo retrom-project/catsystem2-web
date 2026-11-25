@@ -8,6 +8,7 @@ import { parseNativeInteger } from './standard.mjs';
 import { NativeConfigurationFields } from './config-fields.mjs';
 import { NativeScriptReplacements } from './script-replacement.mjs';
 import { NATIVE_ABIS, nativeABI, nativeABIBehavior } from './abi/index.mjs';
+import { serializeNativePreferences } from './preferences.mjs';
 
 export const NATIVE_CONFIGURATION_LAYOUTS = Object.freeze(
   Object.fromEntries(
@@ -424,6 +425,23 @@ export class NativeConfigurationRefresh {
     this.pending = false;
     return true;
   }
+}
+
+export function installNativeConfigurationCommands(world) {
+  const refresh = new NativeConfigurationRefresh(world);
+  world.runtime.register('main', 361, async (args) => {
+    if (args.length) throw new Error('Native preference save expects no arguments');
+    if (typeof world.storage?.write !== 'function')
+      throw new Error('Native preference save requires its file service');
+    // This explicit save is unconditional and independent of automatic dirty
+    // flushing. The original wrapper does not expose the file writer's result.
+    await world.storage.write(
+      world.preferencesName,
+      serializeNativePreferences(world.configuration),
+    );
+    return nativeReply(2);
+  });
+  return refresh;
 }
 
 export function nativeConfiguration(id, args, machine, services = {}) {

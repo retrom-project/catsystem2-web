@@ -13082,6 +13082,18 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    361: {
+      name: 'configuration.savePreferences',
+      family: 'configuration',
+      signature: {
+        argumentWords: 0,
+        controlCodes: [2],
+        parameters: [],
+        result: { description: 'void', kind: 'void' },
+        resultWritten: false,
+        review: 'declared',
+      },
+    },
     362: {
       name: 'bitmap.canvasSize',
       family: 'bitmap',
