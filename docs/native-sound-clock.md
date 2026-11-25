@@ -131,7 +131,14 @@ SDK23, SDK63 and SDK67 Main569 read the primary DirectSound buffer's decoded-
 stream query word. Both Main155 per-file load types use this backend owner; a
 file's streaming/static mode does not select the other global native backend.
 Absent devices, missing buffers or decoders and invalid banks return zero.
-The alternate backend has no proved browser mapping and remains an open shape.
+The original engine startup selects the primary backend in all three builds.
+SDK63/67 retain a private WaveOut constructor mode, but their sole engine
+construction call passes mode one. SDK23 compiles mode one inside that
+constructor. All four native tables, exports, incoming constructor references
+and stored function pointers preserve this boundary; window initialization and
+configuration routes keep the same selection. Controlled native captures retain
+the private WaveOut behavior separately. A failed DirectSound initialization
+releases its owner without selecting WaveOut.
 Main587 returns the primary buffer completion word, irrespective of the current
 file mode. Static playback increments it once per completed pass. Finite repeat
 counts decrement to one; zero repeats until stopped. Pause preserves the counter,
@@ -219,5 +226,5 @@ to zero, two and three, two nonaligned EOF tails, mono 8-bit and stereo 16-bit
 PCM, and cold restores before and after queued output begins. Captured native
 ring bytes agree with the production reader and scheduled output PCM. These
 are controlled output-port checks; they do not establish physical device
-playback. The alternate global backend and remaining tag/decoder-option shapes
-are separate from this primary stream lifecycle.
+playback. Host initialization-failure results and remaining tag/decoder-option
+shapes are separate from this primary stream lifecycle.
