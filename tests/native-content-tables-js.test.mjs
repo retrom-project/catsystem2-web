@@ -146,7 +146,11 @@ for (const profile of [
     },
   );
 
-for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+])
   test(
     profile +
       ' question GCALL keeps parsed state, owner identity and native exports through a cold checkpoint',
@@ -195,7 +199,7 @@ for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67']
         assert.equal(await call(first, 745, [second]), 0);
         const pointer = first.runtime.imageDataBuffers.process.allocate(276);
         assert.equal(await call(first, 767, [question, pointer]), 276);
-        if (profile === 'bokutomo-engine-2.6.1.67')
+        if (profile !== 'grisaia-jp-engine-2.6.1.23')
           for (const id of [769, 770]) {
             assert.equal(await call(first, id, [0]), undefined);
             assert.equal(await call(first, id, [question]), undefined);
@@ -302,7 +306,11 @@ test('fixed SDK .23 first genre placeholder continues through following literals
   }
 });
 
-for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+])
   test(
     profile +
       ' large legal genre ranges visit only occupied question keys and cold restore their current configuration',

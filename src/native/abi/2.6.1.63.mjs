@@ -2,6 +2,7 @@
 // Candidate own normal data. Local registration only; no physical executable layouts.
 import {
   NATIVE_SEMANTICS,
+  nativeContentDatabaseSignatures,
   NATIVE_TILE_GAME_IDS as tileGameOperations,
   NATIVE_TILE_GAME_SIGNATURES,
 } from './semantics.mjs';
@@ -17,6 +18,7 @@ const mainConstantZero = [
   171, 174, 175, 176, 177, 178, 179, 181, 183, 186, 236, 432, 551, 554, 555, 575, 580, 909, 925,
 ];
 
+const questionDatabaseOperations = Array.from({ length: 37 }, (_, i) => 742 + i);
 const cp932TextOperations = [611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621, 695, 884];
 const screenEffectOperations = [
   [521, 'Blur', [2, 3, 4, 6, 7]],
@@ -281,6 +283,10 @@ export default {
   nameTable: { legacyFieldBytes: 32 },
   stringBank: { emptyGetResult: 1, cssOwnerLookupOnly: true },
   database: {
+    questionIdentitySignedIndex: true,
+    questionFormatRequired: true,
+    questionLoadSkipsKnownFiles: true,
+    questionGenrePlaceholderContinues: true,
     nullExportPolicy: 'reject-unwritten',
     nullImportPolicy: 'reject-unwritten',
     requiresMappedFormat: true,
@@ -1128,14 +1134,13 @@ export default {
           462, 463, 467, 468, 525, 526, 529, 532, 533, 538, 558, 564, 569, 570, 582, 583, 584, 585,
           587, 588, 589, 599, 600, 601, 602, 603, 622, 623, 624, 628, 629, 631, 632, 641, 648, 650,
           655, 657, 658, 659, 663, 664, 665, 666, 667, 668, 669, 677, 678, 679, 680, 682, 688, 690,
-          691, 692, 703, 704, 705, 706, 707, 708, 709, 716, 721, 722, 725, 729, 734, 738, 742, 743,
-          744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761,
-          762, 763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779,
-          780, 781, 782, 783, 784, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803,
-          804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821,
-          822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 837, 838, 839, 840, 841, 842, 843,
-          845, 846, 847, 904, 905,
+          691, 692, 703, 704, 705, 706, 707, 708, 709, 716, 721, 722, 725, 729, 734, 738, 779, 780,
+          781, 782, 783, 784, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804,
+          805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822,
+          823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 837, 838, 839, 840, 841, 842, 843, 845,
+          846, 847, 904, 905,
         ],
+
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
         recovered: [
@@ -1163,14 +1168,21 @@ export default {
           630, 633, 634, 635, 636, 637, 638, 639, 640, 645, 646, 647, 649, 651, 653, 654, 662, 674,
           675, 676, 681, 683, 684, 685, 689, 693, 694, 695, 696, 697, 698, 699, 700, 701, 702, 710,
           711, 712, 713, 714, 715, 717, 718, 719, 720, 723, 724, 726, 727, 728, 730, 731, 732, 733,
-          735, 736, 737, 739, 740, 741, 785, 786, 787, 788, 789, 790, 833, 834, 835, 836, 844, 848,
-          849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866,
-          867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884,
-          885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902,
-          903, 934, 935, 936, 937,
+          735, 736, 737, 739, 740, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753,
+          754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771,
+          772, 773, 774, 775, 776, 777, 778, 785, 786, 787, 788, 789, 790, 833, 834, 835, 836, 844,
+          848, 849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865,
+          866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883,
+          884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901,
+          902, 903, 934, 935, 936, 937,
         ],
       },
       evidence: [
+        {
+          ids: questionDatabaseOperations,
+          value:
+            'Own 2.6.1.63 Main742–778 constructs the 740-byte Question owner at 0x4b9ec0 and destroys it at 0x4b9fa0. Loader0x4b5c70 feeds original KCDB parser0x51d080. CP932 configuration, duplicate/retry IO, grouped pool order, extra genres, shared RNG draws and the native 88-byte state records match production GCALL and cold independent owners. Main769/770 are strict one-word owner wrappers before the empty member at0x54e1a0, reported separately as original stub behavior. Negative identity index and all three unmapped formats reach the own CRT invalid-parameter handler at0x5aca58.',
+        },
         {
           ids: tileGameOperations,
           value:
@@ -1982,6 +1994,7 @@ export default {
         },
       ],
       signatures: [
+        ...nativeContentDatabaseSignatures(questionDatabaseOperations),
         ...NATIVE_TILE_GAME_SIGNATURES,
         ...screenEffectSignatures,
 
