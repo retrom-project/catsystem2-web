@@ -3440,8 +3440,8 @@ test('63 title Particle FES runs selected native calls and restores its own bank
     [1, 2, 5, 6, 19, 25, 26, 27, 28, 30, 31, 34, 35, 36, 50],
   );
   assert.throws(
-    () => instance.native(33, [], instance.machine),
-    /Unreviewed PTCL native .*particle-v2\/33/,
+    () => instance.native(0, [0], instance.machine),
+    /Unreviewed PTCL native .*particle-v2\/0/,
   );
   assert.throws(
     () => instance.native(5, [520], instance.machine),
@@ -3454,7 +3454,7 @@ test('63 title Particle FES runs selected native calls and restores its own bank
   await restored.world.restore(structuredClone(snapshot));
   assert.equal(await checkpointDifference(restored.world.snapshot(0), snapshot), null);
   const copy = restored.world.particles.get(taskID).bank.instance;
-  assert.throws(() => copy.native(33, [], copy.machine), /Unreviewed PTCL native/);
+  assert.throws(() => copy.native(0, [0], copy.machine), /Unreviewed PTCL native/);
   await world.close();
   assert.equal(restored.world.particles.get(taskID).active, true);
 });
@@ -3592,7 +3592,10 @@ test('63 warning and title motions run the selected round, linear and clear cont
     ),
     motion = new MotionInstance(script, { profile: 'rebellions-jp-engine-2.6.1.63' }),
     initialSP = motion.machine.sp;
-  assert.throws(() => motion.native(3, [], motion.machine), /Unrecovered MOT native .*:3/);
+  assert.throws(
+    () => motion.native(3, [], motion.machine),
+    /MOT math\.tan expects 1 arguments, got 0/,
+  );
   assert.equal(motion.update(3).active, false);
   assert.equal(motion.machine.load(512) | 0, -1);
   assert.deepEqual(
