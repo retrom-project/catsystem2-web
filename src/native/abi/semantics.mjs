@@ -41337,3 +41337,57 @@ export function nativeContentDatabaseSignatures(ids) {
     };
   });
 }
+
+// Shared raw/CSS ABI metadata; each build still owns admission and failure policy.
+export function nativeRawCSSSignatures({ sourceTarget } = {}) {
+  return [
+    {
+      ids: [238],
+      fields: {
+        result: { kind: 'handle', handleKind: 'global-file', ownership: 'owned' },
+        resultWritten: true,
+        review: 'reviewed',
+      },
+    },
+    ...[833, 834, 835, 836].map((id) => {
+      const signature = NATIVE_SEMANTICS.main[id].signature;
+      return {
+        ids: [id],
+        fields: {
+          parameters: signature.parameters.map((parameter) => {
+            if (parameter.type.kind === 'handle')
+              return {
+                ...parameter,
+                type: { kind: 'handle', handleKind: 'global-file', ownership: 'borrowed' },
+              };
+            if (parameter.type.kind !== 'pointer') return parameter;
+            return {
+              ...parameter,
+              type: {
+                kind: 'pointer',
+                addressSpace: id === 836 ? 'vm' : 'native',
+                direction: id === 836 ? 'out' : 'in',
+                target:
+                  id === 835 && sourceTarget
+                    ? sourceTarget
+                    : { kind: 'integer', bits: id === 836 ? 32 : 8, signed: false },
+              },
+            };
+          }),
+          ...([833, 836].includes(id)
+            ? {
+                result: {
+                  kind: 'pointer',
+                  addressSpace: 'native',
+                  direction: 'out',
+                  target: { kind: 'integer', bits: 8, signed: false },
+                },
+              }
+            : {}),
+          resultWritten: id !== 834,
+          review: 'reviewed',
+        },
+      };
+    }),
+  ];
+}

@@ -5,6 +5,7 @@ import {
   NATIVE_PREFERENCE_DATA_IDS as preferenceDataOperations,
   nativePreferenceDataSignatures,
   nativeContentDatabaseSignatures,
+  nativeRawCSSSignatures,
   NATIVE_TILE_GAME_IDS as tileGameOperations,
   NATIVE_TILE_GAME_SIGNATURES,
 } from './semantics.mjs';
@@ -2079,59 +2080,11 @@ export default {
       signatures: [
         ...nativePreferenceDataSignatures(),
         { ids: [361, 533], fields: { review: 'reviewed' } },
-        {
-          ids: [238],
-          fields: {
-            result: { kind: 'handle', handleKind: 'global-file', ownership: 'owned' },
-            resultWritten: true,
-            review: 'reviewed',
+        ...nativeRawCSSSignatures({
+          sourceTarget: {
+            kind: 'union',
+            alternatives: [{ kind: 'integer', bits: 8, signed: false }, scriptTaskHeader],
           },
-        },
-        ...[833, 834, 835, 836].map((id) => {
-          const signature = NATIVE_SEMANTICS.main[id].signature;
-          return {
-            ids: [id],
-            fields: {
-              parameters: signature.parameters.map((parameter) => {
-                if (parameter.type.kind === 'handle')
-                  return {
-                    ...parameter,
-                    type: { kind: 'handle', handleKind: 'global-file', ownership: 'borrowed' },
-                  };
-                if (parameter.type.kind !== 'pointer') return parameter;
-                return {
-                  ...parameter,
-                  type: {
-                    kind: 'pointer',
-                    addressSpace: id === 836 ? 'vm' : 'native',
-                    direction: id === 836 ? 'out' : 'in',
-                    target:
-                      id === 835
-                        ? {
-                            kind: 'union',
-                            alternatives: [
-                              { kind: 'integer', bits: 8, signed: false },
-                              scriptTaskHeader,
-                            ],
-                          }
-                        : { kind: 'integer', bits: id === 836 ? 32 : 8, signed: false },
-                  },
-                };
-              }),
-              ...([833, 836].includes(id)
-                ? {
-                    result: {
-                      kind: 'pointer',
-                      addressSpace: 'native',
-                      direction: 'out',
-                      target: { kind: 'integer', bits: 8, signed: false },
-                    },
-                  }
-                : {}),
-              resultWritten: id !== 834,
-              review: 'reviewed',
-            },
-          };
         }),
         ...nativeContentDatabaseSignatures(compiledDatabaseOperations),
         ...nativeContentDatabaseSignatures(selectionDatabaseOperations),
