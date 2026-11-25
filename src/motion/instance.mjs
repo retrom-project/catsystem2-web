@@ -2,7 +2,7 @@
 import { KCSMachine, nativeReply, floatBits, bitsFloat, formatNative } from '../kcs.mjs';
 import { nativeCatalog } from '../native/catalog.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
-import { floatBytes, floats } from '../native/calculation-memory.mjs';
+import { floatBytes, floats, floatWords, matrixStorage } from '../native/calculation-memory.mjs';
 import { multiplyNativeMatrix } from '../native/calculation-math.mjs';
 import { nativeGeometry } from '../native/geometry.mjs';
 import { nativeMatrix } from '../native/matrix.mjs';
@@ -27,7 +27,7 @@ import {
 } from '../ppi/numeric.mjs';
 import { MOTION_ABI, initialMotionObject } from './abi.mjs';
 import { rotateRelativeX87, yawPitchRollX87 } from './native-rotation.mjs';
-import { normalizeSSEWords, transformSSEWords } from './native-sse.mjs';
+import { inverseSSEWords, normalizeSSEWords, transformSSEWords } from './native-sse.mjs';
 import {
   identity,
   inverse,
@@ -89,6 +89,7 @@ export class MotionInstance {
     this.matrixVectorUseScalarD3DX = abi.motion?.matrixVectorUseScalarD3DX;
     this.vectorTransformUsesSSEWords = abi.motion?.vectorTransformUsesSSEWords;
     this.vectorNormalizeUsesSSEWords = abi.motion?.vectorNormalizeUsesSSEWords;
+    this.matrixInverseUsesSSEWords = abi.motion?.matrixInverseUsesSSEWords;
     this.vectorOperationsUseNativeGeometry = abi.motion?.vectorOperationsUseNativeGeometry;
     this.vectorComponentsUseX87 = abi.motion?.vectorComponentsUseX87;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
@@ -205,6 +206,17 @@ export class MotionInstance {
       return word(x87TriangleWaveWord(...args));
     if (this.currentMatrixFallback && id >= 23 && id <= 26)
       return nativeMatrix(contract.name, args, machine, this.calculations);
+    if (id === 27 && this.matrixInverseUsesSSEWords) {
+      const storage = matrixStorage(machine, args[0], this.calculations),
+        bytes = storage.read(),
+        result = inverseSSEWords(floatWords(bytes));
+      if (result) {
+        const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        result.forEach((word, i) => view.setUint32(i * 4, word, true));
+        storage.write(bytes);
+      }
+      return done();
+    }
     if (
       (id === 31 && this.vectorNormalizeUsesSSEWords) ||
       (id === 37 && this.vectorTransformUsesSSEWords)

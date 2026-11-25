@@ -300,6 +300,7 @@ export default {
     vectorOperationsUseNativeGeometry: true,
     vectorTransformUsesSSEWords: true,
     vectorNormalizeUsesSSEWords: true,
+    matrixInverseUsesSSEWords: true,
     vectorComponentsUseX87: true,
     nativeFilenameQuery: true,
     queryFormatsUnmappedAsEmpty: true,
@@ -3923,13 +3924,18 @@ export default {
     generic: {
       count: 45,
       slots: {
-        unknown: [0, 27, 43, 44],
+        unknown: [0, 43, 44],
         recovered: [
           1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-          26, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+          26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
         ],
       },
       evidence: [
+        {
+          ids: [27],
+          value:
+            'Own MOT wrapper 0x55df00 resolves a mapped matrix or selects the current matrix through 0x530fa0. The native selector-2 inverse at 0x5eb93f forms packed adjugate rows, sums determinant pairs and refines the SSE reciprocal seed once. Zero and unordered determinants preserve the input. Physical results include unaligned local/shared matrices and the selected-current fallback. Control 2 leaves the result unwritten.',
+        },
         {
           ids: [31],
           value:
@@ -4007,7 +4013,7 @@ export default {
         { ids: [39, 40], fields: { resultWritten: true } },
         { ids: [11], fields: { resultWritten: true } },
         { ids: [32, 33, 36], fields: { resultWritten: false } },
-        ...[31, 37].map((id) => ({
+        ...[27, 31, 37].map((id) => ({
           ids: [id],
           fields: {
             parameters: NATIVE_SEMANTICS.generic[id].signature.parameters.map((parameter, i) => ({

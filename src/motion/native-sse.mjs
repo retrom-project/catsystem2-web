@@ -59,6 +59,69 @@ export function normalizeSSEWords(vector) {
   return vector.map((word) => sseFloat32Arithmetic('multiply', word, factor));
 }
 
+const vectorArithmetic = (operation, left, right) =>
+  left.map((word, i) => sseFloat32Arithmetic(operation, word, right[i]));
+const multiply = (left, right) => vectorArithmetic('multiply', left, right);
+const add = (left, right) => vectorArithmetic('add', left, right);
+const subtract = (left, right) => vectorArithmetic('subtract', left, right);
+const swapPairs = ([a, b, c, d]) => [b, a, d, c];
+const rotateHalves = ([a, b, c, d]) => [c, d, a, b];
+
+export function inverseSSEWords(matrix) {
+  // Form four adjugate rows from the original packed column products.
+  // Keep each subtraction and addition separate: reassociation changes f32.
+  const x = [matrix[0], matrix[4], matrix[8], matrix[12]],
+    y = [matrix[9], matrix[13], matrix[1], matrix[5]],
+    z = [matrix[2], matrix[6], matrix[10], matrix[14]],
+    w = [matrix[11], matrix[15], matrix[3], matrix[7]],
+    zr = rotateHalves(z),
+    zw = swapPairs(multiply(w, z)),
+    zwr = rotateHalves(zw),
+    yzDifference = subtract(multiply(y, zwr), multiply(y, zw)),
+    yz = swapPairs(multiply(y, z)),
+    yzr = rotateHalves(yz),
+    first = subtract(add(multiply(w, yz), yzDifference), multiply(w, yzr)),
+    yw = swapPairs(multiply(rotateHalves(y), w)),
+    ywr = rotateHalves(yw),
+    row0 = subtract(add(multiply(zr, yw), first), multiply(zr, ywr)),
+    remaining = rotateHalves(subtract(multiply(ywr, x), multiply(yw, x))),
+    yx = swapPairs(multiply(y, x)),
+    yxr = rotateHalves(yx),
+    second = subtract(multiply(w, yxr), add(multiply(w, yx), remaining)),
+    wx = swapPairs(multiply(w, x)),
+    wxr = rotateHalves(wx),
+    row2 = subtract(add(multiply(wx, y), second), multiply(y, wxr)),
+    zwDifference = rotateHalves(subtract(multiply(zwr, x), multiply(zw, x))),
+    third = add(multiply(wxr, zr), subtract(zwDifference, multiply(wx, zr))),
+    xz = swapPairs(multiply(x, zr)),
+    xzr = rotateHalves(xz),
+    row1 = subtract(add(multiply(w, xz), third), multiply(w, xzr)),
+    yzRemaining = rotateHalves(subtract(multiply(yzr, x), multiply(yz, x))),
+    fourth = subtract(
+      subtract(subtract(multiply(yx, zr), yzRemaining), multiply(zr, yxr)),
+      multiply(xz, y),
+    ),
+    row3 = add(multiply(y, xzr), fourth),
+    determinantProducts = multiply(x, row0),
+    determinantPairs = add(rotateHalves(determinantProducts), determinantProducts),
+    determinant = sseFloat32Arithmetic('add', determinantPairs[1], determinantPairs[0]),
+    value = bitsFloat(determinant);
+  if (value === 0 || Number.isNaN(value)) return null;
+  const seed = reciprocalSSEWord(determinant),
+    factor = sseFloat32Arithmetic(
+      'subtract',
+      sseFloat32Arithmetic('add', seed, seed),
+      sseFloat32Arithmetic('multiply', determinant, sseFloat32Arithmetic('multiply', seed, seed)),
+    ),
+    scale = Array(4).fill(factor);
+  return [
+    ...multiply(row0, scale),
+    ...multiply(row1, scale),
+    ...multiply(row2, scale),
+    ...multiply(scale, row3),
+  ];
+}
+
 export function transformSSEWords(vector, matrix) {
   return Array.from({ length: 4 }, (_, column) => {
     // Each matrix row is the destination operand of MULPS. Both sums keep

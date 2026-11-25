@@ -189,9 +189,9 @@ test('2.6.1.67 Motion matrix calls preserve native fallback, SSE2 products and f
     assert.equal(machine.load(132), floatBits(35));
   }
   const malformed = await motion(23, []),
-    guarded = await motion(27, [64]);
+    guarded = await motion(0, [64]);
   assert.throws(() => malformed.update(0), /expects 4 arguments/);
-  assert.throws(() => guarded.update(0), /Unrecovered MOT native .*:1b/);
+  assert.throws(() => guarded.update(0), /Unrecovered MOT native .*:0/);
 });
 
 test('2.6.1.67 Motion vector calls preserve x87 result words and native operand aliases', async () => {
@@ -262,6 +262,54 @@ test('2.6.1.67 Motion vector calls preserve x87 result words and native operand 
     );
     assert.equal(machine.load(args[0] + 16), parentCanary);
     if (reply !== undefined) assert.equal(machine.load(160), reply);
+  }
+});
+
+test('2.6.1.67 MOT inverse uses the native SSE reciprocal and current-matrix fallback', async () => {
+  const matrix = [
+      1.125, 0.25, 0.5, 0, -0.125, 0.5, -0.25, 0, 0.5, 0.625, 1.875, 0, 17.25, -8.125, -3, 1,
+    ].map(floatBits),
+    expected = (
+      '3f7fffff be124924 be924924 00000000 3dcccccc 3fd99999 3e4ccccc 00000000 ' +
+      'be999999 bf075074 3f0af8af 00000000 c18ab333 416b0ea0 4102ea0e 3f7fffff'
+    )
+      .split(' ')
+      .map((word) => Number.parseInt(word, 16));
+  for (const address of [64, 0x80000043, 0xffffffff]) {
+    const selected = new Uint32Array(matrix),
+      instance = new MotionInstance(await readKCS(motionProgram([[27, [address]]])), {
+        profile,
+        calculations: { matrix: new Uint8Array(selected.buffer) },
+      }),
+      { machine } = instance;
+    if (address !== 0xffffffff) {
+      matrix.forEach((word, i) => machine.store(address + i * 4, word));
+      machine.bytes(address - 1, 1)[0] = 0x91;
+      machine.bytes(address + 64, 1)[0] = 0x7a;
+    }
+    assert.equal(instance.update(0).status, 'halted');
+    assert.equal(machine.pop(), 0xa0263136);
+    assert.equal(machine.sp, machine.floor);
+    assert.deepEqual(
+      address === 0xffffffff
+        ? [...selected]
+        : expected.map((_, i) => machine.load(address + i * 4)),
+      expected,
+    );
+    if (address !== 0xffffffff) {
+      assert.deepEqual([...selected], matrix);
+      assert.equal(machine.bytes(address - 1, 1)[0], 0x91);
+      assert.equal(machine.bytes(address + 64, 1)[0], 0x7a);
+    }
+  }
+  for (const words of [Array(16).fill(0), [0x7f801234, ...matrix.slice(1)]]) {
+    const instance = new MotionInstance(await readKCS(motionProgram([[27, [64]]])), { profile });
+    words.forEach((word, i) => instance.machine.store(64 + i * 4, word));
+    instance.update(0);
+    assert.deepEqual(
+      words.map((_, i) => instance.machine.load(64 + i * 4)),
+      words,
+    );
   }
 });
 
