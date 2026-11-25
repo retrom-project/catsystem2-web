@@ -209,6 +209,79 @@ test('2.6.1.23 raw Scene pointer query maps the actual Script kind without stopp
   );
 });
 
+test('2.6.1.23 explicit history string GCALLs retain owner isolation and saved CP932 bytes after cold restore', async (t) => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    scene = [0x13, 64],
+    other = [0x13, 68],
+    ptr = (address) => [0x23, address],
+    steps = [
+      [334, [0, 0, 53, 47, 0x7fffffff], 0],
+      [335, [0, 0, 53, 47, 0x7fffffff], 0],
+      [337, [0, 0, 53, 0x7fffffff]],
+      [329, [scene, ptr(256), 4], 1],
+      [334, [scene, 0, 53, 47, ptr(320)], 1],
+      [335, [scene, 0xffffffff, 53, 47, ptr(1024)], 1],
+      [335, [scene, 0, 53, 5, ptr(1088)], 0],
+      [335, [other, 0, 53, 47, ptr(1152)], 0],
+      [337, [scene, 0, 53, ptr(384)]],
+      [336, [scene, 0, 53, ptr(512)]],
+      [276, [47, ptr(448)]],
+      [336, [scene, 0, 53, ptr(512)]],
+      [276, [47, ptr(576)]],
+      [335, [scene, 0, 53, 47, ptr(1216)], 1],
+    ],
+    files = {
+      'explicit-history.kcs': kcsProgram(
+        [
+          [43, 323, 0],
+          [38, 64],
+          [43, 323, 0],
+          [38, 68],
+          ...steps.flatMap(([id, args, expected], index) => [
+            ...args.map((arg) => [37, arg]),
+            [43, id, args.length * 4],
+            ...(expected === undefined ? [] : [[38, 1536 + index * 4]]),
+          ]),
+          [59],
+        ],
+        [
+          [256, 'Scene.cst'],
+          [320, '昔の文字'],
+          [384, 'A$str47 B$str5 C$strx'],
+          [448, '保存の文字'],
+          [512, '$str47 $str999999'],
+          [576, '後の変更'],
+        ],
+      ),
+    },
+    world = await dataWorld(profile, files);
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('explicit-history.kcs', { initialExecute: false }),
+    m = task.machine,
+    floor = m.sp;
+  m.bytes(1024, 256).fill(0xa5);
+  await world.runtime.scheduler.execute(task);
+  assert.equal(m.sp, floor);
+  steps.forEach(([, , expected], index) => {
+    if (expected !== undefined) assert.equal(m.load(1536 + index * 4), expected >>> 0);
+  });
+  assert.equal(m.string(1024), '昔の文字');
+  assert.deepEqual(m.bytes(1088, 2), Uint8Array.of(0, 0xa5));
+  assert.deepEqual(m.bytes(1152, 32), new Uint8Array(32).fill(0xa5));
+  assert.equal(m.string(384), 'A昔の文字 B C$strx');
+  assert.equal(m.string(1216), '保存の文字');
+  const restored = await dataWorld(profile, files, { initialize: false });
+  t.after(() => restored.close({ flushFiles: false }));
+  await restored.restore(structuredClone(world.snapshot()));
+  const first = restored.runtime.handles.get(m.load(64), 'scene-data'),
+    second = restored.runtime.handles.get(m.load(68), 'scene-data');
+  assert.deepEqual(first.history.getString(0, 53, 47).bytes, encodeCP932('保存の文字'));
+  assert.deepEqual(second.history.path, []);
+  assert.notEqual(first, world.runtime.handles.get(m.load(64), 'scene-data'));
+  const owner = restored.runtime.scheduler.tasks.get(task.id);
+  assert.equal(restored.runtime.stringBank(owner, false).get(47), '後の変更');
+});
+
 test('2.6.1.67 Scene history GCALLs keep CP932 aliases and import compact save records', async (t) => {
   const scene = [0x13, 64],
     restored = [0x13, 68],

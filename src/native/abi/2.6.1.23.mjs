@@ -99,6 +99,7 @@ const taskSceneOperations = [
   219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 235,
 ];
 const crossTaskSceneOperations = [233, 234];
+const explicitHistoryStringOperations = [334, 335, 337];
 function geometrySignatures(table, ids) {
   return ids.map((id) => {
     const { name, signature } = NATIVE_SEMANTICS[table][id],
@@ -564,6 +565,11 @@ const mainEvidence = [
     ids: crossTaskSceneOperations,
     value:
       'Own 2.6.1.23 wrappers 0x485a30/0x485bf0 route raw 162 through the original task tree to Script 0x45377b, then expand retained strings or copy both compact history lists independently of the source interpreter.',
+  },
+  {
+    ids: explicitHistoryStringOperations,
+    value:
+      'Own 2.6.1.23 explicit Scene wrappers 0x4810a0/0x481120/0x481290 retain five-word string set/get and four-word expansion, clamped path selection, raw CP932 bytes, null-owner short circuits and saved-string isolation.',
   },
   {
     ids: [385, 386],
@@ -2115,7 +2121,11 @@ export default {
         { ids: [864, 868], fields: { resultWritten: false } },
         { ids: [515, 518, 519], fields: { resultWritten: true } },
         { ids: [516, 517], fields: { resultWritten: false } },
-        ...[...taskSceneOperations, ...crossTaskSceneOperations].map((id) => ({
+        ...[
+          ...taskSceneOperations,
+          ...crossTaskSceneOperations,
+          ...explicitHistoryStringOperations,
+        ].map((id) => ({
           ids: [id],
           fields: {
             resultWritten: NATIVE_SEMANTICS.main[id].signature.controlCodes.includes(1),
@@ -2123,7 +2133,13 @@ export default {
               parameter.type.kind === 'handle'
                 ? {
                     ...parameter,
-                    type: { kind: 'handle', handleKind: 'task', ownership: 'borrowed' },
+                    type: {
+                      kind: 'handle',
+                      handleKind: explicitHistoryStringOperations.includes(id)
+                        ? 'scene-data'
+                        : 'task',
+                      ownership: 'borrowed',
+                    },
                   }
                 : parameter.type.kind !== 'pointer'
                   ? parameter
@@ -2132,9 +2148,9 @@ export default {
                       type: {
                         ...parameter.type,
                         addressSpace: 'vm',
-                        direction: [222, 228, 230, 235].includes(id)
+                        direction: [222, 228, 230, 235, 335].includes(id)
                           ? 'out'
-                          : id === 232 || id === 233
+                          : id === 232 || id === 233 || id === 337
                             ? 'inout'
                             : 'in',
                         target:
