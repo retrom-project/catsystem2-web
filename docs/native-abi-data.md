@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 494       | 57            | 17            | 301     | Generic 25 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 502       | 57            | 17            | 293     | Generic 36 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 393       | 80            | 19            | 446     | Generic 15 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 450       | 80            | 19            | 389     | Generic 33 of 45, Particle 41 of 44 and 47 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
@@ -61,6 +61,18 @@ PC64 can differ by one float32 ULP on subnormal results. Both Particle
 power entries follow the same initialized SSE2 CRT selection as Main 61.
 Main 52 remains guarded. The existing Generic 3 and Particle 8 tangent
 coverage has a known numerical difference for very large finite angles.
+
+Main 350–358 and Generic 27–37 share mapped matrix and vector layouts.
+Inverse uses the current matrix when the destination fails address
+translation. A singular matrix retains its prior words. Copy and
+subtraction process DWORDs forward, so overlapping buffers retain the
+original live source behavior. Vector scaling loads its factor once.
+Length and squared length return one x87 result word. The Core uses the
+original scalar D3DX PC24 path for inverse, multiply, normalize and
+transform. The original SSE2 selector can produce different words on
+these operations, including a distinct zero-vector normalization.
+Transformation requires finite operands until its raw nonfinite results
+are reproduced.
 
 Main 11 writes seven local date and time DWORDs in original field order.
 An aliased destination receives its last field. Main 214–217 clear, unite

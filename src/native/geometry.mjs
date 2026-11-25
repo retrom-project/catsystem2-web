@@ -3,7 +3,7 @@ import { nativeABI } from './abi/index.mjs';
 import { nativeReply, bitsFloat, floatBits } from '../kcs/vm.mjs';
 import { roundX87Single as r } from '../ppi/x87.mjs';
 import { quietFloat32Bits, x87Float32Arithmetic } from '../ppi/numeric.mjs';
-import { inverseNativeMatrix } from './calculation-math.mjs';
+import { inverseNativeMatrix, multiplyNativeMatrix } from './calculation-math.mjs';
 import { matrixStorage, floats, floatBytes } from './calculation-memory.mjs';
 import { transformFloat32Pairs } from '../motion/matrix.mjs';
 const f = Math.fround;
@@ -32,6 +32,8 @@ function x87DotNaN(machine, address) {
   return result;
 }
 export function nativeGeometry(operation, args, machine, argumentWords, state, math) {
+  if (math?.strictGeometryArity && args.length !== argumentWords)
+    throw new Error(`Native ${operation} expects ${argumentWords} argument words`);
   const words = Array.from(args);
   while (words.length < argumentWords) words.push(machine.nativeArgument(words.length));
   const [a, b] = words;
@@ -42,6 +44,8 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     return nativeReply(2);
   }
   if (operation === 'matrix.copy') {
+    machine.bytes(a, 64);
+    machine.bytes(b, 64);
     const width = math?.matrixCopyChunkBytes ?? 16;
     for (let i = 0; i < 64; i += width) {
       const chunk = machine.bytes((b + i) >>> 0, width).slice();
@@ -49,9 +53,17 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     }
     return nativeReply(2);
   }
+  if (operation === 'matrix.multiply') {
+    const target = machine.bytes(a, 64),
+      source = machine.bytes(b, 64);
+    target.set(floatBytes(multiplyNativeMatrix(floats(target), floats(source))));
+    return nativeReply(2);
+  }
   if (['vector4.add', 'vector4.subtract', 'matrix.subtract'].includes(operation)) {
     const size = operation === 'matrix.subtract' ? 16 : 4,
       addition = operation === 'vector4.add';
+    machine.bytes(a, size * 4);
+    machine.bytes(b, size * 4);
     for (let i = 0; i < size; i++) {
       const target = (a + i * 4) >>> 0,
         x = machine.load(target),
@@ -63,6 +75,7 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     }
     return nativeReply(2);
   }
+  machine.bytes(a, 16);
   const v = read(machine, a, 4);
   let output;
   if (operation === 'vector4.length' || operation === 'vector4.lengthSquared') {
@@ -88,7 +101,13 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     const factor = bitsFloat(factorWord);
     output = v.map((n) => f(n * factor));
   } else {
+    machine.bytes(b, 64);
     const m = read(machine, b, 16);
+    if (
+      math?.vectorTransformRequiresFinite &&
+      (!v.every(Number.isFinite) || !m.every(Number.isFinite))
+    )
+      throw new RangeError('Native vector transform requires finite matrix and vector operands');
     if (math?.vectorTransformPairwise) output = transformFloat32Pairs(v, m);
     else
       output = Array.from({ length: 4 }, (_, i) => {

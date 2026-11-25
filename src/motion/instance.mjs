@@ -81,6 +81,7 @@ export class MotionInstance {
     this.transformVector = abi.math?.vectorTransformPairwise ? transformFloat32Pairs : transform;
     this.orderedScalarRotations = abi.motion?.orderedScalarRotations;
     this.matrixMemoryOperationsUseNativeOrder = abi.motion?.matrixMemoryOperationsUseNativeOrder;
+    this.matrixVectorUseScalarD3DX = abi.motion?.matrixVectorUseScalarD3DX;
     this.vectorOperationsUseNativeGeometry = abi.motion?.vectorOperationsUseNativeGeometry;
     this.skipBypassesDelay = abi.motion?.skipBypassesDelay !== false;
     this.currentMatrixFallback = abi.motion?.currentMatrixFallback;
@@ -192,16 +193,19 @@ export class MotionInstance {
       return word(x87TriangleWaveWord(...args));
     if (this.currentMatrixFallback && id >= 23 && id <= 26)
       return nativeMatrix(contract.name, args, machine, this.calculations);
-    if (this.matrixMemoryOperationsUseNativeOrder && (id === 28 || id === 30)) {
-      machine.bytes(args[0], 64);
-      machine.bytes(args[1], 64);
-      return nativeGeometry(contract.name, args, machine, contract.argumentWords, null, this.math);
-    }
-    if (this.vectorOperationsUseNativeGeometry && id >= 32 && id <= 36) {
-      machine.bytes(args[0], 16);
-      if (id === 32 || id === 33) machine.bytes(args[1], 16);
-      return nativeGeometry(contract.name, args, machine, contract.argumentWords, null, this.math);
-    }
+    if (
+      (this.matrixVectorUseScalarD3DX && (id === 27 || id === 29 || id === 31 || id === 37)) ||
+      (this.matrixMemoryOperationsUseNativeOrder && (id === 28 || id === 30)) ||
+      (this.vectorOperationsUseNativeGeometry && id >= 32 && id <= 36)
+    )
+      return nativeGeometry(
+        contract.name,
+        args,
+        machine,
+        contract.argumentWords,
+        this.calculations,
+        this.math,
+      );
     const scalarReply =
       this.interpreterMath &&
       nativeScalarMath(

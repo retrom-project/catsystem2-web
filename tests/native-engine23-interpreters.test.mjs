@@ -1107,6 +1107,59 @@ test('2.6.1.23 Main applies matrix operations to the mapped or current record', 
   }
 });
 
+test('2.6.1.23 both interpreters use the original matrix and vector memory contracts', async (t) => {
+  const world = await dataWorld(profile, {}, { initialize: false });
+  t.after(() => world.close({ flushFiles: false }));
+  const copy = await guest('generic', 28, [68, 64], { calculations: world.calculations });
+  for (let i = 0; i < 17; i++) copy.machine.store(64 + i * 4, 0x7930f7a1 + i);
+  copy.run(2);
+  for (let i = 0; i < 17; i++) assert.equal(copy.machine.load(64 + i * 4), 0x7930f7a1);
+
+  const original = [
+    1.125, 0.25, 0.5, 0, -0.125, 0.5, -0.25, 0, 0.5, 0.625, 1.875, 0, 17.25, -8.125, -3, 1,
+  ].map(floatBits);
+  const inverted = [
+    1065353216, 3188869413, 3197258021, 0, 1036831949, 1071225242, 1045220557, 0, 3197737370,
+    3204927605, 1057683632, 0, 3247092531, 1097535137, 1090710031, 1065353216,
+  ];
+  const activeMatrix = world.calculations.matrix,
+    matrix = new DataView(activeMatrix.buffer, activeMatrix.byteOffset, 64);
+  const initialize = () => original.forEach((word, i) => matrix.setUint32(i * 4, word, true));
+  const invert = await guest('generic', 27, [0xffffffff], { calculations: world.calculations });
+  initialize();
+  invert.run(2);
+  assert.deepEqual(
+    inverted.map((_, i) => matrix.getUint32(i * 4, true)),
+    inverted,
+  );
+
+  const mainScript = await readKCS(
+    kcsProgram([[37, sentinel], [37, 0xffffffff], [43, 350, 4], [59]]),
+  );
+  const main = world.runtime.scheduler.add(mainScript, { name: 'inverse.kcs', abi: 'main' });
+  initialize();
+  await world.runtime.tick();
+  assert.equal(main.status, 'finished');
+  assert.equal(main.machine.sp, main.machine.floor + 4);
+  assert.equal(main.machine.pop(), sentinel);
+  assert.deepEqual(
+    inverted.map((_, i) => matrix.getUint32(i * 4, true)),
+    inverted,
+  );
+
+  const lengths = await guest('generic', 34, [96]);
+  [8192, 0, 2, 2].forEach((value, i) => lengths.machine.store(96 + i * 4, floatBits(value)));
+  lengths.run(1, floatBits(8192));
+  const unbounded = await guest('generic', 30, [64, 0xffffffff]);
+  unbounded.machine.bytes(64, 64).fill(0x83);
+  assert.throws(() => unbounded.run(2), /KCS memory/);
+  assert.deepEqual(unbounded.machine.bytes(64, 64), new Uint8Array(64).fill(0x83));
+  const transform = await guest('generic', 37, [64, 192]);
+  transform.machine.store(64, 0x7f800001);
+  assert.throws(() => transform.run(2), /requires finite matrix and vector operands/);
+  assert.equal(transform.machine.load(64), 0x7f800001);
+});
+
 test('2.6.1.23 PTCL writes the four viewport words in order in both tables', async () => {
   const local = 64,
     shared = 0x80000100,

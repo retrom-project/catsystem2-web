@@ -92,7 +92,36 @@ export const engine23CommonHeads = {
 
 const legacyTaskWordOperations = [126, 127, 128, 129, 131, 132, 138, 139];
 const rectangleOperations = [214, 215, 216, 217];
+const mainGeometryOperations = [350, 351, 352, 353, 354, 355, 356, 357];
+const motionGeometryOperations = [27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37];
+function geometrySignatures(table, ids) {
+  return ids.map((id) => {
+    const { name, signature } = NATIVE_SEMANTICS[table][id],
+      resultWritten = signature.controlCodes.includes(1);
+    return {
+      ids: [id],
+      fields: {
+        resultWritten,
+        parameters: signature.parameters.map((parameter, index) => {
+          const matrix =
+              name.startsWith('matrix.') || (index === 1 && name === 'vector4.transform'),
+            direction = index || resultWritten ? 'in' : name === 'matrix.copy' ? 'out' : 'inout',
+            target =
+              index === 1 && name === 'vector4.scale'
+                ? { kind: 'float', bits: 32 }
+                : { kind: 'record', name: matrix ? 'matrix4' : 'vector4' };
+          return { ...parameter, type: { kind: 'pointer', direction, addressSpace: 'vm', target } };
+        }),
+      },
+    };
+  });
+}
 const mainEvidence = [
+  {
+    ids: mainGeometryOperations,
+    value:
+      'Own 2.6.1.23 wrappers map VM matrix and vector records through 0x50c020. The Main and paired MOT lanes have matching control words, x87 memory order and scalar PC24 outputs.',
+  },
   {
     ids: [11],
     value:
@@ -1087,6 +1116,11 @@ export default {
     lerpUsesX87: true,
     triangleWaveUsesX87: true,
     roundIntegerResult: 'int64-low-word',
+    strictGeometryArity: true,
+    matrixCopyChunkBytes: 4,
+    vectorLengthUsesX87: true,
+    vectorWordArithmeticUsesX87: true,
+    vectorTransformRequiresFinite: true,
     vectorTransformWFirst: true,
   },
   motion: {
@@ -1096,6 +1130,9 @@ export default {
     splineUsesX87: true,
     currentMatrixFallback: true,
     orderedScalarRotations: true,
+    matrixMemoryOperationsUseNativeOrder: true,
+    matrixVectorUseScalarD3DX: true,
+    vectorOperationsUseNativeGeometry: true,
   },
   particle: {
     scriptVersionFallback: 'particle-v1',
@@ -1366,6 +1403,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...geometrySignatures('main', mainGeometryOperations),
         { ids: [27, 28], fields: { resultWritten: true } },
         ...rectangleOperations.map((id) => ({
           ids: [id],
@@ -1960,6 +1998,11 @@ export default {
     generic: {
       ...tables(45, [
         {
+          ids: motionGeometryOperations,
+          value:
+            'Own 2.6.1.23 MOT matrix and vector wrappers retain mapped VM records, the current matrix fallback on inverse, sequential DWORD overlap behavior and the scalar PC24 D3DX arithmetic.',
+        },
+        {
           ids: [1, 8, 9, 10, 12],
           value: 'Own 2.6.1.23 MOT sin, ceil, absolute, floor and sqrt match the Particle bodies',
         },
@@ -2001,6 +2044,7 @@ export default {
         },
       ]),
       signatures: [
+        ...geometrySignatures('generic', motionGeometryOperations),
         {
           ids: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 39, 40, 41, 42],
           fields: { resultWritten: true },
