@@ -2,6 +2,7 @@
 
 import {
   NATIVE_SEMANTICS,
+  nativePreferenceDataSignatures,
   nativeContentDatabaseSignatures,
   NATIVE_TILE_GAME_IDS as tileGameOperations,
   NATIVE_TILE_GAME_SIGNATURES,
@@ -178,6 +179,11 @@ function geometrySignatures(table, ids) {
 }
 
 const mainEvidence = [
+  {
+    ids: [589],
+    value:
+      'Own Main589 at 0x47ba70 translates both VM destinations before writing the two queryWords from this build, in order and without a result. Local, shared, aliased destinations and outputs over argument words agree through full GCALLs and cold restore. Independently observed Main582/584 shapes retain mapped raw words across this compact build’s canonical preference/system-voice banks and earlier queryWords aliases -2555/-2554, including DWORD index multiplication wrap. The existing input-block and random-selection contracts remain enabled; unrepresented configuration fields remain diagnostic.',
+  },
   {
     ids: [361, 533],
     value:
@@ -1226,6 +1232,8 @@ export default {
     nvEndPositionRequiresSection: true,
   },
   configuration: {
+    systemVoiceIncludesPreferenceBlocks: true,
+    systemVoiceQueryWordIndex: -2555,
     blockSizes: [2856, 56, 28, 12],
     keyHide: false,
     extendedPreferences: false,
@@ -1620,6 +1628,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...nativePreferenceDataSignatures([589]),
         { ids: [361, 533], fields: { review: 'reviewed' } },
         ...NATIVE_TILE_GAME_SIGNATURES,
 

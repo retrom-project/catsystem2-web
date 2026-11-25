@@ -1,11 +1,18 @@
 # Native configuration queries
 
-SDK 2.6.1.67 Main 360 copies the 5,628-byte voice, 60-byte message and 28-byte
+SDK 2.6.1.63 and 2.6.1.67 Main 360 copy the 5,628-byte voice, 60-byte message and 28-byte
 effect inputs into the live configuration. It preserves the fourth window
 block and skips unmapped inputs. Main 582/584 retain full word values across
 the contiguous preference and system-voice banks, including signed aliases
 into the preceding voice, message, effect and window blocks. These are live
 views of the canonical owners and survive a cold World restore.
+
+The independently checked SDK23 equivalents retain their smaller 2,856-byte
+voice and 56-byte message owners and 32 system-voice channels. Its indexed view
+and Main 589 share the same two live query words. SDK63 has 48 channels. The
+query-word aliases in the indexed view start at -4,426 for SDK67, -4,425 for
+SDK63 and -2,555 for SDK23; wrapped DWORD indexes preserve these aliases.
+All three versions keep their existing canonical owners across cold restores.
 
 Main 583 returns `FFFFFFFF` when every system-voice channel is disabled and
 consumes no random value. Otherwise it uses one value from the same integer
@@ -44,7 +51,8 @@ dirty rectangle while the notification still completes. The pending latch and
 renderer rectangles survive a cold World checkpoint. This operation does not
 mark preferences dirty or save a file.
 
-Run `node --test tests/native-configuration-refresh.test.mjs
+Run `node --test tests/native-configuration-data.test.mjs
+tests/native-configuration-refresh.test.mjs
 tests/native-preference-save.test.mjs` for the three configuration command
 families, including cold World restore and rejected storage I/O. File cold-read
 integration remains a separate check from a World snapshot restore.
