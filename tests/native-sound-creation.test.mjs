@@ -99,6 +99,14 @@ for (const profile of [
         assert.equal(device.loaded, false);
         assert.equal(await invoke(world, 569, [bank]), 0);
       }
+      world.sound.primary(world.main.id).groups.clear();
+      await invoke(world, 602, [7, 0, 0, 2, 50]);
+      const expected = profile.includes('.67') ? [0, 1, 2, 0] : [0, 1, 0xffffffff, 0xffffffff];
+      for (const bank of expected) assert.equal(await invoke(world, 604, [7, 0, 288, 1, 1]), bank);
+      assert.equal(await invoke(world, 604, [77, 0, 288, 1, 2]), 0xffffffff);
+      await invoke(world, 156, [0]);
+      assert.equal(await invoke(world, 604, [7, 0, 288, 1, 1]), 0);
+      await assert.rejects(invoke(world, 604, [7, 0, 288, 1, 9]), /result uninitialized/);
     } finally {
       await world.close({ flushFiles: false });
     }

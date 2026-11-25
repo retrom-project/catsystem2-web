@@ -153,6 +153,14 @@ and destruction chain releases every allocated group node; the shared owner
 preserves its records through a cold World restore and closes with its Sound
 task. These commands register selection data and do not start playback.
 
+Main604 creates actual decoder/buffer owners from those records. SDK67 includes
+the upper bank bound and, when full, reuses a releasing bank, a finishing bank,
+or the first bank. SDK63 and SDK23 scan a half-open range and otherwise reuse a
+releasing bank. The SDK63/67 packet wrapper leaves the separate type selector
+zero; SDK23 sends its selector directly. Missing groups return -1. The owning
+load/selection differential and final native manager unload are distinct from
+the still-open deferred task-frame release fade.
+
 Main166 packs its signed 16-bit target pan and unsigned 16-bit duration before
 storing the fade state at the Sound task's current-minus-base frame. Main167
 ignores the first distance float and stores the second as maximum distance,
