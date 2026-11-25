@@ -222,7 +222,7 @@ for (const [version, profile, soundTypeMessage, otherType] of versions) {
         const historySave = () => world.runtime.native('main', 385, [0, 0, 0, 0], machine, main);
         assert.deepEqual(historySave(), { control: 1, value: 0 });
         assert.throws(
-          () => world.runtime.native('main', 599, [0, 0, 0, 0, 0, 0], machine, main),
+          () => world.runtime.native('main', 629, [0, 0, 0], machine, main),
           /Unsupported|unrecovered/i,
         );
         assert.equal(world.runtime.handlers.has('main:988'), false);
@@ -341,7 +341,7 @@ test('old ABI Runtime binds only present slots and preserves unknown dispatch', 
     assert.equal(runtime.handlers.get('main:359'), callback);
     const machine = { pc: 16, debug: null },
       task = { id: 1, name: 'owned-runtime-control' };
-    const unknown = version === '2.6.1.67' ? [[599, 6]] : [[856, 7]];
+    const unknown = version === '2.6.1.67' ? [[629, 3]] : [[856, 7]];
     for (const [id, words] of unknown) {
       assert.equal(runtime.register('main', id, callback), true);
       assert.throws(
@@ -1029,7 +1029,7 @@ test('67 first-title entry GCALLs preserve VM zero and real task identity', asyn
     assert.equal(await world.sendEngine(id, world.main.id, 9), 0);
     assert.deepEqual(record.implementation.snapshot(), beforeStrictMessage);
     assert.equal(attempted.cpu, 0);
-    assert.equal(nativeABI(title67Profile).tables.main.entries[599].status, 'unknown');
+    assert.equal(nativeABI(title67Profile).tables.main.entries[629].status, 'unknown');
     assert.equal(
       nativeABI('rebellions-jp-engine-2.6.1.63').tables.main.entries[629].status,
       'unknown',
@@ -3920,7 +3920,7 @@ async function verifyCloseBoundaries(profile, emptyStringResult) {
     assert.deepEqual(world.runtime.handles.snapshot(), before);
     const entries = nativeABI(profile).tables.main.entries;
     for (const id of [836, 869, 871, 873]) assert.equal(entries[id].status, 'recovered');
-    for (const id of profile === title67Profile ? [599] : [239, 856])
+    for (const id of profile === title67Profile ? [629] : [239, 856])
       assert.equal(entries[id].status, 'unknown');
   } finally {
     await source.world.close();
