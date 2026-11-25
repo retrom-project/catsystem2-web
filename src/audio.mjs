@@ -11,6 +11,21 @@ import { sourcePCM, NativePCMWindows } from './native/audio-pcm.mjs';
 const isVoice = (channel) =>
   channel.group === 'voice' || (channel.group === 'native' && channel.nativeCategory === 'voice');
 const nativeCategories = new Set([null, 'bgm', 'se', 'voice', 'sysvoice']);
+const validNativeDrain = (channel) =>
+  channel.nativeDraining === undefined ||
+  channel.nativeDraining === false ||
+  (channel.nativeDraining === true &&
+    channel.nativeBufferPlayback === true &&
+    channel.sourceMode === 'stream' &&
+    Number.isInteger(channel.nativeStreamEnd) &&
+    channel.nativeStreamEnd >= 0 &&
+    Number.isInteger(channel.nativeDrainEnd) &&
+    channel.nativeDrainEnd >= channel.nativeStreamEnd &&
+    channel.remainingDuration === 0 &&
+    channel.pcmState?.values instanceof Uint32Array &&
+    channel.pcmState.values.length === 80 &&
+    Number.isFinite(channel.pcmState.progress) &&
+    channel.pcmState.progress >= 0);
 const validTags = (tags) => {
   if (tags === null) return true;
   if (!tags || Object.getPrototypeOf(tags) !== Object.prototype) return false;
@@ -84,7 +99,7 @@ export class AudioMixer {
     if (!this.deferPlayback) return;
     this.deferPlayback = false;
     for (const channel of this.channels.values())
-      if (channel.playing && !channel.loading) this.startSource(channel);
+      if (channel.playing && !channel.loading && !channel.nativeDraining) this.startSource(channel);
   }
   async decodeBuffer(bytes, maxSamples = Infinity) {
     const rate = sourceSampleRate(bytes),
@@ -140,6 +155,7 @@ export class AudioMixer {
     return buffer ? { buffer, metadata: this.sourceMetadata.get(buffer) } : null;
   }
   async play(sound) {
+    if (!validNativeDrain(sound)) throw new Error('Invalid native audio drain checkpoint');
     const key = sound.channel,
       generation = (this.generations.get(key) || 0) + 1;
     this.generations.set(key, generation);
@@ -163,6 +179,7 @@ export class AudioMixer {
       remainingDelay: Math.max(0, sound.delay || 0),
       loopCount: sound.loopCount ?? (sound.loop ? 0 : 1),
       completionCount: sound.completionCount ?? 0,
+      nativeDraining: !!sound.nativeDraining,
       remainingDuration: sound.remainingDuration,
     };
     if (
@@ -210,7 +227,12 @@ export class AudioMixer {
     if (sound.pcmState) channel.pcmWindows.restore(sound.pcmState.values);
     this.configureLoop(channel);
     channel.offset = this.wrapPosition(channel, channel.offset);
-    if (channel.playing && !this.deferPlayback) this.startSource(channel);
+    if (channel.nativeDraining)
+      channel.playbackRate = channel.nativeSpatial?.enabled
+        ? spatialPlaybackRate(channel.nativeSpatial, buffer.sampleRate)
+        : 1;
+    if (channel.playing && !this.deferPlayback && !channel.nativeDraining)
+      this.startSource(channel);
     if (isVoice(channel)) {
       const samples = buffer.getChannelData(0),
         step = Math.max(1, Math.floor(buffer.sampleRate / 60)),
@@ -319,7 +341,8 @@ export class AudioMixer {
     source.onended = () => {
       if (channel.nativeBufferPlayback && channel.sourceMode === 'stream') {
         this.syncNativePCM(channel);
-        this.resetNativePCM(channel.channel);
+        this.detach(channel);
+        return;
       }
       source.onended = null;
       source.disconnect();
@@ -383,7 +406,13 @@ export class AudioMixer {
     const gains = nativeSoundPanGains(channel.pan || 0);
     channel.panLeft?.gain.setValueAtTime(gains[0], this.context.currentTime);
     channel.panRight?.gain.setValueAtTime(gains[1], this.context.currentTime);
-    if (!channel.source) return;
+    if (!channel.source) {
+      if (channel.nativeDraining)
+        channel.playbackRate = channel.nativeSpatial.enabled
+          ? spatialPlaybackRate(channel.nativeSpatial, channel.buffer.sampleRate)
+          : 1;
+      return;
+    }
     const spatial = channel.nativeSpatial;
     if (spatial.enabled && !channel.spatialNode) {
       channel.spatialNode = this.context.createPanner();
@@ -432,6 +461,23 @@ export class AudioMixer {
   }
   scheduleEnd(channel) {
     const remaining = channel.remainingDuration;
+    if (
+      channel.nativeBufferPlayback &&
+      channel.sourceMode === 'stream' &&
+      !channel.nativeDraining
+    ) {
+      const pcm = this.pcmSources.get(channel.buffer),
+        bytesPerSecond = pcm.sampleRate * pcm.channels * (pcm.bitsPerSample >>> 3);
+      channel.nativeStreamEnd =
+        remaining === null || remaining === undefined
+          ? null
+          : Math.round((channel.pcmOrigin + channel.pcmProgress + remaining) * bytesPerSecond);
+      channel.nativeDrainEnd =
+        channel.nativeStreamEnd === null
+          ? null
+          : Math.ceil(channel.nativeStreamEnd / channel.pcmWindows.halfSecondBytes) *
+            channel.pcmWindows.halfSecondBytes;
+    }
     channel.playUntil =
       remaining === null || remaining === undefined
         ? null
@@ -539,6 +585,9 @@ export class AudioMixer {
     }
   }
   position(channel, time = this.context.currentTime) {
+    if (channel.nativeBufferPlayback && channel.sourceMode === 'stream')
+      this.syncNativePCM(channel, time);
+    if (channel.nativeDraining) return channel.duration;
     const value =
       channel.paused || channel.loading || channel.ended || this.deferPlayback
         ? channel.offset
@@ -547,6 +596,7 @@ export class AudioMixer {
   }
   wrapPosition(channel, value) {
     if (channel.loading) return value;
+    if (channel.nativeDraining) return channel.duration;
     if (!channel.loop) return Math.min(channel.duration, value);
     const end = channel.loopEnd ?? channel.duration,
       start = channel.loopStart ?? 0;
@@ -583,7 +633,10 @@ export class AudioMixer {
     if (!channel?.paused) return;
     channel.paused = false;
     channel.playing = true;
-    if (!channel.loading) this.startSource(channel);
+    if (!channel.loading) {
+      channel.pcmClock = this.context.currentTime;
+      if (!channel.nativeDraining) this.startSource(channel);
+    }
     return channel;
   }
   fade(channel, frames, from, to, reset = false) {
@@ -777,13 +830,15 @@ export class AudioMixer {
       consumed = Math.floor((channel.pcmProgress * bytesPerSecond) / state.halfSecondBytes);
     if (!channel.nativeLevelProperty) {
       channel.pcmRefills = consumed;
+      this.settleNativeStream(channel);
       return;
     }
     const remaining = this.remaining(channel, now),
       endByte =
-        remaining === null || remaining === undefined
+        channel.nativeStreamEnd ??
+        (remaining === null || remaining === undefined
           ? Infinity
-          : Math.round((channel.pcmOrigin + channel.pcmProgress + remaining) * bytesPerSecond),
+          : Math.round((channel.pcmOrigin + channel.pcmProgress + remaining) * bytesPerSecond)),
       origin = Math.floor(channel.pcmOrigin * bytesPerSecond),
       loopStart = Math.round(channel.loopStart * bytesPerSecond),
       loopEnd = Math.round(channel.loopEnd * bytesPerSecond);
@@ -831,12 +886,48 @@ export class AudioMixer {
           regionBytes: data.length,
         });
     }
+    this.settleNativeStream(channel);
+  }
+  settleNativeStream(channel) {
+    if (
+      !channel.nativeBufferPlayback ||
+      !channel.playing ||
+      this.deferPlayback ||
+      channel.sourceMode !== 'stream' ||
+      channel.nativeStreamEnd === null ||
+      channel.nativeStreamEnd === undefined
+    )
+      return;
+    const pcm = this.pcmSources.get(channel.buffer),
+      position = Math.floor(
+        (channel.pcmOrigin + channel.pcmProgress) *
+          pcm.sampleRate *
+          pcm.channels *
+          (pcm.bitsPerSample >>> 3),
+      );
+    if (position < channel.nativeStreamEnd) return;
+    channel.nativeDraining = true;
+    if (position < channel.nativeDrainEnd) return;
+    this.detach(channel);
+    this.resetNativePCM(channel.channel);
+    channel.offset = 0;
+    channel.playing = false;
+    channel.ended = true;
+    this.events.push({ channel: channel.channel, reason: 'ended', frame: this.frame });
+  }
+  nativePlaying(key) {
+    const channel = this.channels.get(key);
+    if (!channel) return false;
+    this.syncNativePCM(channel);
+    return channel.playing;
   }
   resetNativePCM(key) {
     const channel = this.channels.get(key);
     if (!channel?.pcmWindows) return;
     const pcm = this.pcmSources.get(channel.buffer);
     channel.pcmOrigin = channel.pcmProgress = channel.pcmRefills = 0;
+    channel.nativeDraining = false;
+    channel.nativeStreamEnd = channel.nativeDrainEnd = null;
     channel.pcmClock = this.context.currentTime;
     channel.pcmWindows.fill(0, pcm.pcm.subarray(0, channel.pcmWindows.halfSecondBytes * 8), {
       initial: true,
@@ -899,6 +990,9 @@ export class AudioMixer {
       loopCount: c.loopCount,
       nativeBufferPlayback: c.nativeBufferPlayback,
       nativeStreamActivity: c.nativeStreamActivity,
+      nativeStreamEnd: c.nativeStreamEnd,
+      nativeDrainEnd: c.nativeDrainEnd,
+      nativeDraining: c.nativeDraining,
       completionCount: c.completionCount,
       loopStartFrame: c.loopStartFrame,
       loopEndFrame: c.loopEndFrame,
@@ -924,6 +1018,8 @@ export class AudioMixer {
     };
   }
   async restore(state) {
+    if (state.channels.some((channel) => !validNativeDrain(channel)))
+      throw new Error('Invalid native audio drain checkpoint');
     if (
       state.channels.some(
         (channel) =>

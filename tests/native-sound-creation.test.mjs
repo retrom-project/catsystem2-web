@@ -52,6 +52,73 @@ for (const profile of [
   'rebellions-jp-engine-2.6.1.63',
   'grisaia-jp-engine-2.6.1.23',
 ])
+  test(`${profile} draining stream pause, cold resume and stop retain native buffer ownership`, async () => {
+    const bytes = wave(64500),
+      files = {
+        'case.kcs': kcsProgram([[43, 0, 0], [59]]),
+        'sound/owned.wav': bytes,
+      };
+    const create = async (initialize = true) => {
+      const world = await dataWorld(profile, files, { initialize }),
+        { context } = audioFixture();
+      world.game.resolveCategory = (name) => (name === 'sound/owned.wav' ? name : null);
+      context.decodeAudioData = async () => ({
+        sampleRate: 8000,
+        numberOfChannels: 1,
+        length: 64500,
+        duration: 64500 / 8000,
+        getChannelData: () => Float32Array.from(bytes.subarray(44), (value) => (value - 128) / 128),
+      });
+      world.audio = world.sound.audio = new AudioMixer(world.game, context);
+      return { world, context };
+    };
+    let { world, context } = await create();
+    try {
+      await invoke(world, 155, [0, 0, 288, 1]);
+      await invoke(world, 157, [0, 1]);
+      context.advance(8.125);
+      assert.equal(await invoke(world, 160, [0]), 1);
+      assert.equal(world.sound.channel(0).nativeDraining, true);
+      await invoke(world, 158, [0]);
+      assert.equal(await invoke(world, 160, [0]), 0);
+      const saved = structuredClone(world.snapshot()),
+        cold = await create(false);
+      await cold.world.restore(saved);
+      await world.close({ flushFiles: false });
+      ({ world, context } = cold);
+      assert.equal(context.sources.length, 0);
+      context.advance(0.125);
+      assert.equal(await invoke(world, 160, [0]), 0);
+      await assert.rejects(invoke(world, 157, [0, 2]), /drained-stream repeat changes/);
+      assert.equal(world.sound.channel(0).paused, true);
+      await invoke(world, 157, [0, 1]);
+      assert.equal(context.sources.length, 0);
+      context.advance(0.25);
+      assert.equal(await invoke(world, 160, [0]), 1);
+      context.advance(0.125);
+      assert.equal(await invoke(world, 160, [0]), 0);
+      assert.equal(world.sound.channel(0).nativeDraining, false);
+      await invoke(world, 155, [0, 0, 288, 1]);
+      await invoke(world, 157, [0, 1]);
+      context.advance(8.125);
+      assert.equal(await invoke(world, 160, [0]), 1);
+      await invoke(world, 159, [0]);
+      context.advance(0.5);
+      assert.equal(await invoke(world, 160, [0]), 0);
+      await invoke(world, 155, [0, 0, 288, 2]);
+      await invoke(world, 157, [0, 1]);
+      context.advance(0.25);
+      assert.equal(await invoke(world, 160, [0]), 1);
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });
+
+for (const profile of [
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+  'grisaia-jp-engine-2.6.1.23',
+])
   test(`${profile} Main155 creates both file modes under one audio service before queries and setters`, async () => {
     const bytes = wave(),
       world = await dataWorld(profile, {

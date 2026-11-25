@@ -516,7 +516,7 @@ test('native PART group classification leaves absent and conflicting roles uncla
   }
 });
 
-test('audio category and tag checkpoint preflight preserves the live owner on invalid data', async () => {
+test('audio category, tag and drain checkpoint preflight preserves the live owner on invalid data', async () => {
   const { mixer, context } = fixture();
   try {
     await mixer.play({
@@ -543,10 +543,14 @@ test('audio category and tag checkpoint preflight preserves the live owner on in
       (value) => (value.tags = { cue: -1 }),
       (value) => (value.tags = { cue: 4294967.296 }),
       (value) => (value.tags = { cue: '1.5' }),
+      (value) => {
+        value.nativeDraining = true;
+        value.nativeStreamEnd = -1;
+      },
     ]) {
       const invalid = structuredClone(saved);
       mutate(invalid.channels[0]);
-      await assert.rejects(mixer.restore(invalid), /playback category|voice tags/);
+      await assert.rejects(mixer.restore(invalid), /playback category|voice tags|drain checkpoint/);
       assert.strictEqual(mixer.channels.get('native:3'), channel);
       assert.equal(context.sources.length, starts);
       assert.deepEqual(mixer.snapshot(), saved);

@@ -196,3 +196,17 @@ separate version policy applies that refill behavior only to those proved
 builds. SDK23 has no corresponding Sound activity-capture message; its message
 boundary remains intact. Cold restore retains both the ring and the remaining
 playback duration.
+
+A partial stream can exhaust its decoded data before the next native refill
+notification. Its bank remains active while that final buffer region drains.
+The adapter derives that endpoint from PCM bytes and the native half-buffer
+size, independently of the new AudioContext's clock origin. Pause retains this
+state, a one-count resume finishes it without starting another decoded source,
+and Stop, Release or a new load discards it. Cold restore preserves the same
+pending endpoint and starts no output node for the silent remainder.
+
+Changing the repeat count of a paused, already-draining stream is still guarded.
+The native can append newly decoded PCM to that existing ring; this additional
+queued-output shape needs its own continuation proof before admission. The
+alternate global backend and remaining tag/decoder-option shapes are also
+separate from the proved primary stream lifecycle.
