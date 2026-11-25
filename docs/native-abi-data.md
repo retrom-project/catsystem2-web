@@ -19,7 +19,7 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 534       | 57            | 17            | 261     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 535       | 57            | 17            | 260     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.63 | 938        | 423       | 80            | 19            | 416     | Generic 16 of 45, Particle 18 of 44 and 27 of 51 |
 | 2.6.1.67 | 938        | 506       | 80            | 19            | 333     | Generic 34 of 45, Particle 42 of 44 and 48 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
@@ -731,6 +731,10 @@ Main 387 stores the allocated buffer in CSS. Main 388 restores an owned
 copy, optionally rebuilding the motions at the supplied frame.
 
 Main 323–327 allocate, release and read the owned CP932 CatScene document.
+Main 322 formats a CP932 name and uses the scene category's default extension
+before checking whether the file can be opened. An existing empty or
+unrecognized file still succeeds; the query does not initialize a reader
+or parse the scene document.
 The reader copies file markers from the records with types `0xf0` and
 `0xf1`. Main 338 queries those markers and Main 608 queries the block count.
 Main 328–333 update or read the independent seen and path lists. Main 336

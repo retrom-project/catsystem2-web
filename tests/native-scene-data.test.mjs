@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { deflateSync } from 'node:zlib';
 import { Binary } from '../src/binary.mjs';
 import { HTTPFile } from '../src/files.mjs';
-import { formatNativeAt } from '../src/kcs.mjs';
+import { formatNativeAt, readKCS } from '../src/kcs.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { KCSMachine } from '../src/kcs/vm.mjs';
 import { NativeHandles } from '../src/native/handles.mjs';
@@ -19,6 +19,8 @@ import {
 } from '../src/native/scene-data.mjs';
 import { kcsProgram, translation } from './helpers.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { NativeResources } from '../src/native/resources.mjs';
+import { parseXML } from '../src/xml.mjs';
 
 function cst(blocks, packed = true) {
   const lines = blocks.flat(),
@@ -253,6 +255,68 @@ test('2.6.1.23 Script owns a narrow scene reader and path history', async (t) =>
   );
   assert.deepEqual(await call(324, [handle]), { control: 2 });
   assert.throws(() => world.runtime.handles.get(handle, 'scene-data'), /released/);
+});
+
+test('2.6.1.23 Scene existence GCALL formats category names without parsing or creating a reader', async () => {
+  const resources = new NativeResources(
+      parseXML('<document><INT><int00><name>scene</name><ext>cst</ext></int00></INT></document>'),
+    ),
+    files = new Map([
+      ['chapter.cst', Uint8Array.of(1, 2, 3)],
+      ['empty.cst', new Uint8Array()],
+    ]),
+    reads = [],
+    runtime = new NativeRuntime({
+      profile: 'grisaia-jp-engine-2.6.1.23',
+      shared: new Uint8Array(2048),
+      read: (name, category) => {
+        if (category === 'kcs') return kcsProgram([[59]]);
+        const resolved = resources.resolve(name, category);
+        reads.push([name, category, resolved]);
+        return files.get(resolved) ?? null;
+      },
+    }),
+    task = await runtime.spawn('exists.kcs'),
+    canary = 0x36eb67a5;
+  for (const [name, result, address] of [
+    ['chapter.cst', 1, 256],
+    ['chapter', 1, 256],
+    ['empty.cst', 1, 256],
+    ['empty', 1, 0x80000040],
+    ['missing.cst', 0, 256],
+    ['%s[G200].cst', 1, 0x80000040],
+  ]) {
+    const program = await readKCS(kcsProgram([[37, canary], [37, address], [43, 322, 4], [59]]));
+    task.status = 'ready';
+    task.io = null;
+    const m = (task.machine = new KCSMachine(
+      program,
+      { native: (id, args, machine) => runtime.scheduler.native(task, id, args, machine) },
+      runtime.scheduler.shared,
+    ));
+    m.writeString('chapter', 200);
+    m.writeString(name, address);
+    const memory = m.bytes(0, 4096).slice(),
+      shared = m.shared.slice(),
+      floor = m.sp;
+    assert.equal((await runtime.scheduler.execute(task)).status, 'halted');
+    assert.equal(m.sp, floor + 8);
+    assert.equal(m.pop(), result);
+    assert.equal(m.pop(), canary);
+    assert.deepEqual(m.bytes(0, 4096), memory);
+    assert.deepEqual(m.shared, shared);
+    assert.equal(runtime.sceneData(task), null);
+  }
+  assert.deepEqual(
+    reads.map(([, category]) => category),
+    Array(6).fill('scene'),
+  );
+  const before = reads.length;
+  await assert.rejects(
+    async () => runtime.native('main', 322, [0x7fffffff], task.machine, task),
+    /memory|unmapped/iu,
+  );
+  assert.equal(reads.length, before);
 });
 
 test('2.6.1.23 task Scene GCALLs preserve raw names, markers and captured strings across cold restore', async (t) => {

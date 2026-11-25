@@ -578,6 +578,11 @@ const mainEvidence = [
       'Own 2.6.1.23 wrappers 0x483c10/0x484680 take four words, query raw 162 through the real Script tree and save/load one compact history side through the original in-memory CSS owner while preserving the other side.',
   },
   {
+    ids: [322],
+    value:
+      'Own 2.6.1.23 wrapper 0x485d70 formats the guest CP932 name, resolves the scene category and reports whether the virtual-file open succeeds; an existing empty file succeeds without parsing CatScene data.',
+  },
+  {
     ids: [385, 386],
     value:
       'Own 2.6.1.23 four-word CSS scene history wrappers and 0x5a39e0 headerless 40-byte records',
@@ -2127,6 +2132,23 @@ export default {
         { ids: [864, 868], fields: { resultWritten: false } },
         { ids: [515, 518, 519], fields: { resultWritten: true } },
         { ids: [516, 517], fields: { resultWritten: false } },
+        {
+          ids: [322],
+          fields: {
+            resultWritten: true,
+            parameters: [
+              {
+                ...NATIVE_SEMANTICS.main[322].signature.parameters[0],
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: { kind: 'format-string', encoding: 'CP932' },
+                },
+              },
+            ],
+          },
+        },
         {
           ids: [238],
           fields: {
