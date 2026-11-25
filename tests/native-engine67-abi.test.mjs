@@ -1171,6 +1171,58 @@ for (const version of [1, 2]) {
         ...overrides,
       });
     };
+  test(`2.6.1.67 ${table} UV updates preserve the original x87 words and current quad`, async () => {
+    const marker = 0x6cf11937,
+      samples = [
+        {
+          args: [2.5, -100, 5.5, 200].map(floatBits),
+          width: 8,
+          height: 16,
+          uv: [1 / 4, 1 / 8, 5 / 8, 1 / 8, 1 / 4, 5 / 16, 5 / 8, 5 / 16].map(floatBits),
+        },
+        {
+          args: [0xe2709dc0, 0xdadaecf4, 0x02c1761f, 0xb7ca33c3],
+          width: bitsFloat(0x7ed94cf2),
+          height: bitsFloat(0x3f4247a9),
+          uv: [
+            0xa30dbbe6, 0xe29e8742, 0x8025b2ee, 0xe29e8742, 0xa30dbbe6, 0xbf28a9f2, 0x8025b2ee,
+            0xbf28a9f2,
+          ],
+        },
+        {
+          args: [0x3f800000, 0xc2b8a418, 0xff801234, 0xb788d897],
+          width: 1,
+          height: 1024,
+          uv: [
+            0x3f000000, 0x3a000000, 0xffc01234, 0x3a000000, 0x3f000000, 0xffc01234, 0xffc01234,
+            0xffc01234,
+          ],
+        },
+      ];
+    for (const { args, width, height, uv } of samples) {
+      const instance = await particle([[37, marker], ...particleCall(29, args), [59]], {
+        count: 2,
+        width,
+        height,
+      });
+      instance.now = 1;
+      const words = new Uint32Array(instance.quads.buffer);
+      words.fill(marker);
+      assert.equal(instance.machine.run().status, 'halted');
+      assert.equal(instance.machine.pop(), marker);
+      assert.equal(instance.machine.sp, instance.machine.floor);
+      assert.deepEqual([...words.slice(0, 28)], Array(28).fill(marker));
+      assert.deepEqual(
+        [...words.slice(28)].filter((_, i) => i % 7 >= 5),
+        uv,
+      );
+      assert.ok([...words.slice(28)].filter((_, i) => i % 7 < 5).every((word) => word === marker));
+    }
+    const malformed = await particle([...particleCall(29, [0, 0, 0]), [59]]);
+    assert.throws(() => malformed.update(0), /requires 4 arguments/);
+    assert.equal(malformed.calls.size, 0);
+  });
+
   test(`2.6.1.67 ${table} fixed state, viewport, quad, register and visibility native wrappers`, async () => {
     const marker = 0xa5a5a5a5,
       position = [0x80000000, 0x7fc12345, 0x3fc00000],
@@ -1246,8 +1298,8 @@ for (const version of [1, 2]) {
     assert.equal(m.pop(), marker);
     assert.equal(m.sp, sp);
     assert.deepEqual(instance.update(10), { active: false, executed: 0 });
-    const guarded = await particle([...particleCall(29, [1, 2, 3, 4]), [59]]);
-    assert.throws(() => guarded.update(9), /Unreviewed PTCL native .*\/29/);
+    const guarded = await particle([...particleCall(0, [64]), [59]]);
+    assert.throws(() => guarded.update(9), /Unreviewed PTCL native .*\/0/);
   });
 
   test(`2.6.1.67 ${table} distance and triangle wave retain the native x87 words`, async () => {

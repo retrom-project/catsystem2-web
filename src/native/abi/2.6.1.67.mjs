@@ -81,7 +81,7 @@ const triangleEvidence =
 const particleDistanceEvidence =
   'Own Particle tables share the six-float wrapper at 0x49a410. Its private distance body stores the three deltas at single precision, adds squared x and y before z, and stores the sum as f32 before the CRT square root. Control 1 writes the result.';
 const particleStateSlots = [1, 2, 4, 5, 27, 28, 30, 31, 32, 35, 36, 39, 40];
-const particleGeometrySlots = [22, 23, 24, 25, 26, 38];
+const particleGeometrySlots = [22, 23, 24, 25, 26, 29, 38];
 const particleRecoveredSlots = [
   ...particleStateSlots,
   ...particleGeometrySlots,
@@ -119,6 +119,11 @@ const particleStateSignatures = {
   fields: { resultWritten: true },
 };
 const particleGeometryEvidence = [
+  {
+    ids: [29],
+    value:
+      'Own Particle tables alias the complete UV wrapper at 0x49a180. It reads the first and third raw f32 input words, subtracts one half, and writes four UV pairs divided by the retained texture dimensions under x87 single precision. The second and fourth arguments and other quad words remain unchanged. Control 2 leaves the result unwritten.',
+  },
   {
     ids: [3],
     value:
@@ -282,6 +287,7 @@ export default {
     loadQuietsFloatWords: true,
     frameScale: 'x87-uint32',
     quadUsesX87: true,
+    textureCoordinatesUseX87: true,
     distanceUsesX87: true,
     projectionBoundsUseX87: true,
     projectionBoundsUseSSE: true,
@@ -4011,7 +4017,7 @@ export default {
     'particle-v1': {
       count: 44,
       slots: {
-        unknown: [0, 29],
+        unknown: [0],
         recovered: particleRecoveredSlots,
       },
       evidence: [
@@ -4055,7 +4061,7 @@ export default {
     'particle-v2': {
       count: 51,
       slots: {
-        unknown: [0, 29],
+        unknown: [0],
         recovered: [...particleRecoveredSlots, 44, 45, 46, 47, 48, 49, 50],
       },
       evidence: [
