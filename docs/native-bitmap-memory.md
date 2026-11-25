@@ -36,6 +36,14 @@ Script bitmap restore reconstructs JS state and aliases. Consumer-owned raw
 views use their separately recorded PE checkpoint identity. All script CPU operations now execute in JS. Explicit decoder/capture imports
 remain separate value transfers.
 
+Alpha blits reuse the retained renderer's packed integer row compositor for
+aligned, separate ordinary RGBA arrays. The same independently clipped rows,
+transparent edge RGB and integer opacity rules apply. Each row rechecks storage
+after its live geometry and edge reads; aliases, shared/resizable arrays,
+fractional spans and custom pixel methods retain scalar processing. Pixel
+providers, their awaits, revision publication and full VRAM writes keep their
+existing order. This creates no new bitmap or checkpoint ownership.
+
 [The JS operation dispatcher](../src/native/bitmap-operations.mjs) implements
 these contracts, with arithmetic in [bitmap-pixels](../src/native/bitmap-pixels.mjs):
 

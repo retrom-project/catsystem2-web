@@ -8,8 +8,37 @@ import { readNativeResource, nativeCategoryFilename } from './resource-file.mjs'
 import { ImageStore, HG3 } from '../formats/hg3.mjs';
 import { SceneImagePreparation } from './scene-image-preparation.mjs';
 import { parseNativeInteger } from './standard.mjs';
+import { blendPackedRow, packedBitmapWords } from './raster-kernel.mjs';
 const f = Math.fround;
 const retainedBackings = new WeakMap();
+const typedArray = Object.getPrototypeOf(Uint8ClampedArray.prototype),
+  ordinaryTypedProperties = new Map(
+    ['buffer', 'byteOffset', 'length', 'set', 'subarray'].map((key) => [
+      key,
+      Object.getOwnPropertyDescriptor(typedArray, key),
+    ]),
+  ),
+  resizableBuffer = Object.getOwnPropertyDescriptor(ArrayBuffer.prototype, 'resizable')?.get;
+function bitmapBlendWords(bytes) {
+  if (!ArrayBuffer.isView(bytes) || Object.getPrototypeOf(bytes) !== Uint8ClampedArray.prototype)
+    return null;
+  for (const [key, original] of ordinaryTypedProperties) {
+    const current = Object.getOwnPropertyDescriptor(typedArray, key);
+    if (
+      Object.hasOwn(bytes, key) ||
+      Object.hasOwn(Uint8ClampedArray.prototype, key) ||
+      current?.get !== original.get ||
+      current?.value !== original.value
+    )
+      return null;
+  }
+  if (
+    !(bytes.buffer instanceof ArrayBuffer) ||
+    (resizableBuffer && Reflect.apply(resizableBuffer, bytes.buffer, []))
+  )
+    return null;
+  return packedBitmapWords(bytes);
+}
 const size = (width, height, empty = false) => {
   if (
     !Number.isSafeInteger(width) ||
@@ -341,12 +370,30 @@ export class NativeBitmap {
       }
       if (!copy && dr[0] > 0 && dest.subarray(output - 4, output).every((v) => !v))
         dest.set([data[start], data[start + 1], data[start + 2], 0], output - 4);
-      for (let x = 0; x < count; x++) {
-        const src = start + x * 4,
-          at = output + x * 4;
-        if (copy) dest.set(data.subarray(src, src + 4), at);
-        else blendBitmapPixel(dest, at, data, src, alpha);
-      }
+      // Check after the live geometry/edge reads. Unknown pixel methods and
+      // aliased or unusual storage keep their existing per-pixel call order.
+      const outputWords = !copy && typeof alpha === 'number' ? bitmapBlendWords(dest) : null,
+        inputWords = outputWords ? bitmapBlendWords(data) : null,
+        packed = inputWords && outputWords.buffer !== inputWords.buffer && Number.isInteger(count);
+      if (
+        packed &&
+        Number.isInteger(start) &&
+        Number.isInteger(output) &&
+        start % 4 === 0 &&
+        output % 4 === 0 &&
+        start >= 0 &&
+        output >= 0 &&
+        start + count * 4 <= data.length &&
+        output + count * 4 <= dest.length
+      )
+        blendPackedRow(dest, output, data, start, count, outputWords, inputWords, alpha);
+      else
+        for (let x = 0; x < count; x++) {
+          const src = start + x * 4,
+            at = output + x * 4;
+          if (copy) dest.set(data.subarray(src, src + 4), at);
+          else blendBitmapPixel(dest, at, data, src, alpha);
+        }
       if (
         !copy &&
         dr[0] + count < this.width &&
