@@ -18,7 +18,11 @@ test('null gallery tables retain their defined controls without inventing an eng
   assert.equal(nativeGalleryTable(0x19c, [0], {}), undefined);
 });
 
-for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.74'])
+for (const profile of [
+  'nekopara-vol3-engine-2.6.1.76',
+  'sdk-4.01-engine-2.6.1.74',
+  'bokutomo-engine-2.6.1.67',
+])
   test(`${profile} JS gallery tables retain independent bytes across fresh World restoration`, async () => {
     const tables = galleryTableFiles(),
       make = (initialize = true) => dataWorld(profile, Object.fromEntries(tables), { initialize }),
@@ -64,9 +68,8 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
     }
   });
 
-test('2.6.1.23 reads and closes both binary gallery layouts through their original GCALL slots', async (t) => {
+async function legacyGalleryTableSlots(t, profile) {
   const type = 'gallery-table',
-    profile = 'grisaia-jp-engine-2.6.1.23',
     files = galleryTableFiles(),
     namesSlot = [0x13, 64],
     variantsSlot = [0x13, 68],
@@ -138,4 +141,11 @@ test('2.6.1.23 reads and closes both binary gallery layouts through their origin
   assert.deepEqual(await native(413, [variants]), { control: 2 });
   assert.throws(() => native(407, [names]), /released/);
   assert.throws(() => native(414, [variants]), /released/);
-});
+}
+
+for (const [version, profile] of [
+  ['2.6.1.23', 'grisaia-jp-engine-2.6.1.23'],
+  ['2.6.1.67', 'bokutomo-engine-2.6.1.67'],
+])
+  test(`${version} reads and closes both binary gallery layouts through their original GCALL slots`, (t) =>
+    legacyGalleryTableSlots(t, profile));
