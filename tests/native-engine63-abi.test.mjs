@@ -50,6 +50,26 @@ async function executeMain(world, id, argv, setup = () => {}, result) {
   }
 }
 
+test('2.6.1.63 bitmap multiply preserves native BGRA factors and lower depths', async (t) => {
+  const world = await dataWorld(profile, { 'main-369.kcs': mainProgram(369, 2) });
+  t.after(() => world.close({ flushFiles: false }));
+  const { images } = world.graphics,
+    handle = images.create(1, 1, world.main.id),
+    bitmap = images.get(handle),
+    color = 0x7f69ebac;
+
+  await executeMain(world, 369, [0, color]);
+  for (const [bpp, expected] of [
+    [2, [153, 127, 99, 173]],
+    [3, [153, 127, 99, 173]],
+    [4, [63, 117, 66, 86]],
+  ]) {
+    Object.assign(bitmap.state, { bpp, rgba: Uint8ClampedArray.of(153, 127, 99, 173) });
+    await executeMain(world, 369, [handle, color]);
+    assert.deepEqual([...(await bitmap.pixels())], expected);
+  }
+});
+
 test('2.6.1.63 bitmap and image-owner geometry preserve raw coordinates and null results', async (t) => {
   const ids = [363, 371, 372, 373, 374, 718, 719, 720];
   const world = await dataWorld(
