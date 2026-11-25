@@ -317,9 +317,19 @@ export async function nativeQuestionTable(id, args, machine, services) {
   const table = owner.data,
     config = table.configuration,
     value = (word) => nativeReply(1, word);
+  const formattedName = () => {
+    const name = nativeDataFormat(args, machine, services, 1);
+    if (
+      name === null &&
+      services.profile &&
+      nativeABI(services.profile).database?.questionFormatRequired
+    )
+      throw new RangeError('Native question operation requires a mapped format');
+    return name;
+  };
   if (id === 0x2e7) handles.release(handle, 'content-database');
   else if (id === 0x2e8 || id === 0x2ee) {
-    const name = nativeDataFormat(args, machine, services, 1);
+    const name = formattedName();
     if (name === null) return value(0);
     if (
       id === 0x2e8 &&
@@ -345,7 +355,7 @@ export async function nativeQuestionTable(id, args, machine, services) {
       ),
     );
   } else if (id === 0x2ef) {
-    const name = nativeDataFormat(args, machine, services, 1);
+    const name = formattedName();
     return value(Number(name !== null && table.configure(nativeDataKey(name))));
   } else if (id === 0x2e9) return value(table.count);
   else if ([0x2ea, 0x2eb, 0x2ec, 0x2ed, 0x2fe, 0x303, 0x304, 0x308].includes(id)) {

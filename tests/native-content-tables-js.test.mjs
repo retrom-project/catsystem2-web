@@ -203,6 +203,11 @@ test('fixed SDK .23 question GCALL keeps parsed state, owner identity and native
     assert.equal(await call(fresh, 771, [question, 0]), 1);
     assert.deepEqual(fresh.runtime.imageDataBuffers.process.read(pointer, 276), saved);
     await assert.rejects(() => call(fresh, 776, [question, -1, 512]), /reads before its pool/);
+    for (const id of [744, 750, 751])
+      await assert.rejects(
+        () => call(fresh, id, [question, 0x7fffffff]),
+        /requires a mapped format/,
+      );
     await call(fresh, 743, [question]);
     await assert.rejects(() => call(fresh, 745, [question]), /released/);
     assert.equal(await call(fresh, 745, [second]), 0);

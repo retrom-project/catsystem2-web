@@ -1355,6 +1355,7 @@ export default {
   database: {
     nullExportPolicy: null,
     questionIdentitySignedIndex: true,
+    questionFormatRequired: true,
     questionLoadSkipsKnownFiles: true,
     questionGenrePlaceholderContinues: true,
     missionCharacterQueryRequiresEntry: true,
