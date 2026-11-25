@@ -40,6 +40,7 @@ const sdk = profile.startsWith('sdk-'),
 let fixture,
   comparisons = 0,
   uninitializedReaderWords = 0;
+engine.createDataBufferProjection();
 new NativeEngineFiles(engine, { game: { readCategory: (name) => fixture.services.read(name) } });
 engine.patch(
   sdk ? 0x8a6910 : 0x8772a0,
@@ -112,7 +113,9 @@ try {
         const cursor = fixture.handles.get(handle, 'history-cursor'),
           count = p.load(raw + 4),
           array = p.load(raw + 12),
-          initialized = cursor.rows.map((row) => {
+          initialized = Array.from({ length: cursor.capacity }, (_, index) =>
+            cursor.row(index),
+          ).map((row) => {
             if (row.reader.body) initializedReaders.add(row.reader);
             const known = initializedReaders.has(row.reader);
             if (!known) uninitializedReaderWords += 3;
@@ -137,14 +140,16 @@ try {
           expected = {
             capacity: cursor.capacity,
             lastPath: cursor.lastPath,
-            rows: cursor.rows.map((row, i) => ({
-              path: row.path,
-              block: row.block,
-              lastBlock: row.lastBlock,
-              valid: row.valid,
-              identity: modelReaders.get(row.reader),
-              reader: readerState(row, initialized[i]),
-            })),
+            rows: Array.from({ length: cursor.capacity }, (_, index) => cursor.row(index)).map(
+              (row, i) => ({
+                path: row.path,
+                block: row.block,
+                lastBlock: row.lastBlock,
+                valid: row.valid,
+                identity: modelReaders.get(row.reader),
+                reader: readerState(row, initialized[i]),
+              }),
+            ),
           };
         check(
           actual,
@@ -169,7 +174,7 @@ try {
           const cursor = fixture.handles.get(handle, 'history-cursor');
           for (let i = 0; i < capacity; i++) {
             readers.set(p.load(p.load(raw + 12) + i * 20 + 12), i);
-            modelReaders.set(cursor.rows[i].reader, i);
+            modelReaders.set(cursor.row(i).reader, i);
           }
         } else if (control === 1) check(p.load(out), reply.value, `result ${id.toString(16)}`);
         else check(p.load(out), 0x3adacafe, 'void preserves output');

@@ -26,16 +26,11 @@ export class NativeHistoryCursor {
   constructor(sceneHandle, capacity) {
     this.sceneHandle = sceneHandle >>> 0;
     this.capacity = capacity >>> 0;
-    if ((this.capacity | 0) < 0 || this.capacity > 0x100000)
+    if ((this.capacity | 0) < 0)
       throw new RangeError('Native history cursor has no mapped reader slots');
     this.lastPath = -1;
-    this.rows = Array.from({ length: this.capacity }, () => ({
-      path: -1,
-      block: -1,
-      lastBlock: -1,
-      reader: new NativeSceneReader(),
-      valid: 0,
-    }));
+    this.rotationOffset = 0;
+    this.slots = new Map();
   }
   history(services) {
     if (!this.sceneHandle)
@@ -47,10 +42,18 @@ export class NativeHistoryCursor {
       at = Math.min(index >>> 0, history.path.length - 1);
     return { at, entry: history.path[at] ?? null };
   }
-  row(index) {
+  row(index, create = true) {
     if ((index | 0) < 0)
       throw new RangeError('Native history cursor reads before its reader slots');
-    return this.rows[index | 0];
+    index |= 0;
+    if (index >= this.capacity) return undefined;
+    const physical = (this.rotationOffset + index) % this.capacity;
+    let row = this.slots.get(physical);
+    if (!row && create) {
+      row = { path: -1, block: -1, lastBlock: -1, reader: new NativeSceneReader(), valid: 0 };
+      this.slots.set(physical, row);
+    }
+    return row;
   }
   async refresh(row, services) {
     const { at, entry } = this.path(row.path, services);
@@ -97,15 +100,14 @@ export class NativeHistoryCursor {
     }
   }
   rotate(forward) {
-    if (!this.rows.length) throw new RangeError('Native history cursor has no mapped reader slots');
-    if (forward) this.rows.push(this.rows.shift());
-    else this.rows.unshift(this.rows.pop());
+    if (!this.capacity) throw new RangeError('Native history cursor has no mapped reader slots');
+    this.rotationOffset = (this.rotationOffset + (forward ? 1 : this.capacity - 1)) % this.capacity;
   }
   async initialize(services) {
     const { at, entry } = this.path(-1, services);
     if (!entry) return;
     this.lastPath = at;
-    const row = this.rows[0];
+    const row = this.row(0);
     if (!row) throw new RangeError('Native history cursor has no mapped reader slots');
     row.path = at;
     row.block = row.lastBlock = entry.value | 0;
@@ -123,17 +125,17 @@ export class NativeHistoryCursor {
       row.valid = await this.text(row, services);
     }
     if (this.capacity > 1) {
-      for (let i = 0; i < this.capacity - 1; i++) await this.move(0, services);
+      for (let i = 0; i < this.capacity - 1; i++) if (!(await this.move(0, services))) break;
     } else if (row.block === row.lastBlock) await this.move(0, services);
   }
   async move(direction, services) {
     const forward = !!direction;
     this.rotate(forward);
     if (!forward) {
-      const row = this.rows[0],
+      const row = this.row(0),
         backup = { ...row };
       if (this.capacity >= 2) {
-        const next = this.rows[1];
+        const next = this.row(1);
         [row.path, row.block, row.lastBlock] = [next.path, next.block, next.lastBlock];
       }
       row.valid = 0;
@@ -160,18 +162,22 @@ export class NativeHistoryCursor {
     }
     let index = 0;
     if (this.capacity >= 2) {
-      index = this.capacity - 2;
-      while (index >= 0 && !this.rows[index].valid) index--;
+      index = -1;
+      for (const [physical, row] of this.slots) {
+        if (!row.valid) continue;
+        const logical = (physical + this.capacity - this.rotationOffset) % this.capacity;
+        if (logical <= this.capacity - 2) index = Math.max(index, logical);
+      }
       if (index < 0) {
         this.rotate(false);
         return 0;
       }
       index++;
     }
-    const row = this.rows[index],
+    const row = this.row(index),
       backup = { ...row };
     if (index) {
-      const previous = this.rows[index - 1];
+      const previous = this.row(index - 1);
       [row.path, row.block, row.lastBlock] = [previous.path, previous.block, previous.lastBlock];
     }
     row.valid = 0;
@@ -206,19 +212,34 @@ export class NativeHistoryCursor {
       sceneHandle: this.sceneHandle,
       capacity: this.capacity,
       lastPath: this.lastPath,
-      rows: this.rows.map((row) => ({ ...row, reader: row.reader.snapshot() })),
+      rotationOffset: this.rotationOffset,
+      slots: [...this.slots]
+        .sort(([left], [right]) => left - right)
+        .map(([index, row]) => ({ index, ...row, reader: row.reader.snapshot() })),
     };
   }
   restore(state) {
+    if (
+      !Number.isInteger(state.capacity) ||
+      state.capacity < 0 ||
+      state.capacity > 0x7fffffff ||
+      !Number.isInteger(state.rotationOffset) ||
+      state.rotationOffset < 0 ||
+      (state.capacity ? state.rotationOffset >= state.capacity : state.rotationOffset !== 0) ||
+      !Array.isArray(state.slots)
+    )
+      throw new Error('Native history cursor checkpoint has an invalid slot layout');
+    const slots = new Map();
+    for (const { index, ...row } of state.slots) {
+      if (!Number.isInteger(index) || index < 0 || index >= state.capacity || slots.has(index))
+        throw new Error('Native history cursor checkpoint has an invalid slot index');
+      slots.set(index, { ...row, reader: new NativeSceneReader().restore(row.reader) });
+    }
     this.sceneHandle = state.sceneHandle >>> 0;
-    this.capacity = state.capacity >>> 0;
+    this.capacity = state.capacity;
     this.lastPath = state.lastPath | 0;
-    if ((this.capacity | 0) < 0 || this.capacity !== state.rows.length)
-      throw new Error('Native history cursor checkpoint slot count differs');
-    this.rows = state.rows.map((row) => ({
-      ...row,
-      reader: new NativeSceneReader().restore(row.reader),
-    }));
+    this.rotationOffset = state.rotationOffset;
+    this.slots = slots;
     return this;
   }
 }
@@ -260,7 +281,7 @@ export function nativeHistoryCursor(id, args, machine, services = {}) {
     if (!services.read) return undefined;
     return cursor.move(args[1], services).then(word);
   }
-  const row = cursor.row(args[1]);
+  const row = cursor.row(args[1], false);
   if (!row?.valid) return word(0);
   if (id === 0x180) {
     // Unlike string destinations, these translated pointers are mandatory.

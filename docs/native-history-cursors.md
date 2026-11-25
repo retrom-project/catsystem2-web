@@ -31,6 +31,13 @@ forward scans start after the previous valid slot. Blocks without a speaker or
 message are skipped. A failed movement restores the record and its position in
 the window, while retaining any reader cache changed during the attempted scan.
 
+The browser stores logical capacity and a rotation offset beside one Map of
+occupied physical slots. A slot obtains an independent reader when needed;
+unoccupied slots retain the original invalid default state. Rotation changes
+the offset, and forward selection visits occupied valid slots. Initialization
+stops when no older display block remains. This represents large legal windows
+without allocating a reader for every unused slot or repeating failed scans.
+
 Creation starts at the final history entry and fills older slots. A one-slot
 window excludes the current final block. The remembered final path index is a
 creation boundary; later queries still obtain each path record's current last
@@ -49,8 +56,10 @@ pointers. Address zero is mapped VM data, not a null destination.
 Releasing a cursor destroys every allocated reader, then its record array and
 descriptor. The scene-data resource is borrowed and remains owned by its caller.
 Access after the source has been released is an explicit dangling-resource error.
-Snapshots preserve that same scene handle, slot order and reader state; restoring
-the runtime reconstructs those references without a second history authority.
+Snapshots preserve that same scene handle, capacity, rotation offset and occupied
+slot/reader records. Restoring the runtime reconstructs those references without
+a second history authority or a dense cache of unused rows. Native CSS file
+records keep their original layout.
 
 `scripts/verify-native-history-cursor.mjs FIXED_EXE IGNORED_REPORT` executes all
 six wrappers and the original rotating-window, history, CST-load/text and
@@ -66,10 +75,11 @@ before that load and counted separately in the private reports. Negative slot
 indices, allocation failure and a nonempty history with zero allocated slots
 would access invalid native storage; the browser implementation diagnoses them.
 An empty history can retain a zero-slot descriptor and release it normally.
-The browser currently rejects positive slot counts above `0x100000` before
-allocation. Those counts may be valid in an original process with sufficient
-memory. They remain an ordinary SDK shape requiring further implementation
-or resource-budget work, rather than an original undefined-input claim.
+Positive counts above `0x100000` use the same occupied-slot representation.
+The public GCALL lifecycle test creates a 1,048,577-slot window backed by only
+the visited readers, exports its normal checkpoint file, restores it into a
+fresh runtime, continues queries and releases the cursor separately from its
+borrowed Scene. An empty 2,097,153-slot window requires no reader slots.
 
 Five public tests cover rotation, command/text results, single-slot behavior,
 ownership and both profiles' dispatcher/fresh-runtime restoration. The authored
