@@ -20393,6 +20393,29 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    585: {
+      name: 'legacyText.setCurrentAndDefaultColor',
+      family: 'legacyText',
+      signature: {
+        argumentWords: 2,
+        controlCodes: [2],
+        parameters: [
+          {
+            name: 'task',
+            description: 'Legacy text task ID',
+            type: { kind: 'object-id', objectKind: 'legacy-text' },
+          },
+          {
+            name: 'color',
+            description: 'Color DWORD',
+            type: { kind: 'bits', bits: 32 },
+          },
+        ],
+        result: { kind: 'void', description: 'void' },
+        resultWritten: false,
+        review: 'declared',
+      },
+    },
     586: {
       name: 'motion.setDefaultFlags',
       family: 'motion',
@@ -20920,6 +20943,49 @@ export const NATIVE_SEMANTICS = freeze({
           kind: 'boolean',
         },
         resultWritten: null,
+        review: 'declared',
+      },
+    },
+    599: {
+      name: 'legacyText.setFontSizes',
+      family: 'legacyText',
+      signature: {
+        argumentWords: 6,
+        controlCodes: [2],
+        parameters: [
+          {
+            name: 'task',
+            description: 'Legacy text task ID',
+            type: { kind: 'object-id', objectKind: 'legacy-text' },
+          },
+          {
+            name: 'smallest',
+            description: 'Smallest glyph size',
+            type: { kind: 'integer', bits: 32, signed: true },
+          },
+          {
+            name: 'small',
+            description: 'Small glyph size',
+            type: { kind: 'integer', bits: 32, signed: true },
+          },
+          {
+            name: 'normal',
+            description: 'Normal glyph size',
+            type: { kind: 'integer', bits: 32, signed: true },
+          },
+          {
+            name: 'large',
+            description: 'Large glyph size',
+            type: { kind: 'integer', bits: 32, signed: true },
+          },
+          {
+            name: 'largest',
+            description: 'Largest glyph size',
+            type: { kind: 'integer', bits: 32, signed: true },
+          },
+        ],
+        result: { kind: 'void', description: 'void' },
+        resultWritten: false,
         review: 'declared',
       },
     },

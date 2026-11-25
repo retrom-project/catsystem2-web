@@ -14,6 +14,8 @@ export const NATIVE_LEGACY_TEXT_IDS = Object.freeze([
   0x1a2,
   0x1c8,
   0x22d,
+  0x249,
+  0x257,
 ]);
 const vmMemory = (machine) => {
   if (machine.bytes && machine.load) return machine;
@@ -179,11 +181,11 @@ export class NativeLegacyTextRuntime {
       await send(114, arg(1), 0, bytes);
       return nativeReply(2);
     }
-    if (id === 0x89) {
+    if (id === 0x89 || id === 0x257) {
       const bytes = new Uint8Array(20),
         v = new DataView(bytes.buffer);
       for (let i = 0; i < 5; i++) v.setUint32(i * 4, arg(i + 1), true);
-      await send(117, 0, 0, bytes);
+      await send(id === 0x89 ? 117 : 123, 0, 0, bytes);
       return nativeReply(2);
     }
     if (id === 0x88) {
@@ -210,6 +212,7 @@ export class NativeLegacyTextRuntime {
         0x8b: 111,
         0x1c8: 120,
         0x22d: 121,
+        0x249: 122,
       },
       message = messages[id];
     if (message === undefined) return undefined;

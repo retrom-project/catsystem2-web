@@ -585,8 +585,19 @@ test('2.6.1.67 kind 8 Text preserves its original packets, rows and published cl
       [123, 3],
       [124, 2],
       [125, 1],
+      [126, 3],
+      [127, 2],
+      [128, 2],
+      [129, 1],
+      [131, 2],
+      [132, 1],
+      [138, 3],
+      [139, 2],
       [418, 4],
+      [456, 2],
       [557, 2],
+      [585, 2],
+      [599, 6],
     ]),
     marker = 0xe59f171d,
     programs = Object.fromEntries(
@@ -632,8 +643,10 @@ test('2.6.1.67 kind 8 Text preserves its original packets, rows and published cl
       args.forEach((word, index) => machine.store(64 + index * 4, word));
       initialize(machine);
       assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
-      assert.equal(machine.sp, start + 4);
+      assert.equal(machine.sp, start + (id === 129 ? 8 : 4));
+      const result = id === 129 ? machine.pop() : undefined;
       assert.equal(machine.pop(), marker);
+      return result;
     } finally {
       await world.objects.release(task.id);
     }
@@ -670,18 +683,46 @@ test('2.6.1.67 kind 8 Text preserves its original packets, rows and published cl
   assert.ok(uploads[0].bytes.every((byte) => byte === 0));
   await call(124, [0x76512345, 513], (machine) => machine.writeString('本文', 513));
   assert.deepEqual(model.text.rows, []);
+  await call(126, [target, 1, 11]);
+  await call(127, [target, -2]);
+  await call(128, [target, 0x80000000]);
+  assert.equal(await call(129, [target]), 1);
+  await assert.rejects(call(129, [0x76512345]), /no initialized 32-bit output word/);
+  await call(131, [target, 18]);
+  await call(138, [target, 17, 6]);
+  await call(456, [target, 1]);
+  await call(585, [target, 0x843210ab]);
+  await call(599, [target, 9, 11, 20, 32, 40]);
+  await call(124, [target, 513], (machine) => machine.writeString('A', 513));
+  await call(139, [target, 1]);
+  await call(132, [target]);
+  assert.deepEqual(
+    Array.from(model.text.rows[0], (word) => word >>> 0),
+    [65, 0x843210ab, 17, 0, 11, 18, 0, 0, 0, 0],
+  );
+  assert.deepEqual(Array.from(model.text.rows[1]), [0xffff, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  assert.deepEqual(
+    [46, 183, 186, 193, 194, 195, 196, 197, 469, 471, 472, 473, 474, 475].map(
+      (i) => model.text.w(i) >>> 0,
+    ),
+    [0x843210ab, 18, 0xfffffffe, 0x843210ab, 1, 11, 1, 0x80000000, 1, 9, 11, 20, 32, 40],
+  );
+  const restored = await dataWorld(profile, programs, { initialize: false });
+  t.after(() => restored.close({ flushFiles: false }));
+  await restored.restore(structuredClone(world.snapshot()));
+  assert.deepEqual(restored.legacyText.tasks.get(owner).text.snapshot(), model.text.snapshot());
 });
 
 test('2.6.1.67 GCALL still rejects the adjacent unreviewed native slot', async () => {
-  const args = [17, 18, 19, 20, 21, 22],
-    { runtime, task } = await run([...args.map((arg) => [37, arg]), [43, 599, 24], [59]]);
+  const args = [17, 18, 19],
+    { runtime, task } = await run([...args.map((arg) => [37, arg]), [43, 134, 12], [59]]);
   await assert.rejects(
     () => runtime.scheduler.execute(task),
     (error) => {
       assert.ok(error instanceof UnsupportedKCSNative);
       assert.equal(error.details.profile, profile);
       assert.equal(error.details.table, 'main');
-      assert.equal(error.details.id, 599);
+      assert.equal(error.details.id, 134);
       assert.deepEqual(error.details.args, args);
       return true;
     },
