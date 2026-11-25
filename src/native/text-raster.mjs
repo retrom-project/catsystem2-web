@@ -10,8 +10,8 @@ const MAX_RASTER_BYTES = 4 * 1024 * 1024,
   typedLength = Object.getOwnPropertyDescriptor(typedArray, 'length').get,
   resizable = Object.getOwnPropertyDescriptor(ArrayBuffer.prototype, 'resizable')?.get;
 function ordinaryBuffer(view) {
-  const buffer = typedBuffer.call(view);
-  return buffer instanceof ArrayBuffer && !resizable?.call(buffer);
+  const buffer = Reflect.apply(typedBuffer, view, []);
+  return buffer instanceof ArrayBuffer && !(resizable && Reflect.apply(resizable, buffer, []));
 }
 function rasterIdentity(glyph, r, padding) {
   if (
@@ -34,10 +34,10 @@ function rasterIdentity(glyph, r, padding) {
     !ArrayBuffer.isView(alpha) ||
     Object.getPrototypeOf(alpha) !== Uint8Array.prototype ||
     !ordinaryBuffer(alpha) ||
-    typedLength.call(alpha) !== glyph.width * glyph.height
+    Reflect.apply(typedLength, alpha, []) !== glyph.width * glyph.height
   )
     return null;
-  return { alpha, values, length: typedLength.call(alpha) };
+  return { alpha, values, length: Reflect.apply(typedLength, alpha, []) };
 }
 function sameRaster(cached, current) {
   if (
@@ -59,7 +59,7 @@ function keepRaster(cache, glyph, identity, shape) {
   if (bytes > MAX_RASTER_BYTES) return;
   cache.entries.set(glyph, {
     values: identity.values,
-    alpha: Uint8Array.prototype.slice.call(identity.alpha),
+    alpha: Reflect.apply(Uint8Array.prototype.slice, identity.alpha, []),
     shape: { ...shape, rgba: shape.rgba.slice(), rect: [...shape.rect] },
     bytes,
   });
