@@ -28,6 +28,8 @@ const soundReceivers = [
   200,
   201,
   202,
+  205,
+  206,
   208,
 ];
 const toSoundRaw = (raw) => ({ min: raw + 6, max: raw + 6, offset: -6 });
@@ -491,6 +493,10 @@ export default {
           { min: 84, max: 84, offset: 3 },
         ],
       },
+      draw: {
+        unmapped: 'reject',
+        raw: [{ min: 211, max: 212, offset: -6 }],
+      },
       sound: {
         unmapped: 'reject',
         canonical: [
@@ -930,6 +936,7 @@ export default {
     imageFilterRequiresLayers: true,
     planeAlphaFlags: 1,
     drawBitmapRequiresRenderer: true,
+    drawAnimationVariableRequiresRenderer: true,
     drawEnablePendingPolicy: 'rising-edge',
     bitmapBlitUsesSourceSize: true,
     screenCaptureOpaque: true,
@@ -989,7 +996,7 @@ export default {
           778, 779, 780, 781, 782, 783, 784, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801,
           802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819,
           820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 837, 838, 839, 840, 841,
-          842, 843, 845, 846, 847, 853, 854, 855, 856, 857, 860, 861, 879, 880, 881, 884, 904, 905,
+          842, 843, 845, 846, 847, 853, 854, 855, 856, 857, 860, 861, 884, 904, 905,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
@@ -1015,11 +1022,16 @@ export default {
           712, 713, 714, 715, 717, 718, 719, 720, 723, 724, 726, 727, 728, 730, 731, 732, 733, 736,
           737, 739, 741, 785, 786, 787, 788, 789, 790, 833, 834, 835, 836, 844, 848, 849, 850, 851,
           852, 858, 859, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876,
-          877, 878, 882, 883, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898,
-          899, 900, 901, 902, 903, 934, 935, 936, 937,
+          877, 878, 879, 880, 881, 882, 883, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895,
+          896, 897, 898, 899, 900, 901, 902, 903, 934, 935, 936, 937,
         ],
       },
       evidence: [
+        {
+          ids: [879, 880, 881],
+          value:
+            'Own Draw raw299–301 register a Sound bank, set an ANM DWORD from a two-word packet, and set an unsigned threshold for an existing link. Draw uses root raw33 and Sound raw205/206. The original renderer writes only ANM indexes 0–63 and the frame hook samples in unsigned key order.',
+        },
         {
           ids: [61, 461],
           value:

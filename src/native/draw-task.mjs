@@ -307,7 +307,11 @@ export class NativeDrawTask {
         return 0;
       }
       case 312:
-        if (this.state.renderer) await this.setAnimationVariable(key, load(l), load(l + 4));
+        if (
+          this.state.renderer ||
+          nativeABI(this.world.profile).graphics.drawAnimationVariableRequiresRenderer
+        )
+          await this.setAnimationVariable(key, load(l), load(l + 4));
         return 0;
       case 313: {
         const link = this.state.registrations.find((entry) => entry.key === key);
@@ -335,6 +339,11 @@ export class NativeDrawTask {
     }
   }
   async setAnimationVariable(key, index, value) {
+    if (
+      !this.state.renderer &&
+      nativeABI(this.world.profile).graphics.drawAnimationVariableRequiresRenderer
+    )
+      throw new Error('The Draw animation variable requires an initialized renderer');
     return this.retained().setAnimationVariable(this, key, index, value);
   }
   async soundTarget() {

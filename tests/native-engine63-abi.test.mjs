@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { openImage } from '../src/formats/hg3.mjs';
-import { readKCS } from '../src/kcs.mjs';
+import { KCSMachine, readKCS } from '../src/kcs.mjs';
 import { floatBits, NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
 import { MOTION_ABI } from '../src/motion/abi.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
@@ -16,6 +16,7 @@ import { areaPixelParameters } from './fixtures/area-effect-cases.mjs';
 import { controlFiles } from './fixtures/control-files.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { defaultFESWorld, drawPixels, loadDefaultFES } from './fixtures/default-fes-world.mjs';
+import { imageOwnerFiles } from './fixtures/image-files.mjs';
 import { kcsProgram } from './helpers.mjs';
 
 const profile = 'rebellions-jp-engine-2.6.1.63';
@@ -307,6 +308,83 @@ test('2.6.1.63 Draw borrows its bitmap and redraws a signed region or the full s
     paint(x, y);
   assert.deepEqual(await pixels(), expected);
   assert.equal(draw.state.renderer.bitmap, bitmap);
+});
+
+test('2.6.1.63 Draw binds Sound activity to retained ANM registers', async (t) => {
+  const program = (await imageOwnerFiles()).get('@cat/image/anim.anm');
+  const world = await dataWorld(profile, { 'probe.anm': program });
+  t.after(() => world.close({ flushFiles: false }));
+  const caller = world.main.id,
+    id = await world.objects.create({ kind: 15, parent: caller }),
+    target = world.nativeTaskID(id),
+    draw = world.graphics.drawTasks.get(id),
+    key = (world.nativeTaskID(caller) | (3 << 16)) >>> 0,
+    marker = 0x82345678,
+    deviceEvents = [];
+  let level = 0;
+  world.sound.audio = {
+    channels: new Map(['native:4', 'native:9'].map((name) => [name, {}])),
+    setNativeLevelProperty: (name, property) => deviceEvents.push([name, property]),
+    nativeLevel: (name) => {
+      deviceEvents.push([name]);
+      return level;
+    },
+    stop: () => {},
+  };
+  const call = async (id, ...args) => {
+    const body = await readKCS(
+        kcsProgram([
+          [37, marker],
+          ...args.map((word) => [37, word]),
+          [43, id, args.length * 4],
+          [59],
+        ]),
+      ),
+      task = { ...world.main, io: null },
+      machine = (task.machine = new KCSMachine(
+        body,
+        {
+          native: (id, words, vm) => world.runtime.scheduler.native(task, id, words, vm),
+        },
+        world.runtime.scheduler.shared,
+      ));
+    await world.runtime.scheduler.execute(task);
+    assert.equal(machine.sp, machine.floor + 4);
+    assert.equal(machine.pop(), marker);
+  };
+  await assert.rejects(() => call(880, target, 3, 0, 1), /initialized renderer/);
+  await world.sendEngine(id, caller, 279, 8, 6);
+  const bitmap = world.graphics.images.create(2, 2, caller),
+    one = floatBits(1),
+    fields = [bitmap, 0, 0, 0, 0, 0, 0, 0, 0, one, one, 255, 1, 0, 0];
+  await world.sendEngine(id, caller, 282, 3, 0, { payload: new NativeGraphicsPacket(fields) });
+  await world.graphics.images.release(bitmap);
+  assert.equal(await world.retainedDraw.load(draw, key, 'probe.anm'), true);
+  const source = world.renderSources.get(world.retainedDraw.record(draw, key).source),
+    registers = source.animation.registers;
+  await call(881, target, 3, 7);
+  assert.deepEqual(draw.state.registrations, []);
+  await call(879, target, 3, 4);
+  await call(881, target, 3, 501);
+  await call(879, target, 3, 9);
+  assert.deepEqual(draw.state.registrations, [{ key, bank: 9, threshold: 501 }]);
+  assert.deepEqual(deviceEvents, [
+    ['native:4', 1],
+    ['native:9', 1],
+  ]);
+  await call(880, target, 3, 63, 0xf214a7c8);
+  await call(880, target, 3, 64, 0xffffffff);
+  await call(880, target, 19, 63, 0xffffffff);
+  assert.equal(registers[63], 0xf214a7c8);
+  for (level of [500, 501, 1000]) {
+    await draw.tick();
+    assert.equal(registers[0], Number(level >= 501));
+    assert.deepEqual(deviceEvents.at(-1), ['native:9']);
+  }
+  await call(879, target, 3, 0xffffffff);
+  assert.deepEqual(draw.state.registrations, []);
+  assert.equal(registers[0], 0);
+  assert.deepEqual(deviceEvents.at(-1), ['native:9', 0]);
 });
 
 test('2.6.1.63 Main stubs preserve their original three result behaviors', async () => {
