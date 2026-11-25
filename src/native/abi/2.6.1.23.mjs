@@ -105,6 +105,7 @@ const historyCursorOperations = [379, 380, 381, 382, 383, 384];
 const questionDatabaseOperations = Array.from({ length: 37 }, (_, i) => 742 + i).filter(
   (id) => id !== 769 && id !== 770,
 );
+const selectionDatabaseOperations = [779, 780, 781, 782, 783, 784, 829, 830, 831, 832];
 const missionDatabaseOperations = Array.from({ length: 34 }, (_, i) => 795 + i);
 function contentDatabaseSignatures(ids) {
   return ids.map((id) => {
@@ -113,7 +114,7 @@ function contentDatabaseSignatures(ids) {
       ids: [id],
       fields: {
         resultWritten: signature.controlCodes.includes(1),
-        ...([742, 795].includes(id)
+        ...([742, 779, 795].includes(id)
           ? { result: { kind: 'handle', handleKind: 'content-database', ownership: 'owned' } }
           : {}),
         parameters: signature.parameters.map((parameter) => {
@@ -181,6 +182,11 @@ function geometrySignatures(table, ids) {
   });
 }
 const mainEvidence = [
+  {
+    ids: selectionDatabaseOperations,
+    value:
+      'Own 2.6.1.23 wrappers 0x475930–0x475b80 construct the 12-byte Selection owner at 0x494830. The original 0x494b70 KCDB load preserves the names/work on failure and replaces only tables on success; CP932 name registration, first duplicate wins, signed marked moves and the 1000-swap integer-RNG hole redistribution retain native vector element boundaries in production GCALL.',
+  },
   {
     ids: missionDatabaseOperations,
     value:
@@ -1299,6 +1305,9 @@ export default {
     questionGenrePlaceholderContinues: true,
     missionCharacterQueryRequiresEntry: true,
     missionFilenameRequired: true,
+    selectionFormatRequired: true,
+    selectionReadSizesFirst: true,
+    selectionRedistributeUsesRandom: true,
   },
   sound: {
     banks: 32,
@@ -1575,6 +1584,7 @@ export default {
       signatures: [
         ...contentDatabaseSignatures(questionDatabaseOperations),
         ...contentDatabaseSignatures(missionDatabaseOperations),
+        ...contentDatabaseSignatures(selectionDatabaseOperations),
         ...geometrySignatures('main', mainGeometryOperations),
         {
           ids: [255],

@@ -7,12 +7,15 @@ import {
   contentDatabase,
   MISSION_COLUMNS,
   MISSION_ROWS,
+  SELECTION_COLUMNS,
+  SELECTION_ROWS,
 } from './fixtures/content-database-data.mjs';
 import { SaveSlotFiles } from './fixtures/save-slot-files.mjs';
 import { KCSMachine, readKCS, encodeCP932 } from '../src/kcs.mjs';
 import { kcsProgram } from './helpers.mjs';
 import { serializeCheckpoint, deserializeCheckpoint, checkpointBytes } from '../src/checkpoint.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
+import { ParticleRandom } from '../src/ppi/random.mjs';
 for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
   test(
     profile + ' JS content table handles restore independently of their resource files',
@@ -386,6 +389,85 @@ test('fixed SDK .23 Mission owners restore statistics and native state independe
     await call(fresh, 796, [owner]);
     await assert.rejects(() => call(fresh, 798, [owner]), /released/);
     assert.equal((await call(first, 798, [owner])).value, 7);
+  } finally {
+    await fresh?.close({ flushFiles: false });
+    await first.close({ flushFiles: false });
+  }
+});
+
+test('fixed SDK .23 Selection redistributes holes with the shared RNG and preserves its work and name owners on cold restore', async () => {
+  const profile = 'grisaia-jp-engine-2.6.1.23',
+    files = Object.fromEntries(contentFiles()),
+    filled = Object.fromEntries(
+      Array.from({ length: 19 }, (_, i) => ['P' + String(i).padStart(2, '0'), 'alpha']),
+    );
+  files.selections = contentDatabase(
+    [...SELECTION_ROWS, { TBL: 4, ...filled }, { TBL: 5, ...filled, P02: 'unknown' }],
+    SELECTION_COLUMNS,
+  );
+  const first = await dataWorld(profile, files),
+    expected = new ParticleRandom(4357),
+    consumeRandom = () => {
+      for (let i = 0; i < 2000; i++) expected.rand();
+    };
+  let fresh;
+  const call = (world, id, args = []) =>
+    world.runtime.native('main', id, args, world.main.machine, world.main);
+  try {
+    const owner = (await call(first, 779)).value;
+    for (const [name, value] of [
+      ['alpha', 100],
+      ['beta', 200],
+      ['gamma', 300],
+      ['alpha', 999],
+    ]) {
+      first.main.machine.writeString(name, 64);
+      await call(first, 781, [owner, value, 64]);
+    }
+    first.main.machine.writeString('selections', 64);
+    assert.equal((await call(first, 782, [owner, 64])).value, 1);
+    await call(first, 829, [owner, 1]);
+    await call(first, 831, [owner, 0]);
+    consumeRandom();
+    assert.deepEqual(first.random.snapshot(), expected.snapshot());
+    assert.equal((await call(first, 784, [owner, 0])).value, 0xfffffff6);
+    assert.equal((await call(first, 784, [owner, 7])).value, 100);
+    assert.equal((await call(first, 784, [owner, 19])).value, 0xffffffff);
+    fresh = await dataWorld(profile, {}, { initialize: false });
+    await fresh.restore(await deserializeCheckpoint(await serializeCheckpoint(first.snapshot())));
+    const restored = fresh.runtime.handles.get(owner, 'content-database').data,
+      source = first.runtime.handles.get(owner, 'content-database').data;
+    assert.deepEqual(restored.snapshot(), source.snapshot());
+    assert.notEqual(restored.work, source.work);
+    await call(fresh, 832, [owner, 2]);
+    consumeRandom();
+    assert.deepEqual(fresh.random.snapshot(), expected.snapshot());
+    assert.equal((await call(fresh, 784, [owner, 2])).value, 0xfffffff6);
+    assert.equal((await call(first, 784, [owner, 2])).value, 300);
+    await call(fresh, 829, [owner, 4]);
+    const before = fresh.random.snapshot();
+    await call(fresh, 832, [owner, 0]);
+    assert.equal((await call(fresh, 784, [owner, 0])).value, 100);
+    assert.deepEqual(fresh.random.snapshot(), before);
+    await call(fresh, 831, [owner, 0]);
+    assert.equal((await call(fresh, 784, [owner, 0])).value, 0xfffffff6);
+    assert.deepEqual(fresh.random.snapshot(), before);
+    await call(fresh, 829, [owner, 5]);
+    await call(fresh, 832, [owner, 0]);
+    consumeRandom();
+    assert.deepEqual(fresh.random.snapshot(), expected.snapshot());
+    assert.equal((await call(fresh, 784, [owner, 2])).value, 100);
+    await call(fresh, 829, [owner, 2]);
+    await call(fresh, 832, [owner, 1]);
+    assert.equal((await call(fresh, 784, [owner, 1])).value, 0xffffffff);
+    await call(fresh, 831, [owner, 1]);
+    assert.equal((await call(fresh, 784, [owner, 1])).value, 0xfffffff6);
+    await assert.rejects(() => call(fresh, 832, [owner, 0xffffffff]), /invalid work index/);
+    await assert.rejects(() => call(fresh, 781, [owner, 1, 0x7fffffff]), /mapped format/);
+    await assert.rejects(() => call(fresh, 782, [owner, 0x7fffffff]), /mapped format/);
+    await call(fresh, 780, [owner]);
+    await assert.rejects(() => call(fresh, 783, [owner]), /released/);
+    assert.equal((await call(first, 783, [owner])).value, 4);
   } finally {
     await fresh?.close({ flushFiles: false });
     await first.close({ flushFiles: false });

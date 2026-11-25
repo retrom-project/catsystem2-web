@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeReply } from '../kcs/vm.mjs';
+import { nativeABI } from './abi/index.mjs';
 import { NativeCompiledTable } from './compiled-table.mjs';
 import { nativeDataArgument, nativeDataFormat, nativeDataKey } from './data-text.mjs';
 
@@ -36,9 +37,29 @@ export class NativeSelectionTable {
     for (let index = 2; index < this.work.length; index++)
       if (this.work[index] === -1) this.work.push(index);
   }
-  consume(index, mark) {
+  consume(index, mark, random) {
     if (index >>> 0 >= this.work.length)
       throw new RangeError('Native selection operation dereferences an invalid work index');
+    if (random) {
+      const value = this.work[index];
+      if (value >= 0) {
+        const holes = [];
+        for (let at = 2; at < this.work.length; at++) if (this.work[at] === -1) holes.push(at);
+        if (holes.length)
+          for (let count = 0; count < 1000; count++) {
+            const first = random.rand() % holes.length,
+              second = random.rand() % holes.length,
+              saved = holes[first];
+            holes[first] = holes[second];
+            holes[second] = saved;
+          }
+        if (holes.length) {
+          this.work[index] = -10;
+          this.work[holes[0]] = value;
+        } else if (mark) this.work[index] = -10;
+      } else if (mark) this.work[index] = -10;
+      return;
+    }
     if (this.work[index] >= 0) this.fillMissing();
     if (mark) this.work[index] = -10;
   }
@@ -75,19 +96,29 @@ export async function nativeSelectionTable(id, args, machine, services) {
   const owner = handles.get(handle, 'content-database');
   if (owner.family !== 'selection')
     throw new Error('Native content database has a different object family');
-  const table = owner.data;
+  const table = owner.data,
+    behavior = services.profile ? nativeABI(services.profile).database : null;
   if (id === 0x30c) {
     handles.release(handle, 'content-database');
     return nativeReply(2);
   }
   if (id === 0x30d) {
     const name = nativeDataFormat(args, machine, services, 2);
+    if (name === null && behavior?.selectionFormatRequired)
+      throw new RangeError('Native selection registration requires a mapped format');
     if (name !== null && !table.names.has(nativeDataKey(name)))
       table.names.set(nativeDataKey(name), argument(1) | 0);
   } else if (id === 0x30e) {
     const name = nativeDataFormat(args, machine, services, 1);
-    if (name === null) return nativeReply(1, 0);
-    const bytes = await services.read(new TextDecoder('shift_jis').decode(name), 'database');
+    if (name === null) {
+      if (behavior?.selectionFormatRequired)
+        throw new RangeError('Native selection load requires a mapped format');
+      return nativeReply(1, 0);
+    }
+    const filename = new TextDecoder('shift_jis').decode(name);
+    let bytes = await services.read(filename, 'database');
+    if (behavior?.selectionReadSizesFirst && bytes?.length)
+      bytes = await services.read(filename, 'database');
     return nativeReply(1, Number(await table.load(bytes)));
   } else if (id === 0x30f) return nativeReply(1, table.tables.size);
   else if (id === 0x310) {
@@ -98,7 +129,12 @@ export async function nativeSelectionTable(id, args, machine, services) {
     );
   } else if (id === 0x33d) table.select(argument(1));
   else if (id === 0x33e) table.move(argument(1), argument(2));
-  else table.consume(argument(1), id === 0x33f);
+  else
+    table.consume(
+      argument(1),
+      id === 0x33f,
+      behavior?.selectionRedistributeUsesRandom ? services.random : undefined,
+    );
   return nativeReply(2);
 }
 export function installNativeSelectionTables(world) {
