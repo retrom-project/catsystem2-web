@@ -180,6 +180,67 @@ test('2.6.1.63 Plane lifecycle and poses use an attached graph and the original 
   await assert.rejects(() => call(86, [156, 160, 0]), /initialized 32-bit output word/);
 });
 
+test('2.6.1.63 Plane Input registers its own graph and preserves the full active word', async (t) => {
+  const widths = new Map([
+    [95, 2],
+    [106, 2],
+    [107, 1],
+    [109, 1],
+  ]);
+  const world = await dataWorld(
+    profile,
+    Object.fromEntries(
+      [...widths].map(([id, words]) => [`main-${id}.kcs`, mainProgram(id, words)]),
+    ),
+  );
+  t.after(() => world.close({ flushFiles: false }));
+  const parent = world.main.id,
+    id = await world.objects.create({ kind: 2, parent }),
+    other = await world.objects.create({ kind: 2, parent }),
+    owner = world.graphics.get(id),
+    target = world.nativeTaskID(id),
+    invoke = (number, args, result) => executeMain(world, number, args, undefined, result);
+  await invoke(95, [0, 1]);
+  await assert.rejects(() => invoke(95, [target, 1]), /requires a live graphics device/);
+  world.graphics.createLogicalDevice();
+  await assert.rejects(() => invoke(95, [target, 1]), /input geometry is unreviewed/);
+  owner.makeGraph({ type: 1, width: 28.5, height: 19.75 });
+  const model = new Float32Array(owner.graph.kx2.buffer);
+  model.set([5.5, 8.25, 12.875], MOTION_ABI.base / 4);
+  model.set([3.125, 11.75, 7], MOTION_ABI.pos / 4);
+  await invoke(95, [target, 0x92345678]);
+  const input = owner.input,
+    registered = input.get(id);
+  assert.deepEqual(registered.bounds, [-2, 3, 26, 23]);
+  assert.equal(registered.priority, 12);
+  assert.equal(registered.flags, 0x92345678);
+  await invoke(95, [target, 0x80000007]);
+  assert.equal(input.get(id), registered);
+  assert.equal(registered.flags, 0x92345678);
+  assert.equal(owner.state.bindExtra, 0x80000007);
+  const peer = world.graphics.get(other);
+  peer.makeGraph({ type: 1, width: 30, height: 24 });
+  await world.sendNativeEngine(world.nativeTaskID(other), parent, 89, 0, 157);
+  input.get(other).active = 1;
+  await invoke(106, [target, 0x801fa4cc]);
+  assert.equal(registered.active, 0x801fa4cc);
+  assert.equal(input.get(other).active, 0);
+  await invoke(107, [target], 0x801fa4cc);
+  input.get(other).active = 1;
+  await invoke(106, [target, 0]);
+  await invoke(107, [target], 0);
+  assert.equal(input.get(other).active, 1);
+  await assert.rejects(() => invoke(107, [0xaef34975]), /Input active word query/);
+  for (const [source, result] of [
+    [16, 2],
+    [0x92345678, 0x92345678],
+  ]) {
+    input.source = source;
+    await invoke(109, [target], result);
+  }
+  await invoke(109, [0xaef34975], 0);
+});
+
 test('2.6.1.63 Draw borrows its bitmap and redraws a signed region or the full surface', async (t) => {
   const widths = new Map([
     [256, 3],
