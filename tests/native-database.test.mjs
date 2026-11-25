@@ -217,99 +217,108 @@ for (const [profile, variable] of [
   );
 }
 
-test('fixed 2.6.1.67 KCS persists indexed database flags through CSS and cold Worlds', async () => {
-  const profile = 'bokutomo-engine-2.6.1.67',
-    storage = new SaveSlotFiles(),
-    files = { authored: compiledDatabase([...DATABASE_ROWS, { ID: 4, INDEX: 'がゃっ' }]) },
-    make = (initialize = true) => dataWorld(profile, files, { storage, initialize }),
-    marker = 0x45291f08,
-    control2 = new Set([834, 870, 871, 875, 878]);
-  const call = async (world, id, args, text = []) => {
-    const guest = await readKCS(
-        kcsProgram([
-          [37, marker],
-          ...args.map((value) => [37, value]),
-          [43, id, args.length * 4],
-          [59],
-        ]),
-      ),
-      task = { ...world.main, io: null },
-      machine = (task.machine = new KCSMachine(guest, {
-        native: (id, words, vm) => world.runtime.scheduler.native(task, id, words, vm),
-      }));
-    text.forEach(([at, value]) => machine.writeString(value, at));
-    machine.store(0x400, marker);
-    machine.store(0x404, marker + 1);
-    await world.runtime.scheduler.execute(task);
-    assert.equal(machine.sp, machine.floor + (control2.has(id) ? 4 : 8));
-    assert.equal(machine.load(0x404), marker + 1);
-    const value = control2.has(id) ? null : machine.pop();
-    assert.equal(machine.pop(), marker);
-    return [value, machine.load(0x400)];
-  };
-  const load = async (world, name = 'authored') =>
-    (
-      await call(
-        world,
-        869,
-        [64, 128, 192, 256],
-        [
-          [64, name],
-          [128, '\\n'],
-          [192, ''],
-          [256, ''],
-        ],
-      )
-    )[0];
-  const fileName = [[64, 'database-flags.dat']];
-  const first = await make();
-  let cold, checkpointWorld;
-  try {
-    const db = await load(first);
-    assert.equal((await call(first, 877, [db]))[0], 0);
-    await call(first, 871, [db, 31, 64], [[64, 'がゃっ']]);
-    assert.equal((await call(first, 877, [db]))[0], 1);
-    await call(first, 878, [db]);
-    await call(first, 871, [db, 63, 64], [[64, 'かやつ']]);
-    assert.equal((await call(first, 877, [db]))[0], 0);
-    const [length] = await call(first, 872, [db, 0]),
-      [wire] = await call(first, 833, [length]),
-      [css] = await call(first, 238, [91]);
-    assert.equal(length, 4 + 4 * 268);
-    await call(first, 872, [db, wire]);
-    const expected = first.runtime.handles.get(db, 'database').snapshot().records;
-    assert.deepEqual([...expected[3][1].flags], [0x80000000, 0x80000000, 1]);
-    assert.equal((await call(first, 835, [css, 7, length, wire]))[0], 1);
-    assert.equal((await call(first, 245, [css, 64], fileName))[0], 1);
-    await call(first, 834, [wire]);
-    await call(first, 870, [db]);
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'bokutomo-engine-2.6.1.67'])
+  test(`${profile} KCS persists indexed database flags through CSS and cold Worlds`, async () => {
+    const storage = new SaveSlotFiles(),
+      files = { authored: compiledDatabase([...DATABASE_ROWS, { ID: 4, INDEX: 'がゃっ' }]) },
+      make = (initialize = true) => dataWorld(profile, files, { storage, initialize }),
+      marker = 0x45291f08,
+      control2 = new Set([834, 870, 871, 875, 878]);
+    const call = async (world, id, args, text = []) => {
+      const guest = await readKCS(
+          kcsProgram([
+            [37, marker],
+            ...args.map((value) => [37, value]),
+            [43, id, args.length * 4],
+            [59],
+          ]),
+        ),
+        task = { ...world.main, io: null },
+        machine = (task.machine = new KCSMachine(guest, {
+          native: (id, words, vm) => world.runtime.scheduler.native(task, id, words, vm),
+        }));
+      text.forEach(([at, value]) => machine.writeString(value, at));
+      machine.store(0x400, marker);
+      machine.store(0x404, marker + 1);
+      await world.runtime.scheduler.execute(task);
+      assert.equal(machine.sp, machine.floor + (control2.has(id) ? 4 : 8));
+      assert.equal(machine.load(0x404), marker + 1);
+      const value = control2.has(id) ? null : machine.pop();
+      assert.equal(machine.pop(), marker);
+      return [value, machine.load(0x400)];
+    };
+    const load = async (world, name = 'authored') =>
+      (
+        await call(
+          world,
+          869,
+          [64, 128, 192, 256],
+          [
+            [64, name],
+            [128, '\\n'],
+            [192, ''],
+            [256, ''],
+          ],
+        )
+      )[0];
+    const fileName = [[64, 'database-flags.dat']];
+    const first = await make();
+    let cold, checkpointWorld;
+    try {
+      const db = await load(first);
+      assert.equal((await call(first, 877, [db]))[0], 0);
+      await call(first, 871, [db, 31, 64], [[64, 'がゃっ']]);
+      assert.equal((await call(first, 877, [db]))[0], 1);
+      await call(first, 878, [db]);
+      await call(first, 871, [db, 63, 64], [[64, 'かやつ']]);
+      assert.equal((await call(first, 877, [db]))[0], 0);
+      const [length] = await call(first, 872, [db, 0]),
+        [wire] = await call(first, 833, [length]),
+        [css] = await call(first, 238, [91]);
+      assert.equal(length, 4 + 4 * 268);
+      await call(first, 872, [db, wire]);
+      const expected = first.runtime.handles.get(db, 'database').snapshot().records;
+      assert.deepEqual([...expected[3][1].flags], [0x80000000, 0x80000000, 1]);
+      assert.equal((await call(first, 835, [css, 7, length, wire]))[0], 1);
+      assert.equal((await call(first, 245, [css, 64], fileName))[0], 1);
+      await call(first, 834, [wire]);
+      await call(first, 870, [db]);
 
-    cold = await make();
-    const imported = await load(cold),
-      [file] = await call(cold, 247, [64], fileName),
-      [data, count] = await call(cold, 836, [file, 7, 0x400]);
-    assert.equal(count, length);
-    assert.equal((await call(cold, 873, [imported, data]))[0], 1);
-    assert.equal((await call(cold, 877, [imported]))[0], 0);
-    assert.deepEqual(cold.runtime.handles.get(imported, 'database').snapshot().records, expected);
-    await assert.rejects(call(cold, 873, [0, data]), /NULL-handle import has an unwritten result/);
-    await assert.rejects(call(cold, 871, [imported, 2, 0xffffffff]), /format address is unmapped/);
-    const checkpoint = structuredClone(cold.snapshot());
-    checkpointWorld = await make(false);
-    await checkpointWorld.restore(checkpoint);
-    assert.deepEqual(
-      checkpointWorld.runtime.handles.get(imported, 'database').snapshot().records,
-      expected,
-    );
-    assert.equal((await call(checkpointWorld, 873, [imported, data]))[0], 1);
-    await call(checkpointWorld, 834, [data]);
-    await call(checkpointWorld, 870, [imported]);
-    const [packed] = await call(checkpointWorld, 874, [0x9d918000, 0x4871ffff]);
-    assert.equal(packed, 0xffff8000);
-    assert.deepEqual(await call(checkpointWorld, 875, [packed, 0x400, 0x400]), [null, 0xffffffff]);
-  } finally {
-    await checkpointWorld?.close({ flushFiles: false });
-    await cold?.close({ flushFiles: false });
-    await first.close({ flushFiles: false });
-  }
-});
+      cold = await make();
+      const imported = await load(cold),
+        [file] = await call(cold, 247, [64], fileName),
+        [data, count] = await call(cold, 836, [file, 7, 0x400]);
+      assert.equal(count, length);
+      assert.equal((await call(cold, 873, [imported, data]))[0], 1);
+      assert.equal((await call(cold, 877, [imported]))[0], 0);
+      assert.deepEqual(cold.runtime.handles.get(imported, 'database').snapshot().records, expected);
+      await assert.rejects(
+        call(cold, 873, [0, data]),
+        /NULL-handle import has an unwritten result/,
+      );
+      await assert.rejects(
+        call(cold, 871, [imported, 2, 0xffffffff]),
+        /format address is unmapped/,
+      );
+      const checkpoint = structuredClone(cold.snapshot());
+      checkpointWorld = await make(false);
+      await checkpointWorld.restore(checkpoint);
+      assert.deepEqual(
+        checkpointWorld.runtime.handles.get(imported, 'database').snapshot().records,
+        expected,
+      );
+      assert.equal((await call(checkpointWorld, 873, [imported, data]))[0], 1);
+      await call(checkpointWorld, 834, [data]);
+      await call(checkpointWorld, 870, [imported]);
+      const [packed] = await call(checkpointWorld, 874, [0x9d918000, 0x4871ffff]);
+      assert.equal(packed, 0xffff8000);
+      assert.deepEqual(await call(checkpointWorld, 875, [packed, 0x400, 0x400]), [
+        null,
+        0xffffffff,
+      ]);
+    } finally {
+      await checkpointWorld?.close({ flushFiles: false });
+      await cold?.close({ flushFiles: false });
+      await first.close({ flushFiles: false });
+    }
+  });

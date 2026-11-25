@@ -31,6 +31,11 @@ const soundReceivers = [
   208,
 ];
 const toSoundRaw = (raw) => ({ min: raw + 6, max: raw + 6, offset: -6 });
+const databaseHandle = {
+  name: 'database',
+  description: 'Borrowed database handle',
+  type: { kind: 'handle', handleKind: 'database', ownership: 'borrowed' },
+};
 
 export default {
   id: 'cs2-2.6.1.63',
@@ -170,7 +175,11 @@ export default {
   },
   nameTable: { legacyFieldBytes: 32 },
   stringBank: { emptyGetResult: 1, cssOwnerLookupOnly: true },
-  database: { nullExportPolicy: 'reject-unwritten', nullImportPolicy: 'reject-unwritten' },
+  database: {
+    nullExportPolicy: 'reject-unwritten',
+    nullImportPolicy: 'reject-unwritten',
+    requiresMappedFormat: true,
+  },
   resources: { categoryCount: 64 },
   sound: {
     banks: 32,
@@ -975,8 +984,8 @@ export default {
           777, 778, 779, 780, 781, 782, 783, 784, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800,
           801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818,
           819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 837, 838, 839, 840,
-          841, 842, 843, 845, 846, 847, 853, 854, 855, 856, 857, 860, 861, 871, 877, 878, 879, 880,
-          881, 884, 904, 905,
+          841, 842, 843, 845, 846, 847, 853, 854, 855, 856, 857, 860, 861, 879, 880, 881, 884, 904,
+          905,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
@@ -1001,12 +1010,17 @@ export default {
           681, 683, 684, 685, 689, 693, 694, 696, 697, 698, 699, 700, 701, 702, 710, 711, 712, 713,
           714, 715, 717, 718, 719, 720, 723, 724, 726, 727, 728, 730, 731, 732, 733, 736, 737, 739,
           741, 785, 786, 787, 788, 789, 790, 833, 834, 835, 836, 844, 848, 849, 850, 851, 852, 858,
-          859, 862, 863, 864, 865, 866, 867, 868, 869, 870, 872, 873, 874, 875, 876, 882, 883, 885,
-          886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903,
-          934, 935, 936, 937,
+          859, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878,
+          882, 883, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900,
+          901, 902, 903, 934, 935, 936, 937,
         ],
       },
       evidence: [
+        {
+          ids: [871, 877, 878],
+          value:
+            'Own CP932 index formatter and KCDB bit writer select a normalized row and mask the bit to five bits. The 92-byte database owns a dirty DWORD at +0x58. Query writes zero for a NULL owner, clear is a no-op, and a NULL owner skips the flag formatter.',
+        },
         {
           ids: [95, 106, 107, 109],
           value:
@@ -1702,6 +1716,34 @@ export default {
         },
       ],
       signatures: [
+        {
+          ids: [871],
+          fields: {
+            parameters: [
+              databaseHandle,
+              {
+                name: 'bit',
+                description: 'Bit index reduced modulo 32',
+                type: { kind: 'integer', bits: 32, signed: false },
+              },
+              {
+                name: 'index',
+                description: 'Guest CP932 format for the database index',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: { kind: 'format-string', encoding: 'CP932' },
+                },
+              },
+            ],
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [877, 878],
+          fields: { parameters: [databaseHandle], review: 'reviewed' },
+        },
         { ids: [200, 514], fields: { resultWritten: true } },
         {
           ids: [702],
