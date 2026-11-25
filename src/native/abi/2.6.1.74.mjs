@@ -1,7 +1,15 @@
 // SPDX-License-Identifier: MPL-2.0
 // Reviewed per-version declarations and script-visible behavior.
 import { FES_COMMON_HEAD_REGISTRATIONS } from './fes-common-heads.mjs';
-import { nativeRawCSSSignatures } from './semantics.mjs';
+import { nativeRawCSSSignatures, nativeContentDatabaseSignatures } from './semantics.mjs';
+
+const contentDatabaseSlots = [
+  742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760,
+  761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779,
+  780, 781, 782, 783, 784, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804,
+  805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823,
+  824, 825, 826, 827, 828, 829, 830, 831, 832,
+];
 
 export default {
   id: 'cs2-2.6.1.74',
@@ -1024,6 +1032,10 @@ export default {
       },
       signatures: [
         ...nativeRawCSSSignatures(),
+        ...nativeContentDatabaseSignatures(contentDatabaseSlots).map((group) => ({
+          ...group,
+          fields: { ...group.fields, review: 'reviewed' },
+        })),
         {
           ids: [96, 97],
           fields: { review: 'reviewed' },
@@ -1381,6 +1393,11 @@ export default {
       ],
       evidence: [
         {
+          ids: contentDatabaseSlots,
+          value:
+            'Own fixed 2.6.1.74 85 content-database wrappers, constructors and callees are linked to the original 2117-call authored resource audit and the new 535-case independent full KCS GCALL comparison. Complete guest data/shared/heap blocks, raw progress formats, owner identities and both MT states agree. Question37 contains two valid-owner empty-member wrappers769/770; these are original stub behavior, not additional effective features. Resource allocation stages and raw/CSS failure are independently proved. Authored legal resources, no actual game database asset scenario; modern unwritten CSS record zero remains unproved.',
+        },
+        {
           ids: [238, 833, 834, 835, 836],
           value:
             'Own fixed 2.6.1.74 raw/CSS wrappers and native hidden-reference helper execute successful allocation/release, independent copied bytes and explicit zero-byte records. A controlled small HeapAlloc failure returns zero/control1 from Main833 and Main836; Main836 leaves its guest length untouched. Actual original diagnostics execute, and successful follow-up allocations/releases remain usable. Production real GCALL confirms bounded exhaustion/free/reuse and cold ownership. These observations do not cover an unwritten record zero.',
@@ -1697,13 +1714,8 @@ export default {
             655, 658, 659, 664, 665, 666, 667, 668, 674, 675, 676, 677, 678, 679, 680, 681, 683,
             684, 685, 694, 695, 696, 697, 698, 699, 700, 703, 704, 705, 706, 707, 708, 709, 710,
             711, 712, 713, 714, 715, 716, 717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727,
-            728, 729, 730, 731, 732, 733, 734, 735, 736, 737, 738, 739, 740, 741, 742, 743, 744,
-            745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761,
-            762, 763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778,
-            779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795,
-            796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812,
-            813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829,
-            830, 831, 832, 844, 845, 846, 847, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859,
+            728, 729, 730, 731, 732, 733, 734, 735, 736, 737, 738, 739, 740, 741, 785, 786, 787,
+            788, 789, 790, 844, 845, 846, 847, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859,
             860, 861, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877,
             878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894,
             895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 935, 936, 937, 938, 939, 940,

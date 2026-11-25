@@ -157,6 +157,8 @@ for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
   'bokutomo-engine-2.6.1.67',
   'rebellions-jp-engine-2.6.1.63',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
 ])
   test(
     profile +
@@ -229,12 +231,17 @@ for (const profile of [
         assert.equal(await call(fresh, 768, [question, pointer]), 1);
         assert.equal(await call(fresh, 771, [question, 0]), 1);
         assert.deepEqual(fresh.runtime.imageDataBuffers.process.read(pointer, 276), saved);
-        await assert.rejects(() => call(fresh, 776, [question, -1, 512]), /reads before its pool/);
-        for (const id of [744, 750, 751])
+        if (nativeABI(profile).database.questionIdentitySignedIndex)
           await assert.rejects(
-            () => call(fresh, id, [question, 0x7fffffff]),
-            /requires a mapped format/,
+            () => call(fresh, 776, [question, -1, 512]),
+            /reads before its pool/,
           );
+        if (nativeABI(profile).database.questionFormatRequired)
+          for (const id of [744, 750, 751])
+            await assert.rejects(
+              () => call(fresh, id, [question, 0x7fffffff]),
+              /requires a mapped format/,
+            );
         await call(fresh, 743, [question]);
         await assert.rejects(() => call(fresh, 745, [question]), /released/);
         assert.equal(await call(fresh, 745, [second]), 0);
@@ -391,6 +398,8 @@ for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
   'bokutomo-engine-2.6.1.67',
   'rebellions-jp-engine-2.6.1.63',
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
 ])
   test(
     profile +
@@ -412,7 +421,8 @@ for (const profile of [
       try {
         first.main.machine.writeString('missing', 64);
         assert.equal((await call(first, 795, [64])).value, 0);
-        await assert.rejects(() => call(first, 795, [0x7fffffff]), /mapped filename/);
+        if (nativeABI(profile).database.missionFilenameRequired)
+          await assert.rejects(() => call(first, 795, [0x7fffffff]), /mapped filename/);
         first.main.machine.writeString('missions', 64);
         const owner = (await call(first, 795, [64])).value;
         await call(first, 821, [owner]);
@@ -448,8 +458,13 @@ for (const profile of [
         first.main.machine.writeString('emptychar', 64);
         const empty = (await call(first, 795, [64])).value;
         first.main.machine.store(1024, 0x12345678);
-        await assert.rejects(() => call(first, 820, [empty, 10, 9, 1024]), /empty set/);
-        assert.equal(first.main.machine.load(1024), 0x12345678);
+        if (nativeABI(profile).database.missionCharacterQueryRequiresEntry) {
+          await assert.rejects(() => call(first, 820, [empty, 10, 9, 1024]), /empty set/);
+          assert.equal(first.main.machine.load(1024), 0x12345678);
+        } else {
+          assert.equal((await call(first, 820, [empty, 10, 9, 1024])).value, 1);
+          assert.equal(first.main.machine.load(1024), 0);
+        }
         assert.equal((await call(first, 820, [empty, 10, 0, 1024])).value, 1);
         assert.equal(first.main.machine.load(1024), 1);
         await assert.rejects(() => call(first, 745, [owner]), /different object family/);
@@ -691,6 +706,57 @@ for (const profile of [
         } finally {
           cold.allocate = allocate;
         }
+      } finally {
+        await fresh?.close({ flushFiles: false });
+        await first.close({ flushFiles: false });
+      }
+    },
+  );
+
+for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'])
+  test(
+    profile + ' modern Selection keeps appended holes and unchanged RNG through cold restore',
+    async () => {
+      const first = await dataWorld(profile, Object.fromEntries(contentFiles()));
+      let fresh;
+      const call = (world, id, args = []) =>
+        world.runtime.native('main', id, args, world.main.machine, world.main);
+      try {
+        const owner = (await call(first, 779)).value;
+        for (const [name, value] of [
+          ['alpha', 100],
+          ['beta', 200],
+          ['gamma', 300],
+          ['alpha', 999],
+        ]) {
+          first.main.machine.writeString(name, 64);
+          await call(first, 781, [owner, value, 64]);
+        }
+        first.main.machine.writeString('selections', 64);
+        assert.equal((await call(first, 782, [owner, 64])).value, 1);
+        await call(first, 829, [owner, 1]);
+        const random = first.random.snapshot();
+        await call(first, 832, [owner, 0]);
+        assert.equal((await call(first, 784, [owner, 0])).value, 100);
+        assert.equal((await call(first, 784, [owner, 19])).value, 3);
+        assert.equal((await call(first, 784, [owner, 33])).value, 17);
+        assert.equal((await call(first, 784, [owner, 34])).value, 0xffffffff);
+        assert.deepEqual(first.random.snapshot(), random);
+        fresh = await dataWorld(profile, {}, { initialize: false });
+        await fresh.restore(
+          await deserializeCheckpoint(await serializeCheckpoint(first.snapshot())),
+        );
+        assert.equal((await call(fresh, 784, [owner, 19])).value, 3);
+        await call(fresh, 831, [owner, 0]);
+        assert.equal((await call(fresh, 784, [owner, 0])).value, -10 >>> 0);
+        assert.equal((await call(first, 784, [owner, 0])).value, 100);
+        assert.deepEqual(fresh.random.snapshot(), random);
+        await call(fresh, 829, [owner, 2]);
+        assert.equal((await call(fresh, 784, [owner, 0])).value, 300);
+        assert.equal((await call(fresh, 783, [owner])).value, 2);
+        await call(fresh, 780, [owner]);
+        await assert.rejects(call(fresh, 783, [owner]), /released/);
+        assert.equal((await call(first, 783, [owner])).value, 2);
       } finally {
         await fresh?.close({ flushFiles: false });
         await first.close({ flushFiles: false });
