@@ -41230,3 +41230,59 @@ function freeze(value) {
   }
   return value;
 }
+
+// Shared content pointer/owner metadata; a profile must still admit each own-proved slot.
+export function nativeContentDatabaseSignatures(ids) {
+  return ids.map((id) => {
+    const signature = NATIVE_SEMANTICS.main[id].signature;
+    return {
+      ids: [id],
+      fields: {
+        resultWritten: signature.controlCodes.includes(1),
+        ...([742, 779, 791, 795].includes(id)
+          ? { result: { kind: 'handle', handleKind: 'content-database', ownership: 'owned' } }
+          : {}),
+        parameters: signature.parameters.map((parameter) => {
+          const type = parameter.type;
+          if (type.kind === 'handle')
+            return {
+              ...parameter,
+              type: { kind: 'handle', handleKind: 'content-database', ownership: 'borrowed' },
+            };
+          if (type.kind !== 'pointer') return parameter;
+          const raw = [767, 768, 823, 824].includes(id);
+          const format = type.target.kind === 'format-string';
+          return {
+            ...parameter,
+            type: {
+              kind: 'pointer',
+              addressSpace: raw ? 'native' : 'vm',
+              direction: raw
+                ? [767, 823].includes(id)
+                  ? 'out'
+                  : 'in'
+                : format || id === 816
+                  ? 'in'
+                  : 'out',
+              target: raw
+                ? {
+                    kind: 'record',
+                    name:
+                      id < 795
+                        ? 'question-state header and 88-byte records'
+                        : 'mission-state header, 24-byte rows and 28-byte characters',
+                  }
+                : format
+                  ? { kind: 'format-string', encoding: 'CP932' }
+                  : id === 794
+                    ? { kind: 'character', bits: 8, encoding: 'bytes' }
+                    : [746, 748, 754, 757, 776, 804, 806].includes(id)
+                      ? { kind: 'character', bits: 8, encoding: 'CP932' }
+                      : { kind: 'integer', bits: 32, signed: true },
+            },
+          };
+        }),
+      },
+    };
+  });
+}
