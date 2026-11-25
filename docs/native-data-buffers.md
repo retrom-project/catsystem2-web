@@ -121,3 +121,12 @@ validated by the build. Inflate/deflate run in Node and browsers without
 WebAssembly; the no-WebAssembly test and frozen x86 fixtures verify the same
 bytes. Remaining original domain 6–9 decoder consumers use the explicitly
 shipped `oracle/hg3-delta.mjs` accelerator until their domains migrate.
+
+The ordinary raw-memory allocator plans its logical address range before
+allocating backing bytes. It has no separate 256 MiB region cap. Exhaustion of
+the defined address space, or a storage allocation RangeError after length
+validation, raises NativeBufferAllocationError. Invalid lengths, missing VM
+references and illegal pointers keep their own diagnostics. Failed reservations
+publish no region; release makes their occupied ranges reusable. Borrowed
+regions still retain only the live interpreter reference in checkpoints.
+The existing next/freeRanges/regions snapshot representation is unchanged.

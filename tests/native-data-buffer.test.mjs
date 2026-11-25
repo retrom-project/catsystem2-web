@@ -2,7 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import { NativeBufferMemory } from '../src/native/buffer-memory.mjs';
+import { NativeBufferMemory, NativeBufferAllocationError } from '../src/native/buffer-memory.mjs';
 import {
   nativeDataBuffer,
   NativeDataBuffers,
@@ -305,4 +305,89 @@ test('a borrowed VM region cannot impersonate an owned data-buffer descriptor', 
   assert.equal(memory.contains(address), false);
   assert.equal(memory.allocations.size, 0);
   assert.equal(bytes[0], 7);
+});
+
+test('buffer address-space exhaustion is typed, leaves state intact and permits release and cold reuse without large storage', () => {
+  const first = new NativeBufferMemory();
+  first.next = 0x7fffffe0;
+  const one = first.allocate(8),
+    two = first.allocate(8);
+  first.write(one, Uint8Array.of(1, 2, 3));
+  first.write(two, Uint8Array.of(4, 5, 6));
+  const state = structuredClone(first.snapshot());
+  assert.throws(() => first.allocate(8), NativeBufferAllocationError);
+  assert.throws(() => first.allocate(0x10000001), NativeBufferAllocationError);
+  assert.deepEqual(first.snapshot(), state);
+  assert.throws(() => first.allocate(-1), RangeError);
+  const fresh = new NativeBufferMemory();
+  fresh.restore(state);
+  fresh.free(one);
+  assert.equal(fresh.allocate(8), one);
+  assert.deepEqual(fresh.read(two, 3), Uint8Array.of(4, 5, 6));
+  assert.deepEqual(first.read(one, 3), Uint8Array.of(1, 2, 3));
+  fresh.free(one);
+  fresh.free(two);
+  assert.equal(fresh.allocations.size, 0);
+});
+
+test('borrowed buffer regions retain reference identity across bounded exhaustion and cold restore', () => {
+  const regions = new Map([
+      [7, new Uint8Array(8)],
+      [8, new Uint8Array(8)],
+    ]),
+    reference = (taskID) => ({ kind: 'vm', taskID, memoryID: 19, length: 8 }),
+    make = () => new NativeBufferMemory({ resolveReference: (ref) => regions.get(ref.taskID) }),
+    first = make();
+  first.next = 0x7fffffe0;
+  const borrowed = first.borrow(reference(7)),
+    owned = first.allocate(8);
+  assert.equal(first.borrow(reference(7)), borrowed);
+  assert.throws(() => first.borrow(reference(8)), NativeBufferAllocationError);
+  const fresh = make();
+  fresh.restore(structuredClone(first.snapshot()));
+  assert.throws(() => fresh.free(borrowed), /interpreter owner/);
+  fresh.free(owned);
+  const second = fresh.borrow(reference(8));
+  assert.equal(second, owned);
+  fresh.store(second, 0x12345678);
+  assert.equal(new DataView(regions.get(8).buffer).getUint32(0, true), 0x12345678);
+  fresh.releaseReferences(7);
+  fresh.releaseReferences(8);
+  assert.equal(fresh.regions.size, 0);
+  assert.equal(first.contains(borrowed), true);
+});
+
+test('only a storage allocation RangeError after valid parameters becomes an allocation failure', () => {
+  const memory = new NativeBufferMemory(),
+    original = globalThis.Uint8Array,
+    failure = new RangeError('authored storage allocation failure');
+  let called = 0,
+    cause = failure;
+  globalThis.Uint8Array = class {
+    constructor() {
+      called++;
+      throw cause;
+    }
+  };
+  try {
+    assert.throws(() => memory.allocate(-1), RangeError);
+    assert.equal(called, 0);
+    assert.throws(
+      () => memory.allocate(8),
+      (error) => error instanceof NativeBufferAllocationError && error.cause === failure,
+    );
+    assert.equal(called, 1);
+    cause = new Error('authored non-allocation failure');
+    assert.throws(
+      () => memory.allocate(8),
+      (error) => error === cause,
+    );
+    assert.equal(called, 2);
+  } finally {
+    globalThis.Uint8Array = original;
+  }
+  assert.equal(memory.next, 0x30000000);
+  assert.equal(memory.regions.size, 0);
+  const pointer = memory.allocate(8);
+  assert.equal(pointer, 0x30000000);
 });

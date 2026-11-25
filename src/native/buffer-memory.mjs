@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 // Raw data addresses occupy a JS-owned space distinct from VM offsets/handles.
 const startAddress = 0x30000000;
+const endAddress = 0x80000000;
 const capacity = (size) => Math.ceil(Math.max(16, size) / 16) * 16;
 const length = (size) => {
-  if (!Number.isSafeInteger(size) || size < 0 || size > 0x10000000)
-    throw new RangeError('Native buffer allocation exceeds its resource limit');
+  if (!Number.isSafeInteger(size) || size < 0 || size > 0xffffffff)
+    throw new RangeError('Native buffer length is outside its DWORD ABI');
   return size;
 };
 const reference = (value) => {
@@ -26,6 +27,13 @@ const sameReference = (a, b) =>
   a.taskID === b.taskID && a.memoryID === b.memoryID && a.length === b.length;
 const regionLength = (value) => value.length;
 
+export class NativeBufferAllocationError extends Error {
+  constructor(message, options) {
+    super(message, options);
+    this.name = 'NativeBufferAllocationError';
+  }
+}
+
 export class NativeBufferMemory {
   constructor({ resolveReference } = {}) {
     this.resolveReference = resolveReference;
@@ -34,14 +42,18 @@ export class NativeBufferMemory {
     this.regions = new Map();
     this.freeRanges = [];
   }
-  reserve(size, value) {
+  #plan(size) {
     length(size);
     const bytes = capacity(size),
       index = this.freeRanges.findIndex((range) => range.size >= bytes),
       range = this.freeRanges[index],
       address = range ? range.address : this.next,
       next = address + bytes;
-    if (next > 0x80000000) throw new RangeError('Native buffer address space exhausted');
+    if (next > endAddress)
+      throw new NativeBufferAllocationError('Native buffer address space exhausted');
+    return { size, bytes, index, range, address, next };
+  }
+  #publish({ size, bytes, index, range, address, next }, value) {
     if (range) {
       range.address = next;
       range.size -= bytes;
@@ -51,9 +63,21 @@ export class NativeBufferMemory {
     this.regions.set(address, value);
     return address;
   }
+  reserve(size, value) {
+    return this.#publish(this.#plan(size), value);
+  }
   allocate(size) {
-    length(size);
-    return this.reserve(size, new Uint8Array(size));
+    const plan = this.#plan(size);
+    let value;
+    try {
+      value = new Uint8Array(size);
+    } catch (error) {
+      if (!(error instanceof RangeError)) throw error;
+      throw new NativeBufferAllocationError('Native buffer storage allocation failed', {
+        cause: error,
+      });
+    }
+    return this.#publish(plan, value);
   }
   resolve(value) {
     if (value instanceof Uint8Array) return value;
@@ -127,7 +151,7 @@ export class NativeBufferMemory {
       !state ||
       !Number.isSafeInteger(state.next) ||
       state.next < startAddress ||
-      state.next > 0x80000000 ||
+      state.next > endAddress ||
       state.next % 16 ||
       !Array.isArray(state.freeRanges) ||
       !Array.isArray(state.regions)
