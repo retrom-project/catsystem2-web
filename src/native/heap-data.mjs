@@ -2,6 +2,7 @@
 // JS-owned raw data addresses are distinct from KCS virtual addresses and handles.
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeABI } from './abi/index.mjs';
+import { NativeBufferAllocationError } from './buffer-memory.mjs';
 
 export const NATIVE_HEAP_DATA_IDS = Object.freeze([0x341, 0x342, 0x343, 0x344]);
 export async function nativeHeapData(id, args, machine, services) {
@@ -15,6 +16,19 @@ export async function nativeHeapData(id, args, machine, services) {
   if (id === 0x343 && (!args[0] || !args[3])) return result(0);
   if (id === 0x344 && !args[0]) return result(0);
   if (typeof services.imageDataBuffers !== 'function') return undefined;
+  const allocate = (heap, size) => {
+    try {
+      return heap.allocateData(size);
+    } catch (error) {
+      if (
+        error instanceof NativeBufferAllocationError &&
+        services.profile &&
+        nativeABI(services.profile).database?.rawHeapAllocationFailureReturnsZero
+      )
+        return 0;
+      throw error;
+    }
+  };
   if (id === 0x344) {
     const bytes = services.handles.get(args[0], 'global-file').read(args[1]);
     if (bytes === null) {
@@ -27,7 +41,8 @@ export async function nativeHeapData(id, args, machine, services) {
       return result(0);
     }
     const heap = await services.imageDataBuffers(),
-      pointer = heap.allocateData(bytes.length);
+      pointer = allocate(heap, bytes.length);
+    if (!pointer) return result(0);
     try {
       heap.process.write(pointer, bytes);
       machine.store(args[2], bytes.length);
@@ -38,7 +53,7 @@ export async function nativeHeapData(id, args, machine, services) {
     }
   }
   const heap = await services.imageDataBuffers();
-  if (id === 0x341) return result(heap.allocateData(args[0]));
+  if (id === 0x341) return result(allocate(heap, args[0]));
   if (id === 0x342) {
     heap.releaseData(args[0]);
     return done();

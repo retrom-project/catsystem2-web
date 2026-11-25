@@ -105,6 +105,46 @@ const historyCursorOperations = [379, 380, 381, 382, 383, 384];
 const questionDatabaseOperations = Array.from({ length: 37 }, (_, i) => 742 + i).filter(
   (id) => id !== 769 && id !== 770,
 );
+const rawDataOperations = [833, 834, 835, 836];
+function rawDataSignatures() {
+  const bytes = { kind: 'character', bits: 8, encoding: 'bytes' };
+  return rawDataOperations.map((id) => {
+    const signature = NATIVE_SEMANTICS.main[id].signature;
+    return {
+      ids: [id],
+      fields: {
+        resultWritten: id !== 834,
+        ...([833, 836].includes(id)
+          ? {
+              result: {
+                kind: 'pointer',
+                addressSpace: 'native',
+                direction: 'inout',
+                target: bytes,
+              },
+            }
+          : {}),
+        parameters: signature.parameters.map((parameter) => {
+          if (parameter.type.kind === 'handle')
+            return {
+              ...parameter,
+              type: { kind: 'handle', handleKind: 'global-file', ownership: 'borrowed' },
+            };
+          if (parameter.type.kind !== 'pointer') return parameter;
+          return {
+            ...parameter,
+            type: {
+              kind: 'pointer',
+              addressSpace: id === 836 ? 'vm' : 'native',
+              direction: id === 834 ? 'inout' : id === 836 ? 'out' : 'in',
+              target: id === 836 ? { kind: 'integer', bits: 32, signed: false } : bytes,
+            },
+          };
+        }),
+      },
+    };
+  });
+}
 const compiledDatabaseOperations = [791, 792, 793, 794];
 const selectionDatabaseOperations = [779, 780, 781, 782, 783, 784, 829, 830, 831, 832];
 const missionDatabaseOperations = Array.from({ length: 34 }, (_, i) => 795 + i);
@@ -185,6 +225,11 @@ function geometrySignatures(table, ids) {
   });
 }
 const mainEvidence = [
+  {
+    ids: rawDataOperations,
+    value:
+      'Own 2.6.1.23 wrappers 0x485060–0x4851f0 own raw HeapAlloc data with a signed reference header, independent CSS blob writes/reads and mapped size outputs. Bounded allocation failures return zero without publishing the size; actual Question/Mission state exports and imports use the same author raw/CSS GCALL chain.',
+  },
   {
     ids: compiledDatabaseOperations,
     value:
@@ -1244,6 +1289,7 @@ export default {
   fileIO: { rawModeAndBoundedBuffer: true },
   globalFile: {
     growthBytes: 524288,
+    hostDataRequiresExplicitZeroRecord: true,
     optionalTaskRecords: true,
     timestampMinimumBytes: 4,
     timestampRequiresMappedOutputs: true,
@@ -1318,6 +1364,7 @@ export default {
     selectionRedistributeUsesRandom: true,
     compiledFormatRequired: true,
     compiledIndexRequiresNonnegative: true,
+    rawHeapAllocationFailureReturnsZero: true,
   },
   sound: {
     banks: 32,
@@ -1592,6 +1639,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...rawDataSignatures(),
         ...contentDatabaseSignatures(questionDatabaseOperations),
         ...contentDatabaseSignatures(missionDatabaseOperations),
         ...contentDatabaseSignatures(selectionDatabaseOperations),

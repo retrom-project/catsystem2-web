@@ -130,3 +130,18 @@ references and illegal pointers keep their own diagnostics. Failed reservations
 publish no region; release makes their occupied ranges reusable. Borrowed
 regions still retain only the live interpreter reference in checkpoints.
 The existing next/freeRanges/regions snapshot representation is unchanged.
+
+The fixed 2.6.1.23 raw heap/CSS family is Main833–836. Its original allocation
+failure branches return zero with control 1; a failed CSS copy leaves the VM
+length output unchanged. Only NativeBufferAllocationError reaches those
+branches. Invalid sizes, pointers and unrelated diagnostics still propagate.
+Bounded address-space exhaustion is covered through real GCALL, release,
+independent CSS copies and a fresh checkpoint restore without large allocations.
+Question and Mission native state also roundtrips through the author-facing
+raw allocation, CSS write, native file save/load, copy and release calls.
+
+An unwritten CSS record zero remains guarded in this build. The original lookup
+scans capacity rather than the used byte count, and its allocation does not
+initialize the payload. Two bounded platform storage contents produce different
+results for the same lookup. Explicitly written zero-byte records are supported,
+including a mapped VM length output at address zero.

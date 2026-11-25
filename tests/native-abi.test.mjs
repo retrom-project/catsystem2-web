@@ -47,10 +47,10 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 624);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 628);
   assert.equal(base.main.entries.filter(({ status }) => status === 'reserved').length, 57);
   assert.equal(base.main.entries.filter(({ status }) => status === 'constant-zero').length, 17);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 171);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 167);
   assert.equal(base.main.entries.filter((entry) => entry.observedArgumentWords.length).length, 435);
   assert.deepEqual(base.main.entries[464].observedArgumentWords, []);
   assert.deepEqual(base.main.entries[543].observedArgumentWords, [3]);
@@ -72,7 +72,7 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
   );
   assert.equal(base.main.entries[289].signature.result.handleKind, 'name-pairs');
   assert.equal(base.main.entries[292].signature.parameters[1].type.target.encoding, 'CP932');
-  assert.equal(base.main.entries[834].status, 'unknown');
+  assert.equal(base.main.entries[837].status, 'unknown');
   for (const [id, words, direction, control] of [
     [26, 1, 'in', 1],
     [37, 3, 'out', 2],
