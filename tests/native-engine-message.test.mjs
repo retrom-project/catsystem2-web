@@ -464,9 +464,9 @@ test('ordinary Game D0 formats the actual header packet, pushes its native zero 
   }
   const unknown = await dataWorld(sdk);
   try {
-    assert.throws(
-      () => unknown.runtime.native('main', 109, [0], unknown.main.machine, unknown.main),
-      (error) => error.details?.id === 109 && error.details.profile === sdk,
+    await assert.rejects(
+      async () => unknown.runtime.native('main', 82, [0], unknown.main.machine, unknown.main),
+      (error) => error.details?.id === 82 && error.details.profile === sdk,
     );
     assert.equal(unknown.nativeEngine, undefined);
   } finally {
