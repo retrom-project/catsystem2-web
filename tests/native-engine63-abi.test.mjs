@@ -52,6 +52,72 @@ async function executeMain(world, id, argv, setup = () => {}, result) {
   }
 }
 
+test('2.6.1.63 task queries preserve route keys, receiver flags and cold restoration', async () => {
+  let world = await dataWorld(profile);
+  const parent = world.main.id,
+    firstKey = 0xf0000173,
+    nestedKey = 0xf10000b1,
+    lastKey = 83,
+    marker = 0xcd34e26a;
+  const call = async (id, args, ownerID = parent) => {
+    const code = await readKCS(
+        kcsProgram([
+          [37, marker],
+          ...args.map((arg) => [37, arg]),
+          [43, id, 4 * args.length],
+          [59],
+        ]),
+      ),
+      owner = {
+        ...world.runtime.scheduler.tasks.get(ownerID),
+        id: ownerID,
+        abi: 'main',
+        context: {},
+        io: null,
+      },
+      machine = (owner.machine = new KCSMachine(code, {
+        native: (number, words, caller) =>
+          world.runtime.scheduler.native(owner, number, words, caller),
+      }));
+    await world.runtime.scheduler.execute(owner);
+    assert.equal(machine.sp, machine.floor + (id === 67 ? 4 : 8));
+    const answer = id === 67 ? undefined : machine.pop();
+    assert.equal(machine.pop(), marker);
+    return answer;
+  };
+  try {
+    const first = await world.objects.create({ kind: 12, parent, nativeID: firstKey }),
+      nested = await world.objects.create({ kind: 12, parent: first, nativeID: nestedKey }),
+      last = await world.objects.create({ kind: 12, parent, nativeID: lastKey });
+
+    world.objects.objects.get(first).flags = 0x81300000;
+    assert.equal(await call(74, [firstKey]), 0x81300000);
+    assert.equal(await call(74, [0x7364cafa]), 0xffffffff);
+    for (const [index, key] of [firstKey, nestedKey, lastKey, 0xffffffff].entries())
+      assert.equal(await call(75, [index]), key);
+    assert.equal(await call(75, [0xffffffff]), 0xffffffff);
+    assert.equal(await call(76, [], nested), firstKey);
+    assert.equal(await call(77, [0]), 0);
+    assert.equal(await call(77, [nestedKey]), 1);
+    await assert.rejects(call(74, [0]), /Root query caller pointer/);
+    await call(67, [lastKey]);
+    await assert.rejects(call(74, [lastKey]), /retiring owner/);
+    assert.equal(await call(77, [lastKey]), 1);
+
+    const checkpoint = structuredClone(world.snapshot());
+    await world.close({ flushFiles: false });
+    world = await dataWorld(profile, {}, { initialize: false });
+    await world.restore(checkpoint);
+    assert.equal(await call(75, [1]), nestedKey);
+    assert.equal(await call(77, [lastKey]), 1);
+    await world.objects.release(last);
+    assert.equal(await call(75, [2]), 0xffffffff);
+    assert.equal(await call(77, [lastKey]), 1);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+
 test('2.6.1.63 Main541 releases existing intersecting texture pages only with an active owner', async (t) => {
   const world = await dataWorld(
     profile,
