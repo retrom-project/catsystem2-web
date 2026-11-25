@@ -11,7 +11,6 @@ import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
-import { NativeInput } from '../src/native/input.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 
 function world() {
@@ -56,6 +55,8 @@ function world() {
   };
   world.inputFor = () => world.input;
   installNativeGraphics(world);
+  // The .74 pose getter requires an attached device even for CPU-owned geometry.
+  world.graphics.createLogicalDevice();
   const machine = new KCSMachine(
     {
       body: new Binary(new Uint8Array([59])),
@@ -147,36 +148,53 @@ test('2.6.1.23 loads a formatted KX2 mesh and resets its owned Plane', async (t)
 });
 
 test('plane input switches use active/enabled/source and forward engine events to the receiver', async () => {
-  const { world: scene, machine } = world();
-  scene.input = new NativeInput();
-  await scene.objects.create({ kind: 2 });
-  const h = await scene.objects.create({ kind: 6 }),
-    task = { id: 42 };
-  await nativeGraphics(0x68, [h, 10, 20, 40, 50, 10, 8], machine, task, scene);
-  const region = scene.input.get(h),
-    plane = scene.graphics.get(h);
-  await nativeGraphics(0x69, [h, 0], machine, task, scene);
-  assert.equal(region.enabled, 0);
-  assert.equal(region.active, 0);
-  await nativeGraphics(0x69, [h, 1], machine, task, scene);
-  await nativeGraphics(0x6a, [h, 1], machine, task, scene);
-  assert.equal(region.active, 1);
-  scene.input.source = 16;
-  assert.equal((await nativeGraphics(0x6d, [h], machine, task, scene)).value, 2);
-  await nativeGraphics(0x350, [h, 0], machine, task, scene);
-  await nativeGraphics(0x351, [h, 0], machine, task, scene);
-  assert.equal(region.hoverEnabled, 0);
-  assert.equal(region.dragEnabled, 0);
-  await plane.message([1, 7, 10, 20]);
-  assert.equal(await plane.message([1, 4, 3, 1]), 1);
-  assert.equal(await plane.message([1, 4, 3, 0]), 0);
-  await plane.message([1, 8, 10, 20]);
-  assert.deepEqual(scene.events, [
-    [42, h, 64, h, 1],
-    [42, h, 9, h, 3],
-    [42, h, 10, h, 3],
-    [42, h, 64, h, 0],
-  ]);
+  const scene = await dataWorld('sdk-4.01-engine-2.6.1.74', {
+    'case.kcs': kcsProgram([[59]]),
+  });
+  try {
+    const h = await scene.objects.create({ kind: 6, parent: scene.main.id }),
+      target = scene.nativeTaskID(h),
+      task = scene.main,
+      { machine } = task,
+      receiver = scene.nativeTaskID(task.id),
+      input = scene.inputFor(h),
+      events = [],
+      send = scene.sendNativeEngine;
+    scene.sendNativeEngine = function (destination, sender, message, w, l, context) {
+      if (destination === receiver && sender === h && [9, 10, 64].includes(message)) {
+        events.push([destination, sender, message, w, l]);
+        return 99;
+      }
+      return send.call(this, destination, sender, message, w, l, context);
+    };
+    await nativeGraphics(0x68, [target, 10, 20, 40, 50, 10, 8], machine, task, scene);
+    const region = input.get(h),
+      plane = scene.graphics.get(h);
+    await nativeGraphics(0x69, [target, 0], machine, task, scene);
+    assert.equal(region.enabled, 0);
+    assert.equal(region.active, 0);
+    await nativeGraphics(0x69, [target, 1], machine, task, scene);
+    await nativeGraphics(0x6a, [target, 1], machine, task, scene);
+    assert.equal(region.active, 1);
+    input.source = 16;
+    assert.equal((await nativeGraphics(0x6d, [target], machine, task, scene)).value, 2);
+    await nativeGraphics(0x350, [target, 0], machine, task, scene);
+    await nativeGraphics(0x351, [target, 0], machine, task, scene);
+    assert.equal(region.hoverEnabled, 0);
+    assert.equal(region.dragEnabled, 0);
+    await plane.message([1, 7, 10, 20]);
+    assert.equal(await plane.message([1, 4, 3, 1]), 1);
+    assert.equal(await plane.message([1, 4, 3, 0]), 0);
+    await plane.message([1, 8, 10, 20]);
+    assert.deepEqual(events, [
+      [receiver, h, 64, target, 1],
+      [receiver, h, 9, target, 3],
+      [receiver, h, 10, target, 3],
+      [receiver, h, 64, target, 0],
+    ]);
+  } finally {
+    await scene.close();
+  }
 });
 
 test('native colored rectangle wrappers preserve ARGB alpha, dimensions and 3-axis KX2 transforms', async () => {
@@ -297,7 +315,7 @@ function rectangleDeclaration(profile) {
   assert.deepEqual(entry.controlCodes, [2]);
   assert.equal(entry.signature.result.kind, 'void');
   assert.equal(entry.signature.resultWritten, false);
-  for (const id of [109, 361, 467])
+  for (const id of [361, 467])
     assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
   assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
 }
@@ -556,6 +574,16 @@ for (const profile of rectangleProfiles)
           colors: [...plane.graph.colors],
         });
       }
+      if (profile === 'sdk-4.01-engine-2.6.1.74') {
+        const output = new NativeGraphicsPacket([], { unwritten: [0, 1, 2] });
+        await a.message([scene.nativeTaskID(scene.main.id), 61, 0, 0], { payload: output });
+        assert.deepEqual(
+          [0, 4, 8].map((at) => output.load(at)),
+          [undefined, undefined, undefined],
+          'The .74 getter leaves its output unwritten before a device is attached',
+        );
+      }
+      scene.graphics.createLogicalDevice();
       const order = scene.graphics.renderSequence,
         deliveries = [],
         queried = [],
@@ -740,7 +768,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[1].type.kind, 'float');
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [109, 361, 467])
+      for (const id of [361, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
     } finally {
@@ -958,7 +986,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[1].type.bits, 32);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [109, 361, 467])
+      for (const id of [361, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
     } finally {
@@ -1253,7 +1281,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[6].name, 'bindingWord');
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [109, 361, 467])
+      for (const id of [361, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
     } finally {
@@ -1518,8 +1546,6 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(profile).tables.main.entries[97].status, 'unknown');
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
       assert.equal(base.state.receiver !== -1, true);
     } finally {
@@ -1757,7 +1783,6 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
     } finally {
       await fresh?.close();
@@ -1983,7 +2008,6 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
     } finally {
       await missing?.close();
@@ -2228,7 +2252,6 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
     } finally {
       await missing?.close();
@@ -2449,8 +2472,6 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[97].status, 'unknown');
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
     } finally {
       await fresh?.close();
@@ -2604,7 +2625,6 @@ for (const profile of rectangleProfiles)
       assert.equal(restored.state.changed, 0);
       assert.deepEqual(scene.snapshot(), checkpoint, 'the source owner is isolated');
       assert.equal(nativeABI(profile).tables.main.entries[108].name, 'plane.setInputReturn');
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[109].status, 'unknown');
       assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[361].status, 'unknown');
       assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
       for (const current of [scene, fresh])
@@ -2762,7 +2782,7 @@ for (const profile of rectangleProfiles)
       assert.equal(declaration.signature.resultWritten, false);
       for (const field of declaration.signature.parameters.slice(1))
         assert.deepEqual(field.type, { kind: 'float', bits: 32 });
-      for (const unknown of [109, 110, 279, 264, 361, 467])
+      for (const unknown of [279, 361, 467])
         assert.equal(
           nativeABI(rectangleProfiles[0]).tables.main.entries[unknown].status,
           'unknown',
@@ -2837,6 +2857,7 @@ for (const profile of rectangleProfiles)
       scene = await dataWorld(profile, files);
     let fresh;
     try {
+      scene.graphics.createLogicalDevice();
       const base = await scene.objects.create({
           kind: 0,
           parent: scene.root,
@@ -2989,7 +3010,7 @@ for (const profile of rectangleProfiles)
       assert.equal(declaration.signature.argumentWords, 4);
       assert.deepEqual(declaration.controlCodes, [2]);
       assert.equal(declaration.signature.resultWritten, false);
-      for (const id of [109, 110, 279, 264, 361, 467])
+      for (const id of [279, 361, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
 
       const saved = scene.snapshot(),
@@ -3307,7 +3328,7 @@ for (const profile of rectangleProfiles)
       assert.equal(declaration.signature.argumentWords, 5);
       assert.deepEqual(declaration.controlCodes, [2]);
       assert.equal(declaration.signature.resultWritten, false);
-      for (const id of [109, 110, 279, 264, 361, 467])
+      for (const id of [279, 361, 467])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       const saved = scene.snapshot(),
         decoded = await deserializeCheckpoint(await serializeCheckpoint(saved));
@@ -3535,8 +3556,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.argumentWords, 5);
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [102, 103, 109, 110, 467])
-        assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[467].status, 'unknown');
       const dto = scene.snapshot(),
         decoded = await deserializeCheckpoint(await serializeCheckpoint(dto));
       fresh = await dataWorld(profile, files, { initialize: false });
