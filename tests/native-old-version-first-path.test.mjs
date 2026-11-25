@@ -255,10 +255,15 @@ for (const [version, profile, soundTypeMessage, otherType] of versions) {
         assert.equal(nativeABI(profile).tables.main.entries[385].signature.argumentWords, 4);
         assert.equal(nativeABI(profile).tables.main.entries[856].signature.argumentWords, 7);
         const beforeControl = world.objects.objects.size;
-        await assert.rejects(
-          world.objects.create({ kind: version === '2.6.1.63' ? 41 : 40, parent: main.id }),
-          /Unreviewed.*controlResources/,
-        );
+        if (version === '2.6.1.63') {
+          const control = await world.objects.create({ kind: 41, parent: main.id });
+          assert.equal(world.objects.objects.get(control).kind, 41);
+          await world.objects.release(control);
+        } else
+          await assert.rejects(
+            world.objects.create({ kind: 40, parent: main.id }),
+            /Unreviewed.*controlResources/,
+          );
         assert.equal(world.objects.objects.size, beforeControl);
         const checkpoint = await source.snapshot();
         fresh = core(await ownedGame(version), profile, attempted);
@@ -336,13 +341,7 @@ test('old ABI Runtime binds only present slots and preserves unknown dispatch', 
     assert.equal(runtime.handlers.get('main:359'), callback);
     const machine = { pc: 16, debug: null },
       task = { id: 1, name: 'owned-runtime-control' };
-    const unknown =
-      version === '2.6.1.67'
-        ? [
-            [599, 6],
-            [836, 3],
-          ]
-        : [[856, 7]];
+    const unknown = version === '2.6.1.67' ? [[599, 6]] : [[856, 7]];
     for (const [id, words] of unknown) {
       assert.equal(runtime.register('main', id, callback), true);
       assert.throws(
@@ -1030,8 +1029,7 @@ test('67 first-title entry GCALLs preserve VM zero and real task identity', asyn
     assert.equal(await world.sendEngine(id, world.main.id, 9), 0);
     assert.deepEqual(record.implementation.snapshot(), beforeStrictMessage);
     assert.equal(attempted.cpu, 0);
-    for (const nativeID of [599, 836])
-      assert.equal(nativeABI(title67Profile).tables.main.entries[nativeID].status, 'unknown');
+    assert.equal(nativeABI(title67Profile).tables.main.entries[599].status, 'unknown');
     assert.equal(
       nativeABI('rebellions-jp-engine-2.6.1.63').tables.main.entries[629].status,
       'unknown',
@@ -2263,6 +2261,7 @@ test('63 textured Plane coordinate mode belongs to its current render model', as
       target = world.nativeTaskID(id),
       width = floatBits(20.5),
       height = floatBits(12.25);
+    world.graphics.createLogicalDevice();
     assert.deepEqual(await call(78, [0, width, height]), { control: 2 });
     assert.deepEqual(await call(466, [target, 1]), { control: 2 });
     assert.equal(plane.state.coordMode, 0);
@@ -3916,11 +3915,10 @@ async function verifyCloseBoundaries(profile, emptyStringResult) {
     await assert.rejects(() => world.runtime.scheduler.execute(empty), /unwritten|uninitialized/);
     assert.equal(empty.machine.load(64), 0xa5a5a5a5);
     assert.deepEqual(world.runtime.handles.snapshot(), before);
-    for (const id of [profile === title67Profile ? 599 : 856, 871])
-      assert.equal(nativeABI(profile).tables.main.entries[id].status, 'unknown');
-    const unreviewed = profile === title67Profile ? [836, 869, 873] : [239];
-    for (const id of unreviewed)
-      assert.equal(nativeABI(profile).tables.main.entries[id].status, 'unknown');
+    const entries = nativeABI(profile).tables.main.entries;
+    for (const id of [836, 869, 871, 873]) assert.equal(entries[id].status, 'recovered');
+    for (const id of profile === title67Profile ? [599] : [239, 856])
+      assert.equal(entries[id].status, 'unknown');
   } finally {
     await source.world.close();
     await source.audio.dispose();
