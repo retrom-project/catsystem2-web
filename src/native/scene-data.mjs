@@ -563,7 +563,11 @@ export function nativeSceneData(id, args, machine, services = {}) {
       language: [0x409, 0x40e].includes(id) ? services.format(args[4], machine) : '',
       toUTF8: id === 0x40d || id === 0x40e,
     });
-    if (bytes === null && behavior?.directTextNull === 'reject' && id === 0x147)
+    if (
+      bytes === null &&
+      id === 0x147 &&
+      (behavior?.directTextNull === 'reject' || (!direct && behavior?.implicitTextRecordRequired))
+    )
       throw new Error('Native CST text has no readable record');
     if (bytes) machine.writeStringBytes(bytes, args[1]);
     return word(

@@ -319,9 +319,8 @@ test('2.6.1.23 Scene existence GCALL formats category names without parsing or c
   assert.equal(reads.length, before);
 });
 
-test('2.6.1.23 task Scene GCALLs preserve raw names, markers and captured strings across cold restore', async (t) => {
-  const profile = 'grisaia-jp-engine-2.6.1.23',
-    ptr = (address) => [0x23, address],
+async function taskSceneColdRestore(t, profile) {
+  const ptr = (address) => [0x23, address],
     steps = [
       [220, [0x7fffffff], 0],
       [219, []],
@@ -426,11 +425,11 @@ test('2.6.1.23 task Scene GCALLs preserve raw names, markers and captured string
   assert.equal(strings.get(47), '後の文字');
   strings.set(47, '復元後');
   assert.equal(world.runtime.stringBank(task, false).get(47), '後の文字');
-});
+}
 
-test('2.6.1.23 task Scene only dereferences an active reader and parsed string references', async () => {
+async function taskSceneRequiredOwners(profile) {
   const runtime = new NativeRuntime({
-      profile: 'grisaia-jp-engine-2.6.1.23',
+      profile,
       read: async () => kcsProgram([[59]]),
     }),
     task = await runtime.spawn('case.kcs'),
@@ -455,7 +454,17 @@ test('2.6.1.23 task Scene only dereferences an active reader and parsed string r
   await call(219, []);
   assert.notEqual(runtime.sceneData(task), old);
   assert.deepEqual(runtime.sceneData(task).history.path, []);
-});
+}
+
+for (const [version, profile] of [
+  ['2.6.1.23', 'grisaia-jp-engine-2.6.1.23'],
+  ['2.6.1.67', 'bokutomo-engine-2.6.1.67'],
+]) {
+  test(`${version} task Scene GCALLs preserve raw names, markers and captured strings across cold restore`, (t) =>
+    taskSceneColdRestore(t, profile));
+  test(`${version} task Scene only dereferences an active reader and parsed string references`, () =>
+    taskSceneRequiredOwners(profile));
+}
 
 test('restored scene hints prepare one explicit M2 resource from the same mounted scene', async (t) => {
   const workerBefore = globalThis.Worker;
