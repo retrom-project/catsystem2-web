@@ -411,8 +411,13 @@ export class FESCoordinator {
       lookup: (name, index) => {
         const bytes = encodeCP932(name);
         if (systemNames) {
-          const stored = instance.player.nativeNamedVariable?.(instance, bytes, index);
-          return stored ?? instance.system(name) ?? instance.valueLookup(bytes, index);
+          const lookup = instance.player.nativeNamedVariable,
+            stored = lookup?.(instance, bytes, index);
+          return (
+            stored ??
+            (!lookup || index === 0 ? instance.system(name) : undefined) ??
+            instance.valueLookup(bytes, index)
+          );
         }
         return instance.valueLookup(bytes, index);
       },

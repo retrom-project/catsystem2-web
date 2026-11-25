@@ -1336,7 +1336,7 @@ export default {
         {
           ids: fesLocalOperations,
           value:
-            'Own wrappers 0x4a0110–0x4a0230 send raw334–338 to the FES receiver at 0x44f200. The named write selects the interpreter’s own context and stores a CP932 byte key at index zero. Copies transfer exactly 2048 private bytes in the selected direction and leave both names and selection unchanged. Main667 reads the result word and uses control 1. Main668 clears that word, and all other wrappers return control 2 without a result write.',
+            'Own wrappers 0x4a0110–0x4a0230 send raw334–338 to the FES receiver at 0x44f200. The named write selects the interpreter’s own context and stores a CP932 byte key at index zero. Ordinary numeric operands and result read that stored word before system fallbacks, including an explicit zero; an absent nonzero index reads zero. Copies transfer exactly 2048 private bytes in the selected direction and leave both names and selection unchanged. Main667 reads the result word and uses control 1. Main668 clears that word, and all other wrappers return control 2 without a result write.',
         },
         {
           ids: [786],

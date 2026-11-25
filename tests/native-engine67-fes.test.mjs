@@ -467,3 +467,84 @@ test('2.6.1.67 CP932 STRING uses its own packet, signed position, page limit and
   assert.deepEqual([owner.text.active, owner.text.elapsed, owner.text.pageLimit], [false, 0, 0]);
   assert.ok(writer.frame().rgba.every((value) => value === 0));
 });
+
+test('2.6.1.67 saved FES names override system values in property operands and results after cold restore', async (t) => {
+  const files = {
+    'screen.fes': encodeCP932(`#DEFINE
+PLANE marker
+#START
+next HOLD
+#HOLD
+#PROPERTY
+marker pri _CLICK_L_+_EXITCODE_
+break
+#RESULT
+result _CLICK_L_+_EXITCODE_
+`),
+    'names.kcs': nativeProgram(
+      [
+        [664, [fes, 128, 5]],
+        [664, [fes, 160, 7]],
+        [664, [fes, 192, 0]],
+      ],
+      [
+        [128, '_CLICK_L_'],
+        [160, '_EXITCODE_'],
+        [192, '_PUSH_DOWN_'],
+      ],
+    ),
+  };
+  const world = await defaultFESWorld(profile, files);
+  t.after(() => world.close({ flushFiles: false }));
+  const { id, task } = await loadDefaultFES(world),
+    writer = await world.spawnScript('names.kcs', { initialExecute: false });
+  await task.tick();
+  writer.machine.store(80, world.nativeTaskID(id));
+  await world.runtime.scheduler.execute(writer);
+  assert.equal(writer.machine.pop(), 0x862afb3d);
+  const fresh = await defaultFESWorld(profile, files, { initialize: false });
+  t.after(() => fresh.close({ flushFiles: false }));
+  await fresh.restore(structuredClone(world.snapshot()));
+  for (const [owner, implementation] of [
+    [world, task],
+    [fresh, fresh.objects.objects.get(id).implementation],
+  ]) {
+    const instance = implementation.player.root;
+    instance.clickR = 1;
+    instance.pushDown = 1;
+    for (const [name, expected] of [
+      ['_CLICK_L_', 5],
+      ['_EXITCODE_', 7],
+      ['_PUSH_DOWN_', 0],
+      ['_CLICK_R_', 1],
+      ['_CLICK_L_[1]', 0],
+      ['_EXITCODE_[1]', 0],
+      ['missing_name', 0],
+    ]) {
+      assert.equal(instance.value(name), expected, name);
+      assert.equal(instance.operandValue(encodeCP932(name)), expected, name);
+      assert.equal(
+        instance.runtime.evaluateBankExpression(encodeCP932(name), { systemNames: true }),
+        expected,
+        name,
+      );
+    }
+    await implementation.player.notify('PROPERTY');
+    await implementation.player.flush();
+    await implementation.tick();
+    const marker = instance.collection.lookup('marker', 0);
+    assert.equal(marker.pri, 12);
+    await implementation.player.notify('RESULT');
+    await implementation.player.flush();
+    assert.deepEqual(
+      await owner.runtime.native(
+        'main',
+        667,
+        [owner.nativeTaskID(id)],
+        owner.main.machine,
+        owner.main,
+      ),
+      { control: 1, value: 12 },
+    );
+  }
+});

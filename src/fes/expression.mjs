@@ -132,18 +132,25 @@ function evaluateTokens(tokens, text, context, depth, operand) {
     if (node.kind === 'macro') return evaluate(node.value, context, depth + 1);
     if (node.kind === 'variable') return reference(node).get() | 0;
     if (node.kind === 'identifier') {
-      const system = context.system?.(node.name);
+      const lookup = context.player?.nativeNamedVariable;
+      let index;
+      if (lookup) {
+        index = node.index ? run(node.index) : 0;
+        const variable = lookup(context, node.name, index);
+        if (variable !== undefined) return variable | 0;
+      }
+      const system = !lookup || index === 0 ? context.system?.(node.name) : undefined;
       if (system !== undefined && system !== null) return system | 0;
-      if (operand) return context.valueLookup(node.nameBytes, node.index ? run(node.index) : 0) | 0;
+      if (operand)
+        return context.valueLookup(node.nameBytes, index ?? (node.index ? run(node.index) : 0)) | 0;
       const macro = context.macro?.(node.name);
       if (macro !== undefined) return evaluate(macro, context, depth + 1);
-      const lookup = context.player?.nativeNamedVariable,
-        index = node.index && (lookup || context.objectHandle) ? run(node.index) : undefined,
-        variable = lookup?.(context, node.name, index ?? 0);
-      if (variable !== undefined) return variable | 0;
+      index ??= node.index && context.objectHandle ? run(node.index) : undefined;
       const handle = context.objectHandle?.(node.name, index);
-      if (handle === undefined || handle === null)
+      if (handle === undefined || handle === null) {
+        if (lookup) return 0;
         throw new Error(`Unexpected FES expression identifier '${node.name}' in ${text}`);
+      }
       return handle | 0;
     }
     if (node.kind === 'postfix' || (node.kind === 'unary' && ['++', '--'].includes(node.op))) {
