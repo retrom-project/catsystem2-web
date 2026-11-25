@@ -7,6 +7,7 @@ import { NativeRuntime } from '../src/native/runtime.mjs';
 import { NativeDictionary, nativeDictionary } from '../src/native/dictionary.mjs';
 import { nativeHeapData } from '../src/native/heap-data.mjs';
 import { kcsProgram } from './helpers.mjs';
+import { dataWorld } from './fixtures/data-world.mjs';
 
 const profile = 'nekopara-vol3-engine-2.6.1.76';
 const machine = () =>
@@ -210,4 +211,87 @@ test('both dictionary families serialize into raw native heap memory and import 
       control: 2,
     });
   }
+});
+
+test('2.6.1.67 ordered dictionaries share live owners and retain packed data across a fresh World', async (t) => {
+  const profile = 'bokutomo-engine-2.6.1.67',
+    marker = 0x2f341ac7,
+    raw = 0xff812345,
+    quiet = 0xffc12345,
+    handle = [0x13, 64],
+    packed = [0x13, 68],
+    restored = [0x13, 72],
+    call = (id, args, output) => [
+      ...args.map((word) => [37, word]),
+      [43, id, args.length * 4],
+      ...(output === undefined ? [] : [[38, output]]),
+    ],
+    program = (...calls) => kcsProgram([[37, marker], ...calls.flat(), [59]]),
+    assets = {
+      'dictionary-create.kcs': program(
+        call(894, [], 64),
+        call(896, [handle, 128, raw]),
+        call(677, [handle, 160, 0x80000000]),
+        call(899, [handle], 80),
+        call(833, [28], 68),
+        call(891, [handle, packed]),
+      ),
+      'dictionary-restore.kcs': program(
+        call(897, [handle, 128], 80),
+        call(680, [handle, raw, 192], 84),
+        call(675, [], 72),
+        call(677, [restored, 160, 5]),
+        call(892, [restored, packed]),
+        call(888, [restored, 128], 88),
+        call(888, [restored, 160], 92),
+        call(898, [handle]),
+        call(899, [handle], 96),
+        call(895, [handle]),
+        call(676, [restored]),
+        call(834, [packed]),
+      ),
+    };
+  async function invoke(world, asset, setup) {
+    const task = await world.spawnScript(asset, { initialExecute: false }),
+      machine = task.machine;
+    machine.writeString('A', 128);
+    machine.writeString('猫', 160);
+    machine.bytes(192, 4).fill(165);
+    setup?.(machine);
+    await world.runtime.scheduler.execute(task);
+    assert.equal(machine.sp, machine.floor + 4);
+    assert.equal(machine.pop(), marker);
+    return machine;
+  }
+  const source = await dataWorld(profile, assets);
+  t.after(() => source.close({ flushFiles: false }));
+  const before = await invoke(source, 'dictionary-create.kcs'),
+    originalHandle = before.load(64),
+    address = before.load(68),
+    size = before.load(80),
+    bytes = source.runtime.imageDataBuffers.process.read(address, size);
+  assert.equal(size, 20);
+  assert.deepEqual(
+    [...bytes],
+    [2, 0, 0, 0, 65, 0, 0, 0, 0x45, 0x23, 0xc1, 0xff, 0x94, 0x4c, 0, 0, 0, 0, 0, 0x80],
+  );
+
+  const world = await dataWorld(profile, assets, { initialize: false });
+  t.after(() => world.close({ flushFiles: false }));
+  await world.restore(structuredClone(source.snapshot()));
+  const heap = world.runtime.imageDataBuffers.process;
+  assert.deepEqual([...heap.read(address, size)], [...bytes]);
+  heap.store(address + 8, raw);
+  const after = await invoke(world, 'dictionary-restore.kcs', (machine) => {
+    machine.store(64, originalHandle);
+    machine.store(68, address);
+  });
+  assert.deepEqual(
+    [80, 84, 88, 92, 96].map((at) => after.load(at)),
+    [raw, 1, quiet, 5, 4],
+  );
+  assert.deepEqual([...after.bytes(192, 4)], [65, 0, 165, 165]);
+  assert.equal(world.runtime.handles.records.has(originalHandle), false);
+  assert.equal(world.runtime.handles.records.has(after.load(72)), false);
+  assert.equal(heap.allocations.has(address), false);
 });

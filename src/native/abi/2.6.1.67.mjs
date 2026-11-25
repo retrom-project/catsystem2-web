@@ -15,6 +15,37 @@ const mainConstantZero = [
 const mainUnwritten = [140, 142, 549];
 const legacyTextInitializers = [123, 418];
 const legacyTextMutators = [124, 125, 557];
+const dictionaryHandle = {
+  name: 'dictionary',
+  description: 'Borrowed dictionary handle',
+  type: { kind: 'handle', handleKind: 'dictionary', ownership: 'borrowed' },
+};
+const dictionaryKey = {
+  name: 'key',
+  description: 'Guest CP932 format for a key',
+  type: {
+    kind: 'pointer',
+    addressSpace: 'vm',
+    direction: 'in',
+    target: { kind: 'format-string', encoding: 'CP932' },
+  },
+};
+const dictionaryKeyOutput = {
+  name: 'destination',
+  description: 'Guest CP932 key output with a terminating NUL',
+  type: {
+    kind: 'pointer',
+    addressSpace: 'vm',
+    direction: 'out',
+    target: { kind: 'character', bits: 8, encoding: 'CP932' },
+  },
+};
+const dictionaryWord = {
+  name: 'value',
+  description: 'Raw value word',
+  type: { kind: 'bits', bits: 32 },
+};
+const dictionaryFloatCopies = [887, 891, 892];
 const remainderEvidence =
   'Own 2.6.1.67 x87 FPREM retains the dividend sign for a nonzero exact multiple, completes large reductions, and selects native NaN payloads. Main and both Particle tables alias 0x499d30. The separate Generic wrapper at 0x55d9c0 calls the same CRT body. Each writes one f32 under control 1.';
 const randomEvidence =
@@ -80,6 +111,7 @@ export default {
   executableSha256: 'd1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010',
   xmlEncoding: 'Shift_JIS',
   fileIO: { rawModeAndBoundedBuffer: true, defaultReadOnly: true },
+  dictionary: { float32Copies: dictionaryFloatCopies },
   text: {
     freeTypeCharacterEncoding: 'cp932',
     freeTypeVersion: '2.4.8',
@@ -1151,15 +1183,14 @@ export default {
           499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 532, 533,
           538, 558, 564, 569, 576, 582, 583, 584, 585, 587, 588, 589, 599, 600, 601, 602, 603, 604,
           622, 623, 624, 628, 629, 631, 632, 641, 648, 657, 662, 663, 664, 665, 666, 667, 668, 669,
-          675, 676, 677, 678, 679, 680, 681, 682, 688, 689, 690, 691, 692, 701, 702, 703, 704, 705,
-          706, 707, 708, 709, 716, 721, 722, 725, 729, 734, 735, 738, 742, 743, 744, 745, 746, 747,
-          748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765,
-          766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783,
-          784, 786, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806,
-          807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824,
-          825, 826, 827, 828, 829, 830, 831, 832, 836, 837, 838, 839, 840, 841, 842, 843, 845, 846,
-          847, 869, 871, 873, 874, 875, 877, 878, 879, 880, 881, 885, 886, 887, 888, 889, 890, 891,
-          892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903,
+          681, 682, 688, 689, 690, 691, 692, 701, 702, 703, 704, 705, 706, 707, 708, 709, 716, 721,
+          722, 725, 729, 734, 735, 738, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753,
+          754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771,
+          772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 786, 791, 792, 793, 794,
+          795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812,
+          813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830,
+          831, 832, 836, 837, 838, 839, 840, 841, 842, 843, 845, 846, 847, 869, 871, 873, 874, 875,
+          877, 878, 879, 880, 881, 903,
         ],
         recovered: [
           1, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
@@ -1182,16 +1213,33 @@ export default {
           537, 539, 540, 541, 542, 549, 557, 565, 566, 567, 568, 570, 571, 572, 577, 586, 590, 591,
           592, 593, 594, 595, 596, 597, 598, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615,
           616, 617, 618, 619, 620, 621, 625, 630, 633, 634, 635, 636, 637, 638, 639, 640, 645, 646,
-          647, 649, 650, 651, 653, 654, 655, 658, 659, 674, 683, 684, 685, 693, 694, 695, 696, 697,
-          698, 699, 700, 710, 711, 712, 713, 714, 715, 717, 718, 719, 720, 723, 724, 726, 727, 728,
-          730, 731, 732, 733, 736, 737, 739, 740, 741, 785, 787, 788, 789, 790, 833, 834, 835, 844,
-          848, 849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865,
-          866, 867, 868, 870, 872, 876, 882, 883, 884, 904, 905, 934, 935, 936, 937,
+          647, 649, 650, 651, 653, 654, 655, 658, 659, 674, 675, 676, 677, 678, 679, 680, 683, 684,
+          685, 693, 694, 695, 696, 697, 698, 699, 700, 710, 711, 712, 713, 714, 715, 717, 718, 719,
+          720, 723, 724, 726, 727, 728, 730, 731, 732, 733, 736, 737, 739, 740, 741, 785, 787, 788,
+          789, 790, 833, 834, 835, 844, 848, 849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859,
+          860, 861, 862, 863, 864, 865, 866, 867, 868, 870, 872, 876, 882, 883, 884, 885, 886, 887,
+          888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 904, 905, 934,
+          935, 936, 937,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: [675, 676, 885, 886, 894, 895],
+          value:
+            'Own allocation and destruction of the ordered dictionary share the exact Main515 and Main516 bodies, including the same 32-byte map owner.',
+        },
+        {
+          ids: [677, 678, 679, 680],
+          value:
+            'Own original wrappers set and remove formatted CP932 keys, read a supplied default on a miss, and copy the first byte-ordered key matching a raw DWORD value into guest memory.',
+        },
+        {
+          ids: [887, 888, 889, 890, 891, 892, 893, 896, 897, 898, 899, 900, 901, 902],
+          value:
+            'Own dictionary wrappers share the live byte-ordered map. Packed rows contain a terminated key, untouched DWORD padding, then one value. Import preserves existing keys. Main887, Main891 and Main892 copy through x87 F32. The second family copies raw words.',
+        },
         {
           ids: [29, 30, 31, 32],
           value:
@@ -2118,6 +2166,148 @@ export default {
         },
       ],
       signatures: [
+        {
+          ids: [675, 885, 894],
+          fields: {
+            result: {
+              kind: 'handle',
+              description: 'New ordered dictionary or zero on allocation failure',
+              handleKind: 'dictionary',
+              ownership: 'owned',
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [676, 886, 895],
+          fields: {
+            parameters: [
+              {
+                ...dictionaryHandle,
+                description: 'Owned dictionary to release',
+                type: { ...dictionaryHandle.type, ownership: 'owned' },
+              },
+            ],
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [677, 896],
+          fields: {
+            parameters: [dictionaryHandle, dictionaryKey, dictionaryWord],
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [887],
+          fields: {
+            parameters: [
+              dictionaryHandle,
+              dictionaryKey,
+              {
+                name: 'value',
+                description: 'IEEE 754 single-precision value',
+                type: { kind: 'float', bits: 32 },
+              },
+            ],
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [678],
+          fields: { parameters: [dictionaryHandle, dictionaryKey], review: 'reviewed' },
+        },
+        {
+          ids: [679],
+          fields: {
+            parameters: [
+              dictionaryHandle,
+              dictionaryKey,
+              { ...dictionaryWord, name: 'fallback', description: 'Word for a missing key' },
+            ],
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [680],
+          fields: {
+            parameters: [dictionaryHandle, dictionaryWord, dictionaryKeyOutput],
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [888, 897],
+          fields: {
+            parameters: [dictionaryHandle, dictionaryKey],
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [889, 898],
+          fields: { parameters: [dictionaryHandle], review: 'reviewed' },
+        },
+        {
+          ids: [890, 899],
+          fields: { parameters: [dictionaryHandle], resultWritten: true, review: 'reviewed' },
+        },
+        {
+          ids: [891, 900],
+          fields: {
+            parameters: [
+              dictionaryHandle,
+              {
+                name: 'destination',
+                description: 'Packed dictionary output in owned native memory',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'native',
+                  direction: 'out',
+                  target: { kind: 'record', name: 'packed-dictionary' },
+                },
+              },
+            ],
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [892, 901],
+          fields: {
+            parameters: [
+              dictionaryHandle,
+              {
+                name: 'source',
+                description: 'Packed dictionary input in owned native memory',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'native',
+                  direction: 'in',
+                  target: { kind: 'record', name: 'packed-dictionary' },
+                },
+              },
+            ],
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [893, 902],
+          fields: {
+            parameters: [
+              dictionaryHandle,
+              {
+                name: 'index',
+                description: 'Byte-ordered key index',
+                type: { kind: 'integer', bits: 32, signed: false },
+              },
+              dictionaryKeyOutput,
+            ],
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
         {
           ids: [29],
           fields: {
