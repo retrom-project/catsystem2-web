@@ -46,6 +46,66 @@ async function executeMain(world, id, argv, setup = () => {}, result) {
   }
 }
 
+test('2.6.1.63 bitmap and image-owner geometry preserve raw coordinates and null results', async (t) => {
+  const ids = [363, 371, 372, 373, 374, 718, 719, 720];
+  const world = await dataWorld(
+    profile,
+    Object.fromEntries(ids.map((id) => [`main-${id}.kcs`, mainProgram(id, 3)])),
+  );
+  t.after(() => world.close({ flushFiles: false }));
+  const images = world.graphics.images,
+    bitmap = images.create(2, 1),
+    source = images.get(bitmap),
+    owner = world.imageOwners.add(bitmap, world.main.id),
+    empty = world.imageOwners.add(0, world.main.id);
+  const call = (id, args, result) => executeMain(world, id, args, undefined, result);
+  await source.fill(0, 0, 2, 1, 0x7fe42b96);
+  const pixels = await source.pixels();
+  for (const [direct, owned, fields] of [
+    [372, 718, ['canvasWidth', 'canvasHeight']],
+    [373, 719, ['offsetX', 'offsetY']],
+    [374, 720, ['baseX', 'baseY']],
+  ]) {
+    await call(direct, [0, 1, 2], 0);
+    await call(direct, [bitmap, 0x80000000, 0xffffffff], 1);
+    assert.deepEqual(
+      fields.map((field) => source.state[field]),
+      [-2147483648, -1],
+    );
+    await call(owned, [0, 3, 4], 1);
+    await call(owned, [empty, 5, 6], 0);
+    assert.deepEqual(
+      fields.map((field) => source.state[field]),
+      [-2147483648, -1],
+    );
+    await call(owned, [owner, 0xff410700, 0x807611ff], 1);
+    assert.deepEqual(
+      fields.map((field) => source.state[field] >>> 0),
+      [0xff410700, 0x807611ff],
+    );
+  }
+  const canary = 0xa5f06e2d;
+  for (const [id, emptyWord, status] of [
+    [363, 0, undefined],
+    [371, canary, 0],
+  ]) {
+    let machine = await executeMain(
+      world,
+      id,
+      [0, 156, 160],
+      (m) => {
+        m.store(156, canary);
+        m.store(160, canary);
+      },
+      status,
+    );
+    assert.deepEqual([machine.load(156), machine.load(160)], [emptyWord, emptyWord]);
+    machine = await call(id, [bitmap, 157, 157], id === 363 ? undefined : 1);
+    assert.equal(machine.load(157), 0x807611ff);
+  }
+  assert.deepEqual(await source.pixels(), pixels);
+});
+
 async function run(instructions, diagnostic) {
   const runtime = new NativeRuntime({
     profile,
