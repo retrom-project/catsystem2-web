@@ -192,7 +192,7 @@ const mainEvidence = [
   {
     ids: [165, 349, 569, 587],
     value:
-      'Own full GCALLs execute this build’s Sound receiver and static-buffer query path. Pan retains its signed raw word; fade-pending returns bit zero, including zero for invalid banks. In the primary DirectSound backend, decoder length comes from the loaded buffer’s decoded-stream virtual query for either per-file load type, with no narrowing of its DWORD result; absent devices, missing buffers and invalid banks return zero. The other native backend remains a separate open shape. Completion count retains the static buffer DWORD and returns zero for missing/static-disabled backends. Its active-device invalid-bank path leaves the native result unwritten and remains diagnostic. All captured Sound/device bytes remain unchanged.',
+      'Own full GCALLs execute this build’s Sound receiver and static-buffer query path. Pan retains its signed raw word; fade-pending returns bit zero, including zero for invalid banks. In the primary DirectSound backend, decoder length comes from the loaded buffer’s decoded-stream virtual query for either per-file load type, with no narrowing of its DWORD result; absent devices, missing buffers and invalid banks return zero. The other native backend remains a separate open shape. The primary buffer completion DWORD counts actual static playback notifications, including finite repeats and repeat-count zero. Pause preserves it; Play and Stop clear it; release and a later stream load retain it until playback resets it. Own Main155 creation, original notification callbacks and Main157/158/159/160/587 full-GCALL chains confirm these transitions. Absent global backends return zero. Its active-device invalid-bank path leaves the native result unwritten and remains diagnostic. All captured Sound/device bytes remain unchanged.',
   },
   {
     ids: [589],
@@ -1377,6 +1377,7 @@ export default {
   sound: {
     banks: 32,
     load3DPositionFromPan: true,
+    bufferCompletionNotifications: true,
     unwrittenQueryBanks: [587],
     firstMessage: 166,
     lastMessage: 197,

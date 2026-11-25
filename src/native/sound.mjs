@@ -281,8 +281,10 @@ export class NativeSound {
     this.refresh(bank);
   }
   release(bank) {
-    this.audio?.stop(this.key(bank));
     const device = this.device[bank];
+    if (this.abi.sound.bufferCompletionNotifications)
+      device.completionCount = this.channel(bank)?.completionCount ?? device.completionCount;
+    this.audio?.stop(this.key(bank));
     device.loaded = false;
     device.file = '';
     device.metadata = null;
@@ -295,6 +297,7 @@ export class NativeSound {
       channel.offset = 0;
       channel.paused = false;
       channel.ended = true;
+      if (this.abi.sound.bufferCompletionNotifications) channel.completionCount = 0;
     }
     this.device[bank].completionCount = 0;
   }
@@ -408,6 +411,7 @@ export class NativeSound {
       loopStartFrame: device.loopStart,
       loopEndFrame: device.loopEnd,
       sourceMode: device.sourceMode,
+      nativeStaticCompletion: !!this.abi.sound.bufferCompletionNotifications,
       nativeLevelProperty: device.property,
       nativeSpatial: structuredClone(device.nativeSpatial),
     });
@@ -481,7 +485,10 @@ export class NativeSound {
           ...state.channels[bank],
           nativeCategory: device.category,
           volumeFactor: this.factor(bank),
-          loopCount: device.loopCount,
+          loopCount: this.abi.sound.bufferCompletionNotifications
+            ? state.channels[bank].loopCount
+            : device.loopCount,
+          nativeStaticCompletion: !!this.abi.sound.bufferCompletionNotifications,
           loopStartFrame: device.loopStart,
           loopEndFrame: device.loopEnd,
           sourceMode: device.sourceMode,
@@ -1110,7 +1117,7 @@ export class NativeSoundTask {
       case 200:
         return device.metadata ? nativeSoundDecoderQuery(device.metadata) : 0;
       case 201:
-        return device.sourceMode === 'static'
+        return this.sound.abi.sound.bufferCompletionNotifications || device.sourceMode === 'static'
           ? (this.sound.channel(selected[0])?.completionCount ?? device.completionCount) >>> 0
           : 0;
       case 202:

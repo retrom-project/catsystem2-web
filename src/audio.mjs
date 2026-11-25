@@ -162,6 +162,7 @@ export class AudioMixer {
       sequence: this.sequence++,
       remainingDelay: Math.max(0, sound.delay || 0),
       loopCount: sound.loopCount ?? (sound.loop ? 0 : 1),
+      completionCount: sound.completionCount ?? 0,
       remainingDuration: sound.remainingDuration,
     };
     if (
@@ -170,6 +171,12 @@ export class AudioMixer {
       channel.loopCount > 0xffffffff
     )
       throw new Error('Invalid native audio loop count');
+    if (
+      !Number.isInteger(channel.completionCount) ||
+      channel.completionCount < 0 ||
+      channel.completionCount > 0xffffffff
+    )
+      throw new Error('Invalid native audio completion count');
     channel.loop = channel.sourceMode !== 'static' && channel.loopCount !== 1;
     // Reserve the bank before decoding so later guest commands can affect it
     // while browser I/O is pending inside this logical frame.
@@ -310,9 +317,7 @@ export class AudioMixer {
     source.start(channel.scheduled, channel.offset);
     this.scheduleEnd(channel);
     source.onended = () => {
-      channel.offset = channel.loop ? channel.loopEnd : channel.duration;
-      channel.playing = false;
-      channel.ended = true;
+      source.onended = null;
       source.disconnect();
       gain.disconnect();
       panner.disconnect();
@@ -320,6 +325,26 @@ export class AudioMixer {
       panRight.disconnect();
       merger.disconnect();
       channel.spatialNode?.disconnect();
+      channel.spatialNode = null;
+      if (channel.nativeStaticCompletion && channel.sourceMode === 'static') {
+        channel.completionCount = (channel.completionCount + 1) >>> 0;
+        if (channel.loopCount !== 1) {
+          if (channel.loopCount) channel.loopCount--;
+          channel.offset = 0;
+          channel.remainingDelay = 0;
+          channel.remainingDuration = undefined;
+          this.startSource(channel);
+          return;
+        }
+      }
+      channel.offset =
+        channel.nativeStaticCompletion && channel.sourceMode === 'static'
+          ? 0
+          : channel.loop
+            ? channel.loopEnd
+            : channel.duration;
+      channel.playing = false;
+      channel.ended = true;
       this.events.push({ channel: channel.channel, reason: 'ended', frame: this.frame });
     };
   }
@@ -830,6 +855,8 @@ export class AudioMixer {
       volumeFactor: c.volumeFactor,
       nativeSpatial: structuredClone(c.nativeSpatial),
       loopCount: c.loopCount,
+      nativeStaticCompletion: c.nativeStaticCompletion,
+      completionCount: c.completionCount,
       loopStartFrame: c.loopStartFrame,
       loopEndFrame: c.loopEndFrame,
       sourceMode: c.sourceMode,

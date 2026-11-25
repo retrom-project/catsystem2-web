@@ -103,3 +103,74 @@ for (const profile of [
       await world.close({ flushFiles: false });
     }
   });
+
+for (const profile of [
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+  'grisaia-jp-engine-2.6.1.23',
+])
+  test(`${profile} static completion repeats survive a cold world and stay in the reused bank`, async () => {
+    const bytes = wave(),
+      files = {
+        'case.kcs': kcsProgram([[43, 0, 0], [59]]),
+        'sound/owned.wav': bytes,
+      };
+    const create = async (initialize = true) => {
+      const world = await dataWorld(profile, files, { initialize }),
+        { context } = audioFixture();
+      world.game.resolveCategory = (name) => (name === 'sound/owned.wav' ? name : null);
+      context.decodeAudioData = async () => ({
+        sampleRate: 8000,
+        numberOfChannels: 1,
+        length: 64000,
+        duration: 8,
+        getChannelData: () => Float32Array.from(bytes.subarray(44), (value) => (value - 128) / 128),
+      });
+      world.audio = world.sound.audio = new AudioMixer(world.game, context);
+      return { world, context };
+    };
+    let { world, context } = await create();
+    try {
+      await invoke(world, 155, [1, 0, 288, 2]);
+      await invoke(world, 157, [1, 3]);
+      context.advance(8);
+      assert.equal(await invoke(world, 587, [1]), 1);
+      assert.equal(await invoke(world, 160, [1]), 1);
+      const saved = structuredClone(world.snapshot()),
+        cold = await create(false);
+      await cold.world.restore(saved);
+      await world.close({ flushFiles: false });
+      ({ world, context } = cold);
+      assert.equal(await invoke(world, 587, [1]), 1);
+      assert.equal(world.sound.channel(1).loopCount, 2);
+      context.advance(8);
+      assert.equal(await invoke(world, 587, [1]), 2);
+      assert.equal(await invoke(world, 160, [1]), 1);
+      context.advance(8);
+      assert.equal(await invoke(world, 587, [1]), 3);
+      assert.equal(await invoke(world, 160, [1]), 0);
+      assert.equal(world.sound.channel(1).offset, 0);
+      await invoke(world, 156, [1]);
+      assert.equal(await invoke(world, 587, [1]), 3);
+      await invoke(world, 155, [1, 0, 288, 1]);
+      assert.equal(world.sound.device[1].sourceMode, 'stream');
+      assert.equal(await invoke(world, 587, [1]), 3);
+      await invoke(world, 157, [1, 1]);
+      assert.equal(await invoke(world, 587, [1]), 0);
+      await invoke(world, 155, [1, 0, 288, 2]);
+      await invoke(world, 157, [1, 0]);
+      context.advance(8);
+      context.advance(8);
+      assert.equal(await invoke(world, 587, [1]), 2);
+      assert.equal(await invoke(world, 160, [1]), 1);
+      await invoke(world, 158, [1]);
+      assert.equal(await invoke(world, 587, [1]), 2);
+      assert.equal(await invoke(world, 160, [1]), 0);
+      await invoke(world, 157, [1, 2]);
+      assert.equal(await invoke(world, 587, [1]), 0);
+      await invoke(world, 159, [1]);
+      assert.equal(await invoke(world, 587, [1]), 0);
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });

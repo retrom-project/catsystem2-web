@@ -54,7 +54,8 @@ for (const profile of profiles) {
       assert.equal(await invoke(world, 587, 0), 0x80000001);
       bank.sourceMode = 'stream';
       assert.equal(await invoke(world, 569, 0), 0xffffffff);
-      // Completion count for a stream created through Main155 is a separate pending proof.
+      // The persistent buffer counter also survives reuse as a stream.
+      assert.equal(await invoke(world, 587, 0), 0x80000001);
       bank.sourceMode = 'static';
       const saved = structuredClone(world.snapshot());
       const cold = await dataWorld(profile, {}, { initialize: false });

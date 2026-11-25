@@ -132,9 +132,13 @@ stream query word. Both Main155 per-file load types use this backend owner; a
 file's streaming/static mode does not select the other global native backend.
 Absent devices, missing buffers or decoders and invalid banks return zero.
 The alternate backend has no proved browser mapping and remains an open shape.
-Main587 returns the primary buffer completion word for the proven static load.
-The SDK23, SDK63 and SDK67 actual Main155 stream/static creation chains initially return
-zero; completion progression remains under audit. An active-device
+Main587 returns the primary buffer completion word, irrespective of the current
+file mode. Static playback increments it once per completed pass. Finite repeat
+counts decrement to one; zero repeats until stopped. Pause preserves the counter,
+Play and Stop clear it, and release retains it. Loading a stream into the same
+bank also retains that counter until Play. Each build's actual Main155 and
+notification-callback differential proves these transitions; production cold
+restore preserves the counter and the remaining repeat count. An active-device
 out-of-range Main587 bank leaves the original result unwritten and remains
 diagnostic; an absent device returns zero. Main165 retains signed pan readback
 and Main349 returns only the pending volume fade bit. Both return zero for an
