@@ -18,6 +18,7 @@ import {
 } from './screen-effect-geometry.mjs';
 import {
   shadeGeometry,
+  wipeMaskPixels,
   mosaicCache,
   appendMosaicHalf,
   expandMosaic,
@@ -337,6 +338,79 @@ export class NativeScreenEffectTask {
       surface: this.surface(row.width, row.height, pixels),
     }));
   }
+  async initializeWipe(params, context, width, height) {
+    const state = this.state,
+      borrowed = nativeABI(this.world.profile).graphics.screenEffectWipeBorrowsMask,
+      duration = params[2];
+    let handle = params[3],
+      imported = 0;
+    if (borrowed && !handle) return;
+    if (context.nativePointer) {
+      if (!this.owner.importMask)
+        throw new Error('FES screen mask requires its registered producer projection');
+      imported = handle = await this.owner.importMask(handle);
+    }
+    const images = this.world.graphics.images;
+    try {
+      const bitmap = images.get(handle),
+        previousMask = state.mask,
+        previousSource = state.maskSource;
+      let mask = 0,
+        source = 0;
+      if (!borrowed || bitmap.state.bpp === 4) {
+        if (borrowed && !duration) throw new RangeError('Screen wipe duration divides by zero');
+        bitmap.commitCanvas();
+        const physical = flipBitmapRows(await bitmap.pixels(), bitmap.width, bitmap.height),
+          pixels = borrowed
+            ? wipeMaskPixels(
+                physical,
+                bitmap.width,
+                bitmap.height,
+                width,
+                height,
+                this.world.graphics.view.drawingRectangle,
+              )
+            : resampleBitmap(physical, bitmap.width, bitmap.height, width, height);
+        if (!borrowed) source = images.alias(handle, this.record.id);
+        try {
+          mask = this.surface(width, height, pixels);
+        } catch (error) {
+          if (source) await images.release(source);
+          throw error;
+        }
+      }
+      state.mask = mask;
+      state.maskSource = source;
+      this.releaseSurface(previousMask);
+      if (previousSource) await images.release(previousSource);
+      // The borrowed bitmap is used only to build the mask. The original
+      // initializer applies the soft wipe at time zero to reset work alpha.
+      if (borrowed && mask) this.updateWipeAlpha(0, false, duration);
+    } finally {
+      if (imported) await images.release(imported);
+    }
+    if (!borrowed && !duration) throw new RangeError('Screen wipe duration divides by zero');
+  }
+  updateWipeAlpha(elapsed, threshold, duration = this.state.duration) {
+    const { state, stage } = this,
+      borrowed = nativeABI(this.world.profile).graphics.screenEffectWipeBorrowsMask;
+    if (!duration) throw new RangeError('Screen wipe duration divides by zero');
+    const pixels = stage.surfacePixels(state.work[0]).slice(),
+      mask = stage.surfaces.get(state.mask).bytes,
+      scale = threshold ? 256 : 512,
+      position = Math.floor(
+        (borrowed
+          ? Math.imul(Math.min(elapsed, state.end, duration), scale) >>> 0
+          : elapsed * scale) / duration,
+      );
+    for (let at = 0; at < pixels.length; at += 4) {
+      if (threshold) {
+        if (mask[at + 2] >= 256 - position) pixels[at + 3] = 0;
+        else if (!borrowed) pixels[at + 3] = 255;
+      } else pixels[at + 3] = 255 - Math.max(0, Math.min(255, position - 256 + mask[at + 2]));
+    }
+    stage.writeSurface(state.work[0], pixels);
+  }
   async initialize(params, context) {
     const state = this.state,
       kind = this.record.kind,
@@ -354,6 +428,7 @@ export class NativeScreenEffectTask {
           this.world.random,
           breakOptions,
         );
+    if (kind === 39) await this.initializeWipe(params, context, width, height);
     state.params = [...params];
     if (kind === 35) {
       state.minimum = bitsFloat(params[20]);
@@ -405,42 +480,7 @@ export class NativeScreenEffectTask {
         state.start = this.clock();
         state.end = (state.start + state.duration) >>> 0;
       }
-      if (kind === 39) {
-        let handle = params[3],
-          imported = 0;
-        if (context.nativePointer) {
-          if (!this.owner.importMask)
-            throw new Error('FES screen mask requires its registered producer projection');
-          imported = handle = await this.owner.importMask(handle);
-        }
-        const images = this.world.graphics.images,
-          bitmap = images.get(handle);
-        try {
-          bitmap.commitCanvas();
-          const pixels = resampleBitmap(
-            flipBitmapRows(await bitmap.pixels(), bitmap.width, bitmap.height),
-            bitmap.width,
-            bitmap.height,
-            width,
-            height,
-          );
-          const previousMask = state.mask,
-            previousSource = state.maskSource,
-            source = images.alias(handle, this.record.id);
-          try {
-            state.mask = this.surface(width, height, pixels);
-          } catch (error) {
-            await images.release(source);
-            throw error;
-          }
-          state.maskSource = source;
-          this.releaseSurface(previousMask);
-          if (previousSource) await images.release(previousSource);
-        } finally {
-          if (imported) await images.release(imported);
-        }
-        if (!state.duration) throw new RangeError('Screen wipe duration divides by zero');
-      } else if (kind === 50) {
+      if (kind === 50) {
         if (
           state.duration < 2 &&
           !nativeABI(this.world.profile).graphics.screenEffectMosaic?.retainShortWipe
@@ -657,27 +697,9 @@ export class NativeScreenEffectTask {
           );
       this.drawSurface(r.captures[0], state.alpha ?? 255);
     } else if (kind === 39) {
-      const working = state.work[0];
-      if (state.active && state.mask) {
-        if (!state.duration) throw new RangeError('Screen wipe duration divides by zero');
-        const pixels = this.stage.surfacePixels(working).slice(),
-          mask = this.stage.surfaces.get(state.mask).bytes,
-          elapsed = (this.clock() - state.start) >>> 0;
-        for (let at = 0; at < pixels.length; at += 4) {
-          if (state.params[4]) {
-            pixels[at + 3] =
-              mask[at + 2] >= 256 - Math.floor((256 * elapsed) / state.duration) ? 0 : 255;
-          } else
-            pixels[at + 3] =
-              255 -
-              Math.max(
-                0,
-                Math.min(255, Math.floor((512 * elapsed) / state.duration) - 256 + mask[at + 2]),
-              );
-        }
-        this.stage.writeSurface(working, pixels);
-      }
-      this.drawSurface(working);
+      if (state.active && state.mask)
+        this.updateWipeAlpha((this.clock() - state.start) >>> 0, Boolean(state.params[4]));
+      this.drawSurface(state.work[0]);
     } else if (kind === 50 || kind === 51) {
       const selection = state.active ? this.updateMosaic() : kind === 50 ? 0 : 255;
       this.drawSurface(state.work[kind === 50 ? selection : 0], kind === 51 ? selection : 255);

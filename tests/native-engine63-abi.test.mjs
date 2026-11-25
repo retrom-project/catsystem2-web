@@ -159,6 +159,65 @@ test('2.6.1.63 Main655 routes a bounded CP932 Plane notification through its cal
   assert.deepEqual(receiver.snapshot(), state);
 });
 
+test('2.6.1.63 Wipe keeps a private mask and preserves cleared alpha on a threshold restart', async (t) => {
+  const world = await dataWorld(profile, {
+    'main-905.kcs': mainProgram(905, 5),
+    'main-531.kcs': mainProgram(531, 2),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const { stageRenderer: stage, screenEffects, graphics } = world;
+  graphics.view.configure({
+    clientWidth: 4,
+    clientHeight: 2,
+    drawingRectangle: [1, 0, 3, 2],
+  });
+  stage.gpu = new ScreenVectorGPU(4, 2);
+  graphics.createLogicalDevice();
+  const rendering = screenEffects.rendering;
+  assert.equal(rendering.prepare(1), true);
+  const capture = Uint8Array.from({ length: 32 }, (_, i) => (i % 4 === 3 ? 79 : 31));
+  stage.writeSurface(rendering.captures[0], capture);
+
+  const id = await world.objects.create({ kind: 39, parent: world.main.id });
+  const target = world.nativeTaskID(id);
+  const wipe = screenEffects.tasks.get(id);
+  const bitmap = graphics.images.create(4, 2, world.main.id);
+  const handle = graphics.images.get(bitmap).dataHandle;
+  await graphics.images.get(bitmap).fill(0, 0, 4, 2, 0xff0000ff);
+  const initialize = (duration) =>
+    executeMain(world, 905, [target, duration, floatBits(0), floatBits(100), bitmap]);
+  const clock = (at) => (wipe.record.effectiveFrame = at);
+  const alpha = (column = 1) => stage.surfacePixels(wipe.state.work[0])[column * 4 + 3];
+  const render = () => rendering.render([], async () => {}, null);
+
+  assert.equal(alpha(), 79);
+  await initialize(4);
+  assert.equal(alpha(), 255);
+  assert.equal(wipe.state.maskSource, 0);
+  const before = structuredClone(wipe.snapshot());
+  await assert.rejects(initialize(0), /duration divides by zero/);
+  graphics.view.configure({ drawingRectangle: [-1, 0, 3, 2] });
+  await assert.rejects(initialize(4), /exceeds its mask allocation/);
+  graphics.view.configure({ drawingRectangle: [1, 0, 3, 2] });
+  assert.deepEqual(wipe.snapshot(), before);
+  await graphics.images.release(bitmap);
+  assert.ok(!graphics.images.handles.records.has(handle));
+
+  clock(7);
+  await executeMain(world, 531, [target, 1]);
+  clock(8);
+  await render();
+  assert.equal(alpha(), 0);
+  assert.equal(alpha(0), 255);
+  clock(9);
+  await executeMain(world, 531, [target, 0]);
+  assert.deepEqual([wipe.state.active, wipe.state.start, wipe.state.end], [0, 7, 11]);
+  clock(18);
+  await executeMain(world, 531, [target, 1]);
+  await render();
+  assert.equal(alpha(), 0);
+});
+
 test('2.6.1.63 Main541 releases existing intersecting texture pages only with an active owner', async (t) => {
   const world = await dataWorld(
     profile,

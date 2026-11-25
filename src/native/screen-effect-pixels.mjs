@@ -39,6 +39,30 @@ export function shadeGeometry(width, height, textureWidth, textureHeight, radius
     { vertices: vertices.slice(3, 6) },
   ]);
 }
+export function wipeMaskPixels(source, sourceWidth, sourceHeight, width, height, rectangle) {
+  const [left, top, right, bottom] = rectangle,
+    columns = right - left,
+    rows = bottom - top;
+  if (left < 0 || top < 0 || right > width || bottom > height)
+    throw new RangeError('Screen wipe rectangle exceeds its mask allocation');
+  if (columns === width && rows === height)
+    return resampleBitmap(source, sourceWidth, sourceHeight, width, height);
+  const pixels = new Uint8ClampedArray(width * height * 4);
+  if (columns <= 0 || rows <= 0) return pixels;
+  if (columns === sourceWidth && rows === sourceHeight) {
+    for (let row = 0; row < rows; row++) {
+      const start = row * columns * 4;
+      pixels.set(source.subarray(start, start + columns * 4), ((top + row) * width + left) * 4);
+    }
+    return pixels;
+  }
+  return resampleBitmap(source, sourceWidth, sourceHeight, columns, rows, null, {
+    pixels,
+    width,
+    x: left,
+    y: top,
+  });
+}
 export function mosaicCache(pixels, width, height, count, maximum, fade = false) {
   const cache = [{ time: 0, q: 1, width, height, pixels: pixels.slice(), alpha: 255 }],
     span = f(f(maximum | 0) - 1);

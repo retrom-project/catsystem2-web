@@ -28,6 +28,8 @@ const screenEffectOperations = [
   [522, 'Blur', []],
   [523, 'Mosaic', [1, 2, 3, 4, 5, 6, 7, 8]],
   [524, 'Mosaic', []],
+  [530, 'Wipe', [2, 3]],
+  [531, 'Wipe', []],
   [853, 'WipeMosaic', [2, 3]],
   [854, 'WipeMosaic', []],
   [855, 'WipeMosaic', []],
@@ -35,6 +37,7 @@ const screenEffectOperations = [
   [857, 'FadeMosaic', []],
   [860, 'WBreak', [2, 3, 6, 7]],
   [861, 'WBreak', []],
+  [905, 'Wipe', [2, 3]],
 ];
 const screenEffectSignatures = screenEffectOperations.map(([id, objectKind, floats]) => ({
   ids: [id],
@@ -56,6 +59,12 @@ const screenEffectSignatures = screenEffectOperations.map(([id, objectKind, floa
             direction: 'in',
             target: { kind: 'record', name: '4 by 4 matrix' },
           },
+        };
+      if ((id === 530 || id === 905) && index === 4)
+        return {
+          name: 'mask',
+          description: 'Borrowed bitmap used to build the transition mask',
+          type: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' },
         };
       return floats.includes(index)
         ? { ...parameter, description: 'Float32 parameter', type: { kind: 'float', bits: 32 } }
@@ -1097,8 +1106,9 @@ export default {
     resizeRGB24: true,
     screenEffectBlurUsesSSE: true,
     screenEffectRectangleUsesLogicalCapture: true,
-    screenEffectRetimesOnActiveInit: [50, 51, 52],
-    screenEffectPreserveStoppedClockKinds: [50, 51, 52],
+    screenEffectRetimesOnActiveInit: [39, 50, 51, 52],
+    screenEffectPreserveStoppedClockKinds: [39, 50, 51, 52],
+    screenEffectWipeBorrowsMask: true,
     screenEffectBreakUsesLogicalCapture: true,
     screenEffectMosaic: { fadeInitializerWords: 6, retainShortWipe: true },
     screenEffectFloatArguments: Object.fromEntries(
@@ -1150,7 +1160,7 @@ export default {
           587, 588, 589, 599, 600, 601, 602, 603, 622, 623, 624, 628, 629, 631, 632, 641, 648, 650,
           657, 658, 659, 663, 664, 665, 666, 667, 668, 669, 677, 678, 679, 680, 682, 688, 690, 691,
           692, 703, 704, 705, 706, 707, 708, 709, 716, 721, 722, 725, 729, 734, 738, 837, 838, 839,
-          840, 841, 842, 843, 845, 846, 847, 904, 905,
+          840, 841, 842, 843, 845, 846, 847, 904,
         ],
 
         reserved: mainReserved,
@@ -1188,8 +1198,8 @@ export default {
           825, 826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 844, 848, 849, 850, 851, 852,
           853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870,
           871, 872, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888,
-          889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 934, 935, 936,
-          937,
+          889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 905, 934, 935,
+          936, 937,
         ],
       },
       evidence: [
@@ -1529,6 +1539,11 @@ export default {
             '2.6.1.63 own raw Plane 81 stores the VRAM type. Raw 82 receives two 256-byte formatted strings and is the original empty SimplePlane branch.',
         },
         {
+          ids: [530, 531, 905],
+          value:
+            '2.6.1.63 own Wipe raw 375 uses the borrowed bitmap data for a private resampled mask and writes mode 0 or 1. Raw 376 starts from its task clock and preserves clocks when stopped.',
+        },
+        {
           ids: [655],
           value:
             '2.6.1.63 formats one CP932 source into 256 bytes and sends raw Plane 83 through the caller Top. The original SimplePlane and M2Plane receivers leave state and result unchanged, using the shared message 86.',
@@ -1609,9 +1624,9 @@ export default {
             '2.6.1.63 own base-point and attribute queries read the composed bitmap. Attribute IDs narrow to sixteen bits and a hit writes five raw words.',
         },
         {
-          ids: [520, 527, 528, 530, 531],
+          ids: [520, 527, 528],
           value:
-            '2.6.1.63 own retained transition query and fade/wipe wrappers use raw 365, 372, 373, 375 and 376 with the same ordered priority and duration packets.',
+            '2.6.1.63 own retained transition query and fade wrappers use raw 365, 372 and 373 with the ordered priority and duration packet.',
         },
         {
           ids: [521, 522, 523, 524],
@@ -2281,7 +2296,7 @@ export default {
         { ids: [339, 534], fields: { resultWritten: false } },
         { ids: [717, 724], fields: { resultWritten: true } },
         { ids: [520], fields: { resultWritten: true } },
-        { ids: [527, 528, 530, 531], fields: { resultWritten: false } },
+        { ids: [527, 528], fields: { resultWritten: false } },
         { ids: [568, 858, 859], fields: { resultWritten: false } },
         { ids: [4, 17, 318], fields: { resultWritten: true } },
         { ids: [94, 453], fields: { resultWritten: false } },
