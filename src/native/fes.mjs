@@ -89,33 +89,35 @@ async function persistFESBank(id, [handle, tag, target], task, world) {
   return reply(1);
 }
 
+const fesArgumentCounts = new Map([
+  [0x1bf, 2],
+  [0x1c0, 1],
+  [0x1c1, 2],
+  [0x1c2, 2],
+  [0x1c3, 2],
+  [0x1c4, 1],
+  [0x1c5, 1],
+  [0x1c6, 1],
+  [0x276, 4],
+  [0x277, 4],
+  [0x278, 3],
+  [0x285, 3],
+  [0x286, 2],
+  [0x287, 2],
+  [0x289, 3],
+  [0x28a, 3],
+  [0x298, 3],
+  [0x299, 1],
+  [0x29a, 1],
+  [0x29b, 1],
+  [0x29c, 1],
+  [0x2e2, 3],
+  [0x372, 3],
+  [0x373, 2],
+]);
+
 export function nativeFES(id, args, machine, task, world) {
-  const count = new Map([
-    [0x1bf, 2],
-    [0x1c0, 1],
-    [0x1c1, 2],
-    [0x1c2, 2],
-    [0x1c3, 2],
-    [0x1c4, 1],
-    [0x1c5, 1],
-    [0x1c6, 1],
-    [0x276, 4],
-    [0x277, 4],
-    [0x278, 3],
-    [0x285, 3],
-    [0x286, 2],
-    [0x287, 2],
-    [0x289, 3],
-    [0x28a, 3],
-    [0x298, 3],
-    [0x299, 1],
-    [0x29a, 1],
-    [0x29b, 1],
-    [0x29c, 1],
-    [0x2e2, 3],
-    [0x372, 3],
-    [0x373, 2],
-  ]).get(id);
+  const count = fesArgumentCounts.get(id);
   if (count === undefined) return undefined;
   if (args.length !== count)
     throw new Error(`KCS FES native 0x${id.toString(16)} expects ${count} arguments`);

@@ -2,14 +2,16 @@
 import { nativeReply } from '../kcs/vm.mjs';
 import { readLoopPoints } from './loop-points.mjs';
 
+const environmentArgumentCounts = new Map([
+  [8, 2],
+  [0x189, 1],
+  [0x190, 2],
+  [0x2e3, 2],
+  [0x3aa, 0],
+]);
+
 export function nativeEnvironment(id, args, machine, services = {}) {
-  const count = new Map([
-    [8, 2],
-    [0x189, 1],
-    [0x190, 2],
-    [0x2e3, 2],
-    [0x3aa, 0],
-  ]).get(id);
+  const count = environmentArgumentCounts.get(id);
   if (count === undefined) return undefined;
   if (args.length !== count)
     throw new Error(`KCS environment native 0x${id.toString(16)} expects ${count} arguments`);

@@ -158,18 +158,20 @@ export class NativeVariableBank {
   }
 }
 
+const bankArgumentCounts = new Map([
+  [0xd1, 1],
+  [0xd2, 1],
+  [0xd3, 2],
+  [0xd4, 1],
+  [0xd5, 1],
+  [0x261, 0],
+  [0x262, 0],
+  [0x292, 1],
+  [0x293, 2],
+]);
+
 export function nativeBank(id, args, machine, services = {}) {
-  const count = new Map([
-    [0xd1, 1],
-    [0xd2, 1],
-    [0xd3, 2],
-    [0xd4, 1],
-    [0xd5, 1],
-    [0x261, 0],
-    [0x262, 0],
-    [0x292, 1],
-    [0x293, 2],
-  ]).get(id);
+  const count = bankArgumentCounts.get(id);
   if (count === undefined) return undefined;
   if (args.length !== count)
     throw new Error(`KCS variable native 0x${id.toString(16)} expects ${count} arguments`);

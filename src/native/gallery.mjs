@@ -23,18 +23,20 @@ export function registerNativeCG(registry, source) {
   }
 }
 
+const galleryArgumentCounts = new Map([
+  [0x1a3, 0],
+  [0x1a4, 1],
+  [0x1a5, 1],
+  [0x1a6, 2],
+  [0x1a7, 2],
+  [0x1a8, 3],
+  [0x1a9, 3],
+  [0x1ca, 2],
+  [0x1cb, 3],
+]);
+
 export function nativeGallery(id, args, machine, services = {}) {
-  const count = new Map([
-    [0x1a3, 0],
-    [0x1a4, 1],
-    [0x1a5, 1],
-    [0x1a6, 2],
-    [0x1a7, 2],
-    [0x1a8, 3],
-    [0x1a9, 3],
-    [0x1ca, 2],
-    [0x1cb, 3],
-  ]).get(id);
+  const count = galleryArgumentCounts.get(id);
   if (count === undefined) return undefined;
   if (args.length !== count)
     throw new Error(`KCS CG native 0x${id.toString(16)} expects ${count} arguments`);
