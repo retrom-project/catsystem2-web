@@ -11,6 +11,12 @@ import { surveyContainer } from './survey-native-corpus.mjs';
 
 const tables = ['main', 'generic', 'particle-v1', 'particle-v2'];
 const receiptKinds = new Set(['original', 'vm', 'guard', 'product']);
+const guardScopes = [
+  'ordinary-runtime',
+  'original-undefined-input',
+  'desktop-author-or-export',
+  'unclassified-evidence',
+];
 const digest = (value) => createHash('sha256').update(value).digest('hex');
 const slotKey = (table, id) => `${table}:${id}`;
 const validSHA = (value) => typeof value === 'string' && /^[0-9a-f]{64}$/.test(value);
@@ -370,6 +376,8 @@ function collectRows(image, abi, scripts, reviews, receipts) {
       !['guarded', 'implemented', 'original-stub'].includes(disposition)
     )
       throw new Error(`Review and current ABI declaration disagree at ${key}`);
+    if (review.sdkScope !== undefined && (!guard || !guardScopes.includes(review.sdkScope)))
+      throw new Error(`Invalid SDK scope for ${key}`);
     assertReviewReceipts(review, receipts, ['original', guard ? 'guard' : 'vm']);
     reviewMap.set(key, review);
   }
@@ -393,6 +401,40 @@ function collectRows(image, abi, scripts, reviews, receipts) {
         },
       ]),
     ),
+  };
+}
+
+export function summarizeSDKCoverage({ tables }, works, receipts) {
+  const guarded = Object.fromEntries(guardScopes.map((scope) => [scope, []])),
+    originalStubs = [];
+  for (const [table, { slots }] of Object.entries(tables))
+    for (const { id, declaration, evidence } of slots) {
+      if (declaration.status === 'unknown') {
+        const scope = evidence?.sdkScope ?? 'unclassified-evidence';
+        guarded[scope].push({ table, id });
+      } else if (
+        evidence?.disposition === 'original-stub' ||
+        ['reserved', 'constant-zero'].includes(declaration.status)
+      )
+        originalStubs.push({ table, id });
+    }
+  const ordinaryOpen = guarded['ordinary-runtime'].length,
+    unclassified = guarded['unclassified-evidence'].length;
+  return {
+    ordinaryRuntime: ordinaryOpen || unclassified ? 'incomplete' : 'no-identified-open-slot',
+    ordinaryOpen,
+    unclassified,
+    guarded,
+    originalStubs,
+    productReceiptsByWork: works.map(({ id, contentIdentity }) => ({
+      work: id,
+      receipts: [...receipts]
+        .filter(
+          ([, receipt]) =>
+            receipt.kind === 'product' && receipt.contentIdentity === contentIdentity,
+        )
+        .map(([id]) => id),
+    })),
   };
 }
 
@@ -443,6 +485,7 @@ export async function collectNativeABIAcceptance(input) {
   const receipts = await collectReceipts(receiptInputs, build, works);
   for (const review of secondary) assertReviewReceipts(review, receipts, ['original']);
   const secondaryABI = Object.fromEntries(Object.entries(abi).filter(([key]) => key !== 'tables'));
+  const rows = collectRows(image, abi, scripts, reviews, receipts);
   return {
     build: {
       executableSha256: image.sha256,
@@ -455,7 +498,8 @@ export async function collectNativeABIAcceptance(input) {
     works,
     scripts,
     scriptDelta: scriptDelta(works, scripts, receipts),
-    ...collectRows(image, abi, scripts, reviews, receipts),
+    ...rows,
+    sdkCoverage: summarizeSDKCoverage(rows, works, receipts),
     secondaryABI,
     secondary,
     receipts: Object.fromEntries(receipts),

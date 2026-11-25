@@ -11,8 +11,61 @@ import {
   inspectCST,
   surveyContainer,
 } from '../scripts/survey-native-corpus.mjs';
-import { verifyWorkExecutable } from '../scripts/collect-native-abi-acceptance.mjs';
+import {
+  summarizeSDKCoverage,
+  verifyWorkExecutable,
+} from '../scripts/collect-native-abi-acceptance.mjs';
 import { kcsProgram, catScene, kif } from './helpers.mjs';
+
+test('a tested work and guards still leave ordinary SDK coverage incomplete', () => {
+  const main = [
+      { id: 0, declaration: { status: 'reserved' } },
+      { id: 1, declaration: { status: 'unknown' }, evidence: { sdkScope: 'ordinary-runtime' } },
+      {
+        id: 2,
+        declaration: { status: 'unknown' },
+        evidence: { sdkScope: 'original-undefined-input' },
+      },
+      {
+        id: 3,
+        declaration: { status: 'unknown' },
+        evidence: { sdkScope: 'desktop-author-or-export' },
+      },
+      { id: 4, declaration: { status: 'unknown' } },
+      { id: 5, declaration: { status: 'recovered' }, evidence: { disposition: 'original-stub' } },
+    ],
+    works = [
+      { id: 'visited', contentIdentity: 'first digest' },
+      { id: 'extra', contentIdentity: 'second digest' },
+    ],
+    receipts = new Map([
+      ['ending', { contentIdentity: 'first digest', kind: 'product' }],
+      ['protected', { contentIdentity: 'second digest', kind: 'guard' }],
+    ]);
+  const summarize = (slots) =>
+    summarizeSDKCoverage({ tables: { main: { slots } } }, works, receipts);
+  const coverage = summarize(main);
+  assert.deepEqual(coverage.guarded, {
+    'ordinary-runtime': [{ table: 'main', id: 1 }],
+    'original-undefined-input': [{ table: 'main', id: 2 }],
+    'desktop-author-or-export': [{ table: 'main', id: 3 }],
+    'unclassified-evidence': [{ table: 'main', id: 4 }],
+  });
+  assert.deepEqual(
+    coverage.originalStubs.map(({ id }) => id),
+    [0, 5],
+  );
+  assert.deepEqual(coverage.productReceiptsByWork, [
+    { work: 'visited', receipts: ['ending'] },
+    { work: 'extra', receipts: [] },
+  ]);
+  assert.equal(coverage.ordinaryRuntime, 'incomplete');
+  assert.equal(coverage.ordinaryOpen, 1);
+  assert.equal(coverage.unclassified, 1);
+  assert.equal(summarize([main[4]]).ordinaryRuntime, 'incomplete');
+  assert.equal(summarize([main[1]]).ordinaryRuntime, 'incomplete');
+  assert.equal(summarize([main[2], main[3]]).ordinaryRuntime, 'no-identified-open-slot');
+});
 
 test('static GCALL decoding distinguishes immediate, memory and stack operands', async () => {
   const bytes = kcsProgram([

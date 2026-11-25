@@ -35,6 +35,25 @@ comparison and corpus commands for their independent review scope.
 | `reviews`           | A `table`, `id`, observed `handlerVA`, `disposition`, `reason` and referenced `receipts` for each reviewed slot. Optional facts record the original argument order, exact widths and kinds, result writes, effects and unresolved branches.                                                                                  |
 | `secondary`         | Reviews of FES commands and object types, task-message channels, layouts or other build-specific data. Give each review a `name`, `reason`, and matching `receipts`. The report includes the declared ABI data for comparison.                                                                                               |
 
+For a guarded slot, use `reviews[].sdkScope` to record the boundary the
+original evidence establishes. Keep each review's reason and receipts with
+the slot and its observed call shapes.
+
+| Scope                      | Evidence to record                                                                                                                                              |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ordinary-runtime`         | The original exposes an ordinary operation. Record which operands, receivers, effects or VM behaviors still need implementation or verification.                |
+| `original-undefined-input` | The original leaves the relevant result or inputs undefined. Identify the precise call shape and the observed failure, stale word or out-of-range access.       |
+| `desktop-author-or-export` | The original hands off to an author tool or platform export capability. Record the receiver, platform action and signature.                                     |
+| `unclassified-evidence`    | The original callable scope still lacks enough evidence for a classification. The collector uses this scope when a guarded slot has no explicit classification. |
+
+The report's `sdkCoverage` lists every guarded slot and the admitted original
+stubs. An ordinary guard or an unclassified guard keeps `ordinaryRuntime`
+incomplete. `no-identified-open-slot` reports the slot review scope. Review
+shape guards inside implemented slots through their facts and receipts. The
+separate `productReceiptsByWork` lists product evidence for each included
+content identity. Runtime rejection receipts establish the guard behavior and
+product receipts establish the paths exercised in the corresponding work.
+
 GCALL scripts are grouped by the bytes of the decoded archive member and by
 their table. FES scripts with identical member bytes can produce different
 calls when include bytes differ. Retain the include digests and the block,
