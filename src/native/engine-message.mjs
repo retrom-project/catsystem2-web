@@ -13,6 +13,40 @@ export function nativeEngineWord(value, label = 'Native engine query') {
 const RELEASED_BRANCH = 'released native task branch';
 const idOf = (record) => nativeEngineWord(record.nativeID ?? record.id, 'Native task identity');
 export const nativeTaskKeyOrder = (left, right) => (left | 0) - (right | 0);
+// Keep only a transient key index. Values and callback boundaries remain live;
+// a child can insert, erase, clear or replace routes while its callback awaits.
+// Structured cloning keeps the Map entries and base() rebuilds this index.
+class NativeTaskRoutes extends Map {
+  #order = null;
+  constructor(entries) {
+    super();
+    for (const [key, value] of entries ?? []) super.set(key, value);
+  }
+  set(key, value) {
+    if (!this.has(key)) this.#order = null;
+    return super.set(key, value);
+  }
+  delete(key) {
+    const removed = super.delete(key);
+    if (removed) this.#order = null;
+    return removed;
+  }
+  clear() {
+    super.clear();
+    this.#order = null;
+  }
+  after(previous) {
+    const order = (this.#order ??= [...this.keys()].sort(nativeTaskKeyOrder));
+    let low = 0,
+      high = order.length;
+    while (low < high) {
+      const middle = (low + high) >>> 1;
+      if ((order[middle] | 0) <= previous) low = middle + 1;
+      else high = middle;
+    }
+    return order[low];
+  }
+}
 const bytesAt = (memory, address, count) => {
   if (typeof memory.bytes === 'function') return memory.bytes(address, count);
   if (typeof memory.read === 'function') return memory.read(address, count);
@@ -80,20 +114,23 @@ export class NativeEngineMessages {
   async eachChild(record, callback, { teardown = false } = {}) {
     let previous = -Infinity;
     for (;;) {
-      // The awaited child can change the route map, so select from the live keys each time.
+      // Re-read the route map and its successor after each awaited callback.
       const routes = record.nativeTaskRoutes;
       if (!routes) return;
-      let key,
-        next = Infinity;
-      for (const candidate of routes.keys()) {
-        const order = candidate | 0;
-        if (order > previous && order < next) {
-          key = candidate;
-          next = order;
+      let key;
+      if (routes instanceof NativeTaskRoutes) key = routes.after(previous);
+      else {
+        let next = Infinity;
+        for (const candidate of routes.keys()) {
+          const order = candidate | 0;
+          if (order > previous && order < next) {
+            key = candidate;
+            next = order;
+          }
         }
       }
       if (key === undefined) return;
-      previous = next;
+      previous = key | 0;
       const child = this.lookupPath(record, key, teardown).pointer;
       if (child?.parent === record.id) await callback(child);
     }
@@ -105,7 +142,7 @@ export class NativeEngineMessages {
     let branch = record,
       parent = this.records.get(record.parent);
     while (parent) {
-      parent.nativeTaskRoutes ??= new Map();
+      parent.nativeTaskRoutes ??= new NativeTaskRoutes();
       const old = parent.nativeTaskRoutes.get(idOf(record));
       if (old !== undefined && old !== branch.id)
         throw new Error(
@@ -356,9 +393,10 @@ export class NativeEngineMessages {
       record.namespace =
         record.parent === null ? null : (this.closestTop(record.parent)?.id ?? null);
     if (!record.nativeTaskRoutes) {
-      record.nativeTaskRoutes = new Map();
+      record.nativeTaskRoutes = new NativeTaskRoutes();
       this.attach(record);
-    }
+    } else if (!(record.nativeTaskRoutes instanceof NativeTaskRoutes))
+      record.nativeTaskRoutes = new NativeTaskRoutes(record.nativeTaskRoutes);
     const protocol = this;
     return {
       async message(words, context = {}) {
