@@ -4,8 +4,13 @@ import { nativeReply, bitsFloat, floatBits } from '../kcs/vm.mjs';
 import { roundX87Single as r } from '../ppi/x87.mjs';
 import { quietFloat32Bits, x87Float32Arithmetic } from '../ppi/numeric.mjs';
 import { inverseNativeMatrix, multiplyNativeMatrix } from './calculation-math.mjs';
-import { matrixStorage, floats, floatBytes } from './calculation-memory.mjs';
+import { matrixStorage, floats, floatBytes, floatWords } from './calculation-memory.mjs';
 import { transformFloat32Pairs } from '../motion/matrix.mjs';
+import {
+  inverseSSEWords,
+  multiplyMatrixSSEWords,
+  normalizeSSEWords,
+} from '../motion/native-sse.mjs';
 const f = Math.fround;
 export const NATIVE_GEOMETRY_OPERATIONS = Object.freeze([
   'matrix.inverse',
@@ -39,7 +44,10 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
   const [a, b] = words;
   if (operation === 'matrix.inverse') {
     const storage = matrixStorage(machine, a >>> 0, state),
-      value = inverseNativeMatrix(floats(storage.read()));
+      bytes = storage.read(),
+      value = math?.matrixInverseUsesSSEWords
+        ? inverseSSEWords(floatWords(bytes))?.map(bitsFloat)
+        : inverseNativeMatrix(floats(bytes));
     if (value) storage.write(floatBytes(value));
     return nativeReply(2);
   }
@@ -56,7 +64,10 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
   if (operation === 'matrix.multiply') {
     const target = machine.bytes(a, 64),
       source = machine.bytes(b, 64);
-    target.set(floatBytes(multiplyNativeMatrix(floats(target), floats(source))));
+    const value = math?.matrixMultiplyUsesSSEWords
+      ? multiplyMatrixSSEWords(floatWords(target), floatWords(source)).map(bitsFloat)
+      : multiplyNativeMatrix(floats(target), floats(source));
+    target.set(floatBytes(value));
     return nativeReply(2);
   }
   if (['vector4.add', 'vector4.subtract', 'matrix.subtract'].includes(operation)) {
@@ -83,6 +94,11 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     if (nan !== undefined) return nativeReply(1, nan);
     const squared = math?.vectorLengthUsesX87 ? x87Dot(v) : dot(v);
     return nativeReply(1, floatBits(operation === 'vector4.length' ? Math.sqrt(squared) : squared));
+  }
+  if (operation === 'vector4.normalize' && math?.vectorNormalizeUsesSSEWords) {
+    const target = machine.bytes(a, 16);
+    target.set(floatBytes(normalizeSSEWords(floatWords(target)).map(bitsFloat)));
+    return nativeReply(2);
   }
   if (operation === 'vector4.normalize') {
     const squared = x87Dot(v);

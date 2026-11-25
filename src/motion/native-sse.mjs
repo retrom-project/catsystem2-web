@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { bitsFloat, floatBits } from '../kcs/vm.mjs';
 const quietNaNBit = 1 << 22;
+const fractionMask = (1 << 23) - 1;
 
 export function sseFloat32Arithmetic(operation, left, right) {
   if ((left & 0x7fffffff) > 0x7f800000) return (left | quietNaNBit) >>> 0;
@@ -22,7 +23,7 @@ function approximate(word, squareRoot) {
   if (squareRoot && sign) return 0xffc00000;
   if (exponent === 255) return sign >>> 0;
   const fractionBits = squareRoot ? 10 : 11,
-    bucket = (magnitude & 0x7fffff) >>> (23 - fractionBits),
+    bucket = (magnitude & fractionMask) >>> (23 - fractionBits),
     center = (1 + (bucket + 0.5) / 2 ** fractionBits) * 2 ** (exponent - 127),
     value = squareRoot ? 1 / Math.sqrt(center) : 1 / center,
     step = 2 ** (Math.floor(Math.log2(value)) - 12),
@@ -134,5 +135,25 @@ export function transformSSEWords(vector, matrix) {
       sseFloat32Arithmetic('add', products[0], products[1]),
       sseFloat32Arithmetic('add', products[2], products[3]),
     );
+  });
+}
+
+export function multiplyMatrixSSEWords(left, right) {
+  // The first and fourth rows reduce in pairs. The fourth row also reverses
+  // the multiply operands, which controls the retained NaN payload.
+  return Array.from({ length: 16 }, (_, index) => {
+    const row = index >> 2,
+      column = index & 3;
+    const products = [0, 1, 2, 3].map((i) => {
+      const a = left[row * 4 + i],
+        b = right[i * 4 + column];
+      return row === 3
+        ? sseFloat32Arithmetic('multiply', b, a)
+        : sseFloat32Arithmetic('multiply', a, b);
+    });
+    const add = (a, b) => sseFloat32Arithmetic('add', a, b);
+    const [x, y, z, w] = products;
+    if (row === 1 || row === 2) return add(add(add(x, y), z), w);
+    return add(add(x, y), add(z, w));
   });
 }

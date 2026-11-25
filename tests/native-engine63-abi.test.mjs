@@ -1534,6 +1534,91 @@ test('2.6.1.63 Main and MOT use the initialized scalar precision and range reduc
   }
 });
 
+test('2.6.1.63 Main and MOT use the initialized D3DX yaw, pitch and roll', async (t) => {
+  const world = await dataWorld(profile, { 'main-662.kcs': mainProgram(662, 4) });
+  t.after(() => world.close({ flushFiles: false }));
+  const address = 256,
+    angles = [0x3f99999a, 0xbf266666, 0x3f66a7f0],
+    expected = [
+      0xbe5e71b0, 0x3f1fc443, 0xbf402404, 0, 0xbf225e4d, 0x3efd0bae, 0x3f1832ea, 0, 0x3f3df27c,
+      0x3f1aed80, 0x3e93b1f6, 0, 0, 0, 0, 0x3f800000,
+    ];
+  const args = [address, ...angles];
+  const value = await executeMain(world, 662, args);
+  const read = (machine) => Array.from({ length: 16 }, (_, i) => machine.load(address + i * 4));
+  assert.deepEqual(read(value), expected);
+
+  const program = kcsProgram([
+    [37, 0x82345678],
+    [37, address],
+    [43, 26, 4],
+    ...args.map((arg) => [37, arg]),
+    [43, 43, 16],
+    [59],
+  ]);
+  const motion = new MotionInstance(await readKCS(program), { profile });
+  motion.run();
+  assert.deepEqual(read(motion.machine), expected);
+  assert.equal(motion.machine.pop(), 0x82345678);
+});
+
+test('2.6.1.63 MOT translates the selected matrix and normalizes a guest vector', async (t) => {
+  const world = await dataWorld(profile);
+  t.after(() => world.close({ flushFiles: false }));
+  const address = 256,
+    marker = 0x71ca822e,
+    translation = [0x3f99999a, 0xbf266666, 0x3f66a7f0],
+    instructions = [
+      [37, 0xffffffff],
+      [43, 26, 4],
+      ...[0xffffffff, ...translation].map((word) => [37, word]),
+      [43, 24, 16],
+      [37, address],
+      [43, 31, 4],
+      [59],
+    ];
+  const motion = new MotionInstance(await readKCS(kcsProgram(instructions)), {
+    profile,
+    calculations: world.calculations,
+  });
+  const { machine } = motion;
+  machine.store(address - 4, marker);
+  [0x404ccccd, 0x40066666, 0xbf95c28f, 0x3f800000].forEach((word, i) =>
+    machine.store(address + 4 * i, word),
+  );
+  machine.store(address + 16, marker);
+  motion.run();
+  const calculation = new DataView(world.calculations.matrix.buffer);
+  assert.deepEqual(
+    [48, 52, 56].map((at) => calculation.getUint32(at, true)),
+    translation,
+  );
+  assert.deepEqual(
+    [-4, 0, 4, 8, 12, 16].map((offset) => machine.load(address + offset)),
+    [marker, 0x3f469328, 0x3f025092, 0xbe913535, 0x3e7837f2, marker],
+  );
+  assert.equal(machine.sp, machine.floor);
+});
+
+test('2.6.1.63 Main and MOT matrix copies honor forward DWORD overlap', async (t) => {
+  const world = await dataWorld(profile, { 'main-351.kcs': mainProgram(351, 2) });
+  t.after(() => world.close({ flushFiles: false }));
+  const address = 256,
+    fields = Array.from({ length: 18 }, (_, i) => 0x71ac9300 + i),
+    args = [address + 4, address];
+  const seed = (machine) => fields.forEach((word, i) => machine.store(address + i * 4, word));
+  const read = (machine) => fields.map((_, i) => machine.load(address + i * 4));
+  const expected = Array(17).fill(fields[0]).concat(fields.at(-1));
+  assert.deepEqual(read(await executeMain(world, 351, args, seed)), expected);
+  const generic = new MotionInstance(
+    await readKCS(kcsProgram([[37, args[0]], [37, args[1]], [43, 28, 8], [59]])),
+    { profile },
+  );
+  seed(generic.machine);
+  generic.run();
+  assert.deepEqual(read(generic.machine), expected);
+});
+
 test('2.6.1.63 zero-width MOT rotation reads each angle from the live aliasing stack', async () => {
   const values = [128, ...[0.8, -0.5, 0.6].map(floatBits)],
     program = kcsProgram([[49, 128], ...values.map((word) => [37, word]), [60], [43, 23, 0], [59]]);

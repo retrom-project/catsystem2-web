@@ -2,7 +2,9 @@
 import { bitsFloat, floatBits } from '../kcs/vm.mjs';
 import { nativeTrigWord } from '../native/scalar-math.mjs';
 import { multiplyNativeMatrix } from '../native/calculation-math.mjs';
+import { quietFloat32Bits, x87BinaryNaNWord } from '../ppi/numeric.mjs';
 import { roundX87Single as r } from '../ppi/x87.mjs';
+import { sseFloat32Arithmetic } from './native-sse.mjs';
 
 const f = Math.fround;
 const product = (a, b) => r(a * b);
@@ -55,39 +57,108 @@ function yawQuaternion(yaw, pitch, roll, useNativeReduction) {
   ];
 }
 
-export function yawPitchRollX87(yaw, pitch, roll, useNativeReduction = false) {
-  const [x, y, z, w] = yawQuaternion(yaw, pitch, roll, useNativeReduction),
-    x2 = f(product(x, 2)),
-    y2 = f(product(y, 2)),
-    z2 = product(z, 2),
-    xx = f(product(x2, x)),
-    xy = f(product(y2, x)),
-    xz = f(product(z2, x)),
-    yy = f(product(y2, y)),
-    yz = f(product(z2, y)),
-    zz = product(z2, z),
-    xw = product(x2, w),
-    yw = product(y2, w),
-    zw = product(z2, w),
-    remaining = f(r(1 - xx));
+const quadrantBias = 0x4b000000;
+const inverseHalfPi = 0x3f22f983;
+const halfPiSegments = [0x3fc90000, 0x39fda000, 0x33a22000, 0x2c34611a];
+const sineCoefficients = [0xb94ca1f0, 0x3c08839d, 0xbe2aaaa3, 0x3f800000];
+const cosineCoefficients = [0x37ccf5ce, 0xbab6061a, 0x3d2aaaa5, 0xbf000000, 0x3f800000];
+const sseAdd = (left, right) => sseFloat32Arithmetic('add', left, right);
+const sseSubtract = (left, right) => sseFloat32Arithmetic('subtract', left, right);
+const sseMultiply = (left, right) => sseFloat32Arithmetic('multiply', left, right);
+const negateWord = (word) => (word ^ 0x80000000) >>> 0;
+
+function evaluatePolynomial(square, coefficients) {
+  return coefficients
+    .slice(1)
+    .reduce(
+      (value, coefficient) => sseAdd(sseMultiply(value, square), coefficient),
+      coefficients[0],
+    );
+}
+
+function halfAngleSinCosSSE(angle) {
+  const half = sseMultiply(quietFloat32Bits(angle), 0x3f000000),
+    magnitude = half & 0x7fffffff;
+  // D3DX stores the rounded multiple of pi/2 in the low bits of a biased float.
+  const rounded = sseAdd(sseMultiply(magnitude, inverseHalfPi), quadrantBias),
+    quadrant = rounded & 3,
+    turns = sseSubtract(rounded, quadrantBias);
+  const reduced = halfPiSegments.reduce(
+      (value, segment) => sseSubtract(value, sseMultiply(segment, turns)),
+      magnitude,
+    ),
+    square = sseMultiply(reduced, reduced),
+    sin = sseMultiply(evaluatePolynomial(square, sineCoefficients), reduced),
+    cos = evaluatePolynomial(square, cosineCoefficients),
+    odd = quadrant & 1,
+    sinSign = (half & 0x80000000) ^ ((quadrant & 2) << 30),
+    cosSign = ((quadrant + odd) & 2) << 30;
+  return [((odd ? cos : sin) ^ sinSign) >>> 0, ((odd ? sin : cos) ^ cosSign) >>> 0];
+}
+
+function yawQuaternionSSE(yaw, pitch, roll) {
+  const [sy, cy] = halfAngleSinCosSSE(yaw),
+    [sp, cp] = halfAngleSinCosSSE(pitch),
+    [sr, cr] = halfAngleSinCosSSE(roll);
+  const triple = (a, b, c) => sseMultiply(sseMultiply(a, b), c);
   return [
-    f(r(r(1 - yy) - zz)),
-    f(r(xy + zw)),
-    f(r(xz - yw)),
+    sseAdd(triple(cr, cy, sp), triple(sr, sy, cp)),
+    sseAdd(triple(cr, sy, cp), negateWord(triple(sr, cy, sp))),
+    sseAdd(triple(sr, cy, cp), negateWord(triple(cr, sy, sp))),
+    sseAdd(triple(cr, cy, cp), triple(sr, sy, sp)),
+  ];
+}
+
+function quaternionArithmetic(left, right, value) {
+  if (!Number.isNaN(value)) return r(value);
+  return bitsFloat(x87BinaryNaNWord(floatBits(left), floatBits(right)) ?? 0xffc00000);
+}
+
+const quaternionMultiply = (left, right) => quaternionArithmetic(left, right, left * right);
+const quaternionAdd = (left, right) => quaternionArithmetic(left, right, left + right);
+const quaternionSubtract = (left, right) => quaternionArithmetic(left, right, left - right);
+
+function matrixFromQuaternion([x, y, z, w]) {
+  // Both D3DX paths convert the quaternion with the same x87 arithmetic.
+  const x2 = f(quaternionMultiply(x, 2)),
+    y2 = f(quaternionMultiply(y, 2)),
+    z2 = quaternionMultiply(z, 2),
+    xx = f(quaternionMultiply(x2, x)),
+    xy = f(quaternionMultiply(y2, x)),
+    xz = f(quaternionMultiply(z2, x)),
+    yy = f(quaternionMultiply(y2, y)),
+    yz = f(quaternionMultiply(z2, y)),
+    zz = quaternionMultiply(z2, z),
+    xw = quaternionMultiply(x2, w),
+    yw = quaternionMultiply(y2, w),
+    zw = quaternionMultiply(z2, w),
+    remaining = f(quaternionSubtract(1, xx));
+  return [
+    f(quaternionSubtract(quaternionSubtract(1, yy), zz)),
+    f(quaternionAdd(xy, zw)),
+    f(quaternionSubtract(xz, yw)),
     0,
-    f(r(xy - zw)),
-    f(r(remaining - zz)),
-    f(r(yz + xw)),
+    f(quaternionSubtract(xy, zw)),
+    f(quaternionSubtract(remaining, zz)),
+    f(quaternionAdd(yz, xw)),
     0,
-    f(r(xz + yw)),
-    f(r(yz - xw)),
-    f(r(remaining - yy)),
+    f(quaternionAdd(xz, yw)),
+    f(quaternionSubtract(yz, xw)),
+    f(quaternionSubtract(remaining, yy)),
     0,
     0,
     0,
     0,
     1,
   ];
+}
+
+export function yawPitchRollX87(yaw, pitch, roll, useNativeReduction = false) {
+  return matrixFromQuaternion(yawQuaternion(yaw, pitch, roll, useNativeReduction));
+}
+
+export function yawPitchRollSSE(yaw, pitch, roll) {
+  return matrixFromQuaternion(yawQuaternionSSE(yaw, pitch, roll).map(bitsFloat));
 }
 
 function rotationAxis(input, angle, useNativeReduction) {

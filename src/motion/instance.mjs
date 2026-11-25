@@ -199,13 +199,16 @@ export class MotionInstance {
       numbers.forEach((value, i) => machine.store(address + i * 4, floatBits(value)));
     this.calls.set(id, (this.calls.get(id) || 0) + 1);
     if (stackRotation)
-      return nativeMatrix(contract.name, args, machine, this.calculations, this.multiplyMatrix);
+      return nativeMatrix(contract.name, args, machine, this.calculations, this.math);
     if (this.interpreterMath && id === 7) return word(x87Atan2Word(...args));
     if (this.interpreterMath && id === 11) return word(x87RemainderWord(...args));
     if (this.interpreterMath?.triangleWaveUsesX87 && id === 42)
       return word(x87TriangleWaveWord(...args));
-    if (this.currentMatrixFallback && id >= 23 && id <= 26)
-      return nativeMatrix(contract.name, args, machine, this.calculations);
+    if (
+      (this.currentMatrixFallback && id >= 23 && id <= 26) ||
+      (id === 43 && this.math?.yawPitchRollUsesSSEWords)
+    )
+      return nativeMatrix(contract.name, args, machine, this.calculations, this.math);
     if (id === 27 && this.matrixInverseUsesSSEWords) {
       const storage = matrixStorage(machine, args[0], this.calculations),
         bytes = storage.read(),
@@ -237,6 +240,7 @@ export class MotionInstance {
     if (
       (this.matrixVectorUseScalarD3DX && (id === 27 || id === 29 || id === 31 || id === 37)) ||
       (this.matrixMemoryOperationsUseNativeOrder && (id === 28 || id === 30)) ||
+      (id === 29 && this.math?.matrixMultiplyUsesSSEWords) ||
       (this.vectorOperationsUseNativeGeometry && id >= 32 && id <= 36)
     )
       return nativeGeometry(
