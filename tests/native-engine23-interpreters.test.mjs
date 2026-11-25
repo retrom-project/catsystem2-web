@@ -1059,6 +1059,45 @@ test('2.6.1.23 Main writes the local YPR matrix without reading the previous own
   assert.equal(machine.load(128, 1), 0x76);
 });
 
+test('2.6.1.23 D3DX rotation uses the physical x87 period for large finite angles', async (t) => {
+  const angles = [0x59000000, 0xdb800000, 0x4f800000];
+  const world = await dataWorld(profile, {
+    'turn.kcs': kcsProgram([
+      [37, sentinel],
+      ...[64, ...angles].map((word) => [37, word]),
+      [43, 662, 16],
+      [59],
+    ]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('turn.kcs', {
+    parent: world.main.id,
+    initialExecute: true,
+  });
+  const readRow = (m) => [64, 68, 72].map((address) => m.load(address));
+  assert.deepEqual(readRow(task.machine), [0xbd84b5ac, 0x3df12428, 0x3f7dad6a]);
+  assert.equal(task.machine.pop(), sentinel);
+
+  const source = [
+    9.005, 2.05, -0.125, 1, 0.5, 0.625, -0.25, 1.5, -2.125, 3.375, -5.75, 7.5, 10.125, -15.75, 5.2,
+    1,
+  ];
+  const reference = [
+    1.125, 0.25, 0.5, 0, -0.125, 0.5, -0.25, 0, 0.5, 0.625, 1.875, 0, 17.25, -8.125, -3, 1,
+  ];
+  for (const [id, args, output] of [
+    [43, [64, ...angles], [0x3fb84006, 0x3fb38ed4, 0x41103cff]],
+    [44, [64, 256, 512], [0xc01f4b2d, 0xc0580c10, 0xc103aa44]],
+  ]) {
+    const { machine, run } = await guest('generic', id, args);
+    source.forEach((value, i) => machine.store(64 + i * 4, floatBits(value)));
+    reference.forEach((value, i) => machine.store(256 + i * 4, floatBits(value)));
+    angles.forEach((word, i) => machine.store(512 + i * 4, word));
+    run(2);
+    assert.deepEqual(readRow(machine), output);
+  }
+});
+
 test('2.6.1.23 Main applies matrix operations to the mapped or current record', async (t) => {
   const world = await dataWorld(profile, {}, { initialize: false });
   t.after(() => world.close({ flushFiles: false }));

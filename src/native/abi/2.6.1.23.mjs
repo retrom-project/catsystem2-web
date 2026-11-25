@@ -1137,6 +1137,7 @@ export default {
     atan2UsesX87: true,
     powUsesSSE2Identities: true,
     trigUsesNativeReduction: true,
+    d3dxUsesNativeReduction: true,
     remainderUsesX87: true,
     randomFloatUsesX87: true,
     interpreterUsesNativeScalarMath: true,

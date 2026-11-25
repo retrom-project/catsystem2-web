@@ -27,7 +27,14 @@ function rotation(axis, word) {
   if (axis === 2) [m[0], m[1], m[4], m[5]] = [c, s, -s, c];
   return m;
 }
-export function nativeMatrix(operation, args, machine, state, multiply = multiplyNativeMatrix) {
+export function nativeMatrix(
+  operation,
+  args,
+  machine,
+  state,
+  multiply = multiplyNativeMatrix,
+  useNativeReduction = false,
+) {
   const count = operation === 'matrix.identity' ? 1 : 4;
   if (operation === 'matrix.rotateXYZ' && args.length === 0) {
     const storage = matrixStorage(machine, machine.nativeArgument(0), state);
@@ -43,7 +50,7 @@ export function nativeMatrix(operation, args, machine, state, multiply = multipl
   if (args.length !== count) throw new Error(`${operation} expects ${count} arguments`);
   if (operation === 'matrix.setYawPitchRoll') {
     const output = machine.bytes(args[0], 64);
-    output.set(floatBytes(yawPitchRollX87(...args.slice(1).map(bitsFloat))));
+    output.set(floatBytes(yawPitchRollX87(...args.slice(1).map(bitsFloat), useNativeReduction)));
     return nativeReply(2);
   }
   const storage = matrixStorage(machine, args[0] >>> 0, state);
@@ -65,6 +72,13 @@ export function installNativeMatrices(world) {
   for (const entry of abi.tables.main.entries)
     if (NATIVE_MATRIX_OPERATIONS.includes(entry.name))
       world.runtime.register('main', entry.id, (args, machine) =>
-        nativeMatrix(entry.name, args, machine, world.calculations, multiply),
+        nativeMatrix(
+          entry.name,
+          args,
+          machine,
+          world.calculations,
+          multiply,
+          abi.math?.d3dxUsesNativeReduction,
+        ),
       );
 }

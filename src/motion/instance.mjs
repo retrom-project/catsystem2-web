@@ -380,7 +380,13 @@ export class MotionInstance {
             throw new RangeError('Non-finite scalar rotation matrix');
           destination.set(
             floatBytes(
-              multiplyNativeMatrix(matrix, yawPitchRollX87(...args.slice(1).map(bitsFloat))),
+              multiplyNativeMatrix(
+                matrix,
+                yawPitchRollX87(
+                  ...args.slice(1).map(bitsFloat),
+                  this.math?.d3dxUsesNativeReduction,
+                ),
+              ),
             ),
           );
           return done();
@@ -399,7 +405,11 @@ export class MotionInstance {
             angles = floats(machine.bytes(args[2], 12));
           if ([...matrix, ...reference].some((value) => !Number.isFinite(value)))
             throw new RangeError('Non-finite scalar rotation matrix');
-          destination.set(floatBytes(rotateRelativeX87(matrix, reference, angles)));
+          destination.set(
+            floatBytes(
+              rotateRelativeX87(matrix, reference, angles, this.math?.d3dxUsesNativeReduction),
+            ),
+          );
           return done();
         }
         const reference = vector(args[1], 16),

@@ -1,13 +1,22 @@
 // SPDX-License-Identifier: MPL-2.0
+import { bitsFloat, floatBits } from '../kcs/vm.mjs';
+import { nativeTrigWord } from '../native/scalar-math.mjs';
 import { multiplyNativeMatrix } from '../native/calculation-math.mjs';
 import { roundX87Single as r } from '../ppi/x87.mjs';
 
 const f = Math.fround;
 const product = (a, b) => r(a * b);
 
-function sinCos(angle) {
+function sinCos(angle, useNativeReduction) {
   if (!Number.isFinite(angle) || Math.abs(angle) >= 2 ** 63)
     throw new RangeError('D3DX rotation angle is outside the scalar FSINCOS range');
+  if (useNativeReduction) {
+    const word = floatBits(angle);
+    return [
+      bitsFloat(nativeTrigWord('sin', word, true)),
+      bitsFloat(nativeTrigWord('cos', word, true)),
+    ];
+  }
   return [f(Math.sin(angle)), f(Math.cos(angle))];
 }
 
@@ -30,10 +39,10 @@ function transform([x, y, z, w], matrix) {
   });
 }
 
-function yawQuaternion(yaw, pitch, roll) {
-  const [sy, cy] = sinCos(f(product(yaw, 0.5))),
-    [sp, cp] = sinCos(f(product(pitch, 0.5))),
-    [sr, cr] = sinCos(f(product(roll, 0.5))),
+function yawQuaternion(yaw, pitch, roll, useNativeReduction) {
+  const [sy, cy] = sinCos(f(product(yaw, 0.5)), useNativeReduction),
+    [sp, cp] = sinCos(f(product(pitch, 0.5)), useNativeReduction),
+    [sr, cr] = sinCos(f(product(roll, 0.5)), useNativeReduction),
     spcy = product(sp, cy),
     cpsy = product(cp, sy),
     cpcy = product(cp, cy),
@@ -46,8 +55,8 @@ function yawQuaternion(yaw, pitch, roll) {
   ];
 }
 
-export function yawPitchRollX87(yaw, pitch, roll) {
-  const [x, y, z, w] = yawQuaternion(yaw, pitch, roll),
+export function yawPitchRollX87(yaw, pitch, roll, useNativeReduction = false) {
+  const [x, y, z, w] = yawQuaternion(yaw, pitch, roll, useNativeReduction),
     x2 = f(product(x, 2)),
     y2 = f(product(y, 2)),
     z2 = product(z, 2),
@@ -81,9 +90,9 @@ export function yawPitchRollX87(yaw, pitch, roll) {
   ];
 }
 
-function rotationAxis(input, angle) {
+function rotationAxis(input, angle, useNativeReduction) {
   const [x, y, z] = normalize(input.slice(0, 3)),
-    [sin, cos] = sinCos(angle),
+    [sin, cos] = sinCos(angle, useNativeReduction),
     t = f(r(1 - cos)),
     xy = f(product(product(y, x), t)),
     yz = product(product(y, z), t),
@@ -111,7 +120,7 @@ function rotationAxis(input, angle) {
   ];
 }
 
-export function rotateRelativeX87(matrix, reference, angles) {
+export function rotateRelativeX87(matrix, reference, angles, useNativeReduction = false) {
   const x = transform([-1, 0, 0, 0], reference),
     z = transform([0, 0, -1, 0], reference);
   x[1] = 0;
@@ -119,7 +128,8 @@ export function rotateRelativeX87(matrix, reference, angles) {
   // operation then normalizes its first three components independently.
   const axes = [normalize(x), [0, -1, 0, 0], normalize(z)];
   return axes.reduce(
-    (value, axis, i) => multiplyNativeMatrix(value, rotationAxis(axis, angles[i])),
+    (value, axis, i) =>
+      multiplyNativeMatrix(value, rotationAxis(axis, angles[i], useNativeReduction)),
     matrix,
   );
 }

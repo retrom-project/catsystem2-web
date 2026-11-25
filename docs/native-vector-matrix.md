@@ -39,6 +39,13 @@ that undefined cross-call residue remains `needs-review`. The differential adapt
 resets the complete fresh FP state for each authored input and does not claim to
 cover that residue. This is not a hardware accuracy claim. Plugin-modified precision state remains outside the approved contract.
 
+The fixed 2.6.1.23 Main 662 and Generic 43/44 scalar rotations reduce
+large finite angles with the physical x87 66-bit pi constant. Yaw, pitch and
+roll enter the instruction as float32 half angles. The physical tests cover
+the smallest subnormals, values around the normal boundary, signed inputs
+and large finite angles up to the direct FSINCOS range. The rejected
+nonfinite and out-of-range shapes retain their existing validation.
+
 [`geometry-cases.mjs`](../tests/fixtures/geometry-cases.mjs) contains 92 authored
 GCALL cases per ABI: current and explicit matrices, fractional and singular inputs,
 exceptional vectors, aliases, unaligned copies, shared and extension storage.
