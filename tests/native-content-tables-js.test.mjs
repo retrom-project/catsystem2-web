@@ -624,7 +624,11 @@ test('KCDB preserves an allocation exception from the decompression stage as a d
   }
 });
 
-for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'bokutomo-engine-2.6.1.67',
+  'rebellions-jp-engine-2.6.1.63',
+])
   test(
     profile + ' raw GCALL preserves CSS ownership across bounded exhaustion and cold reuse',
     async () => {

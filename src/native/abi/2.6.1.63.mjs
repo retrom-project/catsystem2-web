@@ -229,7 +229,11 @@ export default {
     extendedQueries: null,
     fontPreferenceLimit: null,
   },
-  globalFile: { growthBytes: 524288, optionalTaskRecords: true },
+  globalFile: {
+    growthBytes: 524288,
+    optionalTaskRecords: true,
+    hostDataRequiresExplicitZeroRecord: true,
+  },
   displayLog: { blockRecordWords: 6 },
   dictionary: { float32Copies: [887, 891, 892] },
   calendar: { weekdayAlgorithm: 'century-integer' },
@@ -286,6 +290,7 @@ export default {
   nameTable: { legacyFieldBytes: 32 },
   stringBank: { emptyGetResult: 1, cssOwnerLookupOnly: true },
   database: {
+    rawHeapAllocationFailureReturnsZero: true,
     compiledFormatRequired: true,
     compiledIndexRequiresNonnegative: true,
     selectionFormatRequired: true,
@@ -1950,7 +1955,7 @@ export default {
         {
           ids: [833, 834, 835, 836],
           value:
-            '2.6.1.63 own reference-prefixed host buffer allocation, release, tagged byte save and tagged byte read with separate guest byte-count output.',
+            'Own Main833 at 0x4a3ed0 executes original reference allocation 0x50a430; Main834 at 0x4b2180 executes signed header release at 0x50a480. Main835 at 0x4a3ef0 copies raw bytes into the actual CSS owner and Main836 at 0x4a3f40 returns an owned byte copy with a separate guest length. Bounded original HeapAlloc failure returns zero/control 1 and leaves the copy length untouched. Actual native helpers and Question/Mission author save/import/free calls match production GCALL and cold restoration. Two platform storage contents prove that unwritten record zero is indeterminate; explicit zero-byte records succeed.',
         },
         {
           ids: [870, 872],
@@ -2024,6 +2029,51 @@ export default {
         },
       ],
       signatures: [
+        {
+          ids: [238],
+          fields: {
+            result: { kind: 'handle', handleKind: 'global-file', ownership: 'owned' },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
+        ...[833, 834, 835, 836].map((id) => {
+          const signature = NATIVE_SEMANTICS.main[id].signature;
+          return {
+            ids: [id],
+            fields: {
+              parameters: signature.parameters.map((parameter) => {
+                if (parameter.type.kind === 'handle')
+                  return {
+                    ...parameter,
+                    type: { kind: 'handle', handleKind: 'global-file', ownership: 'borrowed' },
+                  };
+                if (parameter.type.kind !== 'pointer') return parameter;
+                return {
+                  ...parameter,
+                  type: {
+                    kind: 'pointer',
+                    addressSpace: id === 836 ? 'vm' : 'native',
+                    direction: id === 836 ? 'out' : 'in',
+                    target: { kind: 'integer', bits: id === 836 ? 32 : 8, signed: false },
+                  },
+                };
+              }),
+              ...([833, 836].includes(id)
+                ? {
+                    result: {
+                      kind: 'pointer',
+                      addressSpace: 'native',
+                      direction: 'out',
+                      target: { kind: 'integer', bits: 8, signed: false },
+                    },
+                  }
+                : {}),
+              resultWritten: id !== 834,
+              review: 'reviewed',
+            },
+          };
+        }),
         ...nativeContentDatabaseSignatures(compiledDatabaseOperations),
         ...nativeContentDatabaseSignatures(selectionDatabaseOperations),
         ...nativeContentDatabaseSignatures(missionDatabaseOperations),
