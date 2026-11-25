@@ -81,7 +81,10 @@ export class NativeRuntime {
           : formatNativeAt),
     };
     this.imageDataBuffers = new NativeDataBuffers({
-      memory: new NativeBufferMemory({ resolveReference: (ref) => this.vmReferenceBytes(ref) }),
+      memory: new NativeBufferMemory({
+        resolveReference: (ref, reader) =>
+          ref.kind === 'task' ? this.taskReferenceBytes(ref, reader) : this.vmReferenceBytes(ref),
+      }),
       handles: this.handles,
       read,
       diagnostic: services.diagnostic,
@@ -380,27 +383,77 @@ export class NativeRuntime {
   releaseVMData(taskID) {
     this.imageDataBuffers.process.releaseReferences(taskID);
   }
-  validateVMReferences(memory, scheduler) {
+  taskCallerLayout(record) {
+    const layout = nativeABI(this.profile).task?.kindQueryCallerView;
+    if (
+      !layout ||
+      record?.kind !== layout.taskKind ||
+      (record.state !== 'active' && record.state !== 'releasing') ||
+      !Number.isInteger(record.nativeID) ||
+      record.nativeID < -0x80000000 ||
+      record.nativeID > 0xffffffff
+    )
+      throw new Error('Native caller task has no reviewed live record layout');
+    return layout;
+  }
+  taskReferenceBytes(reference, reader) {
+    const record = this.services.objects?.objects.get(reference.taskID),
+      layout = this.taskCallerLayout(record);
+    if (reference.length !== layout.byteLength)
+      throw new Error('Native caller task reference has the wrong readable span');
+    if (reader !== undefined && !Object.hasOwn(layout.readBy, reader))
+      throw new Error('Native caller task address has no reviewed read contract for this native');
+    const bytes = new Uint8Array(layout.byteLength),
+      view = new DataView(bytes.buffer);
+    view.setUint32(layout.fields.vtable, layout.vtableWord, true);
+    view.setUint32(layout.fields.nativeTaskID, record.nativeID, true);
+    return bytes;
+  }
+  taskCallerAddress(taskID) {
+    const layout = this.taskCallerLayout(this.services.objects?.objects.get(taskID));
+    return this.imageDataBuffers.process.borrow({
+      kind: 'task',
+      taskID,
+      length: layout.byteLength,
+    });
+  }
+  releaseTaskData(taskID) {
+    this.imageDataBuffers.process.releaseReferences(taskID, 'task');
+  }
+  validateBufferReferences(memory, scheduler, records = this.services.objects?.objects) {
     if (!Array.isArray(scheduler?.tasks)) throw new Error('Native checkpoint tasks are invalid');
     const tasks = new Map(scheduler.tasks.map((task) => [task.id, task])),
-      owners = new Set();
+      vmOwners = new Set(),
+      taskOwners = new Set();
     this.imageDataBuffers.process.validateState(memory, (reference) => {
+      if (reference.kind === 'task') {
+        const record = records?.get(reference.taskID),
+          layout = this.taskCallerLayout(record);
+        if (
+          taskOwners.has(reference.taskID) ||
+          record.state !== 'active' ||
+          reference.length !== layout.byteLength
+        )
+          throw new Error('Native caller task checkpoint reference does not match its owner');
+        taskOwners.add(reference.taskID);
+        return;
+      }
       const saved = tasks.get(reference.taskID)?.machine;
       if (
-        owners.has(reference.taskID) ||
+        vmOwners.has(reference.taskID) ||
         !saved ||
         saved.memoryID !== reference.memoryID ||
         !(saved.memory instanceof Uint8Array) ||
         saved.memory.length !== reference.length
       )
         throw new Error('Native VM buffer checkpoint source does not match its interpreter');
-      owners.add(reference.taskID);
+      vmOwners.add(reference.taskID);
     });
   }
   snapshot() {
     const scheduler = this.scheduler.snapshot(),
       imageDataBuffers = this.imageDataBuffers.snapshot();
-    this.validateVMReferences(imageDataBuffers.memory, scheduler);
+    this.validateBufferReferences(imageDataBuffers.memory, scheduler);
     return {
       profile: this.profile,
       handles: this.handles.snapshot(),
@@ -408,10 +461,10 @@ export class NativeRuntime {
       scheduler,
     };
   }
-  async restore(state) {
+  async restore(state, records) {
     if (state.profile !== this.profile)
       throw new Error('Native checkpoint ABI profile does not match');
-    this.validateVMReferences(state.imageDataBuffers?.memory, state.scheduler);
+    this.validateBufferReferences(state.imageDataBuffers?.memory, state.scheduler, records);
     const previous = { records: this.handles.records, next: this.handles.next };
     const previousBuffers = this.imageDataBuffers.snapshot();
     try {

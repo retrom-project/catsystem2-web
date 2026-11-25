@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { deserializeCheckpoint, serializeCheckpoint } from '../src/checkpoint.mjs';
 import { openImage } from '../src/formats/hg3.mjs';
 import { encodeCP932, KCSMachine, readKCS } from '../src/kcs.mjs';
 import { floatBits, NATIVE_RESULT_SENTINEL } from '../src/kcs/vm.mjs';
@@ -102,9 +103,10 @@ test('2.6.1.63 task queries preserve route keys, receiver flags and cold restora
     assert.equal(await call(76, [], nested), firstKey);
     assert.equal(await call(77, [0]), 0);
     assert.equal(await call(77, [nestedKey]), 1);
-    await assert.rejects(call(74, [0]), /Root query caller pointer/);
+    const callerAddress = await call(74, [0]);
+    assert.notEqual(callerAddress, world.nativeTaskID(parent));
     await call(67, [lastKey]);
-    await assert.rejects(call(74, [lastKey]), /retiring owner/);
+    assert.equal(await call(74, [lastKey]), callerAddress);
     assert.equal(await call(77, [lastKey]), 1);
 
     const checkpoint = structuredClone(world.snapshot());
@@ -118,6 +120,143 @@ test('2.6.1.63 task queries preserve route keys, receiver flags and cold restora
     assert.equal(await call(77, [lastKey]), 1);
   } finally {
     await world.close({ flushFiles: false });
+  }
+});
+
+test('2.6.1.63 Main74 borrows the calling Script header for independent CSS byte copies', async () => {
+  const files = new Map();
+  const storage = {
+    read: async (name) => files.get(name)?.slice() ?? null,
+    write: async (name, bytes) => (files.set(name, bytes.slice()), true),
+  };
+  const freshWorld = (initialize) => dataWorld(profile, {}, { initialize, storage });
+  const world = await freshWorld(true);
+  const checkpointWorld = await freshWorld(false);
+  const fileWorld = await freshWorld(false);
+  const code = async (id, words) => readKCS(kcsProgram([[43, id, words * 4], [59]]));
+  async function call(w, owner, id, args, setup = () => {}) {
+    const task = { ...w.runtime.scheduler.tasks.get(owner), id: owner, abi: 'main', io: null },
+      machine = (task.machine = new KCSMachine(await code(id, args.length), {
+        native: (slot, values, caller) => w.runtime.scheduler.native(task, slot, values, caller),
+      })),
+      marker = 0x11ca120e;
+    machine.push(marker);
+    args.forEach((value) => machine.push(value));
+    setup(machine);
+    await w.runtime.scheduler.execute(task);
+    assert.ok(machine.halted);
+    const control = [67, 246, 834].includes(id) ? 2 : 1;
+    assert.equal(machine.sp, machine.floor + (control === 1 ? 8 : 4));
+    const value = control === 1 ? machine.pop() : null;
+    assert.equal(machine.pop(), marker);
+    return { control, value, machine };
+  }
+  const pointerWords = (memory, at, n) =>
+    Array.from({ length: n }, (_, index) => memory.load(at + 4 * index));
+  const name = (machine) => machine.writeString('caller-header.css', 512);
+  try {
+    const a = world.main.id,
+      b = (await world.spawnScript('case.kcs', { parent: world.root, initialExecute: false })).id,
+      c = await world.objects.create({ kind: 12, parent: a, nativeID: 400 }),
+      cID = world.nativeTaskID(c),
+      heap = world.runtime.imageDataBuffers.process,
+      vtable = nativeABI(profile).task.kindQueryCallerView.vtableWord,
+      file = (await call(world, a, 238, [17])).value,
+      css = world.runtime.handles.get(file, 'global-file');
+    const addrA = (await call(world, a, 74, [0])).value,
+      addrB = (await call(world, b, 74, [0])).value;
+    assert.notEqual(addrA, addrB);
+    assert.notEqual(addrA, world.nativeTaskID(a));
+    assert.notEqual(addrB, world.nativeTaskID(b));
+    assert.equal(heap.allocations.has(addrA), false);
+    assert.equal((await call(world, a, 74, [cID])).value, 12);
+    await call(world, a, 67, [cID]);
+    assert.equal((await call(world, a, 74, [cID])).value, addrA);
+    assert.equal((await call(world, b, 74, [cID])).value, addrB);
+    const vmAddress = world.runtime.vmDataAddress(a, world.main.machine);
+    world.runtime.releaseVMData(a);
+    assert.equal(heap.contains(vmAddress), false);
+    assert.equal((await call(world, a, 74, [0])).value, addrA);
+
+    assert.equal((await call(world, a, 835, [file, 11, 8, addrA])).value, 1);
+    assert.equal((await call(world, b, 835, [file, 12, 4, addrB + 4])).value, 1);
+    assert.equal((await call(world, b, 835, [file, 13, 3, addrA + 1])).value, 1);
+    const { value: copy, machine } = await call(world, b, 836, [file, 11, 512]);
+    assert.equal(machine.load(512), 8);
+    assert.notEqual(copy, addrA);
+    assert.deepEqual(pointerWords(heap, copy, 2), [vtable, world.nativeTaskID(a)]);
+    assert.deepEqual([...css.read(13)], [...css.read(11).subarray(1, 4)]);
+    await call(world, b, 834, [copy]);
+
+    const savedNativeID = world.nativeTaskID(a),
+      record = world.objects.objects.get(a);
+    record.nativeID = 901;
+    assert.equal((await call(world, b, 835, [file, 14, 8, addrA])).value, 1);
+    assert.equal(new DataView(css.read(14).buffer).getUint32(4, true), 901);
+    assert.equal(new DataView(css.read(11).buffer).getUint32(4, true), savedNativeID);
+    record.nativeID = savedNativeID;
+    const before = css.snapshot();
+    await assert.rejects(call(world, a, 835, [file, 15, 9, addrA]), /Unmapped native buffer/);
+    await assert.rejects(call(world, a, 835, [file, 15, 2, addrA + 7]), /Unmapped native buffer/);
+    await assert.rejects(call(world, a, 834, [addrA]), /requires an owned raw allocation/);
+    assert.throws(() => heap.store(addrA, 7), /reviewed read-only consumer/);
+    assert.throws(() => heap.readHostData(addrA, 8, 767), /no reviewed read contract/);
+    assert.deepEqual(css.snapshot(), before);
+
+    assert.equal((await call(world, a, 245, [file, 512], name)).value, 1);
+    assert.equal(new DataView(files.get('caller-header.css').buffer).getUint32(0, true), 0x535343);
+    const reboundVMAddress = world.runtime.vmDataAddress(a, world.main.machine);
+    const checkpoint = await serializeCheckpoint(world.snapshot());
+    const state = await deserializeCheckpoint(checkpoint);
+    await checkpointWorld.restore(state);
+    assert.equal((await call(checkpointWorld, a, 74, [0])).value, addrA);
+    assert.equal((await call(checkpointWorld, b, 74, [cID])).value, addrB);
+    assert.equal(
+      checkpointWorld.runtime.vmDataAddress(a, checkpointWorld.main.machine),
+      reboundVMAddress,
+    );
+    for (const corrupt of [
+      (reference) => {
+        reference.length = 9;
+      },
+      (reference) => {
+        reference.taskID = b;
+      },
+      (reference) => {
+        reference.taskID = 99999;
+      },
+    ]) {
+      const invalid = structuredClone(state.runtime);
+      corrupt(invalid.imageDataBuffers.memory.regions.find(([at]) => at === addrA)[1]);
+      await assert.rejects(checkpointWorld.runtime.restore(invalid), /Native caller task/);
+      assert.deepEqual(checkpointWorld.snapshot(), state);
+    }
+
+    await checkpointWorld.objects.release(b);
+    await assert.rejects(
+      call(checkpointWorld, a, 835, [file, 15, 4, addrB]),
+      /Unmapped native buffer/,
+    );
+    const replacement = await checkpointWorld.spawnScript('case.kcs', {
+      parent: checkpointWorld.root,
+      initialExecute: false,
+    });
+    assert.equal(replacement.id, b);
+    assert.notEqual((await call(checkpointWorld, b, 74, [0])).value, addrB);
+    assert.deepEqual(checkpointWorld.runtime.handles.get(file, 'global-file').snapshot(), before);
+
+    await fileWorld.initialize('case.kcs');
+    const fileOwner = fileWorld.main.id;
+    const restoredFile = (await call(fileWorld, fileOwner, 247, [512], name)).value;
+    assert.ok(restoredFile);
+    const { value: coldCopy } = await call(fileWorld, fileOwner, 836, [restoredFile, 11, 512]);
+    assert.deepEqual(pointerWords(fileWorld.runtime.imageDataBuffers.process, coldCopy, 2), [
+      vtable,
+      savedNativeID,
+    ]);
+    await call(fileWorld, fileOwner, 834, [coldCopy]);
+  } finally {
+    for (const w of [fileWorld, checkpointWorld, world]) await w.close({ flushFiles: false });
   }
 });
 

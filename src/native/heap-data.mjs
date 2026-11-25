@@ -58,6 +58,7 @@ export async function nativeHeapData(id, args, machine, services) {
     heap.releaseData(args[0]);
     return done();
   }
-  services.handles.get(args[0], 'global-file').write(args[1], heap.process.read(args[3], args[2]));
+  const file = services.handles.get(args[0], 'global-file');
+  file.write(args[1], heap.process.readHostData(args[3], args[2], id));
   return result(1);
 }

@@ -22,6 +22,7 @@ const questionDatabaseOperations = Array.from({ length: 37 }, (_, i) => 742 + i)
 const missionDatabaseOperations = Array.from({ length: 34 }, (_, i) => 795 + i);
 const selectionDatabaseOperations = [779, 780, 781, 782, 783, 784, 829, 830, 831, 832];
 const compiledDatabaseOperations = [791, 792, 793, 794];
+const scriptTaskHeader = { kind: 'record', name: '8-byte Script task header' };
 const cp932TextOperations = [611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621, 695, 884];
 const screenEffectOperations = [
   [521, 'Blur', [2, 3, 4, 6, 7]],
@@ -884,7 +885,13 @@ export default {
   },
   task: {
     childQueryUsesRouteEntries: true,
-    kindQueryRejectsRetiringOwner: true,
+    kindQueryCallerView: {
+      taskKind: 12,
+      byteLength: 8,
+      fields: { vtable: 0, nativeTaskID: 4 },
+      vtableWord: (1 << 28) | (63 << 8) | 12,
+      readBy: { 835: NATIVE_SEMANTICS.main[835].name },
+    },
   },
   floatingPoint: {
     precisionBits: 24,
@@ -1245,7 +1252,7 @@ export default {
         {
           ids: [74, 75, 77],
           value:
-            'Own task queries at 0x4aa1f0, 0x4aa300 and 0x4aa260 return control 1. Raw13 reads the live recipient flags or returns minus one on a miss. Raw31 tests Top map membership including null entries. Child enumeration uses signed route keys whose immediate branch has the caller as its parent. Top and retiring receivers can retain the original caller pointer for raw13.',
+            'Own task queries at 0x4aa1f0, 0x4aa300 and 0x4aa260 return control 1. Raw13 reads the live recipient flags or returns minus one on a miss. Raw31 tests Top map membership including null entries. Child enumeration uses signed route keys whose immediate branch has the caller as its parent. Top and retiring receivers retain the caller word for raw13. The portable task address borrows the caller Script header for the reviewed CSS read.',
         },
         {
           ids: [541],
@@ -1983,7 +1990,7 @@ export default {
         {
           ids: [833, 834, 835, 836],
           value:
-            'Own Main833 at 0x4a3ed0 executes original reference allocation 0x50a430; Main834 at 0x4b2180 executes signed header release at 0x50a480. Main835 at 0x4a3ef0 copies raw bytes into the actual CSS owner and Main836 at 0x4a3f40 returns an owned byte copy with a separate guest length. Bounded original HeapAlloc failure returns zero/control 1 and leaves the copy length untouched. Actual native helpers and Question/Mission author save/import/free calls match production GCALL and cold restoration. Two platform storage contents prove that unwritten record zero is indeterminate; explicit zero-byte records succeed.',
+            'Own Main833 at 0x4a3ed0 executes original reference allocation 0x50a430; Main834 at 0x4b2180 executes signed header release at 0x50a480. Main835 at 0x4a3ef0 copies raw bytes into the actual CSS owner and Main836 at 0x4a3f40 returns an owned byte copy with a separate guest length. An active Script caller permits a bounded eight-byte native-address view of its class word and task ID. Bounded original HeapAlloc failure returns zero/control 1 and leaves the copy length untouched. Actual native helpers and Question/Mission author save/import/free calls match production GCALL and cold restoration. Two platform storage contents prove that unwritten record zero is indeterminate; explicit zero-byte records succeed.',
         },
         {
           ids: [870, 872],
@@ -2084,7 +2091,16 @@ export default {
                     kind: 'pointer',
                     addressSpace: id === 836 ? 'vm' : 'native',
                     direction: id === 836 ? 'out' : 'in',
-                    target: { kind: 'integer', bits: id === 836 ? 32 : 8, signed: false },
+                    target:
+                      id === 835
+                        ? {
+                            kind: 'union',
+                            alternatives: [
+                              { kind: 'integer', bits: 8, signed: false },
+                              scriptTaskHeader,
+                            ],
+                          }
+                        : { kind: 'integer', bits: id === 836 ? 32 : 8, signed: false },
                   },
                 };
               }),
@@ -2110,7 +2126,34 @@ export default {
         ...NATIVE_TILE_GAME_SIGNATURES,
         ...screenEffectSignatures,
 
-        { ids: [74, 75, 77], fields: { resultWritten: true } },
+        { ids: [75, 77], fields: { resultWritten: true } },
+        {
+          ids: [74],
+          fields: {
+            parameters: [
+              {
+                name: 'task',
+                description: 'Target native task ID in the caller Top',
+                type: { kind: 'object-id', objectKind: 'task' },
+              },
+            ],
+            result: {
+              kind: 'union',
+              alternatives: [
+                { kind: 'integer', bits: 32, signed: true },
+                {
+                  kind: 'pointer',
+                  addressSpace: 'native',
+                  direction: 'in',
+                  target: scriptTaskHeader,
+                  description: 'Borrowed caller address for the lifetime of the Script task',
+                },
+              ],
+            },
+            resultWritten: true,
+            review: 'reviewed',
+          },
+        },
         { ids: [541], fields: { resultWritten: false } },
         {
           ids: [740],

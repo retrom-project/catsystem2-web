@@ -60,8 +60,10 @@ export class NativeDataBuffers {
   releaseData(address) {
     if (!address) return;
     const p = this.process,
-      allocation = address - 4,
-      references = p.load(allocation) | 0;
+      allocation = address - 4;
+    if (!p.allocations.has(allocation))
+      throw new Error('Native data release requires an owned raw allocation');
+    const references = p.load(allocation) | 0;
     if (references <= 1) {
       if (!p.free(allocation)) throw new Error('Native data buffer freed unknown storage');
     } else p.store(allocation, references - 1);

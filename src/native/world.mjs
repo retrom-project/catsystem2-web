@@ -278,7 +278,10 @@ export class NativeWorld {
     this.engineMessages = new NativeEngineMessages(this);
     this.objects.releaseIdentity = (record) => this.engineMessages.release(record);
     this.objects.unregisterIdentity = (record) => this.engineMessages.unregister(record);
-    this.objects.markReleasedIdentity = (record) => this.engineMessages.markReleased(record);
+    this.objects.markReleasedIdentity = (record) => {
+      this.runtime.releaseTaskData(record.id);
+      this.engineMessages.markReleased(record);
+    };
     this.objects.pruneRoutes = (record) => this.engineMessages.pruneNullRoutes(record);
     this.objects.notify = (...args) => this.sendEngine(...args);
     this.objects.childrenProvider = (record) => this.engineMessages.children(record);
@@ -1080,7 +1083,10 @@ export class NativeWorld {
     this.frame = state.frame;
     this.root = state.root;
     await restoreNativeRegistry(this, state.platformRegistry);
-    await this.runtime.restore(state.runtime);
+    await this.runtime.restore(
+      state.runtime,
+      new Map(state.objects.objects.map((record) => [record.id, record])),
+    );
     const bankSelections = new Map(
       [...this.runtime.handles.records]
         .filter(([, record]) => record.type === 'variable-bank')

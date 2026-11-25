@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Raw data addresses occupy a JS-owned space distinct from VM offsets/handles.
+const taskStartAddress = 0x20000000;
 const startAddress = 0x30000000;
 const endAddress = 0x80000000;
 const capacity = (size) => Math.ceil(Math.max(16, size) / 16) * 16;
@@ -8,14 +9,22 @@ const length = (size) => {
     throw new RangeError('Native buffer length is outside its DWORD ABI');
   return size;
 };
+const isTaskReference = (value) => value.kind === 'task';
 const reference = (value) => {
   if (
     !value ||
     Object.getPrototypeOf(value) !== Object.prototype ||
-    Object.keys(value).sort().join(',') !== 'kind,length,memoryID,taskID' ||
-    value.kind !== 'vm' ||
     !Number.isSafeInteger(value.taskID) ||
-    value.taskID < 0 ||
+    value.taskID < 0
+  )
+    throw new Error('Invalid native buffer reference');
+  const keys = Object.keys(value).sort().join(',');
+  if (isTaskReference(value)) {
+    if (keys !== 'kind,length,taskID' || value.length === 0)
+      throw new Error('Invalid native task buffer reference');
+  } else if (
+    keys !== 'kind,length,memoryID,taskID' ||
+    value.kind !== 'vm' ||
     !Number.isSafeInteger(value.memoryID) ||
     value.memoryID < 1
   )
@@ -24,7 +33,7 @@ const reference = (value) => {
   return { ...value };
 };
 const sameReference = (a, b) =>
-  a.taskID === b.taskID && a.memoryID === b.memoryID && a.length === b.length;
+  a.kind === b.kind && a.taskID === b.taskID && a.memoryID === b.memoryID && a.length === b.length;
 const regionLength = (value) => value.length;
 
 export class NativeBufferAllocationError extends Error {
@@ -38,6 +47,7 @@ export class NativeBufferMemory {
   constructor({ resolveReference } = {}) {
     this.resolveReference = resolveReference;
     this.next = startAddress;
+    this.nextTaskAddress = taskStartAddress;
     this.allocations = new Map();
     this.regions = new Map();
     this.freeRanges = [];
@@ -79,41 +89,64 @@ export class NativeBufferMemory {
     }
     return this.#publish(plan, value);
   }
-  resolve(value) {
+  #resolve(value, taskReader) {
     if (value instanceof Uint8Array) return value;
-    const bytes = this.resolveReference?.(value);
+    const bytes = this.resolveReference?.(value, taskReader);
     if (!(bytes instanceof Uint8Array) || bytes.length !== value.length)
-      throw new Error('Native VM buffer reference has no live matching region');
+      throw new Error('Native buffer reference has no live matching region');
     return bytes;
   }
   borrow(source) {
     const value = reference(source);
-    this.resolve(value);
+    this.#resolve(value);
     for (const [address, region] of this.regions) {
-      if (region instanceof Uint8Array || region.taskID !== value.taskID) continue;
+      if (region.kind !== value.kind || region.taskID !== value.taskID) continue;
       if (!sameReference(region, value))
-        throw new Error('Native VM buffer owner was replaced before release');
+        throw new Error('Native buffer owner was replaced before release');
       return address;
     }
-    return this.reserve(value.length, value);
+    if (!isTaskReference(value)) return this.reserve(value.length, value);
+    // Object IDs can be reused after deletion. Task addresses have their
+    // own monotonically allocated range, so an old pointer cannot name
+    // the replacement task or an ordinary owned buffer.
+    const address = this.nextTaskAddress,
+      next = address + capacity(value.length);
+    if (next > startAddress)
+      throw new NativeBufferAllocationError('Native task address space exhausted');
+    this.nextTaskAddress = next;
+    this.regions.set(address, value);
+    return address;
   }
-  releaseReferences(taskID) {
+  releaseReferences(taskID, kind = 'vm') {
+    if (kind === 'task' && this.nextTaskAddress === taskStartAddress) return;
     for (const [address, value] of this.regions)
-      if (!(value instanceof Uint8Array) && value.taskID === taskID) this.free(address, value);
+      if (value.kind === kind && value.taskID === taskID) this.free(address, value);
   }
   contains(address, size = 1) {
     return [...this.regions].some(
-      ([start, value]) => address >= start && address + size <= start + regionLength(value),
+      ([start, value]) =>
+        !isTaskReference(value) &&
+        address >= start &&
+        address + size <= start + regionLength(value),
     );
   }
-  view(address, size) {
-    for (const [start, value] of this.regions)
-      if (address >= start && address + size <= start + regionLength(value))
-        return this.resolve(value).subarray(address - start, address - start + size);
+  #view(address, size, taskReader) {
+    for (const [start, value] of this.regions) {
+      if (!(address >= start && address + size <= start + regionLength(value))) continue;
+      if (isTaskReference(value) && taskReader === undefined)
+        throw new RangeError('Native task address requires a reviewed read-only consumer');
+      return this.#resolve(value, taskReader).subarray(address - start, address - start + size);
+    }
     throw new RangeError('Unmapped native buffer data address');
+  }
+  view(address, size) {
+    return this.#view(address, size);
   }
   read(address, size) {
     return this.view(address, size).slice();
+  }
+  readHostData(address, size, nativeID) {
+    return this.#view(address, size, nativeID).slice();
   }
   write(address, bytes) {
     this.view(address, bytes.length).set(bytes);
@@ -131,8 +164,13 @@ export class NativeBufferMemory {
     if (value === undefined) return false;
     const size = regionLength(value);
     if (!(value instanceof Uint8Array) && owner !== value)
-      throw new Error('Borrowed VM buffer must be released by its interpreter owner');
+      throw new Error(
+        isTaskReference(value)
+          ? 'Borrowed native task buffer must be released by its task owner'
+          : 'Borrowed VM buffer must be released by its interpreter owner',
+      );
     this.regions.delete(address);
+    if (isTaskReference(value)) return true;
     this.allocations.delete(address);
     this.freeRanges.push({ address, size: capacity(size) });
     this.freeRanges.sort((a, b) => a.address - b.address);
@@ -147,45 +185,58 @@ export class NativeBufferMemory {
     return true;
   }
   validateState(state, validateReference = () => {}) {
+    const nextTaskAddress = state?.nextTaskAddress ?? taskStartAddress;
     if (
       !state ||
       !Number.isSafeInteger(state.next) ||
       state.next < startAddress ||
       state.next > endAddress ||
       state.next % 16 ||
+      !Number.isSafeInteger(nextTaskAddress) ||
+      nextTaskAddress < taskStartAddress ||
+      nextTaskAddress > startAddress ||
+      nextTaskAddress % 16 ||
       !Array.isArray(state.freeRanges) ||
       !Array.isArray(state.regions)
     )
       throw new Error('Invalid native buffer checkpoint');
-    const ranges = [];
+    const ranges = [],
+      taskRanges = [];
     for (const row of state.regions) {
       if (!Array.isArray(row) || row.length !== 2) throw new Error('Invalid native buffer region');
       const [address, value] = row;
       if (!(value instanceof Uint8Array)) validateReference(reference(value));
       const size = length(regionLength(value));
-      ranges.push({ address, size: capacity(size) });
+      (isTaskReference(value) ? taskRanges : ranges).push({ address, size: capacity(size) });
     }
     for (const range of state.freeRanges) {
       if (!range || !Number.isSafeInteger(range.size) || range.size < 16 || range.size % 16)
         throw new Error('Invalid native buffer free range');
       ranges.push(range);
     }
-    ranges.sort((a, b) => a.address - b.address);
-    let end = startAddress;
-    for (const range of ranges) {
-      if (
-        !Number.isSafeInteger(range.address) ||
-        range.address % 16 ||
-        range.address < end ||
-        range.address + range.size > state.next
-      )
-        throw new Error('Overlapping or invalid native buffer checkpoint range');
-      end = range.address + range.size;
-    }
+    const validateRanges = (entries, minimum, maximum) => {
+      entries.sort((a, b) => a.address - b.address);
+      let end = minimum;
+      for (const range of entries) {
+        if (
+          !Number.isSafeInteger(range.address) ||
+          range.address % 16 ||
+          range.address < end ||
+          range.address + range.size > maximum
+        )
+          throw new Error('Overlapping or invalid native buffer checkpoint range');
+        end = range.address + range.size;
+      }
+    };
+    validateRanges(ranges, startAddress, state.next);
+    validateRanges(taskRanges, taskStartAddress, nextTaskAddress);
   }
   snapshot() {
     return {
       next: this.next,
+      ...(this.nextTaskAddress === taskStartAddress
+        ? {}
+        : { nextTaskAddress: this.nextTaskAddress }),
       freeRanges: this.freeRanges.map((range) => ({ ...range })),
       regions: [...this.regions].map(([at, value]) => [
         at,
@@ -202,6 +253,7 @@ export class NativeBufferMemory {
       ]),
     );
     this.next = state.next;
+    this.nextTaskAddress = state.nextTaskAddress ?? taskStartAddress;
     this.freeRanges = state.freeRanges.map((range) => ({ ...range }));
     this.regions = regions;
     this.allocations = new Map(

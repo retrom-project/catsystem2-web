@@ -94,20 +94,27 @@ export function nativeTask(id, args, machine, task, services) {
       if (id === 0x4a) {
         const record = records.get(resolve(args[0]));
         if (!record) return result(-1);
-        if (abi?.kindQueryRejectsRetiringOwner && record.destroyRequested && !originalOwner(world))
+        const hasOriginal = world && originalOwner(world),
+          callerView = abi?.kindQueryCallerView,
+          retiring = record.destroyRequested;
+        if (abi?.kindQueryRejectsRetiringOwner && retiring && !hasOriginal)
           throw new Error('Native task kind requires a written reply from its retiring owner');
-        if (world && (record.implementation?.pointer || record.kind === 1)) {
+        if (
+          world &&
+          (record.implementation?.pointer || record.kind === 1 || (retiring && callerView))
+        ) {
           const context = {};
           return then(world.sendNativeEngine(args[0], task.id, 13, 0, 0, context), (value) => {
             if (!context.nativeRouted) return result(-1);
             if (value !== NATIVE_UNWRITTEN_WORD) return result(nativeEngineWord(value));
             // The original wrapper passes its initialized caller pointer as
             // the reply word. A routed receiver can leave that word intact.
-            if (!originalOwner(world))
-              throw new Error(
-                'A retained Root query caller pointer requires explicit original-engine ownership',
-              );
-            return then(originalFeature(world, 'task-memory', 'pointer', task.id), result);
+            if (hasOriginal)
+              return then(originalFeature(world, 'task-memory', 'pointer', task.id), result);
+            if (callerView) return result(world.runtime.taskCallerAddress(task.id));
+            throw new Error(
+              'A retained Root query caller pointer requires explicit original-engine ownership',
+            );
           });
         }
         if (record.kind === 1)

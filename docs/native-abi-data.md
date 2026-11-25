@@ -2261,6 +2261,12 @@ An owned Script waits for the close message, persists its banks and releases
 its typed handles. A fresh World restores the complete saved fixture before
 running its own close and produces the same bytes.
 
+## 2.6.1.63 caller task addresses
+
+Main 74 sends raw 13 through the caller's Top. A live recipient supplies its flags, and a route miss returns `0xffffffff`. Top and a destroy-requested recipient can leave the caller word in the result. For a live Script caller, that word is a stable borrowed native address. The reference remains valid until the caller is released, including when the caller's interpreter is replaced. Reusing a task ID gives the replacement a different address.
+
+Main 835 can copy any byte span within the caller's eight-byte header. The first word identifies the reviewed Script class through an opaque value. The next word is the caller's native task ID. CSS stores its own byte copy, and Main 836 returns separately owned data. The checkpoint codec preserves the borrowed address and validates its live Script owner. Main 834 requires an owned raw allocation. Wider header reads, writes to the borrowed address and other raw-pointer consumers raise an explicit error.
+
 ## 2.6.1.63 story motion
 
 The story MOT resources use the generic scalar table for sine, cosine,
