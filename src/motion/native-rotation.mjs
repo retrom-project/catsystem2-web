@@ -28,6 +28,14 @@ function sinCos(angle, useNativeReduction) {
   return [f(Math.sin(angle)), f(Math.cos(angle))];
 }
 
+export function nativeAxisSinCosWords(word) {
+  const angle = bitsFloat(word);
+  // A finite input outside the hardware range leaves ST0 untouched. The
+  // second store reads the empty register and writes the x87 indefinite.
+  if (Number.isFinite(angle) && Math.abs(angle) >= 2 ** 63) return [0xffc00000, word];
+  return [nativeTrigWord('sin', word, true), nativeTrigWord('cos', word, true)];
+}
+
 function normalize(input) {
   const squared = f(input.map((value) => product(value, value)).reduce((a, b) => r(a + b)));
   if (Math.abs(squared - 1) <= 2 ** -23) return input;
@@ -74,12 +82,10 @@ const sseMultiply = (left, right) => sseFloat32Arithmetic('multiply', left, righ
 const negateWord = (word) => (word ^ 0x80000000) >>> 0;
 
 function evaluatePolynomial(square, coefficients) {
-  return coefficients
-    .slice(1)
-    .reduce(
-      (value, coefficient) => sseAdd(sseMultiply(value, square), coefficient),
-      coefficients[0],
-    );
+  let value = coefficients[0];
+  for (let i = 1; i < coefficients.length; i++)
+    value = sseAdd(sseMultiply(value, square), coefficients[i]);
+  return value;
 }
 
 function halfAngleSinCosSSE(angle) {
@@ -115,42 +121,42 @@ function yawQuaternionSSE(yaw, pitch, roll) {
   ];
 }
 
-function quaternionArithmetic(left, right, value) {
+function x87Arithmetic(left, right, value) {
   if (!Number.isNaN(value)) return r(value);
   return bitsFloat(x87BinaryNaNWord(floatBits(left), floatBits(right)) ?? 0xffc00000);
 }
 
-const quaternionMultiply = (left, right) => quaternionArithmetic(left, right, left * right);
-const quaternionAdd = (left, right) => quaternionArithmetic(left, right, left + right);
-const quaternionSubtract = (left, right) => quaternionArithmetic(left, right, left - right);
+const x87Multiply = (left, right) => x87Arithmetic(left, right, left * right);
+const x87Add = (left, right) => x87Arithmetic(left, right, left + right);
+const x87Subtract = (left, right) => x87Arithmetic(left, right, left - right);
 
 function matrixFromQuaternion([x, y, z, w]) {
   // Both D3DX paths convert the quaternion with the same x87 arithmetic.
-  const x2 = f(quaternionMultiply(x, 2)),
-    y2 = f(quaternionMultiply(y, 2)),
-    z2 = quaternionMultiply(z, 2),
-    xx = f(quaternionMultiply(x2, x)),
-    xy = f(quaternionMultiply(y2, x)),
-    xz = f(quaternionMultiply(z2, x)),
-    yy = f(quaternionMultiply(y2, y)),
-    yz = f(quaternionMultiply(z2, y)),
-    zz = quaternionMultiply(z2, z),
-    xw = quaternionMultiply(x2, w),
-    yw = quaternionMultiply(y2, w),
-    zw = quaternionMultiply(z2, w),
-    remaining = f(quaternionSubtract(1, xx));
+  const x2 = f(x87Multiply(x, 2)),
+    y2 = f(x87Multiply(y, 2)),
+    z2 = x87Multiply(z, 2),
+    xx = f(x87Multiply(x2, x)),
+    xy = f(x87Multiply(y2, x)),
+    xz = f(x87Multiply(z2, x)),
+    yy = f(x87Multiply(y2, y)),
+    yz = f(x87Multiply(z2, y)),
+    zz = x87Multiply(z2, z),
+    xw = x87Multiply(x2, w),
+    yw = x87Multiply(y2, w),
+    zw = x87Multiply(z2, w),
+    remaining = f(x87Subtract(1, xx));
   return [
-    f(quaternionSubtract(quaternionSubtract(1, yy), zz)),
-    f(quaternionAdd(xy, zw)),
-    f(quaternionSubtract(xz, yw)),
+    f(x87Subtract(x87Subtract(1, yy), zz)),
+    f(x87Add(xy, zw)),
+    f(x87Subtract(xz, yw)),
     0,
-    f(quaternionSubtract(xy, zw)),
-    f(quaternionSubtract(remaining, zz)),
-    f(quaternionAdd(yz, xw)),
+    f(x87Subtract(xy, zw)),
+    f(x87Subtract(remaining, zz)),
+    f(x87Add(yz, xw)),
     0,
-    f(quaternionAdd(xz, yw)),
-    f(quaternionSubtract(yz, xw)),
-    f(quaternionSubtract(remaining, yy)),
+    f(x87Add(xz, yw)),
+    f(x87Subtract(yz, xw)),
+    f(x87Subtract(remaining, yy)),
     0,
     0,
     0,
@@ -167,28 +173,36 @@ export function yawPitchRollSSE(yaw, pitch, roll) {
   return matrixFromQuaternion(yawQuaternionSSE(yaw, pitch, roll).map(bitsFloat));
 }
 
-function rotationAxis(input, angle, useNativeReduction, normalizeVector = normalize) {
+function rotationAxis(
+  input,
+  angle,
+  useNativeReduction,
+  normalizeVector = normalize,
+  nativeAngles = false,
+) {
   const [x, y, z] = normalizeVector(input.slice(0, 3)),
-    [sin, cos] = sinCos(angle, useNativeReduction),
-    t = f(r(1 - cos)),
-    xy = f(product(product(y, x), t)),
-    yz = product(product(y, z), t),
-    zx = product(product(z, x), t),
-    sx = product(x, sin),
-    sy = product(y, sin),
-    sz = product(z, sin);
+    [sin, cos] = nativeAngles
+      ? nativeAxisSinCosWords(floatBits(angle)).map(bitsFloat)
+      : sinCos(angle, useNativeReduction),
+    t = f(x87Subtract(1, cos)),
+    xy = f(x87Multiply(x87Multiply(y, x), t)),
+    yz = x87Multiply(x87Multiply(y, z), t),
+    zx = x87Multiply(x87Multiply(z, x), t),
+    sx = x87Multiply(x, sin),
+    sy = x87Multiply(y, sin),
+    sz = x87Multiply(z, sin);
   return [
-    f(r(product(product(x, x), t) + cos)),
-    f(r(xy + sz)),
-    f(r(zx - sy)),
+    f(x87Add(x87Multiply(x87Multiply(x, x), t), cos)),
+    f(x87Add(xy, sz)),
+    f(x87Subtract(zx, sy)),
     0,
-    f(r(xy - sz)),
-    f(r(product(product(y, y), t) + cos)),
-    f(r(sx + yz)),
+    f(x87Subtract(xy, sz)),
+    f(x87Add(x87Multiply(x87Multiply(y, y), t), cos)),
+    f(x87Add(sx, yz)),
     0,
-    f(r(f(sy) + zx)),
-    f(r(yz - sx)),
-    f(r(product(product(z, z), t) + cos)),
+    f(x87Add(f(sy), zx)),
+    f(x87Subtract(yz, sx)),
+    f(x87Add(x87Multiply(x87Multiply(z, z), t), cos)),
     0,
     0,
     0,
@@ -211,7 +225,7 @@ export function rotateRelativeX87(matrix, reference, angles, useNativeReduction 
   );
 }
 
-export function rotateRelativeSSEWords(matrix, reference, angles) {
+export function rotateRelativeSSEWords(matrix, reference, angles, nativeAngles = false) {
   const x = transformSSEWords([-1, 0, 0, 0].map(floatBits), reference),
     z = transformSSEWords([0, 0, -1, 0].map(floatBits), reference);
   x[1] = 0;
@@ -221,7 +235,13 @@ export function rotateRelativeSSEWords(matrix, reference, angles) {
     (value, axis, i) =>
       multiplyMatrixSSEWords(
         value,
-        rotationAxis(axis.map(bitsFloat), bitsFloat(angles[i]), true, normalizeAxis).map(floatBits),
+        rotationAxis(
+          axis.map(bitsFloat),
+          bitsFloat(angles[i]),
+          true,
+          normalizeAxis,
+          nativeAngles,
+        ).map(floatBits),
       ),
     matrix,
   );

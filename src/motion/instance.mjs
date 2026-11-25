@@ -440,7 +440,12 @@ export class MotionInstance {
             matrix = floatWords(destination),
             reference = floatWords(machine.bytes(args[1], 64)),
             angles = floatWords(machine.bytes(args[2], 12)),
-            result = rotateRelativeSSEWords(matrix, reference, angles),
+            result = rotateRelativeSSEWords(
+              matrix,
+              reference,
+              angles,
+              this.math?.axisRotationUsesX87Words,
+            ),
             view = new DataView(destination.buffer, destination.byteOffset, destination.byteLength);
           result.forEach((word, i) => view.setUint32(i * 4, word, true));
           return done();

@@ -1619,6 +1619,70 @@ test('2.6.1.63 Main and MOT matrix copies honor forward DWORD overlap', async (t
   assert.deepEqual(read(generic.machine), expected);
 });
 
+test('2.6.1.63 MOT rotates relative to live reference axes using the original angle words', async () => {
+  const target = 256,
+    reference = 320,
+    angles = 384;
+  const program = await readKCS(
+    kcsProgram([
+      [37, target],
+      [43, 26, 4],
+      [37, reference],
+      [43, 26, 4],
+      [37, target],
+      [37, reference],
+      [37, angles],
+      [43, 44, 12],
+      [59],
+    ]),
+  );
+  const cases = [
+    [
+      [0x3f99999a, 0xbf266666, 0x3f66a7f0],
+      [
+        0x3efd0bad, 0xbf1fc440, 0xbf1aed7c, 0, 0xbd8765b8, 0x3f2aca87, 0xbf3df279, 0, 0x3f5de780,
+        0x3ed03d82, 0x3e93b1f5, 0, 0, 0, 0, 0x3f800000,
+      ],
+    ],
+    [[0x5f000000, 0, 0], Array(16).fill(0xffc00000)],
+  ];
+  for (const [words, expected] of cases) {
+    const motion = new MotionInstance(program, { profile });
+    words.forEach((word, i) => motion.machine.store(angles + i * 4, word));
+    motion.run();
+    assert.deepEqual(
+      expected.map((_, i) => motion.machine.load(target + i * 4)),
+      expected,
+    );
+    assert.equal(motion.machine.sp, motion.machine.floor);
+  }
+});
+
+test('2.6.1.63 explicit MOT rotation observes overwritten angle words on the stack', async () => {
+  const target = 256,
+    marker = 0x8325ef6d;
+  const args = [target, 0x3f99999a, 0xbf266666, 0x3f66a7f0];
+  const program = kcsProgram([
+    [49, target - 4],
+    [37, marker],
+    ...args.map((word) => [37, word]),
+    [43, 23, 16],
+    [59],
+  ]);
+  new DataView(program.buffer).setUint32(32, 0, true);
+  const motion = new MotionInstance(await readKCS(program), { profile });
+  const input = [
+    1.2, 2.1, -0.4, 1.11, -1.91, 0.85, 0.5, 3.2, 1.9, 2.84, 0.23, -0.45, 0.9, 3.17, -0.55, 1,
+  ];
+  input.forEach((value, i) => motion.machine.store(target + i * 4, floatBits(value)));
+  motion.run();
+  assert.deepEqual(
+    [0, 4, 8, 12].map((offset) => motion.machine.load(target + offset)),
+    [0xbec8dfe3, 0x3f972533, 0x3f0f8124, 0x3f66a7f0],
+  );
+  assert.equal(motion.machine.pop(), marker);
+});
+
 test('2.6.1.63 zero-width MOT rotation reads each angle from the live aliasing stack', async () => {
   const values = [128, ...[0.8, -0.5, 0.6].map(floatBits)],
     program = kcsProgram([[49, 128], ...values.map((word) => [37, word]), [60], [43, 23, 0], [59]]);

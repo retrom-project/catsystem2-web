@@ -206,6 +206,7 @@ export default {
     matrixInverseUsesSSEWords: true,
     vectorNormalizeUsesSSEWords: true,
     vectorTransformUsesSSEWords: true,
+    relativeRotationUsesSSEWords: true,
     vectorOperationsUseNativeGeometry: true,
     vectorComponentsUseX87: true,
     skipBypassesDelay: false,
@@ -2150,7 +2151,8 @@ export default {
         },
         {
           ids: [44],
-          value: 'Own MOT row-vector axis rotation from the selected reference transform.',
+          value:
+            'Own rotate-relative wrapper selects SSE directions and both original normalization widths. The x87 axis assembler preserves hardware words even when FSINCOS cannot reduce or the angles are not finite. Output and reference or angle storage can alias.',
         },
         {
           ids: [17, 38, 41],
