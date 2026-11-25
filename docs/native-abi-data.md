@@ -20,8 +20,8 @@ selected or enabled by proximity to another version number.
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
 | 2.6.1.23 | 869        | 672       | 57            | 17            | 123     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.63 | 938        | 524       | 80            | 19            | 315     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.67 | 938        | 711       | 80            | 19            | 128     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.63 | 938        | 610       | 80            | 19            | 229     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.67 | 938        | 712       | 80            | 19            | 127     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51                                     |
 
@@ -2404,3 +2404,29 @@ and reject the unwritten database domain. The four unique short passes are a
 composite: the original two baseline native failures and all later dependency
 and author failures remain in ignored receipts. No new actual startup, close,
 title-WAIT, whole game, browser or physical-oracle result is claimed here.
+
+## Question, Mission, Selection and compiled data services
+
+The fixed .23, .63 and .67 builds independently admit their own Question,
+Mission, Selection and KCDB table wrappers. Each registration uses the common
+JavaScript data models only after comparing its own wrapper, callee, allocator,
+object fields and full GCALL behavior. In .63 and .67 the 769/770 wrappers still
+resolve a valid one-word Question owner before an empty original member call;
+these two entries are empty behavior, separate from the 83 functional entries.
+The .23 versions remain its independently proved arbitrary-width empty entries.
+
+Native Question and Mission state can travel through the author raw allocation,
+CSS copy, native save, cold read, import and release calls. Owned buffers retain
+reference headers, independent copies and the original length-write behavior.
+Only proved allocation failures return zero; invalid sizes, pointers and unrelated
+errors remain diagnostics. Unwritten CSS record zero depends on unused native
+storage and remains protected; explicit zero-byte records are supported.
+
+Question genre ranges match occupied keys without expanding every integer in a
+large legal interval. Duplicate and overlapping ranges retain their original order
+and shared integer RNG consumption. KCDB reads enforce the declared output size
+and exact decoded length without a local artificial size threshold. Distinguishing
+output-storage exhaustion from inflater-internal resource failure remains a
+precise secondary gap. The input tables are legal authored native-format fixtures;
+scoped original-resource inventories did not find corresponding game data tables.
+These checks establish VM and native-format behavior, not a new product route.
