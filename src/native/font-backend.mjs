@@ -2,7 +2,8 @@
 import { nativeABI } from './abi/index.mjs';
 import { NativeTextParser } from './text-parser.mjs';
 import { nativeCategoryFilename, readNativeResource } from './resource-file.mjs';
-const pending = new Map();
+const pending = new Map(),
+  verifiedAdvance = new WeakMap();
 export function loadNativeFreeType(version) {
   const filename = version === '2.4.8' ? 'native_freetype_248.mjs' : 'native_freetype.mjs';
   if (!pending.has(version))
@@ -18,7 +19,16 @@ export function loadNativeFreeType(version) {
             new URL('../../.local/vendor/freetype/' + filename, import.meta.url)
           );
         }
-        return module.default();
+        const backend = await module.default();
+        // Resolve a generated lazy export through the reviewed no-face early
+        // return. No font size, charmap or glyph slot exists at this point.
+        backend._cs2_font_advance(0, 0, 0);
+        backend._cs2_font_glyph(0, 0, 0, 0);
+        verifiedAdvance.set(backend, {
+          advance: backend._cs2_font_advance,
+          glyph: backend._cs2_font_glyph,
+        });
+        return backend;
       })().catch((error) => {
         pending.delete(version);
         throw error;
@@ -31,6 +41,8 @@ export class NativeTextFonts {
     Object.assign(this, { source, world, profile });
     this.fonts = new Map();
     this.glyphs = new Map();
+    this.advances = new WeakMap();
+    this.ownedFonts = new WeakSet();
   }
   async ready() {
     this.module ??= await loadNativeFreeType(nativeABI(this.profile).text.freeTypeVersion);
@@ -52,9 +64,13 @@ export class NativeTextFonts {
     this.open(key, bytes);
   }
   open(key, bytes) {
-    const m = this.module;
+    const m = this.module,
+      publish = (record) => {
+        this.fonts.set(key, record);
+        this.ownedFonts.add(record);
+      };
     if (!bytes) {
-      this.fonts.set(key, { bytes: null, face: 0, input: 0 });
+      publish({ bytes: null, face: 0, input: 0 });
       return;
     }
     const input = m._malloc(bytes.length);
@@ -62,8 +78,8 @@ export class NativeTextFonts {
     const face = m._cs2_font_open(input, bytes.length, 0);
     if (!face) {
       m._free(input);
-      this.fonts.set(key, { bytes: bytes.slice(), face: 0, input: 0 });
-    } else this.fonts.set(key, { bytes: bytes.slice(), face, input });
+      publish({ bytes: bytes.slice(), face: 0, input: 0 });
+    } else publish({ bytes: bytes.slice(), face, input });
   }
   measure(font, text) {
     return this.source.measure(font, text);
@@ -81,9 +97,42 @@ export class NativeTextFonts {
   }
   advance(font, code) {
     const f = this.fonts.get(font.face || 'default.ttf');
-    return f?.face
-      ? this.module._cs2_font_advance(f.face, Math.abs(font.height), this.code(code))
-      : 0;
+    if (!f?.face) return 0;
+    const module = this.module,
+      call = module._cs2_font_advance,
+      face = f.face,
+      size = Math.abs(font.height),
+      unicode = this.code(code),
+      descriptor = Object.getOwnPropertyDescriptor(module, '_cs2_font_advance'),
+      glyph = Object.getOwnPropertyDescriptor(module, '_cs2_font_glyph'),
+      verified = verifiedAdvance.get(module);
+    if (
+      !this.ownedFonts.has(f) ||
+      descriptor?.value !== call ||
+      !verified ||
+      verified.advance !== call ||
+      glyph?.value !== verified.glyph ||
+      !Number.isInteger(size) ||
+      size <= 0 ||
+      size > 0x7fffffff ||
+      !Number.isInteger(unicode)
+    )
+      return Reflect.apply(call, module, [face, size, unicode]);
+    let cache = this.advances.get(f);
+    if (!cache || cache.module !== module || cache.face !== face) {
+      cache = { module, face, values: new Map() };
+      this.advances.set(f, cache);
+    }
+    const key = size + '/' + unicode;
+    if (cache.values.has(key)) return cache.values.get(key);
+    const value = Reflect.apply(call, module, [face, size, unicode]);
+    // The wrapper returns zero for absent glyphs and any size/load failure.
+    // Recompute those results so a later successful load is never hidden.
+    if (value !== 0) {
+      cache.values.set(key, value);
+      if (cache.values.size > 4096) cache.values.delete(cache.values.keys().next().value);
+    }
+    return value;
   }
   glyphNative(font, code) {
     const key = JSON.stringify([font.face, font.height, code]);
@@ -130,5 +179,7 @@ export class NativeTextFonts {
     }
     this.fonts.clear();
     this.glyphs.clear();
+    this.advances = new WeakMap();
+    this.ownedFonts = new WeakSet();
   }
 }

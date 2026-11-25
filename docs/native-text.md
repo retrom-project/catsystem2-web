@@ -53,6 +53,16 @@ fixtures compare actual glyph advances, boxes and every RGBA byte against
 both original libraries. Missing resources/glyphs preserve the original empty
 result; this backend does not substitute the packaged GDI fallback.
 
+Native advance measurements reuse successful scalar results for the current
+owned font face, pixel size and converted character code. Only the pinned
+advance/glyph providers enter this cache; replaced or accessor exports keep
+their ordinary calls. The wrapper's zero result is never cached. Each face
+retains at most 4,096 measurements, and close or cold restore discards them.
+The native glyph operation sets its own size and loads its own glyph, so it
+does not consume the previous measurement's mutable FreeType slot. Font bytes,
+layout records, raster pixels and the existing checkpoint fields stay owned
+by their original producers.
+
 Build the font backends with:
 
 ```sh
