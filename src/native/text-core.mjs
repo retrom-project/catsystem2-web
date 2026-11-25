@@ -9,6 +9,7 @@ import { NativeTextObjects } from './text-objects.mjs';
 import { rasterTextGlyph, compositeTextGlyph } from './text-raster.mjs';
 import { openImage } from '../formats/hg3.mjs';
 import { nativeTextUnits } from './text-scanner.mjs';
+import { packedBitmapWords } from './raster-kernel.mjs';
 const join = (arrays) => {
   const out = new Uint8Array(arrays.reduce((n, a) => n + a.length, 0));
   let at = 0;
@@ -310,14 +311,20 @@ export class JSTextWriter {
           rgba.length === complete.length &&
           rgba.length % 4 === 0
         ) {
-          for (let i = 0; i < rgba.length; i += 4) {
-            const red = complete[i],
-              green = complete[i + 1],
-              blue = complete[i + 2];
-            rgba[i] = red;
-            rgba[i + 1] = green;
-            rgba[i + 2] = blue;
-          }
+          const outputWords = packedBitmapWords(rgba),
+            inputWords = packedBitmapWords(complete);
+          if (outputWords && inputWords)
+            for (let i = 0; i < outputWords.length; i++)
+              outputWords[i] = (outputWords[i] & 0xff000000) | (inputWords[i] & 0x00ffffff);
+          else
+            for (let i = 0; i < rgba.length; i += 4) {
+              const red = complete[i],
+                green = complete[i + 1],
+                blue = complete[i + 2];
+              rgba[i] = red;
+              rgba[i + 1] = green;
+              rgba[i + 2] = blue;
+            }
         } else {
           for (let i = 0; i < rgba.length; i += 4) rgba.set(complete.subarray(i, i + 3), i);
         }
