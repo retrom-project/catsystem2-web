@@ -824,10 +824,13 @@ const scalarCases = [
   { ids: [50, 1, 6], args: [0x3f000000], result: 0x3ef57744 },
   { ids: [50, 1, 6], args: [0x80000000], result: 0x80000000 },
   { ids: [50, 1, 6], args: [0xff852038], result: 0xffc52038 },
+  { ids: [50, 1, 6], args: [0x5f000000], result: 0x3f780bd8 },
   { ids: [51, 2, 7], args: [0x3f000000], result: 0x3f60a940 },
   { ids: [51, 2, 7], args: [0x7f800000], result: 0xffc00000 },
+  { ids: [51, 2, 7], args: [0x7f7fffff], result: 0xbe6acefc },
   { ids: [52, 3, 8], args: [0x3f000000], result: 0x3f0bda7b },
   { ids: [52, 3, 8], args: [0x80000000], result: 0x80000000 },
+  { ids: [52, 3, 8], args: [0x7f7fffff], result: 0xc087d565 },
   { ids: [53, 4, 9], args: [0x3f000000], result: 0x3f060a92 },
   { ids: [53, 4, 9], args: [0x40000000], result: 0xffc00000 },
   { ids: [54, 5, 10], args: [0x3f000000], result: 0x3f860a92 },
@@ -836,6 +839,10 @@ const scalarCases = [
   { ids: [55, 6, 11], args: [0xff800000], result: 0xbfc90fdb },
   { ids: [57, 9, 14], args: [0x80000000], result: 0 },
   { ids: [57, 9, 14], args: [0xff812345], result: 0x7fc12345 },
+  { ids: [61, 13, 18], args: [0xbf800000, 0x7f800000], result: 0x3f800000 },
+  { ids: [61, 13, 18], args: [0x7f801234, 0], result: 0x7fc01234 },
+  { ids: [61, 13, 18], args: [0xff801234, 0x80000000], result: 0xffc01234 },
+  { ids: [61, 13, 18], args: [0x80000000, 0xc0400000], result: 0xff800000 },
   { ids: [62, 14, 19], args: [floatBits(180)], result: 0x40490fdb },
   { ids: [62, 14, 19], args: [0x7f7fffff], result: 0x7c8efa35 },
   { ids: [63, 15, 20], args: [0x7bbb3ee6], result: 0x7ea7a18e },
@@ -900,6 +907,28 @@ test('2.6.1.67 Main scalar GCALLs write the original x87 and integer words', asy
   const world = await dataWorld(profile, { 'case.kcs': kcsProgram(scalarProgram(0)) });
   t.after(() => world.close({ flushFiles: false }));
   assertScalarOutput(world.main.machine);
+});
+
+test('2.6.1.67 Main log10 retains the initialized CRT result words', async (t) => {
+  const samples = [
+      [0x3f800000, 0],
+      [0xbf800000, 0xffc00000],
+      [0x80000000, 0xff800000],
+      [1, 0xc23369f4],
+      [0x7f801234, 0x7fc01234],
+    ],
+    program = kcsProgram([
+      ...samples.flatMap(([value]) => [
+        [37, value],
+        [43, 461, 4],
+      ]),
+      [59],
+    ]),
+    world = await dataWorld(profile, { 'case.kcs': program });
+  t.after(() => world.close({ flushFiles: false }));
+  const { machine } = world.main;
+  assert.equal(machine.sp, machine.floor + 4 * samples.length);
+  for (const [, expected] of samples.slice().reverse()) assert.equal(machine.pop(), expected);
 });
 
 for (const [table, version, column] of [
