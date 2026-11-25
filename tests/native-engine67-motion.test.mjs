@@ -265,6 +265,55 @@ test('2.6.1.67 Motion vector calls preserve x87 result words and native operand 
   }
 });
 
+test('2.6.1.67 MOT vector transforms preserve physical SSE2 NaNs and aliased source words', async () => {
+  const matrix = [1, 1, 1, 1, 33554432, 0, 0, 0, 1, 0, 0, 0, -33554432, 0, 0, 0].map(floatBits),
+    samples = [
+      { before: [1, 1, 1, 1].map(floatBits), after: [0, 1, 1, 1].map(floatBits) },
+      {
+        before: [0x7fc12345, 0x7f800000, 0xff820234, 0x80000000],
+        after: Array(4).fill(0x7fc12345),
+      },
+      {
+        before: [0x7f800000, 0, 0xff820234, 0x80000000],
+        after: Array(4).fill(0xffc20234),
+      },
+      {
+        before: [0x7f800000, 0xff800000, 0, 0],
+        after: Array(4).fill(0xffc00000),
+      },
+    ];
+  for (const { before, after } of samples) {
+    const instance = new MotionInstance(await readKCS(motionProgram([[37, [64, 0x80000001]]])), {
+        profile,
+      }),
+      { machine } = instance;
+    before.forEach((word, i) => machine.store(64 + i * 4, word));
+    matrix.forEach((word, i) => machine.store(0x80000001 + i * 4, word));
+    machine.store(60, 0xce5852f0);
+    machine.store(80, 0xce5852f0);
+    assert.equal(instance.update(0).status, 'halted');
+    assert.equal(machine.pop(), 0xa0263136);
+    assert.equal(machine.sp, machine.floor);
+    assert.deepEqual(
+      after.map((_, i) => machine.load(64 + i * 4)),
+      after,
+    );
+    assert.equal(machine.load(60), 0xce5852f0);
+    assert.equal(machine.load(80), 0xce5852f0);
+    assert.deepEqual(
+      matrix.map((_, i) => machine.load(0x80000001 + i * 4)),
+      matrix,
+    );
+  }
+  const aliased = new MotionInstance(await readKCS(motionProgram([[37, [80, 64]]])), { profile });
+  matrix.forEach((word, i) => aliased.machine.store(64 + i * 4, word));
+  assert.equal(aliased.update(0).status, 'halted');
+  assert.deepEqual(
+    Array.from({ length: 4 }, (_, i) => aliased.machine.load(80 + i * 4)),
+    Array(4).fill(floatBits(33554432)),
+  );
+});
+
 test('2.6.1.67 motion GCALLs own a manager, identity matrix, flags, members and release', async (t) => {
   const world = await dataWorld(profile, {
     'motion-create.kcs': motionProgram([
