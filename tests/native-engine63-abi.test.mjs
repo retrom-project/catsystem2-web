@@ -116,6 +116,72 @@ async function run(instructions, diagnostic) {
   return { runtime, task, machine: task.machine };
 }
 
+test('2.6.1.63 Draw borrows its bitmap and redraws a signed region or the full surface', async (t) => {
+  const widths = new Map([
+    [256, 3],
+    [259, 13],
+    [260, 3],
+    [261, 1],
+    [262, 2],
+    [340, 1],
+    [862, 5],
+  ]);
+  const world = await dataWorld(
+    profile,
+    Object.fromEntries(
+      [...widths].map(([id, words]) => [`main-${id}.kcs`, mainProgram(id, words)]),
+    ),
+  );
+  t.after(() => world.close({ flushFiles: false }));
+  world.graphics.createLogicalDevice();
+  const id = await world.objects.create({ kind: 15, parent: world.main.id }),
+    draw = world.graphics.drawTasks.get(id),
+    target = world.nativeTaskID(id),
+    call = (slot, args = [], result) =>
+      executeMain(world, slot, [target, ...args], undefined, result);
+  await assert.rejects(() => call(261), /Draw bitmap query requires an initialized renderer/);
+  draw.state.dirty = false;
+  await call(340);
+  assert.equal(draw.state.dirty, true);
+  draw.state.dirty = false;
+  await call(862, [-1, 0, 4, 3]);
+  assert.equal(draw.state.dirty, true);
+  assert.equal(draw.state.renderer, null);
+
+  await call(256, [8, 6]);
+  await call(260, [0, 0]);
+  await call(262, [0]);
+  const images = world.graphics.images,
+    bitmap = draw.state.renderer.bitmap,
+    source = images.create(3, 2);
+  await images.get(source).fill(0, 0, 3, 2, 0xffe2bb11);
+  const position = [floatBits(2), floatBits(1)],
+    scale = [floatBits(1), floatBits(1)];
+  await call(259, [1, source, ...position, 0, 0, 0, ...scale, 255, 1, 0]);
+  await images.release(source);
+  await call(261, [], bitmap);
+  await call(261, [], bitmap);
+
+  const pixels = () => images.get(bitmap).pixels();
+  const expected = new Uint8ClampedArray(8 * 6 * 4);
+  const paint = (x, y) => expected.set([0xe2, 0xbb, 0x11, 255], ((5 - y) * 8 + x) * 4);
+  assert.deepEqual(await pixels(), expected);
+  await call(862, [-3, 0, 3, 3]);
+  paint(2, 1);
+  paint(2, 2);
+  assert.deepEqual(await pixels(), expected);
+  await call(340);
+  for (const [x, y] of [
+    [3, 1],
+    [3, 2],
+    [4, 1],
+    [4, 2],
+  ])
+    paint(x, y);
+  assert.deepEqual(await pixels(), expected);
+  assert.equal(draw.state.renderer.bitmap, bitmap);
+});
+
 test('2.6.1.63 Main stubs preserve their original three result behaviors', async () => {
   const table = nativeABI(profile).tables.main.entries;
   const noops = table.filter((entry) => entry.status === 'reserved');
