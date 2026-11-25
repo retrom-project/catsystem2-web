@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { CatSystem2 } from '../src/engine.mjs';
 import { bitsFloat, encodeCP932, floatBits, KCSMachine, readKCS } from '../src/kcs.mjs';
 import { MotionInstance } from '../src/motion/instance.mjs';
 import { ParticleScriptInstance } from '../src/ppi/script.mjs';
@@ -84,7 +85,13 @@ test('2.6.1.67 task queries enumerate branch keys and follow owner teardown', as
     const script = await readKCS(
         kcsProgram([[37, word], ...args.map((arg) => [37, arg]), [43, id, args.length * 4], [59]]),
       ),
-      owner = { context: {}, ...world.runtime.scheduler.tasks.get(ownerID), id: ownerID, abi: 'main', io: null },
+      owner = {
+        context: {},
+        ...world.runtime.scheduler.tasks.get(ownerID),
+        id: ownerID,
+        abi: 'main',
+        io: null,
+      },
       machine = (owner.machine = new KCSMachine(
         script,
         {
@@ -179,6 +186,78 @@ test('2.6.1.67 Main9 preserves queued close confirmation and Script shutdown', a
     assert.deepEqual(actions, expected);
     assert.equal(main.scriptEnabled, quits ? 0 : 1);
     assert.equal(Boolean(world.quitRequested), quits);
+  }
+});
+
+test('2.6.1.67 KCS queues display and minimize commands and confirms Script shutdown', async () => {
+  const marker = 0x5a8f2813,
+    files = Object.fromEntries(
+      [845, 846, 847].map((id) => [`${id}.kcs`, kcsProgram([[37, marker], [43, id, 0], [59]])]),
+    ),
+    world = await dataWorld(profile, files),
+    requests = [],
+    actions = [];
+  let confirm = false;
+  world.host.nativeWindowMessage = async (message) => {
+    requests.push(message);
+    CatSystem2.prototype.nativeWindowStateChanged.call({
+      world,
+      host: { nativeIsWindow: () => message.lParam === 0 },
+    });
+  };
+  world.host.nativeWindowAction = async (action) => {
+    actions.push(action);
+    return action.type === 'confirm-close' && confirm;
+  };
+  const post = async (id) => {
+    const task = await world.spawnScript(`${id}.kcs`, { initialExecute: false });
+    try {
+      await world.runtime.scheduler.execute(task);
+      assert.equal(task.machine.sp, task.machine.floor + 4);
+      assert.equal(task.machine.pop(), marker);
+      assert.deepEqual(world.windowMessages, [{ message: 0x469 + id - 845, wParam: 0, lParam: 0 }]);
+    } finally {
+      await world.objects.release(task.id);
+    }
+    await world.processWindowMessages();
+    assert.deepEqual(world.windowMessages, []);
+  };
+  try {
+    const { screen } = world.configuration;
+    screen.fullscreen = 0;
+    screen.fullWidth = 960;
+    screen.fullHeight = 588;
+    await post(845);
+    assert.equal(requests.at(-1).lParam, 1);
+    assert.deepEqual([screen.fullscreen, screen.currentWidth, screen.currentHeight], [1, 960, 588]);
+    await post(845);
+    assert.equal(requests.at(-1).lParam, 0);
+    assert.deepEqual(
+      [screen.fullscreen, screen.currentWidth, screen.currentHeight],
+      [0, screen.width, screen.height],
+    );
+    await post(846);
+    assert.deepEqual(
+      actions.map(({ type }) => type),
+      ['minimize'],
+    );
+    world.input.idleFrames = 9;
+    await post(847);
+    assert.equal(world.input.idleFrames, 0);
+    assert.equal(actions.at(-1).type, 'confirm-close');
+    assert.equal(actions.at(-1).caption, '終了');
+    assert.ok(!world.quitRequested);
+    assert.equal(world.objects.objects.get(world.main.id).scriptEnabled, 1);
+    confirm = true;
+    await post(847);
+    assert.deepEqual(
+      actions.slice(-3).map(({ type }) => type),
+      ['confirm-close', 'hide', 'close'],
+    );
+    assert.equal(world.objects.objects.get(world.main.id).scriptEnabled, 0);
+    assert.equal(world.quitRequested, true);
+  } finally {
+    await world.close({ flushFiles: false });
   }
 });
 
