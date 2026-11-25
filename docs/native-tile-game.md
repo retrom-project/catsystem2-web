@@ -22,6 +22,10 @@ streams have a different initializer. A World checkpoint stores this tile stream
 then stores independent context caches through the handle codec. Pending event
 replay and the complete dealt hand resume in a fresh JS World.
 
+SDK 2.6.1.67 emits a pre-action ability notification only when the automatic
+activation helper activates an ability. An already pending explicit human
+ability does not insert that notification into the ordinary discard sequence.
+
 The implementation is split into the native interface, canonical rule record,
 hand evaluator, action/AI rules, round driver and special/deal policies. Resource
 reads and PE projections are absent from this independent module. The previous

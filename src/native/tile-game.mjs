@@ -41,7 +41,7 @@ export class NativeTileGame {
       ])
         seed = (seed << width) | part;
     }
-    this.model = new NativeTileModel(seed);
+    this.model = new NativeTileModel(seed, nativeABI(world.profile).tileGame);
   }
   apply(id, args, machine) {
     if (!NATIVE_TILE_GAME_IDS.includes(id)) return undefined;

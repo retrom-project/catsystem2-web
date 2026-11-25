@@ -446,11 +446,13 @@ export class NativeTileRound {
         }
         model.set('next', 20007);
         break;
-      case 20019:
+      case 20019: {
         model.set('next', 20020);
-        model.preAction(current());
-        if (this.pending(current())) this.notify(current(), 20020);
+        const activated = model.preAction(current());
+        if (model.preActionNotificationUsesResult ? activated : this.pending(current()))
+          this.notify(current(), 20020);
         break;
+      }
       case 20020: {
         model.set('next', 20042);
         flags()[434] = 1;

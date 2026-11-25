@@ -51,7 +51,8 @@ const field = Object.freeze({
 });
 const styleFlags = [0, 3, 1, 3, 1, 1, 7, 0, 1, 3, 0, 1, 3, 3, 39, 3, 3, 3, 7, 3];
 export class NativeTileModel {
-  constructor(randomSeed = 4357) {
+  constructor(randomSeed = 4357, options = {}) {
+    this.preActionNotificationUsesResult = options.preActionNotificationUsesResult ?? false;
     this.random = new NativeMT19937();
     let seed = randomSeed >>> 0;
     for (let index = 0; index < 624; index++) {
