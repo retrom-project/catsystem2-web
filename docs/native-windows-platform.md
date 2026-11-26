@@ -133,6 +133,12 @@ messages without consulting a language table. The 2.6.1.23 caption is `エラー
 2.6.1.63 and 2.6.1.67 use `実行エラー`. Selected error codes, buttons and the
 owned modal cancellation follow each original helper. This consumer evidence
 does not establish a global language service or a language-file loader.
+Legacy native queue return `-3` ends the current FES notification after its
+started work is drained; the interrupted notification is not resumed by later
+frames. The same command in the main frame cursor continues after draining.
+`result` has this native return too. JavaScript asynchronous work for an
+original zero-return command retains its continuation. No pending host action
+or event continuation is replayed by a completed-action cold restore.
 No external program, OS registry or network send service is installed.
 
 Actual local-browser tests distinguish trusted opening from the current

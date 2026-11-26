@@ -751,7 +751,12 @@ export class FESInstance {
           if (scope.reply !== null) {
             const value = scope.reply;
             scope.reply = null;
-            if (this.nativeCommandReturn(value).action === 'suspend') break;
+            const reply = this.nativeCommandReturn(value);
+            if (reply.action === 'suspend') break;
+            if (this.nativeYieldEndsEvent(reply)) {
+              await this.flushNativeRecords();
+              break;
+            }
           }
           await this.flushNativeRecords();
           bindContext();
@@ -811,13 +816,15 @@ export class FESInstance {
       current,
     });
   }
-  nativeCommandReturn(value) {
+  nativeCommandReturn(value, { queue = true } = {}) {
     const word = value >>> 0,
       signed = word | 0;
     if (!word) return {};
     if (signed === -3) {
-      this.nativeQueuePending = true;
-      return { action: 'flush' };
+      if (queue) this.nativeQueuePending = true;
+      return this.nativeYieldEndsEvent({ nativeReturn: signed })
+        ? { action: 'flush', nativeReturn: signed }
+        : { action: 'flush' };
     }
     if (signed === -1) {
       if (this.runtime) this.commandDelayUntil = -1;
@@ -910,7 +917,10 @@ export class FESInstance {
         }
         if (result.action === 'stop') return true;
         if (result.action === 'suspend' || result.action === 'flush') {
-          stack.push([label, pc]);
+          // A native queue yield ends the legacy event cursor. Async work
+          // introduced by the JavaScript host still resumes its continuation.
+          if (mode === 'event' && this.nativeYieldEndsEvent(result)) stack.length = 0;
+          else stack.push([label, pc]);
           this.suspended = stack;
           this.decodePending = result.action === 'flush';
           return jumped;
@@ -918,6 +928,13 @@ export class FESInstance {
       }
     }
     return jumped;
+  }
+  nativeYieldEndsEvent(result) {
+    return (
+      result.nativeReturn === -3 &&
+      this.runtime &&
+      nativeABI(this.runtime.world.profile).fes.nativeQueueYieldStopsNotification === true
+    );
   }
   skip(lines, pc, stopAtElse) {
     let depth = 0;
@@ -1118,18 +1135,18 @@ export class FESInstance {
                 systemNames: true,
               })
             : p(0);
-        return { action: 'flush' };
+        return this.nativeCommandReturn(-3, { queue: false });
       case 'execfes':
         this.player.requestFES(
           this.text(args[0]),
           this,
           Array.from({ length: 16 }, (_, i) => (args[i + 1] === undefined ? 0 : p(i + 1))),
         );
-        return { action: 'flush' };
+        return this.nativeCommandReturn(-3, { queue: false });
       case 'execkcs':
         this.exitCode = -1;
         this.player.requestKCS(this.text(args[0]), this);
-        return { action: 'flush' };
+        return this.nativeCommandReturn(-3, { queue: false });
       case 'endfes':
       case 'endkcs': {
         const endKCS = head === 'endkcs';

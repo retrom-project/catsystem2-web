@@ -942,6 +942,7 @@ export default {
     mxcsr: null,
   },
   fes: {
+    nativeQueueYieldStopsNotification: true,
     shellErrorText: { storage: 'inline', caption: '実行エラー' },
     localAccessUsesNativeTypes: true,
     variableBankOffset: 1800,
