@@ -17,26 +17,26 @@ signature differences, observations and evidence. They also own their existing
 service behavior, capability, message, encoding and layout records. No engine is
 selected or enabled by proximity to another version number.
 
-| Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
-| -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 701       | 57            | 17            | 94      | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.63 | 938        | 674       | 80            | 19            | 165     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.67 | 938        | 738       | 80            | 19            | 101     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
-| 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51                                     |
+| Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
+| -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
+| 2.6.1.23 | 869        | 708       | 57            | 17            | 87      | 45 / 44 / 51               |
+| 2.6.1.63 | 938        | 681       | 80            | 19            | 158     | 45 / 44 / 51               |
+| 2.6.1.67 | 938        | 740       | 80            | 19            | 99      | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51               |
+| 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51               |
 
 The registry represents 5,509 slots, including 2,344 SDK74/Game76 slots.
-The older registrations retain unknown auxiliary slots and unadmitted stub
-observations. The counts reflect the classified slots in each registration.
-SDK74/Game76 auxiliary generic entries retain `recovered` and particle entries
-retain `declared`.
+The older auxiliary tables now register all entries, including their nine own-PE
+logger bridges. Unadmitted stub observations and unresolved ordinary shapes remain
+separate. The counts reflect classified slots, not complete SDK acceptance.
+All five builds classify their auxiliary entries as `recovered`; unresolved
+resource, renderer and capacity shapes remain separately recorded.
 
 These registration counts do not count SDK acceptance. Every table entry also
 needs a link to its own executable fingerprint or a proved equivalence bridge,
 and to an actual test of that behavior. A `recovered` label or static wrapper
-survey alone is insufficient. In particular, the 95 declared particle entries
-per modern build remain subject to that evidence review; choosing the correct
-particle table does not prove its individual functions. Functional cases,
+survey alone is insufficient. Choosing the correct particle table does not prove
+its individual functions or every resource and renderer shape. Functional cases,
 original stub behavior and guarded shapes are recorded separately.
 
 ## 2.6.1.23 startup and title

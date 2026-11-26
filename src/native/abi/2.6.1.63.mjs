@@ -127,6 +127,12 @@ const particleStateEvidence = {
     'Own Particle v1 and v2 share the task-rate and x87 unsigned scaling entries, four-word UV entry, exit control, and Main integer RNG body. Both original tables were called with physical owners.',
 };
 
+const auxiliaryLoggerEvidence = {
+  ids: [0],
+  value:
+    'Own complete Generic and both Particle zero wrappers reach the owning formatter and actual CRT logger through the original GCALL dispatcher. The Particle tables share one exact receiver, and no receiver field is read or written. Seven cases per table retain CP932 bytes, two-stage percent handling, mapped zero-width and ignored-tail arguments, 499-byte termination, control2 without a result store, full guest/owner and original writable-data effects. Existing five-build formatter and Main1/Main14 evidence is reused. OS debug-window transport is captured only. See tests/fixtures/native-legacy-aux-logger-golden.json and docs/kcs-vm.md.',
+};
+
 export default {
   id: 'cs2-2.6.1.63',
   profile: 'rebellions-jp-engine-2.6.1.63',
@@ -310,6 +316,7 @@ export default {
   },
   movie: { alwaysUseBgmVolume: true },
   particle: {
+    debugUsesNativeLogger: true,
     deferGraphAttachment: true,
     frameScale: 'x87-uint32',
     scriptUsesTaskFrameRate: true,
@@ -2621,13 +2628,13 @@ export default {
     generic: {
       count: 45,
       slots: {
-        unknown: [0],
         recovered: [
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-          26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
+          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+          25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
         ],
       },
       evidence: [
+        auxiliaryLoggerEvidence,
         {
           ids: [18, 19, 20, 21, 22, 24, 25, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 39, 40],
           value:
@@ -2684,13 +2691,13 @@ export default {
     'particle-v1': {
       count: 44,
       slots: {
-        unknown: [0],
         recovered: [
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-          26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
+          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+          25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43,
         ],
       },
       evidence: [
+        auxiliaryLoggerEvidence,
         particleStateEvidence,
         {
           ids: [39, 40],
@@ -2723,14 +2730,14 @@ export default {
     'particle-v2': {
       count: 51,
       slots: {
-        unknown: [0],
         recovered: [
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
-          26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
-          48, 49, 50,
+          0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+          25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46,
+          47, 48, 49, 50,
         ],
       },
       evidence: [
+        auxiliaryLoggerEvidence,
         particleStateEvidence,
         {
           ids: [44, 45, 46],

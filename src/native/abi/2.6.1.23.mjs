@@ -999,7 +999,14 @@ const mainEvidence = [
       'Own 2.6.1.23 Area wrappers 0x486780, 0x4869e0, 0x486aa0 and 0x486c10 use the legacy kind dispatch, raw 231/233/235, and the 56-byte kind 26 initializer through raw 248',
   },
 ];
+const auxiliaryLoggerEvidence = {
+  ids: [0],
+  value:
+    'Own complete Generic and both Particle zero wrappers reach the owning formatter and actual CRT logger through the original GCALL dispatcher. The Particle tables share one exact receiver, and no receiver field is read or written. Seven cases per table retain CP932 bytes, two-stage percent handling, mapped zero-width and ignored-tail arguments, 499-byte termination, control2 without a result store, full guest/owner and original writable-data effects. Existing five-build formatter and Main1/Main14 evidence is reused. OS debug-window transport is captured only. See tests/fixtures/native-legacy-aux-logger-golden.json and docs/kcs-vm.md.',
+};
+
 const particleInterpreterEvidence = [
+  auxiliaryLoggerEvidence,
   {
     ids: [29],
     value:
@@ -1181,11 +1188,12 @@ const toSound = (id) => toMessage(id + 13, -13);
 const tables = (count, evidence = [], stubs = {}) => {
   const stubIds = Object.values(stubs).flat();
   const recovered = evidence.flatMap(({ ids }) => ids).sort((a, b) => a - b),
-    known = new Set([...recovered, ...stubIds]);
+    known = new Set([...recovered, ...stubIds]),
+    unknown = Array.from({ length: count }, (_, id) => id).filter((id) => !known.has(id));
   return {
     count,
     slots: {
-      unknown: Array.from({ length: count }, (_, id) => id).filter((id) => !known.has(id)),
+      ...(unknown.length ? { unknown } : {}),
       ...(recovered.length ? { recovered } : {}),
       ...stubs,
     },
@@ -1372,6 +1380,7 @@ export default {
     registerWordsUseX87: true,
   },
   particle: {
+    debugUsesNativeLogger: true,
     scriptVersionFallback: 'particle-v1',
     frameScale: 'x87-uint32',
     quadUsesX87: true,
@@ -2622,6 +2631,7 @@ export default {
     },
     generic: {
       ...tables(45, [
+        auxiliaryLoggerEvidence,
         {
           ids: motionGeometryOperations,
           value:
