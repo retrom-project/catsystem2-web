@@ -705,6 +705,7 @@ export class FESStringDriver {
       scratch.cursor[1] = rect?.[mode === 'nv' ? 3 : 2] ?? 0;
       cursorMask = 3;
     }
+    const extentChanged = Boolean(object.sizeDirty);
     if (object.sizeDirty) {
       this.setView(object, object.width, object.height);
       object.sizeDirty = false;
@@ -718,7 +719,9 @@ export class FESStringDriver {
       !s.first &&
       !s.fontDirty &&
       !object.positionPending &&
-      !object.sizePending &&
+      // SIZE2 is a retained mode; its resource read belongs to first above.
+      // A newly prepared extent still keeps this drive's ordinary footprint.
+      !extentChanged &&
       s.pendingClear &&
       s.fullSource &&
       s.source.length === 0 &&

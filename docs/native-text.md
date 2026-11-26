@@ -178,8 +178,12 @@ image-font source and selector map may remain attached: empty clear/configure
 operations do not consume them. The writer must own their records; this also
 covers retained selectors whose source image is missing. Nonempty source,
 user-font loads or remapping, NV, first initialization, font replacement,
-resource references, changed dimensions,
+first reference lookups, pending position references, changed dimensions,
 VRAM position/output changes and unknown providers use ordinary publication.
+STRING keeps `SIZE2` as a persistent definition mode. Once first-drive resource
+and view preparation has completed, that flag alone does not imply pending IO.
+A drive that prepares a dirty extent remains ordinary, and owned admission
+still requires the live writer dimensions and VRAM footprint to match.
 Eligibility is checked before every resource message and output. Losing it first
 settles the last requested output, then runs the new provider. GDI and reentrant
 callbacks retain their original intermediate clear and redraw sequence.
