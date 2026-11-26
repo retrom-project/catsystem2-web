@@ -131,7 +131,7 @@ export class NativeSceneReader {
     return { count: this.body.u32(at), start: this.body.u32(at + 4) };
   }
 
-  type(block, line) {
+  type(block, line, behavior) {
     block |= 0;
     line |= 0;
     if (!this.body) return -1;
@@ -142,7 +142,21 @@ export class NativeSceneReader {
     if (line >= info.count) return -1;
     const offset = this.body.u32(this.offsetsOffset + 4 * (info.start + line));
     const at = this.stringsOffset + offset;
-    return this.body.u8(at) === 1 ? this.body.u8(at + 1) : -1;
+    const type = this.body.u8(at) === 1 ? this.body.u8(at + 1) : -1;
+    if (behavior?.cstFileMarkers && (type === 0xf0 || type === 0xf1)) {
+      const bytes = this.text(block, line);
+      if (bytes === null) throw new Error('Native CST file marker has no readable record');
+      if (type === 0xf0) {
+        if (bytes.length >= 260) throw new Error('Native CST filename exceeds its 260-byte field');
+        this.fileNameBytes = bytes;
+        this.filename = decoder.decode(bytes);
+      } else {
+        const parsed = parseNativeIntegerPrefix(decoder.decode(bytes));
+        if (!parsed) throw new Error('Native CST file value is not an integer');
+        this.fileValue = parsed.value;
+      }
+    }
+    return type;
   }
 
   text(block, line, { language = '', toUTF8 = false } = {}) {
@@ -189,11 +203,11 @@ export class NativeSceneReader {
     return -1;
   }
 
-  messageCount() {
+  messageCount(behavior) {
     let count = 0;
     for (let block = 0; block < this.blockCount; block++)
       for (let line = 0; line < this.blockInfo(block).count; line++)
-        if (this.type(block, line) === 0x20) count++;
+        if (this.type(block, line, behavior) === 0x20) count++;
     return count;
   }
 
@@ -537,23 +551,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
         return word(Number(value));
       });
   }
-  if (id === 0x146) {
-    const type = reader.type(args[1], args[2]);
-    if (behavior?.cstFileMarkers && (type === 0xf0 || type === 0xf1)) {
-      const bytes = reader.text(args[1], args[2]);
-      if (bytes === null) throw new Error('Native CST file marker has no readable record');
-      if (type === 0xf0) {
-        if (bytes.length >= 260) throw new Error('Native CST filename exceeds its 260-byte field');
-        reader.fileNameBytes = bytes;
-        reader.filename = decoder.decode(bytes);
-      } else {
-        const parsed = parseNativeIntegerPrefix(decoder.decode(bytes));
-        if (!parsed) throw new Error('Native CST file value is not an integer');
-        reader.fileValue = parsed.value;
-      }
-    }
-    return word(type);
-  }
+  if (id === 0x146) return word(reader.type(args[1], args[2], behavior));
   if ([0x147, 0x409, 0x40d, 0x40e].includes(id)) {
     if (!mapped(machine, args[1])) {
       if (!direct && behavior?.implicitTextDestinationRequired)
@@ -663,7 +661,8 @@ export function nativeSceneData(id, args, machine, services = {}) {
     return word(reader.fileValue);
   }
   if (id === 0x260) return word(reader?.info(4) ?? 0);
-  if (id === 0x3d4) return word(reader.messageCount());
+  if (id === 0x3d4)
+    return word(reader.messageCount(behavior?.messageCountTypeSideEffects ? behavior : undefined));
   if (id === 0x3d6) return word(history.path.length - 1);
   if (id === 0x3d2) {
     if (args[1] && history.path.length)

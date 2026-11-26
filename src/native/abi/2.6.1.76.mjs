@@ -100,6 +100,10 @@ export default {
     relativeRotationUsesSSEWords: true,
     vectorComponentsUseSSEWords: true,
   },
+  scene: {
+    implicitReaderUsesDirectBehavior: true,
+    implicitTextRecordRequired: true,
+  },
   xmlEncoding: 'UTF-8',
   text: {
     debugPrintByteLimit: 500,

@@ -76,6 +76,13 @@ export default {
     relativeRotationUsesSSEWords: true,
     vectorComponentsUseSSEWords: true,
   },
+  scene: {
+    cstFileMarkers: true,
+    messageCountTypeSideEffects: true,
+    translations: false,
+    implicitReaderUsesDirectBehavior: true,
+    implicitTextRecordRequired: true,
+  },
   particle: {
     taskMessageStart: 309,
     taskMessagesUseRawTransport: true,

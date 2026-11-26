@@ -1,5 +1,32 @@
 # Scene-local checkpoints
 
+Main323 creates an independent owner containing a CST reader and a history
+owner; Main324 destroys both and releases the enclosing RefBuffer. Main219
+instead replaces the reader/history fields of its real Script callback owner.
+The two modern builds use 304-byte and 324-byte readers respectively, plus
+the independent 8-byte history owner. Neither Scene35 nor Scene38 is a Task
+kind: those are ledger counts of explicit scene-family Main entries. The
+related implicit taskScene and historyCursor entries have separate coverage.
+
+The own74 reader type method consumes F0/F1 records as current filename/value
+markers. Its message-count scan performs the same writes. Own76 returns the
+types without those marker writes. The shared reader uses the build policy
+at these consumption points; the earlier builds retain their existing type
+policy. Only74 has the newly proved message-count side effects enabled.
+The74 reader has no translation tail and does not request CSTL input. The76
+localization methods and configured language prefixes remain a separate group.
+
+The modern reader fixture runs actual Main323 owners and factory-created
+Script callbacks through mounted CST/zlib loading, CP932 byte copies, count
+sentinels, missing-file retention, seen/path operations and independent cold
+restore. Before a successful load, the original block/line fields are untouched
+heap bytes; their raw captures do not establish portable initial cursor values.
+An implicit text call with a mapped destination and no readable record remains
+diagnosed rather than pretending that a native null-source copy succeeded.
+Separate ignored receipts use the shipped sc01/01 CST entries, exact container
+and entry hashes, full native/current KCS frames and cold reader state. These
+are short resource/owner bridges, not full application or product-route tests.
+
 Main `3DF` appends a local checkpoint to the last path entry in an explicit scene resource. Main `3E0` searches that path backwards and restores it. Main `3E2` branches the history at a scene index and position. This is the original engine's scene-local state used by history and replay; it is separate from a complete browser World checkpoint.
 
 The JS selector reads the `config` resource, parses `localstr` with the ABI XML encoding and recovered comma/integer rules, and selects variable indices using the current eight local flag ranges. This replaces the original constructor in both ABIs. The browser keeps one authoritative variable bank, string bank and scene history. It serializes selected variable index/value pairs and a temporary selected-string bank using the recovered layouts and pinned zlib 1.2.3 level 9.
