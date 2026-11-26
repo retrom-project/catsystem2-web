@@ -164,21 +164,3 @@ for (const fixture of encoded.cases) {
     }
   });
 }
-
-test('SDK23 keeps the separately observed partial nine-piece shape protected before its admission', async (t) => {
-  const fixture = encoded.cases.find((item) => item.protectedPartialNinePatch);
-  const world = await dataWorld(profile, {
-    [fixture.file]: Buffer.from(fixture.encodedBase64, 'base64'),
-    'partial.kcs': kcsProgram(
-      [...call(365, [256], 32), ...call(648, [handle, 8, 8], 40), [59]],
-      [[256, fixture.file]],
-    ),
-  });
-  t.after(() => world.close({ flushFiles: false }));
-  const task = await world.spawnScript('partial.kcs', {
-    parent: world.main.id,
-    initialExecute: false,
-  });
-  await assert.rejects(world.runtime.scheduler.execute(task), /missing tile frames/);
-  world.runtime.imageDataBuffers.release(task.machine.load(32));
-});

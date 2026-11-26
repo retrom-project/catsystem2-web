@@ -21,9 +21,13 @@ existing bitmap ownership model.
 
 The SDK23 tests compare opaque and alpha tile pixels, partial edge repetitions,
 HG2 input, nonconsecutive frame IDs and RGB24 expansion with intact original
-GCALLs. Partial tile resources have separate defined original observations;
-they remain guarded alongside other encoded formats, empty nine-piece dimensions and destinations
-smaller than a source tile. Shared semantic names do not admit
+GCALLs. Valid partial resources preserve destinations for missing IDs, including
+a single HG2 `0x25` corner and sparse or unmatched HG3 tile IDs. HG2 `0x10`
+instead reuses its one image for every tile lookup; HG2 `0x20/0x25` uses IDs.
+The separate `428` ordinal wrapper only exposes index zero for HG2 before
+`0x25`. These are local command rules, and do not change other callers' frame
+selection. Other encoded formats, empty nine-piece dimensions and destinations
+smaller than a source tile remain guarded. Shared semantic names do not admit
 these entries for other builds.
 
 [NativeImages](../src/native/image.mjs) owns script bitmap pixels, metadata,

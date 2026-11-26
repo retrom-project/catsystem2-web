@@ -20,7 +20,14 @@ export async function nativeEncodedBitmap(world, id, argument, machine, task) {
   const image = await openImage(bytes),
     images = world.graphics.images;
   if (id === 428) {
-    const frame = image.frames[argument(1) >>> 0];
+    const index = argument(1) >>> 0,
+      // The own HG2 wrapper exposes ordinal lookup only from format0x25.
+      frame =
+        bytes[3] === 50 && image.version < 0x25
+          ? index === 0
+            ? image.frame(0)
+            : null
+          : image.frames[index];
     if (!frame) return nativeReply(1, 0);
     await image.decode(frame);
     const bitmap = images.addDecoded(image, frame);
@@ -38,12 +45,6 @@ export async function nativeEncodedBitmap(world, id, argument, machine, task) {
   const width = argument(1) >>> 0,
     height = argument(2) >>> 0;
   if (!width || !height) throw new Error('Unreviewed empty nine-piece bitmap dimensions');
-  if (
-    Array.from({ length: 9 }, (_, id) => id).some(
-      (id) => !image.frames.some((frame) => frame.id === id),
-    )
-  )
-    throw new Error('Unreviewed nine-piece bitmap with missing tile frames');
   const result = images.create(width, height, task.id);
   try {
     const pixels = new Uint8ClampedArray(width * height * 4);

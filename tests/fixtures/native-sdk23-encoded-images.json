@@ -56,7 +56,7 @@
       },
       "nativeReceiptSha256": "822881f789a0ffc8d7cd6387f4558bda5e3ad2b8da42866b188d7a6a868f1e3d",
       "producerSha256": "b80fe88fd44b01347ff8d2456d622d2e3df230b55d1861d9edd7f40736a79ab3",
-      "protectedPartialNinePatch": {
+      "ninePatch": {
         "width": 8,
         "height": 8,
         "bpp": 4,
@@ -73,8 +73,7 @@
           0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
         ],
         "header": [0, 0, 0, 0, 0, 0, 0]
-      },
-      "ninePatch": null
+      }
     },
     {
       "name": "ordinal-rgb24",
@@ -125,6 +124,174 @@
       },
       "nativeReceiptSha256": "265b96c46a75c241110a8ba60fd1d40ca697a4296cf6da1e6bd080dae8c732f3",
       "producerSha256": "6b0fb8f9ae54ecef1fc668ae298daf3347468f6a61b46ad02cd4e6400958821b"
+    },
+    {
+      "name": "hg3-sparse",
+      "file": "partial.hg3",
+      "encodedBase64": "SEctMwwAAAAAAwAAgwAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAIAAAAgAAAAAAAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADMAAAAAAAAAAgAAAAwAAAAEAAAADwAAAAsAAAB4nGNTY8wCAAD6AJh4nGPkcDhQD4b2ABlWBQaDAAAABAAAAHN0ZGluZm8AOAAAACgAAAACAAAAAgAAACAAAAAAAAAAAAAAAAIAAAACAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAAMwAAAAAAAAACAAAADAAAAAQAAAAPAAAACwAAAHic0+bUzgIAAYsAynicY+RwOFAPhvYAGVYFBoMAAAAGAAAAc3RkaW5mbwA4AAAAKAAAAAIAAAACAAAAIAAAAAAAAAAAAAAAAgAAAAIAAAAAAAAAAAAAAAAAAABpbWcwMDAwAAAAAAAzAAAAAAAAAAIAAAAMAAAABAAAAA8AAAALAAAAeJzTNzfLAgACOwEHeJxj5HA4UA+G9gAZVgUGAAAAAAgAAABzdGRpbmZvADgAAAAoAAAAAgAAAAIAAAAgAAAAAAAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADMAAAAAAAAAAgAAAAwAAAAEAAAADwAAAAsAAAB4nLO340sFAAI7APF4nGPkcDhQD4b2ABlWBQY=",
+      "index": 0,
+      "decoded": {
+        "width": 2,
+        "height": 2,
+        "bpp": 4,
+        "frameID": 0,
+        "rgba": [17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255],
+        "header": [2, 2, 0, 0, 1, 0, 0]
+      },
+      "ninePatch": {
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "frameID": 0,
+        "rgba": [
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 69, 85, 111, 255, 69, 85, 111, 255, 121, 129, 139, 255, 121, 129, 139, 255,
+          121, 129, 139, 255, 121, 129, 139, 255, 0, 0, 0, 0, 0, 0, 0, 0, 69, 85, 111, 255, 69, 85,
+          111, 255, 121, 129, 139, 255, 121, 129, 139, 255, 121, 129, 139, 255, 121, 129, 139, 255,
+          0, 0, 0, 0, 0, 0, 0, 0, 17, 41, 83, 255, 17, 41, 83, 255, 95, 107, 125, 255, 95, 107, 125,
+          255, 95, 107, 125, 255, 95, 107, 125, 255, 0, 0, 0, 0, 0, 0, 0, 0, 17, 41, 83, 255, 17,
+          41, 83, 255, 95, 107, 125, 255, 95, 107, 125, 255, 95, 107, 125, 255, 95, 107, 125, 255,
+          0, 0, 0, 0, 0, 0, 0, 0
+        ],
+        "header": [0, 0, 0, 0, 0, 0, 0]
+      },
+      "nativeReceiptSha256": "783a37f09d6dafb5285807a5feac7cfbf7a992d97e9361b54275e6664103af92",
+      "producerSha256": "05c31387efaa2a51aadd1eaa29e00fdf4193fe52c8d048bd2a5e05bda04e342a"
+    },
+    {
+      "name": "hg3-none",
+      "file": "partial.hg3",
+      "encodedBase64": "SEctMwwAAAAAAwAAAAAAAAsAAABzdGRpbmZvADgAAAAoAAAAAgAAAAIAAAAgAAAAAAAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADMAAAAAAAAAAgAAAAwAAAAEAAAADwAAAAsAAAB4nGNTY8wCAAD6AJh4nGPkcDhQD4b2ABlWBQY=",
+      "index": 0,
+      "decoded": {
+        "width": 2,
+        "height": 2,
+        "bpp": 4,
+        "frameID": 11,
+        "rgba": [17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255],
+        "header": [2, 2, 0, 0, 1, 0, 0]
+      },
+      "ninePatch": {
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "frameID": 11,
+        "rgba": [
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        ],
+        "header": [0, 0, 0, 0, 0, 0, 0]
+      },
+      "nativeReceiptSha256": "565279a0ab1ec0ee6967ec0ac27f230390345bbdbedd8f160250e09f46859db7",
+      "producerSha256": "05c31387efaa2a51aadd1eaa29e00fdf4193fe52c8d048bd2a5e05bda04e342a"
+    },
+    {
+      "name": "hg2-nine",
+      "file": "partial.hg3",
+      "encodedBase64": "SEctMgwAAAAlAAAAAgAAAAIAAAAgAAAAAAAAAAAAAAAMAAAABAAAAA8AAAALAAAAKAAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAGcAAAAAAAAAAAAAAHicY1NjzAIAAPoAmHicY+RwOFAPhvYAGVYFBgIAAAACAAAAIAAAAAAAAAAAAAAADAAAAAQAAAAPAAAACwAAACgAAAABAAAAAgAAAAIAAAAAAAAAAAAAAAAAAABnAAAAAAAAAAAAAAB4nGOztnQAAAF/ALt4nGPkcDhQD4b2ABlWBQYCAAAAAgAAACAAAAAAAAAAAAAAAAwAAAAEAAAADwAAAAsAAAAoAAAAAgAAAAIAAAACAAAAAAAAAAAAAAAAAAAAZwAAAAAAAAAAAAAAeJwTl5HJAgABVgC6eJxj5HA4UA+G9gAZVgUGAgAAAAIAAAAgAAAAAAAAAAAAAAAMAAAABAAAAA8AAAALAAAAKAAAAAMAAAACAAAAAgAAAAAAAAAAAAAAAAAAAGcAAAAAAAAAAAAAAHickzZlcQAAAVcAlXicY+RwOFAPhvYAGVYFBgIAAAACAAAAIAAAAAAAAAAAAAAADAAAAAQAAAAPAAAACwAAACgAAAAEAAAAAgAAAAIAAAAAAAAAAAAAAAAAAABnAAAAAAAAAAAAAAB4nNPm1M4CAAGLAMp4nGPkcDhQD4b2ABlWBQYCAAAAAgAAACAAAAAAAAAAAAAAAAwAAAAEAAAADwAAAAsAAAAoAAAABQAAAAIAAAACAAAAAAAAAAAAAAAAAAAAZwAAAAAAAAAAAAAAeJzTVxJ2AAABjACleJxj5HA4UA+G9gAZVgUGAgAAAAIAAAAgAAAAAAAAAAAAAAAMAAAABAAAAA8AAAALAAAAKAAAAAYAAAACAAAAAgAAAAAAAAAAAAAAAAAAAGcAAAAAAAAAAAAAAHic0zc3ywIAAjsBB3icY+RwOFAPhvYAGVYFBgIAAAACAAAAIAAAAAAAAAAAAAAADAAAAAQAAAAPAAAACwAAACgAAAAHAAAAAgAAAAIAAAAAAAAAAAAAAAAAAABnAAAAAAAAAAAAAAB4nLOX1nUGAAHuAMt4nGPkcDhQD4b2ABlWBQYCAAAAAgAAACAAAAAAAAAAAAAAAAwAAAAEAAAADwAAAAsAAAAoAAAACAAAAAIAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeJyzt+NLBQACOwDxeJxj5HA4UA+G9gAZVgUG",
+      "index": 7,
+      "decoded": {
+        "width": 2,
+        "height": 2,
+        "bpp": 4,
+        "frameID": 7,
+        "rgba": [108, 118, 132, 255, 108, 118, 132, 255, 108, 118, 132, 255, 108, 118, 132, 255],
+        "header": [2, 2, 0, 0, 1, 0, 0]
+      },
+      "ninePatch": {
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "frameID": 7,
+        "rgba": [
+          43, 63, 97, 255, 43, 63, 97, 255, 108, 118, 132, 255, 108, 118, 132, 255, 108, 118, 132,
+          255, 108, 118, 132, 255, 56, 74, 104, 255, 56, 74, 104, 255, 43, 63, 97, 255, 43, 63, 97,
+          255, 108, 118, 132, 255, 108, 118, 132, 255, 108, 118, 132, 255, 108, 118, 132, 255, 56,
+          74, 104, 255, 56, 74, 104, 255, 69, 85, 111, 255, 69, 85, 111, 255, 121, 129, 139, 255,
+          121, 129, 139, 255, 121, 129, 139, 255, 121, 129, 139, 255, 82, 96, 118, 255, 82, 96, 118,
+          255, 69, 85, 111, 255, 69, 85, 111, 255, 121, 129, 139, 255, 121, 129, 139, 255, 121, 129,
+          139, 255, 121, 129, 139, 255, 82, 96, 118, 255, 82, 96, 118, 255, 17, 41, 83, 255, 17, 41,
+          83, 255, 95, 107, 125, 255, 95, 107, 125, 255, 95, 107, 125, 255, 95, 107, 125, 255, 30,
+          52, 90, 255, 30, 52, 90, 255, 17, 41, 83, 255, 17, 41, 83, 255, 95, 107, 125, 255, 95,
+          107, 125, 255, 95, 107, 125, 255, 95, 107, 125, 255, 30, 52, 90, 255, 30, 52, 90, 255
+        ],
+        "header": [0, 0, 0, 0, 0, 0, 0]
+      },
+      "nativeReceiptSha256": "e56431da0785cbf0947394502c188d8796e34a76adc6515430aa670d293939bf",
+      "producerSha256": "8aa03c71544ef2c6a80af41b5e1e7220eb62d6813b47153d9ee5769b051324e2"
+    },
+    {
+      "name": "hg2-v10",
+      "file": "partial.hg3",
+      "encodedBase64": "SEctMgwAAAAQAAAAAgAAAAIAAAAgAAAAAAAAAAAAAAAMAAAABAAAAA8AAAALAAAAeJxjU2PMAgAA+gCYeJxj5HA4UA+G9gAZVgUG",
+      "index": 0,
+      "decoded": {
+        "width": 2,
+        "height": 2,
+        "bpp": 4,
+        "frameID": 0,
+        "rgba": [17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255],
+        "header": [2, 2, 0, 0, 0, 0, 0]
+      },
+      "ninePatch": {
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "frameID": 0,
+        "rgba": [
+          17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17,
+          41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41,
+          83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83,
+          255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255,
+          17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17,
+          41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41,
+          83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83,
+          255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255,
+          17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17,
+          41, 83, 255
+        ],
+        "header": [0, 0, 0, 0, 0, 0, 0]
+      },
+      "nativeReceiptSha256": "05489e74891c026ef652b881eb411c1e05ac8f86839e8c16b0b0df55ea8726e2",
+      "producerSha256": "107698f4391d0abef3f1376d60cc278c036b7e0e99806117027359e877aec6f9"
+    },
+    {
+      "name": "hg2-v20",
+      "file": "partial.hg3",
+      "encodedBase64": "SEctMgwAAAAgAAAAAgAAAAIAAAAgAAAAAAAAAAAAAAAMAAAABAAAAA8AAAALAAAAIAAAAAAAAAACAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAB4nGNTY8wCAAD6AJh4nGPkcDhQD4b2ABlWBQY=",
+      "index": 0,
+      "decoded": {
+        "width": 2,
+        "height": 2,
+        "bpp": 4,
+        "frameID": 0,
+        "rgba": [17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255, 17, 41, 83, 255],
+        "header": [2, 2, 0, 0, 1, 0, 0]
+      },
+      "ninePatch": {
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "frameID": 0,
+        "rgba": [
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 17, 41, 83, 255, 17, 41, 83, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 41, 83, 255, 17, 41, 83, 255, 0, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        ],
+        "header": [0, 0, 0, 0, 0, 0, 0]
+      },
+      "nativeReceiptSha256": "2f3add26305e5b03a05472710b8ba156c72c56f2c2e04540b9707b27598a59fb",
+      "producerSha256": "107698f4391d0abef3f1376d60cc278c036b7e0e99806117027359e877aec6f9"
     }
   ]
 }
