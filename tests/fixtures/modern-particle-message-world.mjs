@@ -6,7 +6,11 @@ import { ParticleRandom } from '../../src/ppi/random.mjs';
 import { MotionLibrary } from '../../src/motion/library.mjs';
 import { kcsProgram } from '../helpers.mjs';
 
-export async function modernParticleMessageWorld(profile, files = {}, { initialize = true } = {}) {
+export async function modernParticleMessageWorld(
+  profile,
+  files = {},
+  { initialize = true, sceneLanguages = [] } = {},
+) {
   const game = new GameFiles(
     new Map(
       Object.entries({
@@ -24,6 +28,7 @@ export async function modernParticleMessageWorld(profile, files = {}, { initiali
       images: {},
       host: {},
       configuration: new NativeConfiguration({ profile }),
+      sceneLanguages,
       motionLibrary: new MotionLibrary(game, { profile, random }),
       storage: { read: async () => null, write: async () => true },
       prepareSceneWorkers: false,

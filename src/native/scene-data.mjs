@@ -117,12 +117,18 @@ export class NativeSceneReader {
     return true;
   }
 
-  loadTranslations(bytes) {
+  loadTranslations(bytes, behavior) {
     this.translations = null;
     if (!bytes) return false;
     const translations = readTranslation(bytes);
-    if (Object.keys(translations).some((name) => !this.languages.includes(name))) return false;
-    this.translations = translations;
+    if (behavior?.translationUnknownPrefixes === 'ignore')
+      this.translations = Object.fromEntries(
+        Object.entries(translations).filter(([name]) => this.languages.includes(name)),
+      );
+    else {
+      if (Object.keys(translations).some((name) => !this.languages.includes(name))) return false;
+      this.translations = translations;
+    }
     return true;
   }
 
@@ -362,7 +368,7 @@ export class NativeSceneData {
     this.reader = new NativeSceneReader(languages);
     this.history = new NativeSceneHistory();
   }
-  async load(name, read, diagnostic, loadTranslations = true) {
+  async load(name, read, diagnostic, behavior) {
     const bytes = await read(name, 'scene');
     if (!bytes) return false;
     let success = false;
@@ -372,12 +378,12 @@ export class NativeSceneData {
       diagnostic?.({ resource: name, error: error.message });
     }
     this.reader.translations = null;
-    if (!loadTranslations) return success;
+    if (behavior?.translations === false) return success;
     const translationName = `${stripExtension(name)}.cstl`,
       translation = await read(translationName, 'scene');
     if (translation) {
       try {
-        this.reader.loadTranslations(translation);
+        this.reader.loadTranslations(translation, behavior);
       } catch (error) {
         diagnostic?.({ resource: translationName, error: error.message });
       }
@@ -543,13 +549,11 @@ export function nativeSceneData(id, args, machine, services = {}) {
     services.world?.m2?.scenePreparation?.discard();
     imagePreparation?.discard();
     const filename = services.format(args[1], machine);
-    return data
-      .load(filename, services.read, services.diagnostic, behavior?.translations !== false)
-      .then((value) => {
-        if (value) imagePreparation?.loaded(data);
-        voicePreparation?.loaded(data, filename, value);
-        return word(Number(value));
-      });
+    return data.load(filename, services.read, services.diagnostic, behavior).then((value) => {
+      if (value) imagePreparation?.loaded(data);
+      voicePreparation?.loaded(data, filename, value);
+      return word(Number(value));
+    });
   }
   if (id === 0x146) return word(reader.type(args[1], args[2], behavior));
   if ([0x147, 0x409, 0x40d, 0x40e].includes(id)) {

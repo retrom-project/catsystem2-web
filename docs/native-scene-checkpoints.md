@@ -14,7 +14,7 @@ types without those marker writes. The shared reader uses the build policy
 at these consumption points; the earlier builds retain their existing type
 policy. Only74 has the newly proved message-count side effects enabled.
 The74 reader has no translation tail and does not request CSTL input. The76
-localization methods and configured language prefixes remain a separate group.
+localization methods and configured language prefixes have separate own-build coverage below.
 
 The modern reader fixture runs actual Main323 owners and factory-created
 Script callbacks through mounted CST/zlib loading, CP932 byte copies, count
@@ -171,3 +171,22 @@ filename used by subsequent refresh checks. `.76` retains its no-marker Type
 behavior. The cursor policy is explicit for `.74`; it does not infer a new
 legacy-build policy. All Main frames and defined row/path/block/valid/body and
 filename fields are compared; no large native slot allocation is performed.
+
+The `.76` localized wrappers have a full own XML language-vector/reader-factory
+bridge. The native Settings member at `+e0cc` contains 56-byte language records;
+Main323 and Script initialization register the actual prefixes with their reader.
+Main1033/1035/1037/1038 comparisons cover raw CP932 versus UTF-8, speakers,
+first-message segment joining, later-message empty output, missing-prefix
+fallback, command text, mapped misses and old-buffer length behavior. A CSTL may
+contain a subset of registered languages, no languages, or additional languages.
+The native loader binds only registered prefixes: an additional unregistered
+prefix does not invalidate matching translations and cannot itself be queried.
+The `.76` policy now preserves that behavior instead of rejecting the entire
+sidecar. No `.74` or legacy translation behavior is inferred from this result.
+
+`NativeSceneData.load` receives the current Scene behavior object as its fourth
+argument; its Scene and Cursor callers use the same translation policy without
+new persistent fields. Three-argument low-level readers keep their explicit
+model defaults. The localized fixture passes the same own-proved language list
+to the ordinary World constructor and replays 41 complete native Main frames,
+with five independent cold restores including extra-language and empty tables.

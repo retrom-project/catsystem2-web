@@ -67,9 +67,8 @@ export class NativeHistoryCursor {
     if (fold(basename(row.reader.filename)) === fold(entry.scene)) return true;
     const data = new NativeSceneData();
     data.reader = row.reader;
-    const translations =
-      !services.profile || nativeABI(services.profile).scene?.translations !== false;
-    return data.load(entry.scene, services.read, services.diagnostic, translations);
+    const behavior = services.profile ? nativeABI(services.profile).scene : undefined;
+    return data.load(entry.scene, services.read, services.diagnostic, behavior);
   }
   async text(row, services, message, speaker) {
     if (!(await this.refresh(row, services))) return 0;
