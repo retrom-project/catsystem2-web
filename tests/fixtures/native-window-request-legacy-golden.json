@@ -1,0 +1,457 @@
+{
+  "scope": "Own GCALL PostMessageA capture; normal existing owned-window success projection. HWND0 and PostMessage0 stay capture-only; no OS operation.",
+  "versions": [
+    {
+      "version": "23",
+      "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "originalSha256": "4973cb3c84aa2161ade7b71190031325d40f0dc6859b03bb2f5d038f4525e12b",
+      "normal": [
+        {
+          "rawId": 845,
+          "sharedSemanticId": 845,
+          "args": [],
+          "post": {
+            "owner": 2568028195,
+            "message": 1129,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 845,
+          "sharedSemanticId": 845,
+          "args": [3735928559],
+          "post": {
+            "owner": 2568028195,
+            "message": 1129,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 845,
+          "sharedSemanticId": 845,
+          "args": [3735928559, 0, 4294967295],
+          "post": {
+            "owner": 2568028195,
+            "message": 1129,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 846,
+          "sharedSemanticId": 846,
+          "args": [],
+          "post": {
+            "owner": 2568028195,
+            "message": 1130,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 846,
+          "sharedSemanticId": 846,
+          "args": [3735928559],
+          "post": {
+            "owner": 2568028195,
+            "message": 1130,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 846,
+          "sharedSemanticId": 846,
+          "args": [3735928559, 0, 4294967295],
+          "post": {
+            "owner": 2568028195,
+            "message": 1130,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 847,
+          "sharedSemanticId": 847,
+          "args": [],
+          "post": {
+            "owner": 2568028195,
+            "message": 1131,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 847,
+          "sharedSemanticId": 847,
+          "args": [3735928559],
+          "post": {
+            "owner": 2568028195,
+            "message": 1131,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 847,
+          "sharedSemanticId": 847,
+          "args": [3735928559, 0, 4294967295],
+          "post": {
+            "owner": 2568028195,
+            "message": 1131,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        }
+      ]
+    },
+    {
+      "version": "63",
+      "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "originalSha256": "101de9855c01e4fc003b35dec77560f3630083bb26620cc6c35c9a3e6424740d",
+      "normal": [
+        {
+          "rawId": 845,
+          "sharedSemanticId": 845,
+          "args": [],
+          "post": {
+            "owner": 2568028195,
+            "message": 1129,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 845,
+          "sharedSemanticId": 845,
+          "args": [3735928559],
+          "post": {
+            "owner": 2568028195,
+            "message": 1129,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 845,
+          "sharedSemanticId": 845,
+          "args": [3735928559, 0, 4294967295],
+          "post": {
+            "owner": 2568028195,
+            "message": 1129,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 846,
+          "sharedSemanticId": 846,
+          "args": [],
+          "post": {
+            "owner": 2568028195,
+            "message": 1130,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 846,
+          "sharedSemanticId": 846,
+          "args": [3735928559],
+          "post": {
+            "owner": 2568028195,
+            "message": 1130,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 846,
+          "sharedSemanticId": 846,
+          "args": [3735928559, 0, 4294967295],
+          "post": {
+            "owner": 2568028195,
+            "message": 1130,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 847,
+          "sharedSemanticId": 847,
+          "args": [],
+          "post": {
+            "owner": 2568028195,
+            "message": 1131,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 847,
+          "sharedSemanticId": 847,
+          "args": [3735928559],
+          "post": {
+            "owner": 2568028195,
+            "message": 1131,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 847,
+          "sharedSemanticId": 847,
+          "args": [3735928559, 0, 4294967295],
+          "post": {
+            "owner": 2568028195,
+            "message": 1131,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        }
+      ]
+    },
+    {
+      "version": "67",
+      "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "originalSha256": "aece97c3b6db7da751e27cf4148751cac8480c51476f6a8360f00317c73c2641",
+      "normal": [
+        {
+          "rawId": 845,
+          "sharedSemanticId": 845,
+          "args": [],
+          "post": {
+            "owner": 2568028195,
+            "message": 1129,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 845,
+          "sharedSemanticId": 845,
+          "args": [3735928559],
+          "post": {
+            "owner": 2568028195,
+            "message": 1129,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 845,
+          "sharedSemanticId": 845,
+          "args": [3735928559, 0, 4294967295],
+          "post": {
+            "owner": 2568028195,
+            "message": 1129,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 846,
+          "sharedSemanticId": 846,
+          "args": [],
+          "post": {
+            "owner": 2568028195,
+            "message": 1130,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 846,
+          "sharedSemanticId": 846,
+          "args": [3735928559],
+          "post": {
+            "owner": 2568028195,
+            "message": 1130,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 846,
+          "sharedSemanticId": 846,
+          "args": [3735928559, 0, 4294967295],
+          "post": {
+            "owner": 2568028195,
+            "message": 1130,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 847,
+          "sharedSemanticId": 847,
+          "args": [],
+          "post": {
+            "owner": 2568028195,
+            "message": 1131,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 847,
+          "sharedSemanticId": 847,
+          "args": [3735928559],
+          "post": {
+            "owner": 2568028195,
+            "message": 1131,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        },
+        {
+          "rawId": 847,
+          "sharedSemanticId": 847,
+          "args": [3735928559, 0, 4294967295],
+          "post": {
+            "owner": 2568028195,
+            "message": 1131,
+            "wParam": 0,
+            "lParam": 0
+          },
+          "control": 2,
+          "result": null
+        }
+      ]
+    }
+  ],
+  "callback63": [
+    {
+      "entry": "0x405700",
+      "message": 1129,
+      "input": [0, 0],
+      "postResult": 1,
+      "reply": 0,
+      "post": {
+        "owner": 2568028195,
+        "message": 273,
+        "wParam": 40012,
+        "lParam": 0
+      }
+    },
+    {
+      "entry": "0x405700",
+      "message": 1129,
+      "input": [3735928559, 4294967295],
+      "postResult": 1,
+      "reply": 0,
+      "post": {
+        "owner": 2568028195,
+        "message": 273,
+        "wParam": 40012,
+        "lParam": 0
+      }
+    },
+    {
+      "entry": "0x405700",
+      "message": 1130,
+      "input": [0, 0],
+      "postResult": 1,
+      "reply": 0,
+      "post": {
+        "owner": 2568028195,
+        "message": 273,
+        "wParam": 40021,
+        "lParam": 0
+      }
+    },
+    {
+      "entry": "0x405700",
+      "message": 1130,
+      "input": [3735928559, 4294967295],
+      "postResult": 1,
+      "reply": 0,
+      "post": {
+        "owner": 2568028195,
+        "message": 273,
+        "wParam": 40021,
+        "lParam": 0
+      }
+    },
+    {
+      "entry": "0x405700",
+      "message": 1131,
+      "input": [0, 0],
+      "postResult": 1,
+      "reply": 0,
+      "post": {
+        "owner": 2568028195,
+        "message": 273,
+        "wParam": 40002,
+        "lParam": 0
+      }
+    },
+    {
+      "entry": "0x405700",
+      "message": 1131,
+      "input": [3735928559, 4294967295],
+      "postResult": 1,
+      "reply": 0,
+      "post": {
+        "owner": 2568028195,
+        "message": 273,
+        "wParam": 40002,
+        "lParam": 0
+      }
+    }
+  ]
+}

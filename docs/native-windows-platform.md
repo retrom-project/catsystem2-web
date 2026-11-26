@@ -245,3 +245,13 @@ remain explicit errors. Controlled native MessageBox capture proves the
 wrapper parameters and return behavior; it does not open an operating-system
 dialog. The legacy host golden and shared message-box tests exercise embedded
 NUL, CP932 text, fixed-frame arguments, waiting and cold restore.
+
+Raw/shared Main845–847 in these three legacy builds enqueue display toggle,
+minimize and close requests through messages 0x469–0x46b. They ignore all
+argument words and preserve the result. The .63 application callback maps them
+to WM_COMMAND 40012, 40021 and 40002 before the existing menu/window handling
+runs. Closing retains the preparation notification, confirmation, hide and
+Script shutdown order. A queued request survives cold restore without running
+the host action during restore. The browser host owns the actual display and
+minimize capability; native NULL HWND and failed PostMessage observations are
+retained as controlled captures rather than simulated browser outcomes.

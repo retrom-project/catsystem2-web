@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { KCSMachine, readKCS } from '../src/kcs.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { CatSystem2 } from '../web/transitional-entry.mjs';
@@ -10,7 +12,11 @@ import { NativeWorld as OrdinaryNativeWorld } from '../src/native/world.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { kcsProgram, memoryGame } from './helpers.mjs';
-async function fixture(profile = 'sdk-4.01-engine-2.6.1.74', World = NativeWorld) {
+async function fixture(
+  profile = 'sdk-4.01-engine-2.6.1.74',
+  World = NativeWorld,
+  initialize = true,
+) {
   const game = memoryGame({ 'main.kcs': kcsProgram([[37, 1024], [43, 0x47, 4], [59]]) }),
     random = new ParticleRandom(),
     configuration = new NativeConfiguration({ profile }),
@@ -35,7 +41,7 @@ async function fixture(profile = 'sdk-4.01-engine-2.6.1.74', World = NativeWorld
       motionLibrary: new MotionLibrary(game, { profile, random }),
       storage: { read: async () => null, write: async () => true },
     });
-  await world.initialize('main.kcs');
+  if (initialize) await world.initialize('main.kcs');
   world.window.sendEvent = async (event, w = 0, l = 0, options) => {
     trace.push(options ? ['event', event, w, l, options] : ['event', event, w, l]);
   };
@@ -43,12 +49,15 @@ async function fixture(profile = 'sdk-4.01-engine-2.6.1.74', World = NativeWorld
 }
 for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
   'sdk-4.01-engine-2.6.1.74',
   'nekopara-vol3-engine-2.6.1.76',
 ])
   test(`${profile} Script window requests post before toggling display, minimizing or asking to close`, async () => {
     const legacy = profile.startsWith('grisaia-'),
-      { world, trace } = await fixture(profile, legacy ? OrdinaryNativeWorld : NativeWorld);
+      ordinary = /\.(23|63|67)$/.test(profile),
+      { world, trace } = await fixture(profile, ordinary ? OrdinaryNativeWorld : NativeWorld);
     try {
       const [task] = world.runtime.scheduler.tasks.values(),
         request = (id) =>
@@ -290,4 +299,109 @@ test('host exit before its first window preserves native message box cancellatio
   assert.equal(host.windowService, undefined);
   host.cancelHostModal();
   assert.equal(await host.nativeWindowAction({ type: 'script-message-box', buttons: 4 }, {}), 7);
+});
+
+const requestGolden = JSON.parse(
+  await readFile(new URL('./fixtures/native-window-request-legacy-golden.json', import.meta.url)),
+);
+for (const version of requestGolden.versions) {
+  const profile = {
+    23: 'grisaia-jp-engine-2.6.1.23',
+    63: 'rebellions-jp-engine-2.6.1.63',
+    67: 'bokutomo-engine-2.6.1.67',
+  }[version.version];
+  test(`${profile} complete Script window GCALL requests match owning captures before queue delivery`, async () => {
+    const { world, trace } = await fixture(profile, OrdinaryNativeWorld);
+    try {
+      for (const row of version.normal) {
+        const task = world.main;
+        task.status = 'ready';
+        task.io = null;
+        const m = (task.machine = new KCSMachine(
+          await readKCS(kcsProgram([[43, row.rawId, row.args.length * 4], [59]])),
+          { native: (id, args, vm) => world.runtime.scheduler.native(task, id, args, vm) },
+        ));
+        m.floor = m.fp = 3584;
+        m.sp = 3588 + 4 * row.args.length;
+        m.store(3584, 0x93deff25);
+        row.args.forEach((n, i) => m.store(3588 + 4 * i, n));
+        trace.length = 0;
+        world.windowMessages.length = 0;
+        assert.equal((await world.runtime.scheduler.execute(task)).status, 'halted');
+        assert.equal(m.sp, 3588);
+        assert.equal(m.load(3584), 0x93deff25);
+        const { owner, ...packet } = row.post;
+        assert.ok(owner);
+        assert.deepEqual(world.windowMessages, [packet]);
+        assert.deepEqual(trace, []);
+      }
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });
+}
+test('2.6.1.63 owning application callback projections post the same menu command without immediate action', async () => {
+  const { world, trace } = await fixture('rebellions-jp-engine-2.6.1.63', OrdinaryNativeWorld);
+  try {
+    for (const row of requestGolden.callback63) {
+      world.windowMessages.length = 0;
+      trace.length = 0;
+      assert.equal(
+        await world.window.message({
+          message: row.message,
+          wParam: row.input[0],
+          lParam: row.input[1],
+        }),
+        true,
+      );
+      const { owner, ...packet } = row.post;
+      assert.ok(owner);
+      assert.deepEqual(world.windowMessages, [packet]);
+      assert.deepEqual(trace, []);
+    }
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+test('2.6.1.63 queued window request survives cold restore and accepted close retains preparation order', async () => {
+  const first = await fixture('rebellions-jp-engine-2.6.1.63', OrdinaryNativeWorld),
+    fresh = await fixture('rebellions-jp-engine-2.6.1.63', OrdinaryNativeWorld, false);
+  try {
+    const t = first.world.main;
+    assert.deepEqual(first.world.runtime.native('main', 846, [], t.machine, t), { control: 2 });
+    const dto = structuredClone(first.world.snapshot());
+    await fresh.world.restore(structuredClone(dto));
+    assert.deepEqual(fresh.world.snapshot(), dto);
+    assert.deepEqual(fresh.trace, []);
+    await fresh.world.processWindowMessages();
+    assert.deepEqual(fresh.trace, ['minimize']);
+    assert.deepEqual(fresh.world.windowMessages, []);
+    const task = fresh.world.main;
+    let accept = false;
+    fresh.host.nativeWindowAction = async ({ type }) => {
+      fresh.trace.push(type);
+      return type === 'confirm-close' ? accept : undefined;
+    };
+    fresh.trace.length = 0;
+    const request = () => fresh.world.runtime.native('main', 847, [], task.machine, task);
+    request();
+    await fresh.world.processWindowMessages();
+    assert.deepEqual(fresh.trace, [['event', 158, 0, 1], 'confirm-close']);
+    assert.equal(fresh.world.quitRequested, undefined);
+    fresh.trace.length = 0;
+    accept = true;
+    request();
+    await fresh.world.processWindowMessages();
+    assert.deepEqual(fresh.trace, [
+      ['event', 158, 0, 1],
+      'confirm-close',
+      'hide',
+      ['event', 162, 0, 0, { taskType: 12 }],
+      'close',
+    ]);
+    assert.equal(fresh.world.quitRequested, true);
+  } finally {
+    await first.world.close({ flushFiles: false });
+    await fresh.world.close({ flushFiles: false });
+  }
 });
