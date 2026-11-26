@@ -42,6 +42,9 @@ const addKnownRange = (ranges, first, end) => {
   result.push([first, end]);
   return result;
 };
+const knownWords = (ranges, visit) => {
+  for (const [lo, hi] of ranges) for (let i = Math.ceil(lo / 4); i * 4 + 4 <= hi; i++) visit(i);
+};
 
 // These bytes and their known ranges have one owner. Missing allocations and
 // allocated but unwritten bytes are different states; neither invents zeros.
@@ -94,6 +97,13 @@ export class ParticleRefBuffers {
           snapshot ? snapshot.known[request.name].map((r) => r.slice()) : [],
         );
       }
+      if (snapshot && auxiliary) {
+        const indices = this.entries.get('sortIndices').value,
+          base = this.entries.get('depthPairs').pointer + 4;
+        knownWords(this.known.get('sortIndices'), (i) => {
+          indices[i] += base;
+        });
+      }
     } catch (error) {
       this.close();
       throw error;
@@ -136,6 +146,27 @@ export class ParticleRefBuffers {
         previous = range[1];
       }
     }
+    const auxiliary = requests.some(({ name }) => name === 'sortIndices');
+    if (
+      auxiliary
+        ? !state.references ||
+          Object.keys(state.references).join(',') !== 'sortIndices' ||
+          state.references.sortIndices !== 'depthPairs'
+        : state.references !== null
+    )
+      throw new Error('Particle RefBuffer checkpoint requires its pointer references');
+    if (auxiliary && state.known.sortIndices.some(([lo, hi]) => lo % 4 || hi % 4))
+      throw new Error('Particle RefBuffer checkpoint has a partial sorting reference');
+    if (auxiliary)
+      knownWords(state.known.sortIndices, (i) => {
+        const offset = state.fields.sortIndices[i];
+        if (
+          !state.fields.depthPairs ||
+          offset % 8 ||
+          offset + 8 > state.fields.depthPairs.byteLength
+        )
+          throw new Error('Particle RefBuffer checkpoint has an invalid sorting reference');
+      });
   }
   get(name) {
     if (this.closed) throw new Error('Particle RefBuffers are released');
@@ -168,6 +199,7 @@ export class ParticleRefBuffers {
   }
   mark(name, offset, size) {
     this.span(name, offset, size);
+    if (this.known.get(name).some(([lo, hi]) => lo <= offset && hi >= offset + size)) return;
     this.known.set(name, addKnownRange(this.known.get(name), offset, offset + size));
   }
   copy(destination, source) {
@@ -187,14 +219,30 @@ export class ParticleRefBuffers {
   }
   snapshot() {
     if (this.closed) throw new Error('Particle RefBuffers are released');
-    return {
+    const state = {
       fields: Object.fromEntries(
         [...this.entries].map(([name, { value }]) => [name, value?.slice() ?? null]),
       ),
       known: Object.fromEntries(
         [...this.known].map(([name, ranges]) => [name, ranges.map((range) => range.slice())]),
       ),
+      references: this.entries.has('sortIndices') ? { sortIndices: 'depthPairs' } : null,
     };
+    if (state.references) {
+      const base = this.entries.get('depthPairs').pointer + 4;
+      knownWords(state.known.sortIndices, (i) => {
+        const offset = state.fields.sortIndices[i] - base;
+        if (
+          !state.fields.depthPairs ||
+          offset < 0 ||
+          offset % 8 ||
+          offset + 8 > state.fields.depthPairs.byteLength
+        )
+          throw new Error('Particle RefBuffer sorting reference has no live target');
+        state.fields.sortIndices[i] = offset;
+      });
+    }
+    return state;
   }
   close() {
     if (this.closed) return;

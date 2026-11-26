@@ -13,17 +13,20 @@ export class NativeParticleProjection {
       },
       shifts = options.zShifts ?? [];
     if (options.alpha === 0) return [];
-    return particleDepthOrder(particles, shifts).flatMap(({ index }, rank) => {
-      const particle = particles[index];
-      if (!particle.disp) return [];
-      const vertices = projectNativeParticle(
-        particle,
-        { ...normalized, zShift: shifts[rank] || 0 },
-        (angle) => [Math.fround(Math.cos(angle)), Math.fround(Math.sin(angle))],
-        24,
-      );
-      if (!vertices) throw new RangeError('Particle transform exceeds finite scalar matrix inputs');
-      return [{ index, vertices }];
-    });
+    return (options.particleOrder ?? particleDepthOrder(particles, shifts)).flatMap(
+      ({ index }, rank) => {
+        const particle = particles[index];
+        if (!particle.disp) return [];
+        const vertices = projectNativeParticle(
+          particle,
+          { ...normalized, zShift: shifts[rank] || 0 },
+          (angle) => [Math.fround(Math.cos(angle)), Math.fround(Math.sin(angle))],
+          24,
+        );
+        if (!vertices)
+          throw new RangeError('Particle transform exceeds finite scalar matrix inputs');
+        return [{ index, vertices }];
+      },
+    );
   }
 }

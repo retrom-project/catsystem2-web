@@ -20,6 +20,7 @@ import {
 } from './abi.mjs';
 import { particleNativeContract } from './contracts.mjs';
 import { ParticleRandom } from './random.mjs';
+import { sortParticleDepths } from './geometry.mjs';
 import { roundX87Single } from './x87.mjs';
 import {
   linearInterpolateSSEWords,
@@ -298,6 +299,70 @@ export class ParticleScriptInstance {
       throw new RangeError('PTCL particle index');
     this.requireBuffer('quads', index * 112, 112, true);
     return readPTCLQuad(this.quads, index * 112);
+  }
+  finishNativeTaskFrame() {
+    if (!this.refBuffers || !this.nativeTaskBuffers) return;
+    this.before = this.frame;
+    if (this.externalDraw || this.refBuffers.get('depthPairs') === null) return;
+    const owner = this.refBuffers,
+      pairs = owner.get('depthPairs'),
+      view = new DataView(pairs.buffer, pairs.byteOffset, pairs.byteLength),
+      order = [],
+      base = owner.entries.get('depthPairs').pointer + 4;
+    const sources = new Map();
+    const word = (name, at) => {
+      this.requireBuffer(name, at, 4, true);
+      if (!sources.has(name)) {
+        const bytes = this[name];
+        sources.set(name, new Uint32Array(bytes.buffer, bytes.byteOffset, bytes.byteLength / 4));
+      }
+      return sources.get(name)[at / 4];
+    };
+    for (let i = 0; i < this.count; i++) {
+      owner.span('depthPairs', i * 8 + 4, 4);
+      view.setUint32(i * 8 + 4, i, true);
+      owner.mark('depthPairs', i * 8 + 4, 4);
+      let depth = sseFloat32Arithmetic(
+        'add',
+        sseFloat32Arithmetic('add', word('positions', i * 16 + 8), word('bases', i * 16 + 8)),
+        word('quads', i * 112 + 8),
+      );
+      if (this.zShifts)
+        depth = sseFloat32Arithmetic(
+          'subtract',
+          depth,
+          sseFloat32Arithmetic('multiply', floatBits(this.zShifts[i]), floatBits(65000)),
+        );
+      owner.span('depthPairs', i * 8, 4);
+      view.setUint32(i * 8, depth, true);
+      owner.mark('depthPairs', i * 8, 4);
+      owner.span('sortIndices', i * 4, 4);
+      owner.get('sortIndices')[i] = base + i * 8;
+      owner.mark('sortIndices', i * 4, 4);
+      order.push({ index: i, depth: bitsFloat(depth) });
+    }
+    sortParticleDepths(order, 0, order.length - 1);
+    for (let i = 0; i < order.length; i++) owner.get('sortIndices')[i] = base + order[i].index * 8;
+  }
+  nativeDrawOrder() {
+    if (!this.refBuffers || !this.nativeTaskBuffers || this.externalDraw) return undefined;
+    const owner = this.refBuffers,
+      base = owner.entries.get('depthPairs').pointer + 4,
+      order = [];
+    let view;
+    for (let i = 0; i < this.count; i++) {
+      owner.span('sortIndices', i * 4, 4, true);
+      const offset = owner.get('sortIndices')[i] - base;
+      if (offset < 0 || offset % 8)
+        throw new Error('Particle sorting reference has no live depth owner');
+      const pairs = owner.span('depthPairs', offset + 4, 4, true);
+      view ??= new DataView(pairs.buffer, pairs.byteOffset, pairs.byteLength);
+      const index = view.getUint32(offset + 4, true);
+      if (index >= this.count)
+        throw new Error('Particle sorting reference exceeds its particle count');
+      order.push({ index });
+    }
+    return order;
   }
   currentAttachment() {
     return this.attachPlane === -1 ? null : this.attachment(this.attachPlane);

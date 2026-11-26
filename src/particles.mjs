@@ -559,6 +559,7 @@ export class Particles {
         bank.clockLast = frame;
       }
       bank.instance.update(bank.clockValue);
+      if (bank.family === 'script') bank.instance.finishNativeTaskFrame();
       if (!bank.instance.active && bank.autoRelease) bank.retireAt = frame + 1;
     }
     if (bank.started && !bank.instance.active && bank.autoRelease && bank.retireAt == null)
@@ -567,16 +568,23 @@ export class Particles {
   }
   async drawBatch(bank) {
     const projection = this.stage.nativeGraphics?.projection();
+    const alpha = bank.alpha >= 255 ? 256 : bank.alpha,
+      particleOrder =
+        alpha !== 0 && bank.family === 'script' ? bank.instance.nativeDrawOrder() : undefined;
     const particles =
-        bank.family === 'plugin' ? ppiParticles(bank.instance) : scriptParticles(bank.instance),
-      alpha = bank.alpha >= 255 ? 256 : bank.alpha;
+      alpha === 0
+        ? []
+        : bank.family === 'plugin'
+          ? ppiParticles(bank.instance)
+          : scriptParticles(bank.instance, particleOrder);
     return {
       geometry: await this.projectGeometry(particles, {
         width: projection?.width ?? this.stage.width,
         height: projection?.height ?? this.stage.height,
-        priority: bank.nativeAtlas?.priority ?? bank.priority,
+        priority: bank.nativeAtlas ? bank.nativeAtlas.priority : bank.priority,
         near: bank.nativeAtlas?.near,
         alpha,
+        particleOrder,
         zShifts: bank.instance.zShifts,
         screenMatrix: projection?.screenMatrix ?? bank.screenMatrix,
         screenShift: projection?.screenShift ?? bank.screenShift,
@@ -593,7 +601,7 @@ export class Particles {
   }
   async drawBank(key, gpu) {
     const bank = this.require(key);
-    if (!bank.started || !bank.instance.active) return;
+    if (!bank.started || !bank.instance.active || bank.alpha === 0) return;
     const batch = await this.drawBatch(bank);
     gpu.drawGeometry(batch.geometry, batch.image, batch.options);
   }

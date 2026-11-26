@@ -81,10 +81,31 @@ The JS checkpoint stores each nullable buffer and its known ranges once. Cold
 restore rebinds those saved owners without retrying their allocation outcomes;
 release frees every successful owner. The original large-count request captures
 and current controlled-failure KCS tests allocate no large particle arrays.
-Successful large resident capacity, the two auxiliary sorting buffers and their
-idle/draw consumption remain separate validation scope; removing the artificial
-count check alone does not complete that resource lifecycle group. Older builds
-retain their existing allocation behavior until their own differences are proved.
+The two auxiliary buffers belong to task idle and draw. After running the KCS
+particle loop, idle stores its current frame as the previous frame, writes depth
+and index pairs, and sorts pointers to those pairs. Draw consumes that stored
+order. An absent depth buffer skips sorting after KCS; an absent index buffer
+is diagnosed at its first write, preserving the completed KCS and first pair.
+External draw skips the auxiliary buffers. Hidden particles read visibility
+before vectors or quads; alpha zero returns before sorting or data reads in draw.
+Idle still sorts while alpha is zero.
+
+Checkpoints store known sorting references as offsets into the sole depth-pair
+owner. Cold restore rebinds those references to the restored allocation. Unknown
+pointer bytes stay unknown and are never interpreted as saved addresses. The
+[idle golden](../tests/fixtures/modern-particle-ref-buffer-idle-golden.json)
+links actual task idle, complete KCS locals, initialized buffers, small partial
+allocation failures, draw commands and the live view dimensions from each PE.
+The native pointer-store failures are protected-consumer evidence; writable low
+page prototypes do not establish a successful native result. Request order is
+independent of owner-field address order: bases allocate before positions even
+though the positions field has the lower address.
+
+Successful large resident capacity and additional overflow consumers remain
+separate validation scope. Older builds retain their existing allocation
+behavior until their own differences are proved. Native D3D SetTexture keeps
+one device-bound texture reference after task release; the OS provider's final
+cleanup is recorded separately from native task destruction.
 
 Attachment assignment accepts a missing group. Resolution occurs when its KCS
 query needs the current graph; deleted or absent groups then produce the proved

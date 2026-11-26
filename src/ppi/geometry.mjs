@@ -70,8 +70,14 @@ export function projectParticle(
   });
 }
 
-export function scriptParticles(instance) {
-  return Array.from({ length: instance.count }, (_, i) => {
+export function scriptParticles(instance, order) {
+  const read = (i) => {
+    if (order) {
+      instance.requireBuffer('visibility', i * 4, 4, true);
+      if (!instance.visibility[i]) return { disp: 0 };
+      for (const name of ['scales', 'rotations', 'bases'])
+        instance.requireBuffer(name, i * 16, 12, true);
+    }
     const vertices = instance.vertices(i);
     if (instance.partialBuffers) {
       for (const name of ['bases', 'positions', 'rotations', 'scales'])
@@ -86,7 +92,11 @@ export function scriptParticles(instance) {
       scale: [...instance.scales.subarray(i * 4, i * 4 + 3)],
       disp: instance.visibility[i],
     };
-  });
+  };
+  if (!order) return Array.from({ length: instance.count }, (_, i) => read(i));
+  const particles = new Array(instance.count);
+  for (const { index } of order) particles[index] = read(index);
+  return particles;
 }
 export function ppiParticles(instance) {
   const bytes = instance.records();
@@ -95,7 +105,7 @@ export function ppiParticles(instance) {
 
 // The original sort takes the middle entry as pivot and moves only strictly
 // lower depths to its left. Pivot swaps also determine equal-depth draw order.
-function sortParticleDepths(order, left, right) {
+export function sortParticleDepths(order, left, right) {
   while (left < right) {
     const middle = (left + right) >>> 1,
       pivot = order[middle];
@@ -152,7 +162,7 @@ export function particleDepthOrder(particles, shifts) {
 
 export function particleGeometry(particles, options) {
   const shifts = options.zShifts || [],
-    order = particleDepthOrder(particles, shifts);
+    order = options.particleOrder ?? particleDepthOrder(particles, shifts);
   // The final shift uses sorted rank. The depth sort uses the original particle index.
   return order.flatMap(({ index }, rank) =>
     particles[index].disp
