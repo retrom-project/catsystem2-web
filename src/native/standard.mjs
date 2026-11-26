@@ -261,6 +261,10 @@ export function nativeStandard(id, args, m, services = {}) {
     args = Array.from({ length: id === 1 ? 1 : 2 }, (_, i) =>
       i < args.length ? args[i] : m.nativeArgument(i),
     );
+  const datePolicy =
+    id === 11 && services.profile ? nativeABI(services.profile).calendar : undefined;
+  if (datePolicy?.localDateReadsFrame)
+    args = Array.from({ length: 7 }, (_, i) => (i < args.length ? args[i] : m.nativeArgument(i)));
   const calendar = nativeCalendar(id, args, services.profile);
   if (calendar !== undefined) return calendar;
   const requireArguments = (count) => {
@@ -325,7 +329,9 @@ export function nativeStandard(id, args, m, services = {}) {
         date.getHours(),
         date.getMinutes(),
         date.getSeconds(),
-      ].forEach((n, i) => m.store(args[i], n));
+      ].forEach((n, i) =>
+        m.store(args[i], datePolicy?.localDateUsesSystemTimeWords ? n & 0xffff : n),
+      );
       return done();
     }
     case 0x0d:

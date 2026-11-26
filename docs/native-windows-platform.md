@@ -228,3 +228,20 @@ loads the browser's saved preferences and recalculates the effective volume.
 A two-profile test distinguishes an unrelated unqualified XML file, the
 native defaults and live preferences, then restores both blocks in a fresh
 engine.
+
+## Legacy script message boxes
+
+Raw/shared Main445 in builds 2.6.1.23, .63 and .67 reads one live VM argument,
+formats its ANSI message and calls MessageBoxA with the engine window owner,
+caption `system error` and MB_OK flags. Zero declared width and ignored trailing
+words retain that argument read. Native API returns zero and one both finish
+with control 2 and leave the VM result untouched.
+
+The browser's `script-message-box` window action displays the formatted text
+and waits for acknowledgement before continuing KCS. A pending action prevents
+checkpoint creation; a completed cold restore does not reopen the dialog.
+Missing host support, an invalid host response or a rejected host callback
+remain explicit errors. Controlled native MessageBox capture proves the
+wrapper parameters and return behavior; it does not open an operating-system
+dialog. The legacy host golden and shared message-box tests exercise embedded
+NUL, CP932 text, fixed-frame arguments, waiting and cold restore.

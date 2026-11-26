@@ -104,7 +104,12 @@ for (const [profile, { handler }] of Object.entries(NATIVE_SCRIPT_MESSAGE_BOX)) 
   );
 }
 
-for (const profile of ['grisaia-jp-engine-2.6.1.23', ...Object.keys(NATIVE_SCRIPT_MESSAGE_BOX)]) {
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
+  ...Object.keys(NATIVE_SCRIPT_MESSAGE_BOX),
+]) {
   test(`ordinary Script MessageBox formats, waits and cold restores without original CPU in ${profile}`, async () => {
     const sentinel = 0x13579bdf,
       script = kcsProgram(

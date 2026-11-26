@@ -1304,7 +1304,11 @@ export default {
     sceneAnimation: null,
     extendedQueries: null,
   },
-  calendar: { weekdayAlgorithm: 'century-integer' },
+  calendar: {
+    weekdayAlgorithm: 'century-integer',
+    localDateReadsFrame: true,
+    localDateUsesSystemTimeWords: true,
+  },
   rectangles: { strictArity: true },
   fileIO: { rawModeAndBoundedBuffer: true },
   globalFile: {
@@ -1678,6 +1682,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [11], fields: { review: 'reviewed', resultWritten: false } },
         { ids: [444], fields: { review: 'reviewed', resultWritten: false } },
         { ids: [192, 193, 194, 195], fields: { review: 'reviewed', resultWritten: true } },
         { ids: [166, 167], fields: { review: 'reviewed' } },

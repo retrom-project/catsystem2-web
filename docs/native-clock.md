@@ -52,3 +52,17 @@ The platform representation follows the documented
 and [UTC FILETIME contract](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtimeasfiletime).
 The exact virtual frame step and saved UTC origin are browser host policy,
 separate from the original engine's frame scheduling semantics.
+
+For builds 2.6.1.23, .63 and .67, raw/shared Main11 reads seven destinations
+from the live argument frame, even when the declared argument width is zero.
+It writes year, month, weekday, day, hour, minute and second in that order.
+Each value passes through the original unsigned SYSTEMTIME WORD before its
+DWORD store. Output aliases therefore follow the original store order; a
+virtual year of 70000 becomes 4464. The World clock and browser timezone
+provide the local date, and cold restore retains its saved UTC origin without
+querying a new date. This projection does not change virtual frame scheduling.
+
+The legacy host golden tests cover seven local/shared outputs, output aliases,
+outputs overlapping arguments, extra words, zero declared width and five date
+epochs. They compare complete GCALLs from each owning PE with the production
+VM; the platform clock itself remains the browser host policy described above.
