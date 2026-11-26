@@ -1,0 +1,1814 @@
+{
+  "scope": "Own complete KCS wrappers and Top/Input construction/receiver. Modal Win32/thread/renderer IO are explicit external service boundaries. Native records compare initialized fields only; word10 and word15 are opaque.",
+  "versions": [
+    {
+      "version": "23",
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "executableSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "entries": [
+        {
+          "raw": 144,
+          "shared": 144,
+          "status": "unknown",
+          "address": 4747648
+        },
+        {
+          "raw": 145,
+          "shared": 145,
+          "status": "unknown",
+          "address": 4747840
+        },
+        {
+          "raw": 146,
+          "shared": 146,
+          "status": "unknown",
+          "address": 4747920
+        },
+        {
+          "raw": 147,
+          "shared": 147,
+          "status": "unknown",
+          "address": 4748016
+        },
+        {
+          "raw": 148,
+          "shared": 148,
+          "status": "unknown",
+          "address": 4748224
+        },
+        {
+          "raw": 149,
+          "shared": 149,
+          "status": "recovered",
+          "address": 4748320
+        },
+        {
+          "raw": 150,
+          "shared": 150,
+          "status": "recovered",
+          "address": 4748448
+        },
+        {
+          "raw": 151,
+          "shared": 151,
+          "status": "unknown",
+          "address": 4748560
+        },
+        {
+          "raw": 152,
+          "shared": 152,
+          "status": "unknown",
+          "address": 4748656
+        },
+        {
+          "raw": 153,
+          "shared": 153,
+          "status": "unknown",
+          "address": 4748752
+        },
+        {
+          "raw": 154,
+          "shared": 154,
+          "status": "unknown",
+          "address": 4748928
+        },
+        {
+          "raw": 285,
+          "shared": 285,
+          "status": "recovered",
+          "address": 4749024
+        },
+        {
+          "raw": 286,
+          "shared": 286,
+          "status": "recovered",
+          "address": 4749136
+        },
+        {
+          "raw": 395,
+          "shared": 395,
+          "status": "unknown",
+          "address": 4749216
+        },
+        {
+          "raw": 396,
+          "shared": 396,
+          "status": "unknown",
+          "address": 4749328
+        },
+        {
+          "raw": 401,
+          "shared": 401,
+          "status": "unknown",
+          "address": 4749424
+        },
+        {
+          "raw": 403,
+          "shared": 403,
+          "status": "recovered",
+          "address": 4749520
+        },
+        {
+          "raw": 404,
+          "shared": 404,
+          "status": "recovered",
+          "address": 4749616
+        }
+      ],
+      "groups": {
+        "register": [
+          {
+            "label": "register signed priority and mask",
+            "id": 144,
+            "args": [3, 4294967291, 256, 2147483655],
+            "control": 2,
+            "result": null,
+            "records": [[3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]]
+          },
+          {
+            "label": "duplicate caller registration",
+            "id": 144,
+            "args": [4660, 9, 272, 3],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 9, 3, 12, 14, 22, 24, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "set priority reorders first matching record",
+            "id": 146,
+            "args": [3, 4294967295],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 3, 12, 14, 22, 24, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "change bounds copied from live VM",
+            "id": 147,
+            "args": [3, 256],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 3, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "change mask to high bit",
+            "id": 148,
+            "args": [3, 2147483648],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "missing owner priority",
+            "id": 146,
+            "args": [2147483647, 10],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "missing owner bounds",
+            "id": 147,
+            "args": [2147483647, 272],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "missing owner mask",
+            "id": 148,
+            "args": [2147483647, 15],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "clear first bounds using NULL",
+            "id": 147,
+            "args": [3, 0],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 0, 0, 0, 0, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "query initial text status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 2,
+            "records": [
+              [3, 4294967295, 2147483648, 0, 0, 0, 0, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "set autohide",
+            "id": 154,
+            "args": [3, 121],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 0, 0, 0, 0, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "query cursor visibility",
+            "id": 396,
+            "args": [],
+            "control": 1,
+            "result": 1,
+            "records": [
+              [3, 4294967295, 2147483648, 0, 0, 0, 0, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "remove one duplicate",
+            "id": 145,
+            "args": [],
+            "control": 2,
+            "result": null,
+            "records": [[3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]]
+          },
+          {
+            "label": "remove remaining duplicate",
+            "id": 145,
+            "args": [],
+            "control": 2,
+            "result": null,
+            "records": []
+          },
+          {
+            "label": "unregister missing owner",
+            "id": 145,
+            "args": [],
+            "control": 2,
+            "result": null,
+            "records": []
+          }
+        ],
+        "text": [
+          {
+            "label": "initial status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 2,
+            "status": 2,
+            "text": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "request CP932 text",
+            "id": 151,
+            "args": [256],
+            "control": 2,
+            "result": null,
+            "status": 0,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "pending status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 0,
+            "status": 0,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "pending buffer retains initial bytes",
+            "id": 153,
+            "args": [512],
+            "control": 2,
+            "result": null,
+            "status": 0,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "cancel status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 2,
+            "status": 2,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "cancel preserves CP932 initial bytes",
+            "id": 153,
+            "args": [512],
+            "control": 2,
+            "result": null,
+            "status": 2,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "second request",
+            "id": 151,
+            "args": [256],
+            "control": 2,
+            "result": null,
+            "status": 0,
+            "text": "420082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "confirm status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 1,
+            "status": 1,
+            "text": "8365835883675c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "confirmed CP932 bytes and NUL only",
+            "id": 153,
+            "args": [512],
+            "control": 2,
+            "result": null,
+            "status": 1,
+            "text": "8365835883675c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "8365835883675c00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "cursor": [
+          {
+            "label": "CP932 image name and unsigned coordinate halves",
+            "id": 395,
+            "args": [256, 4294934529, 305419896],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "image",
+                "bytes": "834a815b835c838b00000000000000000000000000000000",
+                "x": 32769,
+                "y": 22136
+              }
+            ],
+            "input": [1, 1, 0, 0, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "renderer high-bit visibility word",
+            "id": 401,
+            "args": [2147483648],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 2147483648
+              }
+            ],
+            "input": [2147483648, 1, 0, 0, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "visibility query is independent Input visible field",
+            "id": 396,
+            "args": [],
+            "control": 1,
+            "result": 1,
+            "services": [],
+            "input": [2147483648, 1, 0, 0, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "autohide preserves native unsigned division",
+            "id": 154,
+            "args": [2147483648, 4294967295],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 1
+              }
+            ],
+            "input": [2147483648, 1, 2147483648, 71582787, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "disabled renderer",
+            "id": 401,
+            "args": [0],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 0
+              }
+            ],
+            "input": [0, 1, 2147483648, 71582787, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "autohide does not show disabled renderer",
+            "id": 154,
+            "args": [1, 120],
+            "control": 2,
+            "result": null,
+            "services": [],
+            "input": [0, 1, 1, 120, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "reenable renderer",
+            "id": 401,
+            "args": [7],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 7
+              }
+            ],
+            "input": [7, 1, 1, 120, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "autohide notifies synchronously",
+            "id": 154,
+            "args": [3, 121],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 1
+              }
+            ],
+            "input": [7, 1, 3, 121, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "set last key raw gate",
+            "id": 403,
+            "args": [63, 2147483648],
+            "control": 2,
+            "result": null,
+            "services": [],
+            "input": [7, 1, 3, 121, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 2147483648
+            ]
+          },
+          {
+            "label": "reset every key gate",
+            "id": 404,
+            "args": [],
+            "control": 2,
+            "result": null,
+            "services": [],
+            "input": [7, 1, 3, 121, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1
+            ]
+          }
+        ]
+      },
+      "lifecycle": {
+        "created": {
+          "id": 66,
+          "args": [11, 0, 256],
+          "control": 1,
+          "result": 4
+        },
+        "release": {
+          "id": 67,
+          "args": [4],
+          "control": 2,
+          "result": null
+        },
+        "secondSize": 4308,
+        "stillRetained": true,
+        "retained": false,
+        "releasedAllocations": 7
+      },
+      "frames": [
+        {
+          "frame": 1,
+          "key": 3,
+          "slot": 0,
+          "source": 1,
+          "result": 1,
+          "events": [[1, 4, 3, 1, 0]]
+        },
+        {
+          "frame": 2,
+          "key": 3,
+          "slot": 0,
+          "source": 1,
+          "result": 1,
+          "events": []
+        },
+        {
+          "frame": 3,
+          "key": 3,
+          "slot": 0,
+          "source": 0,
+          "result": 1,
+          "events": [[1, 4, 3, 0, 0]]
+        },
+        {
+          "frame": 4,
+          "key": 63,
+          "slot": 3,
+          "source": 16,
+          "result": 1,
+          "events": [[1, 4, 63, 1, 0]]
+        },
+        {
+          "frame": 5,
+          "key": 63,
+          "slot": 3,
+          "source": 0,
+          "result": 1,
+          "events": [[1, 4, 63, 0, 0]]
+        },
+        {
+          "frame": 6,
+          "events": [],
+          "afterUnregister": true
+        }
+      ]
+    },
+    {
+      "version": "63",
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "executableSHA256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "entries": [
+        {
+          "raw": 144,
+          "shared": 144,
+          "status": "unknown",
+          "address": 4830112
+        },
+        {
+          "raw": 145,
+          "shared": 145,
+          "status": "unknown",
+          "address": 4828208
+        },
+        {
+          "raw": 146,
+          "shared": 146,
+          "status": "unknown",
+          "address": 4828288
+        },
+        {
+          "raw": 147,
+          "shared": 147,
+          "status": "unknown",
+          "address": 4828384
+        },
+        {
+          "raw": 148,
+          "shared": 148,
+          "status": "unknown",
+          "address": 4828576
+        },
+        {
+          "raw": 149,
+          "shared": 149,
+          "status": "recovered",
+          "address": 4828672
+        },
+        {
+          "raw": 150,
+          "shared": 150,
+          "status": "recovered",
+          "address": 4828784
+        },
+        {
+          "raw": 151,
+          "shared": 151,
+          "status": "unknown",
+          "address": 4828896
+        },
+        {
+          "raw": 152,
+          "shared": 152,
+          "status": "unknown",
+          "address": 4828992
+        },
+        {
+          "raw": 153,
+          "shared": 153,
+          "status": "unknown",
+          "address": 4829088
+        },
+        {
+          "raw": 154,
+          "shared": 154,
+          "status": "unknown",
+          "address": 4829264
+        },
+        {
+          "raw": 285,
+          "shared": 285,
+          "status": "recovered",
+          "address": 4829360
+        },
+        {
+          "raw": 286,
+          "shared": 286,
+          "status": "recovered",
+          "address": 4829472
+        },
+        {
+          "raw": 395,
+          "shared": 395,
+          "status": "unknown",
+          "address": 4829552
+        },
+        {
+          "raw": 396,
+          "shared": 396,
+          "status": "unknown",
+          "address": 4829664
+        },
+        {
+          "raw": 401,
+          "shared": 401,
+          "status": "unknown",
+          "address": 4829760
+        },
+        {
+          "raw": 403,
+          "shared": 403,
+          "status": "recovered",
+          "address": 4829856
+        },
+        {
+          "raw": 404,
+          "shared": 404,
+          "status": "recovered",
+          "address": 4829952
+        }
+      ],
+      "groups": {
+        "register": [
+          {
+            "label": "register signed priority and mask",
+            "id": 144,
+            "args": [3, 4294967291, 256, 2147483655],
+            "control": 2,
+            "result": null,
+            "records": [[3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]]
+          },
+          {
+            "label": "duplicate caller registration",
+            "id": 144,
+            "args": [4660, 9, 272, 3],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 9, 3, 12, 14, 22, 24, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "set priority reorders first matching record",
+            "id": 146,
+            "args": [3, 4294967295],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 3, 12, 14, 22, 24, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "change bounds copied from live VM",
+            "id": 147,
+            "args": [3, 256],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 3, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "change mask to high bit",
+            "id": 148,
+            "args": [3, 2147483648],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "missing owner priority",
+            "id": 146,
+            "args": [2147483647, 10],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "missing owner bounds",
+            "id": 147,
+            "args": [2147483647, 272],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "missing owner mask",
+            "id": 148,
+            "args": [2147483647, 15],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "clear first bounds using NULL",
+            "id": 147,
+            "args": [3, 0],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 0, 0, 0, 0, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "query initial text status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 2,
+            "records": [
+              [3, 4294967295, 2147483648, 0, 0, 0, 0, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "set autohide",
+            "id": 154,
+            "args": [3, 121],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 0, 0, 0, 0, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "query cursor visibility",
+            "id": 396,
+            "args": [],
+            "control": 1,
+            "result": 1,
+            "records": [
+              [3, 4294967295, 2147483648, 0, 0, 0, 0, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "remove one duplicate",
+            "id": 145,
+            "args": [],
+            "control": 2,
+            "result": null,
+            "records": [[3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]]
+          },
+          {
+            "label": "remove remaining duplicate",
+            "id": 145,
+            "args": [],
+            "control": 2,
+            "result": null,
+            "records": []
+          },
+          {
+            "label": "unregister missing owner",
+            "id": 145,
+            "args": [],
+            "control": 2,
+            "result": null,
+            "records": []
+          }
+        ],
+        "text": [
+          {
+            "label": "initial status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 2,
+            "status": 2,
+            "text": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "request CP932 text",
+            "id": 151,
+            "args": [256],
+            "control": 2,
+            "result": null,
+            "status": 0,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "pending status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 0,
+            "status": 0,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "pending buffer retains initial bytes",
+            "id": 153,
+            "args": [512],
+            "control": 2,
+            "result": null,
+            "status": 0,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "cancel status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 2,
+            "status": 2,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "cancel preserves CP932 initial bytes",
+            "id": 153,
+            "args": [512],
+            "control": 2,
+            "result": null,
+            "status": 2,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "second request",
+            "id": 151,
+            "args": [256],
+            "control": 2,
+            "result": null,
+            "status": 0,
+            "text": "420082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "confirm status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 1,
+            "status": 1,
+            "text": "8365835883675c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "confirmed CP932 bytes and NUL only",
+            "id": 153,
+            "args": [512],
+            "control": 2,
+            "result": null,
+            "status": 1,
+            "text": "8365835883675c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "8365835883675c00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "cursor": [
+          {
+            "label": "CP932 image name and unsigned coordinate halves",
+            "id": 395,
+            "args": [256, 4294934529, 305419896],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "image",
+                "bytes": "834a815b835c838b00000000000000000000000000000000",
+                "x": 32769,
+                "y": 22136
+              }
+            ],
+            "input": [1, 1, 0, 0, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "renderer high-bit visibility word",
+            "id": 401,
+            "args": [2147483648],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 2147483648
+              }
+            ],
+            "input": [2147483648, 1, 0, 0, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "visibility query is independent Input visible field",
+            "id": 396,
+            "args": [],
+            "control": 1,
+            "result": 1,
+            "services": [],
+            "input": [2147483648, 1, 0, 0, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "autohide preserves native unsigned division",
+            "id": 154,
+            "args": [2147483648, 4294967295],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 1
+              }
+            ],
+            "input": [2147483648, 1, 2147483648, 71582787, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "disabled renderer",
+            "id": 401,
+            "args": [0],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 0
+              }
+            ],
+            "input": [0, 1, 2147483648, 71582787, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "autohide does not show disabled renderer",
+            "id": 154,
+            "args": [1, 120],
+            "control": 2,
+            "result": null,
+            "services": [],
+            "input": [0, 1, 1, 120, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "reenable renderer",
+            "id": 401,
+            "args": [7],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 7
+              }
+            ],
+            "input": [7, 1, 1, 120, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "autohide notifies synchronously",
+            "id": 154,
+            "args": [3, 121],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 1
+              }
+            ],
+            "input": [7, 1, 3, 121, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "set last key raw gate",
+            "id": 403,
+            "args": [79, 2147483648],
+            "control": 2,
+            "result": null,
+            "services": [],
+            "input": [7, 1, 3, 121, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2147483648
+            ]
+          },
+          {
+            "label": "reset every key gate",
+            "id": 404,
+            "args": [],
+            "control": 2,
+            "result": null,
+            "services": [],
+            "input": [7, 1, 3, 121, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          }
+        ]
+      },
+      "lifecycle": {
+        "created": {
+          "id": 66,
+          "args": [11, 0, 256],
+          "control": 1,
+          "result": 4
+        },
+        "release": {
+          "id": 67,
+          "args": [4],
+          "control": 2,
+          "result": null
+        },
+        "secondSize": 5268,
+        "stillRetained": true,
+        "retained": false,
+        "releasedAllocations": 7
+      },
+      "frames": [
+        {
+          "frame": 1,
+          "key": 3,
+          "slot": 0,
+          "source": 1,
+          "result": 1,
+          "events": [[1, 4, 3, 1, 0]]
+        },
+        {
+          "frame": 2,
+          "key": 3,
+          "slot": 0,
+          "source": 1,
+          "result": 1,
+          "events": []
+        },
+        {
+          "frame": 3,
+          "key": 3,
+          "slot": 0,
+          "source": 0,
+          "result": 1,
+          "events": [[1, 4, 3, 0, 0]]
+        },
+        {
+          "frame": 4,
+          "key": 79,
+          "slot": 3,
+          "source": 16,
+          "result": 1,
+          "events": [[1, 4, 79, 1, 0]]
+        },
+        {
+          "frame": 5,
+          "key": 79,
+          "slot": 3,
+          "source": 0,
+          "result": 1,
+          "events": [[1, 4, 79, 0, 0]]
+        },
+        {
+          "frame": 6,
+          "events": [],
+          "afterUnregister": true
+        }
+      ]
+    },
+    {
+      "version": "67",
+      "profile": "bokutomo-engine-2.6.1.67",
+      "executableSHA256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "entries": [
+        {
+          "raw": 144,
+          "shared": 144,
+          "status": "unknown",
+          "address": 4830384
+        },
+        {
+          "raw": 145,
+          "shared": 145,
+          "status": "unknown",
+          "address": 4828480
+        },
+        {
+          "raw": 146,
+          "shared": 146,
+          "status": "unknown",
+          "address": 4828560
+        },
+        {
+          "raw": 147,
+          "shared": 147,
+          "status": "unknown",
+          "address": 4828656
+        },
+        {
+          "raw": 148,
+          "shared": 148,
+          "status": "unknown",
+          "address": 4828848
+        },
+        {
+          "raw": 149,
+          "shared": 149,
+          "status": "recovered",
+          "address": 4828944
+        },
+        {
+          "raw": 150,
+          "shared": 150,
+          "status": "recovered",
+          "address": 4829056
+        },
+        {
+          "raw": 151,
+          "shared": 151,
+          "status": "unknown",
+          "address": 4829168
+        },
+        {
+          "raw": 152,
+          "shared": 152,
+          "status": "unknown",
+          "address": 4829264
+        },
+        {
+          "raw": 153,
+          "shared": 153,
+          "status": "unknown",
+          "address": 4829360
+        },
+        {
+          "raw": 154,
+          "shared": 154,
+          "status": "unknown",
+          "address": 4829536
+        },
+        {
+          "raw": 285,
+          "shared": 285,
+          "status": "recovered",
+          "address": 4829632
+        },
+        {
+          "raw": 286,
+          "shared": 286,
+          "status": "recovered",
+          "address": 4829744
+        },
+        {
+          "raw": 395,
+          "shared": 395,
+          "status": "unknown",
+          "address": 4829824
+        },
+        {
+          "raw": 396,
+          "shared": 396,
+          "status": "unknown",
+          "address": 4829936
+        },
+        {
+          "raw": 401,
+          "shared": 401,
+          "status": "recovered",
+          "address": 4830032
+        },
+        {
+          "raw": 403,
+          "shared": 403,
+          "status": "recovered",
+          "address": 4830128
+        },
+        {
+          "raw": 404,
+          "shared": 404,
+          "status": "recovered",
+          "address": 4830224
+        }
+      ],
+      "groups": {
+        "register": [
+          {
+            "label": "register signed priority and mask",
+            "id": 144,
+            "args": [3, 4294967291, 256, 2147483655],
+            "control": 2,
+            "result": null,
+            "records": [[3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]]
+          },
+          {
+            "label": "duplicate caller registration",
+            "id": 144,
+            "args": [4660, 9, 272, 3],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 9, 3, 12, 14, 22, 24, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "set priority reorders first matching record",
+            "id": 146,
+            "args": [3, 4294967295],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 3, 12, 14, 22, 24, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "change bounds copied from live VM",
+            "id": 147,
+            "args": [3, 256],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 3, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "change mask to high bit",
+            "id": 148,
+            "args": [3, 2147483648],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "missing owner priority",
+            "id": 146,
+            "args": [2147483647, 10],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "missing owner bounds",
+            "id": 147,
+            "args": [2147483647, 272],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "missing owner mask",
+            "id": 148,
+            "args": [2147483647, 15],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 4294967294, 3, 30, 40, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "clear first bounds using NULL",
+            "id": 147,
+            "args": [3, 0],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 0, 0, 0, 0, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "query initial text status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 2,
+            "records": [
+              [3, 4294967295, 2147483648, 0, 0, 0, 0, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "set autohide",
+            "id": 154,
+            "args": [3, 121],
+            "control": 2,
+            "result": null,
+            "records": [
+              [3, 4294967295, 2147483648, 0, 0, 0, 0, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "query cursor visibility",
+            "id": 396,
+            "args": [],
+            "control": 1,
+            "result": 1,
+            "records": [
+              [3, 4294967295, 2147483648, 0, 0, 0, 0, 0, 1, 1, 1],
+              [3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]
+            ]
+          },
+          {
+            "label": "remove one duplicate",
+            "id": 145,
+            "args": [],
+            "control": 2,
+            "result": null,
+            "records": [[3, 4294967291, 2147483655, 4294967294, 3, 30, 40, 0, 1, 1, 1]]
+          },
+          {
+            "label": "remove remaining duplicate",
+            "id": 145,
+            "args": [],
+            "control": 2,
+            "result": null,
+            "records": []
+          },
+          {
+            "label": "unregister missing owner",
+            "id": 145,
+            "args": [],
+            "control": 2,
+            "result": null,
+            "records": []
+          }
+        ],
+        "text": [
+          {
+            "label": "initial status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 2,
+            "status": 2,
+            "text": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "request CP932 text",
+            "id": 151,
+            "args": [256],
+            "control": 2,
+            "result": null,
+            "status": 0,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "pending status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 0,
+            "status": 0,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "pending buffer retains initial bytes",
+            "id": 153,
+            "args": [512],
+            "control": 2,
+            "result": null,
+            "status": 0,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "cancel status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 2,
+            "status": 2,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "cancel preserves CP932 initial bytes",
+            "id": 153,
+            "args": [512],
+            "control": 2,
+            "result": null,
+            "status": 2,
+            "text": "82a082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "second request",
+            "id": 151,
+            "args": [256],
+            "control": 2,
+            "result": null,
+            "status": 0,
+            "text": "420082a2410000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "confirm status",
+            "id": 152,
+            "args": [],
+            "control": 1,
+            "result": 1,
+            "status": 1,
+            "text": "8365835883675c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "82a082a24100cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          },
+          {
+            "label": "confirmed CP932 bytes and NUL only",
+            "id": 153,
+            "args": [512],
+            "control": 2,
+            "result": null,
+            "status": 1,
+            "text": "8365835883675c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+            "output": "8365835883675c00cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          }
+        ],
+        "cursor": [
+          {
+            "label": "CP932 image name and unsigned coordinate halves",
+            "id": 395,
+            "args": [256, 4294934529, 305419896],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "image",
+                "bytes": "834a815b835c838b00000000000000000000000000000000",
+                "x": 32769,
+                "y": 22136
+              }
+            ],
+            "input": [1, 1, 0, 0, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "renderer high-bit visibility word",
+            "id": 401,
+            "args": [2147483648],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 2147483648
+              }
+            ],
+            "input": [2147483648, 1, 0, 0, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "visibility query is independent Input visible field",
+            "id": 396,
+            "args": [],
+            "control": 1,
+            "result": 1,
+            "services": [],
+            "input": [2147483648, 1, 0, 0, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "autohide preserves native unsigned division",
+            "id": 154,
+            "args": [2147483648, 4294967295],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 1
+              }
+            ],
+            "input": [2147483648, 1, 2147483648, 71582787, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "disabled renderer",
+            "id": 401,
+            "args": [0],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 0
+              }
+            ],
+            "input": [0, 1, 2147483648, 71582787, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "autohide does not show disabled renderer",
+            "id": 154,
+            "args": [1, 120],
+            "control": 2,
+            "result": null,
+            "services": [],
+            "input": [0, 1, 1, 120, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "reenable renderer",
+            "id": 401,
+            "args": [7],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 7
+              }
+            ],
+            "input": [7, 1, 1, 120, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "autohide notifies synchronously",
+            "id": 154,
+            "args": [3, 121],
+            "control": 2,
+            "result": null,
+            "services": [
+              {
+                "service": "visible",
+                "word": 1
+              }
+            ],
+            "input": [7, 1, 3, 121, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          },
+          {
+            "label": "set last key raw gate",
+            "id": 403,
+            "args": [79, 2147483648],
+            "control": 2,
+            "result": null,
+            "services": [],
+            "input": [7, 1, 3, 121, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2147483648
+            ]
+          },
+          {
+            "label": "reset every key gate",
+            "id": 404,
+            "args": [],
+            "control": 2,
+            "result": null,
+            "services": [],
+            "input": [7, 1, 3, 121, 0, 0, 0, 0],
+            "gates": [
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+              1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+            ]
+          }
+        ]
+      },
+      "lifecycle": {
+        "created": {
+          "id": 66,
+          "args": [11, 0, 256],
+          "control": 1,
+          "result": 4
+        },
+        "release": {
+          "id": 67,
+          "args": [4],
+          "control": 2,
+          "result": null
+        },
+        "secondSize": 5268,
+        "stillRetained": true,
+        "retained": false,
+        "releasedAllocations": 7
+      },
+      "frames": [
+        {
+          "frame": 1,
+          "key": 3,
+          "slot": 0,
+          "source": 1,
+          "result": 1,
+          "events": [[1, 4, 3, 1, 0]]
+        },
+        {
+          "frame": 2,
+          "key": 3,
+          "slot": 0,
+          "source": 1,
+          "result": 1,
+          "events": []
+        },
+        {
+          "frame": 3,
+          "key": 3,
+          "slot": 0,
+          "source": 0,
+          "result": 1,
+          "events": [[1, 4, 3, 0, 0]]
+        },
+        {
+          "frame": 4,
+          "key": 79,
+          "slot": 3,
+          "source": 16,
+          "result": 1,
+          "events": [[1, 4, 79, 1, 0]]
+        },
+        {
+          "frame": 5,
+          "key": 79,
+          "slot": 3,
+          "source": 0,
+          "result": 1,
+          "events": [[1, 4, 79, 0, 0]]
+        },
+        {
+          "frame": 6,
+          "events": [],
+          "afterUnregister": true
+        }
+      ]
+    }
+  ]
+}

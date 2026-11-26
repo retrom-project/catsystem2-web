@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [144, 145, 146, 147, 148, 151, 152, 153, 154, 395, 396, 401],
+    value:
+      'Own 2.6.1.23 Top/Input constructors and actual Main66 kind11 factory, complete KCS dispatcher and Input receiver. Main144–148 use raw Input 119/120/121/122/124, text132/133/134 and autohide135; image140/query141/enable142. Signed priority and duplicate ordering, live copied RECT/NULL clear and raw masks match. The own text worker/dialog callback preserves pending0/confirm1/cancel2, CP932 bytes through NUL and limit16/capacity256. Thread/Win32 IO and borrowed renderer image/visibility/query are explicit service boundaries. Six own Input frames deliver down/held/up through an authored consumed callback and stop after unregister. Main67 retirement retains Input; its own deleting destructor separately frees owned allocations while borrowing device/renderer. Native scratch/padding and uninitialized .23 NULL text are not normalized.',
+  },
+  {
     ids: [444],
     value:
       'Own 2.6.1.23 Main444 reads four fixed live VM destinations and queries the actual main module RT_VERSION through GetModuleFileNameA(0). The original metadata helper, delimiter and integer parsing run through full GCALLs with real resource bytes. It stores four zero-extended low16 components in order through control2, preserving shared, aliased, argument-overlapping, zero-declared-width and trailing-word shapes. Missing translation or FileVersion leaves defined zero components. Captured OS Version API failures also zero them but do not supply absent browser module authority. The browser uses its uniquely selected module metadata; native uninitialized numeric scratch and overlong fixed string fields remain diagnostic.',
@@ -1086,6 +1091,11 @@ const mainConstantZero = [
 // Literal GCALL widths in the fixed KCS, MOT and particle archives are
 // observations independent of native admission or argument reads.
 const mainObservedWidths = [
+  { ids: [145, 152, 396], value: [0] },
+  { ids: [151, 153, 401], value: [1] },
+  { ids: [146, 147, 148, 154], value: [2] },
+  { ids: [395], value: [3] },
+  { ids: [144], value: [4] },
   {
     value: [0],
     ids: [
@@ -1682,6 +1692,11 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        {
+          ids: [144, 145, 146, 147, 148, 151, 153, 154, 395, 401],
+          fields: { review: 'reviewed' },
+        },
+        { ids: [152, 396], fields: { review: 'reviewed', resultWritten: true } },
         { ids: [11], fields: { review: 'reviewed', resultWritten: false } },
         { ids: [444], fields: { review: 'reviewed', resultWritten: false } },
         { ids: [192, 193, 194, 195], fields: { review: 'reviewed', resultWritten: true } },

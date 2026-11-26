@@ -104,3 +104,61 @@ IDs, a real original bitmap mask, independent mask ownership after image
 release, both real device wheel words and untouched neighboring canaries.
 Restoring a fresh World preserves the mask and device identity; changes in the
 restored World leave the original input and bitmap state independent.
+
+## Ordinary Input on .23, .63 and .67
+
+The own original Top constructors create Input before the Script caller. Actual
+Main66 kind11 creates another independently owned Input; Main67 requests retirement
+without freeing it immediately. Subsequent calls of each own deleting destructor
+free the native Input and its list/name allocations. Those destructor probes are
+separate from the retirement call and do not claim a Top collection pass. The
+normal World performs collection in its existing object walk, preserves retiring
+owners through a checkpoint, and releases them independently after restore.
+Window/device and renderer services are borrowed by Input.
+
+All three versions register Main144–148, 151–154, 395 and 396; .23 and .63 also
+register Main401, joining the already reviewed .67 entry. These 35 version/entry
+pairs use the existing shared implementations. .23 sends Input raw119–124 for
+registration through mask changes and raw132–135 for text/autohide. The equivalent
+.63/.67 ranges are raw122–127 and raw135–138, with the rectangle query occupying
+the unused slot between rectangle and mask setters. Cursor image/query/enable
+are .23 raw140/141/142 and .63/.67 raw143/144/145. Shared semantic numbers stay
+126–131, 139–142 and 147–149 respectively; Main IDs and Input messages are
+recorded separately in the golden fixture.
+
+Duplicate owner registrations remain separate ordered records. Priorities compare
+as signed DWORDs; changing the first matching priority removes and appends that
+record before sorting. Rectangles are copied from live caller memory, NULL clears
+them, and masks preserve every bit. Registration always owns the calling Script,
+while Main144's first argument supplies the packet sender. Missing owner updates
+and repeated unregister calls preserve the other records. Only initialized native
+record fields are compared: the unused scratch word and trailing padding word are opaque.
+
+Text requests copy a CP932 string including its terminator into the existing
+256-byte buffer. Pending status is zero, confirmation one, cancellation two;
+cancellation retains the initial bytes. Reading text copies through NUL and
+preserves destination bytes after it, even while pending. The own worker starts
+the modal dialog and its original callback sets a 16-character edit limit with a
+256-byte ANSI output capacity. Thread creation/exit and Win32 dialog IO in the
+native probes are explicit authored service boundaries. The normal host supplies
+`inputText`; a pending request cannot be checkpointed. The request, buffer and
+status use the current snapshot contract without another format generation.
+
+Cursor image hotspots use the low unsigned half of each argument. Input's visible
+field is separate from the renderer's full visibility word. Autohide preserves
+unsigned multiplication/division at the task frame rate and sends its visibility
+notification in the current call. Native cursor wrapper probes use an explicit
+borrowed renderer service; they do not establish a real device or decoder. The
+normal image-provider path owns its decoded image and backup, releases replaced
+or rejected image handles, and restores independent pixels in a fresh World.
+The mapped CP932 path is admitted; the existing .23 NULL/uninitialized source
+protection remains. Six finite own frames cover down/held/up and the final key's
+fourth device slot, then verify that unregister stops delivery. The target reply
+callback and physical key/window samples are explicit test boundaries.
+
+`tests/native-input-legacy.test.mjs` replays the own records through actual KCS
+GCALLs in a normal World, checks complete controls and output bytes, and verifies
+frame dispatch, factory retirement/collection, image ownership and independent
+cold restore. Main688 and the unproved serializer and physical pointer shapes
+remain protected. These Input results do not close the separate rapid-dialogue
+performance target.
