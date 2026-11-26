@@ -1593,6 +1593,7 @@ export default {
     mxcsr: null,
   },
   fes: {
+    shellErrorText: { storage: 'inline', caption: 'エラー' },
     definitionTypes: [
       'BASE',
       'CIMAGE',

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Observable localized ShellExecute failure UI shared by the two profiles.
+// ShellExecute failure UI: legacy inline text and localized later builds.
 const caption = '$0100-0000$実行エラー',
   messages = new Map([
     [0, '$0100-0001$メモリまたはリソースが不足しています。'],
@@ -23,9 +23,14 @@ const caption = '$0100-0000$実行エラー',
     [32, '$0100-0010$指定されたダイナミックリンクライブラリ（DLL）が見つかりませんでした。'],
   ]);
 
-export function fesShellError(result, strings) {
+export function fesShellError(result, strings, text) {
   const message = messages.get(result);
-  return message
-    ? { caption: strings.get(caption), message: strings.get(message), buttons: 0 }
-    : null;
+  if (!message) return null;
+  if (text?.storage === 'inline')
+    return {
+      caption: text.caption,
+      message: message.slice(message.indexOf('$', 1) + 1),
+      buttons: 0,
+    };
+  return { caption: strings.get(caption), message: strings.get(message), buttons: 0 };
 }

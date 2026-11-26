@@ -5,6 +5,7 @@ import { fesNarrowText } from '../fes/tokens.mjs';
 import { fesRawTail } from '../fes/source.mjs';
 import { FESFontEnumeration } from './fes-fonts.mjs';
 import { fesShellError } from './fes-shell-errors.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 export const FES_PLATFORM_COMMANDS = Object.freeze([
   'clipboard',
@@ -117,7 +118,11 @@ export class FESPlatformFrontends {
       if (this.closed) return;
       if (!Number.isInteger(result) || result < 0 || result > 0xffffffff)
         throw new TypeError('FES external open must report its unsigned platform result');
-      const error = fesShellError(result, this.world.globalStrings);
+      const error = fesShellError(
+        result,
+        this.world.globalStrings,
+        nativeABI(this.world.profile).fes.shellErrorText,
+      );
       if (error && !this.closed) {
         flight.modal = true;
         await this.world.window.action('fes-message-box', {

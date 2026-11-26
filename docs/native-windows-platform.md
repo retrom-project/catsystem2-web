@@ -128,6 +128,11 @@ opener before the requested URL loads, and reports33. Popup denial reports5;
 unsupported schemes, Windows parameters/directories and unavailable browser
 opening report31. Main629 discards these host results, preserving its native
 void contract. FES uses its separate localized failure UI and FIFO semantics.
+The three legacy FES builds instead show the original inline CP932 error
+messages without consulting a language table. The 2.6.1.23 caption is `エラー`;
+2.6.1.63 and 2.6.1.67 use `実行エラー`. Selected error codes, buttons and the
+owned modal cancellation follow each original helper. This consumer evidence
+does not establish a global language service or a language-file loader.
 No external program, OS registry or network send service is installed.
 
 Actual local-browser tests distinguish trusted opening from the current
