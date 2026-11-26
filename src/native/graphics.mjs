@@ -12,7 +12,14 @@ import { bitsFloat, floatBits, nativeReply } from '../kcs.mjs';
 import { quietFloat32Bits } from '../ppi/numeric.mjs';
 import { NativeRetainedDraw } from './retained-draw.mjs';
 import { NativeDrawTask, NATIVE_DRAW_IDS, nativeDraw } from './draw-task.mjs';
-import { NativeImages, NATIVE_IMAGE_IDS, nativeImage } from './image.mjs';
+import {
+  NativeImages,
+  NativeBitmap,
+  NATIVE_IMAGE_IDS,
+  nativeImage,
+  nativePublicationPixels,
+} from './image.mjs';
+import { NativeHandles } from './handles.mjs';
 import { identity } from '../motion/matrix.mjs';
 import {
   nativeGraphGeometry,
@@ -166,6 +173,8 @@ export class NativeGraphics {
     return true;
   }
   async meshTexture(index) {
+    if (this.world.text?.publications?.size || this.world.text?.flushingPublication)
+      await this.world.text.flushPublications();
     this.initializeTextures();
     return this.texturePages.frame(index);
   }
@@ -208,7 +217,13 @@ export class NativeGraphics {
     };
     return true;
   }
-  async ensureVRAM(width, height) {
+  async ensureVRAM(width, height, { textPublication = null } = {}) {
+    const text = this.world.text;
+    if (
+      (text?.publications?.size || text?.flushingPublication) &&
+      (!textPublication || textPublication !== text.flushingToken)
+    )
+      await text.flushPublications();
     let bitmap = this.vramHandle ? this.images.get(this.vramHandle) : null;
     if (bitmap && bitmap.width >= width && bitmap.height >= height) return bitmap;
     const next = this.images.create(
@@ -216,13 +231,17 @@ export class NativeGraphics {
       Math.max(height, bitmap?.height || 0),
     );
     if (bitmap) {
-      await this.images.get(next).blit(bitmap, { copy: true });
+      await this.images
+        .get(next)
+        .blit(bitmap, { copy: true, ...(textPublication ? { textPublication } : {}) });
       await this.images.release(this.vramHandle);
     }
     this.vramHandle = next;
     return this.images.get(next);
   }
   async fill(x, y, width, height, color = 0) {
+    if (this.world.text?.publications?.size || this.world.text?.flushingPublication)
+      await this.world.text.flushPublications();
     if (color === 0) {
       if (!this.view.active || width <= 0 || height <= 0) return 0;
       this.initializeTextures();
@@ -241,13 +260,21 @@ export class NativeGraphics {
   get hasOrdinaryBitmapOutput() {
     return this.output === nativeBitmapOutput && this.ensureVRAM === nativeEnsureVRAM;
   }
-  async output(bitmap, offset, region = null, { upload = true, flipY = false, retained } = {}) {
+  async output(
+    bitmap,
+    offset,
+    region = null,
+    { upload = true, flipY = false, retained, textPublication = null, revisionSteps = 1 } = {},
+  ) {
     const [x, y] = offset,
       area = region || [0, 0, bitmap.width, bitmap.height];
-    const vram = await this.ensureVRAM(
-      Math.max(this.world.game.width, x + bitmap.width),
-      Math.max(this.world.game.height, y + bitmap.height),
-    );
+    const dimensions = [
+        Math.max(this.world.game.width, x + bitmap.width),
+        Math.max(this.world.game.height, y + bitmap.height),
+      ],
+      vram = textPublication
+        ? await this.ensureVRAM(...dimensions, { textPublication })
+        : await this.ensureVRAM(...dimensions);
     await vram.blit(bitmap, {
       dx: x + area[0],
       dy: y + area[1],
@@ -257,6 +284,7 @@ export class NativeGraphics {
       height: area[3] - area[1],
       copy: true,
       flipY,
+      ...(textPublication ? { textPublication, revisionSteps } : {}),
     });
     this.initializeTextures();
     if (upload && this.view.active) {
@@ -266,10 +294,17 @@ export class NativeGraphics {
           footprint: [x, y, x + bitmap.width, y + bitmap.height],
           changed: retained.changed && translated(retained.changed),
         };
-      return this.texturePages.upload(vram, translated(area), publication);
+      return textPublication
+        ? this.texturePages.upload(vram, translated(area), publication, {
+            textPublication,
+            revisionSteps,
+          })
+        : this.texturePages.upload(vram, translated(area), publication);
     }
   }
   async prepareRender() {
+    if (this.world.text?.publications?.size || this.world.text?.flushingPublication)
+      await this.world.text.flushPublications();
     for (const [id, players] of this.fesSurfaces) {
       const draw = this.drawTasks.get(id);
       if (!draw?.state.renderer) continue;
@@ -522,6 +557,46 @@ export class NativeGraphics {
 
 const nativeBitmapOutput = NativeGraphics.prototype.output,
   nativeEnsureVRAM = NativeGraphics.prototype.ensureVRAM;
+const publicationConsumers = [
+  [NativeGraphics.prototype, ['output', 'ensureVRAM', 'initializeTextures']],
+  [NativeImages.prototype, ['get', 'create', 'release', 'nativeMemory']],
+  [NativeBitmap.prototype, ['state', 'pixels', 'frame', 'blit', 'changed']],
+  [NativeTexturePages.prototype, ['upload']],
+  [NativeHandles.prototype, ['get']],
+].map(([prototype, keys]) => [
+  prototype,
+  keys.map((key) => [key, Object.getOwnPropertyDescriptor(prototype, key)]),
+]);
+function ordinaryPublicationConsumer(value, index) {
+  const [prototype, methods] = publicationConsumers[index];
+  return (
+    value &&
+    Object.getPrototypeOf(value) === prototype &&
+    methods.every(([key, descriptor]) => {
+      const current = Object.getOwnPropertyDescriptor(prototype, key);
+      return (
+        !Object.hasOwn(value, key) &&
+        current?.value === descriptor?.value &&
+        current?.get === descriptor?.get &&
+        current?.set === descriptor?.set
+      );
+    })
+  );
+}
+
+export function nativeTextGraphicsPublication(graphics) {
+  if (!ordinaryPublicationConsumer(graphics, 0) || !ordinaryPublicationConsumer(graphics.images, 1))
+    return false;
+  const handles = graphics.images.handles;
+  if (!ordinaryPublicationConsumer(handles, 4)) return false;
+  const vram = handles.records.get(graphics.vramHandle)?.value;
+  return (
+    ordinaryPublicationConsumer(vram, 2) &&
+    ordinaryPublicationConsumer(graphics.texturePages, 3) &&
+    !vram.canvasDirty &&
+    nativePublicationPixels(Object.getOwnPropertyDescriptor(vram.state, 'rgba')?.value)
+  );
+}
 
 export class NativeGraphicTask {
   constructor(graphics, record) {

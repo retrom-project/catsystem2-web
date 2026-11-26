@@ -2,9 +2,62 @@
 import { nativeABI } from './abi/index.mjs';
 import { NativeTextParser } from './text-parser.mjs';
 import { nativeCategoryFilename, readNativeResource } from './resource-file.mjs';
+import { CanvasTextGlyphs } from '../render/native-text.mjs';
 const pending = new Map(),
   verifiedAdvance = new WeakMap(),
-  rasterOwners = new WeakMap();
+  rasterOwners = new WeakMap(),
+  readySources = new WeakMap();
+
+function ordinaryMethods(owner, prototype, methods) {
+  return (
+    Object.getPrototypeOf(owner) === prototype &&
+    methods.every(
+      ([key, value]) =>
+        !Object.hasOwn(owner, key) &&
+        Object.getOwnPropertyDescriptor(prototype, key)?.value === value,
+    )
+  );
+}
+
+// A publication transaction must not cross a font read, provider callback or
+// replaced WASM export. Read descriptors without invoking unknown accessors.
+export function nativeTextFontPublication(owner, parser, config) {
+  if (!ordinaryMethods(owner, NativeTextFonts.prototype, fontMethods)) return false;
+  const ready = readySources.get(owner),
+    module = Object.getOwnPropertyDescriptor(owner, 'module')?.value,
+    source = Object.getOwnPropertyDescriptor(owner, 'source')?.value,
+    verified = verifiedAdvance.get(module);
+  if (
+    !ready ||
+    ready.module !== module ||
+    ready.source !== source ||
+    !verified ||
+    !ordinaryMethods(source, CanvasTextGlyphs.prototype, canvasMethods) ||
+    Object.getPrototypeOf(owner.fonts) !== Map.prototype ||
+    !['advance', 'glyph', 'malloc', 'free'].every(
+      (key) =>
+        Object.getOwnPropertyDescriptor(module, verified[key + 'Name'])?.value === verified[key],
+    )
+  )
+    return false;
+  for (const bytes of [parser.config, config]) {
+    if (!(bytes instanceof Uint8Array) || bytes.length !== parser.config.length) return false;
+    const font = Reflect.apply(
+        parserFont,
+        { profile: parser.profile, utf8: parser.utf8, config: bytes },
+        [new Int32Array(22)],
+      ),
+      record = owner.fonts.get(font.face || 'default.ttf');
+    if (
+      !font.backend ||
+      !record ||
+      !owner.ownedFonts.has(record) ||
+      !Object.getOwnPropertyDescriptor(record, 'face')?.value
+    )
+      return false;
+  }
+  return true;
+}
 
 // Only ordinary owned native glyphs can enter the pure raster cache. Keep
 // provider checks as descriptors so checking an accessor never invokes it.
@@ -46,9 +99,17 @@ export function loadNativeFreeType(version) {
         // return. No font size, charmap or glyph slot exists at this point.
         backend._cs2_font_advance(0, 0, 0);
         backend._cs2_font_glyph(0, 0, 0, 0);
+        const empty = backend._malloc(0);
+        backend._free(empty);
         verifiedAdvance.set(backend, {
           advance: backend._cs2_font_advance,
           glyph: backend._cs2_font_glyph,
+          malloc: backend._malloc,
+          free: backend._free,
+          advanceName: '_cs2_font_advance',
+          glyphName: '_cs2_font_glyph',
+          mallocName: '_malloc',
+          freeName: '_free',
         });
         return backend;
       })().catch((error) => {
@@ -69,6 +130,8 @@ export class NativeTextFonts {
   async ready() {
     this.module ??= await loadNativeFreeType(nativeABI(this.profile).text.freeTypeVersion);
     await this.source.ready?.();
+    if (ordinaryMethods(this.source, CanvasTextGlyphs.prototype, canvasMethods))
+      readySources.set(this, { module: this.module, source: this.source });
   }
   async prepareConfiguration(profile, mode, config) {
     await this.ready();
@@ -212,6 +275,14 @@ export class NativeTextFonts {
     this.advances = new WeakMap();
     this.ownedFonts = new WeakSet();
     rasterOwners.delete(this);
+    // Closing faces does not undo the already completed module/Canvas readiness.
   }
 }
 const ordinaryGlyphNative = NativeTextFonts.prototype.glyphNative;
+const fontMethods = Object.entries(Object.getOwnPropertyDescriptors(NativeTextFonts.prototype))
+    .filter(([key, descriptor]) => key !== 'constructor' && typeof descriptor.value === 'function')
+    .map(([key, descriptor]) => [key, descriptor.value]),
+  canvasMethods = Object.entries(Object.getOwnPropertyDescriptors(CanvasTextGlyphs.prototype))
+    .filter(([key, descriptor]) => key !== 'constructor' && typeof descriptor.value === 'function')
+    .map(([key, descriptor]) => [key, descriptor.value]),
+  parserFont = NativeTextParser.prototype.font;

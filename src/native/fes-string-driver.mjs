@@ -714,11 +714,33 @@ export class FESStringDriver {
       s.dirty = true;
       s.revision = layout.revision;
     }
-    const send = (op, w = 0, l = 0, bytes = null, context = null) =>
-        task.message([instance.runtimeID, first + op, w, l], {
+    const publication =
+      !s.first &&
+      !s.fontDirty &&
+      !object.positionPending &&
+      !object.sizePending &&
+      s.pendingClear &&
+      s.fullSource &&
+      s.source.length === 0 &&
+      mode !== 'nv'
+        ? this.world.text.beginPublication(
+            task,
+            layout.config(),
+            [Math.trunc(object.vramX), Math.trunc(object.vramY)],
+            layout.abi.packetOutput ?? layout.word(layout.abi.flags - 1),
+          )
+        : null;
+    const send = async (op, w = 0, l = 0, bytes = null, context = null) => {
+        if (publication) {
+          const pending = publication.before();
+          if (pending) await pending;
+        }
+        return task.message([instance.runtimeID, first + op, w, l], {
           ...context,
+          ...(publication ? { textPublication: publication } : {}),
           ...(bytes ? { payload: payload(bytes), nativeSenderWorldID: instance.runtimeID } : {}),
-        }),
+        });
+      },
       packet = () =>
         packTextConfiguration(
           runtime.bindings(mode),
@@ -727,145 +749,167 @@ export class FESStringDriver {
           Math.trunc(object.vramY),
           layout ? (layout.abi.packetOutput ?? layout.word(layout.abi.flags - 1)) : 1,
         );
-    if (s.first) {
-      await send(1, 0, 0, packet());
-      s.first = false;
-      s.dirty = false;
-    }
-    if (s.pendingClear) {
-      await send(mode === 'nv' ? 5 : 4);
-      s.line = 0;
-      s.pendingClear = false;
-    }
-    if (s.fontDirty) {
-      let bytes = null;
-      if (s.fontSource !== null) {
-        const source = instance.collection.graph.get(s.fontSource);
-        if (!source || source.deleted || source.nativeType !== 2)
-          throw new Error('FES image-font source is no longer a live IMAGE');
-        bytes = this.imageDataFor(instance, source);
-        if (bytes !== null && !(bytes instanceof Uint8Array))
-          throw new TypeError('FES image-font service must return held bytes or null');
+    let failure,
+      failed = false;
+    try {
+      if (s.first) {
+        await send(1, 0, 0, packet());
+        s.first = false;
+        s.dirty = false;
       }
-      await send(mode === 'nv' ? 10 : 9, 0, 0, null, { resourceBytes: bytes });
-      for (const [char, selector] of s.fontMap) {
-        if (mode === 'nv') {
-          scratch.cursor[0] = char;
-          scratch.cursor[1] = selector;
-          cursorMask = 3;
-        } else {
-          scratch.cursor[0] = selector;
-          cursorMask |= 1;
+      if (s.pendingClear) {
+        await send(mode === 'nv' ? 5 : 4);
+        s.line = 0;
+        s.pendingClear = false;
+      }
+      if (s.fontDirty) {
+        if (publication) await this.world.text.flushPublications();
+        let bytes = null;
+        if (s.fontSource !== null) {
+          const source = instance.collection.graph.get(s.fontSource);
+          if (!source || source.deleted || source.nativeType !== 2)
+            throw new Error('FES image-font source is no longer a live IMAGE');
+          bytes = this.imageDataFor(instance, source);
+          if (bytes !== null && !(bytes instanceof Uint8Array))
+            throw new TypeError('FES image-font service must return held bytes or null');
         }
-        await send(mode === 'nv' ? 11 : 10, char, selector);
-      }
-      s.fontDirty = false;
-    }
-    if (s.dirty) {
-      await send(2, 0, 0, packet());
-      s.dirty = false;
-    }
-    if (layout) {
-      let layoutChanged = false;
-      const abi = layout.abi;
-      if (abi.shift !== null && layout.word(abi.shift + 1)) {
-        await send(15, 0, layout.word(abi.shift));
-        layout.word(abi.shift + 1, 0);
-        layoutChanged = true;
-      }
-      if (messages.clearCategory)
-        for (let i = 0; i < 4; i++)
-          if (layout.word(abi.category + i)) {
-            await send(19, i);
-            layout.word(abi.category + i, 0);
-            layoutChanged = true;
+        await send(mode === 'nv' ? 10 : 9, 0, 0, null, { resourceBytes: bytes });
+        for (const [char, selector] of s.fontMap) {
+          if (mode === 'nv') {
+            scratch.cursor[0] = char;
+            scratch.cursor[1] = selector;
+            cursorMask = 3;
+          } else {
+            scratch.cursor[0] = selector;
+            cursorMask |= 1;
           }
-      for (const kind of ['d_prof', 'prof'])
-        if (layout.profiles[kind]) {
-          const entry = layout.profiles[kind];
-          await send(
-            kind === 'prof' ? 16 : 13,
-            entry.index,
-            0,
-            join(entry.bytes, Uint8Array.of(0)),
-          );
-          delete layout.profiles[kind];
+          await send(mode === 'nv' ? 11 : 10, char, selector);
+        }
+        s.fontDirty = false;
+      }
+      if (s.dirty) {
+        await send(2, 0, 0, packet());
+        s.dirty = false;
+      }
+      if (layout) {
+        let layoutChanged = false;
+        const abi = layout.abi;
+        if (abi.shift !== null && layout.word(abi.shift + 1)) {
+          await send(15, 0, layout.word(abi.shift));
+          layout.word(abi.shift + 1, 0);
           layoutChanged = true;
         }
-      if (layoutChanged) this.saveLayout(object, layout);
-    }
-    if (mode === 'nv' && s.redraw) {
-      await send(17);
-      s.redraw = false;
-    }
-    if (mode === 'nv' && s.section) {
-      await send(14);
-      s.section = false;
-    }
-    if (object.positionPending) {
-      object.positionPending = false;
-      const rectangle = await this.reference(instance, object.positionReference, object);
-      object.x = f(rectangle?.[0] ?? 0);
-      object.y = f(rectangle?.[1] ?? 0);
-      object.z = 0;
-      scratch.cursor[0] = rectangle?.[1] ?? 0;
-      scratch.cursor[1] = rectangle?.[0] ?? 0;
-      cursorMask = 3;
-      markFESObjectDirty(instance, object);
-    }
-    if (mode === 'nv' && s.secondaryPending) {
-      s.secondaryPending = false;
-      if (s.secondary.length) await send(4, 0, 0, join(s.secondary, Uint8Array.of(0)));
-      s.oldSecondaryLength = s.secondary.length;
-    }
-    if (s.fullSource) {
-      await send(mode === 'nv' ? 5 : 4);
-      if (s.source.length) await send(3, 0, 0, join(s.source, Uint8Array.of(0)));
-      s.oldLength = s.source.length;
-      s.fullSource = false;
-      if (mode !== 'nv' && messages.maxOperation >= 14) s.line = await send(14);
-    } else if (s.oldLength !== s.source.length) {
-      await send(3, 0, 0, join(s.source.subarray(s.oldLength), Uint8Array.of(0)));
-      s.oldLength = s.source.length;
-      if (mode !== 'nv' && messages.maxOperation >= 14) s.line = await send(14);
-    }
-
-    if (object.dirty) {
-      await this.graphics(instance, object);
-      await send(mode === 'nv' ? 13 : 12, 0, s.speed);
-      object.dirty = false;
-    } else {
-      const sleeping = !!instance.player.nativeInput?.state.sleeping;
-      if (object.textSleepMask !== sleeping)
-        await task.message([instance.runtimeID, 47, 0, Number(object.disp && !sleeping)]);
-      object.textSleepMask = sleeping;
-    }
-    if (s.pagePending) {
-      await send(mode === 'nv' ? 9 : 8, 0, s.page);
-      s.pagePending = false;
-    }
-    if (s.remaining !== 0) {
-      s.remaining = await send(mode === 'nv' ? 6 : 5);
-      if (mode !== 'nv' && messages.maxOperation >= 17) s.remainingPage = await send(17);
-    }
-    scratch.cursorWritten = 0;
-    await send(mode === 'nv' ? 12 : 11, 0, 4, null, { payload: scratch.cursorMemory });
-    if (scratch.cursorWritten === 3 || (scratch.cursorWritten === 0 && cursorMask === 3)) {
-      for (let i = 0; i < 2; i++) {
-        if (scratch.cursor[i] !== s.end[i]) s.endChanged = true;
-        s.end[i] = scratch.cursor[i];
+        if (messages.clearCategory)
+          for (let i = 0; i < 4; i++)
+            if (layout.word(abi.category + i)) {
+              await send(19, i);
+              layout.word(abi.category + i, 0);
+              layoutChanged = true;
+            }
+        for (const kind of ['d_prof', 'prof'])
+          if (layout.profiles[kind]) {
+            const entry = layout.profiles[kind];
+            await send(
+              kind === 'prof' ? 16 : 13,
+              entry.index,
+              0,
+              join(entry.bytes, Uint8Array.of(0)),
+            );
+            delete layout.profiles[kind];
+            layoutChanged = true;
+          }
+        if (layoutChanged) this.saveLayout(object, layout);
       }
-      s.endKnown = scratch.cursorWritten === 3;
-    } else if (
-      scratch.cursorWritten !== 0 ||
-      cursorMask !== 0 ||
-      (!s.endKnown && !(mode === 'nv' && textABI.nvEndPositionRequiresSection))
-    )
-      throw new Error('FES text cursor query left outputs unwritten without a complete known end');
-    if (s.finish) {
-      await send(mode === 'nv' ? 7 : 6);
-      s.finish = false;
+      if (mode === 'nv' && s.redraw) {
+        await send(17);
+        s.redraw = false;
+      }
+      if (mode === 'nv' && s.section) {
+        await send(14);
+        s.section = false;
+      }
+      if (object.positionPending) {
+        if (publication) await this.world.text.flushPublications();
+        object.positionPending = false;
+        const rectangle = await this.reference(instance, object.positionReference, object);
+        object.x = f(rectangle?.[0] ?? 0);
+        object.y = f(rectangle?.[1] ?? 0);
+        object.z = 0;
+        scratch.cursor[0] = rectangle?.[1] ?? 0;
+        scratch.cursor[1] = rectangle?.[0] ?? 0;
+        cursorMask = 3;
+        markFESObjectDirty(instance, object);
+      }
+      if (mode === 'nv' && s.secondaryPending) {
+        s.secondaryPending = false;
+        if (s.secondary.length) await send(4, 0, 0, join(s.secondary, Uint8Array.of(0)));
+        s.oldSecondaryLength = s.secondary.length;
+      }
+      if (s.fullSource) {
+        await send(mode === 'nv' ? 5 : 4);
+        if (s.source.length) await send(3, 0, 0, join(s.source, Uint8Array.of(0)));
+        s.oldLength = s.source.length;
+        s.fullSource = false;
+        if (mode !== 'nv' && messages.maxOperation >= 14) s.line = await send(14);
+      } else if (s.oldLength !== s.source.length) {
+        await send(3, 0, 0, join(s.source.subarray(s.oldLength), Uint8Array.of(0)));
+        s.oldLength = s.source.length;
+        if (mode !== 'nv' && messages.maxOperation >= 14) s.line = await send(14);
+      }
+
+      if (publication) await this.world.text.flushPublications();
+      if (object.dirty) {
+        await this.graphics(instance, object);
+        await send(mode === 'nv' ? 13 : 12, 0, s.speed);
+        object.dirty = false;
+      } else {
+        const sleeping = !!instance.player.nativeInput?.state.sleeping;
+        if (object.textSleepMask !== sleeping)
+          await task.message([instance.runtimeID, 47, 0, Number(object.disp && !sleeping)]);
+        object.textSleepMask = sleeping;
+      }
+      if (s.pagePending) {
+        await send(mode === 'nv' ? 9 : 8, 0, s.page);
+        s.pagePending = false;
+      }
+      if (s.remaining !== 0) {
+        s.remaining = await send(mode === 'nv' ? 6 : 5);
+        if (mode !== 'nv' && messages.maxOperation >= 17) s.remainingPage = await send(17);
+      }
+      scratch.cursorWritten = 0;
+      await send(mode === 'nv' ? 12 : 11, 0, 4, null, { payload: scratch.cursorMemory });
+      if (scratch.cursorWritten === 3 || (scratch.cursorWritten === 0 && cursorMask === 3)) {
+        for (let i = 0; i < 2; i++) {
+          if (scratch.cursor[i] !== s.end[i]) s.endChanged = true;
+          s.end[i] = scratch.cursor[i];
+        }
+        s.endKnown = scratch.cursorWritten === 3;
+      } else if (
+        scratch.cursorWritten !== 0 ||
+        cursorMask !== 0 ||
+        (!s.endKnown && !(mode === 'nv' && textABI.nvEndPositionRequiresSection))
+      )
+        throw new Error(
+          'FES text cursor query left outputs unwritten without a complete known end',
+        );
+      if (s.finish) {
+        await send(mode === 'nv' ? 7 : 6);
+        s.finish = false;
+      }
+    } catch (error) {
+      failure = error;
+      failed = true;
     }
+    if (publication)
+      try {
+        await this.world.text.flushPublications();
+      } catch (error) {
+        failure = failed
+          ? new AggregateError([failure, error], 'FES text execution and publication failed')
+          : error;
+        failed = true;
+      }
+    if (failed) throw failure;
   }
   async graphics(instance, object) {
     const state = fesPlaneRenderingState(instance, object),

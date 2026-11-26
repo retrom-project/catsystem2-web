@@ -266,6 +266,11 @@ export class NativeRuntime {
         source: machine.debug,
       });
     if (entry.status === 'unknown') throw unsupported();
+    // A reentrant native observer must see all earlier owned text writes.
+    if (this.textPublicationBarrier)
+      return this.textPublicationBarrier().then(() =>
+        this.dispatchNative(table, id, args, machine, task, scheduler),
+      );
     const key = `${table}:${id}`;
     this.calls.set(key, (this.calls.get(key) || 0) + 1);
     let reply;

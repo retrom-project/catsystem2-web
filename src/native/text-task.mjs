@@ -3,9 +3,9 @@
 // Recovered native resource ranges are selected per ABI. Other resource
 // producers use the World's canonical message numbers.
 import { nativeABI } from './abi/index.mjs';
-import { NativeGraphicTask } from './graphics.mjs';
+import { NativeGraphicTask, nativeTextGraphicsPublication } from './graphics.mjs';
 import { NativeBitmap } from './image.mjs';
-import { NativeTextRuntime, NativeTextWriter } from './text.mjs';
+import { NativeTextRuntime, NativeTextWriter, nativeTextPublicationWriter } from './text.mjs';
 import { nvTextConfig, textConfig, unpackTextConfiguration } from './text-config.mjs';
 import { CanvasTextGlyphs } from '../render/native-text.mjs';
 import { MOTION_ABI, setMotionVector } from '../motion/abi.mjs';
@@ -22,19 +22,95 @@ export class NativeTextService {
     this.core = new NativeTextRuntime({ profile: world.profile }, { world, glyphs });
     this.fes = null;
     this.log = null;
+    this.publications = new Map();
+    this.flushingPublication = null;
   }
   async runtime() {
     await (this.ready ??= this.core.ready());
     return this.core;
   }
   snapshot() {
+    if (this.publications.size || this.flushingPublication)
+      throw new Error('Text checkpoint requires a settled publication');
     return this.core.snapshot({ windows: false });
   }
+  beginPublication(task, config, offset = task.text.vram, output = task.text.output) {
+    if (
+      this.publications.size ||
+      this.flushingPublication ||
+      this.world.transitionalExe ||
+      !ordinaryTextTask(task)
+    )
+      return null;
+    if (!(config instanceof Uint8Array) || config.length < 12) return null;
+    const dimensions = new DataView(config.buffer, config.byteOffset, config.byteLength),
+      width = dimensions.getInt32(4, true),
+      height = dimensions.getInt32(8, true);
+    if (width <= 0 || height <= 0 || !output) return null;
+    const writer = this.core.writers.get(task.text.writer),
+      batch = {
+        task,
+        config,
+        pending: null,
+        enabled: true,
+        physicalPublications: 0,
+        eligible: (nextConfig = config) =>
+          ordinaryTextTask(task) &&
+          this.core.writers.get(task.text.writer) === writer &&
+          task.text.output === output &&
+          task.text.vram.every((value, i) => value === offset[i]) &&
+          writer?.pixels?.width === width &&
+          writer.pixels.height === height &&
+          (!batch.pending || writer.parser.source.length === 0) &&
+          nativeTextPublicationWriter(writer, nextConfig) &&
+          nativeTextGraphicsPublication(this.world.graphics),
+        before: () => {
+          if (batch.enabled && !batch.eligible()) return this.flushPublications();
+          return this.flushingPublication;
+        },
+      };
+    if (!batch.eligible()) return null;
+    this.publications.set(task, batch);
+    this.world.runtime.textPublicationBarrier = () => this.flushPublications();
+    return batch;
+  }
+  flushPublications() {
+    if (this.flushingPublication) return this.flushingPublication;
+    if (!this.publications.size) return null;
+    const batches = [...this.publications.values()];
+    this.publications.clear();
+    for (const batch of batches) batch.enabled = false;
+    this.flushingPublication = (async () => {
+      for (const batch of batches) {
+        const { task, pending } = batch;
+        if (pending) {
+          this.flushingToken = batch;
+          const frame = { ...pending.frame, rgba: pending.frame.rgba.slice() };
+          await Reflect.apply(publishTextFrame, task, [
+            frame,
+            true,
+            null,
+            pending.offset,
+            batch,
+            pending.count,
+          ]);
+          batch.physicalPublications++;
+        }
+      }
+    })().finally(() => {
+      this.flushingToken = null;
+      this.flushingPublication = null;
+      this.world.runtime.textPublicationBarrier = null;
+    });
+    return this.flushingPublication;
+  }
   async restore(state) {
+    if (this.publications.size || this.flushingPublication) await this.flushPublications();
     if (state.writers.length || state.fonts.length) await this.runtime();
     this.core.restore(state, { windows: false });
   }
-  close() {
+  async close() {
+    if (this.publications.size || this.flushingPublication) await this.flushPublications();
     return this.core.close();
   }
   create(record) {
@@ -122,28 +198,45 @@ export class NativeTextTask {
   async output(region = null) {
     const writer = await this.writer();
     if (!writer || !this.text.output) return;
+    const batch = this.service.publications?.get(this);
+    if (batch) {
+      if (!region && batch.eligible() && writer.parser.source.length === 0) {
+        batch.pending = {
+          frame: writer.pixels,
+          offset: this.text.vram.slice(),
+          count: (batch.pending?.count ?? 0) + 1,
+        };
+        return;
+      }
+      await this.service.flushPublications();
+    }
     const readFrame = writer.frame,
       frame = Reflect.apply(readFrame, writer, []),
       ownsPixels =
         readFrame === copyTextFrame &&
         frame.rgba instanceof Uint8ClampedArray &&
-        frame.rgba.buffer !== writer.pixels.rgba.buffer,
-      bitmap = new NativeBitmap(this.graphics.images, {
-        ...frame,
-        rgba: ownsPixels ? null : frame.rgba,
-        bpp: 4,
-        canvasWidth: frame.width,
-        canvasHeight: frame.height,
-        offsetX: 0,
-        offsetY: 0,
-        baseX: 0,
-        baseY: 0,
-        clip: [0, 0, frame.width, frame.height],
-        source: null,
-        attributes: [],
-      });
+        frame.rgba.buffer !== writer.pixels.rgba.buffer;
+    await this.publishFrame(frame, ownsPixels, region, this.text.vram);
+  }
+  async publishFrame(frame, ownsPixels, region, offset, textPublication = null, revisionSteps = 1) {
+    const bitmap = new NativeBitmap(this.graphics.images, {
+      ...frame,
+      rgba: ownsPixels ? null : frame.rgba,
+      bpp: 4,
+      canvasWidth: frame.width,
+      canvasHeight: frame.height,
+      offsetX: 0,
+      offsetY: 0,
+      baseX: 0,
+      baseY: 0,
+      clip: [0, 0, frame.width, frame.height],
+      source: null,
+      attributes: [],
+    });
     if (ownsPixels) bitmap.state.rgba = frame.rgba;
-    await this.graphics.output(bitmap, this.text.vram, region);
+    if (textPublication)
+      await this.graphics.output(bitmap, offset, region, { textPublication, revisionSteps });
+    else await this.graphics.output(bitmap, offset, region);
   }
   async dirtyOutput() {
     const writer = await this.writer();
@@ -157,6 +250,9 @@ export class NativeTextTask {
   async restart() {
     const writer = await this.writer();
     if (!writer || !this.graph || !this.state.shown) return;
+    const batch = this.service.publications?.get(this);
+    if (batch && (!batch.eligible() || writer.parser.source.length))
+      await this.service.flushPublications();
     this.text.active = true;
     await writer.draw(this.text.elapsed, this.text.pageLimit);
     await this.output();
@@ -182,6 +278,11 @@ export class NativeTextTask {
     this.text.imageFontBuffer = pointer;
   }
   async message(words, context = {}) {
+    if (
+      (this.service.publications?.size || this.service.flushingPublication) &&
+      (!context.textPublication || context.textPublication !== this.service.publications.get(this))
+    )
+      await this.service.flushPublications();
     if (context.fromHost) {
       const runtime = await this.service.runtime();
       return runtime.fromHost(() => this.message(words, { ...context, fromHost: false }));
@@ -241,6 +342,8 @@ export class NativeTextTask {
       );
       this.text.vram = [view.getInt32(configEnd, true), view.getInt32(configEnd + 4, true)];
       this.text.output = view.getUint32(configEnd + 8, true);
+      const batch = this.service.publications?.get(this);
+      if (batch && !batch.eligible(config)) await this.service.flushPublications();
       await writer.configure(config);
       if (operation === 1) {
         this.text.sourceEvents = [];
@@ -397,6 +500,8 @@ export class NativeTextTask {
     }
   }
   snapshot() {
+    if (this.service.publications?.has(this) || this.service.flushingPublication)
+      throw new Error('Text task checkpoint requires a settled publication');
     return { plane: this.plane.snapshot(), text: structuredClone(this.text) };
   }
   async restore(state) {
@@ -407,6 +512,8 @@ export class NativeTextTask {
     if (this.text.writer !== null) await this.writer();
   }
   async close({ fromHost = false } = {}) {
+    if (this.service.publications?.has(this) || this.service.flushingPublication)
+      await this.service.flushPublications();
     if (this.text.writer === null) {
       await this.plane.close();
       return;
@@ -649,6 +756,27 @@ export class NativeNVTextTask extends NativeTextTask {
         throw new Error(`Unrecovered NV text operation ${operation}`);
     }
   }
+}
+
+const taskPublicationMethods = [NativeTextTask, NativeTextService].map((type) => [
+  type.prototype,
+  Object.entries(Object.getOwnPropertyDescriptors(type.prototype)).filter(
+    ([key, d]) => key !== 'constructor' && typeof d.value === 'function',
+  ),
+]);
+const publishTextFrame = NativeTextTask.prototype.publishFrame;
+function ordinaryTextTask(task) {
+  return [task, task.service].every((value, index) => {
+    const [prototype, methods] = taskPublicationMethods[index];
+    return (
+      Object.getPrototypeOf(value) === prototype &&
+      methods.every(
+        ([key, d]) =>
+          !Object.hasOwn(value, key) &&
+          Object.getOwnPropertyDescriptor(prototype, key)?.value === d.value,
+      )
+    );
+  });
 }
 
 export function installNativeText(world, { glyphs } = {}) {

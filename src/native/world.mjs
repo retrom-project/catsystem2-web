@@ -572,6 +572,8 @@ export class NativeWorld {
     return this.engineMessages.resolve(senderWorldID, nativeID);
   }
   async sendNativeEngine(nativeID, senderWorldID, message, wParam = 0, lParam = 0, context = {}) {
+    if (this.text?.publications?.size || this.text?.flushingPublication)
+      await this.text.flushPublications();
     const reply = await this.engineMessages.dispatchNative(
       senderWorldID,
       nativeID,
@@ -613,6 +615,8 @@ export class NativeWorld {
     return this.dispatchContext.run(executor, operation);
   }
   async sendEngine(id, sender, message, wParam = 0, lParam = 0, context = {}) {
+    if (this.text?.publications?.size || this.text?.flushingPublication)
+      await this.text.flushPublications();
     const reply = await this.engineMessages.dispatch(id, sender, message, wParam, lParam, context);
     context.nativeRouted = reply.routed;
     return reply.result;

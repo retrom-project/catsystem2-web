@@ -46,6 +46,8 @@ export class NativeScreenCapture {
     return { width: target.width, height: target.height, rgba: gpu.pixels(target) };
   }
   async screenshot(task) {
+    if (this.world.text?.publications?.size || this.world.text?.flushingPublication)
+      await this.world.text.flushPublications();
     if (!this.world.graphics.view.active) return nativeReply(1, 0);
     const stage = this.world.stageRenderer;
     if (!stage?.gpu) return nativeReply(1, 0);

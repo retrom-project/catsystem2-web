@@ -204,9 +204,14 @@ export class NativeTexturePages {
     }
     return pages.length ? { rectangle, pages } : null;
   }
-  async upload(bitmap, rectangle = null, retained = null) {
+  async upload(
+    bitmap,
+    rectangle = null,
+    retained = null,
+    { textPublication = null, revisionSteps = 1 } = {},
+  ) {
     const dither = Boolean(this.layout.dither);
-    const input = await bitmap.frame(),
+    const input = await (textPublication ? bitmap.frame({ textPublication }) : bitmap.frame()),
       region = rectangle ?? [0, 0, input.width, input.height],
       [sx, sy, right, bottom] = region,
       previous = retained?.previous,
@@ -251,7 +256,7 @@ export class NativeTexturePages {
           }
         else throw new Error(`Unsupported native texture depth ${page.bpp}`);
       }
-      frame.revision++;
+      for (let step = 0; step < revisionSteps; step++) frame.revision++;
       if (page.surface) this.stage.surfaces.get(page.surface).revision = frame.revision;
     }
     if (full || ownsFootprint) return this.#capturePublication(current.rectangle, input);

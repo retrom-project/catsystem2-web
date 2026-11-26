@@ -161,3 +161,48 @@ visual game screenshot acceptance are separate from CPU/state equality.
 `strid` reads the single World text writer's parsed ID map. STRING21 and STRING8 on ABI76 use the string query; LOG24 and LOGSTRING8 on ABI76 use the current viewport ring slot's generated main STRING. NVSTRING29 is excluded by the original handler. Whole-selection traversal skips holes and retains the original shared -1 argument caches across mixed classes. Missing writers or IDs return the original defined zero.
 
 `redraw` only marks NVSTRING29. Its deferred resource driver sends canonical506 (NV operation17) after configuration and before section/source updates. The pending flag is owned by the current FES checkpoint; fresh World restore reuses the existing JS writer without resource replay. Two frozen-ABI default entrance tests, including real LOG children and pending redraw restoration, live in `tests/fes-resource-queries.test.mjs`. No PE text constructor or implicit text feature is involved.
+
+## Owned FES clear publications
+
+One STRING/STRING8 FES drive may combine repeated full empty-source outputs into
+one pixel publication. Every resource message, configuration, parser operation,
+query result and clock update still runs in its original order. The transaction
+ends before plane/graphics updates and never spans another task, notification or
+logic frame. This is a private driver contract; an `await` between its owned
+operations does not promise that intermediate VRAM has been published.
+
+The path requires an already initialized writer, an already opened owned FT
+face, completed ordinary Canvas readiness, unchanged pinned FT exports and
+unchanged writer/parser/task/bitmap/texture/graphics methods. Image fonts, NV,
+first initialization, font replacement, resource references, changed dimensions,
+VRAM position/output changes and unknown providers use ordinary publication.
+Eligibility is checked before every resource message and output. Losing it first
+settles the last requested output, then runs the new provider. GDI and reentrant
+callbacks retain their original intermediate clear and redraw sequence.
+
+The pending frame is the owned empty writer allocation, retained when a later
+configuration replaces it. The final publication takes one independent pixel
+snapshot and writes the complete footprint. Existing raw VRAM writes inside the
+footprint are overwritten; writes outside it survive. Public native dispatch,
+VRAM bitmap reads, graphics reads/writes, stage preparation, screenshot capture,
+restore and close settle the transaction first. An in-flight flush also blocks
+later observers; its internal bitmap access carries only that flush's ephemeral
+token. A failed drive flushes the last requested frame before propagating its
+error. Checkpoints require settled World/text state and contain no transaction.
+
+Publication versions retain their logical increments even when pixel copies are
+combined:
+
+| Field                         | Consumers                                           | Transaction behavior                                                                               |
+| ----------------------------- | --------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `NativeBitmap.state.revision` | cached frame/canvas invalidation, bitmap checkpoint | Advance once for every original full blit; invalidate the cache when committing pixels.            |
+| Texture page `frame.revision` | GPU upload cache and retained publication ownership | Advance once for every original intersecting upload, with the same page footprint and dirty flags. |
+| Stage surface `revision`      | stage/GPU surface synchronization and cold restore  | Copy the final page revision, including all logical increments.                                    |
+
+These are internal cache/publication versions, not native task frame counters or
+script query results. They are compared explicitly in the regression fixtures;
+combining pixels does not discard them. Native dirty/bounds queries pass the
+native dispatch barrier, and screenshots compose only after pending work has
+settled. Presented-frame recording and host thumbnails continue to read the
+presented framebuffer. The regular World checkpoint guard rejects an active
+frame; direct text checkpoints also reject an unsettled publication.

@@ -4,4 +4,5 @@ export {
   JSTextRuntime as NativeTextRuntime,
   JSTextWriter as NativeTextWriter,
   JSNVTextWriter as NativeNVTextWriter,
+  nativeTextPublicationWriter,
 } from './text-core.mjs';

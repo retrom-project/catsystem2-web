@@ -39,6 +39,15 @@ function bitmapBlendWords(bytes) {
     return null;
   return packedBitmapWords(bytes);
 }
+const pixelSlice = Object.getOwnPropertyDescriptor(typedArray, 'slice')?.value;
+export function nativePublicationPixels(bytes) {
+  return (
+    !Object.hasOwn(bytes ?? {}, 'slice') &&
+    !Object.hasOwn(Uint8ClampedArray.prototype, 'slice') &&
+    Object.getOwnPropertyDescriptor(typedArray, 'slice')?.value === pixelSlice &&
+    bitmapBlendWords(bytes) !== null
+  );
+}
 const size = (width, height, empty = false) => {
   if (
     !Number.isSafeInteger(width) ||
@@ -137,7 +146,15 @@ export class NativeBitmap {
     retainedBackings.set(state, slot);
     return backing;
   }
-  async pixels() {
+  async pixels({ textPublication = null } = {}) {
+    const text = this.registry?.world?.text;
+    if (
+      (text?.publications?.size || text?.flushingPublication) &&
+      (!textPublication || textPublication !== text.flushingToken) &&
+      this.registry.handles.records.get(this.registry.world.graphics.vramHandle)?.value
+        .dataHandle === this.dataHandle
+    )
+      await text.flushPublications();
     if (
       this.dataHandle &&
       this.registry.nativeMemory?.refs.data.has(this.dataHandle) &&
@@ -165,24 +182,32 @@ export class NativeBitmap {
     }
     return this.state.alphaHint === 2;
   }
-  changed() {
-    this.state.revision = (this.state.revision || 0) + 1;
+  changed(revisionSteps = 1) {
+    for (let i = 0; i < revisionSteps; i++) this.state.revision = (this.state.revision || 0) + 1;
     this.cachedFrame = null;
     this.canvas = null;
     return this.registry?.nativeMemory?.changed(this.dataHandle);
   }
-  async frame() {
+  async frame({ textPublication = null } = {}) {
+    const text = this.registry?.world?.text;
+    if (
+      (text?.publications?.size || text?.flushingPublication) &&
+      (!textPublication || textPublication !== text.flushingToken) &&
+      this.registry.handles.records.get(this.registry.world.graphics.vramHandle)?.value
+        .dataHandle === this.dataHandle
+    )
+      await text.flushPublications();
     if (
       this.dataHandle &&
       this.registry.nativeMemory?.refs.data.has(this.dataHandle) &&
       !this.registry.nativeMemory.isOwned?.(this.dataHandle)
     )
-      await this.pixels();
+      await (textPublication ? this.pixels({ textPublication }) : this.pixels());
     if (!this.cachedFrame || this.cachedFrame.revision !== this.state.revision)
       this.cachedFrame = {
         width: this.width,
         height: this.height,
-        rgba: await this.pixels(),
+        rgba: await (textPublication ? this.pixels({ textPublication }) : this.pixels()),
         revision: this.state.revision,
       };
     return this.cachedFrame;
@@ -343,6 +368,8 @@ export class NativeBitmap {
       copy = false,
       alpha = 255,
       flipY = false,
+      textPublication = null,
+      revisionSteps = 1,
     } = {},
   ) {
     // Clip source and destination independently, then limit both to
@@ -352,8 +379,8 @@ export class NativeBitmap {
     const count = Math.min(sr[2] - sr[0], dr[2] - dr[0]),
       rows = Math.min(sr[3] - sr[1], dr[3] - dr[1]);
     if (!count || !rows) return false;
-    const dest = await this.pixels(),
-      input = await source.pixels();
+    const dest = await (textPublication ? this.pixels({ textPublication }) : this.pixels()),
+      input = await (textPublication ? source.pixels({ textPublication }) : source.pixels());
     const data = source === this ? new Uint8ClampedArray(input) : input;
     const bulkCopy =
       copy &&
@@ -404,7 +431,7 @@ export class NativeBitmap {
       }
     }
     this.state.source = null;
-    await this.changed();
+    await (textPublication ? this.changed(revisionSteps) : this.changed());
     return true;
   }
   async resize(width, height, { legacyCells = false } = {}) {

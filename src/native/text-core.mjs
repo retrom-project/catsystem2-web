@@ -3,13 +3,15 @@ import { nativeABI } from './abi/index.mjs';
 import { NativeTextParser } from './text-parser.mjs';
 import { textVisible } from './text-layout.mjs';
 import { textConfig, textPacket } from './text-config.mjs';
-import { NativeTextFonts } from './font-backend.mjs';
+import { NativeTextFonts, nativeTextFontPublication } from './font-backend.mjs';
 import { CanvasTextGlyphs } from '../render/native-text.mjs';
 import { NativeTextObjects } from './text-objects.mjs';
 import { rasterTextGlyph, compositeTextGlyph } from './text-raster.mjs';
 import { openImage } from '../formats/hg3.mjs';
 import { nativeTextUnits } from './text-scanner.mjs';
 import { packedBitmapWords } from './raster-kernel.mjs';
+import { nativePublicationPixels } from './image.mjs';
+const ownedWriters = new WeakSet();
 const join = (arrays) => {
   const out = new Uint8Array(arrays.reduce((n, a) => n + a.length, 0));
   let at = 0;
@@ -115,6 +117,7 @@ export class JSTextRuntime {
 export class JSTextWriter {
   constructor(runtime, { pointer, mode }) {
     Object.assign(this, { runtime, pointer, mode });
+    ownedWriters.add(this);
     this.parser = this.newParser();
     this.config = null;
     this.pixels = null;
@@ -149,6 +152,14 @@ export class JSTextWriter {
     if (config.length !== this.bindings.configSize)
       throw new Error('Text configuration size differs');
     await this.runtime.glyphs.prepareConfiguration(this.runtime.profile, this.mode, config);
+    // Readiness can yield. Settle earlier writes before a newly replaced
+    // layout/glyph provider runs, even if it changed inside that await.
+    const text = this.runtime.world?.text;
+    for (const batch of text?.publications?.values() ?? [])
+      if (batch.task.text.writer === this.pointer && !batch.eligible(config)) {
+        await text.flushPublications();
+        break;
+      }
     this.config = config.slice();
     this.parser.configure(config);
     this.maximumTime = this.lastFrame = this.baseTime = this.baseFrame = 0;
@@ -530,6 +541,7 @@ export class JSTextWriter {
     this.categories = new Map(s.categories);
   }
   async close() {
+    ownedWriters.delete(this);
     this.runtime.writers.delete(this.pointer);
   }
 }
@@ -788,4 +800,50 @@ export class JSNVTextWriter extends JSTextWriter {
       });
     this.parser = this.main.at(-1)?.parser ?? this.parser;
   }
+}
+
+const publicationMethods = [JSTextRuntime, JSTextWriter, NativeTextParser].map((type) => [
+  type.prototype,
+  Object.entries(Object.getOwnPropertyDescriptors(type.prototype)).filter(
+    ([key, descriptor]) => key !== 'constructor' && typeof descriptor.value === 'function',
+  ),
+]);
+function ordinaryPublicationObject(value, index) {
+  const [prototype, methods] = publicationMethods[index];
+  return (
+    Object.getPrototypeOf(value) === prototype &&
+    methods.every(
+      ([key, descriptor]) =>
+        !Object.hasOwn(value, key) &&
+        Object.getOwnPropertyDescriptor(prototype, key)?.value === descriptor.value,
+    )
+  );
+}
+// Only the default owned STRING writer can defer publication. NV, image fonts,
+// provider overrides and first font IO retain their complete message order.
+export function nativeTextPublicationWriter(writer, config) {
+  if (
+    !ownedWriters.has(writer) ||
+    !ordinaryPublicationObject(writer, 1) ||
+    !ordinaryPublicationObject(writer.runtime, 0) ||
+    !ordinaryPublicationObject(writer.parser, 2) ||
+    writer.runtime.writers.get(writer.pointer) !== writer ||
+    writer.mode === 'nv' ||
+    writer.imageFont ||
+    Object.getPrototypeOf(writer.fontImages) !== Map.prototype ||
+    writer.fontImages.size ||
+    !writer.pixels ||
+    !nativePublicationPixels(writer.pixels.rgba) ||
+    writer.pixels.rgba.length !== writer.pixels.width * writer.pixels.height * 4
+  )
+    return false;
+  if (!(config instanceof Uint8Array) || config.length !== writer.parser.config.length)
+    return false;
+  const dimensions = new DataView(config.buffer, config.byteOffset, config.byteLength);
+  if (
+    dimensions.getInt32(4, true) !== writer.pixels.width ||
+    dimensions.getInt32(8, true) !== writer.pixels.height
+  )
+    return false;
+  return nativeTextFontPublication(writer.runtime.glyphs, writer.parser, config);
 }
