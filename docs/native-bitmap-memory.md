@@ -48,6 +48,26 @@ word retain their original values; they are not replaced by decoded pixel depth.
 Normal HG2/HG3 KCS tests compare all output and surrounding seeded words, then
 restore and release the still-live encoded descriptor in an independent World.
 
+SDK23 image-owner `716/721/722/725/729/734` operate on the existing typed
+image owner. The original file-server, Settings, software kcView, Top and Script
+constructors establish the loaded layer vector and its separate Script cleanup
+list. Packed multiplication and alpha scaling visit those layers; alpha queries
+and hints use the current output bitmap. Attribute copy retains the five-word
+payload. KCS tests compare each intermediate pixel, metadata word and mapped
+attribute output, then check independent cold restore, release and Script reload.
+The original automatic list also releases both loaded and blank owners on reload
+and after retirement reaches the actual deleting destructor.
+
+The `.23` RGBA `734` helper blends physical rows within independently clipped
+rectangles, skips zero-alpha source samples and preserves all RGB outside the
+rectangle. Source mask values `1`–`4` select B/G/R/A as an integer multiplier of
+the target alpha; target RGB remains unchanged. This local strategy
+retains the original integer alpha arithmetic without changing the shared
+presentation compositor. Other pixel depths, alternate blend types, absent
+source/output bitmaps and the external VRAM branch remain guarded. `721` with
+no output bitmap leaves the native result unwritten and remains protected.
+Blank owners are not passed to the loaded-layer iterators.
+
 [NativeImages](../src/native/image.mjs) owns script bitmap pixels, metadata,
 attributes and aliasing in JS. Canvas presentation is a derived cache. A
 checkpoint saves the shared JS pixel backing once and preserves the bitmap

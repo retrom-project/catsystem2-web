@@ -139,6 +139,11 @@ export class NativeImageOwners {
       return value(1);
     }
     if (id === 0x2d1) {
+      if (
+        nativeABI(this.world.profile).graphics.imageOwnerAlphaQueryRequiresBitmap &&
+        (!first || !this.get(first).bitmap)
+      )
+        throw new Error('The image alpha query requires an owner bitmap');
       if (!first) return value(NATIVE_RESULT_SENTINEL);
       const record = this.get(first);
       return value(

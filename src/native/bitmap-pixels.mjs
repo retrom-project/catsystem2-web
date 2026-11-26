@@ -2,7 +2,7 @@
 import { originalOwner, originalOperation } from './original-adapter.mjs';
 import { nativeABI } from './abi/index.mjs';
 // Integer bitmap arithmetic follows the reviewed packed-pixel algorithms.
-import { resampleBitmap } from './image.mjs';
+import { blendBitmapPixel, resampleBitmap } from './image.mjs';
 import { flipBitmapRows } from './raster-kernel.mjs';
 const f = Math.fround;
 export async function bitmapColor(bitmap, mode, argument) {
@@ -207,6 +207,26 @@ export async function bitmapTransfer(world, destination, source, args, copy, tas
   sy = sr[1];
   dx = dr[0];
   dy = dr[1];
+  if (args.blendPhysicalRows) {
+    const pixels = await destination.pixels(),
+      input = sameBacking ? pixels : await source.pixels();
+    for (let row = 0; row < height; row++)
+      for (let x = 0; x < width; x++) {
+        const from = ((source.height - 1 - sy - row) * source.width + sx + x) * 4,
+          to = ((destination.height - 1 - dy - row) * destination.width + dx + x) * 4,
+          mask = source.state.mask >>> 0;
+        if (mask) {
+          const channel = [2, 1, 0, 3][mask - 1];
+          pixels[to + 3] = (((pixels[to + 3] + 1) * (input[from + channel] + 1) - 1) >>> 8) & 255;
+        } else if (input[from + 3]) {
+          // The old scalar RGBA helper skips zero-alpha samples and touches
+          // only the clipped rectangle, including its otherwise invisible RGB.
+          blendBitmapPixel(pixels, to, input, from);
+        }
+      }
+    destination.state.source = null;
+    return destination.changed();
+  }
   if (args.copyPhysicalRows) {
     const pixels = await destination.pixels(),
       input = sameBacking ? pixels : await source.pixels(),

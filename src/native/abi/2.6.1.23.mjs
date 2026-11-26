@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [716, 721, 722, 725, 729, 734],
+    value:
+      'Own complete Script GCALLs use the original kcFileServer singleton, complete Settings defaults, software kcView and true Top/Script constructors. Main710 creates a real64-byte loaded image owner with its nonempty native layer vector;733 creates an independent blank target. Main716 packed multiplication and729 alpha scaling visit loaded layers,721 reads the live output alpha hint,722 changes that hint,725 copies a nonempty HG3 attribute tree and734 blends a legal source/target rectangle. All output pixels, metadata, copied attribute words, controls and Script+0x9c automatic-list references are compared. Null or bitmap-less721 leaves the original result unwritten and remains guarded; blank owners are not passed to the layer iterators.',
+  },
+  {
     ids: [375, 431],
     value:
       'Own Main375 at0x4897b0 formats the CP932 image path, reads at most1024 bytes through the explicit IFile boundary and executes the original nine-word header parser. Own431 at0x489a90 consumes the true Main365 twenty-byte descriptor, zeros its nine-word output and runs the whole HG2/HG3 container parser. Full actual Script GCALLs compare distinct mapped spans and surrounding seeded words for valid HG2/HG3, including the HG2 header depth-derived word and the container helper untouched word after wrapper zeroing. Both return control1; no synthetic native owner, text patch or invalid-output probe is used.',
@@ -1681,6 +1686,7 @@ export default {
   },
   graphics: {
     bitmapAlphaQueryRequiresOwner: true,
+    imageOwnerAlphaQueryRequiresBitmap: true,
     bitmapResizeUsesLegacyCells: true,
     bitmapToneSkipsNeutralOwner: true,
     bitmapCompositeUsesLegacyRows: true,
@@ -1688,6 +1694,7 @@ export default {
     bitmapBlitUsesSourceSize: true,
     sameSizeBitmapCopyClips: true,
     imageOwnerCopyPhysicalRows: true,
+    imageOwnerBlendPhysicalRows: true,
     screenCaptureOpaque: true,
     recordingRequiresFrame: true,
     screenEffectRetimesOnActiveInit: [38, 39, 50, 51, 52],

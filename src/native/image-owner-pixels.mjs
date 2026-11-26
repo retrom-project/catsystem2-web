@@ -44,8 +44,25 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
       nativeABI(world.profile).graphics.imageOwnerCopyRequiresBitmap
     )
       throw new Error('The image copy requires a source bitmap');
+    if (
+      id === 0x2de &&
+      nativeABI(world.profile).graphics.imageOwnerBlendPhysicalRows &&
+      (!source?.bitmap || !target.bitmap)
+    )
+      throw new Error('The image blend requires source and target bitmaps');
     if (source?.bitmap) {
       const words = Array.from({ length: 10 }, (_, i) => a(i));
+      if (id === 0x2de && nativeABI(world.profile).graphics.imageOwnerBlendPhysicalRows) {
+        if (
+          images.get(source.bitmap).state.bpp !== 4 ||
+          images.get(target.bitmap).state.bpp !== 4 ||
+          images.get(source.bitmap).state.blendType ||
+          images.get(source.bitmap).state.mask >>> 0 > 4
+        )
+          throw new Error('The image blend requires the reviewed RGBA scalar format');
+        words.operation = 'clipped-blend';
+        words.blendPhysicalRows = true;
+      }
       if (id === 0x2df) {
         words.operation = 'clipped-copy';
         words.copyPhysicalRows = nativeABI(world.profile).graphics.imageOwnerCopyPhysicalRows;
