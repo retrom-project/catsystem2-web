@@ -58,9 +58,9 @@ every decoded frame in the same source map, including a single-frame source;
 the existing HG2v10/v20 decoder contracts supply their one-frame form. Ordinals
 remain distinct from frame IDs. Encoded rebinding of an existing bitmap or array-retained source preserves
 that source and its loaded ANM. The array owner observes the replaced frames
-and geometry while keeping its original reference count. Nested image-owner
-rebinding remains guarded until its nested renderer lifetime is modeled. JFIF
-inputs require their complete decoder initialization proof. Replacing
+and geometry while keeping its original reference count. Image-owner rebinding retains its original owner independently of current
+decoded frames, as described below. JFIF inputs still require their complete
+decoder initialization proof. Replacing
 encoded frames keeps an already loaded ANM object and its control state; it does
 not create a new retained source or implicitly load a program.
 
@@ -92,3 +92,36 @@ invalidated while the node, layer and references remain. The original VM
 comparison covers both transitions, every output pixel, caller-array release,
 removal and destruction. Independent cold Worlds continue from the initial
 empty bind, both encoded rebinds and array release.
+
+For .23, an image-owner Draw source retains the same Main710 owner, its renderer
+and children. Main711 removes the Script reference; the retained owner stays
+alive until the Draw entry releases its final reference. The owner array and
+renderer hold their two references to each child source. Child ANM objects,
+frame handles and owner updates remain shared. The checkpoint stores these
+resource identities and reference counts in the existing resource codecs.
+
+Main623 can replace the current decoded frames of this source without replacing
+its owner. Main657 prefers the current bitmap and falls back to the owner's
+bitmap when the decoded map is empty. That fallback does not reset the source's
+cached geometry. A source can therefore have logical dimensions3x2 while the
+actual retained bitmap remains4x3 with its original pitch. Scalar and affine CPU
+sampling use both values; the bitmap getter keeps the actual bitmap dimensions.
+Affine cached dimensions beyond actual storage remain guarded pending their
+normal contract qualification.
+
+The .23 affine RGBA blend keeps full intermediate weights until its final
+shift. It has a different partial-alpha rounding rule from the scalar helper.
+Layer changes update the ordering tree without invalidating pixels. A later
+source or visibility update triggers redraw using the new order. Normal VM
+comparisons cover both layer orders, visibility-triggered redraw, alpha,
+subsequent entry removal and independent cold continuation.
+
+The display and capture path consumes the completed CPU renderer bitmap.
+Retained source geometry does not go directly to Stage or a GPU texture.
+`graphics.surface` returns that renderer bitmap; ordinary output copies its
+RGBA rows into VRAM before texture-page upload and Stage composition. The short
+comparison checks the full output bitmap and physical texture rows after both
+layer orders and later drawings, reusing the established presentation path.
+An unqualified non-HG animated Main710 owner remains protected at construction;
+Main703's separately qualified empty source contract does not establish its
+owner storage layout.

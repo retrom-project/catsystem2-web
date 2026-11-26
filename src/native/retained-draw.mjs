@@ -29,6 +29,7 @@ function readyRasterSources(graphics, bitmap, pixels, items) {
   for (const item of items) {
     const source = images.get(item.image);
     if (
+      item.rasterGeometry ||
       source.dataHandle === bitmap.dataHandle ||
       source.canvasDirty ||
       source.pixels !== NativeBitmap.prototype.pixels ||
@@ -171,19 +172,20 @@ export class NativeRetainedDraw {
   async fromBitmap(handle) {
     return this.sources.create({ bitmap: this.world.graphics.images.alias(handle) });
   }
-  fromLayer(layer) {
+  fromLayer(layer, borrowedBitmaps = false) {
     const images = this.world.graphics.images;
     const handle = this.sources.create({
-        bitmap: layer.bitmap ? images.alias(layer.bitmap) : 0,
+        bitmap: layer.bitmap ? (borrowedBitmaps ? layer.bitmap : images.alias(layer.bitmap)) : 0,
         frames: (layer.animation?.frames ?? []).map((f) => ({
           ...f,
-          bitmap: f.bitmap ? images.alias(f.bitmap) : 0,
+          bitmap: f.bitmap ? (borrowedBitmaps ? f.bitmap : images.alias(f.bitmap)) : 0,
         })),
         bounds: layer.animation?.bounds ?? null,
         program: layer.program,
       }),
       state = layer.animation?.bounds ?? (layer.bitmap ? images.get(layer.bitmap).state : {});
     Object.assign(this.sources.get(handle), {
+      ...(borrowedBitmaps ? { borrowedBitmaps: true } : {}),
       animatedLayer: Boolean(layer.animation),
       baseShown: 1,
       base: [state.baseX ?? 0, state.baseY ?? 0],
@@ -191,6 +193,18 @@ export class NativeRetainedDraw {
     return handle;
   }
   fromOwner(handle) {
+    if (nativeABI(this.world.profile).graphics.drawRetainsImageOwner) {
+      if (!this.world.imageOwners.get(handle).bitmap)
+        throw new Error('The empty image-owner Draw source has no reviewed ABI binding');
+      const source = this.sources.create();
+      this.world.imageOwners.retain(handle);
+      Object.assign(this.sources.get(source), {
+        ownerHandle: handle,
+        retainedOwner: true,
+        ownerRevision: this.world.imageOwners.get(handle).rebuild ?? 0,
+      });
+      return source;
+    }
     const owner = this.world.imageOwners.get(handle),
       source = this.sources.create({
         bitmap: owner.bitmap ? this.world.graphics.images.alias(owner.bitmap) : 0,
@@ -201,6 +215,49 @@ export class NativeRetainedDraw {
       ownerRevision: owner.rebuild ?? 0,
     });
     return source;
+  }
+  children(source) {
+    return source.retainedOwner
+      ? (this.world.imageOwners.get(source.ownerHandle).retainedChildren ?? [])
+      : source.children;
+  }
+  async syncOwnerModel(ownerHandle) {
+    const owner = this.world.imageOwners.get(ownerHandle),
+      revision = owner.rebuild ?? 0,
+      layers = owner.layers ?? [];
+    if (owner.retainedChildren && owner.retainedChildrenRevision === revision) return;
+    if (owner.layerSources?.length === layers.length) {
+      for (const [i, layer] of layers.entries()) {
+        const child = this.sources.get(owner.layerSources[i]),
+          state =
+            layer.animation?.bounds ??
+            (layer.bitmap ? this.world.graphics.images.get(layer.bitmap).state : {});
+        child.bitmap = layer.bitmap || 0;
+        child.frames = (layer.animation?.frames ?? []).map((frame) => ({ ...frame }));
+        child.bounds = layer.animation?.bounds ?? null;
+        child.base = [state.baseX ?? 0, state.baseY ?? 0];
+      }
+    } else {
+      const previous = [...(owner.layerSources ?? []), ...(owner.retainedChildren ?? [])];
+      owner.layerSources = layers.map((layer) => this.fromLayer(layer, true));
+      owner.retainedChildren = owner.layerSources.map((child) => this.sources.retain(child));
+      for (const child of previous) await this.sources.release(child);
+    }
+    owner.retainedChildrenRevision = revision;
+    for (const record of this.world.runtime.handles.records.values())
+      if (
+        record.type === 'render-source' &&
+        record.value.retainedOwner &&
+        record.value.ownerHandle === ownerHandle
+      ) {
+        record.value.groupDirty = false;
+        record.value.ownerRevision = revision;
+        record.value.revision++;
+      }
+  }
+  async syncOwner(handle) {
+    const source = this.sources.get(handle);
+    if (source.retainedOwner) await this.syncOwnerModel(source.ownerHandle);
   }
   async fromData(handle) {
     const buffers = this.world.runtime.imageDataBuffers;
@@ -216,7 +273,10 @@ export class NativeRetainedDraw {
       kind === 1 &&
       nativeABI(this.world.profile).graphics.drawEncodedBindingRebuildsFrames
     ) {
-      if (![0, 1, 2].includes(record.kind))
+      if (
+        ![0, 1, 2].includes(record.kind) &&
+        !(record.kind === 3 && this.sources.get(record.source).retainedOwner)
+      )
         throw new Error('The encoded Draw rebind source class has no reviewed ABI binding');
       const replacement = await this.fromData(inputToken);
       if (!replacement) return false;
@@ -248,6 +308,7 @@ export class NativeRetainedDraw {
       }
       this.items.set(this.key(draw, key), record);
     }
+    await this.syncOwner(record.source);
     const source = this.sources.get(record.source);
     Object.assign(source, {
       position: fields.slice(4, 6).map(bitsFloat),
@@ -309,10 +370,11 @@ export class NativeRetainedDraw {
       const source = this.sources.get(handle);
       source.enabled = value >>> 0;
       let changed = false;
-      for (const child of source.children)
+      for (const child of this.children(source))
         if (this.sources.get(child).hasProgram) {
           if (enable(child)) changed = true;
-          for (const sibling of source.children) if (this.advance(sibling, frame)) changed = true;
+          for (const sibling of this.children(source))
+            if (this.advance(sibling, frame)) changed = true;
         }
       if (changed) {
         source.groupDirty = true;
@@ -320,6 +382,7 @@ export class NativeRetainedDraw {
       }
       return changed;
     };
+    await this.syncOwner(record.source);
     enable(record.source);
     await this.update(draw, frame);
   }
@@ -329,7 +392,7 @@ export class NativeRetainedDraw {
     const visit = (handle) => {
       const source = this.sources.get(handle);
       source.animation?.setVariable(index, value);
-      for (const child of source.children) visit(child);
+      for (const child of this.children(source)) visit(child);
     };
     visit(record.source);
   }
@@ -374,6 +437,7 @@ export class NativeRetainedDraw {
       this.advance(handle, -1);
       source.enabled = enabled;
     };
+    await this.syncOwner(record.source);
     visit(record.source);
     await this.pull(draw, record);
     return true;
@@ -400,13 +464,26 @@ export class NativeRetainedDraw {
         if (source.frames.some((f) => f.key === key && f.bitmap)) source.selected = key;
       }
     }
-    for (const child of source.children)
+    for (const child of this.children(source))
       if (this.advance(child, frame)) {
         changed = true;
         source.groupDirty = true;
       }
     const bitmap = this.sources.bitmap(handle),
       bitmapRevision = bitmap ? this.world.graphics.images.get(bitmap).state.revision : -1;
+    if (
+      source.retainedOwner &&
+      bitmap !== source.sourceBitmap &&
+      source.frames.some((frame) => frame.bitmap === bitmap)
+    ) {
+      const state = this.world.graphics.images.get(bitmap).state;
+      source.rasterGeometry = {
+        width: state.width,
+        height: state.height,
+        offsetX: state.offsetX,
+        offsetY: state.offsetY,
+      };
+    }
     changed = changed || bitmap !== source.sourceBitmap || bitmapRevision !== source.bitmapRevision;
     source.sourceBitmap = bitmap;
     source.bitmapRevision = bitmapRevision;
@@ -424,6 +501,7 @@ export class NativeRetainedDraw {
   async update(draw, frame) {
     for (const record of this.items.values())
       if (record.surface === draw.record.id) {
+        await this.syncOwner(record.source);
         this.advance(record.source, frame);
         if (this.needsPull(record)) await this.pull(draw, record);
       }
@@ -450,22 +528,28 @@ export class NativeRetainedDraw {
   async composite(source) {
     const images = this.world.graphics.images,
       model = this.world.runtime.handles.records.get(source.ownerHandle);
-    if (model?.type === 'image-owner' && source.ownerRevision !== (model.value.rebuild ?? 0)) {
+    if (
+      !source.retainedOwner &&
+      model?.type === 'image-owner' &&
+      source.ownerRevision !== (model.value.rebuild ?? 0)
+    ) {
       const children = (model.value.layers ?? []).map((layer) => this.fromLayer(layer)),
         bitmap = model.value.bitmap ? images.alias(model.value.bitmap) : 0;
-      for (const child of source.children) await this.sources.release(child);
+      for (const child of this.children(source)) await this.sources.release(child);
       if (source.bitmap) await images.release(source.bitmap);
       source.children = children;
       source.bitmap = bitmap;
       source.ownerRevision = model.value.rebuild ?? 0;
       source.groupDirty = false;
     }
-    if (!source.children.length || !source.bitmap || !source.groupDirty) return;
-    const output = images.get(source.bitmap);
+    const children = this.children(source),
+      outputHandle = source.retainedOwner ? model.value.bitmap : source.bitmap;
+    if (!children.length || !outputHandle || !source.groupDirty) return;
+    const output = images.get(outputHandle);
     output.commitCanvas();
     const pixels = flipBitmapRows(await output.pixels(), output.width, output.height);
     pixels.fill(0);
-    for (const child of source.children) {
+    for (const child of this.children(source)) {
       const input = this.sources.get(child),
         bitmap = this.sources.bitmap(child);
       if (!bitmap) continue;
@@ -503,8 +587,11 @@ export class NativeRetainedDraw {
     output.state.source = null;
     await output.changed();
     source.groupDirty = false;
-    source.sourceBitmap = source.bitmap;
-    source.bitmapRevision = output.state.revision;
+    source.sourceBitmap =
+      source.frames.find((frame) => frame.key === source.selected)?.bitmap ||
+      source.bitmap ||
+      outputHandle;
+    source.bitmapRevision = images.get(source.sourceBitmap).state.revision;
   }
   async pull(draw, record) {
     const source = this.sources.get(record.source);
@@ -516,10 +603,18 @@ export class NativeRetainedDraw {
       await draw.removeEntry(record.key);
       return false;
     }
+    let rasterGeometry;
+    if (source.rasterGeometry) {
+      const state = this.world.graphics.images.get(bitmap).state;
+      if (Object.entries(source.rasterGeometry).some(([key, value]) => value !== state[key]))
+        rasterGeometry = { ...source.rasterGeometry };
+    }
     const item = await draw.upsert(record.key, {
       image: bitmap,
+      ...(rasterGeometry ? { rasterGeometry } : {}),
       ...this.attributes(source),
       retained: record.source,
+      ...(source.retainedOwner ? { borrowedBitmap: true } : {}),
     });
     if (nativeABI(this.world.profile).graphics.retainedSourcesUseStoredLayer)
       item.layer = record.layer;
@@ -530,6 +625,7 @@ export class NativeRetainedDraw {
   async rasterize(draw, areas, forceOutput) {
     for (const record of this.items.values())
       if (record.surface === draw.record.id) {
+        await this.syncOwner(record.source);
         this.advance(record.source);
         if (this.needsPull(record)) await this.pull(draw, record);
       }
@@ -701,15 +797,40 @@ export class NativeRetainedDraw {
           for (const item of items) {
             const source = images.get(item.image);
             source.commitCanvas();
+            const pixels = await source.pixels(),
+              state = source.state,
+              geometry = item.rasterGeometry,
+              packetState = geometry
+                ? {
+                    ...state,
+                    ...geometry,
+                    clip: [
+                      state.clip[0],
+                      state.clip[1],
+                      Math.min(state.clip[2], geometry.width),
+                      Math.min(state.clip[3], geometry.height),
+                    ],
+                  }
+                : state;
+            if (
+              item.mode &&
+              geometry &&
+              (geometry.width > state.width || geometry.height > state.height)
+            )
+              throw new Error(
+                'The affine source geometry beyond its bitmap storage has no reviewed ABI binding',
+              );
             rasterizeRetainedBitmap(
               rows,
               renderer.width,
               renderer.height,
-              await source.pixels(),
-              source.state,
+              pixels,
+              packetState,
               item,
               area,
-              options,
+              geometry
+                ? { ...options, storageWidth: state.width, storageHeight: state.height }
+                : options,
             );
           }
         }

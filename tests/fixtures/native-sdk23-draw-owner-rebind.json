@@ -1,0 +1,399 @@
+{
+  "resources": [
+    {
+      "name": "pixels.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+    },
+    {
+      "name": "replacement.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAE0AAAAAAAAAAgAAACAAAAAXAAAAFQAAAA0AAAB4nOM+cEAzVdX83y+mc/zGjw+av9TIcjhwwAEAfgUK1nicY+RgYK4xPCDOXLOTIR4AEM8DKA==",
+      "sha256": "b138dbea191a6d7e54fd3ce2a39e0fb4782595998881cc83ecb2263e70393bec"
+    },
+    {
+      "name": "empty.kcf",
+      "base64": "S0NGAAMAAgAMAAQAS0NMWgAAAAAYAAAAAAAAAAAAAAAcAAAAHwAAAAAAALWLZf/HnX9A362X/39JH/+VYTuAp3FTAA==",
+      "sha256": "919e7e693c6ab9be89ead37bcdf533e10f691b6101e2f976688e990479d8ba56"
+    }
+  ],
+  "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "producerSha256": "08c477e45003dc8303f3396a0b9ad5bef58e439d054592ce4a6a6d4659ca30a6",
+  "helperSha256": "0b4fb98b0b02e4fcefe0e17e364db59c0add90ca2075358f87b8c4d0bef82294",
+  "scope": "Real Main66/256/260/262 initialized Draw, Main710 image-owner factory and Main731 retained owner source. Main623 replaces current decoded bitmap while preserving actual nested holder identity; release encoded descriptor and original Script owner, replace with valid KCF empty decoded map and observe Main657 fallback, CPU pixels, then removal/destruction. All original native objects; no arbitrary actor, code patch, device output or abnormal input.",
+  "originalReceipt": ".local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/draw16-20261127/ORIGINAL-DRAW-OWNER-REBIND.json",
+  "originalReceiptSha256": "90dbe772dc4c5fde177ccff8cd3962a973c35bb20ed8eec72e19c6d43c78c77c",
+  "rows": [
+    {
+      "id": 66,
+      "args": [15, 3, 320],
+      "resultAddress": 32,
+      "itemCount": null,
+      "scriptOwnerCount": 0,
+      "bitmap": null
+    },
+    {
+      "id": 256,
+      "args": [[19, 32], 8, 6],
+      "resultAddress": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    },
+    {
+      "id": 260,
+      "args": [[19, 32], 0, 0],
+      "resultAddress": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    },
+    {
+      "id": 262,
+      "args": [[19, 32], 0],
+      "resultAddress": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    },
+    {
+      "id": 710,
+      "args": [256],
+      "resultAddress": 36,
+      "itemCount": 0,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    },
+    {
+      "id": 731,
+      "args": [
+        [19, 32],
+        7,
+        [19, 36],
+        1073741824,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        200,
+        1,
+        0
+      ],
+      "resultAddress": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 2,
+        "currentBitmap": false,
+        "holderIdentity": true
+      }
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40YGQvP2fIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 2,
+        "currentBitmap": false,
+        "holderIdentity": true
+      }
+    },
+    {
+      "id": 657,
+      "args": [[19, 32], 7],
+      "resultAddress": 56,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40YGQvP2fIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 2,
+        "currentBitmap": false,
+        "holderIdentity": true
+      },
+      "borrowHolder": true,
+      "borrowCurrent": false
+    },
+    {
+      "id": 365,
+      "args": [384],
+      "resultAddress": 40,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40YGQvP2fIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 2,
+        "currentBitmap": false,
+        "holderIdentity": true
+      }
+    },
+    {
+      "id": 623,
+      "args": [
+        [19, 32],
+        7,
+        [19, 40],
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        180,
+        1,
+        0
+      ],
+      "resultAddress": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40YGQvP2fIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 2,
+        "currentBitmap": true,
+        "holderIdentity": true
+      }
+    },
+    {
+      "id": 657,
+      "args": [[19, 32], 7],
+      "resultAddress": 60,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB40YGQvP2fIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 2,
+        "currentBitmap": true,
+        "holderIdentity": true
+      },
+      "borrowHolder": false,
+      "borrowCurrent": true
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9Jf7Q7YZVaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZYu1tH+dxy2Xrd+0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 2,
+        "currentBitmap": true,
+        "holderIdentity": true
+      }
+    },
+    {
+      "id": 366,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9Jf7Q7YZVaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZYu1tH+dxy2Xrd+0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 2,
+        "currentBitmap": true,
+        "holderIdentity": true
+      }
+    },
+    {
+      "id": 711,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9Jf7Q7YZVaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZYu1tH+dxy2Xrd+0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 1,
+        "currentBitmap": true,
+        "holderIdentity": true
+      }
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9Jf7Q7YZVaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZYu1tH+dxy2Xrd+0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 1,
+        "currentBitmap": true,
+        "holderIdentity": true
+      }
+    },
+    {
+      "id": 365,
+      "args": [448],
+      "resultAddress": 40,
+      "itemCount": 1,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9Jf7Q7YZVaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZYu1tH+dxy2Xrd+0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 1,
+        "currentBitmap": true,
+        "holderIdentity": true
+      }
+    },
+    {
+      "id": 623,
+      "args": [
+        [19, 32],
+        7,
+        [19, 40],
+        1073741824,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        220,
+        1,
+        0
+      ],
+      "resultAddress": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9Jf7Q7YZVaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZYu1tH+dxy2Xrd+0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 1,
+        "currentBitmap": false,
+        "holderIdentity": true
+      }
+    },
+    {
+      "id": 657,
+      "args": [[19, 32], 7],
+      "resultAddress": 64,
+      "itemCount": 1,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9Jf7Q7YZVaAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZYu1tH+dxy2Xrd+0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 1,
+        "currentBitmap": false,
+        "holderIdentity": true
+      },
+      "borrowHolder": true,
+      "borrowCurrent": false
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 1,
+        "currentBitmap": false,
+        "holderIdentity": true
+      }
+    },
+    {
+      "id": 366,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "itemCount": 1,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "retainedOwner": {
+        "refs": 1,
+        "currentBitmap": false,
+        "holderIdentity": true
+      }
+    },
+    {
+      "id": 258,
+      "args": [[19, 32], 7],
+      "resultAddress": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    },
+    {
+      "id": 67,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "itemCount": 0,
+      "scriptOwnerCount": 0,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      }
+    }
+  ]
+}

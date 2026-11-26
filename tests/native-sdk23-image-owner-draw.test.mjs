@@ -112,11 +112,9 @@ for (const fixture of [
           }
         }
         if (row.id === 711) {
-          assert.equal(
-            world.runtime.handles.records.has(m.load(36)),
-            false,
-            'source owner is released',
-          );
+          const held = world.imageOwners.get(m.load(36));
+          assert.equal(held.owner, null, 'Script reference leaves its automatic list');
+          assert.equal(held.refs, 1, 'Draw still retains the actual image owner');
           const fresh = await dataWorld(profile, inputs, { initialize: false });
           try {
             await fresh.restore(structuredClone(world.snapshot()));
@@ -128,6 +126,11 @@ for (const fixture of [
       }
       await world.objects.tick(30);
       assert.equal(world.objects.objects.has(drawID), false, 'retired Draw deleted on update');
+      assert.equal(
+        world.runtime.handles.records.has(m.load(36)),
+        false,
+        'nested image owner ends with the Draw entry',
+      );
       assert.equal(
         world.runtime.handles.records.has(m.load(40)),
         false,

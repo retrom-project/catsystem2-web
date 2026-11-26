@@ -104,3 +104,13 @@ New independent pixel, packet and reconstruction differentials are in
 `native-image-owner-pixels.test.mjs` and `native-image-owner-projection.test.mjs`.
 The latter also checks complete static/ANM output pixels, immutable input
 ownership, projection dimensions and fresh World restoration.
+
+SDK2.6.1.23 Draw retains the actual logical image owner. A Script release drops
+its automatic-list reference without destroying the owner while Draw still
+holds it. The owner keeps the source-array and renderer references to each
+child source, including the same ANM state and bitmap handles. Encoded Draw
+rebinding owns a separate current frame map; an empty current map can expose
+the retained owner's bitmap again. Final entry destruction releases the decoded
+frames, the owner and then its remaining child/bitmap resources. These fields
+belong to the current internal checkpoint contract; no new save-file words or
+parallel checkpoint reader are introduced.

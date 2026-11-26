@@ -82,7 +82,10 @@ export class NativeRenderSources {
     this.handles.release(handle, 'render-source');
     for (const child of source.children) await this.release(child);
     const bitmaps = new Set([source.bitmap, ...source.frames.map((frame) => frame.bitmap)]);
-    for (const bitmap of bitmaps) if (bitmap) await this.world.graphics.images.release(bitmap);
+    if (!source.borrowedBitmaps)
+      for (const bitmap of bitmaps) if (bitmap) await this.world.graphics.images.release(bitmap);
+    if (source.retainedOwner)
+      await this.world.imageOwners.release(source.ownerHandle, { retained: true });
   }
   bitmap(handle, { first = false, ordinal = null } = {}) {
     const source = this.get(handle);
@@ -95,9 +98,15 @@ export class NativeRenderSources {
             ? source.frames[0]
             : source.frames.find((frame) => frame.key === source.selected)
           : source.frames[Math.max(0, ordinal | 0)];
-      return frame?.bitmap ?? 0;
+      return (
+        frame?.bitmap ||
+        (source.retainedOwner ? this.world.imageOwners.get(source.ownerHandle).bitmap : 0)
+      );
     }
-    return source.bitmap;
+    return (
+      source.bitmap ||
+      (source.retainedOwner ? this.world.imageOwners.get(source.ownerHandle).bitmap : 0)
+    );
   }
   async decode(bytes) {
     const empty = requireImageSourceFormat(
@@ -137,6 +146,15 @@ export class NativeRenderSources {
       oldBitmaps = new Set([source.bitmap, ...source.frames.map((frame) => frame.bitmap)]);
     for (const name of ['bitmap', 'frames', 'bounds', 'selected', 'sourceBitmap', 'bitmapRevision'])
       source[name] = decoded[name];
+    if (source.retainedOwner && decoded.sourceBitmap) {
+      const state = this.world.graphics.images.get(decoded.sourceBitmap).state;
+      source.rasterGeometry = {
+        width: state.width,
+        height: state.height,
+        offsetX: state.offsetX,
+        offsetY: state.offsetY,
+      };
+    }
     if (source.animation)
       source.animation.maxFrameKey = Math.max(0, ...source.frames.map((frame) => frame.key));
     source.revision++;

@@ -272,10 +272,12 @@ export class NativeDrawTask {
       case 299: {
         const item = this.entry(key);
         if (item) {
-          this.mark(item);
+          const invalidate =
+            nativeABI(this.world.profile).graphics.drawLayerChangeInvalidates !== false;
+          if (invalidate) this.mark(item);
           item.layer = l | 0;
           this.retained()?.setLayer(this, key, l);
-          this.mark(item);
+          if (invalidate) this.mark(item);
           return 1;
         }
         return 0;
@@ -442,12 +444,12 @@ export class NativeDrawTask {
       return prepareBitmapAffine({
         width: renderer.width,
         height: renderer.height,
-        sourceWidth: image.width,
-        sourceHeight: image.height,
+        sourceWidth: item.rasterGeometry?.width ?? image.width,
+        sourceHeight: item.rasterGeometry?.height ?? image.height,
         position: item.position,
         base: [
-          Math.fround(item.base[0] - image.state.offsetX),
-          Math.fround(item.base[1] - image.state.offsetY),
+          Math.fround(item.base[0] - (item.rasterGeometry?.offsetX ?? image.state.offsetX)),
+          Math.fround(item.base[1] - (item.rasterGeometry?.offsetY ?? image.state.offsetY)),
         ],
         rotation: item.rotation,
         scale: item.scale,
@@ -455,16 +457,21 @@ export class NativeDrawTask {
     }
     const image = this.graphics.images.get(item.image),
       x =
-        ((image.state.offsetX | 0) +
+        (((item.rasterGeometry?.offsetX ?? image.state.offsetX) | 0) +
           truncateFloat32(item.position[0]) -
           truncateFloat32(item.base[0])) |
         0,
       y =
-        ((image.state.offsetY | 0) +
+        (((item.rasterGeometry?.offsetY ?? image.state.offsetY) | 0) +
           truncateFloat32(item.position[1]) -
           truncateFloat32(item.base[1])) |
         0;
-    return [x, y, x + image.width, y + image.height];
+    return [
+      x,
+      y,
+      x + (item.rasterGeometry?.width ?? image.width),
+      y + (item.rasterGeometry?.height ?? image.height),
+    ];
   }
   mark(item, previous = false) {
     const bounds = previous ? item.dirtyBounds : this.bounds(item);
@@ -485,9 +492,13 @@ export class NativeDrawTask {
     const source = values.image && this.graphics.images.get(values.image),
       alias = !source
         ? 0
-        : old?.image && this.graphics.images.get(old.image).dataHandle === source.dataHandle
-          ? old.image
-          : this.graphics.images.alias(values.image, this.record.id);
+        : values.borrowedBitmap
+          ? values.image
+          : old?.image &&
+              !old.borrowedBitmap &&
+              this.graphics.images.get(old.image).dataHandle === source.dataHandle
+            ? old.image
+            : this.graphics.images.alias(values.image, this.record.id);
     const item = {
       ...values,
       key: key >>> 0,
@@ -497,7 +508,8 @@ export class NativeDrawTask {
     };
     if (old) {
       renderer.items.splice(renderer.items.indexOf(old), 1, item);
-      if (old.image && old.image !== alias) await this.graphics.images.release(old.image);
+      if (old.image && !old.borrowedBitmap && old.image !== alias)
+        await this.graphics.images.release(old.image);
     } else renderer.items.push(item);
     this.mark(item);
     return item;
@@ -513,7 +525,7 @@ export class NativeDrawTask {
     if (item) {
       this.mark(item, true);
       renderer.items.splice(renderer.items.indexOf(item), 1);
-      if (item.image) await this.graphics.images.release(item.image);
+      if (item.image && !item.borrowedBitmap) await this.graphics.images.release(item.image);
     }
     return Boolean(item);
   }

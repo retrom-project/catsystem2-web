@@ -127,7 +127,8 @@ export function affineBitmap(
 ) {
   const prepared = prepareBitmapAffine({ ...options, width, height, sourceWidth, sourceHeight });
   const { area, matrix, transformedBase, position, base } = prepared;
-  const alpha = options.alpha ?? 255;
+  const alpha = options.alpha ?? 255,
+    sourceStride = options.sourceStride ?? sourceWidth;
   if (!alpha) return prepared;
   const sample = new Uint8ClampedArray(4);
   const firstDestinationRow = options.firstDestinationRow ?? 0;
@@ -140,9 +141,9 @@ export function affineBitmap(
       const ix = ((u >> 15) + base[0]) | 0,
         iy = ((v >> 15) + base[1]) | 0;
       if (ix >>> 0 >= sourceWidth || iy >>> 0 >= sourceHeight) continue;
-      const a = (iy * sourceWidth + ix) * 4;
+      const a = (iy * sourceStride + ix) * 4;
       const b = ix < sourceWidth - 1 ? a + 4 : a;
-      const c = iy < sourceHeight - 1 ? a + sourceWidth * 4 : a;
+      const c = iy < sourceHeight - 1 ? a + sourceStride * 4 : a;
       const d = ix < sourceWidth - 1 && iy < sourceHeight - 1 ? c + 4 : a;
       if (!(source[a + 3] + source[b + 3] + source[c + 3] + source[d + 3])) continue;
       const dx = u & 32767,

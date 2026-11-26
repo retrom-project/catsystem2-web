@@ -98,6 +98,32 @@ export function blendTypeRGBPixel(output, at, input, offset, mode) {
     output[at + channel] = ((mixed * alpha + destination * (256 - alpha)) & 65535) >>> 8;
   }
 }
+function blendAffineBitmapPixel(output, at, input, offset, opacity) {
+  const alpha = (((input[offset + 3] + 1) * (opacity & 65535)) >>> 8) & 255,
+    destinationAlpha = output[at + 3];
+  if (!alpha) return;
+  if (alpha === 255 || !destinationAlpha) {
+    output.set([input[offset], input[offset + 1], input[offset + 2], alpha], at);
+  } else if (destinationAlpha === 255) {
+    for (let c = 0; c < 3; c++)
+      output[at + c] += Math.imul(input[offset + c] - output[at + c], alpha) >> 8;
+  } else {
+    const overlap = alpha * destinationAlpha,
+      source = alpha * (256 - destinationAlpha),
+      destination = destinationAlpha * (256 - alpha),
+      total = (overlap + source + destination) >>> 8,
+      reciprocal = Math.floor(65536 / total);
+    for (let c = 0; c < 3; c++)
+      output[at + c] =
+        (Math.imul(
+          input[offset + c] * (overlap + source) + output[at + c] * destination,
+          reciprocal,
+        ) >>>
+          24) &
+        255;
+    output[at + 3] = total;
+  }
+}
 const emptyPixel = (pixels, at) =>
   !pixels[at] && !pixels[at + 1] && !pixels[at + 2] && !pixels[at + 3];
 
@@ -142,6 +168,8 @@ export function rasterizeRetainedBitmap(
     firstDestinationRow = 0,
     written = null,
     preserveTransparentRGB = true,
+    storageWidth = state.width,
+    storageHeight = state.height,
   } = {},
 ) {
   if (!item.visible || !item.alpha || !state.width || !state.height) return;
@@ -162,9 +190,10 @@ export function rasterizeRetainedBitmap(
   if (item.mode) {
     // Both reviewed dispatch tables contain explicit empty handlers here.
     if (state.bpp !== 4 || (!blend && mask)) return;
-    const input = flipBitmapRows(pixels, state.width, state.height);
+    const input = flipBitmapRows(pixels, storageWidth, storageHeight);
     affineBitmap(output, width, height, input, state.width, state.height, {
       position: item.position,
+      sourceStride: storageWidth,
       base: [Math.fround(item.base[0] - state.offsetX), Math.fround(item.base[1] - state.offsetY)],
       rotation: item.rotation,
       scale: item.scale,
@@ -181,6 +210,8 @@ export function rasterizeRetainedBitmap(
               )
                 return;
               if (blend) blendTypePixel(out, at, source, offset, alpha, blend, true);
+              else if (!preserveTransparentRGB)
+                blendAffineBitmapPixel(out, at, source, offset, alpha);
               else blendBitmapPixel(out, at, source, offset, alpha);
             },
           }
@@ -208,13 +239,13 @@ export function rasterizeRetainedBitmap(
       pixels.buffer !== output.buffer &&
       Number.isInteger(state.width) &&
       Number.isInteger(state.height) &&
-      pixels.length === state.width * state.height * 4 &&
+      pixels.length === storageWidth * storageHeight * 4 &&
       area.every(Number.isInteger) &&
       area[0] >= x &&
       area[1] >= y &&
       area[2] <= x + state.width &&
       area[3] <= y + state.height,
-    input = logicalRows ? pixels : flipBitmapRows(pixels, state.width, state.height),
+    input = logicalRows ? pixels : flipBitmapRows(pixels, storageWidth, storageHeight),
     normal = !mask && !useBlend,
     firstOutputRow = (flipDestinationY ? height - area[3] : area[1]) - firstDestinationRow,
     endOutputRow = firstOutputRow + area[3] - area[1],
@@ -255,8 +286,8 @@ export function rasterizeRetainedBitmap(
       );
   written?.push(area);
   for (let row = area[1]; row < area[3]; row++) {
-    const sourceY = logicalRows ? state.height - 1 - (row - y) : row - y,
-      start = (sourceY * state.width + area[0] - x) * 4,
+    const sourceY = logicalRows ? storageHeight - 1 - (row - y) : row - y,
+      start = (sourceY * storageWidth + area[0] - x) * 4,
       destinationY = flipDestinationY ? height - 1 - row : row,
       at = ((destinationY - firstDestinationRow) * width + area[0]) * 4;
     if (normal && copy) {

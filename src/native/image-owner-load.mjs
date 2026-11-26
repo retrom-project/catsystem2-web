@@ -52,6 +52,14 @@ export async function loadImageOwner(
   const animatedLayer = async (file) => {
     const bytes = await files.read(file);
     if (!bytes?.length) return;
+    if (
+      !frameFormats &&
+      nativeABI(world.profile).graphics.drawRetainsImageOwner &&
+      nativeABI(world.profile).graphics.renderSourceEmptyFrameFormats?.includes(
+        rasterFormat(bytes)?.toUpperCase(),
+      )
+    )
+      throw new Error('The empty animated image owner has no reviewed ABI binding');
     const empty = requireImageSourceFormat(
       bytes,
       frameFormats,
@@ -165,7 +173,10 @@ export async function loadImageOwner(
     const record = { owner: task.id, bitmap: 0, info: [0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0], layers };
     await owners.rebuild(record);
     record.info[9] = selection.selectors.length ? 1 : 0;
-    return world.runtime.handles.add('image-owner', record);
+    const handle = owners.addRecord(record);
+    if (!describeLayers && nativeABI(world.profile).graphics.drawRetainsImageOwner)
+      await world.retainedDraw.syncOwnerModel(handle);
+    return handle;
   } catch (error) {
     for (const handle of new Set(
       layers.flatMap((l) => [l.bitmap, ...(l.animation?.frames ?? []).map((f) => f.bitmap)]),

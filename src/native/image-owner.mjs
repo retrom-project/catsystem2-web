@@ -53,11 +53,28 @@ export class NativeImageOwners {
   get(handle) {
     return this.world.runtime.handles.get(handle, 'image-owner');
   }
-  add(bitmap, owner, info) {
-    return this.world.runtime.handles.add('image-owner', { bitmap, owner, info, layers: null });
+  addRecord(record) {
+    if (nativeABI(this.world.profile).graphics.drawRetainsImageOwner) record.refs = 1;
+    return this.world.runtime.handles.add('image-owner', record);
   }
-  async release(handle) {
+  add(bitmap, owner, info) {
+    return this.addRecord({ bitmap, owner, info, layers: null });
+  }
+  retain(handle) {
     const record = this.get(handle);
+    if (!Number.isSafeInteger(record.refs) || record.refs < 1)
+      throw new Error('The image-owner retained reference has no reviewed ABI binding');
+    record.refs++;
+    return handle;
+  }
+  async release(handle, { retained = false } = {}) {
+    const record = this.get(handle);
+    if (nativeABI(this.world.profile).graphics.drawRetainsImageOwner) {
+      if (!retained) record.owner = null;
+      if (--record.refs > 0) return;
+      for (const child of [...(record.retainedChildren ?? []), ...(record.layerSources ?? [])])
+        await this.world.renderSources.release(child);
+    }
     this.world.runtime.handles.release(handle, 'image-owner');
     const handles = new Set([
       record.bitmap,
