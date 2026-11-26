@@ -84,6 +84,12 @@ The current library follows that invalidation boundary. Its default reader is
 bound to the current World's mode-3 mounted search, storage and resource-cache
 view; an explicitly supplied library reader retains authority. Cache folding is
 separate from the requested filename and each record's basic name.
+The internal World checkpoint stores the current source cache and the actual
+source bytes held by each live record. Records from one load share immutable
+source storage. An older actor survives a same-name file change and cache
+invalidation through cold restore; restoring it does not insert its old code
+into the current cache. A byte-identical current entry is reused. These fields
+belong to the internal checkpoint, and are not added to native CSS/CTS records.
 The cache fixture runs the real MOT static constructor before its two-manager
 Main GCALL sequence. Earlier probes which omitted that static constructor are
 not evidence of native cache lifetime. An empty-archive filename fixture uses

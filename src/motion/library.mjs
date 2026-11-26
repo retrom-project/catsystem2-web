@@ -50,6 +50,25 @@ export class MotionLibrary {
   clear() {
     this.scripts.clear();
   }
+  snapshot() {
+    return [...this.scripts].map(([key, entry]) => [key, entry.source.slice()]);
+  }
+  restore(state) {
+    if (!Array.isArray(state)) throw new Error('Invalid MOT source cache');
+    const entries = new Map();
+    for (const [key, source] of state) {
+      if (
+        typeof key !== 'string' ||
+        !(source instanceof Uint8Array) ||
+        !source.length ||
+        entries.has(key)
+      )
+        throw new Error('Invalid MOT cached source');
+      entries.set(key, { source: source.slice(), script: null, pending: null });
+    }
+    this.clear();
+    for (const entry of entries) this.scripts.set(...entry);
+  }
   nativeFilename(bytes) {
     for (let at = 0; at < bytes.length; at++) {
       if (nativeDataPair(bytes, at)) at++;
@@ -101,14 +120,27 @@ export class MotionLibrary {
     } else script.recordName = key.replaceAll('\\', '/').split('/').at(-1) + '.kcs';
     return script;
   }
-  async load(name) {
-    const script = await this.optional(name);
+  async load(name, { source = null } = {}) {
+    const script = await this.optional(name, { source });
     if (!script) throw new Error(`Missing mot resource: ${name}`);
     return script;
   }
-  async optional(name, { read, nameBytes } = {}) {
+  async optional(name, { read, nameBytes, source = null } = {}) {
     const key = this.#key(name, nameBytes);
     if (key === null) return null;
+    if (source !== null) {
+      if (!(source instanceof Uint8Array) || !source.length)
+        throw new Error('Invalid MOT instance source');
+      const cached = this.scripts.get(key)?.source;
+      if (
+        !cached ||
+        source.length !== cached.length ||
+        source.some((byte, at) => byte !== cached[at])
+      )
+        return this.#describe({ ...(await readKCS(source)), source }, name, key, nameBytes);
+      // Reuse the current immutable entry only when the actual bytes match.
+      // Restoring an older actor must not replace the current named cache.
+    }
     if (!this.scripts.has(key)) {
       const bytes = read
         ? await read(name)
@@ -127,11 +159,16 @@ export class MotionLibrary {
                 : await this.game.require(`${key}.kcs`);
       // A missing or zero-size source is not inserted in the native source list.
       if (!bytes || bytes.byteLength === 0) return null;
-      this.scripts.set(key, readKCS(bytes));
+      this.scripts.set(key, { source: bytes.slice(), script: null, pending: null });
     }
-    const script = await this.scripts.get(key);
+    const entry = this.scripts.get(key);
+    if (!entry.script) {
+      entry.pending ??= readKCS(entry.source).then((script) => (entry.script = script));
+      await entry.pending;
+    }
+    const script = entry.script;
     // Cached code is shared; each record retains its own requested filename.
-    return this.#describe({ ...script }, name, key, nameBytes);
+    return this.#describe({ ...script, source: entry.source }, name, key, nameBytes);
   }
   manager(base, speed = 1) {
     return new MotionManager({
@@ -141,7 +178,7 @@ export class MotionLibrary {
       random: this.random,
       calculations: this.calculations,
       onDebug: this.onDebug,
-      loadScript: (name) => this.load(name),
+      loadScript: (name, source) => this.load(name, { source }),
     });
   }
 }

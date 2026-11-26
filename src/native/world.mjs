@@ -1052,6 +1052,7 @@ export class NativeWorld {
       inputBindings: this.inputBindings?.snapshot() ?? null,
       resourceCache: this.resourceCache.snapshot(),
       imageFiles: this.imageFiles.snapshot(),
+      motionSources: this.motionLibrary.snapshot?.() ?? null,
       movies,
     };
   }
@@ -1087,6 +1088,10 @@ export class NativeWorld {
     this.random.restore(state.random);
     this.resourceCache.restore(state.resourceCache);
     this.imageFiles.restore(state.imageFiles);
+    if (state.motionSources !== null) {
+      if (!this.motionLibrary.restore) throw new Error('MOT source restore requires its library');
+      this.motionLibrary.restore(state.motionSources);
+    }
     if (state.inputBindings) {
       this.inputBindings ??= new NativeInputBindings(this.input, this.configuration);
       this.inputBindings.restore(state.inputBindings);

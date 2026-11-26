@@ -133,7 +133,14 @@ export class MotionManager {
   clear() {
     this.records.clear();
   }
-  snapshot() {
+  snapshot({ copySources = true } = {}) {
+    const sources = new Map(),
+      sourceFor = (source) => {
+        if (!source) return null;
+        if (!copySources) return source;
+        if (!sources.has(source)) sources.set(source, source.slice());
+        return sources.get(source);
+      };
     return {
       profile: this.profile,
       base: this.base.slice(),
@@ -149,6 +156,7 @@ export class MotionManager {
         group: record.group,
         startTick: record.startTick,
         script: record.instance.script.name,
+        source: sourceFor(record.instance.script.source),
         instance: record.instance.snapshot(),
       })),
     };
@@ -172,9 +180,16 @@ export class MotionManager {
           state[key].some((value) => value !== 0 && value !== 1))
       )
         throw new Error('Invalid MOT manager bank knowledge');
-    const records = new Map();
+    const records = new Map(),
+      sources = new Map();
     for (const record of state.records) {
-      const script = await this.loadScript(record.script);
+      if (record.source !== null && !(record.source instanceof Uint8Array))
+        throw new Error('Invalid MOT record source');
+      let scripts = sources.get(record.source);
+      if (!scripts) sources.set(record.source, (scripts = new Map()));
+      if (!scripts.has(record.script))
+        scripts.set(record.script, this.loadScript(record.script, record.source));
+      const script = await scripts.get(record.script);
       const instance = new MotionInstance(script, {
         profile: this.profile,
         random: this.random,

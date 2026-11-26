@@ -7,6 +7,7 @@ import { modernParticleMessageWorld } from './fixtures/modern-particle-message-w
 import { KCSMachine, readKCS } from '../src/kcs.mjs';
 import { kcsProgram } from './helpers.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
+import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 const golden = JSON.parse(
     await readFile(new URL('./fixtures/modern-motion-cache-golden.json', import.meta.url)),
   ),
@@ -14,10 +15,12 @@ const golden = JSON.parse(
 for (const build of golden.builds) {
   test(`${build.version} real Main GCALLs share source code until manager deletion while retaining existing actors`, async () => {
     const programs = build.programs.map((b) => new Uint8Array(Buffer.from(b, 'base64'))),
-      world = await modernParticleMessageWorld(build.profile, {
+      files = {
         'startup.xml': new TextEncoder().encode(build.xml),
         'loose/mutable.kcs': programs[0],
-      });
+      };
+    let world = await modernParticleMessageWorld(build.profile, files),
+      caller = world.main;
     let revision = 0,
       reads = 0,
       addCount = 0,
@@ -25,11 +28,21 @@ for (const build of golden.builds) {
       previous = new Uint8Array(8192);
     // This is the current World storage, assigned after constructing its library.
     // The immutable mounted file remains the original source as a decoy.
-    world.storage.read = async (path) =>
-      path === 'loose/mutable.kcs' ? (reads++, programs[revision]) : null;
+    const bindStorage = () => {
+      world.storage.read = async (path) =>
+        path === 'loose/mutable.kcs' ? (reads++, programs[revision]) : null;
+    };
+    bindStorage();
+    async function cold() {
+      const state = await deserializeCheckpoint(await serializeCheckpoint(world.snapshot()));
+      await world.close({ flushFiles: false });
+      world = await modernParticleMessageWorld(build.profile, files, { initialize: false });
+      bindStorage();
+      await world.restore(state);
+      caller = world.main;
+    }
     world.runtime.handles.next = 0x10000;
     try {
-      const caller = world.main;
       for (const row of build.rows) {
         if (row.id === 304 && addCount++ === 1) revision = 1;
         const program = await readKCS(
@@ -72,6 +85,34 @@ for (const build of golden.builds) {
           assert.equal(reads * 2, expected.readCount);
         }
         previous = machine.memory.slice();
+        if (row.id === 307 && [2, 4].includes(updateCount)) {
+          await cold();
+          const manager = await world.runtime.services.motion.get(row.args[0]);
+          const coldMachine = (caller.machine = new KCSMachine(
+            await readKCS(kcsProgram([[43, 307, 12], [59]])),
+            {
+              native: (id, args, m) => world.runtime.scheduler.native(caller, id, args, m),
+            },
+            world.runtime.scheduler.shared,
+          ));
+          [row.args[0], 1, 0].forEach((word, i) => coldMachine.store(4100 + i * 4, word));
+          coldMachine.sp = 4112;
+          caller.status = 'ready';
+          caller.io = null;
+          caller.waiting = null;
+          await world.runtime.scheduler.execute(caller);
+          assert.equal(coldMachine.load(4100), 1);
+          const records = [...manager.records.values()];
+          if (records.length > 1)
+            assert.equal(records[0].instance.script.source, records[1].instance.script.source);
+          assert.deepEqual(
+            [...manager.records.values()].map(({ handle, instance }) => ({
+              handle,
+              register: instance.machine.load(0x8000009c),
+            })),
+            build.cases[updateCount - 1].state,
+          );
+        }
       }
       assert.equal(world.runtime.services.motion.library.scripts.size, 0);
     } finally {

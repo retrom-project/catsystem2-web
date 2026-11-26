@@ -44,7 +44,8 @@ export class NativeMotionRegistry {
     handles.registerType('motion-manager', {
       snapshot: (record) => ({
         owner: record.owner,
-        state: record.manager ? record.manager.snapshot() : record.state,
+        // NativeHandles detaches this entire graph once, preserving shared code.
+        state: record.manager ? record.manager.snapshot({ copySources: false }) : record.state,
       }),
       // Loading KCS is asynchronous. The opaque resource is restored now; its
       // first call resolves scripts before returning the native control reply.
