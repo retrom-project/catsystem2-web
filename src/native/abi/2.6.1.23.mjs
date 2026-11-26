@@ -1741,6 +1741,8 @@ export default {
     drawEncodedBindingRebuildsFrames: true,
     renderSourcesDeferProgram: true,
     renderSourceFrameFormats: ['HG2', 'HG3'],
+    renderSourceEmptyFrameFormats: ['BMP', 'PSD', 'KCF', 'PNG'],
+    retainedEmptySources: true,
     retainedAllImageFrames: true,
     retainedSourcesUseStoredLayer: true,
     renderSources: { stride: 72, bytes: 276 },

@@ -56,7 +56,13 @@ async function pixels(world, handle, expected, label) {
   );
 }
 
-for (const scenario of ['sources', 'hg2-sources', 'source-cross-rebind', 'source-layer'])
+for (const scenario of [
+  'sources',
+  'hg2-sources',
+  'source-cross-rebind',
+  'source-layer',
+  'source-empty',
+])
   test(
     'SDK23 ' +
       scenario +
@@ -98,6 +104,12 @@ for (const scenario of ['sources', 'hg2-sources', 'source-cross-rebind', 'source
           );
           if (row.sourceLive) {
             assert.equal(w.renderSources.get(source).refs, row.sourceRef, label + ' refs');
+            if (row.frameCount !== undefined)
+              assert.equal(
+                w.renderSources.get(source).frames.length,
+                row.frameCount,
+                label + ' frame count',
+              );
             if (row.sourceLayer !== undefined)
               assert.equal(
                 w.renderSources.get(source).layer >>> 0,
@@ -132,10 +144,14 @@ for (const scenario of ['sources', 'hg2-sources', 'source-cross-rebind', 'source
         if (row.id === 709) {
           const handle = m.load(row.resultAddress);
           assert.equal(handle, world.renderSources.bitmap(source, { ordinal: row.args[1] }));
-          await pixels(world, handle, row.borrowed, label + ' borrowed ordinal');
+          if (row.borrowed) await pixels(world, handle, row.borrowed, label + ' borrowed ordinal');
+          else assert.equal(handle, 0, label + ' empty ordinal');
         }
         await compare(world, task, row, label);
-        if (row.id === 704 && drawID) {
+        if (
+          drawID &&
+          (row.id === 704 || (scenario === 'source-empty' && [707, 623].includes(row.id)))
+        ) {
           const fresh = await dataWorld(profile, files, { initialize: false });
           try {
             await fresh.restore(structuredClone(world.snapshot()));
@@ -254,3 +270,75 @@ for (const scenario of ['source-rebind', 'source-program', 'source-bitmap-progra
       assert.equal(world.objects.objects.has(drawID), false);
     },
   );
+
+test('SDK23 BMP, PSD and PNG with ANM create real empty retained sources with zeroed geometry and cold release', async (t) => {
+  const golden = await readGolden('empty-formats'),
+    name = 'empty-formats.kcs',
+    files = {
+      ...Object.fromEntries(golden.resources.map((r) => [r.name, Buffer.from(r.base64, 'base64')])),
+      [name]: kcsProgram(
+        [
+          [37, 0x656d7031],
+          ...Array.from({ length: 36 }, (_, i) => [
+            [37, 0x34343434],
+            [38, 512 + i * 4],
+          ]).flat(),
+          ...Array.from({ length: 10 }, (_, i) => [
+            [37, 0x35353535],
+            [38, 800 + i * 4],
+          ]).flat(),
+          ...golden.rows.flatMap((row) => [
+            ...row.args.map((a) => [37, a]),
+            [43, row.id, row.args.length * 4],
+            ...(row.resultAddress === null ? [] : [[38, row.resultAddress]]),
+            [43, 65, 0],
+          ]),
+          [59],
+        ],
+        golden.rows.filter((row) => row.id === 703).map((row) => [row.args[0], row.name]),
+      ),
+    },
+    world = await dataWorld(profile, files);
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript(name, { parent: world.main.id, initialExecute: false }),
+    m = task.machine,
+    floor = m.sp;
+  const compare = (w, current, row) => {
+    const machine = current.machine;
+    assert.equal(machine.sp, floor + 4);
+    assert.equal(machine.load(floor), 0x656d7031);
+    if (row.resultAddress !== null) assert.equal(machine.load(row.resultAddress), row.result);
+    assert.equal(machine.load(512), row.records[0]);
+    const handle = machine.load(516);
+    if (row.sourceLive) {
+      const source = w.renderSources.get(handle);
+      assert.equal(source.frames.length, 0);
+      assert.equal(source.bitmap, 0);
+      assert.equal(source.refs, row.sourceRef);
+    } else assert.equal(handle, 0);
+    assert.deepEqual(
+      Array.from({ length: 10 }, (_, i) => machine.load(800 + i * 4)),
+      row.metadata,
+    );
+  };
+  for (const [i, row] of golden.rows.entries()) {
+    await world.runtime.scheduler.execute(task);
+    compare(world, task, row);
+    if (row.id === 703) {
+      const handle = m.load(516),
+        fresh = await dataWorld(profile, files, { initialize: false });
+      try {
+        await fresh.restore(structuredClone(world.snapshot()));
+        const restored = fresh.runtime.scheduler.tasks.get(task.id);
+        compare(fresh, restored, row);
+        for (let next = i + 1; next <= i + 3; next++) {
+          await fresh.runtime.scheduler.execute(restored);
+          compare(fresh, restored, golden.rows[next]);
+        }
+        assert.equal(fresh.runtime.handles.records.has(handle), false);
+      } finally {
+        await fresh.close({ flushFiles: false });
+      }
+    }
+  }
+});

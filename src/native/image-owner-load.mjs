@@ -6,12 +6,19 @@ import { nativeImagePathParts } from './image-file.mjs';
 import { nativeImageMetadata } from './image-buffer-info.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { HG3 } from '../formats/hg3.mjs';
+import { rasterFormat } from '../formats/raster.mjs';
 
 const decode = (bytes) => new TextDecoder('shift_jis').decode(bytes);
-export function requireImageSourceFormat(bytes, formats) {
-  if (!formats) return;
+export function requireImageSourceFormat(bytes, formats, emptyFormats) {
+  if (!formats) return false;
   const signature = String.fromCharCode(...bytes.subarray(0, 4)),
-    format = signature === 'HG-2' ? 'HG2' : signature === 'HG-3' ? 'HG3' : null;
+    format =
+      signature === 'HG-2'
+        ? 'HG2'
+        : signature === 'HG-3'
+          ? 'HG3'
+          : rasterFormat(bytes)?.toUpperCase();
+  if (emptyFormats?.includes(format)) return true;
   if (!formats.includes(format))
     throw new Error('The retained source format has no reviewed ABI binding');
 }
@@ -45,7 +52,11 @@ export async function loadImageOwner(
   const animatedLayer = async (file) => {
     const bytes = await files.read(file);
     if (!bytes?.length) return;
-    requireImageSourceFormat(bytes, frameFormats);
+    const empty = requireImageSourceFormat(
+      bytes,
+      frameFormats,
+      nativeABI(world.profile).graphics.renderSourceEmptyFrameFormats,
+    );
     const out = new Uint8Array(36);
     let bounds = {
       offsetX: 0,
@@ -69,10 +80,11 @@ export async function loadImageOwner(
     }
     const frames = [];
     try {
-      const image = await images.images.load(file);
-      const candidates =
-        nativeABI(world.profile).graphics.preserveRGB24 ||
-        nativeABI(world.profile).graphics.retainedAllImageFrames
+      const image = empty ? null : await images.images.load(file);
+      const candidates = empty
+        ? []
+        : nativeABI(world.profile).graphics.preserveRGB24 ||
+            nativeABI(world.profile).graphics.retainedAllImageFrames
           ? image.frames
           : image instanceof HG3
             ? image.frames

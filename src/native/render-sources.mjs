@@ -100,10 +100,12 @@ export class NativeRenderSources {
     return source.bitmap;
   }
   async decode(bytes) {
-    requireImageSourceFormat(
+    const empty = requireImageSourceFormat(
       bytes,
       nativeABI(this.world.profile).graphics.renderSourceFrameFormats,
+      nativeABI(this.world.profile).graphics.renderSourceEmptyFrameFormats,
     );
+    if (empty) return this.create();
     const image = await openImage(bytes),
       images = this.world.graphics.images,
       candidates =

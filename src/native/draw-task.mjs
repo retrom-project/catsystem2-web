@@ -435,6 +435,7 @@ export class NativeDrawTask {
     return this.state.renderer?.items.find((item) => item.key === key >>> 0);
   }
   bounds(item) {
+    if (!item.image) return [0, 0, 0, 0];
     if (item.mode) {
       const renderer = this.state.renderer,
         image = this.graphics.images.get(item.image);
@@ -469,7 +470,7 @@ export class NativeDrawTask {
     const bounds = previous ? item.dirtyBounds : this.bounds(item);
     if (!bounds) throw new Error('Drawing entry has no previous dirty bounds');
     item.dirtyBounds = bounds;
-    if (!item.visible) return;
+    if (!item.visible || !item.image) return;
     this.state.renderer.dirtyRects.push([...bounds]);
     this.state.renderer.dirty = true;
   }
@@ -479,9 +480,12 @@ export class NativeDrawTask {
     // Original resource setters may already have destroyed the previous bitmap.
     // Its last valid geometry still invalidates the pixels it occupied.
     if (old) this.mark(old, true);
-    const source = this.graphics.images.get(values.image),
-      alias =
-        old && this.graphics.images.get(old.image).dataHandle === source.dataHandle
+    if (!values.image && !nativeABI(this.world.profile).graphics.retainedEmptySources)
+      throw new Error('The empty Draw source has no reviewed ABI binding');
+    const source = values.image && this.graphics.images.get(values.image),
+      alias = !source
+        ? 0
+        : old?.image && this.graphics.images.get(old.image).dataHandle === source.dataHandle
           ? old.image
           : this.graphics.images.alias(values.image, this.record.id);
     const item = {
@@ -493,7 +497,7 @@ export class NativeDrawTask {
     };
     if (old) {
       renderer.items.splice(renderer.items.indexOf(old), 1, item);
-      if (old.image !== alias) await this.graphics.images.release(old.image);
+      if (old.image && old.image !== alias) await this.graphics.images.release(old.image);
     } else renderer.items.push(item);
     this.mark(item);
     return item;
@@ -509,12 +513,12 @@ export class NativeDrawTask {
     if (item) {
       this.mark(item, true);
       renderer.items.splice(renderer.items.indexOf(item), 1);
-      await this.graphics.images.release(item.image);
+      if (item.image) await this.graphics.images.release(item.image);
     }
     return Boolean(item);
   }
   async rasterize(item, region) {
-    if (!item.visible || !item.alpha) return;
+    if (!item.image || !item.visible || !item.alpha) return;
     if (item.mode) {
       const input = this.graphics.images.get(item.image),
         output = this.graphics.images.get(this.state.renderer.bitmap);

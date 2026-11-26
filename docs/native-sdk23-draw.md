@@ -59,8 +59,8 @@ the existing HG2v10/v20 decoder contracts supply their one-frame form. Ordinals
 remain distinct from frame IDs. Encoded rebinding of an existing bitmap or array-retained source preserves
 that source and its loaded ANM. The array owner observes the replaced frames
 and geometry while keeping its original reference count. Nested image-owner
-rebinding and other decoded formats remain specific guarded follow-up shapes
-within the Image-to-Draw work. Replacing
+rebinding remains guarded until its nested renderer lifetime is modeled. JFIF
+inputs require their complete decoder initialization proof. Replacing
 encoded frames keeps an already loaded ANM object and its control state; it does
 not create a new retained source or implicitly load a program.
 
@@ -76,3 +76,19 @@ renderer's ordering key. Main708, ANM updates and encoded rebinding preserve the
 layer. Each renderer keeps its ordering key separately from the shared field.
 The focused original VM comparison covers layer0, signed layer-3, transform
 update, CPU pixels, source release and independent cold continuation.
+
+A valid BMP, PSD, KCF or PNG file with a matching ANM file follows Main703's
+frame-source path. Its original ordinal decoder yields an empty frame map,
+while Main703 succeeds with a typed retained source. Main706 clears its nine
+output words and returns0; Main709 returns0 for its empty ordinal. The ANM is
+still deferred until the explicit program load. These outcomes differ from
+plain primary-image parsing and from a failed source factory.
+
+An empty source remains a logical Draw entry: it contributes to the count,
+retains its layer and clip, and Main657 returns0. CPU rasterization skips its
+absent bitmap without creating a zero-size bitmap. Encoded rebinding can replace
+that same source's empty map with HG3 frames and back again; old pixels are
+invalidated while the node, layer and references remain. The original VM
+comparison covers both transitions, every output pixel, caller-array release,
+removal and destruction. Independent cold Worlds continue from the initial
+empty bind, both encoded rebinds and array release.

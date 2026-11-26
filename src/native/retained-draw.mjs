@@ -510,7 +510,7 @@ export class NativeRetainedDraw {
     const source = this.sources.get(record.source);
     await this.composite(source);
     const bitmap = this.sources.bitmap(record.source);
-    if (!bitmap) {
+    if (!bitmap && !nativeABI(this.world.profile).graphics.retainedEmptySources) {
       await draw.removeEntry(record.key);
       return false;
     }
@@ -532,6 +532,7 @@ export class NativeRetainedDraw {
         if (this.needsPull(record)) await this.pull(draw, record);
       }
     for (const item of draw.state.renderer.items) {
+      if (!item.image) continue;
       const bitmap = this.world.graphics.images.get(item.image);
       bitmap.commitCanvas();
       if (item.imageRevision !== bitmap.state.revision) {
@@ -567,7 +568,11 @@ export class NativeRetainedDraw {
     area[2] = Math.min(renderer.width, area[2]);
     area[3] = Math.min(renderer.height, area[3]);
     const hasArea = area[0] < area[2] && area[1] < area[3],
-      items = hasArea ? renderer.items.toSorted((a, b) => a.layer - b.layer || a.key - b.key) : [],
+      items = hasArea
+        ? renderer.items
+            .filter((item) => item.image)
+            .toSorted((a, b) => a.layer - b.layer || a.key - b.key)
+        : [],
       plainBacking =
         ordinary &&
         !renderer.externalPaint &&
