@@ -881,7 +881,7 @@ export function nativeTextPublicationWriter(writer, config) {
     ['get', 'set', 'values'].some((key) => Object.hasOwn(map.value, key))
   )
     return false;
-  for (const frame of Map.prototype.values.call(map.value))
+  for (const frame of Reflect.apply(Map.prototype.values, map.value, []))
     if (frame !== null && typeof frame !== 'number' && !images.frames.has(frame)) return false;
   if (!(config instanceof Uint8Array) || config.length !== writer.parser.config.length)
     return false;
