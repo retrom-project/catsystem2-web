@@ -702,5 +702,14 @@ links each own capture hash and checks whole local memory, all seven particle
 arrays, observable state and independent cold continuation through real KCS.
 Attachment base/position/registration queries currently have empty-manager
 evidence only; live attachment graphs remain open. The constructor's current
-one-million-count resource limit, remaining geometry/texture/RNG wrappers and
+one-million-count resource limit, remaining geometry/texture wrappers and
 other unproved shapes remain separate unfinished SDK work.
+
+Particle v1/v2 RNG slots 33/34 use the exact callee and global state of each
+own build's Generic39/40. Their complete 25-byte wrappers differ only in the
+relative-call displacement and read no argv or receiver word. The
+[own bridge](../tests/fixtures/modern-particle-random-bridge.json) retains those
+bytes and links the existing integer/real MT golden at its original Git source.
+Real Particle KCS checks zero/one/two ignored tail words, complete independent
+streams, whole local/owner state and continuing/fresh cold instances. The
+original MT vectors are reused, not rerun or presented as new physical samples.

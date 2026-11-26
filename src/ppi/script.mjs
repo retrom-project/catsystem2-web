@@ -57,7 +57,7 @@ const particleScalarNames = new Map([
   [21, 'integerAbs'],
 ]);
 const stateFrameIds = new Set([
-  1, 2, 3, 4, 5, 27, 28, 30, 31, 32, 35, 36, 39, 40, 44, 45, 46, 47, 48, 49, 50,
+  1, 2, 3, 4, 5, 27, 28, 30, 31, 32, 33, 34, 35, 36, 39, 40, 44, 45, 46, 47, 48, 49, 50,
 ]);
 // Components read by FMUL directly from a vertex, ordered by vertex index.
 const quadScaleMemoryOperands = [0b101, 0, 0, 0b110];

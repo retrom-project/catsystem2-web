@@ -41487,3 +41487,16 @@ export function nativeParticleStateSignatures(table) {
     },
   }));
 }
+
+export function nativeParticleRandomSignatures() {
+  return [
+    {
+      ids: [33, 34],
+      fields: {
+        review: 'reviewed',
+        reviewReason:
+          'Complete own Particle wrappers differ from the proved Generic RNG wrappers only in relative-call displacement; own callee/global state are identical and no argv or receiver word is read. Real Particle KCS retains both complete MT streams and cold continuation.',
+      },
+    },
+  ];
+}

@@ -10,6 +10,7 @@ import {
   nativeInterpreterGeometrySignatures,
   NATIVE_PARTICLE_STATE_IDS,
   nativeParticleStateSignatures,
+  nativeParticleRandomSignatures,
 } from './semantics.mjs';
 
 const contentDatabaseSlots = [
@@ -1892,14 +1893,17 @@ export default {
       slots: {
         recovered: [
           0,
+          33,
+          34,
           ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v1'],
           ...NATIVE_PARTICLE_STATE_IDS['particle-v1'],
         ].sort((a, b) => a - b),
-        declared: [22, 23, 24, 25, 26, 29, 33, 34, 37, 38],
+        declared: [22, 23, 24, 25, 26, 29, 37, 38],
       },
       signatures: [
         ...nativeInterpreterScalarSignatures('particle-v1'),
         ...nativeParticleStateSignatures('particle-v1'),
+        ...nativeParticleRandomSignatures(),
       ],
       evidence: [
         {
@@ -1909,12 +1913,17 @@ export default {
         },
         { ids: NATIVE_INTERPRETER_SCALAR_IDS['particle-v1'], value: scalarEvidence },
         {
+          ids: [33, 34],
+          value:
+            'Own complete Particle wrappers and Generic39/40 differ only in relative-call displacement and target the identical own callee/global RNG state. Neither reads argv or receiver fields. Existing own complete integer/real MT golden is reused at its original source pin; current real Particle KCS validates both full streams, zero/one/two ignored tails, whole local/owner state and independent cold continuation. See tests/fixtures/modern-particle-random-bridge.json.',
+        },
+        {
           ids: NATIVE_PARTICLE_STATE_IDS['particle-v1'],
           value:
             'Own physical 2.6.1.74 actual Particle/base constructor, KCS actor/VM callback, original reference buffers/initializer and complete destructor, with explicit authored view/configuration projection. Whole local/arrays, control/result, fixed argv frames, raw signaling-NaN copies, uint32 frame conversion and cold data state are compared against current KCS. File/texture/renderer registration and live attachment graphs remain separate scopes. See tests/fixtures/modern-particle-state-golden.json.',
         },
         {
-          ids: [22, 23, 24, 25, 26, 29, 33, 34, 37, 38],
+          ids: [22, 23, 24, 25, 26, 29, 37, 38],
           value: 'sdk-4.01-header-and-pinned-game-wrapper',
         },
       ],
@@ -1924,14 +1933,17 @@ export default {
       slots: {
         recovered: [
           0,
+          33,
+          34,
           ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'],
           ...NATIVE_PARTICLE_STATE_IDS['particle-v2'],
         ].sort((a, b) => a - b),
-        declared: [22, 23, 24, 25, 26, 29, 33, 34, 37, 38, 47, 48, 49],
+        declared: [22, 23, 24, 25, 26, 29, 37, 38, 47, 48, 49],
       },
       signatures: [
         ...nativeInterpreterScalarSignatures('particle-v2'),
         ...nativeParticleStateSignatures('particle-v2'),
+        ...nativeParticleRandomSignatures(),
       ],
       evidence: [
         {
@@ -1941,12 +1953,17 @@ export default {
         },
         { ids: NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'], value: scalarEvidence },
         {
+          ids: [33, 34],
+          value:
+            'Own complete Particle wrappers and Generic39/40 differ only in relative-call displacement and target the identical own callee/global RNG state. Neither reads argv or receiver fields. Existing own complete integer/real MT golden is reused at its original source pin; current real Particle KCS validates both full streams, zero/one/two ignored tails, whole local/owner state and independent cold continuation. See tests/fixtures/modern-particle-random-bridge.json.',
+        },
+        {
           ids: NATIVE_PARTICLE_STATE_IDS['particle-v2'],
           value:
             'Own physical 2.6.1.74 actual Particle/base constructor, KCS actor/VM callback, original reference buffers/initializer and complete destructor, with explicit authored view/configuration projection. Whole local/arrays, control/result, fixed argv frames, raw signaling-NaN copies, uint32 frame conversion and cold data state are compared against current KCS. File/texture/renderer registration and live attachment graphs remain separate scopes. See tests/fixtures/modern-particle-state-golden.json.',
         },
         {
-          ids: [22, 23, 24, 25, 26, 29, 33, 34, 37, 38, 47, 48, 49],
+          ids: [22, 23, 24, 25, 26, 29, 37, 38, 47, 48, 49],
           value: 'sdk-4.01-header-and-pinned-game-wrapper',
         },
       ],
