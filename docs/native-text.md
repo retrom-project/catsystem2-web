@@ -63,6 +63,33 @@ does not consume the previous measurement's mutable FreeType slot. Font bytes,
 layout records, raster pixels and the existing checkpoint fields stay owned
 by their original producers.
 
+The pinned C wrapper can retain an independent hinted outline between a
+successful measurement and the later bitmap request. Measurement still uses
+`FT_LOAD_DEFAULT`; bitmap rendering occurs only in the glyph operation, with
+the same normal render mode and integer advance. Neither public JS glyph maps
+nor writer pixels are populated early. Core consumers read the eight output
+fields and immediately copy alpha; none reads the face's mutable glyph slot.
+
+This reuse covers the pinned TrueType drivers and the default Adobe CFF driver
+in 2.7.1. Every size request resets TrueType's CVT, twilight, storage and
+graphics state before hinting. The old CFF and Type1 interpreters are outside
+the proof: 2.4.8 CFF, other drivers, embedded bitmaps and transformed faces keep
+the original load/render path. The old CFF random operator and seed remain
+unchanged; its stochastic glyphs do not carry a cross-call pixel-equality
+promise. No font name or game name selects this optimization.
+
+Each module retains at most 128 outlines and 2 MiB of estimated logical
+outline/entry content. This excludes allocator overhead and the ordinary
+returned bitmap lifetime. Keys include the owned face, charmap, glyph index,
+requested size, ppem and scales; incompatible size/charmap/transform state
+discards a face's entries. Eviction recomputes a complete request. Optional
+allocation or cached-render failures fall back to the ordinary load/render;
+allocation pressure releases optional outlines before retrying an allocation
+failure. Output pointers remain independent between faces and live until the
+next mutating operation on that face or its close. Close and cold restore
+release outlines and returned bitmaps before destroying the face; no cache
+field is added to checkpoints.
+
 Ordinary owned native glyphs also reuse the pure color and shadow raster.
 Every call still obtains the current glyph and checks all alpha bytes, metrics,
 colors and shadow settings. Shared or resizable buffers, accessor metrics and
@@ -81,6 +108,25 @@ The builder verifies fixed upstream archives, compiler and wrapper identity.
 Standalone builds verify the fixed generated hashes and package both JS
 modules, FTL notices, source bundles and `vendor/freetype-manifest.json`.
 No WASM or original EXE is involved in these font backends.
+
+The builder freezes its wrapper and script inputs before compiling either
+release. `--outline-cache disabled` produces a matched control from the same
+source; it changes the backend optimization, not font quality, load flags or
+interpreter selection. Keep the two output directories separate.
+
+Optional C body probes exercise actual load counts, transform/charmap changes,
+bounded eviction, allocation failures and face lifetimes:
+
+```sh
+python3 scripts/prepare-native-freetype-tests.py --emsdk /path/to/emsdk-3.1.74
+node --test tests/font-outline-cache.test.mjs
+```
+
+`CS2_FT_PROBES_ROOT` selects another prepared probe directory. Its manifest
+checks the exact wrapper and probe sources. The two additional probe exports
+are test-only; production continues to expose the same six font/allocator
+exports. Production metrics, pitch, bounds and every alpha byte are also
+checked against the original pinned modules using the packaged OFL font.
 
 `GAME/strframe_frame` is the reveal scale (constructor default 5, missing XML
 field 0), represented as `scene.textFrame`; it is not FPS. Speed rebasing,
