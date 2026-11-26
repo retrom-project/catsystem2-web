@@ -61,6 +61,7 @@ export function browserVirtualKey(event) {
 
 export class NativeInputBindings {
   constructor(input, configuration) {
+    const keyCount = input.keyCount;
     Object.assign(this, { input, configuration });
     this.down = Object.fromEntries(categories.map((name) => [name, new Set()]));
     this.events = [];
@@ -72,10 +73,10 @@ export class NativeInputBindings {
     this.browserKeys = new Map();
     this.logical = [];
     this.logicalDown = new Set();
-    this.live = new Uint32Array(320);
-    this.sampled = new Uint32Array(320);
-    this.repeat = new Uint32Array(80);
-    this.injected = new Uint32Array(80);
+    this.live = new Uint32Array(keyCount * 4);
+    this.sampled = new Uint32Array(keyCount * 4);
+    this.repeat = new Uint32Array(keyCount);
+    this.injected = new Uint32Array(keyCount);
     this.mouseState = new Uint32Array(8);
     this.pointerActivation = false;
     // The original window's script gate starts enabled. WinMain loads the
@@ -85,6 +86,9 @@ export class NativeInputBindings {
     this.touchState = createNativeTouchState(this.touchHoldEnabled);
     this.touchActive = false;
     this.inside = 0;
+  }
+  get keyCount() {
+    return this.repeat.length;
   }
   key(category, code, down) {
     if (!categories.includes(category) || !Number.isInteger(code) || code < 1 || code > 255)
@@ -158,7 +162,7 @@ export class NativeInputBindings {
     this.pulses.push(up ? 6 : 7);
   }
   tap(index) {
-    if (!Number.isInteger(index) || index < 0 || index >= 80)
+    if (!Number.isInteger(index) || index < 0 || index >= this.keyCount)
       throw new Error('Invalid native logical key');
     this.logical.push({ index, down: true }, { index, down: false });
   }
@@ -284,7 +288,7 @@ export class NativeInputBindings {
         this.events.push({ category: 'joypad', code, down: false });
   }
   setPulse(index, count) {
-    if (index >= 80) throw new RangeError('Input pulse index crosses the key table');
+    if (index >= this.keyCount) throw new RangeError('Input pulse index crosses the key table');
     this.injected[index] = count;
   }
   query(index, slot) {
@@ -304,7 +308,7 @@ export class NativeInputBindings {
     this.sync();
   }
   sync(input = this.input) {
-    for (let index = 0; index < 80; index++)
+    for (let index = 0; index < this.keyCount; index++)
       for (let slot = 0; slot < 4; slot++) {
         const at = index * 4 + slot;
         input.key(index, !!this.sampled[at], this.sampled[at], slot);
@@ -350,6 +354,15 @@ export class NativeInputBindings {
     );
   }
   restore(state) {
+    const count = this.input.keyCount;
+    for (const [key, size] of [
+      ['live', count * 4],
+      ['sampled', count * 4],
+      ['repeat', count],
+      ['injected', count],
+    ])
+      if (!(state[key] instanceof Uint32Array) || state[key].length !== size)
+        throw new Error('Native input bindings checkpoint key table does not match its Input');
     Object.assign(this, structuredClone(state));
     this.sync();
   }

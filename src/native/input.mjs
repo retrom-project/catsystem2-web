@@ -17,6 +17,10 @@ const bytesAt = (memory, pointer, size) =>
 const writeBytes = (memory, address, bytes) =>
   memory.write ? memory.write(address, bytes) : bytesAt(memory, address, bytes.length).set(bytes);
 const noop = () => {};
+const inputKeyCount = (configuration) =>
+  (configuration?.profile
+    ? nativeABI(configuration.profile).text.configurationLayout.keyRows
+    : undefined) ?? 80;
 
 export const NATIVE_INPUT_IDS = Object.freeze([
   ...Array.from({ length: 11 }, (_, i) => 0x90 + i),
@@ -64,6 +68,7 @@ export class NativeInput {
     configuration,
     services = {},
   } = {}) {
+    const keyCount = inputKeyCount(configuration);
     Object.assign(this, { dispatch, cursor, textInput, services, configuration });
     this.frameRate = frameRate >>> 0;
     this.regions = [];
@@ -74,16 +79,16 @@ export class NativeInput {
     this.dragging = false;
     this.dragX = this.dragY = 0;
     this.dragThreshold = 2;
-    this.captures = new Uint32Array(80);
-    this.lastReceivers = new Uint32Array(80).fill(0xffffffff);
-    this.keys = new Uint32Array(320);
-    this.sources = new Uint32Array(320);
-    this.held = new Uint32Array(320);
-    this.previous = new Uint32Array(320);
-    this.handled = new Uint32Array(320);
-    this.repeatEnabled = new Uint8Array(320).fill(1);
-    this.enabled = new Uint32Array(80).fill(1);
-    this.pulses = new Uint32Array(80);
+    this.captures = new Uint32Array(keyCount);
+    this.lastReceivers = new Uint32Array(keyCount).fill(0xffffffff);
+    this.keys = new Uint32Array(keyCount * 4);
+    this.sources = new Uint32Array(keyCount * 4);
+    this.held = new Uint32Array(keyCount * 4);
+    this.previous = new Uint32Array(keyCount * 4);
+    this.handled = new Uint32Array(keyCount * 4);
+    this.repeatEnabled = new Uint8Array(keyCount * 4).fill(1);
+    this.enabled = new Uint32Array(keyCount).fill(1);
+    this.pulses = new Uint32Array(keyCount);
     this.repeatStart = 30;
     this.repeatInterval = 5;
     this.source = 0;
@@ -102,6 +107,9 @@ export class NativeInput {
     this.pointerActivation = false;
     this.warp = null;
     this.mouseState = new Uint8Array(32);
+  }
+  get keyCount() {
+    return this.enabled.length;
   }
   configureCursor() {
     this.cursorAutoHide = this.configuration ? readWord(this.configuration.blocks[2], 4) : 0;
@@ -177,18 +185,18 @@ export class NativeInput {
     if (
       !Number.isInteger(index) ||
       index < 0 ||
-      index >= 80 ||
+      index >= this.keyCount ||
       !Number.isInteger(device) ||
       device < 0 ||
       device >= 4
     )
-      throw new Error('Native input key/device is outside the 80 by 4 table');
+      throw new Error(`Native input key/device is outside the ${this.keyCount} by 4 table`);
     const at = index * 4 + device;
     this.keys[at] = Number(!!down);
     this.sources[at] = source >>> 0;
   }
   queryKey(index, slot = 0) {
-    if (index < 0 || index >= 80 || slot < 0 || slot > 3)
+    if (index < 0 || index >= this.keyCount || slot < 0 || slot > 3)
       throw new RangeError('Native input device query crosses its key table');
     if (this.services.queryKey) return this.services.queryKey(index, slot) >>> 0;
     if (this.pulses[index]) {
@@ -332,7 +340,7 @@ export class NativeInput {
     this.routePoint = [this.previousX, this.previousY];
     let stop = false;
     for (let slot = 0; slot < 4 && !stop; slot++)
-      for (let index = 0; index < 80 && !stop; index++) {
+      for (let index = 0; index < this.keyCount && !stop; index++) {
         const at = index * 4 + slot;
         if (!this.enabled[index] || !this.held[at]) continue;
         this.held[at] = this.handled[at] = 0;
@@ -413,7 +421,7 @@ export class NativeInput {
     this.routePoint = [localX, localY];
     let stop = false;
     for (let slot = 0; slot < 4 && !stop; slot++)
-      for (let index = 0; index < 80 && !stop; index++) {
+      for (let index = 0; index < this.keyCount && !stop; index++) {
         if (!this.enabled[index]) continue;
         const at = index * 4 + slot,
           source = this.queryKey(index, slot);
@@ -718,7 +726,8 @@ export class NativeInput {
         break;
       }
       case 150:
-        if (w >= 80) throw new RangeError('Native input key gate crosses the 80-key table');
+        if (w >= this.keyCount)
+          throw new RangeError(`Native input key gate crosses the ${this.keyCount}-key table`);
         this.enabled[w] = l;
         break;
       case 151:
@@ -730,7 +739,8 @@ export class NativeInput {
         if (record()) record().dragEnabled = l >>> 0;
         break;
       case 154:
-        if (w >= 80) throw new RangeError('Native input pulse crosses the 80-key table');
+        if (w >= this.keyCount)
+          throw new RangeError(`Native input pulse crosses the ${this.keyCount}-key table`);
         if (this.services.setPulse) this.services.setPulse(w, l);
         else this.pulses[w] = l;
         break;
@@ -784,6 +794,21 @@ export class NativeInput {
     );
   }
   restore(state) {
+    const count = inputKeyCount(this.configuration);
+    for (const [key, size, type = Uint32Array] of [
+      ['captures', count],
+      ['lastReceivers', count],
+      ['keys', count * 4],
+      ['sources', count * 4],
+      ['held', count * 4],
+      ['previous', count * 4],
+      ['handled', count * 4],
+      ['repeatEnabled', count * 4, Uint8Array],
+      ['enabled', count],
+      ['pulses', count],
+    ])
+      if (!(state[key] instanceof type) || state[key].length !== size)
+        throw new Error('Native input checkpoint key table does not match its configuration');
     Object.assign(this, structuredClone(state));
   }
 }

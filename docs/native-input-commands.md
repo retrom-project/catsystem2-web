@@ -1,5 +1,20 @@
 # Plane registration, input-owner query, bitmap mask and wheel reset
 
+The .23 Input has 64 logical keys with four device slots each; .63 and .67 have 80. The existing per-version configuration key-row layout is the shared authority
+for those dimensions. Input state, browser bindings, frame traversal, key gates
+and pulses use that same count. A key beyond the registered domain is guarded
+instead of reading the adjacent native repeat/capture fields. Snapshots retain
+their current profile's typed arrays and validate their dimensions before
+replacing either Input or binding state; no extra checkpoint field is needed.
+
+The own original Top constructors create their real Input and Sound children,
+and their factories construct the real Script caller. Complete original KCS
+GCALLs register and unregister an Input region and read its initial text status.
+A bounded original frame traverses 256 device slots in .23 and 320 in .63/.67.
+The frame observation excludes the latter versions' additional mouse-state
+queries from the key-table count. Device/window input samples are explicit test
+boundaries; the Input constructors, receiver, frame and VM bodies execute intact.
+
 With an explicit original engine or loading owner, `5F` retains its complete
 original wrapper, and `18A` retains its original wrapper and mask helper.
 Root queries use the caller's Top namespace; SDK's Root range remains distinct
