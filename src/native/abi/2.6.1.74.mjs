@@ -54,6 +54,7 @@ export default {
     vectorTransformUsesSSEWords: true,
   },
   motion: {
+    workingStartsUninitialized: true,
     managerLifetime: 'explicit-delete',
     controlIgnoresArgumentTail: true,
     geometryArgumentsReadFrame: true,

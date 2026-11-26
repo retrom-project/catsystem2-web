@@ -8,7 +8,13 @@ import {
   yawPitchRollX87,
 } from '../motion/native-rotation.mjs';
 import { multiplyNativeMatrix } from './calculation-math.mjs';
-import { matrixStorage, floats, floatBytes, floatWords } from './calculation-memory.mjs';
+import {
+  matrixStorage,
+  floats,
+  floatBytes,
+  floatWords,
+  writeCalculationBytes,
+} from './calculation-memory.mjs';
 import { nativeTrigWord, scalarArgumentWords } from './scalar-math.mjs';
 import { multiplyMatrixSSEWords } from '../motion/native-sse.mjs';
 export const NATIVE_MATRIX_OPERATIONS = Object.freeze([
@@ -62,13 +68,17 @@ export function nativeMatrix(operation, args, machine, state, math) {
     return nativeReply(2);
   }
   if (operation === 'matrix.setYawPitchRoll' || operation === 'matrix.rotateYawPitchRoll') {
-    const output = machine.bytes(args[0], 64),
-      angles = args.slice(1),
+    machine.region(args[0], 64);
+    const angles = args.slice(1),
       matrix = math?.yawPitchRollUsesSSEWords
         ? yawPitchRollSSE(...angles)
         : yawPitchRollX87(...angles.map(bitsFloat), math?.d3dxUsesNativeReduction);
-    output.set(
-      operation === 'matrix.setYawPitchRoll' ? floatBytes(matrix) : multiply(output, matrix),
+    writeCalculationBytes(
+      machine,
+      args[0],
+      operation === 'matrix.setYawPitchRoll'
+        ? floatBytes(matrix)
+        : multiply(machine.bytes(args[0], 64), matrix),
     );
     return nativeReply(2);
   }

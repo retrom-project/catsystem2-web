@@ -24,7 +24,7 @@ export class MotionTarget {
     // Native object vtable[1] refreshes the base when there is no active motion.
     if (!this.manager.busy()) {
       this.manager.clear();
-      if (refreshBase) this.manager.base.set(this.readState());
+      if (refreshBase) this.manager.setBank(false, this.readState());
       this.lastFrame = -1;
       this.lastHandle = 0;
     }

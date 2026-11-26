@@ -49,7 +49,9 @@ export class MotionLibrary {
     return (this.nativeFilenameQuery ? lowerAscii(name) : name.toLowerCase()).replace(/\.kcs$/, '');
   }
   #describe(script, name, key, nameBytes) {
-    script.name = key;
+    // Cache folding is not a resource filename: a qualified path needs its
+    // extension when an independent cold manager loads this script again.
+    script.name = name;
     if (this.nativeFilenameQuery) {
       nameBytes ??= encodeCP932(name);
       const bytes = this.nativeFilename(nameBytes) ?? nameBytes;

@@ -108,10 +108,9 @@ function setState(manager, working, word, machine) {
     if (index === 6 || index === 9) view.setUint32(offset, word(index), true);
     else bytes.set(machine.bytes(word(index), length), offset);
   }
-  (working ? manager.working : manager.base).set(bytes);
+  manager.setBank(working, bytes);
 }
 function getState(manager, working, word, machine) {
-  const state = working ? manager.working : manager.base;
   for (const [index, offset, length] of transfer) {
     if (working && index === 9) {
       // This mode needs a mapped host pointer. Zero is
@@ -122,7 +121,7 @@ function getState(manager, working, word, machine) {
         continue;
       }
     }
-    machine.bytes(word(index), length).set(state.subarray(offset, offset + length));
+    machine.writeBytes(word(index), manager.readBank(working, offset, length));
   }
 }
 
@@ -213,7 +212,7 @@ export function nativeMotion(id, args, machine, services = {}, owner) {
         getState(manager, id === 0x12e, word, machine);
         return done();
       case 0x12f:
-        manager.base.set(manager.working);
+        manager.copyBank(false, true);
         return done();
       case 0x130:
       case 0x217: {
@@ -297,7 +296,7 @@ export function nativeMotion(id, args, machine, services = {}, owner) {
             throw new Error(
               'Native MOT filename format is unmapped; original formatter reads NULL',
             );
-          manager.working.set(manager.base);
+          manager.copyBank(true, false);
           if (nameBytes === null) return value(0);
           const filename = registry.library.nativeFilename(nameBytes);
           if (filename === null) return value(0);
@@ -310,7 +309,7 @@ export function nativeMotion(id, args, machine, services = {}, owner) {
             ),
           );
         }
-        manager.working.set(manager.base);
+        manager.copyBank(true, false);
         const name = machine.string(word(1)).replaceAll('\\', '/').split('/').at(-1).toLowerCase();
         return value(
           Number(

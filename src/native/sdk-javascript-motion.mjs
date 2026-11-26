@@ -39,7 +39,8 @@ export class SDKJavaScriptMotions {
     this.checkOpen();
     const registry = this.world.runtime.services.motion,
       owner = this.motionOwner(object);
-    if (object.motion !== undefined && !this.busy(object)) this.manager(object).base.set(base);
+    if (object.motion !== undefined && !this.busy(object))
+      this.manager(object).setBank(false, base);
     const script = await registry.library.optional(file, {
       read: (name) => readNativeResource(this.world, name, 3),
     });
@@ -52,7 +53,7 @@ export class SDKJavaScriptMotions {
     if (script === null) return undefined;
     if (object.motion === undefined) {
       object.motion = registry.create(owner);
-      this.manager(object).base.set(base);
+      this.manager(object).setBank(false, base);
     }
     this.manager(object).add(script, { registers });
     return undefined;

@@ -9,7 +9,13 @@ import {
 } from '../kcs.mjs';
 import { nativeCatalog } from '../native/catalog.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
-import { floatBytes, floats, floatWords, matrixStorage } from '../native/calculation-memory.mjs';
+import {
+  floatBytes,
+  floats,
+  floatWords,
+  matrixStorage,
+  copyCalculationBytes,
+} from '../native/calculation-memory.mjs';
 import { multiplyNativeMatrix } from '../native/calculation-math.mjs';
 import { nativeGeometry } from '../native/geometry.mjs';
 import { nativeMatrix } from '../native/matrix.mjs';
@@ -59,6 +65,107 @@ import {
 } from './matrix.mjs';
 
 const f = Math.fround;
+// Only MOT receivers can inherit untouched manager bytes. Ordinary KCS memory
+// keeps its TypedArray path; masks are allocated only for a region with unknown
+// bytes and follow that region through opaque copies and cold restore.
+class MotionMachine extends KCSMachine {
+  constructor(...args) {
+    super(...args);
+    this.unknownMemory = null;
+  }
+  requireKnown(buffer, at, count) {
+    const mask = this.unknownMemory?.get(buffer);
+    if (mask && mask.subarray(at, at + count).includes(0))
+      throw new Error(`Native MOT reads uninitialized memory bytes at offset ${at}, pc ${this.pc}`);
+  }
+  setKnowledge(buffer, at, count, known = null) {
+    let mask = this.unknownMemory?.get(buffer);
+    if (!mask && known?.includes(0)) {
+      mask = new Uint8Array(buffer.length).fill(1);
+      (this.unknownMemory ??= new Map()).set(buffer, mask);
+    }
+    if (!mask) return;
+    if (known) mask.set(known, at);
+    else mask.fill(1, at, at + count);
+    if (!mask.includes(0)) {
+      this.unknownMemory.delete(buffer);
+      if (!this.unknownMemory.size) this.unknownMemory = null;
+    }
+  }
+  bytes(address, count) {
+    const [buffer, at] = this.region(address, count);
+    this.requireKnown(buffer, at, count);
+    return buffer.subarray(at, at + count);
+  }
+  load(address, width = 4, signed = false) {
+    if (this.unknownMemory) {
+      const [buffer, at] = this.region(address >>> 0, width);
+      this.requireKnown(buffer, at, width);
+    }
+    return super.load(address, width, signed);
+  }
+  store(address, value, width = 4) {
+    super.store(address, value, width);
+    if (this.unknownMemory) {
+      const [buffer, at] = this.region(address >>> 0, width);
+      this.setKnowledge(buffer, at, width);
+    }
+  }
+  writeBytes(address, bytes) {
+    super.writeBytes(address, bytes);
+    if (this.unknownMemory) {
+      const [buffer, at] = this.region(address, bytes.length);
+      this.setKnowledge(buffer, at, bytes.length);
+    }
+  }
+  copyBytes(target, source, count) {
+    const [destination, to] = this.region(target, count),
+      [buffer, from] = this.region(source, count),
+      known = this.unknownMemory?.get(buffer)?.slice(from, from + count) ?? null;
+    destination.set(buffer.subarray(from, from + count).slice(), to);
+    this.setKnowledge(destination, to, count, known);
+  }
+  free(address) {
+    const result = super.free(address);
+    if (this.unknownMemory) {
+      const live = new Set([this.memory, this.shared, ...this.blocks]);
+      for (const buffer of this.unknownMemory.keys())
+        if (!live.has(buffer)) this.unknownMemory.delete(buffer);
+      if (!this.unknownMemory.size) this.unknownMemory = null;
+    }
+    return result;
+  }
+  snapshot() {
+    const state = super.snapshot(),
+      regions = [this.memory, this.shared, ...this.blocks];
+    state.unknownMemory = [...(this.unknownMemory ?? [])].map(([buffer, mask]) => {
+      const region = regions.indexOf(buffer);
+      if (region < 0) throw new Error('MOT unknown memory has no live owner');
+      return { region, mask: mask.slice() };
+    });
+    return state;
+  }
+  restore(state) {
+    super.restore(state);
+    if (!Array.isArray(state.unknownMemory)) throw new Error('Invalid MOT memory knowledge');
+    const regions = [this.memory, this.shared, ...this.blocks],
+      masks = new Map();
+    for (const { region, mask } of state.unknownMemory) {
+      const buffer = regions[region];
+      if (
+        !Number.isInteger(region) ||
+        !buffer ||
+        masks.has(buffer) ||
+        !(mask instanceof Uint8Array) ||
+        mask.length !== buffer.length ||
+        mask.some((value) => value !== 0 && value !== 1)
+      )
+        throw new Error('Invalid MOT memory knowledge region');
+      if (mask.includes(0)) masks.set(buffer, mask.slice());
+    }
+    this.unknownMemory = masks.size ? masks : null;
+  }
+}
 const unary = new Map([
   [1, Math.sin],
   [2, Math.cos],
@@ -123,7 +230,7 @@ export class MotionInstance {
     this.budget = budget;
     this.calls = new Map();
     this.messages = [];
-    this.machine = new KCSMachine(script, this, this.shared);
+    this.machine = new MotionMachine(script, this, this.shared);
     this.view.setInt32(MOTION_ABI.active, 1, true);
     this.view.setUint32(MOTION_ABI.flags, flags, true);
     this.setRegisters(registers);
@@ -132,6 +239,16 @@ export class MotionInstance {
   }
   get object() {
     return this.shared.subarray(0, MOTION_ABI.objectSize);
+  }
+  setObject(bytes, known = null) {
+    if (bytes.length !== MOTION_ABI.objectSize || (known && known.length !== bytes.length))
+      throw new Error('Invalid MOT object bank size');
+    this.object.set(bytes);
+    this.machine.setKnowledge(this.shared, 0, MOTION_ABI.objectSize, known);
+  }
+  objectKnowledge() {
+    const known = this.machine.unknownMemory?.get(this.shared)?.slice(0, MOTION_ABI.objectSize);
+    return known?.includes(0) ? known : null;
   }
   get frame() {
     return this.view.getInt32(MOTION_ABI.frame, true);
@@ -256,13 +373,13 @@ export class MotionInstance {
       (id === 37 && this.vectorTransformUsesSSEWords)
     ) {
       const [target, source] = args;
-      machine.bytes(target, 16);
+      machine.region(target, 16);
       const read = (address, count) =>
         Array.from({ length: count }, (_, i) => machine.load((address + i * 4) >>> 0));
       let result;
       if (id === 31) result = normalizeSSEWords(read(target, 4));
       else {
-        machine.bytes(source, 64);
+        machine.region(source, 64);
         result = transformSSEWords(read(target, 4), read(source, 16));
       }
       result.forEach((value, i) => machine.store((target + i * 4) >>> 0, value));
@@ -427,7 +544,7 @@ export class MotionInstance {
         return done();
       }
       case 28:
-        machine.bytes(args[0], 64).set(machine.bytes(args[1], 64).slice());
+        copyCalculationBytes(machine, args[0], args[1], 64);
         return done();
       case 29: {
         const product = this.matrixMemoryOperationsUseNativeOrder ? this.multiplyMatrix : multiply;

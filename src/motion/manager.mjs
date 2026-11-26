@@ -29,6 +29,11 @@ export class MotionManager {
     this.elapsedUsesX87 = profile && nativeABI(profile).motion?.elapsedUsesX87;
     this.base = base.slice();
     this.working = base.slice();
+    this.baseKnown = null;
+    this.workingKnown =
+      profile && nativeABI(profile).motion?.workingStartsUninitialized
+        ? new Uint8Array(MOTION_ABI.objectSize)
+        : null;
     this.speed = f(speed);
     this.random = random;
     this.calculations = calculations;
@@ -38,6 +43,25 @@ export class MotionManager {
     this.nextHandle = 1;
     this.flags = 0;
     this.lastProcessed = false;
+  }
+  setBank(working, bytes, known = null) {
+    if (bytes.length !== MOTION_ABI.objectSize || (known && known.length !== bytes.length))
+      throw new Error('Invalid MOT manager bank size');
+    (working ? this.working : this.base).set(bytes);
+    this[working ? 'workingKnown' : 'baseKnown'] = known?.includes(0) ? known.slice() : null;
+  }
+  copyBank(working, sourceWorking) {
+    this.setBank(
+      working,
+      sourceWorking ? this.working : this.base,
+      sourceWorking ? this.workingKnown : this.baseKnown,
+    );
+  }
+  readBank(working, offset = 0, length = MOTION_ABI.objectSize) {
+    const known = working ? this.workingKnown : this.baseKnown;
+    if (known?.subarray(offset, offset + length).includes(0))
+      throw new Error(`Native MOT reads uninitialized ${working ? 'working' : 'base'} bytes`);
+    return (working ? this.working : this.base).subarray(offset, offset + length);
   }
   add(script, { group = 0, startTick = 0, ...options } = {}) {
     const handle = this.nextHandle++;
@@ -55,7 +79,7 @@ export class MotionManager {
   update(frame, deferStart = false, afterHandle = 0) {
     if (!Number.isInteger(frame) || frame < 0 || frame > 0xffffffff)
       throw new RangeError('MOT manager frame must be uint32');
-    if (!afterHandle) this.working.set(this.base);
+    if (!afterHandle) this.copyBank(true, false);
     this.lastProcessed = false;
     for (const record of [...this.records.values()].sort((a, b) => a.handle - b.handle)) {
       if (record.handle <= afterHandle) continue;
@@ -63,7 +87,7 @@ export class MotionManager {
         if (deferStart) continue;
         record.startTick = frame;
       }
-      record.instance.object.set(this.working);
+      record.instance.setObject(this.working, this.workingKnown);
       const delta = (frame - record.startTick) | 0;
       const time = this.elapsedUsesX87
         ? roundX87Single(
@@ -73,16 +97,16 @@ export class MotionManager {
       const elapsed = Math.trunc(time) >>> 0;
       record.instance.update(elapsed);
       this.lastProcessed = true;
-      this.working.set(record.instance.object);
+      this.setBank(true, record.instance.object, record.instance.objectKnowledge());
     }
     return this.working;
   }
   finish(group) {
-    this.working.set(this.base);
+    this.copyBank(true, false);
     for (const record of [...this.records.values()].sort((a, b) => a.handle - b.handle)) {
-      record.instance.object.set(this.working);
+      record.instance.setObject(this.working, this.workingKnown);
       if (group === undefined || record.group === group) record.instance.finish();
-      this.working.set(record.instance.object);
+      this.setBank(true, record.instance.object, record.instance.objectKnowledge());
     }
     return this.working;
   }
@@ -110,6 +134,8 @@ export class MotionManager {
       profile: this.profile,
       base: this.base.slice(),
       working: this.working.slice(),
+      baseKnown: this.baseKnown?.slice() ?? null,
+      workingKnown: this.workingKnown?.slice() ?? null,
       speedWord: this.speedWord,
       flags: this.flags,
       nextHandle: this.nextHandle,
@@ -134,6 +160,14 @@ export class MotionManager {
       typeof this.loadScript !== 'function'
     )
       throw new Error('MOT manager checkpoint/profile/loader mismatch');
+    for (const key of ['baseKnown', 'workingKnown'])
+      if (
+        state[key] !== null &&
+        (!(state[key] instanceof Uint8Array) ||
+          state[key].length !== MOTION_ABI.objectSize ||
+          state[key].some((value) => value !== 0 && value !== 1))
+      )
+        throw new Error('Invalid MOT manager bank knowledge');
     const records = new Map();
     for (const record of state.records) {
       const script = await this.loadScript(record.script);
@@ -146,8 +180,8 @@ export class MotionManager {
       instance.restore(record.instance);
       records.set(record.handle, { ...record, instance });
     }
-    this.base.set(state.base);
-    this.working.set(state.working);
+    this.setBank(false, state.base, state.baseKnown);
+    this.setBank(true, state.working, state.workingKnown);
     this.speedWord = state.speedWord;
     this.flags = state.flags;
     this.nextHandle = state.nextHandle;

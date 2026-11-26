@@ -78,6 +78,7 @@ export default {
     frameScale: 'sse-uint32',
   },
   motion: {
+    workingStartsUninitialized: true,
     managerLifetime: 'explicit-delete',
     controlIgnoresArgumentTail: true,
     geometryArgumentsReadFrame: true,

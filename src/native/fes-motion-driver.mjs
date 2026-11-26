@@ -40,7 +40,7 @@ export class FESMotionDriver {
     // needs the object's first snapshot before its motion publishes anything.
     if (!existing || !this.busy(object)) {
       const snapshot = target.state();
-      if (snapshot) target.manager.base.set(snapshot);
+      if (snapshot) target.manager.setBank(false, snapshot);
     }
     return target;
   }

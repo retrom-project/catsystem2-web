@@ -44,6 +44,25 @@ native CSS motion-record layout is unchanged. The modern Main state fixture
 also checks complete KCS local frames, overlapping output pointers, empty and
 null-manager controls, and independent cold restores of both banks and flags.
 
+The two modern constructors leave the working bank untouched. Its 144 bytes
+therefore carry initialization knowledge separately from their backing storage.
+Main303 and empty updates copy this knowledge with the bytes. A MOT script may
+write individual fields, build a matrix, or copy opaque bytes without first
+reading them; only an actual read of unknown bytes is diagnosed. Fully known
+banks use a null mask. Internal checkpoints preserve masks for the manager and
+any MOT VM region receiving an opaque copy, including after independent cold
+restore. Earlier builds keep their existing initialization policy until their
+own constructor chain is reviewed.
+
+The modern knowledge fixture links actual Main294/303/304/307/295 calls through
+the original file-server registration, mounted loose reader, KCS/zlib parser
+and Motion receiver. The mount namespace, extension and loose directory remain
+separate. Its partial-write/read, whole-bank stack copy, overlapping matrix copy
+and opaque local copy distinguish portable initialized bytes from captured heap
+contents. This is an authored resource/owner bridge, not a full game startup.
+The current library retains the requested resource filename independently of
+its folded cache key so a qualified filename remains loadable after cold restore.
+
 The game serializer/load pair is `78A2F0`/`78A420`; the SDK pair is
 `622400`/`622540`. `scripts/verify-native-motion-checkpoint.mjs` executes each
 original serializer and main `13C` refresh wrapper against authored ordered

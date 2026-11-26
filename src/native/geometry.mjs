@@ -4,7 +4,14 @@ import { nativeReply, bitsFloat, floatBits } from '../kcs/vm.mjs';
 import { roundX87Single as r } from '../ppi/x87.mjs';
 import { quietFloat32Bits, x87Float32Arithmetic } from '../ppi/numeric.mjs';
 import { inverseNativeMatrix, multiplyNativeMatrix } from './calculation-math.mjs';
-import { matrixStorage, floats, floatBytes, floatWords } from './calculation-memory.mjs';
+import {
+  matrixStorage,
+  floats,
+  floatBytes,
+  floatWords,
+  writeCalculationBytes,
+  copyCalculationBytes,
+} from './calculation-memory.mjs';
 import { transformFloat32Pairs } from '../motion/matrix.mjs';
 import {
   inverseSSEWords,
@@ -55,12 +62,11 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     return nativeReply(2);
   }
   if (operation === 'matrix.copy') {
-    machine.bytes(a, 64);
-    machine.bytes(b, 64);
+    machine.region(a, 64);
+    machine.region(b, 64);
     const width = math?.matrixCopyChunkBytes ?? 16;
     for (let i = 0; i < 64; i += width) {
-      const chunk = machine.bytes((b + i) >>> 0, width).slice();
-      machine.bytes((a + i) >>> 0, width).set(chunk);
+      copyCalculationBytes(machine, (a + i) >>> 0, (b + i) >>> 0, width);
     }
     return nativeReply(2);
   }
@@ -70,14 +76,14 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     const value = math?.matrixMultiplyUsesSSEWords
       ? multiplyMatrixSSEWords(floatWords(target), floatWords(source)).map(bitsFloat)
       : multiplyNativeMatrix(floats(target), floats(source));
-    target.set(floatBytes(value));
+    writeCalculationBytes(machine, a, floatBytes(value));
     return nativeReply(2);
   }
   if (['vector4.add', 'vector4.subtract', 'matrix.subtract'].includes(operation)) {
     const size = operation === 'matrix.subtract' ? 16 : 4,
       addition = operation === 'vector4.add';
-    machine.bytes(a, size * 4);
-    machine.bytes(b, size * 4);
+    machine.region(a, size * 4);
+    machine.region(b, size * 4);
     for (let i = 0; i < size; i++) {
       const target = (a + i * 4) >>> 0,
         x = machine.load(target),
@@ -91,7 +97,7 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
     }
     return nativeReply(2);
   }
-  machine.bytes(a, 16);
+  machine.region(a, 16);
   const v = read(machine, a, 4);
   let output;
   if (operation === 'vector4.length' || operation === 'vector4.lengthSquared') {
@@ -111,7 +117,11 @@ export function nativeGeometry(operation, args, machine, argumentWords, state, m
   }
   if (operation === 'vector4.normalize' && math?.vectorNormalizeUsesSSEWords) {
     const target = machine.bytes(a, 16);
-    target.set(floatBytes(normalizeSSEWords(floatWords(target)).map(bitsFloat)));
+    writeCalculationBytes(
+      machine,
+      a,
+      floatBytes(normalizeSSEWords(floatWords(target)).map(bitsFloat)),
+    );
     return nativeReply(2);
   }
   if (operation === 'vector4.normalize') {

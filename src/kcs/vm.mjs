@@ -269,6 +269,14 @@ export class KCSMachine {
     const [buffer, at] = this.region(address, count);
     return buffer.subarray(at, at + count);
   }
+  writeBytes(address, bytes) {
+    const [buffer, at] = this.region(address, bytes.length);
+    buffer.set(bytes, at);
+  }
+  copyBytes(target, source, count) {
+    this.region(target, count);
+    this.writeBytes(target, this.bytes(source, count).slice());
+  }
   nativeArgument(index) {
     if (!Number.isSafeInteger(index) || index < 0 || this.nativeArgumentBase === undefined)
       throw new Error('KCS native argument is unavailable');
@@ -390,7 +398,8 @@ export class KCSMachine {
     throw new Error('KCS unterminated string');
   }
   writeStringBytes(bytes, address) {
-    this.bytes(address, bytes.length + 1).set(bytes);
+    this.region(address, bytes.length + 1);
+    this.writeBytes(address, bytes);
     this.store(address + bytes.length, 0, 1);
   }
   writeString(text, address) {
@@ -547,14 +556,15 @@ export class KCSMachine {
         count = this.read(o[1]);
       if (size > this.sp || this.fp + count + 12 > this.memory.length)
         throw new Error('KCS invalid return frame');
-      const result = this.bytes(this.sp - size, size).slice();
+      const source = this.sp - size;
+      this.region(source, size);
       this.sp = this.fp + count + 12;
       this.floor = this.pop();
       this.fp = this.pop();
       next = this.pop();
       if (count > this.sp) throw new Error('KCS invalid return arguments');
       this.sp -= count;
-      this.bytes(this.sp, size).set(result);
+      this.copyBytes(this.sp, source, size);
       this.sp += size;
       this.depth = Math.max(0, this.depth - 1);
       this.debug.functions.pop();
@@ -566,7 +576,7 @@ export class KCSMachine {
       const address = this.raw(o[0]),
         count = this.read(o[1]);
       if (count > this.sp) throw new Error('KCS invalid stack copy');
-      this.bytes(address, count).set(this.bytes(this.sp - count, count).slice());
+      this.copyBytes(address, this.sp - count, count);
     } else if (op === 49 || op === 50) {
       const count = this.read(o[0]),
         floor = this.floor + (op === 49 ? count : -count);
