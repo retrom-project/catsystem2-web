@@ -70,13 +70,30 @@ export class MotionLibrary {
     for (const entry of entries) this.scripts.set(...entry);
   }
   nativeFilename(bytes) {
-    for (let at = 0; at < bytes.length; at++) {
-      if (nativeDataPair(bytes, at)) at++;
-      else if (at > 0 && (bytes[at] === 0x2f || bytes[at] === 0x5c)) return bytes;
-    }
+    const wide = typeof bytes === 'string';
+    if (wide) {
+      if (!this.nativeFilenameWide) throw new TypeError('Narrow MOT filename requires bytes');
+      for (let at = 1; at < bytes.length; at++)
+        if (bytes[at] === '/' || bytes[at] === '\\') return bytes;
+    } else
+      for (let at = 0; at < bytes.length; at++) {
+        if (nativeDataPair(bytes, at)) at++;
+        else if (at > 0 && (bytes[at] === 0x2f || bytes[at] === 0x5c)) return bytes;
+      }
     const resources = this.game.nativeResources;
     const entry = resources?.entries.find(({ name }) => lowerAscii(name) === 'mot');
     if (resources && !entry) return null;
+    if (wide) {
+      // CSS supplies WCHAR names directly to the wide loader. Configuration
+      // category fields retain their existing narrow conversion separately.
+      const prefix = entry?.archive ? cp932.decode(encodeCP932(entry.archive)) + '/' : '',
+        separator = Math.max(bytes.lastIndexOf('/'), bytes.lastIndexOf('\\')),
+        suffix =
+          bytes.lastIndexOf('.') > separator
+            ? ''
+            : cp932.decode(encodeCP932('.' + (entry?.extension ?? 'kcs')));
+      return prefix + bytes + suffix;
+    }
     const prefix = entry?.archive ? encodeCP932(entry.archive + '/') : [];
     const suffix =
       bytes.lastIndexOf(0x2e) > lastSeparator(bytes)
@@ -86,12 +103,15 @@ export class MotionLibrary {
   }
   nativeFilenameKey(bytes) {
     return this.nativeFilenameWide
-      ? cp932.decode(bytes).toLowerCase()
+      ? (typeof bytes === 'string' ? bytes : cp932.decode(bytes)).toLowerCase()
       : lowerAscii(nativeDataKey(bytes));
+  }
+  #inputName(name, nameBytes) {
+    return nameBytes ?? (this.nativeFilenameWide ? name : encodeCP932(name));
   }
   #key(name, nameBytes) {
     if (this.nativeFilenameQuery) {
-      const filename = this.nativeFilename(nameBytes ?? encodeCP932(name));
+      const filename = this.nativeFilename(this.#inputName(name, nameBytes));
       return filename === null ? null : this.nativeFilenameKey(filename);
     }
     return (
@@ -102,12 +122,12 @@ export class MotionLibrary {
     // Cache folding is not a resource filename: a qualified path needs its
     // extension when an independent cold manager loads this script again.
     script.name = name;
-    script.nameBytes = (nameBytes ?? encodeCP932(name)).slice();
+    script.nameBytes = nameBytes?.slice() ?? (this.nativeFilenameWide ? null : encodeCP932(name));
     if (this.nativeFilenameQuery) {
-      nameBytes ??= encodeCP932(name);
-      const bytes = this.nativeFilename(nameBytes) ?? nameBytes;
+      const input = this.#inputName(name, nameBytes),
+        bytes = this.nativeFilename(input) ?? input;
       if (this.nativeFilenameWide) {
-        const filename = cp932.decode(bytes),
+        const filename = typeof bytes === 'string' ? bytes : cp932.decode(bytes),
           separator = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
         script.recordName = filename.slice(separator > 0 ? separator + 1 : 0);
         script.recordNameBytes = encodeCP932(script.recordName);
@@ -143,21 +163,20 @@ export class MotionLibrary {
       // Restoring an older actor must not replace the current named cache.
     }
     if (!this.scripts.has(key)) {
-      const bytes = read
-        ? await read(name)
-        : this.read
-          ? await this.read(
-              this.nativeFilenameQuery
-                ? cp932.decode(this.nativeFilename(nameBytes ?? encodeCP932(name)))
-                : name,
-            )
-          : this.game.readCategory
-            ? await this.game.readCategory(name, 'mot')
-            : this.game.requireCategory
-              ? await this.game.requireCategory(name, 'mot')
-              : this.game.read
-                ? await this.game.read(`${key}.kcs`)
-                : await this.game.require(`${key}.kcs`);
+      const filename = this.nativeFilenameQuery
+          ? this.nativeFilename(this.#inputName(name, nameBytes))
+          : name,
+        bytes = read
+          ? await read(name)
+          : this.read
+            ? await this.read(typeof filename === 'string' ? filename : cp932.decode(filename))
+            : this.game.readCategory
+              ? await this.game.readCategory(name, 'mot')
+              : this.game.requireCategory
+                ? await this.game.requireCategory(name, 'mot')
+                : this.game.read
+                  ? await this.game.read(`${key}.kcs`)
+                  : await this.game.require(`${key}.kcs`);
       // A missing or zero-size source is not inserted in the native source list.
       if (!bytes || bytes.byteLength === 0) return null;
       this.scripts.set(key, { source: bytes.slice(), script: null, pending: null });

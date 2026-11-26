@@ -318,7 +318,11 @@ export function nativeMotion(id, args, machine, services = {}, owner) {
             Number(
               [...manager.records.values()].some(
                 ({ instance }) =>
-                  registry.library.nativeFilenameKey(instance.script.recordNameBytes) === key,
+                  registry.library.nativeFilenameKey(
+                    registry.library.nativeFilenameWide
+                      ? instance.script.recordName
+                      : instance.script.recordNameBytes,
+                  ) === key,
               ),
             ),
           );

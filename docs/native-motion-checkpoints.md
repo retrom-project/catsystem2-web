@@ -25,7 +25,16 @@ the loader. The wide record uses the original conversion to UTF-16. Internal
 manager snapshots retain each record's requested filename bytes with its code
 source, so an independent cold restore preserves the same name and cache key.
 Decoding validates record extents against used length while allowing retained
-capacity after it. The motion-checkpoint handle stores its owner manager,
+capacity after it. The last legal filename uses 31 bytes in the narrow record
+or 31 UTF-16 code units in the wide record, followed by its NUL. Original
+Main304/315/296 calls and CSS-file restoration cover these complete fields,
+including CP932 double-byte names and aliases, with no unwritten filename
+padding excluded. A wide CSS filename can contain characters outside CP932:
+it remains UTF-16 through the mounted loader, source cache, query and cold
+restore rather than being converted through a narrow filename. Its internal
+requested-name bytes are null when the source of the name was WCHAR data.
+Names exceeding the native field's capacity remain outside this defined scope.
+The motion-checkpoint handle stores its owner manager,
 buffer and capacity separately. In the two modern builds, a Main294 manager
 survives the creating Script's destruction and remains usable by another Script;
 Main295 explicitly releases it. The creator recorded in a JS checkpoint is
@@ -104,6 +113,14 @@ Main GCALL sequence. Earlier probes which omitted that static constructor are
 not evidence of native cache lifetime. An empty-archive filename fixture uses
 an explicit FileServer slot registration, matching its original producer; it
 does not establish automatic WinMain registration for that configuration.
+
+The native inner loader checks the KCS signature. A noncanonical first DWORD
+does not load or execute an otherwise valid compressed payload: the outer Add
+can return a nonzero member handle for an active shell whose code pointer is
+null. Canonical setter controls distinguish that shell from a loaded VM.
+Earlier probes which observed only Add and state queries do not establish
+accepted code. The JS loader retains its signature check; native failed-shell
+consumers outside the captured delete/update controls remain protected.
 
 Manager-created modern records leave their object and frame bytes untouched
 until the respective input copy and VM update. Their internal checkpoint keeps
