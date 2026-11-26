@@ -52,7 +52,7 @@ function blendColor(source, destination, mode, affine) {
       : Math.min(255, Math.trunc((255 * source) / (255 - destination)));
   throw new Error(`Unsupported retained bitmap blend type ${mode}`);
 }
-function blendTypePixel(output, at, input, offset, opacity, mode, affine) {
+export function blendTypePixel(output, at, input, offset, opacity, mode, affine) {
   const alpha = (((input[offset + 3] + 1) * (opacity & 65535)) >>> 8) & 255,
     destinationAlpha = output[at + 3];
   if (!alpha) {
@@ -81,6 +81,22 @@ function blendTypePixel(output, at, input, offset, opacity, mode, affine) {
       255;
   }
   output[at + 3] = total;
+}
+export function blendTypeRGBPixel(output, at, input, offset, mode) {
+  const alpha = input[offset + 3];
+  if (!alpha) return;
+  for (let channel = 0; channel < 3; channel++) {
+    const source = input[offset + channel],
+      destination = output[at + channel],
+      product = (destination * (source + 1)) >> 8,
+      mixed =
+        mode === 4
+          ? source < 128
+            ? product
+            : 2 * (source + destination - product) - 255
+          : blendColor(source, destination, mode, false);
+    output[at + channel] = ((mixed * alpha + destination * (256 - alpha)) & 65535) >>> 8;
+  }
 }
 const emptyPixel = (pixels, at) =>
   !pixels[at] && !pixels[at + 1] && !pixels[at + 2] && !pixels[at + 3];

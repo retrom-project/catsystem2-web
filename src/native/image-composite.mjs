@@ -11,6 +11,7 @@ import { blendBitmapPixel } from './image.mjs';
 import { HG2 } from '../formats/hg2.mjs';
 import { HG3 } from '../formats/hg3.mjs';
 import { PSD } from '../formats/psd.mjs';
+import { blendTypePixel } from './raster-kernel.mjs';
 export const NATIVE_IMAGE_COMPOSITE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x1cc, words: 1, control: 1 }),
 ]);
@@ -160,6 +161,11 @@ export class NativeImageComposites {
               format = image instanceof HG2 ? 'HG2' : image instanceof HG3 ? 'HG3' : 'raster';
             if (!formats.includes(format))
               throw new Error('Selector image input has no reviewed format binding');
+            if (
+              nativeABI(this.world.profile).graphics.imageCompositePreservesRGB24 &&
+              image.frame(0)?.bpp === 24
+            )
+              images.get(h).state.bpp = 3;
           }
           const source = images.get(h),
             v = source.state;
@@ -177,7 +183,9 @@ export class NativeImageComposites {
           dy = y;
           if (width > 0 && height > 0) {
             if (nativeABI(this.world.profile).graphics.bitmapCompositeUsesLegacyRows) {
-              if (![3, 4].includes(v.bpp) || v.blendType)
+              const blend = v.blendType ?? 0,
+                modes = nativeABI(this.world.profile).graphics.imageCompositeBlendTypes ?? [0];
+              if (![3, 4].includes(v.bpp) || !modes.includes(blend))
                 throw new Error('Selector composition requires the reviewed scalar pixel format');
               const pixels = await output.pixels(),
                 input = await source.pixels();
@@ -185,7 +193,11 @@ export class NativeImageComposites {
                 for (let x = 0; x < width; x++) {
                   const from = ((source.height - 1 - sy - y) * source.width + sx + x) * 4,
                     to = ((output.height - 1 - dy - y) * output.width + dx + x) * 4;
-                  if (input[from + 3]) blendBitmapPixel(pixels, to, input, from);
+                  if (input[from + 3]) {
+                    if (!blend) blendBitmapPixel(pixels, to, input, from);
+                    else if (v.bpp === 4)
+                      blendTypePixel(pixels, to, input, from, 255, blend, false);
+                  }
                 }
               s.source = null;
               await output.changed();

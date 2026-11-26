@@ -33,7 +33,7 @@
         "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       },
       "target": null
     },
@@ -47,14 +47,14 @@
         "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       },
       "target": {
         "shape": [3, 2, 4],
         "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       }
     },
     {
@@ -67,14 +67,14 @@
         "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       },
       "target": {
         "shape": [3, 2, 4],
         "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       }
     },
     {
@@ -88,7 +88,7 @@
         "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       }
     },
     {
@@ -109,7 +109,7 @@
         "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       },
       "target": null
     },
@@ -123,14 +123,14 @@
         "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       },
       "target": {
         "shape": [3, 2, 3],
         "rgbaBase64": "2K54/7yWYv+khlD/kmxC/3haMP9gShj/",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       }
     },
     {
@@ -143,14 +143,14 @@
         "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       },
       "target": {
         "shape": [3, 2, 3],
         "rgbaBase64": "H0l//3t7e/+khlD/ZYu1/3lqVf+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       }
     },
     {
@@ -163,14 +163,14 @@
         "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//",
         "mask": 1,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       },
       "target": {
         "shape": [3, 2, 3],
         "rgbaBase64": "H0l//3t7e/+khlD/ZYu1/3lqVf+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       }
     },
     {
@@ -183,14 +183,14 @@
         "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//",
         "mask": 1,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       },
       "target": {
         "shape": [3, 2, 3],
         "rgbaBase64": "H0l//3t7e/+khlD/ZYu1/3lqVf+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       }
     },
     {
@@ -204,7 +204,7 @@
         "rgbaBase64": "H0l//3t7e/+khlD/ZYu1/3lqVf+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       }
     },
     {
@@ -225,7 +225,7 @@
         "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       },
       "target": null
     },
@@ -239,14 +239,14 @@
         "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       },
       "target": {
         "shape": [3, 2, 3],
         "rgbaBase64": "2K54/7yWYv+khlD/kmxC/3haMP9gShj/",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       }
     },
     {
@@ -259,14 +259,14 @@
         "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       },
       "target": {
         "shape": [3, 2, 3],
         "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       }
     },
     {
@@ -280,7 +280,7 @@
         "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
         "mask": 0,
         "blendType": 0,
-        "alphaHint": 1
+        "dataReferences": 1
       }
     },
     {

@@ -272,3 +272,17 @@ Main460/703 VM comparisons cover every output byte and cold ownership. For
 both formats Main428 uses the original ordinal-reader zero stub without writing
 the third output. Main648 still returns an automatically owned null-storage
 wrapper; the helper's zero result does not become the wrapper's result.
+
+The .23 scalar blend dispatcher accepts authored HG3 `cptype`1–5 for RGBA
+sources. It selects that function before consulting the mask word. RGBA targets
+use the existing mixed-alpha CPU arithmetic; RGB targets use their own scalar
+weighting and mode4 color branch. The RGB source table has no cptype handler, so
+the complete wrapper preserves the destination and still returns control2.
+Main460 selector composition uses the same RGBA functions and preserves RGB24
+source depth for this dispatch. The original bitmap header word at+80 counts data references; it is not the
+browser's internal alpha classification. The comparison checks that ownership
+separately from the actual alpha samples.
+Normal VM comparisons cover all five RGBA modes, a RGB destination, cptype over
+mask, all selector pixels, explicit/automatic ownership and independent cold
+continuation. Other blend codes and unqualified external VRAM shapes stay
+protected.

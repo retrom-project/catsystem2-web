@@ -3,7 +3,7 @@ import { originalOwner, originalOperation } from './original-adapter.mjs';
 import { nativeABI } from './abi/index.mjs';
 // Integer bitmap arithmetic follows the reviewed packed-pixel algorithms.
 import { blendBitmapPixel, resampleBitmap } from './image.mjs';
-import { flipBitmapRows } from './raster-kernel.mjs';
+import { flipBitmapRows, blendTypePixel, blendTypeRGBPixel } from './raster-kernel.mjs';
 const f = Math.fround;
 export async function bitmapColor(bitmap, mode, argument) {
   const s = bitmap.state;
@@ -215,7 +215,12 @@ export async function bitmapTransfer(world, destination, source, args, copy, tas
         const from = ((source.height - 1 - sy - row) * source.width + sx + x) * 4,
           to = ((destination.height - 1 - dy - row) * destination.width + dx + x) * 4,
           mask = source.state.mask >>> 0;
-        if (mask) {
+        if (args.blendType) {
+          if (destination.state.bpp === 3)
+            blendTypeRGBPixel(pixels, to, input, from, args.blendType);
+          else if (input[from + 3])
+            blendTypePixel(pixels, to, input, from, 255, args.blendType, false);
+        } else if (mask) {
           const channel = [2, 1, 0, 3][mask - 1];
           pixels[to + 3] = (((pixels[to + 3] + 1) * (input[from + channel] + 1) - 1) >>> 8) & 255;
         } else if (input[from + 3]) {

@@ -56,15 +56,20 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
         const sourceBpp = images.get(source.bitmap).state.bpp,
           targetBpp = images.get(target.bitmap).state.bpp,
           mask = images.get(source.bitmap).state.mask >>> 0,
+          blendType = images.get(source.bitmap).state.blendType ?? 0,
+          blendTypes = nativeABI(world.profile).graphics.imageOwnerBlendTypes ?? [0],
           formats = nativeABI(world.profile).graphics.imageOwnerBlendRGB24 ? [3, 4] : [4];
         if (
           !formats.includes(sourceBpp) ||
           !formats.includes(targetBpp) ||
-          images.get(source.bitmap).state.blendType ||
-          mask > sourceBpp
+          !blendTypes.includes(blendType) ||
+          (!blendType && mask > sourceBpp)
         )
           throw new Error('The image blend requires a reviewed scalar pixel format');
-        if (targetBpp === 3 && mask) return done(); // The native mask dispatch has no RGB target function.
+        // The cptype dispatch precedes mask selection and has no RGB source function.
+        if ((blendType && sourceBpp === 3) || (!blendType && targetBpp === 3 && mask))
+          return done();
+        words.blendType = blendType;
         words.operation = 'clipped-blend';
         words.blendPhysicalRows = true;
       }
