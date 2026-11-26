@@ -1,0 +1,1097 @@
+{
+  "scope": "Own complete Main629 GCALL with captured ShellExecuteA leaf only; no external navigation/process/registry or hardware claim.",
+  "builds": [
+    {
+      "version": "23",
+      "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "handler": "0x47bb00",
+      "producerSha256": "6c7bd859ff69133167186723aa7ad514c483f9bbeb11432fd57cc62aec647143",
+      "cases": [
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 0,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 0
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 2,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 2
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 5,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 5
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 31,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 31
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 32,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 32
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 4294967295,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 4294967295
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "local controlled URL",
+          "strings": ["http://localhost:40007/controlled-target", "", ""],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [
+              104, 116, 116, 112, 58, 47, 47, 108, 111, 99, 97, 108, 104, 111, 115, 116, 58, 52, 48,
+              48, 48, 55, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100, 45, 116, 97, 114,
+              103, 101, 116
+            ],
+            "parameters": [],
+            "directory": [],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "external game-shaped author string capture only",
+          "strings": ["convert_all.bat", "", "scene"],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [99, 111, 110, 118, 101, 114, 116, 95, 97, 108, 108, 46, 98, 97, 116],
+            "parameters": [],
+            "directory": [115, 99, 101, 110, 101],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "literal percent",
+          "strings": ["file%%one", "parameter%%two", "directory%%three"],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 37, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 37, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 37, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "global numeric expansion",
+          "strings": ["file-%d[G64]", "params-%d[G68]", "dir-%d[G72]"],
+          "words": [
+            [64, 7],
+            [68, 8],
+            [72, 9]
+          ],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 55],
+            "parameters": [112, 97, 114, 97, 109, 115, 45, 56],
+            "directory": [100, 105, 114, 45, 57],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "same input aliases",
+          "strings": ["all-three"],
+          "args": [256, 256, 256],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [97, 108, 108, 45, 116, 104, 114, 101, 101],
+            "parameters": [97, 108, 108, 45, 116, 104, 114, 101, 101],
+            "directory": [97, 108, 108, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "shared string addresses",
+          "strings": ["shared-file", "shared-params", "shared-directory"],
+          "shared": true,
+          "args": [2147483904, 2147484416, 2147484928],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [115, 104, 97, 114, 101, 100, 45, 102, 105, 108, 101],
+            "parameters": [115, 104, 97, 114, 101, 100, 45, 112, 97, 114, 97, 109, 115],
+            "directory": [
+              115, 104, 97, 114, 101, 100, 45, 100, 105, 114, 101, 99, 116, 111, 114, 121
+            ],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "ignored trailing word",
+          "strings": ["file-tail", "parameter-tail", "directory-tail"],
+          "tail": 3735928559,
+          "args": [256, 768, 1280, 3735928559],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 116, 97, 105, 108],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 45, 116, 97, 105, 108],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 97, 105, 108],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "long normal 259 byte operands",
+          "strings": [
+            "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+            "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          ],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102
+            ],
+            "parameters": [
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112
+            ],
+            "directory": [
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100
+            ],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "empty operands",
+          "strings": ["", "", ""],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [],
+            "parameters": [],
+            "directory": [],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        }
+      ]
+    },
+    {
+      "version": "63",
+      "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "handler": "0x49df70",
+      "producerSha256": "6c7bd859ff69133167186723aa7ad514c483f9bbeb11432fd57cc62aec647143",
+      "cases": [
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 0,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 0
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 2,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 2
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 5,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 5
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 31,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 31
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 32,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 32
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 4294967295,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 4294967295
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "local controlled URL",
+          "strings": ["http://localhost:40007/controlled-target", "", ""],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [
+              104, 116, 116, 112, 58, 47, 47, 108, 111, 99, 97, 108, 104, 111, 115, 116, 58, 52, 48,
+              48, 48, 55, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100, 45, 116, 97, 114,
+              103, 101, 116
+            ],
+            "parameters": [],
+            "directory": [],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "external game-shaped author string capture only",
+          "strings": ["convert_all.bat", "", "scene"],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [99, 111, 110, 118, 101, 114, 116, 95, 97, 108, 108, 46, 98, 97, 116],
+            "parameters": [],
+            "directory": [115, 99, 101, 110, 101],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "literal percent",
+          "strings": ["file%%one", "parameter%%two", "directory%%three"],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 37, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 37, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 37, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "global numeric expansion",
+          "strings": ["file-%d[G64]", "params-%d[G68]", "dir-%d[G72]"],
+          "words": [
+            [64, 7],
+            [68, 8],
+            [72, 9]
+          ],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 55],
+            "parameters": [112, 97, 114, 97, 109, 115, 45, 56],
+            "directory": [100, 105, 114, 45, 57],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "same input aliases",
+          "strings": ["all-three"],
+          "args": [256, 256, 256],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [97, 108, 108, 45, 116, 104, 114, 101, 101],
+            "parameters": [97, 108, 108, 45, 116, 104, 114, 101, 101],
+            "directory": [97, 108, 108, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "shared string addresses",
+          "strings": ["shared-file", "shared-params", "shared-directory"],
+          "shared": true,
+          "args": [2147483904, 2147484416, 2147484928],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [115, 104, 97, 114, 101, 100, 45, 102, 105, 108, 101],
+            "parameters": [115, 104, 97, 114, 101, 100, 45, 112, 97, 114, 97, 109, 115],
+            "directory": [
+              115, 104, 97, 114, 101, 100, 45, 100, 105, 114, 101, 99, 116, 111, 114, 121
+            ],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "ignored trailing word",
+          "strings": ["file-tail", "parameter-tail", "directory-tail"],
+          "tail": 3735928559,
+          "args": [256, 768, 1280, 3735928559],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 116, 97, 105, 108],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 45, 116, 97, 105, 108],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 97, 105, 108],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "long normal 259 byte operands",
+          "strings": [
+            "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+            "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          ],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102
+            ],
+            "parameters": [
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112
+            ],
+            "directory": [
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100
+            ],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "empty operands",
+          "strings": ["", "", ""],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [],
+            "parameters": [],
+            "directory": [],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        }
+      ]
+    },
+    {
+      "version": "67",
+      "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "handler": "0x49e090",
+      "producerSha256": "6c7bd859ff69133167186723aa7ad514c483f9bbeb11432fd57cc62aec647143",
+      "cases": [
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 0,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 0
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 2,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 2
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 5,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 5
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 31,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 31
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 32,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 32
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "three distinct operands",
+          "strings": ["file-one", "parameters-two", "directory-three"],
+          "args": [256, 768, 1280],
+          "result": 4294967295,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 115, 45, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 4294967295
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "local controlled URL",
+          "strings": ["http://localhost:40007/controlled-target", "", ""],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [
+              104, 116, 116, 112, 58, 47, 47, 108, 111, 99, 97, 108, 104, 111, 115, 116, 58, 52, 48,
+              48, 48, 55, 47, 99, 111, 110, 116, 114, 111, 108, 108, 101, 100, 45, 116, 97, 114,
+              103, 101, 116
+            ],
+            "parameters": [],
+            "directory": [],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "external game-shaped author string capture only",
+          "strings": ["convert_all.bat", "", "scene"],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [99, 111, 110, 118, 101, 114, 116, 95, 97, 108, 108, 46, 98, 97, 116],
+            "parameters": [],
+            "directory": [115, 99, 101, 110, 101],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "literal percent",
+          "strings": ["file%%one", "parameter%%two", "directory%%three"],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 37, 111, 110, 101],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 37, 116, 119, 111],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 37, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "global numeric expansion",
+          "strings": ["file-%d[G64]", "params-%d[G68]", "dir-%d[G72]"],
+          "words": [
+            [64, 7],
+            [68, 8],
+            [72, 9]
+          ],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 55],
+            "parameters": [112, 97, 114, 97, 109, 115, 45, 56],
+            "directory": [100, 105, 114, 45, 57],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "same input aliases",
+          "strings": ["all-three"],
+          "args": [256, 256, 256],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [97, 108, 108, 45, 116, 104, 114, 101, 101],
+            "parameters": [97, 108, 108, 45, 116, 104, 114, 101, 101],
+            "directory": [97, 108, 108, 45, 116, 104, 114, 101, 101],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "shared string addresses",
+          "strings": ["shared-file", "shared-params", "shared-directory"],
+          "shared": true,
+          "args": [2147483904, 2147484416, 2147484928],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [115, 104, 97, 114, 101, 100, 45, 102, 105, 108, 101],
+            "parameters": [115, 104, 97, 114, 101, 100, 45, 112, 97, 114, 97, 109, 115],
+            "directory": [
+              115, 104, 97, 114, 101, 100, 45, 100, 105, 114, 101, 99, 116, 111, 114, 121
+            ],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "ignored trailing word",
+          "strings": ["file-tail", "parameter-tail", "directory-tail"],
+          "tail": 3735928559,
+          "args": [256, 768, 1280, 3735928559],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [102, 105, 108, 101, 45, 116, 97, 105, 108],
+            "parameters": [112, 97, 114, 97, 109, 101, 116, 101, 114, 45, 116, 97, 105, 108],
+            "directory": [100, 105, 114, 101, 99, 116, 111, 114, 121, 45, 116, 97, 105, 108],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "long normal 259 byte operands",
+          "strings": [
+            "fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "ppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp",
+            "ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+          ],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102, 102,
+              102, 102, 102, 102
+            ],
+            "parameters": [
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112, 112,
+              112, 112, 112, 112
+            ],
+            "directory": [
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+              100, 100, 100, 100
+            ],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        },
+        {
+          "name": "empty operands",
+          "strings": ["", "", ""],
+          "args": [256, 768, 1280],
+          "result": 33,
+          "control": 2,
+          "leaf": {
+            "owner": 305419896,
+            "verb": [111, 112, 101, 110],
+            "file": [],
+            "parameters": [],
+            "directory": [],
+            "show": 5,
+            "result": 33
+          },
+          "sourceMemoryUnchanged": true,
+          "temporaryOwners": 0
+        }
+      ]
+    }
+  ]
+}

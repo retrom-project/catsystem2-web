@@ -44,10 +44,10 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     Object.values(base).map(({ count }) => count),
     [869, 45, 44, 51],
   );
-  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 709);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'recovered').length, 710);
   assert.equal(base.main.entries.filter(({ status }) => status === 'reserved').length, 57);
   assert.equal(base.main.entries.filter(({ status }) => status === 'constant-zero').length, 17);
-  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 86);
+  assert.equal(base.main.entries.filter(({ status }) => status === 'unknown').length, 85);
   assert.equal(base.main.entries.filter((entry) => entry.observedArgumentWords.length).length, 447);
   assert.deepEqual(base.main.entries[464].observedArgumentWords, []);
   assert.deepEqual(base.main.entries[543].observedArgumentWords, [3]);
@@ -289,7 +289,7 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     assert.equal(signature.resultWritten, control === 1);
     assert.deepEqual(signature.controlCodes, [control]);
   }
-  for (const id of [287, 288, 629]) assert.equal(base.main.entries[id].status, 'unknown');
+  for (const id of [287, 288, 688]) assert.equal(base.main.entries[id].status, 'unknown');
   const unknown = nativeABI('sdk-4.01-engine-2.6.1.74').tables.main.entries[0x52];
   assert.equal(unknown.name, null);
   assert.equal(unknown.signature.parameters, null);

@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [629],
+    value:
+      'Own 2.6.1.23 Main629 complete GCALL and original formatter expand the first three fixed VM CP932 operands in order as file, parameters and directory. ShellExecuteA borrows the Script HWND, uses operation open and show5, and discards every OS result through control2. Sixteen own cases cover distinct and aliased inputs, global expansions, shared addresses, 259-byte strings and ignored trailing words with unchanged VM source memory. The browser host reports real HTTP(S) popup availability; other schemes, Windows arguments and working directories remain unsupported capability domains, not fabricated success. Zero/short frames and overlong native temporaries are not admitted.',
+  },
+  {
     ids: [738],
     value:
       'Own 2.6.1.23 Main738 sends raw321 to a constructed, loaded FES owner. Full GCALL uses original Main365-owned 20-byte descriptors holding a valid encoded HG3 resource. A new key retains once; a duplicate key retains neither its previous descriptor again nor a different candidate. A second key shares one descriptor, caller release leaves both cache references, Main67 retirement retains them, and the original FES deleting destructor releases the descriptor and owner after ordinary static resource-list initialization. The wrapper returns control2 without a result write. Unknown foreign pointers and incomplete renderer/3D shapes are not inferred from these encoded-byte ownership cases.',
@@ -1749,6 +1754,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [629], fields: { review: 'reviewed', resultWritten: false } },
         {
           ids: [738],
           fields: {

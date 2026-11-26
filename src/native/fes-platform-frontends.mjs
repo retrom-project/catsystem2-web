@@ -116,7 +116,7 @@ export class FESPlatformFrontends {
       });
       if (this.closed) return;
       if (!Number.isInteger(result) || result < 0 || result > 0xffffffff)
-        throw new TypeError('FES external open must report its real ShellExecute result');
+        throw new TypeError('FES external open must report its unsigned platform result');
       const error = fesShellError(result, this.world.globalStrings);
       if (error && !this.closed) {
         flight.modal = true;

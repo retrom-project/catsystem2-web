@@ -3,7 +3,7 @@
 Native meanings live once in
 [semantics.mjs](../src/native/abi/semantics.mjs), indexed by table namespace and
 numeric ID. Main, generic/MOT and the two particle namespaces remain separate.
-The catalog contains 932 reviewed main meanings and 45/44/51 auxiliary meanings.
+The catalog contains 933 reviewed main meanings and 45/44/51 auxiliary meanings.
 These are the union of the registered engines' recovered declarations, not a
 list of functions enabled in every engine. Project descriptive names do not
 claim to recover the compiler's original symbols.
@@ -19,9 +19,9 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
-| 2.6.1.23 | 869        | 709       | 57            | 17            | 86      | 45 / 44 / 51               |
-| 2.6.1.63 | 938        | 683       | 80            | 19            | 156     | 45 / 44 / 51               |
-| 2.6.1.67 | 938        | 741       | 80            | 19            | 98      | 45 / 44 / 51               |
+| 2.6.1.23 | 869        | 710       | 57            | 17            | 85      | 45 / 44 / 51               |
+| 2.6.1.63 | 938        | 684       | 80            | 19            | 155     | 45 / 44 / 51               |
+| 2.6.1.67 | 938        | 742       | 80            | 19            | 97      | 45 / 44 / 51               |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51               |
 

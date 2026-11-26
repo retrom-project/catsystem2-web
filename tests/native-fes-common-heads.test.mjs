@@ -430,6 +430,6 @@ for (const [version, count, waitReview] of [
       FES_COMMON_HEAD_BINDING_REVIEWS[waitReview],
     );
     assert.equal(abi.tables.main.entries[0x181].status, 'recovered');
-    assert.equal(abi.tables.main.entries[629].status, 'unknown');
+    assert.equal(abi.tables.main.entries[688].status, 'unknown');
   });
 }

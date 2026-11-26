@@ -9,12 +9,7 @@ import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 import { audioFixture } from './fixtures/audio-context.mjs';
-import {
-  StartupCanvas,
-  startupEnvironment,
-  startupXML,
-  startupVersionImage,
-} from './fixtures/ordinary-startup.mjs';
+import { StartupCanvas, startupEnvironment, startupXML } from './fixtures/ordinary-startup.mjs';
 import { hg3, kcsProgram, kif } from './helpers.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 
@@ -241,7 +236,7 @@ test('2.6.1.23 protects full name tables, owner types and over-budget allocation
   }
 });
 
-test('2.6.1.23 selects the loose startup and drives KCS, Draw and FES through a fresh Core', async () => {
+test('2.6.1.23 authored Core selects loose startup and drives KCS, Draw and FES', async () => {
   const startup = (entry, width, height) =>
       startupXML(
         profile,
@@ -307,7 +302,6 @@ test('2.6.1.23 selects the loose startup and drives KCS, Draw and FES through a 
   metadata.setInt32(56, 82, true);
   metadata.setInt32(60, 54, true);
   const game = await gameFiles({
-      'module.exe': startupVersionImage('2.6.1.23'),
       'config/startup.xml': startup('owned.kcs', 82, 54),
       'config.int': kif([
         ['startup.xml', startup('unused.kcs', 64, 48)],
@@ -329,6 +323,7 @@ test('2.6.1.23 selects the loose startup and drives KCS, Draw and FES through a 
       const { context } = audioFixture();
       return new CatSystem2({
         game,
+        nativeProfile: profile,
         canvas: new StartupCanvas(),
         audioContext: context,
         randomSeed: 3,
@@ -360,10 +355,7 @@ test('2.6.1.23 selects the loose startup and drives KCS, Draw and FES through a 
     assert.equal(world.runtime.calls.get('main:447'), 1);
     assert.equal(world.runtime.calls.get('main:448'), 1);
     assert.equal(world.soundConfiguration.loaded, false);
-    assert.throws(
-      () => world.runtime.native('main', 629, [0, 0, 0], machine, main),
-      UnsupportedKCSNative,
-    );
+    assert.throws(() => world.runtime.native('main', 688, [], machine, main), UnsupportedKCSNative);
     assert.throws(() => nativeABIBehavior(profile, 'sound.completionFrame'), /Unreviewed ABI/);
 
     await core.step(4);

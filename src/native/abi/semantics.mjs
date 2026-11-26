@@ -22027,6 +22027,27 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    629: {
+      name: 'window.openExternal',
+      family: 'window',
+      signature: {
+        argumentWords: 3,
+        controlCodes: [2],
+        parameters: ['file', 'parameters', 'directory'].map((name) => ({
+          name,
+          description: 'Guest CP932 format for ShellExecute open ' + name,
+          type: {
+            kind: 'pointer',
+            addressSpace: 'vm',
+            direction: 'in',
+            target: { kind: 'format-string', encoding: 'CP932' },
+          },
+        })),
+        result: { kind: 'void', description: 'ShellExecute result is discarded' },
+        resultWritten: false,
+        review: 'declared',
+      },
+    },
     630: {
       name: 'fes.notifyObject',
       family: 'fes',

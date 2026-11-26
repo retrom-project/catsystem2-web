@@ -2,6 +2,7 @@
 // Browser substitutes for the application's modal OS interfaces.
 import { NativeConfiguration } from './config.mjs';
 import { NativeFESConfiguration } from './fes-config.mjs';
+import { nativeDataString } from './data-text.mjs';
 const element = (tag, text) => {
     const node = document.createElement(tag);
     if (text !== undefined) node.textContent = text;
@@ -375,12 +376,53 @@ export class BrowserNativeWindow {
       );
     return yesNo ? (accepted ? 6 : 7) : !buttons || accepted ? 1 : 2;
   }
+  externalOpen(action) {
+    if (this.#exiting) return 5;
+    const bytes = action.type === 'fes-open-site' ? action.bytes : action.file;
+    if (!(bytes instanceof Uint8Array)) throw new TypeError('External open requires narrow bytes');
+    if (action.type === 'script-shell-open') {
+      if (action.operation !== 'open' || action.show !== 5)
+        throw new Error('Unsupported native external open operation');
+      for (const value of [action.parameters, action.directory]) {
+        if (!(value instanceof Uint8Array))
+          throw new TypeError('External open parameters and directory require narrow bytes');
+        if (nativeDataString(value).length) return 31;
+      }
+    }
+    let url;
+    try {
+      url = new URL(new TextDecoder('shift_jis').decode(nativeDataString(bytes)));
+    } catch {
+      return 31;
+    }
+    if (!['http:', 'https:'].includes(url.protocol)) return 31;
+    if (typeof globalThis.window?.open !== 'function') return 31;
+    let opened;
+    try {
+      // Keep the initial same-origin handle so a blocked popup is observable.
+      // Detach its opener before the requested document can begin loading.
+      opened = window.open('about:blank', '_blank');
+      if (!opened) return 5;
+      opened.opener = null;
+      opened.location.replace(url.href);
+      return 33;
+    } catch {
+      opened?.close();
+      return 5;
+    }
+  }
   async perform(action, world) {
-    if (['fes-configuration', 'fes-message-box'].includes(action.type) && action.owner != null) {
+    if (
+      ['fes-configuration', 'fes-message-box', 'fes-open-site'].includes(action.type) &&
+      action.owner != null
+    ) {
       const owner = world.objects.objects.get(action.owner);
-      if (!owner || owner.state === 'releasing') return false;
+      if (!owner || owner.state === 'releasing') return action.type === 'fes-open-site' ? 5 : false;
     }
     switch (action.type) {
+      case 'script-shell-open':
+      case 'fes-open-site':
+        return this.externalOpen(action);
       case 'confirm-title':
       case 'confirm-close':
         return this.confirm(action);

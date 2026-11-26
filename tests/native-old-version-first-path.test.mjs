@@ -221,7 +221,7 @@ for (const [version, profile, soundTypeMessage, otherType] of versions) {
         const historySave = () => world.runtime.native('main', 385, [0, 0, 0, 0], machine, main);
         assert.deepEqual(historySave(), { control: 1, value: 0 });
         assert.throws(
-          () => world.runtime.native('main', 629, [0, 0, 0], machine, main),
+          () => world.runtime.native('main', 688, [], machine, main),
           /Unsupported|unrecovered/i,
         );
         assert.equal(world.runtime.handlers.has('main:988'), false);
@@ -341,7 +341,7 @@ test('old ABI Runtime binds only present slots and preserves unknown dispatch', 
     const machine = { pc: 16, debug: null },
       task = { id: 1, name: 'owned-runtime-control' };
     const entries = nativeABI(profile).tables.main.entries,
-      unknown = version === '2.6.1.67' ? [[629, 3]] : [[688, 0]];
+      unknown = [[688, 0]];
     if (version === '2.6.1.63') {
       assert.equal(entries[239].status, 'recovered');
       assert.equal(entries[239].signature.argumentWords, 5);
@@ -1034,9 +1034,9 @@ test('67 first-title entry GCALLs preserve VM zero and real task identity', asyn
     assert.equal(await world.sendEngine(id, world.main.id, 9), 0);
     assert.deepEqual(record.implementation.snapshot(), beforeStrictMessage);
     assert.equal(attempted.cpu, 0);
-    assert.equal(nativeABI(title67Profile).tables.main.entries[629].status, 'unknown');
+    assert.equal(nativeABI(title67Profile).tables.main.entries[688].status, 'unknown');
     assert.equal(
-      nativeABI('rebellions-jp-engine-2.6.1.63').tables.main.entries[629].status,
+      nativeABI('rebellions-jp-engine-2.6.1.63').tables.main.entries[688].status,
       'unknown',
     );
   } finally {
@@ -3940,8 +3940,7 @@ async function verifyCloseBoundaries(profile, emptyStringResult) {
     const entries = nativeABI(profile).tables.main.entries;
     for (const id of [836, 869, 871, 873]) assert.equal(entries[id].status, 'recovered');
     if (profile !== title67Profile) assert.equal(entries[239].status, 'recovered');
-    for (const id of profile === title67Profile ? [629] : [688])
-      assert.equal(entries[id].status, 'unknown');
+    for (const id of [688]) assert.equal(entries[id].status, 'unknown');
   } finally {
     await source.world.close();
     await source.audio.dispose();

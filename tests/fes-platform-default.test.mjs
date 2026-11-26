@@ -734,10 +734,19 @@ for (const profile of profiles) {
         );
       }
       result = undefined;
-      await assert.rejects(run(), /real ShellExecute result/);
+      await assert.rejects(run(), /unsigned platform result/);
       const browser = new BrowserNativeWindow({});
-      world.host.nativeWindowAction = (action) => browser.perform(action, world);
-      await assert.rejects(run(), /Unknown browser window action fes-open-site/);
+      actions.length = 0;
+      world.host.nativeWindowAction = (action) => {
+        actions.push(action);
+        return action.type === 'fes-open-site' ? browser.perform(action, world) : 1;
+      };
+      await run();
+      assert.deepEqual(
+        actions.map(({ type }) => type),
+        ['fes-open-site', 'fes-message-box'],
+      );
+      assert.equal(actions[1].caption, '実行エラー');
       assert.equal(h.instance.global(10), 0);
     } finally {
       await world.close();

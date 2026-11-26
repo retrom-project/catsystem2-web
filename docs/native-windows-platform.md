@@ -112,6 +112,32 @@ load 16-bit NE resources.
 [version queries](https://learn.microsoft.com/en-us/windows/win32/api/winver/nf-winver-verqueryvaluew),
 [Wine 8.0 version API](https://github.com/wine-mirror/wine/blob/wine-8.0/dlls/kernelbase/version.c).
 
+## External opening
+
+Main629 has the same raw/shared ID in the three registered legacy builds.
+Its three CP932 format operands are file, parameters and working directory,
+in that order. It borrows the Script's application window, uses `open` and
+show5, and returns control2 without exposing the ShellExecute result. Extra
+words are ignored. Ordinary proofs cover strings through259 bytes; shorter
+frames, invalid addresses and longer fixed-buffer writes remain diagnostic.
+
+The existing `window.action` domain carries owned narrow byte copies to the
+browser host as `script-shell-open`. Its HTTP(S) service shares the FES
+`fes-open-site` path. A permitted popup starts at `about:blank`, detaches its
+opener before the requested URL loads, and reports33. Popup denial reports5;
+unsupported schemes, Windows parameters/directories and unavailable browser
+opening report31. Main629 discards these host results, preserving its native
+void contract. FES uses its separate localized failure UI and FIFO semantics.
+No external program, OS registry or network send service is installed.
+
+Actual local-browser tests distinguish trusted opening from the current
+Retrom iframe's popup restriction and untrusted automatic requests. They use
+only a controlled same-origin target and check actual popup navigation,
+detached opener, unchanged KCS result stack and cleanup. They do not establish
+an external site's behavior or a live PFB Run. Opened documents have independent
+browser ownership; closing the game does not close a completed external window.
+No action or opened-window handle is serialized or replayed on cold restore.
+
 ## Resources in mapped PE images
 
 The original A/W `FindResource` and `FindResourceEx` imports resolve numeric
