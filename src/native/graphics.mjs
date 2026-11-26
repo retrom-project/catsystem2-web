@@ -1922,11 +1922,32 @@ export class NativeGraphicTask {
         first = end;
       }
       if (draws) {
+        const fields = Object.getOwnPropertyDescriptors(inputGraph);
+        const pureGeometry =
+          ordinaryPublicationConsumer(this.graphics, 0) &&
+          ['mesh', 'triangles', 'custom', 'callback', 'vertexEffectID'].every(
+            (key) =>
+              !fields[key] ||
+              (Object.hasOwn(fields[key], 'value') &&
+                (key === 'vertexEffectID' ? fields[key].value === undefined : !fields[key].value)),
+          ) &&
+          triangles.every(
+            (triangle) =>
+              Array.isArray(triangle.vertices) &&
+              triangle.vertices.every(
+                (vertex) =>
+                  ['x', 'y', 'z', 'w', 'u', 'v', 'color'].every(
+                    (key) =>
+                      typeof Object.getOwnPropertyDescriptor(vertex, key)?.value === 'number',
+                  ) && Object.getOwnPropertyDescriptor(vertex, 'diffuse') === undefined,
+              ),
+          );
         const frames = nativeTexturePageFrames(
           this.graphics.texturePages,
           pageIndices,
           gpu,
           this.graphics,
+          { ...options, pureGeometry },
         );
         for (let i = 0; i < frames.length; i++) pageDraws[i].frame = frames[i];
         gpu.drawTexturePages(draws, options);

@@ -1,5 +1,25 @@
 // SPDX-License-Identifier: MPL-2.0
 // One shared live device authority; attachment handles/promises are not checkpoints.
+const ownedDeviceReaders = new WeakMap(),
+  deviceListenerCount = Object.getOwnPropertyDescriptor(Set.prototype, 'size').get;
+
+// The intrinsic renderer has no callback during requireReady(). Public device
+// observers, subclasses and replaced lifecycle ports keep the ordinary path.
+export function nativeGraphicsDeviceReadOwned(device, source) {
+  return Boolean(
+    ownedDeviceReaders.has(device) &&
+      Object.getPrototypeOf(device) === NativeGraphicsDevice.prototype &&
+      deviceReadMethods.every(([key, descriptor]) => {
+        const current = Object.getOwnPropertyDescriptor(NativeGraphicsDevice.prototype, key);
+        return (
+          !Object.hasOwn(device, key) &&
+          current?.value === descriptor.value &&
+          current?.get === descriptor.get
+        );
+      }) &&
+      ownedDeviceReaders.get(device)(source),
+  );
+}
 export class NativeGraphicsDevice {
   #status = 'detached';
   #generation = 0;
@@ -8,6 +28,16 @@ export class NativeGraphicsDevice {
   #pending = null;
   #error = null;
   #listeners = new Set();
+  constructor() {
+    ownedDeviceReaders.set(
+      this,
+      (source) =>
+        !!source &&
+        this.#status !== 'closed' &&
+        this.#source === source &&
+        Reflect.apply(deviceListenerCount, this.#listeners, []) === 0,
+    );
+  }
   get status() {
     return this.#status;
   }
@@ -131,3 +161,6 @@ export class NativeGraphicsDevice {
     this.#publish('closed');
   }
 }
+const deviceReadMethods = Reflect.ownKeys(NativeGraphicsDevice.prototype)
+  .filter((key) => key !== 'constructor')
+  .map((key) => [key, Object.getOwnPropertyDescriptor(NativeGraphicsDevice.prototype, key)]);

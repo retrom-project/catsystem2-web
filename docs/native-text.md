@@ -214,6 +214,21 @@ does not revoke the loan. Public page frames and unknown GPU consumers keep the
 ordinary borrowing path. No pixel shadow cache is added, and cold World page
 reconstruction installs the same mutation and read fences.
 
+Page indices for a plain, callback-free rectangle graph are acquired together
+in one synchronous operation. This operation checks the current original GPU,
+page Map, intrinsic D3D context and actual device attachment; public device
+observers, replaced getters/ports and nonordinary geometry keep public borrowing.
+No qualification survives this operation or an `await`.
+
+A managed texture cache hit still settles its producer before reading revision
+metadata. For an existing intrinsic reader, the synchronous hit uses only current
+data descriptors and the original cache Maps, preserves LRU order, and returns
+the existing opaque texture. It reads no pixel bytes, calls no GL/context/device
+code and creates no reader or persistent trust cache. Frame acquisition, uploads
+and later publication eligibility retain the complete GL qualification. Foreign
+frames keep ordinary getter order; an intrinsic frame whose header becomes an
+accessor permanently loses owned publication without invoking that getter early.
+
 The pending frame is the owned empty writer allocation, retained when a later
 configuration replaces it. The final publication takes one independent pixel
 snapshot and writes the complete footprint. Previously borrowed raw VRAM keeps

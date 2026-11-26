@@ -5,6 +5,7 @@ import { copyBitmapRow } from './raster-kernel.mjs';
 import { nativeBitmapFrame, borrowNativePixels } from './image.mjs';
 import {
   nativeTextureConsumer,
+  nativeD3DContextReadOwned,
   registerNativeTextureRead,
   borrowNativeTextureRead,
 } from '../render/particles-gl.mjs';
@@ -36,12 +37,19 @@ export function nativeTexturePagesOwned(pages, owner) {
 }
 // One synchronous acquisition of locally computed page indices. Settle before
 // inspecting an unknown input/provider, and never retain qualification afterward.
-export function nativeTexturePageFrames(pages, indices, gpu, owner) {
+export function nativeTexturePageFrames(pages, indices, gpu, owner, options = null) {
   const barrier = textureReadBarriers.get(pages);
   barrier?.();
   const selected = Uint32Array.from(indices),
     frames = [];
-  if (!barrier || !nativeTexturePagesOwned(pages, owner) || !nativeTextureConsumer(gpu)) {
+  if (
+    !barrier ||
+    !options?.pureGeometry ||
+    typeof options.blendMode !== 'number' ||
+    !nativeD3DContextReadOwned(options.context) ||
+    !nativeTexturePagesOwned(pages, owner) ||
+    !nativeTextureConsumer(gpu)
+  ) {
     for (const index of selected) frames.push(pages.frame(index));
     return frames;
   }
@@ -248,7 +256,8 @@ export class NativeTexturePages {
   }
   #registerRead(frame) {
     const barrier = textureReadBarriers.get(this);
-    if (barrier) registerNativeTextureRead(frame, barrier, () => borrowNativePixels(frame.rgba));
+    if (barrier)
+      registerNativeTextureRead(frame, barrier, () => borrowNativePixels(frame.rgba), true);
   }
   releaseRectangle(x, y, width, height) {
     this.#observe();

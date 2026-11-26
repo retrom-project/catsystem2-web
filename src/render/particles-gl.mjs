@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-import { NativeGraphicsDevice } from '../native/graphics-device.mjs';
+import { NativeGraphicsDevice, nativeGraphicsDeviceReadOwned } from '../native/graphics-device.mjs';
 import {
   describeGLUniforms,
   createGLBindingCapture,
@@ -15,8 +15,23 @@ import { appendNativeLinePixels } from './native-lines.mjs';
 const nativeTextureReaders = new WeakSet(),
   nativeTexturePorts = new WeakMap(),
   nativeTextureCaches = new WeakMap(),
+  nativeTextureDevices = new WeakMap(),
   nativeTextureReadOwners = new WeakMap(),
   nativeTextureForEach = Map.prototype.forEach,
+  nativeTextureMapGet = Map.prototype.get,
+  nativeTextureMapDelete = Map.prototype.delete,
+  nativeTextureMapSet = Map.prototype.set,
+  nativeTextureRevisionGet = WeakMap.prototype.get,
+  nativeTextureMapHas = Map.prototype.has,
+  nativeTextureWeakMapHas = WeakMap.prototype.has,
+  nativeTextureSetHas = Set.prototype.has,
+  nativeTextureArrayLength = Object.getOwnPropertyDescriptor(
+    Object.getPrototypeOf(Float32Array.prototype),
+    'length',
+  ).get,
+  nativeTextureArraySet = Object.getPrototypeOf(Float32Array.prototype).set,
+  nativeTextureRecords = new WeakMap(),
+  nativeD3DContexts = new WeakSet(),
   WebGLPort = globalThis.WebGL2RenderingContext,
   nativeWebGLShape = [];
 if (typeof WebGLPort === 'function')
@@ -31,10 +46,164 @@ function sameDescriptor(current, original) {
     current?.set === original.set
   );
 }
+function nativeTextureRecord(value) {
+  nativeTextureRecords.set(value, Reflect.ownKeys(value));
+  return value;
+}
+function dataTextureRecord(value) {
+  return (
+    nativeTextureRecords.has(value) &&
+    Object.getPrototypeOf(value) === Object.prototype &&
+    nativeTextureRecords.get(value).every((key) => Object.hasOwn(value, key)) &&
+    Reflect.ownKeys(Object.getOwnPropertyDescriptors(value)).every((key) =>
+      Object.hasOwn(Object.getOwnPropertyDescriptor(value, key), 'value'),
+    )
+  );
+}
+function nativeCollection(value, index) {
+  const [prototype, methods] = collectionMethods[index];
+  try {
+    Reflect.apply(collectionBrands[index], value, [undefined]);
+  } catch {
+    return false;
+  }
+  return (
+    Object.getPrototypeOf(value) === prototype &&
+    methods.every(
+      ([key, descriptor]) =>
+        !Object.hasOwn(value, key) &&
+        sameDescriptor(Object.getOwnPropertyDescriptor(prototype, key), descriptor),
+    )
+  );
+}
+function nativeTextureDrawData(gpu, cache) {
+  if (
+    !textureArrayMethods.every(([key, descriptor]) =>
+      sameDescriptor(Object.getOwnPropertyDescriptor(Array.prototype, key), descriptor),
+    )
+  )
+    return false;
+  const fields = Object.getOwnPropertyDescriptors(gpu);
+  if (
+    !Reflect.ownKeys(fields).every((key) => Object.hasOwn(fields[key], 'value')) ||
+    fields.uniform?.value !== cache.uniform ||
+    !dataTextureRecord(cache.uniform)
+  )
+    return false;
+  for (const key of ['maxAnisotropy', 'textureBudget', 'textureBytes'])
+    if (typeof fields[key]?.value !== 'number') return false;
+  const anisotropy = fields.anisotropy?.value;
+  if (anisotropy !== cache.anisotropy) return false;
+  for (const [object, keys, prototype] of cache.extensionKeys)
+    if (
+      Reflect.ownKeys(object).length !== keys.length ||
+      Object.getPrototypeOf(object) !== prototype
+    )
+      return false;
+  for (const [object, key, descriptor] of cache.extensionFields)
+    if (!sameDescriptor(Object.getOwnPropertyDescriptor(object, key), descriptor)) return false;
+  const vertices = fields.vertexData?.value;
+  if (vertices) {
+    try {
+      Reflect.apply(nativeTextureArrayLength, vertices, []);
+    } catch {
+      return false;
+    }
+    if (
+      Object.getPrototypeOf(vertices) !== Float32Array.prototype ||
+      ['length', 'set'].some(
+        (key) => Object.hasOwn(vertices, key) || Object.hasOwn(Float32Array.prototype, key),
+      ) ||
+      Object.getPrototypeOf(Float32Array.prototype).set !== nativeTextureArraySet ||
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(Float32Array.prototype), 'length')
+        ?.get !== nativeTextureArrayLength
+    )
+      return false;
+  }
+  for (const [key, value, kind] of cache.collections)
+    if (fields[key]?.value !== value || !nativeCollection(value, kind)) return false;
+  const target = fields.activeTarget?.value ?? fields.primaryTarget?.value;
+  if (target) {
+    if (!dataTextureRecord(target)) return false;
+    const depth = Object.getOwnPropertyDescriptor(target, 'depthStencil')?.value;
+    if (depth && !dataTextureRecord(depth)) return false;
+    for (const record of [target, depth])
+      if (record)
+        for (const key of ['width', 'height', 'format', 'validMask']) {
+          const field = Object.getOwnPropertyDescriptor(record, key);
+          if (field && typeof field.value !== 'number') return false;
+        }
+  }
+  return true;
+}
+function nativeStateMap(value, nested = false) {
+  // The native brand check rejects Proxy/foreign objects without invoking them.
+  try {
+    Reflect.apply(nativeTextureMapHas, value, [undefined]);
+  } catch {
+    return false;
+  }
+  const [prototype, methods] = mapMethods[0];
+  if (
+    Object.getPrototypeOf(value) !== prototype ||
+    !methods.every(
+      ([key, descriptor]) =>
+        !Object.hasOwn(value, key) &&
+        sameDescriptor(Object.getOwnPropertyDescriptor(prototype, key), descriptor),
+    )
+  )
+    return false;
+  let valid = true;
+  Reflect.apply(nativeTextureForEach, value, [
+    (item, key) => {
+      if (typeof key !== 'number' || (nested ? !nativeStateMap(item) : typeof item !== 'number'))
+        valid = false;
+    },
+  ]);
+  return valid;
+}
+export function nativeD3DContextReadOwned(context) {
+  if (!nativeD3DContexts.has(context)) return false;
+  const fields = Object.getOwnPropertyDescriptors(context);
+  if (
+    !Reflect.ownKeys(fields).every((key) => Object.hasOwn(fields[key], 'value')) ||
+    fields.scissor?.value !== undefined
+  )
+    return false;
+  for (const key of ['states', 'samplers']) if (!nativeStateMap(fields[key]?.value)) return false;
+  for (const key of ['samplerStages', 'stages'])
+    if (!nativeStateMap(fields[key]?.value, true)) return false;
+  for (const key of [
+    'lastDrawType',
+    'lastBlend',
+    'depthStencilEnabled',
+    'magFilter',
+    'minFilter',
+    'multisampleAntialias',
+  ])
+    if (!['number', 'boolean'].includes(typeof fields[key]?.value)) return false;
+  return (
+    Reflect.apply(nativeTextureMapGet, fields.samplerStages.value, [0]) === fields.samplers.value
+  );
+}
 // Internal page ownership, not a second texture cache or pixel allocation.
-export function registerNativeTextureRead(frame, settle, borrow) {
+export function registerNativeTextureRead(frame, settle, borrow, plainFrame = false) {
   if (!nativeTextureReadOwners.has(frame))
-    nativeTextureReadOwners.set(frame, { settle, borrow, borrowed: false, readers: new Set() });
+    nativeTextureReadOwners.set(frame, {
+      settle,
+      borrow,
+      plainFrame,
+      borrowed: false,
+      readers: new Set(),
+    });
+}
+function plainTextureHeader(frame, owner) {
+  return (
+    owner.plainFrame &&
+    ['rgba', 'revision'].every((key) =>
+      Object.hasOwn(Object.getOwnPropertyDescriptor(frame, key) ?? {}, 'value'),
+    )
+  );
 }
 export function borrowNativeTextureRead(frame) {
   const owner = nativeTextureReadOwners.get(frame);
@@ -45,7 +214,11 @@ export function borrowNativeTextureRead(frame) {
 }
 export function nativeTextureReadOwned(frame, checked = new Map()) {
   const owner = nativeTextureReadOwners.get(frame);
-  if (!owner || owner.borrowed) return false;
+  if (!owner || owner.borrowed || !owner.plainFrame) return false;
+  if (!plainTextureHeader(frame, owner)) {
+    owner.borrowed = true;
+    return false;
+  }
   for (const reader of owner.readers) {
     if (!checked.has(reader)) checked.set(reader, nativeTextureConsumer(reader));
     if (!checked.get(reader)) {
@@ -56,7 +229,7 @@ export function nativeTextureReadOwned(frame, checked = new Map()) {
   }
   return true;
 }
-export function nativeTextureConsumer(gpu) {
+function nativeTextureReaderState(gpu) {
   if (
     !nativeTextureReaders.has(gpu) ||
     Object.getOwnPropertyDescriptor(gpu, 'closed')?.value ||
@@ -67,25 +240,41 @@ export function nativeTextureConsumer(gpu) {
         sameDescriptor(Object.getOwnPropertyDescriptor(ParticlesGL.prototype, key), descriptor),
     )
   )
-    return false;
+    return null;
   const gl = Object.getOwnPropertyDescriptor(gpu, 'gl')?.value;
   const cache = nativeTextureCaches.get(gpu);
+  return gl &&
+    gl === nativeTexturePorts.get(gpu) &&
+    cache &&
+    Object.getOwnPropertyDescriptor(gpu, 'textures')?.value === cache.textures &&
+    Object.getOwnPropertyDescriptor(gpu, 'textureRevisions')?.value === cache.revisions &&
+    Object.getPrototypeOf(cache.textures) === Map.prototype &&
+    Object.getPrototypeOf(cache.revisions) === WeakMap.prototype &&
+    mapMethods.every(([prototype, methods]) =>
+      methods.every(
+        ([key, descriptor]) =>
+          !Object.hasOwn(prototype === Map.prototype ? cache.textures : cache.revisions, key) &&
+          sameDescriptor(Object.getOwnPropertyDescriptor(prototype, key), descriptor),
+      ),
+    ) &&
+    cache
+    ? cache
+    : null;
+}
+export function nativeTextureConsumer(gpu) {
+  const cache = nativeTextureReaderState(gpu);
+  const device = nativeTextureDevices.get(gpu);
+  if (
+    !cache ||
+    !nativeTextureDrawData(gpu, cache) ||
+    !device ||
+    Object.getOwnPropertyDescriptor(gpu, 'graphicsDevice')?.value !== device.device ||
+    !nativeGraphicsDeviceReadOwned(device.device, device.source)
+  )
+    return false;
+  const gl = nativeTexturePorts.get(gpu);
   return Boolean(
     nativeWebGLShape.length &&
-      gl &&
-      gl === nativeTexturePorts.get(gpu) &&
-      cache &&
-      Object.getOwnPropertyDescriptor(gpu, 'textures')?.value === cache.textures &&
-      Object.getOwnPropertyDescriptor(gpu, 'textureRevisions')?.value === cache.revisions &&
-      Object.getPrototypeOf(cache.textures) === Map.prototype &&
-      Object.getPrototypeOf(cache.revisions) === WeakMap.prototype &&
-      mapMethods.every(([prototype, methods]) =>
-        methods.every(
-          ([key, descriptor]) =>
-            !Object.hasOwn(prototype === Map.prototype ? cache.textures : cache.revisions, key) &&
-            sameDescriptor(Object.getOwnPropertyDescriptor(prototype, key), descriptor),
-        ),
-      ) &&
       Object.getPrototypeOf(gl) === WebGLPort.prototype &&
       nativeWebGLShape.every(([prototype, descriptors]) =>
         Reflect.ownKeys(descriptors).every(
@@ -96,14 +285,75 @@ export function nativeTextureConsumer(gpu) {
       ),
   );
 }
-function settleNativeTextureRead(gpu, frame) {
+function settleNativeTextureRead(gpu, frame, alreadySettled = false) {
   const owner = nativeTextureReadOwners.get(frame);
   if (!owner) return;
-  owner.settle();
+  if (!alreadySettled) owner.settle();
+  if (owner.plainFrame && !plainTextureHeader(frame, owner)) owner.borrowed = true;
+  // This frame can never grant owned publication again. No qualification or
+  // repeated borrowing can revoke that loan, and its read barrier still runs.
+  if (owner.borrowed) return;
   if (!nativeTextureConsumer(gpu)) {
     owner.borrowed = true;
     owner.borrow();
   } else owner.readers.add(gpu);
+}
+function nativeCachedTexture(gpu, frame, owner) {
+  if (
+    !owner ||
+    owner.borrowed ||
+    !owner.plainFrame ||
+    !Reflect.apply(nativeTextureSetHas, owner.readers, [gpu])
+  )
+    return null;
+  const cache = nativeTextureMetadataCache(gpu);
+  if (!cache) return null;
+  const rgba = Object.getOwnPropertyDescriptor(frame, 'rgba'),
+    revision = Object.getOwnPropertyDescriptor(frame, 'revision');
+  if (!rgba || !Object.hasOwn(rgba, 'value') || !revision || !Object.hasOwn(revision, 'value')) {
+    owner.borrowed = true;
+    return null;
+  }
+  const texture = Reflect.apply(nativeTextureMapGet, cache.textures, [frame]);
+  if (
+    !texture ||
+    !rgba.value ||
+    Reflect.apply(nativeTextureRevisionGet, cache.revisions, [frame]) !== revision.value
+  )
+    return null;
+  // A hit touches only captured original cache metadata and data descriptors.
+  // It neither reads pixels nor calls GL/context/device/provider code, and
+  // does not add a reader or retain a qualification for any later operation.
+  Reflect.apply(nativeTextureMapDelete, cache.textures, [frame]);
+  Reflect.apply(nativeTextureMapSet, cache.textures, [frame, texture]);
+  return texture;
+}
+function nativeTextureMetadataCache(gpu) {
+  const cache = nativeTextureCaches.get(gpu);
+  if (
+    !cache ||
+    Object.getOwnPropertyDescriptor(gpu, 'textures')?.value !== cache.textures ||
+    Object.getOwnPropertyDescriptor(gpu, 'textureRevisions')?.value !== cache.revisions
+  )
+    return null;
+  for (const [name, brand, prototype, ports] of textureMetadataPorts) {
+    const map = cache[name];
+    try {
+      Reflect.apply(brand, map, [undefined]);
+    } catch {
+      return null;
+    }
+    if (
+      Object.getPrototypeOf(map) !== prototype ||
+      ports.some(
+        ([key, value]) =>
+          Object.hasOwn(map, key) ||
+          Object.getOwnPropertyDescriptor(prototype, key)?.value !== value,
+      )
+    )
+      return null;
+  }
+  return cache;
 }
 function settleNativeTextureCache(gpu) {
   const cache = nativeTextureCaches.get(gpu);
@@ -475,7 +725,7 @@ export function createD3DContext({
   multisampleAntialias = 0,
 } = {}) {
   const { states, samplers } = particleRenderState();
-  return {
+  const context = {
     states,
     samplers,
     samplerStages: new Map([[0, samplers]]),
@@ -487,6 +737,8 @@ export function createD3DContext({
     minFilter,
     multisampleAntialias,
   };
+  nativeD3DContexts.add(context);
+  return context;
 }
 // Reinitialization preserves the existing context and Map aliases held by borrowers.
 export function resetD3DContext(context, options) {
@@ -520,6 +772,7 @@ export function restoreD3DContext(state, context = null) {
     samplerStages,
     stages: new Map(state.stages.map(([stage, states]) => [stage, new Map(states)])),
   };
+  nativeD3DContexts.add(restored);
   return context ? assignD3DContext(context, restored) : restored;
 }
 
@@ -662,45 +915,47 @@ export class ParticlesGL {
     if (!gl.getProgramParameter(this.program, gl.LINK_STATUS))
       throw new Error(gl.getProgramInfoLog(this.program));
     gl.useProgram(this.program);
-    this.uniform = Object.fromEntries(
-      [
-        'resolution',
-        'backgroundPass',
-        'effekseerPass',
-        'effekseerTextured',
-        'effekseerCamera',
-        'effekseerProjection',
-        'effekseerViewportSize',
-        'image',
-        'addressMode',
-        'filters',
-        'borderColor',
-        'srgbTexture',
-        'textureOperations',
-        'directModulation',
-        'followingColorOperation',
-        'textureColorArgs',
-        'textureAlphaArgs',
-        'textureFactor',
-        'textureConstant',
-        'nativeAnisotropy',
-        'maxAnisotropy',
-        'srgbWrite',
-        'destination',
-        'blending',
-        'blendFactors',
-        'blendOperations',
-        'blendConstant',
-        'fogEnabled',
-        'fogMode',
-        'fogParameters',
-        'fogColor',
-        'lineAntialias',
-        'lineSegment',
-        'alphaTest',
-        'alphaFunction',
-        'alphaReference',
-      ].map((n) => [n, gl.getUniformLocation(this.program, n)]),
+    this.uniform = nativeTextureRecord(
+      Object.fromEntries(
+        [
+          'resolution',
+          'backgroundPass',
+          'effekseerPass',
+          'effekseerTextured',
+          'effekseerCamera',
+          'effekseerProjection',
+          'effekseerViewportSize',
+          'image',
+          'addressMode',
+          'filters',
+          'borderColor',
+          'srgbTexture',
+          'textureOperations',
+          'directModulation',
+          'followingColorOperation',
+          'textureColorArgs',
+          'textureAlphaArgs',
+          'textureFactor',
+          'textureConstant',
+          'nativeAnisotropy',
+          'maxAnisotropy',
+          'srgbWrite',
+          'destination',
+          'blending',
+          'blendFactors',
+          'blendOperations',
+          'blendConstant',
+          'fogEnabled',
+          'fogMode',
+          'fogParameters',
+          'fogColor',
+          'lineAntialias',
+          'lineSegment',
+          'alphaTest',
+          'alphaFunction',
+          'alphaReference',
+        ].map((n) => [n, gl.getUniformLocation(this.program, n)]),
+      ),
     );
     try {
       this.bindingUniforms = describeGLUniforms(gl, this.program);
@@ -764,35 +1019,35 @@ export class ParticlesGL {
     );
     if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
       throw new Error('Particle RGBA/depth/stencil framebuffer is incomplete');
-    this.primaryTarget = {
+    this.primaryTarget = nativeTextureRecord({
       owner: this,
       width,
       height,
       texture: this.targetTexture,
       framebuffer: this.framebuffer,
       contentValid: false,
-    };
-    this.primaryDepthStencil = {
+    });
+    this.primaryDepthStencil = nativeTextureRecord({
       owner: this,
       width,
       height,
       format: 75,
       renderbuffer: this.depthStencil,
       validMask: 0,
-    };
+    });
     this.primaryTarget.depthStencil = this.primaryDepthStencil;
     this.primaryTarget.attachmentsChecked = true;
     this.primaryAttachmentChecks = new WeakMap();
     this.nativeTargets = new Set();
     this.nativeDepth = new Set();
-    nativeTextureCaches.set(this, { textures: this.textures, revisions: this.textureRevisions });
+    rememberNativeTextureCache(this);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   }
   attachGraphicsDevice(device) {
     if (this.graphicsDevice === device) return device;
     if (this.graphicsDevice) throw new Error('GPU already has a shared graphics owner');
     this.graphicsDevice = device;
-    this.devicePort = device.attach({
+    const source = {
       kind: 'webgl',
       validate: () => {
         settleNativeTextureCache(this);
@@ -802,7 +1057,9 @@ export class ParticlesGL {
         settleNativeTextureCache(this);
         return this.rebuildResources();
       },
-    });
+    };
+    nativeTextureDevices.set(this, { device, source });
+    this.devicePort = device.attach(source);
     return device;
   }
   noticeLoss() {
@@ -869,9 +1126,10 @@ export class ParticlesGL {
       next = Object.create(ParticlesGL.prototype);
     // Build handles in a temporary transaction, not a second device/cache.
     // Current objects are changed only after every required resource validates.
-    Object.assign(next, { gl: this.gl, canvas: this.canvas });
+    Object.assign(next, { gl: this.gl, canvas: this.canvas, graphicsDevice: this.graphicsDevice });
     nativeTextureReaders.add(next);
     nativeTexturePorts.set(next, nativeTexturePorts.get(this));
+    nativeTextureDevices.set(next, nativeTextureDevices.get(this));
     try {
       next.initializeResources(primary.width, primary.height);
       next.textureBudget = this.textureBudget;
@@ -924,7 +1182,7 @@ export class ParticlesGL {
         nativeTargets: new Set(targets),
         nativeDepth: new Set(depths),
       });
-      nativeTextureCaches.set(this, nativeTextureCaches.get(next));
+      rememberNativeTextureCache(this);
       if (this.gl.isVertexArray(previousVertexArray))
         this.gl.deleteVertexArray(previousVertexArray);
       this.drawing = false;
@@ -994,14 +1252,14 @@ export class ParticlesGL {
   }
   allocateRenderTarget(width, height, rgba) {
     const gl = this.gl,
-      target = {
+      target = nativeTextureRecord({
         owner: this,
         width,
         height,
         texture: gl.createTexture(),
         framebuffer: gl.createFramebuffer(),
         contentValid: rgba != null,
-      };
+      });
     gl.bindTexture(gl.TEXTURE_2D, target.texture);
     gl.texImage2D(
       gl.TEXTURE_2D,
@@ -1032,7 +1290,14 @@ export class ParticlesGL {
     if (![75, 77, 80].includes(format))
       throw new Error(`Native depth/stencil format ${format} needs its precision backend`);
     const gl = this.gl,
-      depth = { owner: this, width, height, format, texture: gl.createTexture(), validMask: 0 };
+      depth = nativeTextureRecord({
+        owner: this,
+        width,
+        height,
+        format,
+        texture: gl.createTexture(),
+        validMask: 0,
+      });
     gl.bindTexture(gl.TEXTURE_2D, depth.texture);
     if (format === 75)
       gl.texImage2D(
@@ -1604,7 +1869,11 @@ export class ParticlesGL {
     return this.managedTexture(frame, trackTransparency);
   }
   managedTexture(frame, trackTransparency = false) {
-    settleNativeTextureRead(this, frame);
+    const owner = nativeTextureReadOwners.get(frame);
+    owner?.settle();
+    const cached = nativeCachedTexture(this, frame, owner);
+    if (cached) return cached;
+    settleNativeTextureRead(this, frame, true);
     let texture = this.textures.get(frame);
     if (texture) {
       this.textures.delete(frame);
@@ -2625,3 +2894,58 @@ const mapMethods = [Map.prototype, WeakMap.prototype].map((prototype) => [
     .filter((key) => key !== 'constructor')
     .map((key) => [key, Object.getOwnPropertyDescriptor(prototype, key)]),
 ]);
+const collectionMethods = [Map.prototype, WeakMap.prototype, Set.prototype].map((prototype) => [
+  prototype,
+  Reflect.ownKeys(prototype)
+    .filter((key) => key !== 'constructor')
+    .map((key) => [key, Object.getOwnPropertyDescriptor(prototype, key)]),
+]);
+const collectionBrands = [nativeTextureMapHas, nativeTextureWeakMapHas, nativeTextureSetHas];
+const textureMetadataPorts = [
+  [
+    'textures',
+    nativeTextureMapHas,
+    Map.prototype,
+    [
+      ['get', nativeTextureMapGet],
+      ['delete', nativeTextureMapDelete],
+      ['set', nativeTextureMapSet],
+    ],
+  ],
+  ['revisions', nativeTextureWeakMapHas, WeakMap.prototype, [['get', nativeTextureRevisionGet]]],
+];
+const textureArrayMethods = Reflect.ownKeys(Array.prototype).map((key) => [
+  key,
+  Object.getOwnPropertyDescriptor(Array.prototype, key),
+]);
+function rememberNativeTextureCache(gpu) {
+  const extensionFields = [],
+    extensionKeys = [];
+  for (
+    let object = gpu.anisotropy;
+    object && object !== Object.prototype;
+    object = Object.getPrototypeOf(object)
+  ) {
+    const keys = Reflect.ownKeys(object);
+    extensionKeys.push([object, keys, Object.getPrototypeOf(object)]);
+    for (const key of keys)
+      extensionFields.push([object, key, Object.getOwnPropertyDescriptor(object, key)]);
+  }
+  nativeTextureCaches.set(gpu, {
+    textures: gpu.textures,
+    revisions: gpu.textureRevisions,
+    uniform: gpu.uniform,
+    anisotropy: gpu.anisotropy,
+    extensionFields,
+    extensionKeys,
+    collections: [
+      ['textureTransparency', gpu.textureTransparency, 1],
+      ['pendingTextureTransparency', gpu.pendingTextureTransparency, 0],
+      ['textureSizes', gpu.textureSizes, 0],
+      ['ownedTextures', gpu.ownedTextures, 2],
+      ['primaryAttachmentChecks', gpu.primaryAttachmentChecks, 1],
+      ['nativeTargets', gpu.nativeTargets, 2],
+      ['nativeDepth', gpu.nativeDepth, 2],
+    ],
+  });
+}

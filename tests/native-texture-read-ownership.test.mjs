@@ -12,7 +12,13 @@ import {
   nativeTextureConsumer,
   nativeTextureReadOwned,
   registerNativeTextureRead,
+  createD3DContext,
+  nativeD3DContextReadOwned,
 } from '../src/render/particles-gl.mjs';
+import {
+  NativeGraphicsDevice,
+  nativeGraphicsDeviceReadOwned,
+} from '../src/native/graphics-device.mjs';
 
 // These controls exercise the read fences, not native WebGL qualification.
 // Positive native-port and default-render ownership are checked in a browser.
@@ -186,6 +192,124 @@ test('a replaced page Map port fails qualification and runs after settlement', (
     assert(frames.every((frame) => !nativeTextureReadOwned(frame)));
   } finally {
     delete pages.pages.get;
+    pages.close();
+  }
+});
+
+test('D3D read qualification rejects replacement context ports without calling them', () => {
+  const context = createD3DContext();
+  assert(nativeD3DContextReadOwned(context));
+  assert.equal(nativeD3DContextReadOwned({ ...context }), false);
+  let calls = 0;
+  const get = context.states.get;
+  context.states.get = function (...args) {
+    calls++;
+    return Reflect.apply(get, this, args);
+  };
+  assert.equal(nativeD3DContextReadOwned(context), false);
+  assert.equal(calls, 0);
+  delete context.states.get;
+  Object.defineProperty(context, 'minFilter', {
+    configurable: true,
+    get() {
+      calls++;
+      return 2;
+    },
+  });
+  assert.equal(nativeD3DContextReadOwned(context), false);
+  assert.equal(calls, 0);
+});
+
+test('device read qualification follows the actual attachment and public observers', () => {
+  const device = new NativeGraphicsDevice(),
+    source = { kind: 'webgl', validate: () => true, rebuild: () => {} };
+  assert.equal(nativeGraphicsDeviceReadOwned(device, source), false);
+  const port = device.attach(source);
+  assert(nativeGraphicsDeviceReadOwned(device, source));
+  const unobserve = device.observe(() => {});
+  assert.equal(nativeGraphicsDeviceReadOwned(device, source), false);
+  unobserve();
+  assert(nativeGraphicsDeviceReadOwned(device, source));
+  port.retire();
+  assert.equal(nativeGraphicsDeviceReadOwned(device, source), false);
+  device.close();
+});
+
+test('foreign frame proxies keep ordinary getters and cache ordering', () => {
+  const events = [],
+    bytes = new Uint8ClampedArray(4),
+    texture = {},
+    other = {};
+  let gpu, frame;
+  frame = new Proxy(
+    { rgba: bytes, revision: 0 },
+    {
+      get(target, key) {
+        if (key === 'rgba' || key === 'revision') {
+          events.push(key);
+          assert.equal([...gpu.textures.keys()].at(-1), frame);
+        }
+        return target[key];
+      },
+      getOwnPropertyDescriptor() {
+        throw new Error('Foreign frame qualification must not inspect descriptors');
+      },
+    },
+  );
+  gpu = Object.assign(Object.create(ParticlesGL.prototype), {
+    textures: new Map([
+      [frame, texture],
+      [other, {}],
+    ]),
+    textureRevisions: new WeakMap([[frame, 0]]),
+  });
+  registerNativeTextureRead(
+    frame,
+    () => events.push('settle'),
+    () => events.push('borrow'),
+  );
+  assert.equal(nativeTextureReadOwned(frame), false);
+  assert.equal(gpu.managedTexture(frame), texture);
+  assert.deepEqual(events, ['settle', 'borrow', 'rgba', 'revision']);
+});
+
+test('an intrinsic frame accessor keeps ordinary cache order and permanently loses ownership', () => {
+  const owner = {},
+    pages = new NativeTexturePages(
+      { size: [1, 1], grid: [1, 1], areas: [[0, 0, 1, 1]], bppY: [0, 1], bpp: 32 },
+      { owner, readBarrier: () => {}, beforeMutation: null },
+    );
+  const frame = pages.pages.get(0).frame,
+    bytes = frame.rgba,
+    other = {},
+    texture = {};
+  const gpu = Object.assign(Object.create(ParticlesGL.prototype), {
+    textures: new Map([
+      [frame, texture],
+      [other, {}],
+    ]),
+    textureRevisions: new WeakMap([[frame, 0]]),
+  });
+  let reads = 0;
+  try {
+    Object.defineProperty(frame, 'rgba', {
+      configurable: true,
+      get() {
+        reads++;
+        assert.equal([...gpu.textures.keys()].at(-1), frame);
+        return bytes;
+      },
+    });
+    assert.equal(gpu.managedTexture(frame), texture);
+    assert.equal(reads, 1);
+    Object.defineProperty(frame, 'rgba', {
+      configurable: true,
+      writable: true,
+      enumerable: true,
+      value: bytes,
+    });
+    assert.equal(nativeTextureReadOwned(frame), false);
+  } finally {
     pages.close();
   }
 });
