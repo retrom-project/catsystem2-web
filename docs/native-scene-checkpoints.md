@@ -129,3 +129,15 @@ fixture storage. The original native file providers are explicit memory-backed
 Win32 leaves; this is an authored SDK file/owner bridge, not a product-route or
 user-record measurement. History extras, full Scene checkpoints, and localized
 reader variants retain separate evidence requirements.
+
+The modern history-extra wrappers have own Main934/978/979/981/993 comparisons.
+An attached global-file snapshot belongs to the last path record; releasing the
+source file preserves that snapshot. Main979 constructs an independent file
+owner, and Main981 copies extras by matching list positions without replacing
+the destination strings or names. Main993 copies only path names and values,
+drops strings and extras, and clears the path on self-copy. The native raw CTS
+header's first DWORD is a process data pointer. Both own importers allocate a
+new data buffer and ignore that saved pointer; only this DWORD is normalized
+in portable comparisons. Capacity, used size, tag, and payload are compared
+without masks. The 38 complete Main frames per build also cover CP932 aliases,
+missing extras, independent file releases, and three checkpoint restores.
