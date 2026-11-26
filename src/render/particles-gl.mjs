@@ -16,6 +16,7 @@ const nativeTextureReaders = new WeakSet(),
   nativeTexturePorts = new WeakMap(),
   nativeTextureCaches = new WeakMap(),
   nativeTextureReadOwners = new WeakMap(),
+  nativeTextureForEach = Map.prototype.forEach,
   WebGLPort = globalThis.WebGL2RenderingContext,
   nativeWebGLShape = [];
 if (typeof WebGLPort === 'function')
@@ -105,6 +106,15 @@ function settleNativeTextureRead(gpu, frame) {
   } else owner.readers.add(gpu);
 }
 function settleNativeTextureCache(gpu) {
+  const cache = nativeTextureCaches.get(gpu);
+  if (cache) {
+    // The public cache/iteration port may have been replaced. Settle the actual
+    // retained owners before invoking that port or any later backend callback.
+    Reflect.apply(nativeTextureForEach, cache.textures, [
+      (_texture, frame) => settleNativeTextureRead(gpu, frame),
+    ]);
+    return;
+  }
   for (const frame of gpu.textures?.keys() ?? []) settleNativeTextureRead(gpu, frame);
 }
 function forgetNativeTextureReader(gpu, frame) {
