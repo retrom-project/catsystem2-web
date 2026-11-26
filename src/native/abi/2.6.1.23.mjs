@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [370, 371, 374, 377, 378],
+    value:
+      'Own 2.6.1.23 Main370/371/374/377/378 run through the actual loader-bound Script VM and original Main112 automatic bitmap list. The real 0x114 wrapper owns the original 0x58 bitmap at vtable0x628a44. Signed base pairs, mapped VM outputs, alpha sampling and cached alpha hints preserve their control1/2 contracts and original pixel bytes. Main377 with no owner leaves its result unwritten and remains guarded; the ordinary live-owner query is admitted.',
+  },
+  {
     ids: [629],
     value:
       'Own 2.6.1.23 Main629 complete GCALL and original formatter expand the first three fixed VM CP932 operands in order as file, parameters and directory. ShellExecuteA borrows the Script HWND, uses operation open and show5, and discards every OS result through control2. Sixteen own cases cover distinct and aliased inputs, global expansions, shared addresses, 259-byte strings and ignored trailing words with unchanged VM source memory. The browser host reports real HTTP(S) popup availability; other schemes, Windows arguments and working directories remain unsupported capability domains, not fabricated success. Zero/short frames and overlong native temporaries are not admitted.',
@@ -1660,6 +1665,7 @@ export default {
     macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
   },
   graphics: {
+    bitmapAlphaQueryRequiresOwner: true,
     bitmapResizeUsesLegacyCells: true,
     bitmapToneSkipsNeutralOwner: true,
     bitmapCompositeUsesLegacyRows: true,
@@ -1762,6 +1768,31 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...[370, 371, 374, 377, 378].map((id) => ({
+          ids: [id],
+          fields: {
+            review: 'reviewed',
+            resultWritten: id !== 378,
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) =>
+              parameter.type.kind === 'handle'
+                ? {
+                    ...parameter,
+                    type: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' },
+                  }
+                : parameter.type.kind === 'pointer'
+                  ? {
+                      ...parameter,
+                      type: {
+                        kind: 'pointer',
+                        addressSpace: 'vm',
+                        direction: 'out',
+                        target: { kind: 'integer', bits: 32, signed: true },
+                      },
+                    }
+                  : parameter,
+            ),
+          },
+        })),
         { ids: [629], fields: { review: 'reviewed', resultWritten: false } },
         {
           ids: [738],

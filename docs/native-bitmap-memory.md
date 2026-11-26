@@ -1,5 +1,15 @@
 # Persistent bitmaps and native operations
 
+SDK 2.6.1.23 base and alpha commands (`370`, `371`, `374`, `377`, `378`)
+use the same typed bitmap model. Their own original Main112 constructor,
+Script automatic list and loader-bound VM establish the live-owner contract:
+base setters preserve signed words, base queries write both VM outputs in order,
+alpha sampling reads the physical channel, and explicit alpha hints control the
+cached query. Main377 with no owner leaves its original result unwritten and
+remains a diagnostic. The SDK23 KCS test compares these outputs and pixels with
+the intact original, then checks release, Script reload and independent cold
+restoration without loading an EXE.
+
 [NativeImages](../src/native/image.mjs) owns script bitmap pixels, metadata,
 attributes and aliasing in JS. Canvas presentation is a derived cache. A
 checkpoint saves the shared JS pixel backing once and preserves the bitmap

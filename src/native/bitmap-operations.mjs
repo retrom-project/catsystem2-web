@@ -40,6 +40,12 @@ export class NativeBitmapOperations {
       return undefined;
     const a = (i) => nativeDataArgument(args, machine, i),
       first = a(0) >>> 0;
+    if (
+      id === 0x179 &&
+      !first &&
+      nativeABI(this.world.profile).graphics.bitmapAlphaQueryRequiresOwner
+    )
+      throw new Error('Native bitmap alpha query requires a live bitmap owner');
     if (first && rawIDs.has(id) && !this.world.runtime.handles.records.has(first))
       return originalFeature(
         this.world,
