@@ -61,10 +61,10 @@ for (const profile of [
         [59],
       ]),
       source = Uint8Array.of(0, 0, 1, 0xba, 0x21, 0, 1),
-      world = await dataWorld(profile, { 'load.kcs': program, 'media/試験.mpg': source });
+      world = await dataWorld(profile, { 'load.kcs': program, 'movies.int/試験.mpg': source });
     t.after(() => world.close({ flushFiles: false }));
     world.game.nativeResources = {
-      entries: [{ name: 'movie', directory: 'media', extension: 'mpg' }],
+      entries: [{ name: 'movie', archive: 'movies.int', directory: 'media', extension: 'mpg' }],
     };
     const plane = await world.objects.create({ kind: 2, parent: world.root, nativeID: 21 }),
       owner = world.graphics.get(plane),
@@ -76,7 +76,7 @@ for (const profile of [
       closes = 0;
     world.host.nativeMovie = (filename, id) => ({
       open(name, input) {
-        assert.equal(filename, 'media/試験.MPG');
+        assert.equal(filename, 'movies.int/試験.MPG');
         assert.equal(name, filename);
         assert.equal(id, plane);
         assert.deepEqual(input.bytes, source);
@@ -813,13 +813,13 @@ test('2.6.1.67 MPEG borrower controls resume cold at saved position and release 
   const make = async (initialize = true) => {
     const world = await dataWorld(
         profile,
-        { 'load.kcs': program, 'media/clip.mpg': source },
+        { 'load.kcs': program, 'movies.int/clip.mpg': source },
         { initialize },
       ),
       events = [],
       sessions = [];
     world.game.nativeResources = {
-      entries: [{ name: 'movie', directory: 'media', extension: 'mpg' }],
+      entries: [{ name: 'movie', archive: 'movies.int', directory: 'media', extension: 'mpg' }],
     };
     world.host.nativeMovie = (filename, id) => {
       let at = 0n;

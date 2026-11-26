@@ -555,7 +555,7 @@ test('2.6.1.63 KX2 keeps occupied Plane registrations and selects the original m
   const world = await dataWorld(profile, {
     'main-81.kcs': mainProgram(81, 2),
     'main-82.kcs': mainProgram(82, 2),
-    'kx2/sample.kx2': model,
+    'kx2.int/sample.kx2': model,
   });
   t.after(() => world.close({ flushFiles: false }));
   const startup = new TextEncoder().encode(
@@ -2394,11 +2394,11 @@ test('2.6.1.63 KCS loads an ordinary MPEG Plane and borrows its registered movie
     world = await dataWorld(profile, {
       'main-701.kcs': mainProgram(701, 2),
       'main-702.kcs': mainProgram(702, 1),
-      'movie/試験.mpg': source,
+      'movies.int/試験.mpg': source,
     });
   t.after(() => world.close({ flushFiles: false }));
   world.game.nativeResources = {
-    entries: [{ name: 'movie', directory: 'movie', extension: 'mpg' }],
+    entries: [{ name: 'movie', archive: 'movies.int', directory: 'movie', extension: 'mpg' }],
   };
   const plane = await world.objects.create({ kind: 2, parent: world.root, nativeID: 21 }),
     owner = world.graphics.get(plane),
@@ -2440,7 +2440,7 @@ test('2.6.1.63 KCS loads an ordinary MPEG Plane and borrows its registered movie
   owner.state.vramType = 1;
   await load('試験');
   await borrow(21, 0);
-  assert.deepEqual(calls.splice(0), [['open', 'movie/試験.mpg', plane], ['close']]);
+  assert.deepEqual(calls.splice(0), [['open', 'movies.int/試験.mpg', plane], ['close']]);
   await assert.rejects(load('unknown.avi'), /Unreviewed media type/);
 
   ready = true;
@@ -2466,7 +2466,7 @@ test('2.6.1.63 KCS loads an ordinary MPEG Plane and borrows its registered movie
   await borrow(21, 0);
   assert.equal(world.runtime.handles.records.has(handle), false);
   assert.equal(world.runtime.handles.records.has(record.bitmap), false);
-  assert.deepEqual(calls, [['open', 'movie/試験.mpg', plane], ['close']]);
+  assert.deepEqual(calls, [['open', 'movies.int/試験.mpg', plane], ['close']]);
 });
 
 test('2.6.1.63 KCS rotates, translates and scales the original SSE2 matrix words', async (t) => {

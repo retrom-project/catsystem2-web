@@ -56,3 +56,20 @@ destruction, all search modes, preload precedence and fresh-process restoration.
 Original optional filename-remapping tables and dynamic mount mutation still
 need their own API and lifecycle coverage. This search evidence does not claim
 those separate file-server commands are implemented.
+
+Legacy narrow category paths in builds .23, .63 and .67 prefix the filename
+with the category's `INT/intNN/int` value. The separate `dir` field supplies
+the loose candidate after namespace selection. For example, `int=container.int`,
+`dir=loose-dir`, `ext=mpg` and a request for `clip` produce
+`container.int/clip.mpg`; mode 3 first reads `loose-dir/clip.mpg`, then the
+same entry in `container.int`. The owning XML parsers, complete Settings
+readers and Main701 GCALLs independently establish that distinction for all
+three builds. A directory prefix in earlier memory-only fixtures was an
+incorrect pairing of fields.
+
+The shared narrow helper serves legacy Plane movies and KX2/KX3 model commands.
+Their mounted-file tests retain different archive and directory names, an
+archive decoy, CP932 names, explicit paths and the actual World/KCS resource
+chain. Sound and ordinary file callers use their existing resource authority;
+they do not call this narrow helper. Modern Plane callers continue through
+their existing category resolver.

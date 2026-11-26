@@ -20,7 +20,7 @@ export function nativeNarrowCategoryPath(game, name, category, count) {
     ?.slice(0, count)
     .find(({ name }) => name.toLowerCase() === category);
   if (!mount) return null;
-  const prefix = encodeCP932(mount.directory ? mount.directory + '/' : ''),
+  const prefix = encodeCP932(mount.archive ? mount.archive + '/' : ''),
     separator = Math.max(name.lastIndexOf(0x2f), name.lastIndexOf(0x5c)),
     suffix = encodeCP932(name.lastIndexOf(0x2e) > separator ? '' : '.' + mount.extension),
     path = new Uint8Array(prefix.length + name.length + suffix.length + 1);

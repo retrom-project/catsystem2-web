@@ -1,0 +1,227 @@
+{
+  "scope": "Own complete XML parse/Settings read/category/GCALL path, int namespace distinct from loose dir",
+  "versions": [
+    {
+      "version": "23",
+      "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "originalSha256": "85fe5a7f2249a54ade88f116c650f0f4b4e147c25d30a5ee3c0f59e07da7b42e",
+      "xml": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><INT><int00><name>kcs</name><ext>kcs</ext></int00><int05><name>movie</name><int>container.int</int><ext>mpg</ext><dir>loose-dir</dir></int05></INT></document>",
+      "fields": {
+        "archive": "container.int",
+        "extension": "mpg",
+        "directory": "loose-dir",
+        "name": "movie"
+      },
+      "settingsRelation": {
+        "baseToSrc": 528,
+        "recordStride": 332,
+        "baseFields": {
+          "archive": 2928,
+          "extension": 2960,
+          "directory": 2968,
+          "name": 3228
+        },
+        "srcFields": {
+          "archive": 2400,
+          "extension": 2432,
+          "directory": 2440,
+          "name": 2700
+        }
+      },
+      "paths": [
+        {
+          "input": "clip",
+          "control": 2,
+          "packet": {
+            "from": 81,
+            "to": 21,
+            "raw": 40,
+            "position": [0, 0, 0],
+            "filename": "container.int/clip.mpg"
+          }
+        },
+        {
+          "input": "CLIP.MPG",
+          "control": 2,
+          "packet": {
+            "from": 81,
+            "to": 21,
+            "raw": 40,
+            "position": [0, 0, 0],
+            "filename": "container.int/CLIP.MPG"
+          }
+        },
+        {
+          "input": "other.int/clip.mpg",
+          "control": 2,
+          "packet": {
+            "from": 81,
+            "to": 21,
+            "raw": 40,
+            "position": [0, 0, 0],
+            "filename": "other.int/clip.mpg"
+          }
+        },
+        {
+          "input": "\u732b",
+          "control": 2,
+          "packet": {
+            "from": 81,
+            "to": 21,
+            "raw": 40,
+            "position": [0, 0, 0],
+            "filename": "container.int/\u732b.mpg"
+          }
+        }
+      ]
+    },
+    {
+      "version": "63",
+      "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "originalSha256": "d92db44326c1c45f1c121f70c1655aa05fd62c4473b50faf9df7a43451eee5de",
+      "xml": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><INT><int00><name>kcs</name><ext>kcs</ext></int00><int05><name>movie</name><int>container.int</int><ext>mpg</ext><dir>loose-dir</dir></int05></INT></document>",
+      "fields": {
+        "archive": "container.int",
+        "extension": "mpg",
+        "directory": "loose-dir",
+        "name": "movie"
+      },
+      "settingsRelation": {
+        "baseToSrc": 528,
+        "recordStride": 332,
+        "baseFields": {
+          "archive": 2932,
+          "extension": 2964,
+          "directory": 2972,
+          "name": 3232
+        },
+        "srcFields": {
+          "archive": 2404,
+          "extension": 2436,
+          "directory": 2444,
+          "name": 2704
+        }
+      },
+      "paths": [
+        {
+          "input": "clip",
+          "control": 2,
+          "packet": {
+            "from": 81,
+            "to": 21,
+            "raw": 41,
+            "position": [0, 0, 0],
+            "filename": "container.int/clip.mpg"
+          }
+        },
+        {
+          "input": "CLIP.MPG",
+          "control": 2,
+          "packet": {
+            "from": 81,
+            "to": 21,
+            "raw": 41,
+            "position": [0, 0, 0],
+            "filename": "container.int/CLIP.MPG"
+          }
+        },
+        {
+          "input": "other.int/clip.mpg",
+          "control": 2,
+          "packet": {
+            "from": 81,
+            "to": 21,
+            "raw": 41,
+            "position": [0, 0, 0],
+            "filename": "other.int/clip.mpg"
+          }
+        },
+        {
+          "input": "\u732b",
+          "control": 2,
+          "packet": {
+            "from": 81,
+            "to": 21,
+            "raw": 41,
+            "position": [0, 0, 0],
+            "filename": "container.int/\u732b.mpg"
+          }
+        }
+      ]
+    },
+    {
+      "version": "67",
+      "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "originalSha256": "4a74809508b30d29f00e60b63b96480a6b888d48796e16d58f065e25e089d881",
+      "xml": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><INT><int00><name>kcs</name><ext>kcs</ext></int00><int05><name>movie</name><int>container.int</int><ext>mpg</ext><dir>loose-dir</dir></int05></INT></document>",
+      "fields": {
+        "archive": "container.int",
+        "extension": "mpg",
+        "directory": "loose-dir",
+        "name": "movie"
+      },
+      "settingsRelation": {
+        "baseToSrc": 528,
+        "recordStride": 332,
+        "baseFields": {
+          "archive": 2932,
+          "extension": 2964,
+          "directory": 2972,
+          "name": 3232
+        },
+        "srcFields": {
+          "archive": 2404,
+          "extension": 2436,
+          "directory": 2444,
+          "name": 2704
+        }
+      },
+      "paths": [
+        {
+          "input": "clip",
+          "control": 2,
+          "packet": {
+            "from": 81,
+            "to": 21,
+            "raw": 41,
+            "position": [0, 0, 0],
+            "filename": "container.int/clip.mpg"
+          }
+        },
+        {
+          "input": "CLIP.MPG",
+          "control": 2,
+          "packet": {
+            "from": 81,
+            "to": 21,
+            "raw": 41,
+            "position": [0, 0, 0],
+            "filename": "container.int/CLIP.MPG"
+          }
+        },
+        {
+          "input": "other.int/clip.mpg",
+          "control": 2,
+          "packet": {
+            "from": 81,
+            "to": 21,
+            "raw": 41,
+            "position": [0, 0, 0],
+            "filename": "other.int/clip.mpg"
+          }
+        },
+        {
+          "input": "\u732b",
+          "control": 2,
+          "packet": {
+            "from": 81,
+            "to": 21,
+            "raw": 41,
+            "position": [0, 0, 0],
+            "filename": "container.int/\u732b.mpg"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -621,11 +621,11 @@ test('fixed 2.6.1.23 Plane KX3 sends CP932 and leaves verified recipients unchan
     };
 
     for (const [id, name, expected, formatAt = 256] of [
-      [target, '表情', 'models/表情.kx3', 0x80000040],
-      [baseTarget, 'mark.表', 'models/mark.表.kx3'],
-      [target, 'mix-%%-01', 'models/mix-%-01.kx3'],
-      [target, '/root', 'models//root.kx3'],
-      [target, '', 'models/.kx3'],
+      [target, '表情', 'different.int/表情.kx3', 0x80000040],
+      [baseTarget, 'mark.表', 'different.int/mark.表.kx3'],
+      [target, 'mix-%%-01', 'different.int/mix-%-01.kx3'],
+      [target, '/root', 'different.int//root.kx3'],
+      [target, '', 'different.int/.kx3'],
       [0x83f0, 'parts/顔', 'parts/顔'],
     ]) {
       const selector = 0x88fe7311;
@@ -693,13 +693,13 @@ test('fixed 2.6.1.23 loads an untextured KX2 model with bounded original ownersh
     view.setUint32(at + 12, color, true);
   });
   const world = await dataWorld(profile, {
-    'models/模型.kx2': bytes,
-    'models/invalid.kx2': new Uint8Array(24),
-    'models/short.kx2': bytes.slice(0, 25),
+    'models.int/模型.kx2': bytes,
+    'models.int/invalid.kx2': new Uint8Array(24),
+    'models.int/short.kx2': bytes.slice(0, 25),
   });
   t.after(() => world.close({ flushFiles: false }));
   world.game.nativeResources = {
-    entries: [{ name: 'KX2', directory: 'models', extension: 'kx2' }],
+    entries: [{ name: 'KX2', archive: 'models.int', directory: 'models', extension: 'kx2' }],
   };
   const memory = Array(3).fill(canary),
     id = await world.objects.create({ kind: 2, parent: world.root }),
@@ -734,7 +734,7 @@ test('fixed 2.6.1.23 loads an untextured KX2 model with bounded original ownersh
   assert.deepEqual(owner.state.rect, [11.5, -3.25, 13.75, 5.75]);
   assert.equal(owner.state.drawType, 6);
   assert.equal(installed.vram, false);
-  assert.equal(installed.filename, 'models/模型.kx2');
+  assert.equal(installed.filename, 'models.int/模型.kx2');
   assert.deepEqual(installed.triangles, [vertices]);
   assert.equal(installed.registrationWord, 1);
   const observed = [];
@@ -744,12 +744,12 @@ test('fixed 2.6.1.23 loads an untextured KX2 model with bounded original ownersh
   await load('invalid');
   assert.equal(owner.graph, installed);
   assert.deepEqual(reads, [
-    'models/missing.kx2',
-    'models/invalid.kx2',
-    'models/short.kx2',
-    'models/模型.kx2',
-    'models/模型.kx2',
-    'models/invalid.kx2',
+    'models.int/missing.kx2',
+    'models.int/invalid.kx2',
+    'models.int/short.kx2',
+    'models.int/模型.kx2',
+    'models.int/模型.kx2',
+    'models.int/invalid.kx2',
   ]);
   await call(world, 82, [target], memory, /target and filename format/);
   await call(world, 82, [0, 0xffffffff], memory);

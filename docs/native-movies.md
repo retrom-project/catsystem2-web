@@ -72,7 +72,8 @@ continue through the original wrappers, projection and physical oracles.
 
 The fixed 2.6.1.23 PE uses raw messages 40 and 82 for Main 701 and 702.
 The old CP932 category resolver supplies a pathname of at most 260 bytes
-including its terminator. SimplePlane loads in VRAM mode 1 with an attached
+including its terminator, prefixed by the `int` namespace. Its separate `dir`
+field supplies the file server's loose candidate. SimplePlane loads in VRAM mode 1 with an attached
 graphics device. A prepared MPEG source publishes the borrowed movie handle
 and graph together. An unavailable source or a declined decoder preserves an
 existing nonmovie graph. The original hardware branch uses its registered
