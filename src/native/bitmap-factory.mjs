@@ -3,6 +3,7 @@
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { nativeDataArgument } from './data-text.mjs';
+import { nativeEncodedBitmap } from './bitmap-encoded.mjs';
 
 export const NATIVE_BITMAP_FACTORY_CONTRACTS = Object.freeze(
   [
@@ -13,6 +14,8 @@ export const NATIVE_BITMAP_FACTORY_CONTRACTS = Object.freeze(
     [0x76, 1, 1],
     [0x77, 3, 2],
     [0x79, 4, 2],
+    [428, 3, 1],
+    [648, 3, 1],
   ].map(([id, words, control]) => Object.freeze({ id, words, control })),
 );
 const contracts = new Map(NATIVE_BITMAP_FACTORY_CONTRACTS.map((entry) => [entry.id, entry]));
@@ -28,6 +31,8 @@ export class NativeBitmapFactories {
       value = (word) => nativeReply(1, word),
       done = () => nativeReply(2),
       handle = argument(0) >>> 0;
+    if (id === 428 || id === 648)
+      return nativeEncodedBitmap(this.world, id, argument, machine, task);
     switch (id) {
       case 0x6f: {
         const loaded = await images.formattedLoad(
@@ -95,4 +100,8 @@ export class NativeBitmapFactories {
 export function installNativeBitmapFactories(world) {
   const factories = new NativeBitmapFactories(world);
   world.bitmapFactories = factories;
+  for (const id of [428, 648])
+    world.runtime.register('main', id, (args, machine, task) =>
+      factories.apply(id, args, machine, task),
+    );
 }

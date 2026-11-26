@@ -97,3 +97,88 @@ test('SDK23 protects the alpha query whose absent owner leaves its original resu
   });
   await assert.rejects(world.runtime.scheduler.execute(task), /requires a live bitmap owner/);
 });
+
+const encoded = JSON.parse(
+  await readFile(new URL('./fixtures/native-sdk23-encoded-images.json', import.meta.url)),
+);
+for (const fixture of encoded.cases) {
+  test('SDK23 actual encoded bitmap GCALL and independent cold: ' + fixture.name, async (t) => {
+    const source = Buffer.from(fixture.encodedBase64, 'base64');
+    const program = kcsProgram(
+      [
+        [37, marker],
+        ...call(365, [256], 32),
+        ...call(428, [handle, fixture.index, 100], 36),
+        ...(fixture.ninePatch
+          ? call(648, [handle, fixture.ninePatch.width, fixture.ninePatch.height], 40)
+          : []),
+        ...call(366, [handle]),
+        [59],
+      ],
+      [[256, fixture.file]],
+    );
+    const inputs = {
+      [fixture.file]: source,
+      'encoded.kcs': program,
+      'empty.kcs': files['image-empty.kcs'],
+    };
+    const world = await dataWorld(profile, inputs);
+    t.after(() => world.close({ flushFiles: false }));
+    const task = await world.spawnScript('encoded.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    });
+    const machine = task.machine,
+      floor = machine.sp;
+    await world.runtime.scheduler.execute(task);
+    assert.equal(machine.halted, true);
+    assert.equal(machine.sp, floor + 4);
+    assert.equal(machine.load(floor), marker);
+    assert.equal(machine.load(100), fixture.decoded.frameID);
+    const produced = [
+      [machine.load(36), fixture.decoded],
+      ...(fixture.ninePatch ? [[machine.load(40), fixture.ninePatch]] : []),
+    ];
+    for (const [id, expected] of produced) {
+      const bitmap = world.graphics.images.get(id);
+      assert.equal(bitmap.owner, task.id);
+      assert.deepEqual(
+        [bitmap.width, bitmap.height, bitmap.state.bpp],
+        [expected.width, expected.height, expected.bpp],
+      );
+      assert.deepEqual([...(await bitmap.pixels())], expected.rgba);
+    }
+    assert.equal(world.runtime.handles.records.has(machine.load(32)), false);
+    const fresh = await dataWorld(profile, inputs, { initialize: false });
+    t.after(() => fresh.close({ flushFiles: false }));
+    await fresh.restore(structuredClone(world.snapshot()));
+    for (const [id, expected] of produced)
+      assert.deepEqual([...(await fresh.graphics.images.get(id).pixels())], expected.rgba);
+    await world.objects.objects
+      .get(task.id)
+      .implementation.loadScript('empty.kcs', { initialExecute: false });
+    await fresh.objects.release(task.id);
+    for (const [id] of produced) {
+      assert.equal(world.runtime.handles.records.has(id), false);
+      assert.equal(fresh.runtime.handles.records.has(id), false);
+    }
+  });
+}
+
+test('SDK23 keeps the separately observed partial nine-piece shape protected before its admission', async (t) => {
+  const fixture = encoded.cases.find((item) => item.protectedPartialNinePatch);
+  const world = await dataWorld(profile, {
+    [fixture.file]: Buffer.from(fixture.encodedBase64, 'base64'),
+    'partial.kcs': kcsProgram(
+      [...call(365, [256], 32), ...call(648, [handle, 8, 8], 40), [59]],
+      [[256, fixture.file]],
+    ),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const task = await world.spawnScript('partial.kcs', {
+    parent: world.main.id,
+    initialExecute: false,
+  });
+  await assert.rejects(world.runtime.scheduler.execute(task), /missing tile frames/);
+  world.runtime.imageDataBuffers.release(task.machine.load(32));
+});

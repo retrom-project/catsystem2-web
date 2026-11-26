@@ -15749,6 +15749,39 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    428: {
+      name: 'bitmap.decodeIndexed',
+      family: 'bitmap',
+      signature: {
+        argumentWords: 3,
+        controlCodes: [1],
+        parameters: [
+          {
+            name: 'imageData',
+            description: 'Borrowed encoded resource descriptor',
+            type: { kind: 'handle', handleKind: 'image-data', ownership: 'borrowed' },
+          },
+          {
+            name: 'index',
+            description: 'Unsigned ordinal frame index',
+            type: { kind: 'integer', bits: 32, signed: false },
+          },
+          {
+            name: 'frameID',
+            description: 'Resolved frame ID, written only on successful decoding',
+            type: {
+              kind: 'pointer',
+              addressSpace: 'vm',
+              direction: 'out',
+              target: { kind: 'integer', bits: 32, signed: false },
+            },
+          },
+        ],
+        result: { kind: 'handle', handleKind: 'bitmap', ownership: 'owned' },
+        resultWritten: true,
+        review: 'declared',
+      },
+    },
     430: {
       name: 'image.hasAnimationFile',
       family: 'image',
@@ -22709,6 +22742,34 @@ export const NATIVE_SEMANTICS = freeze({
           kind: 'void',
         },
         resultWritten: false,
+        review: 'declared',
+      },
+    },
+    648: {
+      name: 'bitmap.createNinePatch',
+      family: 'bitmap',
+      signature: {
+        argumentWords: 3,
+        controlCodes: [1],
+        parameters: [
+          {
+            name: 'imageData',
+            description: 'Borrowed HG2/HG3 resource with tile frame IDs0–8',
+            type: { kind: 'handle', handleKind: 'image-data', ownership: 'borrowed' },
+          },
+          {
+            name: 'width',
+            description: 'Unsigned destination pixel width',
+            type: { kind: 'integer', bits: 32, signed: false },
+          },
+          {
+            name: 'height',
+            description: 'Unsigned destination pixel height',
+            type: { kind: 'integer', bits: 32, signed: false },
+          },
+        ],
+        result: { kind: 'handle', handleKind: 'bitmap', ownership: 'owned' },
+        resultWritten: true,
         review: 'declared',
       },
     },

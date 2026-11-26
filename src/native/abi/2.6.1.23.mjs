@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [428, 648],
+    value:
+      'Own Main428 at0x4899e0 decodes an ordinal frame from the actual Main365 twenty-byte encoded resource, writes the resolved frame ID through its third live VM argument, converts RGB24 to RGBA32 and inserts the real0x114 bitmap owner into Script+0x98. Main648 at0x489ea0 uses0x4d86a0 to compose HG2/HG3 tile IDs0–8 into a new bitmap: corners, repeated edges and repeated center, with normal partial edge clips. Actual loaded Script GCALLs preserve distinct ordinal/ID values, opaque and alpha pixels, typed resource/list ownership and explicit release. Unsupported formats and unproved empty/smaller target shapes stay guarded; this is not a blank-size constructor.',
+  },
+  {
     ids: [370, 371, 374, 377, 378],
     value:
       'Own 2.6.1.23 Main370/371/374/377/378 run through the actual loader-bound Script VM and original Main112 automatic bitmap list. The real 0x114 wrapper owns the original 0x58 bitmap at vtable0x628a44. Signed base pairs, mapped VM outputs, alpha sampling and cached alpha hints preserve their control1/2 contracts and original pixel bytes. Main377 with no owner leaves its result unwritten and remains guarded; the ordinary live-owner query is admitted.',
@@ -1768,6 +1773,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [428, 648], fields: { review: 'reviewed' } },
         ...[370, 371, 374, 377, 378].map((id) => ({
           ids: [id],
           fields: {

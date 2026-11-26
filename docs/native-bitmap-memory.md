@@ -10,6 +10,22 @@ remains a diagnostic. The SDK23 KCS test compares these outputs and pixels with
 the intact original, then checks release, Script reload and independent cold
 restoration without loading an EXE.
 
+SDK23 `428` decodes an ordinal frame from a typed encoded image-data handle and
+writes that frame's actual ID to its third VM argument on success. The ordinal
+and ID can differ. It expands RGB24 into RGBA32 and registers the bitmap for
+Script cleanup. `648` constructs a new bitmap from HG2/HG3 frame IDs `0`–`8`:
+four corners, repeated vertical/horizontal edges and a repeated center. Its remaining operands are the
+destination width and height. Both commands return control 1 with an owned
+bitmap; explicit release, Script reload/destruction and checkpoints use the
+existing bitmap ownership model.
+
+The SDK23 tests compare opaque and alpha tile pixels, partial edge repetitions,
+HG2 input, nonconsecutive frame IDs and RGB24 expansion with intact original
+GCALLs. Partial tile resources have separate defined original observations;
+they remain guarded alongside other encoded formats, empty nine-piece dimensions and destinations
+smaller than a source tile. Shared semantic names do not admit
+these entries for other builds.
+
 [NativeImages](../src/native/image.mjs) owns script bitmap pixels, metadata,
 attributes and aliasing in JS. Canvas presentation is a derived cache. A
 checkpoint saves the shared JS pixel backing once and preserves the bitmap
