@@ -4,6 +4,124 @@ import { nativePCMLevel } from './sound-values.mjs';
 
 const pcm16 = (sample) => Math.min(32767, Math.max(-32768, Math.round(sample * 32768)));
 
+const adpcmAdaptation = [
+  230, 230, 230, 230, 307, 409, 512, 614, 768, 614, 512, 409, 307, 230, 230, 230,
+];
+
+// This decoder retains the native reader's container accounting. Its RIFF
+// scanner subtracts the chunk header from the stored payload size; its initial
+// length scan starts immediately after the coefficient table, before restart
+// seeks to the data payload. Neither value is the container's fact count.
+export function decodeNativeMSADPCM(bytes) {
+  const b = new Binary(bytes, 'native MS ADPCM');
+  if (bytes.length < 12 || !b.magic('RIFF') || b.str(8, 4) !== 'WAVE') return null;
+  let format, data;
+  for (let at = 12; at + 8 <= bytes.length && (!format || !data); ) {
+    const size = b.u32(at + 4),
+      payload = at + 8;
+    b.range(payload, size);
+    if (b.str(at, 4) === 'fmt ') format = { at: payload, size };
+    if (b.str(at, 4) === 'data') data = { at: payload, size };
+    at = payload + size;
+  }
+  if (!format || b.u16(format.at) !== 2) return null;
+  if (format.size < 26 || !data || data.size < 8)
+    throw new Error('Unsupported native MS ADPCM container');
+  const at = format.at,
+    channels = b.u16(at + 2),
+    sampleRate = b.u32(at + 4),
+    blockAlign = b.u16(at + 12),
+    bits = b.u16(at + 14),
+    samplesPerBlock = b.u16(at + 18),
+    coefficientCount = b.u16(at + 20),
+    headerBytes = channels * 7,
+    coefficientEnd = at + 22 + coefficientCount * 4;
+  if (
+    ![1, 2].includes(channels) ||
+    !sampleRate ||
+    bits !== 4 ||
+    samplesPerBlock < 2 ||
+    !coefficientCount ||
+    coefficientEnd > at + format.size
+  )
+    throw new Error('Unsupported native MS ADPCM format');
+  const blockBytes =
+    Math.trunc((samplesPerBlock - 2) / Math.trunc(2 / channels)) -
+    channels * (bits * (samplesPerBlock - 2) + 49) +
+    8 * blockAlign;
+  if (blockBytes < headerBytes) throw new Error('Unsupported native MS ADPCM block layout');
+  const end = data.at + data.size - 8,
+    countBytes = (start) => {
+      let count = 0;
+      for (let position = start; position < end; position += blockBytes) {
+        const size = Math.min(blockBytes, end - position);
+        if (size < headerBytes)
+          throw new Error('Native MS ADPCM partial header has undefined samples');
+        count += channels * 4 + (size - headerBytes) * 4;
+      }
+      return count;
+    },
+    pcm = new Uint8Array(countBytes(data.at)),
+    view = new DataView(pcm.buffer),
+    signed16 = (word) => (word << 16) >> 16;
+  let output = 0;
+  const write = (sample) => {
+    view.setInt16(output, sample, true);
+    output += 2;
+  };
+  for (let position = data.at; position < end; position += blockBytes) {
+    const size = Math.min(blockBytes, end - position),
+      state = [];
+    for (let channel = 0; channel < channels; channel++) {
+      const predictor = b.u8(position + channel);
+      if (predictor >= coefficientCount)
+        throw new Error('Native MS ADPCM predictor has no owned coefficient');
+      const coefficients = at + 22 + predictor * 4;
+      state.push({
+        first: signed16(b.u16(position + channels * 3 + channel * 2)),
+        second: signed16(b.u16(position + channels * 5 + channel * 2)),
+        delta: signed16(b.u16(position + channels + channel * 2)),
+        coefficient1: signed16(b.u16(coefficients)),
+        coefficient2: signed16(b.u16(coefficients + 2)),
+      });
+    }
+    for (const channel of state) write(channel.second);
+    for (const channel of state) write(channel.first);
+    const sample = (channel, nibble) => {
+      const prediction = Math.trunc(
+          ((Math.imul(channel.first, channel.coefficient1) +
+            Math.imul(channel.second, channel.coefficient2)) |
+            0) /
+            256,
+        ),
+        value = Math.min(
+          32767,
+          Math.max(-32768, prediction + channel.delta * (nibble >= 8 ? nibble - 16 : nibble)),
+        );
+      channel.delta = signed16(
+        Math.max(16, Math.trunc((channel.delta * adpcmAdaptation[nibble]) / 256)),
+      );
+      channel.second = channel.first;
+      channel.first = value;
+      write(value);
+    };
+    for (let input = position + headerBytes; input < position + size; input++) {
+      const word = b.u8(input);
+      sample(state[0], word >>> 4);
+      sample(state[channels - 1], word & 15);
+    }
+  }
+  return {
+    pcm,
+    channels,
+    sampleRate,
+    bitsPerSample: 16,
+    precision: 'native-ms-adpcm',
+    advertisedBytes: countBytes(coefficientEnd),
+    prefixOverwrites: true,
+  };
+}
+
 export function sourcePCM(bytes, metadata, buffer) {
   if (
     metadata.codec === 'wav' &&

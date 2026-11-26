@@ -253,3 +253,14 @@ remaining prefix and output scheduling. Release discards the bank's decoded
 buffer owner. The new path covers PCM WAVE 8/16-bit source bytes; nonzero
 options for other codecs require their owning implementations and remain
 diagnostic. SDK23 has no raw Main935/936 slots.
+
+The integer MS ADPCM decoding foundation preserves SDK67's own RIFF accounting,
+signed prediction/adaptation and mono/stereo interleaving. Its advertised byte
+count comes from an initial scan after the format coefficients; actual reads
+restart at the data payload and stop eight bytes before the container chunk
+end. The two lengths remain separate. Invalid predictors and partial block
+headers retain diagnostics for the original's undefined memory reads. This
+foundation alone does not enable nonzero ADPCM options: the native reader also
+overwrites the original destination after consuming a partial silent prefix,
+and its seek operation restarts instead of honoring the target. Playback and
+queue integration require those separate byte-write and lifecycle contracts.
