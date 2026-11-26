@@ -255,6 +255,10 @@ export class NativeWorld {
         if (bytes === null) throw new Error(`Missing ${category} resource: ${name}`);
         return bytes;
       };
+    if (this.motionLibrary.withResources)
+      this.motionLibrary = this.motionLibrary.withResources(this.game, (name) =>
+        readNativeResource(this, nativeCategoryFilename(this.game, name, 'mot'), 3),
+      );
     this.soundConfiguration = soundConfiguration || new NativeSoundConfiguration({ profile });
     this.globalStrings = new NativeGlobalStrings({
       profile,
@@ -1169,6 +1173,7 @@ export class NativeWorld {
     await attempt(() => this.movies.close());
     await attempt(() => this.graphics.cursor.close());
     await attempt(() => this.screenEffects.close());
+    await attempt(() => this.runtime.services.motion.close());
     await attempt(() => this.resourceCache.close());
     this.imageFiles.close();
     if (this.ownsSteam) await attempt(() => this.steamService.close());

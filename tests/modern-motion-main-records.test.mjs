@@ -134,6 +134,9 @@ for (const build of golden.builds)
         'loose/ソ.kcs': new Uint8Array(Buffer.from(source.program, 'base64')),
         'loose/clock-7.kcs': new Uint8Array(Buffer.from(source.program, 'base64')),
       });
+    // The own filename-shape producer explicitly registers this slot after
+    // reading an empty archive field; it is not an automatic startup mount.
+    world.game.nativeSearch.register('mot', 'loose');
     try {
       const task = world.main,
         m = task.machine,

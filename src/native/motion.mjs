@@ -38,7 +38,9 @@ export class NativeMotionRegistry {
       throw new Error('Native MOT registry requires resource handles and a motion library');
     this.handles = handles;
     this.library = library;
-    this.managerLifetime = library.profile && nativeABI(library.profile).motion?.managerLifetime;
+    const behavior = library.profile && nativeABI(library.profile).motion;
+    this.managerLifetime = behavior?.managerLifetime;
+    this.sourceCacheRelease = behavior?.sourceCacheRelease;
     handles.registerType('motion-manager', {
       snapshot: (record) => ({
         owner: record.owner,
@@ -75,6 +77,12 @@ export class NativeMotionRegistry {
   }
   release(handle) {
     this.handles.release(handle, 'motion-manager');
+    if (this.sourceCacheRelease === 'manager-delete') this.library.clear();
+  }
+  close() {
+    for (const [handle, record] of this.handles.records)
+      if (record.type === 'motion-manager') this.release(handle);
+    if (this.sourceCacheRelease === 'manager-delete') this.library.clear();
   }
   releaseOwner(owner) {
     // The creator remains checkpoint provenance. These managers are released

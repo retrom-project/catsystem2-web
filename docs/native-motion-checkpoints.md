@@ -77,6 +77,19 @@ backslash in `ソ.kcs` leaves `.kcs`. The wide 2.6.1.76 record splits after
 conversion to UTF-16 and retains `ソ.kcs`. Query comparison follows the same
 narrow/wide representation; both behaviors have actual add/query controls.
 
+The two modern builds keep a process-wide raw MOT source list. Main296 clears
+members without clearing this list. Main295 deletes a manager and clears the
+shared list, while instances in another manager keep their already parsed code.
+The current library follows that invalidation boundary. Its default reader is
+bound to the current World's mode-3 mounted search, storage and resource-cache
+view; an explicitly supplied library reader retains authority. Cache folding is
+separate from the requested filename and each record's basic name.
+The cache fixture runs the real MOT static constructor before its two-manager
+Main GCALL sequence. Earlier probes which omitted that static constructor are
+not evidence of native cache lifetime. An empty-archive filename fixture uses
+an explicit FileServer slot registration, matching its original producer; it
+does not establish automatic WinMain registration for that configuration.
+
 Manager-created modern records leave their object and frame bytes untouched
 until the respective input copy and VM update. Their internal checkpoint keeps
 that qualification too, including a deferred record which has never run. Direct
