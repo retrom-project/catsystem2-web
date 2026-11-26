@@ -106,7 +106,9 @@ export class NativeRenderSources {
     const image = await openImage(bytes),
       images = this.world.graphics.images,
       candidates =
-        nativeABI(this.world.profile).graphics.preserveRGB24 || image instanceof HG3
+        nativeABI(this.world.profile).graphics.preserveRGB24 ||
+        nativeABI(this.world.profile).graphics.retainedAllImageFrames ||
+        image instanceof HG3
           ? image.frames
           : image.frames.slice(0, 1),
       frames = [];
@@ -118,7 +120,7 @@ export class NativeRenderSources {
       }
       frames.sort((a, b) => a.key - b.key);
       if (!frames.length) return 0;
-      return frames.length === 1
+      return frames.length === 1 && !nativeABI(this.world.profile).graphics.retainedAllImageFrames
         ? this.create({ bitmap: frames[0].bitmap })
         : this.create({ frames });
     } catch (error) {

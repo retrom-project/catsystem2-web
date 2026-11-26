@@ -53,8 +53,15 @@ after the caller releases its array. Only the reviewed HG3/ANM shapes establish
 this binding; other image formats and transform modes require their own shape
 review.
 
-The current frame-source binding covers the compared HG3 path. HG2 frame-source
-enumeration, cross-class encoded rebinding and other decoded formats remain
-specific guarded follow-up shapes within the Image-to-Draw work. Replacing
+The frame-source binding covers HG2 and HG3. Native HG2v25 enumeration stores
+every decoded frame in the same source map, including a single-frame source;
+the existing HG2v10/v20 decoder contracts supply their one-frame form. Ordinals
+remain distinct from frame IDs. Cross-class encoded rebinding and other decoded
+formats remain specific guarded follow-up shapes within the Image-to-Draw work. Replacing
 encoded frames keeps an already loaded ANM object and its control state; it does
 not create a new retained source or implicitly load a program.
+
+The transform mode is a raw zero/nonzero word. Actual mode2 and all-bits-set
+Image-owner GCALLs enter the same affine branch as mode1 and preserve the full
+compared pixels, ownership and cold continuation. They are accepted ordinary
+shapes. The field is not an enumeration restricted to0 and1.

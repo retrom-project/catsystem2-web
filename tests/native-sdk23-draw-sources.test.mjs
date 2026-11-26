@@ -33,7 +33,11 @@ function inputs(golden, name, arrays = false) {
       [
         [256, golden.resources[0].name],
         [320, 'Draw sources'],
-        [384, 'source.hg3'],
+        [
+          384,
+          golden.resources.find((r) => r.name.startsWith('source.') && !r.name.endsWith('.anm'))
+            ?.name ?? 'source.hg3',
+        ],
       ],
     ),
   };
@@ -52,96 +56,102 @@ async function pixels(world, handle, expected, label) {
   );
 }
 
-test('SDK23 source arrays and real Draw GCALLs preserve tags, ordinal frames and retained references through cold', async (t) => {
-  const golden = await readGolden('sources'),
-    files = inputs(golden, 'draw-sources.kcs', true),
-    world = await dataWorld(profile, files);
-  t.after(() => world.close({ flushFiles: false }));
-  const task = await world.spawnScript('draw-sources.kcs', {
-      parent: world.main.id,
-      initialExecute: false,
-    }),
-    m = task.machine,
-    floor = m.sp;
-  m.store(88, world.nativeTaskID(world.main.id));
-  let drawID, source;
-  const compare = async (w, currentTask, row, label) => {
-    const machine = currentTask.machine;
-    for (let i = 0; i < 36; i++) {
-      if (i % 18 === 1)
-        assert.equal(
-          Boolean(machine.load(512 + i * 4)),
-          Boolean(row.records[i]),
-          label + ' record handle',
-        );
-      else assert.equal(machine.load(512 + i * 4), row.records[i], label + ' array word' + i);
-    }
-    assert.deepEqual(
-      Array.from({ length: 10 }, (_, i) => machine.load(800 + i * 4)),
-      row.metadata,
-      label + ' metadata',
-    );
-    if (source) {
-      assert.equal(
-        w.runtime.handles.records.has(source),
-        row.sourceLive,
-        label + ' source lifetime',
-      );
-      if (row.sourceLive) {
-        assert.equal(w.renderSources.get(source).refs, row.sourceRef, label + ' refs');
-        assert.equal(
-          Boolean(w.renderSources.get(source).animation),
-          row.sourceHasProgram,
-          label + ' explicit ANM load',
-        );
-      }
-    }
-    if (drawID) {
-      const renderer = w.objects.objects.get(drawID).implementation.state.renderer;
-      assert.equal(renderer?.items.length ?? null, row.itemCount, label + ' Draw count');
-      if (row.bitmap) await pixels(w, renderer.bitmap, row.bitmap, label);
-    }
-  };
-  for (const [index, row] of golden.rows.entries()) {
-    await world.runtime.scheduler.execute(task);
-    const label = 'Main' + row.id + ' at' + index;
-    assert.equal(m.sp, floor + 4, label + ' control');
-    assert.equal(m.load(floor), marker, label + ' marker');
-    if (row.id === 703 && m.load(512) === 2) source = m.load(516);
-    if (row.id === 66) drawID = world.resolveTaskID(m.load(32), task.id);
-    if ([703, 706].includes(row.id)) assert.equal(m.load(row.resultAddress), row.result);
-    if (row.id === 709) {
-      const handle = m.load(row.resultAddress);
-      assert.equal(handle, world.renderSources.bitmap(source, { ordinal: row.args[1] }));
-      await pixels(world, handle, row.borrowed, label + ' borrowed ordinal');
-    }
-    await compare(world, task, row, label);
-    if (row.id === 704 && drawID) {
-      const fresh = await dataWorld(profile, files, { initialize: false });
-      try {
-        await fresh.restore(structuredClone(world.snapshot()));
-        const restored = fresh.runtime.scheduler.tasks.get(task.id);
-        await compare(fresh, restored, row, 'independent array-release cold');
-        for (let next = index + 1; next < golden.rows.length; next++) {
-          await fresh.runtime.scheduler.execute(restored);
-          assert.equal(restored.machine.load(floor), marker);
-          await compare(fresh, restored, golden.rows[next], 'cold continuation ' + next);
+for (const scenario of ['sources', 'hg2-sources'])
+  test(
+    'SDK23 ' +
+      scenario +
+      ' arrays and real Draw GCALLs preserve tags, ordinal frames and retained references through cold',
+    async (t) => {
+      const golden = await readGolden(scenario),
+        files = inputs(golden, 'draw-sources.kcs', true),
+        world = await dataWorld(profile, files);
+      t.after(() => world.close({ flushFiles: false }));
+      const task = await world.spawnScript('draw-sources.kcs', {
+          parent: world.main.id,
+          initialExecute: false,
+        }),
+        m = task.machine,
+        floor = m.sp;
+      m.store(88, world.nativeTaskID(world.main.id));
+      let drawID, source;
+      const compare = async (w, currentTask, row, label) => {
+        const machine = currentTask.machine;
+        for (let i = 0; i < 36; i++) {
+          if (i % 18 === 1)
+            assert.equal(
+              Boolean(machine.load(512 + i * 4)),
+              Boolean(row.records[i]),
+              label + ' record handle',
+            );
+          else assert.equal(machine.load(512 + i * 4), row.records[i], label + ' array word' + i);
         }
-        await fresh.objects.tick(40);
-        assert.equal(fresh.objects.objects.has(drawID), false);
-      } finally {
-        await fresh.close({ flushFiles: false });
+        assert.deepEqual(
+          Array.from({ length: 10 }, (_, i) => machine.load(800 + i * 4)),
+          row.metadata,
+          label + ' metadata',
+        );
+        if (source) {
+          assert.equal(
+            w.runtime.handles.records.has(source),
+            row.sourceLive,
+            label + ' source lifetime',
+          );
+          if (row.sourceLive) {
+            assert.equal(w.renderSources.get(source).refs, row.sourceRef, label + ' refs');
+            assert.equal(
+              Boolean(w.renderSources.get(source).animation),
+              row.sourceHasProgram,
+              label + ' explicit ANM load',
+            );
+          }
+        }
+        if (drawID) {
+          const renderer = w.objects.objects.get(drawID).implementation.state.renderer;
+          assert.equal(renderer?.items.length ?? null, row.itemCount, label + ' Draw count');
+          if (row.bitmap) await pixels(w, renderer.bitmap, row.bitmap, label);
+        }
+      };
+      for (const [index, row] of golden.rows.entries()) {
+        await world.runtime.scheduler.execute(task);
+        const label = 'Main' + row.id + ' at' + index;
+        assert.equal(m.sp, floor + 4, label + ' control');
+        assert.equal(m.load(floor), marker, label + ' marker');
+        if (row.id === 703 && m.load(512) === 2) source = m.load(516);
+        if (row.id === 66) drawID = world.resolveTaskID(m.load(32), task.id);
+        if ([703, 706].includes(row.id)) assert.equal(m.load(row.resultAddress), row.result);
+        if (row.id === 709) {
+          const handle = m.load(row.resultAddress);
+          assert.equal(handle, world.renderSources.bitmap(source, { ordinal: row.args[1] }));
+          await pixels(world, handle, row.borrowed, label + ' borrowed ordinal');
+        }
+        await compare(world, task, row, label);
+        if (row.id === 704 && drawID) {
+          const fresh = await dataWorld(profile, files, { initialize: false });
+          try {
+            await fresh.restore(structuredClone(world.snapshot()));
+            const restored = fresh.runtime.scheduler.tasks.get(task.id);
+            await compare(fresh, restored, row, 'independent array-release cold');
+            for (let next = index + 1; next < golden.rows.length; next++) {
+              await fresh.runtime.scheduler.execute(restored);
+              assert.equal(restored.machine.load(floor), marker);
+              await compare(fresh, restored, golden.rows[next], 'cold continuation ' + next);
+            }
+            await fresh.objects.tick(40);
+            assert.equal(fresh.objects.objects.has(drawID), false);
+          } finally {
+            await fresh.close({ flushFiles: false });
+          }
+        }
       }
-    }
-  }
-  await world.objects.tick(40);
-  assert.equal(world.objects.objects.has(drawID), false);
-  assert.equal(
-    world.runtime.handles.records.has(m.load(52)),
-    false,
-    'borrowed source frame ends with retained source',
+      await world.objects.tick(40);
+      assert.equal(world.objects.objects.has(drawID), false);
+      assert.equal(
+        world.runtime.handles.records.has(m.load(52)),
+        false,
+        'borrowed source frame ends with retained source',
+      );
+    },
   );
-});
 
 for (const scenario of ['source-rebind', 'source-program'])
   test(

@@ -1,0 +1,672 @@
+{
+  "scope": "SDK23 original complete GCALL retained sources and ImageData rebinding; physical BGRA to logical RGBA",
+  "originalReceipt": ".local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/draw16-20261127/ORIGINAL-DRAW-HG2-SOURCES.json",
+  "originalReceiptSha256": "049266588258b4d40906a6e3798b1b167838b43ce9bcbc66b19a5f775f88c20e",
+  "producerSha256": "f52dc3eea9a4882edb78739bc8a9567a10e42acd0a890ab37f40517b4a492f1e",
+  "helperSha256": "0b4fb98b0b02e4fcefe0e17e364db59c0add90ca2075358f87b8c4d0bef82294",
+  "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "resources": [
+    {
+      "name": "static.hg2",
+      "base64": "SEctMgwAAAAlAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAAgAAAAFwAAABUAAAANAAAAKAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAHic4z5wQDNV1fzfL6Zz/MaPD5q/1MhyOHDAAQB+BQrWeJxj5GBgrjE8IM5cs5MhHgAQzwMo",
+      "sha256": "02b138d45187102547d81100403ff35180853a2a43b2c1d6f392c06bc6c63bb1"
+    },
+    {
+      "name": "source.hg2",
+      "base64": "SEctMgwAAAAlAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAAgAAAAFwAAABUAAAANAAAAKAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAQAAAIEAAAAAAAAAAAAAAHic4z5wQDNV1fzfL6Zz/MaPD5q/1MhyOHDAAQB+BQrWeJxj5GBgrjE8IM5cs5MhHgAQzwMoAwAAAAIAAAAgAAAAAAAAAAAAAAAgAAAAFwAAABUAAAANAAAAKAAAAAIAAAADAAAAAgAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAHickz5wQDNVVerfL6Zz/OyPD5q/1HB2OHDAAQB64Qp2eJxj5GBgrjE8IM5cs5MhHgAQzwMo",
+      "sha256": "b816acb13001b2fd77c1d20a246d2c69046ef24efaf6a64656a85c80edf7f01c"
+    },
+    {
+      "name": "source.anm",
+      "base64": "QU5NAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "sha256": "3898db675a37bf1cdec3d6f4ffb1033afb3bbbca3815705ea42ad76d65ac2893"
+    }
+  ],
+  "rows": [
+    {
+      "id": 703,
+      "args": [256, 512, 2],
+      "resultAddress": 44,
+      "result": 1,
+      "itemCount": null,
+      "records": [
+        1, 537111648, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [
+        892679477, 892679477, 892679477, 892679477, 892679477, 892679477, 892679477, 892679477,
+        892679477, 892679477
+      ],
+      "sourceLive": null,
+      "sourceRef": null,
+      "bitmap": null,
+      "borrowed": null,
+      "sourceHasProgram": null
+    },
+    {
+      "id": 704,
+      "args": [512, 1],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": null,
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [
+        892679477, 892679477, 892679477, 892679477, 892679477, 892679477, 892679477, 892679477,
+        892679477, 892679477
+      ],
+      "sourceLive": null,
+      "sourceRef": null,
+      "bitmap": null,
+      "borrowed": null,
+      "sourceHasProgram": null
+    },
+    {
+      "id": 703,
+      "args": [384, 512, 2],
+      "resultAddress": 44,
+      "result": 1,
+      "itemCount": null,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [
+        892679477, 892679477, 892679477, 892679477, 892679477, 892679477, 892679477, 892679477,
+        892679477, 892679477
+      ],
+      "sourceLive": true,
+      "sourceRef": 1,
+      "bitmap": null,
+      "borrowed": null,
+      "sourceHasProgram": false
+    },
+    {
+      "id": 706,
+      "args": [[19, 516], 800],
+      "resultAddress": 48,
+      "result": 1,
+      "itemCount": null,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 1,
+      "bitmap": null,
+      "borrowed": null,
+      "sourceHasProgram": false
+    },
+    {
+      "id": 709,
+      "args": [[19, 516], 0],
+      "resultAddress": 52,
+      "result": 537133872,
+      "itemCount": null,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 1,
+      "bitmap": null,
+      "borrowed": {
+        "shape": [3, 2, 4],
+        "width": 3,
+        "height": 2,
+        "bpp": 4,
+        "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//"
+      },
+      "sourceHasProgram": false
+    },
+    {
+      "id": 709,
+      "args": [[19, 516], 1],
+      "resultAddress": 56,
+      "result": 537134240,
+      "itemCount": null,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 1,
+      "bitmap": null,
+      "borrowed": {
+        "shape": [3, 2, 4],
+        "width": 3,
+        "height": 2,
+        "bpp": 4,
+        "rgbaBase64": "KFKI/0RqnoBcerAAbpS+/4im0ECgtuj/"
+      },
+      "sourceHasProgram": false
+    },
+    {
+      "id": 66,
+      "args": [15, 3, 320],
+      "resultAddress": 32,
+      "result": 5,
+      "itemCount": null,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 1,
+      "bitmap": null,
+      "borrowed": null,
+      "sourceHasProgram": false
+    },
+    {
+      "id": 256,
+      "args": [[19, 32], 8, 6],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 0,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": false
+    },
+    {
+      "id": 260,
+      "args": [[19, 32], 0, 0],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 0,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": false
+    },
+    {
+      "id": 262,
+      "args": [[19, 32], 0],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 0,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": false
+    },
+    {
+      "id": 707,
+      "args": [
+        [19, 32],
+        7,
+        [19, 516],
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        220,
+        1,
+        0
+      ],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 2,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": false
+    },
+    {
+      "id": 708,
+      "args": [
+        [19, 32],
+        7,
+        [19, 516],
+        1077936128,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        99,
+        1,
+        0
+      ],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 2,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": false
+    },
+    {
+      "id": 624,
+      "args": [[19, 32], 7, 384],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 2,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": true
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 2,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH0l/YzthlTEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABli7Vjf53HGZet32MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": true
+    },
+    {
+      "id": 365,
+      "args": [256],
+      "resultAddress": 36,
+      "result": 537137376,
+      "itemCount": 1,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 2,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH0l/YzthlTEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABli7Vjf53HGZet32MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": true
+    },
+    {
+      "id": 622,
+      "args": [[19, 32], 8, [19, 36], 0, 1065353216, 0, 0, 0, 1065353216, 1065353216, 180, 1, 0],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 2,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 2,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH0l/YzthlTEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABli7Vjf53HGZet32MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": true
+    },
+    {
+      "id": 623,
+      "args": [
+        [19, 32],
+        8,
+        [19, 36],
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        190,
+        1,
+        0
+      ],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 2,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 2,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH0l/YzthlTEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABli7Vjf53HGZet32MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": true
+    },
+    {
+      "id": 366,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 2,
+      "records": [
+        2, 537133584, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 2,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH0l/YzthlTEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABli7Vjf53HGZet32MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": true
+    },
+    {
+      "id": 704,
+      "args": [512, 1],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 2,
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH0l/YzthlTEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABli7Vjf53HGZet32MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": true
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 2,
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": true,
+      "sourceRef": 1,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9Jf747YZVfH0l/YzthlTEAAAAAAAAAAAAAAAAAAAAAZYu1vn+dxzCQp9jXf53HGZet32MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": true
+    },
+    {
+      "id": 258,
+      "args": [[19, 32], 7],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 1,
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": false,
+      "sourceRef": null,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9Jf747YZVfH0l/YzthlTEAAAAAAAAAAAAAAAAAAAAAZYu1vn+dxzCQp9jXf53HGZet32MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": null
+    },
+    {
+      "id": 258,
+      "args": [[19, 32], 8],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 0,
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": false,
+      "sourceRef": null,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9Jf747YZVfH0l/YzthlTEAAAAAAAAAAAAAAAAAAAAAZYu1vn+dxzCQp9jXf53HGZet32MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": null
+    },
+    {
+      "id": 340,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 0,
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": false,
+      "sourceRef": null,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": null
+    },
+    {
+      "id": 67,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "itemCount": 0,
+      "records": [
+        0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 0, 0, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468, 875836468,
+        875836468, 875836468
+      ],
+      "metadata": [0, 0, 3, 2, 3, 2, 4, 0, 0, 892679477],
+      "sourceLive": false,
+      "sourceRef": null,
+      "bitmap": {
+        "shape": [8, 6, 4],
+        "width": 8,
+        "height": 6,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+      },
+      "borrowed": null,
+      "sourceHasProgram": null
+    }
+  ]
+}

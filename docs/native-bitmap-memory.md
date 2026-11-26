@@ -89,7 +89,9 @@ using the same retained resource graph. Its descriptor carries the float32
 position, base, rotation and scale plus clamped alpha, visibility and mode.
 The SDK23 CPU raster policy leaves zero effective-alpha pixels and rectangle
 borders untouched, for normal rows and affine sampling. Modes `0` and `1` are
-covered; other mode words remain guarded. Positive KCS tests compare full CPU
+covered. The raw mode word selects zero/nonzero branches; subsequent actual
+mode2 and all-bits-set GCALLs confirm the same affine behaviour and cold
+continuation, so nonzero words are accepted. Positive KCS tests compare full CPU
 pixels through rotated and scaled forms, replacing a key, releasing the source
 owner, independent cold restore, entry removal and Draw destruction.
 

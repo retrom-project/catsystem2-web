@@ -70,11 +70,13 @@ export async function loadImageOwner(
     const frames = [];
     try {
       const image = await images.images.load(file);
-      const candidates = nativeABI(world.profile).graphics.preserveRGB24
-        ? image.frames
-        : image instanceof HG3
+      const candidates =
+        nativeABI(world.profile).graphics.preserveRGB24 ||
+        nativeABI(world.profile).graphics.retainedAllImageFrames
           ? image.frames
-          : image.frames.slice(0, 1);
+          : image instanceof HG3
+            ? image.frames
+            : image.frames.slice(0, 1);
       for (const frame of candidates) {
         if (frames.some((f) => f.key === frame.id >>> 0)) continue;
         let bitmap = 0;

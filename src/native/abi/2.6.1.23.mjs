@@ -182,8 +182,9 @@ const mainEvidence = [
   {
     ids: [622, 623, 624, 703, 704, 706, 707, 708, 709],
     value:
-      'Own complete GCALLs run the initialized file server, Settings, software kcView, Top/Script and Draw. Main703 produces72-byte records containing tag1 bitmap owners or tag2 actual0xc4 retained sources from valid HG3/ANM files;704 releases and clears each live record. Main706 writes all nine geometry words and709 borrows valid ordinal frames0/1. Main707/708 bind the retained source and change transforms without duplicating its reference;624 loads the actual ANM. Main622/623 decode the real Main365 encoded descriptor; even rebinding the same descriptor reconstructs the native frame owners and ends the previous borrowed frame. Caller array/data release leaves Draw references, normal CPU pixels and final removal/destruction match, and independent cold resumes the VM. No synthetic native receiver or platform output is used.',
+      'Own complete HG2v25 multi-frame and HG3 GCALLs run the actual initialized platform/Script/Draw chain. Main703 produces72-byte tag1 bitmap or tag2 actual0xc4 source records;704 clears/releases them. Main706 writes nine geometry words and709 borrows ordinal0/1 independently of frame IDs0/2. Main707/708 retain a source and update transforms;624 explicitly loads ANM. Main622/623 decode real Main365 buffers and rebuild frame owners even for the same descriptor, retaining the source identity and any loaded ANM owner. The original frame map stores every HG2/HG3 frame, including one frame; prior own HG2v10/v20 decoder proofs supply their single-frame contracts. Caller release preserves Draw ownership, pixels, removal/destruction and independent cold continuation. Other decoded formats and cross-class rebinding remain guarded.',
   },
+
   {
     ids: [663],
     value:
@@ -1723,13 +1724,13 @@ export default {
     sameSizeBitmapCopyClips: true,
     imageOwnerCopyPhysicalRows: true,
     imageOwnerBlendPhysicalRows: true,
-    imageOwnerDrawModes: [0, 1],
     retainedScalarRows: true,
     drawRetirementRetainsResources: true,
     drawCountAndLayerRequireRenderer: true,
     drawEncodedBindingRebuildsFrames: true,
     renderSourcesDeferProgram: true,
-    renderSourceFrameFormats: ['HG3'],
+    renderSourceFrameFormats: ['HG2', 'HG3'],
+    retainedAllImageFrames: true,
     renderSources: { stride: 72, bytes: 276 },
     retainedBytes: 196,
     screenCaptureOpaque: true,
