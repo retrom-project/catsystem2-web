@@ -1,0 +1,332 @@
+{
+  "scope": "Original Main66/143 owners and Main365-owned20-byte descriptors, ordinary encoded HG3 bytes. Original resource-list static constructor is initialized from own CRT metadata; Main67 retains cache before original FES deleting destructor frees it. IO and borrowed device are explicit services; no completed physical rendering assertion.",
+  "versions": [
+    {
+      "version": "23",
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "executableSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "mainRawToShared": [[738, 738]],
+      "target": 2,
+      "pointer": 537050928,
+      "other": 537051168,
+      "image": [
+        72, 71, 45, 51, 12, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 116, 100, 105, 110,
+        102, 111, 0, 56, 0, 0, 0, 40, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 105, 109, 103, 48, 48,
+        48, 48, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 16, 0, 0, 0, 8, 0, 0, 0, 10, 0,
+        0, 0, 2, 0, 0, 0, 120, 156, 99, 184, 202, 112, 154, 245, 67, 210, 35, 0, 14, 92, 3, 218,
+        120, 156, 19, 228, 0, 0, 0, 44, 0, 26
+      ],
+      "calls": [
+        {
+          "label": "load real encoded image-data descriptor",
+          "id": 365,
+          "args": [256],
+          "control": 1,
+          "result": 537050928
+        },
+        {
+          "label": "cache real descriptor under new key",
+          "id": 738,
+          "args": [2, 320, 537050928],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "cache duplicate key again",
+          "id": 738,
+          "args": [2, 320, 537050928],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "load independent duplicate candidate",
+          "id": 365,
+          "args": [256],
+          "control": 1,
+          "result": 537051168
+        },
+        {
+          "label": "duplicate key does not retain other descriptor",
+          "id": 738,
+          "args": [2, 320, 537051168],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "release duplicate candidate",
+          "id": 366,
+          "args": [537051168],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "cache shared descriptor under another key",
+          "id": 738,
+          "args": [2, 352, 537050928],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "release caller descriptor reference",
+          "id": 366,
+          "args": [537050928],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "retire real FES owner",
+          "id": 67,
+          "args": [2],
+          "control": 2,
+          "result": null
+        }
+      ],
+      "refs": [
+        {
+          "label": "new key",
+          "words": [142, 142, 2, 0]
+        },
+        {
+          "label": "duplicate key",
+          "words": [142, 142, 2, 0]
+        },
+        {
+          "label": "second key",
+          "words": [142, 142, 3, 0]
+        },
+        {
+          "label": "caller released",
+          "words": [142, 142, 2, 0]
+        },
+        {
+          "label": "retiring owner keeps cache",
+          "words": [142, 142, 2, 0]
+        }
+      ],
+      "teardown": {
+        "ownerFreed": true,
+        "descriptorFreed": true
+      },
+      "platformPumpEntries": 0
+    },
+    {
+      "version": "63",
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "executableSHA256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "mainRawToShared": [[738, 738]],
+      "target": 2,
+      "pointer": 537048096,
+      "other": 537048336,
+      "image": [
+        72, 71, 45, 51, 12, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 116, 100, 105, 110,
+        102, 111, 0, 56, 0, 0, 0, 40, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 105, 109, 103, 48, 48,
+        48, 48, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 16, 0, 0, 0, 8, 0, 0, 0, 10, 0,
+        0, 0, 2, 0, 0, 0, 120, 156, 99, 184, 202, 112, 154, 245, 67, 210, 35, 0, 14, 92, 3, 218,
+        120, 156, 19, 228, 0, 0, 0, 44, 0, 26
+      ],
+      "calls": [
+        {
+          "label": "load real encoded image-data descriptor",
+          "id": 365,
+          "args": [256],
+          "control": 1,
+          "result": 537048096
+        },
+        {
+          "label": "cache real descriptor under new key",
+          "id": 738,
+          "args": [2, 320, 537048096],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "cache duplicate key again",
+          "id": 738,
+          "args": [2, 320, 537048096],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "load independent duplicate candidate",
+          "id": 365,
+          "args": [256],
+          "control": 1,
+          "result": 537048336
+        },
+        {
+          "label": "duplicate key does not retain other descriptor",
+          "id": 738,
+          "args": [2, 320, 537048336],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "release duplicate candidate",
+          "id": 366,
+          "args": [537048336],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "cache shared descriptor under another key",
+          "id": 738,
+          "args": [2, 352, 537048096],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "release caller descriptor reference",
+          "id": 366,
+          "args": [537048096],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "retire real FES owner",
+          "id": 67,
+          "args": [2],
+          "control": 2,
+          "result": null
+        }
+      ],
+      "refs": [
+        {
+          "label": "new key",
+          "words": [142, 142, 2, 0]
+        },
+        {
+          "label": "duplicate key",
+          "words": [142, 142, 2, 0]
+        },
+        {
+          "label": "second key",
+          "words": [142, 142, 3, 0]
+        },
+        {
+          "label": "caller released",
+          "words": [142, 142, 2, 0]
+        },
+        {
+          "label": "retiring owner keeps cache",
+          "words": [142, 142, 2, 0]
+        }
+      ],
+      "teardown": {
+        "ownerFreed": true,
+        "descriptorFreed": true
+      },
+      "platformPumpEntries": 0
+    },
+    {
+      "version": "67",
+      "profile": "bokutomo-engine-2.6.1.67",
+      "executableSHA256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "mainRawToShared": [[738, 738]],
+      "target": 2,
+      "pointer": 537048096,
+      "other": 537048336,
+      "image": [
+        72, 71, 45, 51, 12, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 115, 116, 100, 105, 110,
+        102, 111, 0, 56, 0, 0, 0, 40, 0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 105, 109, 103, 48, 48,
+        48, 48, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 16, 0, 0, 0, 8, 0, 0, 0, 10, 0,
+        0, 0, 2, 0, 0, 0, 120, 156, 99, 184, 202, 112, 154, 245, 67, 210, 35, 0, 14, 92, 3, 218,
+        120, 156, 19, 228, 0, 0, 0, 44, 0, 26
+      ],
+      "calls": [
+        {
+          "label": "load real encoded image-data descriptor",
+          "id": 365,
+          "args": [256],
+          "control": 1,
+          "result": 537048096
+        },
+        {
+          "label": "cache real descriptor under new key",
+          "id": 738,
+          "args": [2, 320, 537048096],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "cache duplicate key again",
+          "id": 738,
+          "args": [2, 320, 537048096],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "load independent duplicate candidate",
+          "id": 365,
+          "args": [256],
+          "control": 1,
+          "result": 537048336
+        },
+        {
+          "label": "duplicate key does not retain other descriptor",
+          "id": 738,
+          "args": [2, 320, 537048336],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "release duplicate candidate",
+          "id": 366,
+          "args": [537048336],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "cache shared descriptor under another key",
+          "id": 738,
+          "args": [2, 352, 537048096],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "release caller descriptor reference",
+          "id": 366,
+          "args": [537048096],
+          "control": 2,
+          "result": null
+        },
+        {
+          "label": "retire real FES owner",
+          "id": 67,
+          "args": [2],
+          "control": 2,
+          "result": null
+        }
+      ],
+      "refs": [
+        {
+          "label": "new key",
+          "words": [142, 142, 2, 0]
+        },
+        {
+          "label": "duplicate key",
+          "words": [142, 142, 2, 0]
+        },
+        {
+          "label": "second key",
+          "words": [142, 142, 3, 0]
+        },
+        {
+          "label": "caller released",
+          "words": [142, 142, 2, 0]
+        },
+        {
+          "label": "retiring owner keeps cache",
+          "words": [142, 142, 2, 0]
+        }
+      ],
+      "teardown": {
+        "ownerFreed": true,
+        "descriptorFreed": true
+      },
+      "platformPumpEntries": 0
+    }
+  ]
+}

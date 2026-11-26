@@ -1216,7 +1216,7 @@ export default {
           441, 442, 443, 446, 456, 457, 460, 462, 463, 467, 468, 532, 538, 558, 564, 570, 585, 588,
           599, 600, 601, 622, 623, 624, 628, 629, 641, 648, 657, 658, 659, 663, 669, 677, 678, 679,
           680, 682, 688, 690, 691, 692, 703, 704, 705, 706, 707, 708, 709, 716, 721, 722, 725, 729,
-          734, 738, 837, 838, 839, 840, 841, 842, 843,
+          734, 837, 838, 839, 840, 841, 842, 843,
         ],
 
         reserved: mainReserved,
@@ -1249,20 +1249,25 @@ export default {
           618, 619, 620, 621, 625, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 645, 646,
           647, 649, 650, 651, 653, 654, 655, 662, 664, 665, 666, 667, 668, 674, 675, 676, 681, 683,
           684, 685, 689, 693, 694, 695, 696, 697, 698, 699, 700, 701, 702, 710, 711, 712, 713, 714,
-          715, 717, 718, 719, 720, 723, 724, 726, 727, 728, 730, 731, 732, 733, 735, 736, 737, 739,
-          740, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757,
-          758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775,
-          776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793,
-          794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811,
-          812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829,
-          830, 831, 832, 833, 834, 835, 836, 844, 845, 846, 847, 848, 849, 850, 851, 852, 853, 854,
-          855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872,
-          873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890,
-          891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 934, 935, 936,
-          937,
+          715, 717, 718, 719, 720, 723, 724, 726, 727, 728, 730, 731, 732, 733, 735, 736, 737, 738,
+          739, 740, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756,
+          757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774,
+          775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792,
+          793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810,
+          811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828,
+          829, 830, 831, 832, 833, 834, 835, 836, 844, 845, 846, 847, 848, 849, 850, 851, 852, 853,
+          854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871,
+          872, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889,
+          890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 934, 935,
+          936, 937,
         ],
       },
       evidence: [
+        {
+          ids: [738],
+          value:
+            'Own 2.6.1.63 Main738 sends raw338 to a constructed, loaded FES owner. Full GCALL uses original Main365-owned 20-byte descriptors holding a valid encoded HG3 resource. A new key retains once; a duplicate key retains neither its previous descriptor again nor a different candidate. A second key shares one descriptor, caller release leaves both cache references, Main67 retirement retains them, and the original FES deleting destructor releases the descriptor and owner after ordinary static resource-list initialization. The wrapper returns control2 without a result write. Unknown foreign pointers and incomplete renderer/3D shapes are not inferred from these encoded-byte ownership cases.',
+        },
         {
           ids: [650],
           value:
@@ -2182,6 +2187,35 @@ export default {
         },
       ],
       signatures: [
+        {
+          ids: [738],
+          fields: {
+            parameters: [
+              {
+                name: 'fes',
+                description: 'Target FES task ID',
+                type: { kind: 'object-id', objectKind: 'FES' },
+              },
+              {
+                name: 'name',
+                description: 'CP932 cache key format',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: { kind: 'format-string', encoding: 'CP932' },
+                },
+              },
+              {
+                name: 'imageData',
+                description: 'Borrowed encoded ImageData descriptor; retained only for a new key',
+                type: { kind: 'handle', handleKind: 'image-data', ownership: 'borrowed' },
+              },
+            ],
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        },
         { ids: [650], fields: { review: 'reviewed', resultWritten: true } },
         ...[631, 632].map((id) => ({
           ids: [id],

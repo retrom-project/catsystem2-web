@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [738],
+    value:
+      'Own 2.6.1.23 Main738 sends raw321 to a constructed, loaded FES owner. Full GCALL uses original Main365-owned 20-byte descriptors holding a valid encoded HG3 resource. A new key retains once; a duplicate key retains neither its previous descriptor again nor a different candidate. A second key shares one descriptor, caller release leaves both cache references, Main67 retirement retains them, and the original FES deleting destructor releases the descriptor and owner after ordinary static resource-list initialization. The wrapper returns control2 without a result write. Unknown foreign pointers and incomplete renderer/3D shapes are not inferred from these encoded-byte ownership cases.',
+  },
+  {
     ids: [631, 632],
     value:
       'Own 2.6.1.23 complete Main631/632 wrappers and loaded FES receiver after true Main66 owners and Main143-loaded VM. Positive BASE count2 creates separately addressable event receivers with indices0/1; STRING type20 constructs its deferred resource owner. Both raw packet strings from Main632 expand argv1, and argv2 is not dereferenced, including an unmapped incoming word. Count and CP932 name are copied into the native stack packet. Both wrappers return control2 without a result write; unknown object types and subsequent unproved renderer shapes retain their guards.',
@@ -1744,6 +1749,35 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        {
+          ids: [738],
+          fields: {
+            parameters: [
+              {
+                name: 'fes',
+                description: 'Target FES task ID',
+                type: { kind: 'object-id', objectKind: 'FES' },
+              },
+              {
+                name: 'name',
+                description: 'CP932 cache key format',
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: 'in',
+                  target: { kind: 'format-string', encoding: 'CP932' },
+                },
+              },
+              {
+                name: 'imageData',
+                description: 'Borrowed encoded ImageData descriptor; retained only for a new key',
+                type: { kind: 'handle', handleKind: 'image-data', ownership: 'borrowed' },
+              },
+            ],
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        },
         ...[631, 632].map((id) => ({
           ids: [id],
           fields: {

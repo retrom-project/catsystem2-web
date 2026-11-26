@@ -1346,3 +1346,14 @@ selects `_LOAD_` without executing it. The integration test compares the full
 original CSS bytes, exports them through GAME_SAVE, then imports them in a new
 storage instance and an independently initialized World. This preserves the
 separate scalar-selection boundary and the existing file contract.
+
+Legacy Main738 retains encoded ImageData descriptors under the same ordinary
+cache protocol. A new key adds one descriptor reference; an existing key adds
+none, including a different incoming descriptor. Two keys can share one live
+20-byte descriptor. Main366 can release the caller's reference while the cache
+retains its two references. Main67 retirement keeps them; actual FES destruction
+releases them once each. The legacy golden uses a valid HG3 loaded by Main365
+and the original deleting destructor, with each version's ordinary resource-list
+static constructor initialized. FreshWorld restores the same sharing and keeps
+its references independent of the original World. This encoded-byte ownership
+proof does not establish a physical renderer or arbitrary foreign-pointer shape.
