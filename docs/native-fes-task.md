@@ -1357,3 +1357,14 @@ and the original deleting destructor, with each version's ordinary resource-list
 static constructor initialized. FreshWorld restores the same sharing and keeps
 its references independent of the original World. This encoded-byte ownership
 proof does not establish a physical renderer or arbitrary foreign-pointer shape.
+
+Final `NativeWorld.close` disposal has a separate resource-cleanup rule. The FES
+remembers only the numeric bank handle successfully validated during binding;
+restore rebuilds that derived value. If final disposal finds that same handle
+already absent, it skips only the obsolete private-context unregister. It keeps
+closing all other owned resources. Existing handles still undergo their type
+checks, and an unvalidated missing handle has no exception. Ordinary VM messages,
+queries and `variableBank()` remain strict. A previously invalid active lifetime
+can still report its message3 failure during disposal; this rule does not swallow
+that failure or promise original WinMain exit behavior. No reference count,
+persistent field, checkpoint version or alternate reader is introduced.

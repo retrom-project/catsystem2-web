@@ -37,6 +37,7 @@ export function createNativeFESTask(world, record) {
     soundTaskID: null,
     sleepValue: 0,
     stringsInherited: false,
+    validatedVariableBankHandle: 0,
     nativeDictionary: null,
     resultValue: 0,
     imageCacheModel,
@@ -120,7 +121,9 @@ export function createNativeFESTask(world, record) {
         'FES initialization sound-task query',
       );
       this.configurePlayer();
-      this.variableBank()?.registerContext(this.variableContextKey());
+      const bank = this.variableBank();
+      bank?.registerContext(this.variableContextKey());
+      this.validatedVariableBankHandle = bank ? variableBank : 0;
       this.bindVariableContext();
       world.applyFESLanguage(this.player);
       this.player.saveObject = 0;
@@ -218,6 +221,7 @@ export function createNativeFESTask(world, record) {
       imageCacheModel.entries = new Map(state.imageCache);
       input.restore(state.input);
       if (!state.player) return;
+      this.validatedVariableBankHandle = this.variableBank() ? record.context.variableBank : 0;
       const runtime = world.runtime;
       this.player = new FESPlayer(
         world.game,
@@ -250,7 +254,16 @@ export function createNativeFESTask(world, record) {
     async closeInterpreter() {
       // Unregister the private variable context before object storage
       // and the FES image cache are released.
-      this.variableBank()?.unregisterContext(this.variableContextKey());
+      // The supplying Script may already have released this validated bank
+      // during final platform disposal. Ordinary VM access remains strict.
+      const handle = record.context.variableBank,
+        releasedDuringDisposal =
+          world.disposalRequested &&
+          handle &&
+          handle === this.validatedVariableBankHandle &&
+          !world.runtime.handles.records.has(handle);
+      if (!releasedDuringDisposal)
+        this.variableBank()?.unregisterContext(this.variableContextKey());
       for (const instance of this.player?.instances || []) {
         if (instance.kcsTaskID != null) await world.objects.release(instance.kcsTaskID);
       }
