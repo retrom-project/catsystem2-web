@@ -284,16 +284,18 @@ export class NativePlaneMovies {
     )
       throw new Error('Plane movie frame differs from its negotiated dimensions');
     const bitmap = this.world.graphics.images.get(record.bitmap),
-      output = await bitmap.pixels();
+      output = await bitmap.pixels(),
+      rowBytes = decoded.width * 4,
+      forceAlpha = !record.planeMode || !record.video.alpha;
     output.fill(0);
     if (!record.planeMode) for (let i = 3; i < output.length; i += 4) output[i] = 255;
-    for (let y = 0; y < decoded.height; y++)
-      for (let x = 0; x < decoded.width; x++) {
-        const from = (y * decoded.width + x) * 4,
-          to = (y * bitmap.width + x) * 4;
-        output.set(decoded.rgba.subarray(from, from + 4), to);
-        if (!record.planeMode || !record.video.alpha) output[to + 3] = 255;
-      }
+    for (let y = 0; y < decoded.height; y++) {
+      const from = y * rowBytes,
+        to = y * bitmap.width * 4;
+      output.set(decoded.rgba.subarray(from, from + rowBytes), to);
+      if (forceAlpha)
+        for (let alpha = to + 3; alpha < to + rowBytes; alpha += 4) output[alpha] = 255;
+    }
     await bitmap.changed();
     record.frameStamp = stamp;
   }

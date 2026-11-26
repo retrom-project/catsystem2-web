@@ -119,6 +119,9 @@ comparisons below are reused; they are not rerun by the ordinary consumer.
 Decoded output belongs to the existing NativeImages bitmap/backing handles.
 The standard movie presents opaque RGB and opaque power-of-two padding;
 the effect preserves actual decoder alpha and transparent padding.
+The frame updater copies contiguous RGBA rows into that bitmap, then forces
+alpha only where the movie mode requires it. Padding, unchanged frame stamps,
+bitmap revisions and retained-frame ownership keep the same behavior.
 The immutable `planeMode` selects this variant; `mode` is the separate kcVideo
 window-mode word. A legal `0x3E4(handle, 0)` changes only that window state, not
 the registry variant or alpha. A cold running borrower first consumed by Stop

@@ -45,6 +45,163 @@ function recordIO(world) {
   return calls;
 }
 
+test('Plane movie rows preserve all alpha policies, NPOT padding and unchanged frame ownership', async () => {
+  const rgba = Uint8Array.of(
+    11,
+    12,
+    13,
+    31,
+    21,
+    22,
+    23,
+    0,
+    31,
+    32,
+    33,
+    255,
+    41,
+    42,
+    43,
+    128,
+    51,
+    52,
+    53,
+    63,
+    61,
+    62,
+    63,
+    1,
+    71,
+    72,
+    73,
+    254,
+    81,
+    82,
+    83,
+    17,
+    91,
+    92,
+    93,
+    9,
+  );
+  for (const planeMode of [0, 1]) {
+    for (const alpha of [false, true]) {
+      const world = await dataWorld(sdk, { 'rows.mpg': Uint8Array.of(0, 0, 1, 0xba) }),
+        id = await world.objects.create({ kind: 2, parent: world.root, nativeID: 21 }),
+        plane = world.graphics.get(id);
+      let decodes = 0,
+        closes = 0;
+      const adapter = {
+        open: () => true,
+        close() {
+          closes++;
+        },
+        configure() {},
+        metadata: () => ({ width: 3, height: 3, duration: 100n, alpha }),
+        frameStamp: () => 17,
+        decodedFrame() {
+          decodes++;
+          return { width: 3, height: 3, rgba };
+        },
+      };
+      world.host.nativeMovie = () => adapter;
+      try {
+        const input = rgba.slice(),
+          loaded = await world.planeMovies.load(plane, planeMode, [0, 0, 0], 'rows.mpg'),
+          record = world.movies.get(loaded.handle),
+          bitmap = world.graphics.images.get(record.bitmap),
+          a = (value) => (planeMode && alpha ? value : 255),
+          pad = planeMode ? 0 : 255;
+        assert.deepEqual([bitmap.width, bitmap.height], [4, 4]);
+        assert.deepEqual(
+          [...(await bitmap.pixels())],
+          [
+            11,
+            12,
+            13,
+            a(31),
+            21,
+            22,
+            23,
+            a(0),
+            31,
+            32,
+            33,
+            a(255),
+            0,
+            0,
+            0,
+            pad,
+            41,
+            42,
+            43,
+            a(128),
+            51,
+            52,
+            53,
+            a(63),
+            61,
+            62,
+            63,
+            a(1),
+            0,
+            0,
+            0,
+            pad,
+            71,
+            72,
+            73,
+            a(254),
+            81,
+            82,
+            83,
+            a(17),
+            91,
+            92,
+            93,
+            a(9),
+            0,
+            0,
+            0,
+            pad,
+            0,
+            0,
+            0,
+            pad,
+            0,
+            0,
+            0,
+            pad,
+            0,
+            0,
+            0,
+            pad,
+            0,
+            0,
+            0,
+            pad,
+          ],
+        );
+        assert.deepEqual(rgba, input);
+        const revision = bitmap.state.revision;
+        await world.planeMovies.updateFrame(loaded.handle, adapter);
+        assert.equal(decodes, 1);
+        assert.equal(bitmap.state.revision, revision);
+        assert.equal(record.frameStamp, 17);
+        const retained = await world.planeMovies.retainedFrame({ handle: loaded.handle });
+        assert.equal(retained.rgba, await bitmap.pixels());
+        assert.equal(retained.revision, revision);
+        await world.planeMovies.releaseHandle(loaded.handle);
+        assert.equal(world.runtime.handles.records.has(loaded.handle), false);
+        assert.equal(world.runtime.handles.records.has(record.bitmap), false);
+        assert.equal(closes, 1);
+      } finally {
+        await world.close({ flushFiles: false });
+      }
+    }
+  }
+});
+
 for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
   'rebellions-jp-engine-2.6.1.63',
