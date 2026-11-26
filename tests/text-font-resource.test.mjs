@@ -68,6 +68,7 @@ test('legacy image-font maps fall back to a blank cell when no 32-bit bitmap is 
             ? null
             : { bpp, width: 2, height: 2, rgba: new Uint8ClampedArray(16).fill(255) },
         glyphMap: new Map([[65, [0, 0, 2, 2]]]),
+        owner: { glyphAtlas: false, glyphKeepsTransparentRgb: false },
         world: {
           graphics: { images: { get: () => bitmap } },
           text: { runtime: async () => ({ glyphs }) },
