@@ -104,6 +104,22 @@ The nonempty Main fixture compares both full KCS VM frames and the initialized
 shared fields across delay/skip, wrapped frames, negative speed, raw active words,
 register replacement, member/group deletion, finish, and independent cold runs.
 
+The modern full-chain fixture adds actual Top/factory Script GCALLs for
+Main315/316/317 and Main387/388. It captures an allocated envelope, refreshes it
+with an empty manager, writes both retained buffers into a native CSS container,
+saves and independently reloads that file, and reconstructs a new MOT owner at
+a different frame through the real mounted KCS/zlib parser. Current KCS checks
+all 8192 local bytes with pointer provenance, control replies and VM registers,
+then repeats the restore through independent World checkpoints. A second check
+loads the original saved CSS bytes directly and retains the copied envelope
+after clearing its file. Only the original allocation's unwritten filename
+padding is excluded from portable byte comparison; opaque padding from a loaded
+native file is copied exactly. This is an authored resource/owner and virtual
+OS-file bridge, not product deployment or a physical GPU result.
+The nonempty Main fixture now references the qualified original source-cache
+static initialization; its 70 normalized frames agree with the earlier parameter
+vectors. The earlier uninitialized-cache runs remain historical captures.
+
 The game serializer/load pair is `78A2F0`/`78A420`; the SDK pair is
 `622400`/`622540`. `scripts/verify-native-motion-checkpoint.mjs` executes each
 original serializer and main `13C` refresh wrapper against authored ordered

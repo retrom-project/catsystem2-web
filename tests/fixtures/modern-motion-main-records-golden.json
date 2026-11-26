@@ -6,8 +6,8 @@
       "version": "74",
       "profile": "sdk-4.01-engine-2.6.1.74",
       "original": {
-        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-MAIN-RECORDS-OBSERVED-74.json",
-        "sha256": "b56192eb7cf3d9844796d47c680d6913744e7d2d85805429add62bef8cba26d3"
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-MAIN-RECORDS-QUALIFIED-74.json",
+        "sha256": "8c89607fc007aae1057fd0a9181c296178a271283ed2e053961ec1ecb3ecacc3"
       },
       "xml": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><INT><int00><int>mot</int><ext>kcs</ext><dir>loose</dir><name>mot</name></int00><int01><name>kcs</name><ext>kcs</ext></int01></INT></document>",
       "inputs": {
@@ -2523,8 +2523,8 @@
       "version": "76",
       "profile": "nekopara-vol3-engine-2.6.1.76",
       "original": {
-        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-MAIN-RECORDS-OBSERVED-76.json",
-        "sha256": "61926436027bdd2e0677bb2af52888655c6a7fd4ed70c34f302eeeca81f2baa2"
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-MAIN-RECORDS-QUALIFIED-76.json",
+        "sha256": "8e7674b66e37042b36e4bcc73df0f2a1a16cc145c722a05413d1990e556cb903"
       },
       "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><document><INT><int00><int>mot</int><ext>kcs</ext><dir>loose</dir><name>mot</name></int00><int01><name>kcs</name><ext>kcs</ext></int01></INT></document>",
       "inputs": {

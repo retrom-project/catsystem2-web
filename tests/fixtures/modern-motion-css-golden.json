@@ -1,0 +1,737 @@
+{
+  "scope": "Own real Motion source-cache static initialization, Top/factory Script, fullMain315/316/317/387/388 and native238/245/247/246, actual mounted KCS/zlib load and independent CSS file read/MOT reconstruction. Complete8192 Main local frames; opaque pointer provenance follows live handles and stale stack slots rather than value-only substitution. Initial filename padding is nonportable allocated content, masked only through its fixed field; refreshed tail/capacity must be retained. Explicit virtual OS providers, not WinMain/product/physicalGPU.",
+  "builds": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-CSS-CHAIN-READY-74.json",
+        "sha256": "956ab6da3d7626b27d8ff5268ed5a55264878ae82832dd0e74d7d0c72e81bd0a"
+      },
+      "program": "S0NTAAIAAAAAAAAANAAAAA0AAABBAAAAAAAAAAAAAAAAEAAAABAAAEEAAAAAAAAAGgAAAHicExVmYGBoEJ7DwNCgaw0ADEQCQA==",
+      "xml": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><INT><int00><int>mot</int><ext>kcs</ext><dir>loose</dir><name>mot</name></int00><int01><name>kcs</name><ext>kcs</ext></int01></INT></document>",
+      "rows": [
+        {
+          "id": 294,
+          "label": "create-source",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [],
+          "result": 65536,
+          "beforeLocalSha256": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+          "localSha256": "53caeaf5cadb8f513b707c8604a050f2835d6fb03fd861e2bcbefd98d0680ef4"
+        },
+        {
+          "id": 238,
+          "label": "create-CSS-owner",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [2441245540],
+          "result": 65537,
+          "beforeLocalSha256": "53caeaf5cadb8f513b707c8604a050f2835d6fb03fd861e2bcbefd98d0680ef4",
+          "localSha256": "d74ef1b32132852c13ef29277ba23ef66dd98b09e956e948888f8e13d7f73846"
+        },
+        {
+          "id": 535,
+          "label": "add-first",
+          "writes": [
+            {
+              "address": 64,
+              "bytes": "b3duZWQA"
+            },
+            {
+              "address": 256,
+              "bytes": "AAAoQgAAAIBFI8F/"
+            },
+            {
+              "address": 320,
+              "bytes": "AQIDBA=="
+            }
+          ],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65536, 64, 256, 3, 320, 3, 9, 7],
+          "result": 1,
+          "beforeLocalSha256": "6bb085c12c410fea84f4e0190033f03c69fb68b80784ed7d0ee0b3804982c18d",
+          "localSha256": "e376cb9bd9fe557f2246601ac88fe521f5249783b1d0ad8c498b3b82ee2b4324"
+        },
+        {
+          "id": 305,
+          "label": "set-first-start",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65536, 1, 100],
+          "result": null,
+          "beforeLocalSha256": "e376cb9bd9fe557f2246601ac88fe521f5249783b1d0ad8c498b3b82ee2b4324",
+          "localSha256": "fdcb5cc856e087d4f3e1a2fce6172ea007f9bd29a6073300ad301c84ea7466cb"
+        },
+        {
+          "id": 315,
+          "label": "capture-two-stage-allocation",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65536, 150],
+          "result": 65538,
+          "beforeLocalSha256": "fdcb5cc856e087d4f3e1a2fce6172ea007f9bd29a6073300ad301c84ea7466cb",
+          "localSha256": "f257e15360d8138d3d3eb45f14006754b11f105310aa8acbbdb92c1c5573c5bf"
+        },
+        {
+          "id": 387,
+          "label": "write-record",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65537, 7, 65538],
+          "result": 1,
+          "beforeLocalSha256": "f257e15360d8138d3d3eb45f14006754b11f105310aa8acbbdb92c1c5573c5bf",
+          "localSha256": "0c32555483272a0cf26f5bc85f2e0453928f04d18df382840ac7027053914bf1"
+        },
+        {
+          "id": 296,
+          "label": "clear-source",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65536],
+          "result": null,
+          "beforeLocalSha256": "0c32555483272a0cf26f5bc85f2e0453928f04d18df382840ac7027053914bf1",
+          "localSha256": "bf38819ae41551f696ea565b0c5d21482cc396e285380a7790b16661129601d6"
+        },
+        {
+          "id": 316,
+          "label": "refresh-empty-reuses-capacity",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65538, 170],
+          "result": 1,
+          "beforeLocalSha256": "bf38819ae41551f696ea565b0c5d21482cc396e285380a7790b16661129601d6",
+          "localSha256": "37df983acd9e521736caf0ffcdcc1b5c98b3cac2fa6f2d4b9eeac1823a344df4"
+        },
+        {
+          "id": 387,
+          "label": "write-empty-retained-record",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65537, 8, 65538],
+          "result": 1,
+          "beforeLocalSha256": "37df983acd9e521736caf0ffcdcc1b5c98b3cac2fa6f2d4b9eeac1823a344df4",
+          "localSha256": "37af4b7ffb93ee2f6678b3a28fa47a2a46b3b5003b73e380732675daafeb67b8"
+        },
+        {
+          "id": 245,
+          "label": "save-CSS-file",
+          "writes": [
+            {
+              "address": 64,
+              "bytes": "bW90aW9uLXRlc3QuY3NzAA=="
+            }
+          ],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65537, 64],
+          "result": 1,
+          "beforeLocalSha256": "9a0be426cf9bb4c4e16f6c4726fbf29ed4d882fe8655ff8cdc11e9860ec8b6f6",
+          "localSha256": "7af5c69b4d5272748d45beb6f1de316f2f8a7b2a3750133d7c1e2000664d29ca"
+        },
+        {
+          "id": 317,
+          "label": "release-capture",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65538],
+          "result": null,
+          "beforeLocalSha256": "7af5c69b4d5272748d45beb6f1de316f2f8a7b2a3750133d7c1e2000664d29ca",
+          "localSha256": "2925bc4ec6ed9604d48056dc52fb6b78fa0570cbc6c49cf525867c98e71c103c"
+        },
+        {
+          "id": 246,
+          "label": "release-file",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65537],
+          "result": null,
+          "beforeLocalSha256": "2925bc4ec6ed9604d48056dc52fb6b78fa0570cbc6c49cf525867c98e71c103c",
+          "localSha256": "d321ff8189eff94045d4247cb63de02769df8dab0811ba4307a36cdfbfd1e247"
+        },
+        {
+          "id": 295,
+          "label": "release-source",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65536],
+          "result": null,
+          "beforeLocalSha256": "d321ff8189eff94045d4247cb63de02769df8dab0811ba4307a36cdfbfd1e247",
+          "localSha256": "a520da5a2066c152173b9f01a074a8525982ab0b27a4b5e3c52171188093bf2d"
+        },
+        {
+          "id": 247,
+          "label": "load-CSS-independent-owner",
+          "writes": [
+            {
+              "address": 64,
+              "bytes": "bW90aW9uLXRlc3QuY3NzAA=="
+            }
+          ],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [64],
+          "result": 65539,
+          "beforeLocalSha256": "a520da5a2066c152173b9f01a074a8525982ab0b27a4b5e3c52171188093bf2d",
+          "localSha256": "ee5b19b66a6e93b081b43db2c4120c20ecbf920447d2c2695371f7f8ceaae577"
+        },
+        {
+          "id": 294,
+          "label": "create-target",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [],
+          "result": 65540,
+          "beforeLocalSha256": "ee5b19b66a6e93b081b43db2c4120c20ecbf920447d2c2695371f7f8ceaae577",
+          "localSha256": "c4ed015ae444ebd552ea547d8eaa3a51278e6ef43512d6f6e73750d2a2e481be"
+        },
+        {
+          "id": 388,
+          "label": "read-record-and-restore-actual-MOT",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65539, 7, 65540, 300],
+          "result": 65541,
+          "beforeLocalSha256": "c4ed015ae444ebd552ea547d8eaa3a51278e6ef43512d6f6e73750d2a2e481be",
+          "localSha256": "0e02f431159d4deac821ea4029553e48978683149e8ee5a3601c7ed175929e1b"
+        },
+        {
+          "id": 307,
+          "label": "update-restored-target",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65540, 300, 0],
+          "result": 1,
+          "beforeLocalSha256": "0e02f431159d4deac821ea4029553e48978683149e8ee5a3601c7ed175929e1b",
+          "localSha256": "40c0a13a894941fd55be119e2097fc1796bde461f56b0f402ecfe287d503e886"
+        },
+        {
+          "id": 388,
+          "label": "read-empty-detached",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65539, 8, 0, 999],
+          "result": 65542,
+          "beforeLocalSha256": "40c0a13a894941fd55be119e2097fc1796bde461f56b0f402ecfe287d503e886",
+          "localSha256": "7a99d8e27d1215c33d6d028c6905acb1404a9e5955513f43e34be305d842fd6c"
+        },
+        {
+          "id": 388,
+          "label": "missing-record",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65539, 99, 0, 0],
+          "result": 0,
+          "beforeLocalSha256": "7a99d8e27d1215c33d6d028c6905acb1404a9e5955513f43e34be305d842fd6c",
+          "localSha256": "232e4e5a41748b26a9db6470157f045907f2dd75ab59f0fe5e413bb39e934ff1"
+        },
+        {
+          "id": 317,
+          "label": "free-detached",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65542],
+          "result": null,
+          "beforeLocalSha256": "232e4e5a41748b26a9db6470157f045907f2dd75ab59f0fe5e413bb39e934ff1",
+          "localSha256": "497323cdae652e897c80d9fcda06007e0e9d1403c52de5afc7dc6ef705d6f309"
+        },
+        {
+          "id": 317,
+          "label": "free-restored",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65541],
+          "result": null,
+          "beforeLocalSha256": "497323cdae652e897c80d9fcda06007e0e9d1403c52de5afc7dc6ef705d6f309",
+          "localSha256": "bbfbba5b37b051d6c5026752808582d351f286acaee38102d40223dee43d6151"
+        },
+        {
+          "id": 246,
+          "label": "free-loaded-file",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65539],
+          "result": null,
+          "beforeLocalSha256": "bbfbba5b37b051d6c5026752808582d351f286acaee38102d40223dee43d6151",
+          "localSha256": "37746979ef4b406b20e41592560b9f625d7219e15faad1b9c02ba8d049583fa6"
+        },
+        {
+          "id": 295,
+          "label": "delete-target",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65540],
+          "result": null,
+          "beforeLocalSha256": "37746979ef4b406b20e41592560b9f625d7219e15faad1b9c02ba8d049583fa6",
+          "localSha256": "1bb677fa4048a4358510cc6e00060a2c21c073c1baf31e96f9c8aa7750596fdb"
+        }
+      ],
+      "snapshots": [
+        {
+          "label": "one-record",
+          "owner": 539134368,
+          "capacity": 1087,
+          "bytes": "PwQAAAEAAAA3BAAAb3duZWQua2NzACIgqOzvfzdVXQAAmyIgAElOVAAAAAAJAAAAAAAoQgAAAIBFI8F/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAyAAAABwAAAAECAw=="
+        },
+        {
+          "label": "empty-refresh",
+          "owner": 539134368,
+          "capacity": 1087,
+          "bytes": "CAAAAAAAAAA3BAAAb3duZWQua2NzACIgqOzvfzdVXQAAmyIgAElOVAAAAAAJAAAAAAAoQgAAAIBFI8F/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAyAAAABwAAAAECAw=="
+        }
+      ],
+      "detached": {
+        "owner": 0,
+        "capacity": 1087,
+        "bytes": "CAAAAAAAAAA3BAAAb3duZWQua2NzACIgqOzvfzdVXQAAmyIgAElOVAAAAAAJAAAAAAAoQgAAAIBFI8F/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAyAAAABwAAAAECAw=="
+      },
+      "restored": {
+        "group": 9,
+        "start": 250,
+        "delay": 7,
+        "registers": "AAAoQgAAAIBFI8F/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        "extraPointer": 8192,
+        "extraLength": 3,
+        "position": "AAAoQgAAAAAAAAAA"
+      },
+      "files": {
+        "motion-test.css": "Q1NTAGQAAACOCAAAZHOCkXjaY2dgYLBngWBGINscSOeX56Wm6GUnFzMoKax4877ePDSWgWG2kgKDp18IUAkDJ4hg0HACEg2uygfrGUbBKBgFIwowA7ERELMDMSMTMwe0GOGASo8WI6NgFIwCEosRAPA5GhQ="
+      },
+      "unknownFilenamePadding": [22, 44]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "original": {
+        "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-MOTION-CSS-CHAIN-READY-76.json",
+        "sha256": "cc32f1b05d0333a8ca6fa8b01f14aa1d8b63e87712da5461e3fba097085e90dc"
+      },
+      "program": "S0NTAAIAAAAAAAAANAAAAA0AAABBAAAAAAAAAAAAAAAAEAAAABAAAEEAAAAAAAAAGgAAAHicExVmYGBoEJ7DwNCgaw0ADEQCQA==",
+      "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><document><INT><int00><int>mot</int><ext>kcs</ext><dir>loose</dir><name>mot</name></int00><int01><name>kcs</name><ext>kcs</ext></int01></INT></document>",
+      "rows": [
+        {
+          "id": 294,
+          "label": "create-source",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [],
+          "result": 65536,
+          "beforeLocalSha256": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47",
+          "localSha256": "53caeaf5cadb8f513b707c8604a050f2835d6fb03fd861e2bcbefd98d0680ef4"
+        },
+        {
+          "id": 238,
+          "label": "create-CSS-owner",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [2441245540],
+          "result": 65537,
+          "beforeLocalSha256": "53caeaf5cadb8f513b707c8604a050f2835d6fb03fd861e2bcbefd98d0680ef4",
+          "localSha256": "d74ef1b32132852c13ef29277ba23ef66dd98b09e956e948888f8e13d7f73846"
+        },
+        {
+          "id": 535,
+          "label": "add-first",
+          "writes": [
+            {
+              "address": 64,
+              "bytes": "b3duZWQA"
+            },
+            {
+              "address": 256,
+              "bytes": "AAAoQgAAAIBFI8F/"
+            },
+            {
+              "address": 320,
+              "bytes": "AQIDBA=="
+            }
+          ],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65536, 64, 256, 3, 320, 3, 9, 7],
+          "result": 1,
+          "beforeLocalSha256": "6bb085c12c410fea84f4e0190033f03c69fb68b80784ed7d0ee0b3804982c18d",
+          "localSha256": "e376cb9bd9fe557f2246601ac88fe521f5249783b1d0ad8c498b3b82ee2b4324"
+        },
+        {
+          "id": 305,
+          "label": "set-first-start",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65536, 1, 100],
+          "result": null,
+          "beforeLocalSha256": "e376cb9bd9fe557f2246601ac88fe521f5249783b1d0ad8c498b3b82ee2b4324",
+          "localSha256": "fdcb5cc856e087d4f3e1a2fce6172ea007f9bd29a6073300ad301c84ea7466cb"
+        },
+        {
+          "id": 315,
+          "label": "capture-two-stage-allocation",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65536, 150],
+          "result": 65538,
+          "beforeLocalSha256": "fdcb5cc856e087d4f3e1a2fce6172ea007f9bd29a6073300ad301c84ea7466cb",
+          "localSha256": "f257e15360d8138d3d3eb45f14006754b11f105310aa8acbbdb92c1c5573c5bf"
+        },
+        {
+          "id": 387,
+          "label": "write-record",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65537, 7, 65538],
+          "result": 1,
+          "beforeLocalSha256": "f257e15360d8138d3d3eb45f14006754b11f105310aa8acbbdb92c1c5573c5bf",
+          "localSha256": "0c32555483272a0cf26f5bc85f2e0453928f04d18df382840ac7027053914bf1"
+        },
+        {
+          "id": 296,
+          "label": "clear-source",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65536],
+          "result": null,
+          "beforeLocalSha256": "0c32555483272a0cf26f5bc85f2e0453928f04d18df382840ac7027053914bf1",
+          "localSha256": "bf38819ae41551f696ea565b0c5d21482cc396e285380a7790b16661129601d6"
+        },
+        {
+          "id": 316,
+          "label": "refresh-empty-reuses-capacity",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65538, 170],
+          "result": 1,
+          "beforeLocalSha256": "bf38819ae41551f696ea565b0c5d21482cc396e285380a7790b16661129601d6",
+          "localSha256": "37df983acd9e521736caf0ffcdcc1b5c98b3cac2fa6f2d4b9eeac1823a344df4"
+        },
+        {
+          "id": 387,
+          "label": "write-empty-retained-record",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65537, 8, 65538],
+          "result": 1,
+          "beforeLocalSha256": "37df983acd9e521736caf0ffcdcc1b5c98b3cac2fa6f2d4b9eeac1823a344df4",
+          "localSha256": "37af4b7ffb93ee2f6678b3a28fa47a2a46b3b5003b73e380732675daafeb67b8"
+        },
+        {
+          "id": 245,
+          "label": "save-CSS-file",
+          "writes": [
+            {
+              "address": 64,
+              "bytes": "bW90aW9uLXRlc3QuY3NzAA=="
+            }
+          ],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65537, 64],
+          "result": 1,
+          "beforeLocalSha256": "9a0be426cf9bb4c4e16f6c4726fbf29ed4d882fe8655ff8cdc11e9860ec8b6f6",
+          "localSha256": "7af5c69b4d5272748d45beb6f1de316f2f8a7b2a3750133d7c1e2000664d29ca"
+        },
+        {
+          "id": 317,
+          "label": "release-capture",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65538],
+          "result": null,
+          "beforeLocalSha256": "7af5c69b4d5272748d45beb6f1de316f2f8a7b2a3750133d7c1e2000664d29ca",
+          "localSha256": "2925bc4ec6ed9604d48056dc52fb6b78fa0570cbc6c49cf525867c98e71c103c"
+        },
+        {
+          "id": 246,
+          "label": "release-file",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65537],
+          "result": null,
+          "beforeLocalSha256": "2925bc4ec6ed9604d48056dc52fb6b78fa0570cbc6c49cf525867c98e71c103c",
+          "localSha256": "d321ff8189eff94045d4247cb63de02769df8dab0811ba4307a36cdfbfd1e247"
+        },
+        {
+          "id": 295,
+          "label": "release-source",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65536],
+          "result": null,
+          "beforeLocalSha256": "d321ff8189eff94045d4247cb63de02769df8dab0811ba4307a36cdfbfd1e247",
+          "localSha256": "a520da5a2066c152173b9f01a074a8525982ab0b27a4b5e3c52171188093bf2d"
+        },
+        {
+          "id": 247,
+          "label": "load-CSS-independent-owner",
+          "writes": [
+            {
+              "address": 64,
+              "bytes": "bW90aW9uLXRlc3QuY3NzAA=="
+            }
+          ],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [64],
+          "result": 65539,
+          "beforeLocalSha256": "a520da5a2066c152173b9f01a074a8525982ab0b27a4b5e3c52171188093bf2d",
+          "localSha256": "ee5b19b66a6e93b081b43db2c4120c20ecbf920447d2c2695371f7f8ceaae577"
+        },
+        {
+          "id": 294,
+          "label": "create-target",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [],
+          "result": 65540,
+          "beforeLocalSha256": "ee5b19b66a6e93b081b43db2c4120c20ecbf920447d2c2695371f7f8ceaae577",
+          "localSha256": "c4ed015ae444ebd552ea547d8eaa3a51278e6ef43512d6f6e73750d2a2e481be"
+        },
+        {
+          "id": 388,
+          "label": "read-record-and-restore-actual-MOT",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65539, 7, 65540, 300],
+          "result": 65541,
+          "beforeLocalSha256": "c4ed015ae444ebd552ea547d8eaa3a51278e6ef43512d6f6e73750d2a2e481be",
+          "localSha256": "0e02f431159d4deac821ea4029553e48978683149e8ee5a3601c7ed175929e1b"
+        },
+        {
+          "id": 307,
+          "label": "update-restored-target",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65540, 300, 0],
+          "result": 1,
+          "beforeLocalSha256": "0e02f431159d4deac821ea4029553e48978683149e8ee5a3601c7ed175929e1b",
+          "localSha256": "40c0a13a894941fd55be119e2097fc1796bde461f56b0f402ecfe287d503e886"
+        },
+        {
+          "id": 388,
+          "label": "read-empty-detached",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65539, 8, 0, 999],
+          "result": 65542,
+          "beforeLocalSha256": "40c0a13a894941fd55be119e2097fc1796bde461f56b0f402ecfe287d503e886",
+          "localSha256": "7a99d8e27d1215c33d6d028c6905acb1404a9e5955513f43e34be305d842fd6c"
+        },
+        {
+          "id": 388,
+          "label": "missing-record",
+          "writes": [],
+          "control": 1,
+          "pc": 11,
+          "sp": 4104,
+          "fp": 4096,
+          "args": [65539, 99, 0, 0],
+          "result": 0,
+          "beforeLocalSha256": "7a99d8e27d1215c33d6d028c6905acb1404a9e5955513f43e34be305d842fd6c",
+          "localSha256": "232e4e5a41748b26a9db6470157f045907f2dd75ab59f0fe5e413bb39e934ff1"
+        },
+        {
+          "id": 317,
+          "label": "free-detached",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65542],
+          "result": null,
+          "beforeLocalSha256": "232e4e5a41748b26a9db6470157f045907f2dd75ab59f0fe5e413bb39e934ff1",
+          "localSha256": "497323cdae652e897c80d9fcda06007e0e9d1403c52de5afc7dc6ef705d6f309"
+        },
+        {
+          "id": 317,
+          "label": "free-restored",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65541],
+          "result": null,
+          "beforeLocalSha256": "497323cdae652e897c80d9fcda06007e0e9d1403c52de5afc7dc6ef705d6f309",
+          "localSha256": "bbfbba5b37b051d6c5026752808582d351f286acaee38102d40223dee43d6151"
+        },
+        {
+          "id": 246,
+          "label": "free-loaded-file",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65539],
+          "result": null,
+          "beforeLocalSha256": "bbfbba5b37b051d6c5026752808582d351f286acaee38102d40223dee43d6151",
+          "localSha256": "37746979ef4b406b20e41592560b9f625d7219e15faad1b9c02ba8d049583fa6"
+        },
+        {
+          "id": 295,
+          "label": "delete-target",
+          "writes": [],
+          "control": 2,
+          "pc": 11,
+          "sp": 4100,
+          "fp": 4096,
+          "args": [65540],
+          "result": null,
+          "beforeLocalSha256": "37746979ef4b406b20e41592560b9f625d7219e15faad1b9c02ba8d049583fa6",
+          "localSha256": "1bb677fa4048a4358510cc6e00060a2c21c073c1baf31e96f9c8aa7750596fdb"
+        }
+      ],
+      "snapshots": [
+        {
+          "label": "one-record",
+          "owner": 537311440,
+          "capacity": 1119,
+          "bytes": "XwQAAAEAAABXBAAAbwB3AG4AZQBkAC4AawBjAHMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAChCAAAAgEUjwX8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAADIAAAAHAAAAAQID"
+        },
+        {
+          "label": "empty-refresh",
+          "owner": 537311440,
+          "capacity": 1119,
+          "bytes": "CAAAAAAAAABXBAAAbwB3AG4AZQBkAC4AawBjAHMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAChCAAAAgEUjwX8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAADIAAAAHAAAAAQID"
+        }
+      ],
+      "detached": {
+        "owner": 0,
+        "capacity": 1119,
+        "bytes": "CAAAAAAAAABXBAAAbwB3AG4AZQBkAC4AawBjAHMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAkAAAAAAChCAAAAgEUjwX8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAADIAAAAHAAAAAQID"
+      },
+      "restored": {
+        "group": 9,
+        "start": 250,
+        "delay": 7,
+        "registers": "AAAoQgAAAIBFI8F/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        "extraPointer": 8192,
+        "extraLength": 3,
+        "position": "AAAoQgAAAAAAAAAA"
+      },
+      "files": {
+        "motion-test.css": "Q1NTAFgAAADOCAAAZHOCkXjaY2dgYIhngWBGIDscSOczlDPkMaQypDDoMWQzJDMUM5AGOMGkhhOQaHBVPljPMApGwSgYUYAZiI2AmB2IGZmYOaDFDAdUerSYGQWjYBRQuZgBAG26Dso="
+      },
+      "unknownFilenamePadding": [32, 76]
+    }
+  ]
+}
