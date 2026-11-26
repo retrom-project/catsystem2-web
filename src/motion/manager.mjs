@@ -27,6 +27,8 @@ export class MotionManager {
       throw new TypeError('A MOT manager requires a 0x90-byte base KX2 object');
     this.profile = profile;
     this.elapsedUsesX87 = profile && nativeABI(profile).motion?.elapsedUsesX87;
+    this.recordStartsUninitialized =
+      profile && nativeABI(profile).motion?.recordStartsUninitialized;
     this.base = base.slice();
     this.working = base.slice();
     this.baseKnown = null;
@@ -73,6 +75,8 @@ export class MotionManager {
       calculations: this.calculations,
       onDebug: this.onDebug,
     });
+    if (this.recordStartsUninitialized)
+      instance.machine.setKnowledge(instance.shared, 0, 148, new Uint8Array(148));
     this.records.set(handle, { handle, group, startTick: startTick >>> 0, instance });
     return handle;
   }

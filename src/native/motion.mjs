@@ -13,13 +13,11 @@ import {
 } from '../ppi/numeric.mjs';
 import { floatBits } from '../kcs.mjs';
 import { nativeABI } from './abi/index.mjs';
-import { nativeDataFormat, nativeDataKey, nativeDataMapped } from './data-text.mjs';
+import { nativeDataFormat, nativeDataMapped } from './data-text.mjs';
 import { linearInterpolateSSEWords } from '../motion/native-sse.mjs';
 import { scalarArgumentWords } from './scalar-math.mjs';
 
 const cp932 = new TextDecoder('shift_jis');
-const cFilenameKey = (bytes) =>
-  nativeDataKey(bytes).replace(/[A-Z]/g, (character) => character.toLowerCase());
 const value = (word) => nativeReply(1, word >>> 0),
   done = () => nativeReply(2);
 const transfer = [
@@ -249,7 +247,11 @@ export function nativeMotion(id, args, machine, services = {}, owner) {
         const record = manager.records.get(word(1));
         if (record)
           record.instance.setRegisterWords(
-            registerWords(word(2), word(3), behavior?.registerWordsUseX87),
+            registerWords(
+              word(2),
+              word(3),
+              behavior?.registerWordsAllowEmpty || behavior?.registerWordsUseX87,
+            ),
           );
         return done();
       }
@@ -300,11 +302,12 @@ export function nativeMotion(id, args, machine, services = {}, owner) {
           if (nameBytes === null) return value(0);
           const filename = registry.library.nativeFilename(nameBytes);
           if (filename === null) return value(0);
-          const key = cFilenameKey(filename);
+          const key = registry.library.nativeFilenameKey(filename);
           return value(
             Number(
               [...manager.records.values()].some(
-                ({ instance }) => cFilenameKey(instance.script.recordNameBytes) === key,
+                ({ instance }) =>
+                  registry.library.nativeFilenameKey(instance.script.recordNameBytes) === key,
               ),
             ),
           );

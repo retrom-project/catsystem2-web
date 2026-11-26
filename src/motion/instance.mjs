@@ -251,40 +251,42 @@ export class MotionInstance {
     return known?.includes(0) ? known : null;
   }
   get frame() {
-    return this.view.getInt32(MOTION_ABI.frame, true);
+    return this.machine.load(0x80000000 + MOTION_ABI.frame) | 0;
   }
   get activeWord() {
-    return this.view.getUint32(MOTION_ABI.active, true);
+    return this.machine.load(0x80000000 + MOTION_ABI.active);
   }
   get active() {
     return this.activeWord !== 0;
   }
   get skip() {
-    return this.view.getInt32(MOTION_ABI.skip, true) !== 0;
+    return this.machine.load(0x80000000 + MOTION_ABI.skip) !== 0;
   }
   setRegisters(registers) {
     for (let i = 0; i < MOTION_ABI.registerCount; i++)
       this.view.setFloat32(MOTION_ABI.registers + i * 4, registers[i] ?? 0, true);
-    this.view.setInt32(MOTION_ABI.active, 1, true);
+    this.machine.setKnowledge(this.shared, MOTION_ABI.registers, 1024);
+    this.machine.store(0x80000000 + MOTION_ABI.active, 1);
   }
   setRegisterWords(bytes) {
     if (!(bytes instanceof Uint8Array) || bytes.length % 4)
       throw new TypeError('MOT register words must be raw DWORDs');
     this.shared.fill(0, MOTION_ABI.registers, MOTION_ABI.registers + 1024);
     this.shared.set(bytes.subarray(0, 1024), MOTION_ABI.registers);
-    this.view.setInt32(MOTION_ABI.active, 1, true);
+    this.machine.setKnowledge(this.shared, MOTION_ABI.registers, 1024);
+    this.machine.store(0x80000000 + MOTION_ABI.active, 1);
   }
   setExtra(bytes) {
     if (!(bytes instanceof Uint8Array)) throw new TypeError('MOT extra data must be bytes');
-    const old = this.view.getUint32(MOTION_ABI.extraData, true);
+    const old = this.machine.load(0x80000000 + MOTION_ABI.extraData);
     if (old) this.machine.free(old);
     const address = bytes.length ? this.machine.allocate(bytes.length) : 0;
-    if (bytes.length) this.machine.bytes(address, bytes.length).set(bytes);
-    this.view.setUint32(MOTION_ABI.extraData, address, true);
-    this.view.setUint32(MOTION_ABI.extraSize, bytes.length, true);
+    if (bytes.length) this.machine.writeBytes(address, bytes);
+    this.machine.store(0x80000000 + MOTION_ABI.extraData, address);
+    this.machine.store(0x80000000 + MOTION_ABI.extraSize, bytes.length);
   }
   setSkip(enabled = true) {
-    this.view.setInt32(MOTION_ABI.skip, Number(enabled), true);
+    this.machine.store(0x80000000 + MOTION_ABI.skip, Number(enabled));
   }
   run() {
     // Native sub_8773A0 resets PC/SP/floor/FP, retaining data and heap allocations.
@@ -301,18 +303,23 @@ export class MotionInstance {
       throw new RangeError('MOT elapsed frame must be uint32');
     if (elapsed < this.delay && (!this.skipBypassesDelay || !this.skip))
       return { active: this.active, executed: 0, delayed: true };
-    this.view.setUint32(MOTION_ABI.frame, elapsed - this.delay, true);
+    this.machine.store(0x80000000 + MOTION_ABI.frame, elapsed - this.delay);
     // Native updates still execute inactive records until their owner removes them.
     return this.run();
   }
   finish() {
-    const saved = this.shared.slice(MOTION_ABI.frame, MOTION_ABI.registers);
-    this.view.setInt32(MOTION_ABI.frame, -1, true);
+    const saved = this.shared.slice(MOTION_ABI.frame, MOTION_ABI.registers),
+      known =
+        this.machine.unknownMemory
+          ?.get(this.shared)
+          ?.slice(MOTION_ABI.frame, MOTION_ABI.registers) ?? null;
+    this.machine.store(0x80000000 + MOTION_ABI.frame, 0xffffffff);
     this.setSkip();
     try {
       return this.run();
     } finally {
       this.shared.set(saved, MOTION_ABI.frame);
+      this.machine.setKnowledge(this.shared, MOTION_ABI.frame, saved.length, known);
     }
   }
   native(id, args, machine) {
@@ -654,7 +661,7 @@ export class MotionInstance {
         return done();
       }
       case 38:
-        this.view.setInt32(MOTION_ABI.active, 0, true);
+        this.machine.store(0x80000000 + MOTION_ABI.active, 0);
         return nativeReply(4);
       case 39:
         return word(this.random.rand());

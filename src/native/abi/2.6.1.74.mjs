@@ -54,7 +54,13 @@ export default {
     vectorTransformUsesSSEWords: true,
   },
   motion: {
+    addUsesFormat: true,
+    registerWordsAllowEmpty: true,
+    activeQueryUsesRawWord: true,
+    nativeFilenameQuery: true,
+    queryRequiresMappedFormat: true,
     workingStartsUninitialized: true,
+    recordStartsUninitialized: true,
     managerLifetime: 'explicit-delete',
     controlIgnoresArgumentTail: true,
     geometryArgumentsReadFrame: true,

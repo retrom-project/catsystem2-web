@@ -4,7 +4,7 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 import { MotionManager } from './manager.mjs';
 import { ParticleRandom } from '../ppi/random.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
-import { nativeDataPair } from '../native/data-text.mjs';
+import { nativeDataPair, nativeDataKey } from '../native/data-text.mjs';
 
 const cp932 = new TextDecoder('shift_jis');
 const lowerAscii = (name) => name.replace(/[A-Z]/g, (character) => character.toLowerCase());
@@ -19,6 +19,7 @@ export class MotionLibrary {
     this.calculations = calculations;
     this.scripts = new Map();
     this.nativeFilenameQuery = profile && nativeABI(profile).motion?.nativeFilenameQuery;
+    this.nativeFilenameWide = profile && nativeABI(profile).layouts?.motionCheckpoint?.wide;
   }
   withCalculations(calculations) {
     const bound = new MotionLibrary(this.game, {
@@ -38,15 +39,22 @@ export class MotionLibrary {
     const resources = this.game.nativeResources;
     const entry = resources?.entries.find(({ name }) => lowerAscii(name) === 'mot');
     if (resources && !entry) return null;
-    const prefix = entry?.directory ? encodeCP932(entry.directory + '/') : [];
+    const prefix = entry?.archive ? encodeCP932(entry.archive + '/') : [];
     const suffix =
       bytes.lastIndexOf(0x2e) > lastSeparator(bytes)
         ? []
         : encodeCP932('.' + (entry?.extension ?? 'kcs'));
     return Uint8Array.from([...prefix, ...bytes, ...suffix]);
   }
+  nativeFilenameKey(bytes) {
+    return this.nativeFilenameWide
+      ? cp932.decode(bytes).toLowerCase()
+      : lowerAscii(nativeDataKey(bytes));
+  }
   #key(name) {
-    return (this.nativeFilenameQuery ? lowerAscii(name) : name.toLowerCase()).replace(/\.kcs$/, '');
+    return (
+      this.nativeFilenameQuery && !this.nativeFilenameWide ? lowerAscii(name) : name.toLowerCase()
+    ).replace(/\.kcs$/, '');
   }
   #describe(script, name, key, nameBytes) {
     // Cache folding is not a resource filename: a qualified path needs its
@@ -55,9 +63,18 @@ export class MotionLibrary {
     if (this.nativeFilenameQuery) {
       nameBytes ??= encodeCP932(name);
       const bytes = this.nativeFilename(nameBytes) ?? nameBytes;
-      const separator = lastSeparator(bytes);
-      script.recordNameBytes = bytes.subarray(separator > 0 ? separator + 1 : 0);
-      script.recordName = cp932.decode(script.recordNameBytes);
+      if (this.nativeFilenameWide) {
+        const filename = cp932.decode(bytes),
+          separator = Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\'));
+        script.recordName = filename.slice(separator > 0 ? separator + 1 : 0);
+        script.recordNameBytes = encodeCP932(script.recordName);
+      } else {
+        // The narrow native record uses byte strrchr, including a CP932 trail
+        // byte equal to backslash. The wide record splits after conversion.
+        const separator = lastSeparator(bytes);
+        script.recordNameBytes = bytes.subarray(separator > 0 ? separator + 1 : 0);
+        script.recordName = cp932.decode(script.recordNameBytes);
+      }
     } else script.recordName = key.replaceAll('\\', '/').split('/').at(-1) + '.kcs';
     return script;
   }

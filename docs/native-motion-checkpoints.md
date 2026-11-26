@@ -63,6 +63,28 @@ contents. This is an authored resource/owner bridge, not a full game startup.
 The current library retains the requested resource filename independently of
 its folded cache key so a qualified filename remains loadable after cold restore.
 
+Modern Main304/535 format the filename before loading, copy raw register words
+without quieting signaling NaNs, and permit an unmapped register source when
+its clamped count is zero. Main306 also clears the bank for that zero count.
+Main309 returns the active DWORD as stored by the script. Main514 formats and
+classifies its query using the mount's archive namespace. It compares that full
+name against the stored basic filename, so a prefixed query can return zero
+even after a successful load; it also refreshes working state from the base.
+The existing 2.6.1.67 category evidence identifies the same archive field,
+independently of the mount's loose directory.
+The narrow 2.6.1.74 record splits basic filenames by bytes: the CP932 trail
+backslash in `ソ.kcs` leaves `.kcs`. The wide 2.6.1.76 record splits after
+conversion to UTF-16 and retains `ソ.kcs`. Query comparison follows the same
+narrow/wide representation; both behaviors have actual add/query controls.
+
+Manager-created modern records leave their object and frame bytes untouched
+until the respective input copy and VM update. Their internal checkpoint keeps
+that qualification too, including a deferred record which has never run. Direct
+`MotionInstance` construction retains its explicit authoring initial state.
+The nonempty Main fixture compares both full KCS VM frames and the initialized
+shared fields across delay/skip, wrapped frames, negative speed, raw active words,
+register replacement, member/group deletion, finish, and independent cold runs.
+
 The game serializer/load pair is `78A2F0`/`78A420`; the SDK pair is
 `622400`/`622540`. `scripts/verify-native-motion-checkpoint.mjs` executes each
 original serializer and main `13C` refresh wrapper against authored ordered
