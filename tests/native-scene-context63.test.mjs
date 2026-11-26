@@ -329,3 +329,76 @@ test('63 own Scene context wrappers execute real GCALLs and round-trip native GA
   for (const id of golden.entries) assert.equal(abi.tables.main.entries[id].status, 'recovered');
   assert.equal(abi.tables.main.entries[688].status, 'unknown');
 });
+
+test('63 imported opaque history tails survive native file reads, Script copies and cold restore', async (t) => {
+  const mask = Buffer.from(golden.historyDefinedMaskHex, 'hex'),
+    payload = Uint8Array.from(Buffer.from(golden.historyDefinedPayloadHex, 'hex'));
+  for (let i = 0; i < payload.length; i++) if (!mask[i]) payload[i] = (i * 13 + 7) & 255;
+  const input = NativeGlobalFile.fromPayload(payload, 17),
+    storage = new NativeFileStorage(
+      { lookup: () => null, read: async () => null },
+      'scene63-tails',
+    ),
+    file = handle(64),
+    imported = handle(68),
+    files = {
+      'import.kcs': program(
+        [
+          [219, []],
+          [247, [ptr(256)], 68],
+          [249, [imported, 101, 57, 0], 2048],
+          [249, [imported, 102, 57, 1], 2052],
+          [238, [17], 64],
+          [239, [file, 101, 57, 0, 1], 2056],
+          [239, [file, 102, 57, 1, 1], 2060],
+        ],
+        [[256, 'save0001.dat']],
+      ),
+      'copy.kcs': program([
+        [219, []],
+        [234, [57], 2048],
+        [238, [17], 64],
+        [239, [file, 101, 73, 0, 1], 2052],
+        [239, [file, 102, 73, 1, 1], 2056],
+      ]),
+    };
+  await storage.prepareGameSave([
+    {
+      path: 'save0001.dat',
+      bytes: await input.file(),
+      createdMs: 1700000000000,
+      accessedMs: 1700000001000,
+      modifiedMs: 1700000002000,
+      attributes: 0x80,
+    },
+  ]);
+  const world = await dataWorld(golden.profile, files, { storage });
+  t.after(() => world.close({ flushFiles: false }));
+  for (const [name, nativeID, count] of [
+    ['import.kcs', 57, 4],
+    ['copy.kcs', 73, 3],
+  ]) {
+    const id = await world.objects.create({ kind: 12, nativeID, parent: world.root }),
+      record = world.objects.objects.get(id);
+    await record.implementation.loadScript(name);
+    const task = world.runtime.scheduler.tasks.get(id);
+    await world.runtime.scheduler.execute(task);
+    for (let i = 0; i < count; i++) assert.equal(task.machine.load(2048 + i * 4), 1);
+    assert.deepEqual(
+      world.runtime.handles.get(task.machine.load(64), 'global-file').payload(),
+      payload,
+    );
+  }
+  const fresh = await dataWorld(golden.profile, files, { initialize: false });
+  t.after(() => fresh.close({ flushFiles: false }));
+  await fresh.restore(structuredClone(world.snapshot()));
+  const restored = [...fresh.runtime.scheduler.tasks.values()].filter((task) =>
+    [57, 73].includes(fresh.nativeTaskID(task.id)),
+  );
+  assert.equal(restored.length, 2);
+  for (const task of restored)
+    assert.deepEqual(
+      fresh.runtime.handles.get(task.machine.load(64), 'global-file').payload(),
+      payload,
+    );
+});
