@@ -41500,3 +41500,20 @@ export function nativeParticleRandomSignatures() {
     },
   ];
 }
+
+export const NATIVE_PARTICLE_GEOMETRY_IDS = freeze([22, 23, 24, 25, 26, 29, 37, 38]);
+
+export function nativeParticleGeometrySignatures(table) {
+  return NATIVE_PARTICLE_GEOMETRY_IDS.map((id) => {
+    const parameters = NATIVE_SEMANTICS[table][id].signature.parameters;
+    return {
+      ids: [id],
+      fields: {
+        review: 'reviewed',
+        reviewReason:
+          'Own constructed receiver and original physical geometry/CRT/D3DX calls, full local/array/control/owner comparison through real KCS and cold. Fixed argv reads and strided vertex access footprints are independent of declared GCALL bytes.',
+        ...(id === 29 ? { argumentWords: 3, parameters: parameters.slice(0, 3) } : {}),
+      },
+    };
+  });
+}

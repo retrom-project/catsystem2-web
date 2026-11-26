@@ -2,6 +2,12 @@
 // Single-precision operation order recovered from native particle handlers.
 import { bitsFloat, floatBits } from '../kcs/vm.mjs';
 import { multiplyX87Integer, roundX87Single } from './x87.mjs';
+import {
+  sseFloat32Arithmetic,
+  inverseSSEWords,
+  multiplyMatrixSSEWords,
+  transformSSEWords,
+} from '../motion/native-sse.mjs';
 const f = Math.fround;
 const pi = f(Math.PI);
 const quietNaNBit = 1 << 22;
@@ -217,6 +223,52 @@ export function rotateVector(vector, axis, radians) {
 
 export function nativeParticleNear(priority) {
   return f(f(65000 - f(priority)) - 1000);
+}
+
+export function particleDistanceSSEWord(words) {
+  const differences = [0, 1, 2].map((i) =>
+      sseFloat32Arithmetic('subtract', words[i], words[i + 3]),
+    ),
+    squares = differences.map((word) => sseFloat32Arithmetic('multiply', word, word)),
+    sum = sseFloat32Arithmetic(
+      'add',
+      sseFloat32Arithmetic('add', squares[1], squares[0]),
+      squares[2],
+    );
+  return (sum & 0x7fffffff) > 0x7f800000 ? sum : floatBits(Math.sqrt(bitsFloat(sum)));
+}
+
+export function particleProjectionSSEWords(
+  zWord,
+  width,
+  height,
+  priority,
+  near = nativeParticleNear(priority),
+) {
+  const word = floatBits,
+    one = word(1),
+    halfX = word((width >>> 0) >>> 1),
+    halfY = word((height >>> 0) >>> 1),
+    total = sseFloat32Arithmetic('add', word(priority), zWord),
+    depth = sseFloat32Arithmetic('subtract', word(65000), total),
+    denominator =
+      bitsFloat(depth) === near ? one : sseFloat32Arithmetic('subtract', depth, word(near)),
+    scale = sseFloat32Arithmetic('divide', word(1000), denominator),
+    identity = Array(16).fill(0),
+    projection = Array(16).fill(0);
+  for (const i of [0, 5, 10, 15]) identity[i] = one;
+  projection[0] = projection[5] = bitsFloat(scale) < 0 ? 0 : scale;
+  projection[10] = word(1 / 65000);
+  projection[15] = sseFloat32Arithmetic('divide', one, denominator);
+  const matrix = multiplyMatrixSSEWords(identity, projection),
+    inverse = inverseSSEWords(matrix) ?? matrix,
+    transformed = transformSSEWords([halfX, halfY, depth, one], inverse);
+  return [
+    sseFloat32Arithmetic('subtract', halfX, transformed[0]),
+    sseFloat32Arithmetic('subtract', halfY, transformed[1]),
+    sseFloat32Arithmetic('add', transformed[0], halfX),
+    sseFloat32Arithmetic('add', transformed[1], halfY),
+  ];
 }
 
 function sseReciprocalEstimate(value) {

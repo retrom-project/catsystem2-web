@@ -14,7 +14,11 @@ import { PTCL_ABI, initialParticle, readPTCLQuad, writePTCLQuad } from './abi.mj
 import { particleNativeContract } from './contracts.mjs';
 import { ParticleRandom } from './random.mjs';
 import { roundX87Single } from './x87.mjs';
-import { linearInterpolateSSEWords } from '../motion/native-sse.mjs';
+import {
+  linearInterpolateSSEWords,
+  rotateVectorSSEWords,
+  sseFloat32Arithmetic,
+} from '../motion/native-sse.mjs';
 import {
   calcFrame,
   degreeToRadian,
@@ -33,6 +37,8 @@ import {
   rotateVector,
   projectionBounds,
   x87ProjectionBoundsWords,
+  particleDistanceSSEWord,
+  particleProjectionSSEWords,
 } from './numeric.mjs';
 
 const f = Math.fround;
@@ -59,6 +65,7 @@ const particleScalarNames = new Map([
 const stateFrameIds = new Set([
   1, 2, 3, 4, 5, 27, 28, 30, 31, 32, 33, 34, 35, 36, 39, 40, 44, 45, 46, 47, 48, 49, 50,
 ]);
+const geometryFrameIds = new Set([22, 23, 24, 25, 26, 29, 37, 38]);
 // Components read by FMUL directly from a vertex, ordered by vertex index.
 const quadScaleMemoryOperands = [0b101, 0, 0, 0b110];
 
@@ -111,6 +118,8 @@ export class ParticleScriptInstance {
     this.debugUsesNativeLogger = abi?.particle?.debugUsesNativeLogger;
     this.stateArgumentsReadFrame = abi?.particle?.stateArgumentsReadFrame;
     this.stateCopiesRawWords = abi?.particle?.stateCopiesRawWords;
+    this.geometryUsesSSEWords = abi?.particle?.geometryUsesSSEWords;
+    this.geometryArgumentsReadFrame = abi?.particle?.geometryArgumentsReadFrame;
     this.quadUsesX87 = abi?.particle?.quadUsesX87;
     this.textureCoordinatesUseX87 = abi?.particle?.textureCoordinatesUseX87;
     this.distanceUsesX87 = abi?.particle?.distanceUsesX87;
@@ -206,17 +215,20 @@ export class ParticleScriptInstance {
     const scalarFrame =
       this.math?.scalarArgumentsReadFrame && ((id >= 6 && id <= 21) || (id >= 41 && id <= 43));
     const stateFrame = this.stateArgumentsReadFrame && stateFrameIds.has(id);
+    const geometryFrame = this.geometryArgumentsReadFrame && geometryFrameIds.has(id);
     if (
       argumentWords !== null &&
       !scalarFrame &&
       !stateFrame &&
+      !geometryFrame &&
       !(id === 0 && this.debugUsesNativeLogger) &&
       args.length !== argumentWords
     )
       throw new Error(
         `PTCL ${contract.name} requires ${argumentWords} arguments, received ${args.length}`,
       );
-    if (scalarFrame || stateFrame) args = scalarArgumentWords(args, machine, argumentWords);
+    if (scalarFrame || stateFrame || geometryFrame)
+      args = scalarArgumentWords(args, machine, argumentWords);
     this.calls.set(id, (this.calls.get(id) || 0) + 1);
     const scalar = (value) => nativeReply(1, value >>> 0);
     const real = (value) => scalar(floatBits(value));
@@ -283,6 +295,14 @@ export class ParticleScriptInstance {
       case 22:
       case 23:
       case 24: {
+        if (this.geometryUsesSSEWords) {
+          const sine = nativeTrigWord('sin', args[1], this.math?.trigUsesNativeReduction),
+            cosine = nativeTrigWord('cos', args[1], this.math?.trigUsesNativeReduction);
+          updatePTCLQuadWords(machine, args[0], 4, (words) =>
+            rotateVectorSSEWords(words, id - 22, sine, cosine),
+          );
+          return voidReply();
+        }
         if (this.quadUsesX87) {
           const sine = nativeTrigWord('sin', args[1], this.math?.trigUsesNativeReduction),
             cosine = nativeTrigWord('cos', args[1], this.math?.trigUsesNativeReduction);
@@ -304,6 +324,16 @@ export class ParticleScriptInstance {
         return voidReply();
       }
       case 25:
+        if (this.geometryUsesSSEWords) {
+          const [, dx, dy, dz] = args;
+          updatePTCLQuadWords(machine, args[0], 4, ([x, y, z, w]) => [
+            sseFloat32Arithmetic('add', x, dx),
+            sseFloat32Arithmetic('add', dy, y),
+            sseFloat32Arithmetic('add', dz, z),
+            sseFloat32Arithmetic('add', 0, w),
+          ]);
+          return voidReply();
+        }
         if (this.quadUsesX87) {
           const [, dx, dy, dz] = args;
           updatePTCLQuadWords(machine, args[0], 4, ([x, y, z, w]) => [
@@ -316,6 +346,17 @@ export class ParticleScriptInstance {
         }
       // Fall through to the shared quad transform on other profiles.
       case 26: {
+        if (this.geometryUsesSSEWords) {
+          const scale = args.slice(1);
+          updatePTCLQuadWords(machine, args[0], 3, (words, vertex) =>
+            words.map((word, i) =>
+              vertex === 0 && i === 0
+                ? sseFloat32Arithmetic('multiply', scale[i], word)
+                : sseFloat32Arithmetic('multiply', word, scale[i]),
+            ),
+          );
+          return voidReply();
+        }
         if (this.quadUsesX87) {
           const scale = args.slice(1);
           updatePTCLQuadWords(machine, args[0], 3, (words, vertex) =>
@@ -351,6 +392,30 @@ export class ParticleScriptInstance {
         vectorOut(this.positions.subarray(base, base + 3));
         return voidReply();
       case 29: {
+        if (this.geometryUsesSSEWords) {
+          const lo = sseFloat32Arithmetic('subtract', args[0], floatBits(0.5)),
+            hi = sseFloat32Arithmetic('subtract', args[2], floatBits(0.5)),
+            values = [
+              [lo, lo],
+              [hi, lo],
+              [lo, hi],
+              [hi, hi],
+            ],
+            view = new DataView(this.quads.buffer);
+          values.forEach(([u, v], i) => {
+            view.setUint32(
+              quadOffset + i * 28 + 20,
+              sseFloat32Arithmetic('divide', u, floatBits(this.width)),
+              true,
+            );
+            view.setUint32(
+              quadOffset + i * 28 + 24,
+              sseFloat32Arithmetic('divide', v, floatBits(this.height)),
+              true,
+            );
+          });
+          return voidReply();
+        }
         // The native slot reads two diagonal values as raw float32 words.
         const lo = f(bitsFloat(args[0]) - 0.5),
           hi = f(bitsFloat(args[2]) - 0.5),
@@ -392,6 +457,7 @@ export class ParticleScriptInstance {
       case 36:
         return scalar(this.now);
       case 37: {
+        if (this.geometryUsesSSEWords) return scalar(particleDistanceSSEWord(args));
         if (this.distanceUsesX87) return scalar(x87DistanceWord(args));
         const [x1, y1, z1, x2, y2, z2] = floats();
         const dx = f(x1 - x2),
@@ -401,6 +467,18 @@ export class ParticleScriptInstance {
       }
       case 38: {
         const outputs = args.slice(1);
+        if (this.geometryUsesSSEWords) {
+          outputs.forEach((address) => machine.region(address, 4));
+          const words = particleProjectionSSEWords(
+            args[0],
+            this.screenWidth,
+            this.screenHeight,
+            this.priority,
+            this.near,
+          );
+          outputs.forEach((address, i) => machine.store(address, words[i]));
+          return voidReply();
+        }
         if (this.projectionBoundsUseX87) {
           outputs.forEach((address) => machine.region(address, 4));
           const words = x87ProjectionBoundsWords(

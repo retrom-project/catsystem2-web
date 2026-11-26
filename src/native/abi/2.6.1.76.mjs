@@ -11,6 +11,8 @@ import {
   NATIVE_PARTICLE_STATE_IDS,
   nativeParticleStateSignatures,
   nativeParticleRandomSignatures,
+  NATIVE_PARTICLE_GEOMETRY_IDS,
+  nativeParticleGeometrySignatures,
 } from './semantics.mjs';
 
 const contentDatabaseSlots = [
@@ -58,6 +60,8 @@ export default {
     debugUsesNativeLogger: true,
     stateArgumentsReadFrame: true,
     stateCopiesRawWords: true,
+    geometryUsesSSEWords: true,
+    geometryArgumentsReadFrame: true,
     frameScale: 'sse-uint32',
   },
   motion: {
@@ -1164,13 +1168,14 @@ export default {
           34,
           ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v1'],
           ...NATIVE_PARTICLE_STATE_IDS['particle-v1'],
+          ...NATIVE_PARTICLE_GEOMETRY_IDS,
         ].sort((a, b) => a - b),
-        declared: [22, 23, 24, 25, 26, 29, 37, 38],
       },
       signatures: [
         ...nativeInterpreterScalarSignatures('particle-v1'),
         ...nativeParticleStateSignatures('particle-v1'),
         ...nativeParticleRandomSignatures(),
+        ...nativeParticleGeometrySignatures('particle-v1'),
       ],
       evidence: [
         {
@@ -1180,6 +1185,11 @@ export default {
         },
         { ids: NATIVE_INTERPRETER_SCALAR_IDS['particle-v1'], value: scalarEvidence },
         {
+          ids: NATIVE_PARTICLE_GEOMETRY_IDS,
+          value:
+            'Own constructed 2.6.1.76 Particle receiver, original physical geometry/CRT/D3DX helpers and complete KCS actor/VM/array lifecycle. Full local/arrays/control/result/owner and current cold comparisons cover strided raw vertex words, exact SSE operand order, non-finite/signed-zero values, actual trig reduction, UV first/third-word semantics and exact matrix projection/in-place singular inverse. Mapped short/tail/alias argv and exact100/96-byte vertex accesses are included; SetTex reads three words regardless of declared GCALL length. Renderer registration, file/texture loading and live attachment graphs remain separate. See tests/fixtures/modern-particle-geometry-golden.json.',
+        },
+        {
           ids: [33, 34],
           value:
             'Own complete Particle wrappers and Generic39/40 differ only in relative-call displacement and target the identical own callee/global RNG state. Neither reads argv or receiver fields. Existing own complete integer/real MT golden is reused at its original source pin; current real Particle KCS validates both full streams, zero/one/two ignored tails, whole local/owner state and independent cold continuation. See tests/fixtures/modern-particle-random-bridge.json.',
@@ -1188,10 +1198,6 @@ export default {
           ids: NATIVE_PARTICLE_STATE_IDS['particle-v1'],
           value:
             'Own physical 2.6.1.76 actual Particle/base constructor, KCS actor/VM callback, original reference buffers/initializer and complete destructor, with explicit authored view/configuration projection. Whole local/arrays, control/result, fixed argv frames, raw signaling-NaN copies, uint32 frame conversion and cold data state are compared against current KCS. File/texture/renderer registration and live attachment graphs remain separate scopes. See tests/fixtures/modern-particle-state-golden.json.',
-        },
-        {
-          ids: [22, 23, 24, 25, 26, 29, 37, 38],
-          value: 'sdk-4.01-header-and-pinned-game-wrapper',
         },
       ],
     },
@@ -1204,13 +1210,15 @@ export default {
           34,
           ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'],
           ...NATIVE_PARTICLE_STATE_IDS['particle-v2'],
+          ...NATIVE_PARTICLE_GEOMETRY_IDS,
         ].sort((a, b) => a - b),
-        declared: [22, 23, 24, 25, 26, 29, 37, 38, 47, 48, 49],
+        declared: [47, 48, 49],
       },
       signatures: [
         ...nativeInterpreterScalarSignatures('particle-v2'),
         ...nativeParticleStateSignatures('particle-v2'),
         ...nativeParticleRandomSignatures(),
+        ...nativeParticleGeometrySignatures('particle-v2'),
       ],
       evidence: [
         {
@@ -1219,6 +1227,11 @@ export default {
             'Own unchanged physical IA32 formatter and actual CRT logger retain CP932 bytes through both stages, mapped first argv word and ignored tails, exact 499-byte terminated logs and control2 without a result store. Current real KCS compares complete VM/owner state and cold continuation against each own-PE input; native 500-byte unterminated output and unprovided logger variadic conversions remain diagnosed. See tests/fixtures/native-logger-golden.json and docs/kcs-vm.md. The two own Particle tables select the same exact receiver, which reads no owner field and uses the same formatter/logger bodies as Generic0; eight actual Particle entry calls verify the bridge with full writable .data snapshots.',
         },
         { ids: NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'], value: scalarEvidence },
+        {
+          ids: NATIVE_PARTICLE_GEOMETRY_IDS,
+          value:
+            'Own constructed 2.6.1.76 Particle receiver, original physical geometry/CRT/D3DX helpers and complete KCS actor/VM/array lifecycle. Full local/arrays/control/result/owner and current cold comparisons cover strided raw vertex words, exact SSE operand order, non-finite/signed-zero values, actual trig reduction, UV first/third-word semantics and exact matrix projection/in-place singular inverse. Mapped short/tail/alias argv and exact100/96-byte vertex accesses are included; SetTex reads three words regardless of declared GCALL length. Renderer registration, file/texture loading and live attachment graphs remain separate. See tests/fixtures/modern-particle-geometry-golden.json.',
+        },
         {
           ids: [33, 34],
           value:
@@ -1230,7 +1243,7 @@ export default {
             'Own physical 2.6.1.76 actual Particle/base constructor, KCS actor/VM callback, original reference buffers/initializer and complete destructor, with explicit authored view/configuration projection. Whole local/arrays, control/result, fixed argv frames, raw signaling-NaN copies, uint32 frame conversion and cold data state are compared against current KCS. File/texture/renderer registration and live attachment graphs remain separate scopes. See tests/fixtures/modern-particle-state-golden.json.',
         },
         {
-          ids: [22, 23, 24, 25, 26, 29, 37, 38, 47, 48, 49],
+          ids: [47, 48, 49],
           value: 'sdk-4.01-header-and-pinned-game-wrapper',
         },
       ],

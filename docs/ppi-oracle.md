@@ -702,8 +702,8 @@ links each own capture hash and checks whole local memory, all seven particle
 arrays, observable state and independent cold continuation through real KCS.
 Attachment base/position/registration queries currently have empty-manager
 evidence only; live attachment graphs remain open. The constructor's current
-one-million-count resource limit, remaining geometry/texture wrappers and
-other unproved shapes remain separate unfinished SDK work.
+one-million-count resource limit and other unproved shapes remain separate
+unfinished SDK work.
 
 Particle v1/v2 RNG slots 33/34 use the exact callee and global state of each
 own build's Generic39/40. Their complete 25-byte wrappers differ only in the
@@ -713,3 +713,17 @@ bytes and links the existing integer/real MT golden at its original Git source.
 Real Particle KCS checks zero/one/two ignored tail words, complete independent
 streams, whole local/owner state and continuing/fresh cold instances. The
 original MT vectors are reused, not rerun or presented as new physical samples.
+
+The own modern geometry corpus covers slots 22–26, 29, 37 and 38 in both
+Particle tables. Real constructed receivers run the unchanged CRT and initialized
+D3DX helpers. Current KCS preserves untouched vertex/color/UV words and the
+native SSE NaN operand order, handles exact 100-byte float4 and 96-byte float3
+strided access spans, and follows the original matrix multiply → in-place inverse
+→ transform projection chain. A singular inverse retains the input matrix.
+SetTex reads the first and third argv words; its actual read footprint is three
+words, with the second unused and later declared words ignored. A three-word
+frame ending at the VM boundary is included in the
+[geometry fixture](../tests/fixtures/modern-particle-geometry-golden.json).
+The corpus compares whole local/array state, aliases, mapped short frames and
+fresh cold continuation. File/texture loading and live attachment graphs are
+still separate unfinished work.
