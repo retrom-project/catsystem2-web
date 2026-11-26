@@ -11,7 +11,8 @@ import { openImage } from '../formats/hg3.mjs';
 import { nativeTextUnits } from './text-scanner.mjs';
 import { packedBitmapWords } from './raster-kernel.mjs';
 import { nativePublicationPixels } from './image.mjs';
-const ownedWriters = new WeakSet();
+const ownedWriters = new WeakSet(),
+  ownedImageFonts = new WeakMap();
 const join = (arrays) => {
   const out = new Uint8Array(arrays.reduce((n, a) => n + a.length, 0));
   let at = 0;
@@ -129,6 +130,12 @@ export class JSTextWriter {
     this.baseFrame = 0;
     this.fontImages = new Map();
     this.categories = new Map();
+    ownedImageFonts.set(this, {
+      source: undefined,
+      decoded: undefined,
+      map: this.fontImages,
+      frames: new WeakSet(),
+    });
   }
   newParser(config) {
     return new NativeTextParser({
@@ -404,17 +411,24 @@ export class JSTextWriter {
           to = ((row + y) * width + sourceX + x) * 4;
         rgba.set(frame.rgba.subarray(from, from + count * 4), to);
       }
-    this.fontImages.set(code, { width, height, bpp: 4, rgba });
+    const image = { width, height, bpp: 4, rgba };
+    ownedImageFonts.get(this)?.frames.add(image);
+    this.fontImages.set(code, image);
   }
   async userFont(bytes) {
     this.imageFont = bytes?.slice() ?? null;
     this.decodedFonts = [];
+    const images = ownedImageFonts.get(this);
+    if (images) {
+      images.source = this.imageFont;
+      images.decoded = this.decodedFonts;
+    }
     if (bytes?.length) {
       try {
         const image = await openImage(bytes);
         for (const frame of image.frames) {
           await image.decode(frame);
-          this.decodedFonts.push({
+          const decoded = {
             id: frame.id,
             bpp: frame.bpp / 8,
             width: frame.width,
@@ -424,7 +438,9 @@ export class JSTextWriter {
             offsetX: frame.offsetX,
             offsetY: frame.offsetY,
             rgba: frame.rgba.slice(),
-          });
+          };
+          images?.frames.add(decoded);
+          this.decodedFonts.push(decoded);
         }
       } catch {
         /* A readable invalid resource clears the old glyph image. */
@@ -469,6 +485,11 @@ export class JSTextWriter {
     if (operation === 9 && !l) {
       this.imageFont = null;
       this.decodedFonts = [];
+      const images = ownedImageFonts.get(this);
+      if (images) {
+        images.source = this.imageFont;
+        images.decoded = this.decodedFonts;
+      }
       return 0;
     }
     if (operation === 13) {
@@ -539,9 +560,19 @@ export class JSTextWriter {
     this.parser.restore(s.parser);
     this.fontImages = new Map(s.fontImages);
     this.categories = new Map(s.categories);
+    const images = {
+      source: this.imageFont,
+      decoded: this.decodedFonts,
+      map: this.fontImages,
+      frames: new WeakSet(),
+    };
+    for (const frame of [...(this.decodedFonts ?? []), ...this.fontImages.values()])
+      if (frame && typeof frame === 'object') images.frames.add(frame);
+    ownedImageFonts.set(this, images);
   }
   async close() {
     ownedWriters.delete(this);
+    ownedImageFonts.delete(this);
     this.runtime.writers.delete(this.pointer);
   }
 }
@@ -819,8 +850,9 @@ function ordinaryPublicationObject(value, index) {
     )
   );
 }
-// Only the default owned STRING writer can defer publication. NV, image fonts,
-// provider overrides and first font IO retain their complete message order.
+// Only empty STRING clears can defer publication. Loaded image-font records
+// remain unused in this region; first loads/replacements and nonempty raster
+// consumption keep their complete message order.
 export function nativeTextPublicationWriter(writer, config) {
   if (
     !ownedWriters.has(writer) ||
@@ -829,14 +861,28 @@ export function nativeTextPublicationWriter(writer, config) {
     !ordinaryPublicationObject(writer.parser, 2) ||
     writer.runtime.writers.get(writer.pointer) !== writer ||
     writer.mode === 'nv' ||
-    writer.imageFont ||
-    Object.getPrototypeOf(writer.fontImages) !== Map.prototype ||
-    writer.fontImages.size ||
     !writer.pixels ||
     !nativePublicationPixels(writer.pixels.rgba) ||
     writer.pixels.rgba.length !== writer.pixels.width * writer.pixels.height * 4
   )
     return false;
+  const images = ownedImageFonts.get(writer),
+    source = Object.getOwnPropertyDescriptor(writer, 'imageFont'),
+    decoded = Object.getOwnPropertyDescriptor(writer, 'decodedFonts'),
+    map = Object.getOwnPropertyDescriptor(writer, 'fontImages');
+  if (
+    !images ||
+    (source && !Object.hasOwn(source, 'value')) ||
+    (decoded && !Object.hasOwn(decoded, 'value')) ||
+    images.source !== source?.value ||
+    images.decoded !== decoded?.value ||
+    images.map !== map?.value ||
+    Object.getPrototypeOf(map.value) !== Map.prototype ||
+    ['get', 'set', 'values'].some((key) => Object.hasOwn(map.value, key))
+  )
+    return false;
+  for (const frame of Map.prototype.values.call(map.value))
+    if (frame !== null && typeof frame !== 'number' && !images.frames.has(frame)) return false;
   if (!(config instanceof Uint8Array) || config.length !== writer.parser.config.length)
     return false;
   const dimensions = new DataView(config.buffer, config.byteOffset, config.byteLength);

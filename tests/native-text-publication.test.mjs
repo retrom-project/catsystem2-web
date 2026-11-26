@@ -7,6 +7,7 @@ import { textConfig, packTextConfiguration } from '../src/native/text-config.mjs
 import { nativeTextPublicationWriter } from '../src/native/text.mjs';
 import { NativeScreenCapture } from '../src/native/screen-capture.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
+import { authoredHG3 } from './fixtures/hg3.mjs';
 
 const profiles = [
   'bokutomo-engine-2.6.1.67',
@@ -73,6 +74,165 @@ function settled(h) {
   assert.equal(h.world.text.flushingPublication, null);
   assert.equal(h.world.runtime.textPublicationBarrier ?? null, null);
 }
+
+const imageFontBytes = authoredHG3([
+  { id: 1, width: 2, height: 2, rgba: Uint8Array.from({ length: 16 }, (_, i) => i * 17) },
+]);
+for (const loaded of [false, true])
+  test(`owned image-font selectors retain empty-clear results and revisions: loaded=${loaded}`, async () => {
+    const results = [];
+    for (const coalesce of [false, true]) {
+      const h = await setup();
+      let fresh;
+      try {
+        await h.writer.userFont(loaded ? imageFontBytes : null);
+        for (let i = 0; i < 9; i++) await h.writer.resourceMessage(10, 0x8740 + i, i + 1);
+        assert.equal(h.writer.decodedFonts.length, loaded ? 1 : 0);
+        if (loaded) h.writer.setCharacterImage(0x8748, h.writer.decodedFonts[0]);
+        assert(nativeTextPublicationWriter(h.writer, h.config));
+        const before = h.vram.state.revision,
+          batch = coalesce ? h.world.text.beginPublication(h.task, h.config) : null,
+          replies = [];
+        for (const [operation, bytes] of [
+          [4, null],
+          [2, h.packet],
+          [4, null],
+          [14, null],
+        ]) {
+          if (batch) await batch.before();
+          replies.push(await h.send(operation, bytes, batch));
+        }
+        await h.world.text.flushPublications();
+        assert.equal(h.vram.state.revision, before + 4);
+        if (batch) assert.equal(batch.physicalPublications, 1);
+        results.push({
+          replies,
+          task: h.task.snapshot(),
+          writer: h.writer.snapshot(),
+          pixels: (await h.vram.pixels()).slice(),
+          revision: h.vram.state.revision,
+          pages: h.world.graphics.texturePages.snapshot(),
+        });
+        // Actual glyph consumption runs after settlement, including the missing
+        // selector's ordinary blank-cell fallback.
+        await h.send(3, Uint8Array.from([...encodeCP932('①'), 0]));
+        await h.send(8);
+        assert.equal(h.writer.fontImages.size, 9);
+        if (coalesce) {
+          fresh = await defaultFESWorld(
+            profiles[3],
+            { 'font.ttf': fontBytes },
+            {
+              initialize: false,
+              glyphs: undefined,
+            },
+          );
+          await fresh.restore(h.world.snapshot());
+          const writer = await fresh.graphics.get(h.task.record.id).writer();
+          assert.deepEqual(writer.snapshot(), h.writer.snapshot());
+          assert(nativeTextPublicationWriter(writer, writer.config));
+        }
+        settled(h);
+      } finally {
+        await fresh?.close({ flushFiles: false });
+        await h.world.close({ flushFiles: false });
+      }
+    }
+    assert.deepEqual(results[1], results[0]);
+  });
+
+test('a dirty FES image font keeps the clear before resource lookup and replacement', async () => {
+  const source =
+    '#DEFINE\nIMAGE uf\nSTRING8 a\n#OBJECT FILE IDN\nuf missing -1\n#OBJECT SIZE POS PRI DISP\na 48,24 0,0 60000 1\n#START\na layout fontind 1 font.ttf\na str AB\na draw\nnext IDLE\n#IDLE\n';
+  const world = await defaultFESWorld(
+    profiles[3],
+    {
+      'screen.fes': new TextEncoder().encode(source),
+      'font.ttf': fontBytes,
+    },
+    { glyphs: undefined },
+  );
+  try {
+    const h = await loadDefaultFES(world);
+    await h.task.tick();
+    const object = h.instance.byKey.get('a'),
+      strings = world.text.fes,
+      sourceObject = h.instance.byKey.get('uf'),
+      vram = world.graphics.images.get(world.graphics.vramHandle),
+      before = vram.state.revision,
+      read = strings.imageDataFor;
+    let reads = 0;
+    await strings.command(h.instance, object, 'clear');
+    strings.setFontSource(object, sourceObject);
+    assert(object.nativeTextState.fontDirty);
+    world.text.beginPublication = () => {
+      throw Error('font IO cannot enter a publication transaction');
+    };
+    strings.imageDataFor = function (...args) {
+      reads++;
+      assert.equal(vram.state.revision, before + 1);
+      assert.equal(world.text.publications.size, 0);
+      return Reflect.apply(read, this, args);
+    };
+    await strings.drive(h.instance, object);
+    assert.equal(reads, 1);
+    assert.equal(object.nativeTextState.fontDirty, false);
+    assert.equal((await world.graphics.get(object.nativeTaskID).writer()).imageFont, null);
+    settled({ world });
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
+
+test('loaded image-font replacement, nonempty input and capture settle prior empty outputs', async () => {
+  const h = await setup();
+  try {
+    await h.writer.userFont(imageFontBytes);
+    await h.writer.resourceMessage(10, 0x8740, 1);
+    for (const boundary of ['input', 'resource', 'capture', 'unknown-map']) {
+      await h.send(4);
+      const batch = h.world.text.beginPublication(h.task, h.config),
+        before = h.vram.state.revision;
+      assert(batch);
+      await h.send(4, null, batch);
+      if (boundary === 'input') {
+        await h.send(3, Uint8Array.from([...encodeCP932('①'), 0]), batch);
+        await batch.before();
+        await h.send(8, null, batch);
+      } else if (boundary === 'resource') {
+        await h.task.message([h.world.main.id, h.task.firstMessage + 9, 0, 0], {
+          resourceBytes: imageFontBytes,
+          consumeResource() {
+            assert(!batch.enabled);
+            assert.equal(h.vram.state.revision, before + 1);
+          },
+        });
+      } else if (boundary === 'capture') await h.vram.frame();
+      else {
+        h.writer.fontImages.set(65, {});
+        await batch.before();
+        h.writer.fontImages.delete(65);
+      }
+      assert(!batch.enabled);
+      assert.equal(batch.physicalPublications, 1);
+      settled(h);
+    }
+    let reads = 0;
+    const descriptor = Object.getOwnPropertyDescriptor(h.writer, 'fontImages');
+    Object.defineProperty(h.writer, 'fontImages', {
+      configurable: true,
+      get() {
+        reads++;
+        throw Error('foreign map accessor');
+      },
+    });
+    assert.equal(h.world.text.beginPublication(h.task, h.config), null);
+    assert.equal(reads, 0);
+    Object.defineProperty(h.writer, 'fontImages', descriptor);
+  } finally {
+    await h.world.close({ flushFiles: false });
+  }
+});
 
 for (const profile of profiles)
   test(`${profile} owned FT clear messages keep results and pixels with one final publication`, async () => {
@@ -221,7 +381,7 @@ for (const boundary of [
     }
   });
 
-test('GDI/custom readiness, image fonts and replaced frame methods retain the full fallback', async () => {
+test('GDI/custom readiness, foreign image fonts and replaced frame methods retain the full fallback', async () => {
   const h = await setup();
   try {
     const fonts = h.writer.runtime.glyphs;
@@ -247,7 +407,7 @@ test('GDI/custom readiness, image fonts and replaced frame methods retain the fu
       view = new DataView(config.buffer);
     view.setUint32(config.length - 4, 0, true);
     assert.equal(h.world.text.beginPublication(h.task, config), null);
-    h.writer.fontImages.set(65, null);
+    h.writer.fontImages.set(65, { width: 1, height: 1, bpp: 4, rgba: new Uint8ClampedArray(4) });
     assert.equal(h.world.text.beginPublication(h.task, h.config), null);
     h.writer.fontImages.clear();
     fonts.fonts.delete('font.ttf');

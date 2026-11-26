@@ -173,8 +173,12 @@ operations does not promise that intermediate VRAM has been published.
 
 The path requires an already initialized writer, an already opened owned FT
 face, completed ordinary Canvas readiness, unchanged pinned FT exports and
-unchanged writer/parser/task/bitmap/texture/graphics methods. Image fonts, NV,
-first initialization, font replacement, resource references, changed dimensions,
+unchanged writer/parser/task/bitmap/texture/graphics methods. An already loaded
+image-font source and selector map may remain attached: empty clear/configure
+operations do not consume them. The writer must own their records; this also
+covers retained selectors whose source image is missing. Nonempty source,
+user-font loads or remapping, NV, first initialization, font replacement,
+resource references, changed dimensions,
 VRAM position/output changes and unknown providers use ordinary publication.
 Eligibility is checked before every resource message and output. Losing it first
 settles the last requested output, then runs the new provider. GDI and reentrant
