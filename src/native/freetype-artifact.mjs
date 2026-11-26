@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 export const NATIVE_FREETYPE_SHA256 = {
-  'native_freetype_248.mjs': '6321efc1a9c78ef288bc51e9172a7bdc8815ca5b2b6df10098198b4eedaa9690',
-  'native_freetype.mjs': '7bbf71dca57c74fdfcdba89fce2df44d8ef09bc81e01d1ff294cd661559e0a39',
+  'native_freetype_248.mjs': '9875eb6d081109426762818018fc208eeedf930ab52de1e8f2c13cc0aa170c74',
+  'native_freetype.mjs': '28aab732c0055e2b246604518bfff45255dddb3d0e65fb8e30ef87d4f4dac267',
 };
 export const NATIVE_FREETYPE_FILES = [
   'native_freetype_248.mjs',

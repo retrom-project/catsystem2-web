@@ -27,6 +27,8 @@ driver can reuse them; legacy CFF, other drivers, bitmaps, transforms and
 incompatible size/charmap state use the ordinary load/render path. Rendering
 stays at the glyph call, returned bitmap lifetimes remain per face, and close
 releases all retained data. The six production exports do not change.
+Cached entries retain the original slot's 26.6 advance separately from
+`FT_Glyph`'s narrower 16.16 value, preserving large advances and quantization.
 
 Use `--outline-cache disabled --output /a/separate/directory` with the same
 builder to prepare a performance control. The manifest and source bundles

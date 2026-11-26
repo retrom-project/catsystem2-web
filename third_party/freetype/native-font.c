@@ -36,6 +36,7 @@ typedef struct OutlineEntry_ {
   int size;
   FT_UShort x_ppem, y_ppem;
   FT_Fixed x_scale, y_scale;
+  FT_Pos advance_x;
   FT_Glyph glyph;
   size_t bytes;
 } OutlineEntry;
@@ -132,6 +133,7 @@ static void remember_outline(FT_Face face, int size, FT_UInt index) {
   entry->face = face; entry->size = size; entry->index = index;
   entry->charmap = face->charmap; entry->x_ppem = m->x_ppem; entry->y_ppem = m->y_ppem;
   entry->x_scale = m->x_scale; entry->y_scale = m->y_scale;
+  entry->advance_x = face->glyph->advance.x;
   entry->glyph = glyph; entry->bytes = bytes; entry->next = outlines;
   outlines = entry; outline_count++; outline_bytes += bytes;
   while (outline_count > OUTLINE_ENTRIES || outline_bytes > OUTLINE_BYTES) {
@@ -211,7 +213,9 @@ int cs2_font_glyph(void *ptr, int size, unsigned code, int *out) {
       FT_BitmapGlyph bitmap = (FT_BitmapGlyph)glyph;
       entry->glyph = glyph; entry->next = outputs; outputs = entry;
       out[0] = bitmap->bitmap.width; out[1] = bitmap->bitmap.rows;
-      out[2] = bitmap->left; out[3] = bitmap->top; out[4] = glyph->advance.x >> 16;
+      // FT_Get_Glyph narrows advance to signed 16.16. Keep the original
+      // slot's 26.6 domain and quantization, including large legal advances.
+      out[2] = bitmap->left; out[3] = bitmap->top; out[4] = entry->advance_x >> 6;
       out[5] = (int)bitmap->bitmap.buffer; out[6] = bitmap->bitmap.pitch;
       out[7] = bitmap->bitmap.pixel_mode;
       return 1;

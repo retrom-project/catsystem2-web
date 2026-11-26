@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Authored rectangles and Unicode cmap: deterministic, small, distinct glyph IDs.
-export function authoredOutlineTTF(count = 200) {
+export function authoredOutlineTTF(count = 200, { unitsPerEm = 1000, advanceWidth = null } = {}) {
   const bytes = (size) => new Uint8Array(size),
     view = (value) => new DataView(value.buffer),
     glyphs = count + 1,
@@ -12,7 +12,7 @@ export function authoredOutlineTTF(count = 200) {
   h.setUint32(4, 0x10000);
   h.setUint32(12, 0x5f0f3cf5);
   h.setUint16(16, 8);
-  h.setUint16(18, 1000);
+  h.setUint16(18, unitsPerEm);
   h.setInt16(40, 600);
   h.setInt16(42, 700);
   h.setUint16(46, 8);
@@ -22,7 +22,7 @@ export function authoredOutlineTTF(count = 200) {
   hh.setUint32(0, 0x10000);
   hh.setInt16(4, 800);
   hh.setInt16(6, -200);
-  hh.setUint16(10, 800);
+  hh.setUint16(10, advanceWidth ?? 800);
   hh.setInt16(16, 600);
   hh.setInt16(18, 1);
   hh.setUint16(34, glyphs);
@@ -57,7 +57,7 @@ export function authoredOutlineTTF(count = 200) {
     ])
       g.setInt16(at + offset, value);
     l.setUint16(index * 2, at / 2);
-    hm.setUint16(index * 4, index === 180 ? 0 : 600 + (index % 7) * 20);
+    hm.setUint16(index * 4, advanceWidth ?? (index === 180 ? 0 : 600 + (index % 7) * 20));
   }
   l.setUint16(glyphs * 2, glyf.length / 2);
   tables.set('glyf', glyf);
