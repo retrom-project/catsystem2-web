@@ -299,6 +299,7 @@ export default {
     vectorNormalizeUsesSSEWords: true,
   },
   motion: {
+    managerLifetime: 'explicit-delete',
     addUsesFormat: true,
     nativeFilenameQuery: true,
     splineUsesX87: true,

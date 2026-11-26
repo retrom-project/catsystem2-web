@@ -30,10 +30,14 @@ buffer and capacity separately. In the two modern builds, a Main294 manager
 survives the creating Script's destruction and remains usable by another Script;
 Main295 explicitly releases it. The creator recorded in a JS checkpoint is
 provenance, not its lifetime owner. Cold restore also works after that Task has
-gone, and closing the World releases the remaining handles. Earlier builds keep
-their current task cleanup policy pending their own lifetime evidence; this does
-not establish an opposite native rule for them. Independently held checkpoints
-retain their separate lifecycle.
+gone, and closing the World releases the remaining handles. The .23, .63 and
+.67 builds independently establish the same lifetime: each actual Script
+factory and loaded KCS VM creates a manager, the real Script deleting destructor
+releases its VM while retaining the manager, and a second Script can query and
+change it before Main295 frees it. Their profile policies now preserve that
+ownership through creator-absent cold restore. This evidence does not extend
+the modern source-cache or unknown-byte policies to those builds.
+Independently held checkpoints retain their separate lifecycle.
 
 The [modern manager lifetime fixture](../tests/fixtures/modern-motion-owner-lifetime-golden.json)
 links both own PEs' real window, Top and Script factory, actual Main GCALLs,

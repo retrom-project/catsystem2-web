@@ -341,6 +341,7 @@ export default {
     attachmentReadsRegistrationWord: true,
   },
   motion: {
+    managerLifetime: 'explicit-delete',
     zeroWidthRotationReadsStack: true,
     currentMatrixFallback: true,
     matrixMemoryOperationsUseNativeOrder: true,

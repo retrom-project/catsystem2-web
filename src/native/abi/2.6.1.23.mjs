@@ -1417,6 +1417,7 @@ export default {
     vectorTransformWFirst: true,
   },
   motion: {
+    managerLifetime: 'explicit-delete',
     addUsesFormat: true,
     nativeFilenameQuery: true,
     elapsedUsesX87: true,
