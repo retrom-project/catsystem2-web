@@ -214,3 +214,14 @@ output that overwrites its position-address argument. The ordinary World/KCS
 comparison preserves complete local bytes, control and PC/SP/FP and performs six
 independent cold restores. No physical Scene pointer exposure, allocator-failure
 behavior or undefined record memory is admitted by this mapped-frame group.
+
+The modern factory's kind34 `kcTaskFEScript` has `kcTaskBase`/`kcClassBase`
+ancestry, without `kcTaskScript`. Its real Scene-query messages leave both pointer
+destinations and the result word untouched. Main234 therefore returns zero for
+this contextless source and preserves an existing destination history; Main233
+can still copy literal text without consuming a source history. Own factory,
+RTTI, native-message and 28 complete Main-frame controls establish this boundary,
+including four independent cold restores. The runtime keeps its Script-only
+record fallback and does not treat FES or its parent context as a Scene owner.
+No Script Scene initializer is executed on the unrelated FES layout. References
+that would consume an absent history retain their existing diagnostic boundary.
