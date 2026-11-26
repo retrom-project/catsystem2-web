@@ -240,7 +240,7 @@ test('63 MOT checkpoints use CP932 records and the live second word of a one-wor
   }
 });
 
-test('Script-owned MOT managers release by owner after restoring resource checkpoints', async () => {
+test('an unprofiled MOT registry retains its current task cleanup policy across restore', async () => {
   const first = setup(),
     owned = nativeMotion(0x126, [], first.machine, { motion: first.registry, owner: 11 }).value,
     other = nativeMotion(0x126, [], first.machine, { motion: first.registry, owner: 12 }).value,

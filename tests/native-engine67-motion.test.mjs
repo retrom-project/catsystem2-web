@@ -189,9 +189,9 @@ test('2.6.1.67 Motion matrix calls preserve native fallback, SSE2 products and f
     assert.equal(machine.load(132), floatBits(35));
   }
   const malformed = await motion(23, [64]),
-    guarded = await motion(0, [64]);
+    guarded = await motion(45, [64]);
   assert.throws(() => malformed.update(0), /expects 4 arguments/);
-  assert.throws(() => guarded.update(0), /Unrecovered MOT native .*:0/);
+  assert.throws(() => guarded.update(0), /Unrecovered MOT native .*:2d/);
 });
 
 test('2.6.1.67 Motion vector calls preserve x87 result words and native operand aliases', async () => {

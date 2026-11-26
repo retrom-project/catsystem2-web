@@ -21,9 +21,22 @@ The manager's profile selects the layout. The serializer writes through the
 filename's first NUL; it does not clear the rest of its fixed-width field.
 Decoding validates record extents against used length while allowing retained
 capacity after it. The motion-checkpoint handle stores its owner manager,
-buffer and capacity separately. Manager resources also retain their owning
-Script task, so Script reload and destruction release only that owner's
-managers; independently held checkpoints retain their own lifecycle.
+buffer and capacity separately. In the two modern builds, a Main294 manager
+survives the creating Script's destruction and remains usable by another Script;
+Main295 explicitly releases it. The creator recorded in a JS checkpoint is
+provenance, not its lifetime owner. Cold restore also works after that Task has
+gone, and closing the World releases the remaining handles. Earlier builds keep
+their current task cleanup policy pending their own lifetime evidence; this does
+not establish an opposite native rule for them. Independently held checkpoints
+retain their separate lifecycle.
+
+The [modern manager lifetime fixture](../tests/fixtures/modern-motion-owner-lifetime-golden.json)
+links both own PEs' real window, Top and Script factory, actual Main GCALLs,
+creator destruction, surviving caller and explicit manager deletion. It compares
+the initialized base bank and manager controls. The initial working-bank bytes
+are a raw capture outside this lifetime acceptance; no initial value is inferred
+from them. The virtual OS providers and standalone KCS caller do not establish
+full application startup or a physical Windows GPU result.
 
 The game serializer/load pair is `78A2F0`/`78A420`; the SDK pair is
 `622400`/`622540`. `scripts/verify-native-motion-checkpoint.mjs` executes each
