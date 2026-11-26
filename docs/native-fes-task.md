@@ -1303,3 +1303,21 @@ code 23. In the reviewed Game program this selects the game's real `config`
 FES and language controls. It is separate from native window command 40027,
 which opens the engine's configuration property sheet. The window command and
 its browser service retain their existing behavior.
+
+## Legacy private contexts
+
+The .23, .63 and .67 Main664–668 wrappers use the caller's Script identity and
+an independently registered FES private context. Main664 writes a CP932 name at
+index zero. Stored values, including zero, override system names; an absent
+indexed name reads zero. Main665 and Main666 copy exactly 512 DWORDs in their
+respective directions. Names, selection and global-bank dirty state do not move.
+An unloaded Script without a private context leaves the destination unchanged.
+Main667 publishes the result under control 1; Main668 clears it under control 2.
+
+The legacy golden cases run full GCALLs on a VM created by the original
+Main143 loader after true Main66 construction, then replay in NativeWorld and
+restore into an independent World. The loaded FES source and its private context
+outlive their use, and the consumer closes before its supplying Script bank.
+The authored notification used here has no IO or platform message-pump entry.
+This observation does not establish a transaction boundary for other programs,
+external providers, renderer callbacks or asynchronous IO.

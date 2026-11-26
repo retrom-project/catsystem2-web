@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [664, 665, 666, 667, 668],
+    value:
+      'Own 2.6.1.23 Main664–668 complete GCALLs after true Main66 Top/Script/FES construction and Main143-loaded Script VM. Named CP932 private values override system operands, including stored zero and absent indexed names. Copies transfer 2048 bytes between actual caller and FES contexts; an unloaded caller without a private context copies nothing. Names and context selection are independent. Main667 returns control 1; all mutators return control 2 without writing a result. The authored loaded notification executes synchronously and reaches no platform message pump; this does not establish arbitrary IO or rendering transaction behavior.',
+  },
+  {
     ids: [144, 145, 146, 147, 148, 151, 152, 153, 154, 395, 396, 401],
     value:
       'Own 2.6.1.23 Top/Input constructors and actual Main66 kind11 factory, complete KCS dispatcher and Input receiver. Main144–148 use raw Input 119/120/121/122/124, text132/133/134 and autohide135; image140/query141/enable142. Signed priority and duplicate ordering, live copied RECT/NULL clear and raw masks match. The own text worker/dialog callback preserves pending0/confirm1/cancel2, CP932 bytes through NUL and limit16/capacity256. Thread/Win32 IO and borrowed renderer image/visibility/query are explicit service boundaries. Six own Input frames deliver down/held/up through an authored consumed callback and stop after unregister. Main67 retirement retains Input; its own deleting destructor separately frees owned allocations while borrowing device/renderer. Native scratch/padding and uninitialized .23 NULL text are not normalized.',
@@ -1564,6 +1569,7 @@ export default {
     mxcsr: null,
   },
   fes: {
+    localAccessUsesNativeTypes: true,
     variableBankOffset: 436,
     frameDecodeResources: true,
     objectHeadsFirst: true,
@@ -1692,6 +1698,28 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...[664, 665, 666, 667, 668].map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) =>
+              index === 0
+                ? { ...parameter, type: { kind: 'object-id', objectKind: 'FES' } }
+                : index === 1
+                  ? {
+                      ...parameter,
+                      type: {
+                        kind: 'pointer',
+                        addressSpace: 'vm',
+                        direction: 'in',
+                        target: { kind: 'format-string', encoding: 'CP932' },
+                      },
+                    }
+                  : parameter,
+            ),
+            resultWritten: id === 667,
+            review: 'reviewed',
+          },
+        })),
         {
           ids: [144, 145, 146, 147, 148, 151, 153, 154, 395, 401],
           fields: { review: 'reviewed' },
