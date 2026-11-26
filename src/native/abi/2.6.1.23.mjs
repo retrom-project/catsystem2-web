@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [631, 632],
+    value:
+      'Own 2.6.1.23 complete Main631/632 wrappers and loaded FES receiver after true Main66 owners and Main143-loaded VM. Positive BASE count2 creates separately addressable event receivers with indices0/1; STRING type20 constructs its deferred resource owner. Both raw packet strings from Main632 expand argv1, and argv2 is not dereferenced, including an unmapped incoming word. Count and CP932 name are copied into the native stack packet. Both wrappers return control2 without a result write; unknown object types and subsequent unproved renderer shapes retain their guards.',
+  },
+  {
     ids: [664, 665, 666, 667, 668],
     value:
       'Own 2.6.1.23 Main664–668 complete GCALLs after true Main66 Top/Script/FES construction and Main143-loaded Script VM. Named CP932 private values override system operands, including stored zero and absent indexed names. Copies transfer 2048 bytes between actual caller and FES contexts; an unloaded caller without a private context copies nothing. Names and context selection are independent. Main667 returns control 1; all mutators return control 2 without writing a result. The authored loaded notification executes synchronously and reaches no platform message pump; this does not establish arbitrary IO or rendering transaction behavior.',
@@ -1569,6 +1574,38 @@ export default {
     mxcsr: null,
   },
   fes: {
+    definitionTypes: [
+      'BASE',
+      'CIMAGE',
+      'IMAGE',
+      'CPLANE',
+      'PLANE',
+      'VIEW',
+      'BUTTON',
+      'DRAW',
+      'WIPE',
+      'SOUND',
+      'SNDTABLE',
+      'PANEL',
+      'SAVEPANEL',
+      'SCROLL',
+      'SCROLL2',
+      'SLIDER',
+      'BGTABLE',
+      'BGTABLE2',
+      'CHTABLE',
+      'CHTABLE2',
+      'STRING',
+      'IMGWND',
+      'PARTICLE',
+      'LOGSTRING',
+      'DIFIMAGE',
+      'RDRAW',
+      'RWIPE',
+      'NUMIMG',
+      'NVSTRING',
+      'WBREAK',
+    ],
     localAccessUsesNativeTypes: true,
     variableBankOffset: 436,
     frameDecodeResources: true,
@@ -1698,6 +1735,34 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...[631, 632].map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) =>
+              index === 0
+                ? { ...parameter, type: { kind: 'object-id', objectKind: 'FES' } }
+                : id === 632 && index === 2
+                  ? {
+                      name: 'ignored',
+                      description: 'Incoming word not read by the original wrapper',
+                      type: { kind: 'bits', bits: 32 },
+                    }
+                  : parameter.type.kind === 'pointer'
+                    ? {
+                        ...parameter,
+                        type: {
+                          kind: 'pointer',
+                          addressSpace: 'vm',
+                          direction: 'in',
+                          target: { kind: 'format-string', encoding: 'CP932' },
+                        },
+                      }
+                    : parameter,
+            ),
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        })),
         ...[664, 665, 666, 667, 668].map((id) => ({
           ids: [id],
           fields: {

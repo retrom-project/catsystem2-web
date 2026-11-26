@@ -1321,3 +1321,19 @@ outlive their use, and the consumer closes before its supplying Script bank.
 The authored notification used here has no IO or platform message-pump entry.
 This observation does not establish a transaction boundary for other programs,
 external providers, renderer callbacks or asynchronous IO.
+
+Legacy Main631 and Main632 now use each version's own raw message bridge.
+Main631 copies a name and signed count into the fixed packet, constructs positive
+BASE groups with independent indexed event targets, and can queue a STRING owner
+for later resource initialization. That declaration does not establish a renderer
+or font-provider result. Main632 expands its second script word twice: both the
+column and row strings come from argv1. The third word is ignored, even when it is
+not a mapped pointer. Tests retain this original wrapper behavior and keep the
+canonical direct message's two independent strings available to its own callers.
+
+The own named factory tables have 30 entries in .23, 33 in .63 and 34 in .67.
+They all start with BASE at index 0 and place STRING at index 20. The .67 table
+inserts STRTABLE at index 32 before M2PLANE at index 33; .63 has M2PLANE at 32.
+The unnamed rows following those tables are not admitted object definitions.
+These catalogs select existing typed implementations; they do not claim every
+provider or resource shape of those implementations has been recovered.

@@ -184,7 +184,7 @@ export function nativeFES(id, args, machine, task, world) {
     return Promise.resolve(send(338, 4, args[1], { payload: memory })).then(done);
   }
   if (id === 0x278) {
-    // Both pinned wrappers expand argv[1] twice; argv[2] is not read.
+    // Each reviewed wrapper expands argv[1] twice; argv[2] is not read.
     const packet = stringsPacket([format(1), format(1)]);
     return Promise.resolve(
       send(339, packet.addresses[0], packet.addresses[1], { payload: packet.memory }),

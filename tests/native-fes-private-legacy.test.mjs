@@ -109,3 +109,107 @@ for (const own of golden.versions) {
     );
   });
 }
+
+const dynamicGolden = JSON.parse(
+  await readFile(
+    new URL('./fixtures/native-fes-dynamic-legacy-golden.json', import.meta.url),
+    'utf8',
+  ),
+);
+for (const own of dynamicGolden.versions) {
+  test(`${own.version} dynamic BASE and deferred STRING owners route full GCALLs and retain ignored argv`, async (t) => {
+    const files = {
+        'authored.fes': Uint8Array.from(own.sourceBytes),
+        'dynamic.kcs': program(own.calls),
+      },
+      world = await dataWorld(own.profile, files);
+    t.after(() => world.close({ flushFiles: false }));
+    world.runtime.variableBank(world.main).initialize(512);
+    const id = await world.objects.create({ kind: 34, parent: world.main.id }),
+      record = world.objects.objects.get(id),
+      target = world.nativeTaskID(id),
+      invoke = (main, args) =>
+        world.runtime.native('main', main, args, world.main.machine, world.main);
+    world.main.machine.writeString('authored', 256);
+    await invoke(447, [target, 256]);
+    await invoke(448, [target]);
+    const task = await world.spawnScript('dynamic.kcs', {
+        parent: world.main.id,
+        initialExecute: false,
+      }),
+      m = task.machine;
+    m.store(80, target);
+    m.writeString('marker', 256);
+    m.writeString('marker', 320);
+    m.writeString('PRI', 352);
+    m.writeString('PRI 123', 384);
+    m.writeString('deferred_text', 416);
+    const dispatch = world.runtime.scheduler.dispatch;
+    let at = 0;
+    const packets = [],
+      send = world.sendNativeEngine;
+    world.sendNativeEngine = function (to, sender, message, w, l, context = {}) {
+      if ([338, 339].includes(message)) {
+        const memory = context.payload;
+        packets.push(
+          message === 338
+            ? {
+                type: l,
+                name: [...new TextEncoder().encode(memory.string(w))],
+                count: memory.load(w + 32),
+              }
+            : { columns: memory.string(w), row: memory.string(l) },
+        );
+      }
+      return send.call(this, to, sender, message, w, l, context);
+    };
+    world.runtime.scheduler.dispatch = async (table, main, args, machine, caller, ...rest) => {
+      if (caller !== task) return dispatch(table, main, args, machine, caller, ...rest);
+      const row = own.calls[at++];
+      assert.equal(main, row.id);
+      if (row.label.startsWith('notify declared')) m.writeString('PING', 256);
+      if (row.label === 'query original PRI') m.writeString('PRI', 320);
+      const reply = await dispatch(table, main, args, machine, caller, ...rest);
+      assert.equal(reply.control, row.control, row.label);
+      if (row.control === 1) assert.equal(reply.value, row.result, row.label);
+      return reply;
+    };
+    await world.runtime.scheduler.execute(task);
+    world.runtime.scheduler.dispatch = dispatch;
+    assert.equal(at, own.calls.length);
+    assert.equal(m.pop(), marker);
+    assert.deepEqual(
+      packets,
+      own.packets.map((packet) =>
+        packet.name
+          ? { type: packet.type, name: packet.name, count: packet.count }
+          : {
+              columns: Buffer.from(packet.columns).toString(),
+              row: Buffer.from(packet.row).toString(),
+            },
+      ),
+    );
+    assert.deepEqual(
+      nativeABI(own.profile).fes.definitionTypes,
+      own.factoryCatalog.map((row) => row.name),
+    );
+    const c = record.implementation.player.root.collection;
+    assert.equal(c.count('marker'), 2);
+    assert.equal(c.lookup('marker', 0).type, 'BASE');
+    assert.equal(c.lookup('marker', 1).index, 1);
+    assert.equal(c.lookup('deferred_text', 0).type, 'STRING');
+    const fresh = await dataWorld(own.profile, files, { initialize: false });
+    t.after(() => fresh.close({ flushFiles: false }));
+    await fresh.restore(structuredClone(world.snapshot()));
+    const fc = fresh.objects.objects.get(id).implementation.player.root.collection;
+    assert.equal(fc.count('marker'), 2);
+    assert.equal(fc.lookup('deferred_text', 0).type, 'STRING');
+    await world.objects.release(id);
+    assert.equal(fc.count('marker'), 2);
+    for (const raw of [631, 632]) {
+      const entry = nativeABI(own.profile).tables.main.entries[raw];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(entry.signature.resultWritten, false);
+    }
+  });
+}
