@@ -40,7 +40,7 @@ export function encodeMotionRecords(manager, frame, storage = null) {
       .at(-1);
     const encoded = layout.wide
       ? new Uint8Array((name.length + 1) * 2)
-      : Uint8Array.from([...encodeCP932(name), 0]);
+      : Uint8Array.from([...(instance.script.recordNameBytes ?? encodeCP932(name)), 0]);
     if (layout.wide) {
       const words = new DataView(encoded.buffer);
       for (let i = 0; i < name.length; i++) words.setUint16(i * 2, name.charCodeAt(i), true);
@@ -101,6 +101,7 @@ export function decodeMotionRecords(bytes, profile = gameProfile) {
     );
     records.push({
       name,
+      nameBytes: layout.wide ? null : bytes.slice(nameStart, end),
       group: view.getUint32(at + layout.group, true),
       registerWords: bytes.slice(at + layout.registers, at + layout.registers + 1024),
       extra: bytes.slice(at + layout.size, at + size),
@@ -115,7 +116,9 @@ export function decodeMotionRecords(bytes, profile = gameProfile) {
 
 export async function restoreMotionRecords(manager, bytes, frame, loadScript) {
   const records = decodeMotionRecords(bytes, manager.profile);
-  const scripts = await Promise.all(records.map((record) => loadScript(record.name)));
+  const scripts = await Promise.all(
+    records.map((record) => loadScript(record.name, record.nameBytes)),
+  );
   manager.clear();
   records.forEach((record, index) =>
     manager.add(scripts[index], {

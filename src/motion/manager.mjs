@@ -156,6 +156,7 @@ export class MotionManager {
         group: record.group,
         startTick: record.startTick,
         script: record.instance.script.name,
+        nameBytes: record.instance.script.nameBytes?.slice() ?? null,
         source: sourceFor(record.instance.script.source),
         instance: record.instance.snapshot(),
       })),
@@ -185,11 +186,17 @@ export class MotionManager {
     for (const record of state.records) {
       if (record.source !== null && !(record.source instanceof Uint8Array))
         throw new Error('Invalid MOT record source');
+      if (record.nameBytes !== null && !(record.nameBytes instanceof Uint8Array))
+        throw new Error('Invalid MOT record filename bytes');
       let scripts = sources.get(record.source);
       if (!scripts) sources.set(record.source, (scripts = new Map()));
-      if (!scripts.has(record.script))
-        scripts.set(record.script, this.loadScript(record.script, record.source));
-      const script = await scripts.get(record.script);
+      const key = JSON.stringify([record.script, record.nameBytes && [...record.nameBytes]]);
+      if (!scripts.has(key))
+        scripts.set(
+          key,
+          this.loadScript(record.script, record.source, record.nameBytes ?? undefined),
+        );
+      const script = await scripts.get(key);
       const instance = new MotionInstance(script, {
         profile: this.profile,
         random: this.random,

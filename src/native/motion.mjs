@@ -97,7 +97,9 @@ export class NativeMotionRegistry {
   }
   restoreRecords(handle, bytes, frame) {
     return this.with(handle, (manager) =>
-      restoreMotionRecords(manager, bytes, frame, (name) => this.library.load(name)),
+      restoreMotionRecords(manager, bytes, frame, (name, nameBytes) =>
+        this.library.load(name, { nameBytes: nameBytes ?? undefined }),
+      ),
     );
   }
   with(handle, callback) {

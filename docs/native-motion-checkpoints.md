@@ -19,6 +19,11 @@ whole retained allocation, not a newly truncated serialization.
 
 The manager's profile selects the layout. The serializer writes through the
 filename's first NUL; it does not clear the rest of its fixed-width field.
+The narrow record preserves the original CP932 bytes, including aliases which
+decode to the same Unicode character. Its CSS reader passes those bytes to
+the loader. The wide record uses the original conversion to UTF-16. Internal
+manager snapshots retain each record's requested filename bytes with its code
+source, so an independent cold restore preserves the same name and cache key.
 Decoding validates record extents against used length while allowing retained
 capacity after it. The motion-checkpoint handle stores its owner manager,
 buffer and capacity separately. In the two modern builds, a Main294 manager

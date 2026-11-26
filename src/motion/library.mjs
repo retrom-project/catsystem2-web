@@ -102,6 +102,7 @@ export class MotionLibrary {
     // Cache folding is not a resource filename: a qualified path needs its
     // extension when an independent cold manager loads this script again.
     script.name = name;
+    script.nameBytes = (nameBytes ?? encodeCP932(name)).slice();
     if (this.nativeFilenameQuery) {
       nameBytes ??= encodeCP932(name);
       const bytes = this.nativeFilename(nameBytes) ?? nameBytes;
@@ -114,14 +115,14 @@ export class MotionLibrary {
         // The narrow native record uses byte strrchr, including a CP932 trail
         // byte equal to backslash. The wide record splits after conversion.
         const separator = lastSeparator(bytes);
-        script.recordNameBytes = bytes.subarray(separator > 0 ? separator + 1 : 0);
+        script.recordNameBytes = bytes.slice(separator > 0 ? separator + 1 : 0);
         script.recordName = cp932.decode(script.recordNameBytes);
       }
     } else script.recordName = key.replaceAll('\\', '/').split('/').at(-1) + '.kcs';
     return script;
   }
-  async load(name, { source = null } = {}) {
-    const script = await this.optional(name, { source });
+  async load(name, { source = null, nameBytes } = {}) {
+    const script = await this.optional(name, { source, nameBytes });
     if (!script) throw new Error(`Missing mot resource: ${name}`);
     return script;
   }
@@ -178,7 +179,7 @@ export class MotionLibrary {
       random: this.random,
       calculations: this.calculations,
       onDebug: this.onDebug,
-      loadScript: (name, source) => this.load(name, { source }),
+      loadScript: (name, source, nameBytes) => this.load(name, { source, nameBytes }),
     });
   }
 }
