@@ -266,7 +266,7 @@ export class NativeDrawTask {
       case 298: {
         const item = this.entry(key);
         if (!item) return 0;
-        store(l, item.layer);
+        store(l, this.retained()?.layer(this, key) ?? item.layer);
         return 1;
       }
       case 299: {
@@ -274,6 +274,7 @@ export class NativeDrawTask {
         if (item) {
           this.mark(item);
           item.layer = l | 0;
+          this.retained()?.setLayer(this, key, l);
           this.mark(item);
           return 1;
         }

@@ -56,7 +56,7 @@ async function pixels(world, handle, expected, label) {
   );
 }
 
-for (const scenario of ['sources', 'hg2-sources', 'source-cross-rebind'])
+for (const scenario of ['sources', 'hg2-sources', 'source-cross-rebind', 'source-layer'])
   test(
     'SDK23 ' +
       scenario +
@@ -98,6 +98,12 @@ for (const scenario of ['sources', 'hg2-sources', 'source-cross-rebind'])
           );
           if (row.sourceLive) {
             assert.equal(w.renderSources.get(source).refs, row.sourceRef, label + ' refs');
+            if (row.sourceLayer !== undefined)
+              assert.equal(
+                w.renderSources.get(source).layer >>> 0,
+                row.sourceLayer,
+                label + ' source layer',
+              );
             assert.equal(
               Boolean(w.renderSources.get(source).animation),
               row.sourceHasProgram,
@@ -108,6 +114,10 @@ for (const scenario of ['sources', 'hg2-sources', 'source-cross-rebind'])
         if (drawID) {
           const renderer = w.objects.objects.get(drawID).implementation.state.renderer;
           assert.equal(renderer?.items.length ?? null, row.itemCount, label + ' Draw count');
+          if (row.sourceLayer !== undefined && row.sourceLive && renderer) {
+            const item = renderer.items.find((entry) => entry.retained === source);
+            if (item) assert.equal(item.layer >>> 0, row.sourceLayer, label + ' renderer layer');
+          }
           if (row.bitmap) await pixels(w, renderer.bitmap, row.bitmap, label);
         }
       };
@@ -118,7 +128,7 @@ for (const scenario of ['sources', 'hg2-sources', 'source-cross-rebind'])
         assert.equal(m.load(floor), marker, label + ' marker');
         if (row.id === 703 && m.load(512) === 2) source = m.load(516);
         if (row.id === 66) drawID = world.resolveTaskID(m.load(32), task.id);
-        if ([703, 706].includes(row.id)) assert.equal(m.load(row.resultAddress), row.result);
+        if ([703, 706, 462].includes(row.id)) assert.equal(m.load(row.resultAddress), row.result);
         if (row.id === 709) {
           const handle = m.load(row.resultAddress);
           assert.equal(handle, world.renderSources.bitmap(source, { ordinal: row.args[1] }));

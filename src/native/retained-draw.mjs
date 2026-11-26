@@ -241,6 +241,11 @@ export class NativeRetainedDraw {
         inputToken,
         source,
       };
+      if (nativeABI(this.world.profile).graphics.retainedSourcesUseStoredLayer) {
+        const sourceState = this.sources.get(source);
+        if (kind !== 2) sourceState.layer = draw.entry(key)?.layer ?? key >>> 16;
+        record.layer = sourceState.layer;
+      }
       this.items.set(this.key(draw, key), record);
     }
     const source = this.sources.get(record.source);
@@ -327,6 +332,20 @@ export class NativeRetainedDraw {
       for (const child of source.children) visit(child);
     };
     visit(record.source);
+  }
+  layer(draw, key) {
+    if (!nativeABI(this.world.profile).graphics.retainedSourcesUseStoredLayer) return undefined;
+    const record = this.record(draw, key);
+    return record ? this.sources.get(record.source).layer : undefined;
+  }
+  setLayer(draw, key, value) {
+    if (!nativeABI(this.world.profile).graphics.retainedSourcesUseStoredLayer) return;
+    const record = this.record(draw, key);
+    if (record) {
+      this.sources.get(record.source).layer = value | 0;
+      // Other renderers retain their own ordering key for this shared source.
+      record.layer = value | 0;
+    }
   }
   visible(draw, key, value) {
     const record = this.record(draw, key);
@@ -500,6 +519,8 @@ export class NativeRetainedDraw {
       ...this.attributes(source),
       retained: record.source,
     });
+    if (nativeABI(this.world.profile).graphics.retainedSourcesUseStoredLayer)
+      item.layer = record.layer;
     if (source.clip) item.clip = [...source.clip];
     record.revision = source.revision;
     return item;

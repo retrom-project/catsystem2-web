@@ -50,6 +50,7 @@ export class NativeRenderSources {
         : -1,
       groupDirty: false,
       refs: 1,
+      ...(nativeABI(this.world.profile).graphics.retainedSourcesUseStoredLayer ? { layer: 0 } : {}),
       bitmap,
       frames,
       children,

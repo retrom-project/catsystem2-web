@@ -1738,6 +1738,7 @@ export default {
     renderSourcesDeferProgram: true,
     renderSourceFrameFormats: ['HG2', 'HG3'],
     retainedAllImageFrames: true,
+    retainedSourcesUseStoredLayer: true,
     renderSources: { stride: 72, bytes: 276 },
     retainedBytes: 196,
     screenCaptureOpaque: true,

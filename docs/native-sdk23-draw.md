@@ -68,3 +68,11 @@ The transform mode is a raw zero/nonzero word. Actual mode2 and all-bits-set
 Image-owner GCALLs enter the same affine branch as mode1 and preserve the full
 compared pixels, ownership and cold continuation. They are accepted ordinary
 shapes. The field is not an enumeration restricted to0 and1.
+
+A retained source loaded by Main703 starts with its own layer0. Main707 inserts
+that same source into the renderer without deriving a new layer from the Draw
+key. Main462 reads the shared source field; Main463 changes it and the selected
+renderer's ordering key. Main708, ANM updates and encoded rebinding preserve the
+layer. Each renderer keeps its ordering key separately from the shared field.
+The focused original VM comparison covers layer0, signed layer-3, transform
+update, CPU pixels, source release and independent cold continuation.
