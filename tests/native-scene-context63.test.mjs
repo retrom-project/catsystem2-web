@@ -2,14 +2,18 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import { deflateSync } from 'node:zlib';
-import golden from './fixtures/native-scene-context63-golden.json' with { type: 'json' };
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { NativeFileStorage } from '../src/native/storage.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
+
+const golden = JSON.parse(
+  await readFile(new URL('./fixtures/native-scene-context63-golden.json', import.meta.url), 'utf8'),
+);
 
 function sceneFile() {
   const blocks = [

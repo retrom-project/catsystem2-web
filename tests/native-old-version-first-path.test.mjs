@@ -340,8 +340,14 @@ test('old ABI Runtime binds only present slots and preserves unknown dispatch', 
     assert.equal(runtime.handlers.get('main:359'), callback);
     const machine = { pc: 16, debug: null },
       task = { id: 1, name: 'owned-runtime-control' };
-    const unknown = version === '2.6.1.67' ? [[629, 3]] : [[239, 5]];
+    const entries = nativeABI(profile).tables.main.entries,
+      unknown = version === '2.6.1.67' ? [[629, 3]] : [[688, 0]];
+    if (version === '2.6.1.63') {
+      assert.equal(entries[239].status, 'recovered');
+      assert.equal(entries[239].signature.argumentWords, 5);
+    }
     for (const [id, words] of unknown) {
+      assert.equal(entries[id].status, 'unknown');
       assert.equal(runtime.register('main', id, callback), true);
       assert.throws(
         () => runtime.native('main', id, new Array(words).fill(0), machine, task),
@@ -3927,7 +3933,8 @@ async function verifyCloseBoundaries(profile, emptyStringResult) {
     assert.deepEqual(world.runtime.handles.snapshot(), before);
     const entries = nativeABI(profile).tables.main.entries;
     for (const id of [836, 869, 871, 873]) assert.equal(entries[id].status, 'recovered');
-    for (const id of profile === title67Profile ? [629] : [239])
+    if (profile !== title67Profile) assert.equal(entries[239].status, 'recovered');
+    for (const id of profile === title67Profile ? [629] : [688])
       assert.equal(entries[id].status, 'unknown');
   } finally {
     await source.world.close();
