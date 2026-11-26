@@ -139,6 +139,18 @@ frames. The same command in the main frame cursor continues after draining.
 `result` has this native return too. JavaScript asynchronous work for an
 original zero-return command retains its continuation. No pending host action
 or event continuation is replayed by a completed-action cold restore.
+
+The legacy return-to-title menu command119 also uses inline Japanese text.
+Only 2.6.1.67 sends its preparation notification before the dialog; accepting
+Yes sends the existing return-to-title event. The original callbacks for the
+three builds do not handle the later language menu range or private language
+window messages. The browser leaves those messages outside their language
+service instead of entering an uninitialized multilingual configuration.
+The actual Settings readers retain identical complete field views with and
+without the authored later language nodes. These bounded startup, Settings,
+window, FES and cold-file proofs do not enable a global language-table API:
+those legacy policies remain unreviewed. The modern language native IDs are
+outside the legacy Main tables, rather than unknown entries in those tables.
 No external program, OS registry or network send service is installed.
 
 Actual local-browser tests distinguish trusted opening from the current

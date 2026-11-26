@@ -723,7 +723,7 @@ export class NativeWorld {
       return;
     }
     if (await this.window.message(message)) return;
-    if ([0x46e, 0x46f, 0x470].includes(message.message)) {
+    if (this.configuration.language && [0x46e, 0x46f, 0x470].includes(message.message)) {
       const field = ['ui', 'main', 'sub'][message.message - 0x46e];
       await this.applyNativeLanguage(field, { reloadMainFirst: field === 'main' });
     } else if (message.message === 0x467 && !this.host.nativeWindowMessage)

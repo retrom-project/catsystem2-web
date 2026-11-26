@@ -916,6 +916,11 @@ export default {
     },
     movieInput: { query: 32, gate: 143 },
     windowDirectClose: 0x433,
+    windowTitleConfirmation: {
+      caption: 'タイトル画面に戻る',
+      message: 'タイトル画面に戻ってよろしいですか？',
+      prepare: false,
+    },
     windowCloseConfirmation: { caption: '退出', template: '%s 确定要退出吗？' },
     soundBaseOnly: [22],
     scriptForward: [9, 10, 22],

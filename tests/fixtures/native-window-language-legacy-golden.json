@@ -1,0 +1,527 @@
+{
+  "scope": "Own WM_COMMAND119 callbacks with captured MessageBoxA and native Root send. Actual native Root teardown is not executed. Settings readers and WM_CLOSE/private-language paths have independent own evidence.",
+  "builds": [
+    {
+      "version": "23",
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+      "receiptSha256": "6bafb7409fb2ed19c70da903fa43bd715cf82ceba1a48455e7a03594563357ed",
+      "settingsReceiptSha256": "7f7ff5c617a192ab36807e3df26a8c5203ff74cd8e77968a923168f0c83c81cc",
+      "rows": [
+        {
+          "present": false,
+          "reply": 0,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": false,
+          "reply": 1,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": false,
+          "reply": 2,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": false,
+          "reply": 6,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": true,
+          "reply": 0,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": true,
+          "reply": 1,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": true,
+          "reply": 2,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": true,
+          "reply": 6,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            },
+            {
+              "type": "native-message",
+              "raw": 20,
+              "w": 0,
+              "l": 0
+            }
+          ]
+        }
+      ],
+      "languageMenus": [
+        {
+          "command": 40065,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40074,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40075,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40084,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40085,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40094,
+          "result": 0,
+          "events": []
+        }
+      ],
+      "languageMessages": [
+        {
+          "message": 1134,
+          "result": 0,
+          "events": []
+        },
+        {
+          "message": 1135,
+          "result": 0,
+          "events": []
+        },
+        {
+          "message": 1136,
+          "result": 0,
+          "events": []
+        }
+      ],
+      "startupXML": [
+        "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><APP><title>Ordinary title</title></APP><INT><int05><name>movie</name><int>container.int</int><ext>mpg</ext><dir>loose-dir</dir></int05></INT></document>",
+        "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><APP><title>Ordinary title</title></APP><INT><int05><name>movie</name><int>container.int</int><ext>mpg</ext><dir>loose-dir</dir></int05></INT><language><default>1</default><L00><code>1041</code><lang>日本語</lang><prefix>jp</prefix></L00><L01><code>1033</code><lang>English</lang><prefix>en</prefix></L01><OPTTABLE>options.txt</OPTTABLE><id><UI>1</UI><main>1</main><sub>0</sub></id></language></document>"
+      ],
+      "settingsViewBytes": 91140,
+      "settingsViewsEqual": true
+    },
+    {
+      "version": "63",
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "receiptSha256": "ee0b032c7ad820373c63c624d3dbabd69ac77b94f2e2074368a25ee4bacb4561",
+      "settingsReceiptSha256": "e2c02a16c953740977d8ffab3988c0b1f96edf3b9d883bcc45e13d371b1d344d",
+      "rows": [
+        {
+          "present": false,
+          "reply": 0,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": false,
+          "reply": 1,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": false,
+          "reply": 2,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": false,
+          "reply": 6,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": true,
+          "reply": 0,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": true,
+          "reply": 1,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": true,
+          "reply": 2,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": true,
+          "reply": 6,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            },
+            {
+              "type": "native-message",
+              "raw": 21,
+              "w": 0,
+              "l": 0
+            }
+          ]
+        }
+      ],
+      "languageMenus": [
+        {
+          "command": 40065,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40074,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40075,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40084,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40085,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40094,
+          "result": 0,
+          "events": []
+        }
+      ],
+      "languageMessages": [
+        {
+          "message": 1134,
+          "result": 0,
+          "events": []
+        },
+        {
+          "message": 1135,
+          "result": 0,
+          "events": []
+        },
+        {
+          "message": 1136,
+          "result": 0,
+          "events": []
+        }
+      ],
+      "startupXML": [
+        "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><APP><title>Ordinary title</title></APP><INT><int05><name>movie</name><int>container.int</int><ext>mpg</ext><dir>loose-dir</dir></int05></INT></document>",
+        "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><APP><title>Ordinary title</title></APP><INT><int05><name>movie</name><int>container.int</int><ext>mpg</ext><dir>loose-dir</dir></int05></INT><language><default>1</default><L00><code>1041</code><lang>日本語</lang><prefix>jp</prefix></L00><L01><code>1033</code><lang>English</lang><prefix>en</prefix></L01><OPTTABLE>options.txt</OPTTABLE><id><UI>1</UI><main>1</main><sub>0</sub></id></language></document>"
+      ],
+      "settingsViewBytes": 91140,
+      "settingsViewsEqual": true
+    },
+    {
+      "version": "67",
+      "profile": "bokutomo-engine-2.6.1.67",
+      "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "receiptSha256": "28c2601726b01c7438b745942fa130df07d17aa9e1f6e25fcc65e759e48a7310",
+      "settingsReceiptSha256": "de6017375d1b8d9060cf0ce6c5285941caf16c851ed1fb244f9c0f46d9f4e155",
+      "rows": [
+        {
+          "present": false,
+          "reply": 0,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": false,
+          "reply": 1,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": false,
+          "reply": 2,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": false,
+          "reply": 6,
+          "events": [
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": true,
+          "reply": 0,
+          "events": [
+            {
+              "type": "native-message",
+              "raw": 154,
+              "w": 0,
+              "l": 1
+            },
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": true,
+          "reply": 1,
+          "events": [
+            {
+              "type": "native-message",
+              "raw": 154,
+              "w": 0,
+              "l": 1
+            },
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": true,
+          "reply": 2,
+          "events": [
+            {
+              "type": "native-message",
+              "raw": 154,
+              "w": 0,
+              "l": 1
+            },
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            }
+          ]
+        },
+        {
+          "present": true,
+          "reply": 6,
+          "events": [
+            {
+              "type": "native-message",
+              "raw": 154,
+              "w": 0,
+              "l": 1
+            },
+            {
+              "type": "MessageBoxA",
+              "caption": "タイトル画面に戻る",
+              "message": "タイトル画面に戻ってよろしいですか？",
+              "buttons": 4
+            },
+            {
+              "type": "native-message",
+              "raw": 21,
+              "w": 0,
+              "l": 0
+            }
+          ]
+        }
+      ],
+      "languageMenus": [
+        {
+          "command": 40065,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40074,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40075,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40084,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40085,
+          "result": 0,
+          "events": []
+        },
+        {
+          "command": 40094,
+          "result": 0,
+          "events": []
+        }
+      ],
+      "languageMessages": [
+        {
+          "message": 1134,
+          "result": 0,
+          "events": []
+        },
+        {
+          "message": 1135,
+          "result": 0,
+          "events": []
+        },
+        {
+          "message": 1136,
+          "result": 0,
+          "events": []
+        }
+      ],
+      "startupXML": [
+        "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><APP><title>Ordinary title</title></APP><INT><int05><name>movie</name><int>container.int</int><ext>mpg</ext><dir>loose-dir</dir></int05></INT></document>",
+        "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><APP><title>Ordinary title</title></APP><INT><int05><name>movie</name><int>container.int</int><ext>mpg</ext><dir>loose-dir</dir></int05></INT><language><default>1</default><L00><code>1041</code><lang>日本語</lang><prefix>jp</prefix></L00><L01><code>1033</code><lang>English</lang><prefix>en</prefix></L01><OPTTABLE>options.txt</OPTTABLE><id><UI>1</UI><main>1</main><sub>0</sub></id></language></document>"
+      ],
+      "settingsViewBytes": 91140,
+      "settingsViewsEqual": true
+    }
+  ]
+}

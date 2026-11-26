@@ -20,12 +20,16 @@ const preparation = new Set([119, 40002, 40027, 40057, 40011, 40041, 40019, 4003
 export class NativeWindow {
   constructor(world) {
     this.world = world;
-    const { windowDirectClose, windowCloseConfirmation, windowClosePreparation } = nativeABI(
-      world.profile,
-    ).messages;
+    const {
+      windowDirectClose,
+      windowCloseConfirmation,
+      windowClosePreparation,
+      windowTitleConfirmation,
+    } = nativeABI(world.profile).messages;
     this.directCloseMessage = windowDirectClose;
     this.closeConfirmation = windowCloseConfirmation;
     this.closePreparation = windowClosePreparation !== false;
+    this.titleConfirmation = windowTitleConfirmation;
     // The original Game owner constructor712820 initializes this raw DWORD.
     this.broadcastFlag = 0;
   }
@@ -72,7 +76,8 @@ export class NativeWindow {
       message === 0x10 ||
       message === 0x410 ||
       (this.directCloseMessage !== undefined && message === this.directCloseMessage) ||
-      [0x467, 0x468, 0x46e, 0x46f, 0x470].includes(message) ||
+      [0x467, 0x468].includes(message) ||
+      Boolean(this.world.configuration.language && [0x46e, 0x46f, 0x470].includes(message)) ||
       (message === 0x112 && (wParam & 0xfff0) === 0xf020)
     );
   }
@@ -236,14 +241,18 @@ export class NativeWindow {
       return true;
     }
     if (!commands.has(command)) return false;
-    if (preparation.has(command) && (command !== 40002 || this.closePreparation))
+    if (
+      preparation.has(command) &&
+      (command !== 40002 || this.closePreparation) &&
+      (command !== 119 || this.titleConfirmation?.prepare !== false)
+    )
       await this.sendEvent(158, 0, 1);
     switch (command) {
       case 119:
         if (
           await this.action('confirm-title', {
-            caption: this.text('$0000-0035$'),
-            message: this.text('$0000-0036$'),
+            caption: this.titleConfirmation?.caption ?? this.text('$0000-0035$'),
+            message: this.titleConfirmation?.message ?? this.text('$0000-0036$'),
           })
         )
           await this.sendEvent(21);

@@ -1105,6 +1105,11 @@ export default {
     },
     movieInput: { query: 32, gate: 143 },
     windowDirectClose: 0x433,
+    windowTitleConfirmation: {
+      caption: 'タイトル画面に戻る',
+      message: 'タイトル画面に戻ってよろしいですか？',
+      prepare: true,
+    },
     windowCloseConfirmation: { caption: '終了', template: '%s を終了してよろしいですか？' },
     // Close preparation communicates the original raw 154 notification.
     soundBaseOnly: [22, 158],

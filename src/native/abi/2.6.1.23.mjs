@@ -1584,6 +1584,11 @@ export default {
     screenEvent: 18,
     tilePlaneCommand: 42,
     windowClosePreparation: false,
+    windowTitleConfirmation: {
+      caption: 'タイトル画面に戻る',
+      message: 'タイトル画面に戻ってよろしいですか？',
+      prepare: false,
+    },
     windowCloseConfirmation: { caption: '終了', template: '%s を終了してよろしいですか？' },
   },
   floatingPoint: {
