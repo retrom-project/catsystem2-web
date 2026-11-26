@@ -128,3 +128,50 @@ validation. `candidateMatches` reports unique code-context pairs, while
 paired candidates whose semantics remain unconfirmed.
 CST condition-analysis failures are recorded per line. Other commands in the
 same successfully decoded container remain in the static coverage result.
+
+## SDK 2.6.1.23 remaining scopes
+
+The census at core `f8f770147ea31077ca0fd1e3e6e4a8eacee14704` joins the
+historical classification to the resolved [current registration](../src/native/abi/2.6.1.23.mjs),
+not its historical unknown count. It applies only to executable SHA-256
+`9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67`.
+Main has 57 reserved, 710 recovered, 17 constant-zero and 85 unknown slots;
+Generic 45 and Particle 44/51 are registered. Registration alone does not
+establish every receiver, argument shape or lifecycle.
+
+The remaining 85 slots classify as 61 ordinary runtime, 21 desktop author/export
+and three with insufficient receiver evidence (`457`, `682`, `688`). Their 85
+original handler bodies are distinct. The selected CST corpus contains 16 call
+sites with 14 distinct argument/result shapes, all in the desktop group. Absence
+of a selected script reference does not establish that a slot is unreachable.
+
+The ordinary group contains 27 bitmap/image/Plane, 16 Draw, nine text, three
+AreaEffect, two Script accumulator and one each of camera, screen effect,
+Particle and sound slots. The bitmap group includes the separate Plane mesh
+entry `467`. Image/Draw ownership and data interfaces require their own
+build's factories, raw message mapping, retained references and VM callers;
+modern same-ID implementations are candidate contracts until those checks pass.
+
+Entries `837`–`843` belong to the original kind-53 `kcTaskQzDebug` factory and
+Win32 dialog receiver. They remain desktop scopes. Normal player routing misses
+observed for other desktop wrappers establish only those argument/receiver
+shapes; formatting may still occur before routing. Neither classification nor a
+routing miss establishes an original whole-slot stub.
+
+`442`/`443` operate on the real Script's unsigned accumulator at `+0x1e4`.
+Its update follows Base and precedes VM execution while active. The original
+second update input comes from host frame-pacer wait sampling. The current
+World has no corresponding input, so these entries remain protected without a
+frame, clock or constant substitute. The separate 88-byte Script diagnostic
+dump omits this field; that export alone does not prove the GAME_SAVE reader.
+Main `588` likewise keeps its established split: an active original manager
+leaves the caller's result unwritten, while an absent manager has a defined zero
+shape. The active branch is already reviewed original undefined behavior.
+
+The historical 52 guarded shapes and six secondary items remain provenance,
+not current residual totals. In particular, the KCDB resource-stage follow-up
+has a later implementation receipt. Current ordinary guards still distinguish
+RGB24 rightward aliasing, packed legacy text initialization and nonfinite vector
+transforms; Main/Generic aliases share a body/shape review. Original undefined
+inputs retain guards without new native probes. Raw per-slot records, source
+pins, positive VM observations and receipt hashes stay in ignored local storage.
