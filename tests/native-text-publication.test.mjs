@@ -1008,3 +1008,29 @@ test('independent copies preserve eligibility, while public borrowing lasts unti
     await h.world.close({ flushFiles: false });
   }
 });
+
+test('fresh World texture pages retain their public observation fence', async () => {
+  const h = await setup();
+  let fresh;
+  try {
+    const saved = h.world.snapshot();
+    fresh = await defaultFESWorld(
+      profiles[3],
+      { 'font.ttf': fontBytes },
+      { initialize: false, glyphs: undefined },
+    );
+    await fresh.restore(saved);
+    const task = fresh.graphics.get(h.task.record.id),
+      batch = fresh.text.beginPublication(task, h.config),
+      pages = fresh.graphics.texturePages;
+    assert(batch);
+    await task.message([fresh.main.id, task.firstMessage + 4, 0, 0], { textPublication: batch });
+    pages.frame(0);
+    assert.equal(batch.physicalPublications, 1);
+    assert.equal(batch.enabled, false);
+    assert.equal(fresh.text.beginPublication(task, h.config), null);
+  } finally {
+    await fresh?.close({ flushFiles: false });
+    await h.world.close({ flushFiles: false });
+  }
+});

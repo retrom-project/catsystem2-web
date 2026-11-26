@@ -3,6 +3,26 @@
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
 import { copyBitmapRow } from './raster-kernel.mjs';
 import { nativeBitmapFrame, borrowNativePixels } from './image.mjs';
+import { nativeTextureConsumer, registerNativeTextureRead } from '../render/particles-gl.mjs';
+const textureReadBarriers = new WeakMap(),
+  textureOwners = new WeakMap();
+
+export function nativeTexturePagesOwned(pages, owner) {
+  return (
+    textureOwners.get(pages) === owner &&
+    Object.getPrototypeOf(pages) === NativeTexturePages.prototype &&
+    Object.getOwnPropertyDescriptor(pages, 'beforeMutation')?.value ===
+      textureReadBarriers.get(pages)
+  );
+}
+// Privileged renderer entry. Public frame() keeps its permanent borrowing rule.
+export function nativeTexturePageFrame(pages, index, gpu, owner) {
+  const barrier = textureReadBarriers.get(pages);
+  if (!barrier || !nativeTexturePagesOwned(pages, owner) || !nativeTextureConsumer(gpu))
+    return pages.frame(index);
+  barrier();
+  return pages.pages.get(index >>> 0)?.frame ?? NULL_NATIVE_TEXTURE;
+}
 // The shared virtual D3D9 platform exposes this guard band for its captured limit.
 export function virtualD3DGuardBand(maximum) {
   return [-maximum, -maximum, maximum, maximum];
@@ -93,36 +113,52 @@ export function textureDitherThreshold(x, y) {
 }
 export class NativeTexturePages {
   #pageIdentities = new WeakMap();
+  #observe() {
+    const barrier = textureReadBarriers.get(this);
+    barrier?.();
+    if (this.beforeMutation !== barrier) this.beforeMutation?.();
+  }
 
   constructor(
     layout,
-    { release = () => {}, stage = null, trackDirty = false, beforeMutation = null } = {},
+    {
+      release = () => {},
+      stage = null,
+      trackDirty = false,
+      beforeMutation = null,
+      readBarrier = null,
+      owner = null,
+    } = {},
   ) {
     this.layout = structuredClone(layout);
     this.releaseFrame = release;
     this.stage = stage;
     this.beforeMutation = beforeMutation;
+    if (owner && readBarrier) {
+      textureReadBarriers.set(this, readBarrier);
+      textureOwners.set(this, owner);
+    }
     this.pages = new Map();
     this.allocateMissing();
     // The flag table covers the entire grid and starts clean after allocation.
     this.dirtyFlags = trackDirty ? new Uint32Array(layout.grid[0] * layout.grid[1]) : null;
   }
   isDirty(index) {
-    this.beforeMutation?.();
+    this.#observe();
     return Boolean(
       this.dirtyFlags && index >= 0 && index < this.dirtyFlags.length && this.dirtyFlags[index],
     );
   }
   hasDirtyPages() {
-    this.beforeMutation?.();
+    this.#observe();
     return this.dirtyFlags?.some((flag) => flag !== 0) ?? false;
   }
   clearDirty() {
-    this.beforeMutation?.();
+    this.#observe();
     this.dirtyFlags?.fill(0);
   }
   allocateMissing(texture = this.layout) {
-    this.beforeMutation?.();
+    this.#observe();
     const layout = this.layout;
     layout.areas = texture.areas.map((row) => Uint32Array.from(row));
     layout.bppY = Uint32Array.from(texture.bppY);
@@ -149,7 +185,7 @@ export class NativeTexturePages {
             if ((this.pages.size + 1) * width * height > 64 * 1024 * 1024)
               throw new RangeError('Native texture allocation exceeds bitmap capacity');
             const surface = this.stage?.createSurface(width, height) ?? null;
-            this.pages.set(index, {
+            const page = {
               x: x * width,
               y: y * height,
               bpp: lower ? 16 : layout.bpp,
@@ -162,12 +198,18 @@ export class NativeTexturePages {
                   : new Uint8ClampedArray(width * height * 4),
                 revision: 0,
               },
-            });
+            };
+            this.#registerRead(page.frame);
+            this.pages.set(index, page);
           }
       }
   }
+  #registerRead(frame) {
+    const barrier = textureReadBarriers.get(this);
+    if (barrier) registerNativeTextureRead(frame, barrier, () => borrowNativePixels(frame.rgba));
+  }
   releaseRectangle(x, y, width, height) {
-    this.beforeMutation?.();
+    this.#observe();
     const right = (x + width) | 0,
       bottom = (y + height) | 0;
     if (x >= right || y >= bottom) return;
@@ -221,7 +263,7 @@ export class NativeTexturePages {
     retained = null,
     { textPublication = null, revisionSteps = 1 } = {},
   ) {
-    this.beforeMutation?.();
+    this.#observe();
     const dither = Boolean(this.layout.dither);
     const input = await nativeBitmapFrame(
         bitmap,
@@ -251,7 +293,7 @@ export class NativeTexturePages {
     if (full || ownsFootprint) return this.#capturePublication(current.rectangle, input);
   }
   clear(x, y, width, height) {
-    this.beforeMutation?.();
+    this.#observe();
     const right = (x + width) | 0,
       bottom = (y + height) | 0;
     if (x >= right || y >= bottom) return;
@@ -274,7 +316,7 @@ export class NativeTexturePages {
     }
   }
   close() {
-    this.beforeMutation?.();
+    this.#observe();
     for (const page of this.pages.values()) {
       this.releaseFrame(page.frame);
       if (page.surface) this.stage.releaseSurface(page.surface);
@@ -282,13 +324,13 @@ export class NativeTexturePages {
     this.pages.clear();
   }
   frame(index) {
-    this.beforeMutation?.();
+    this.#observe();
     const frame = this.pages.get(index >>> 0)?.frame ?? NULL_NATIVE_TEXTURE;
     borrowNativePixels(frame.rgba);
     return frame;
   }
   snapshot() {
-    this.beforeMutation?.();
+    this.#observe();
     return structuredClone({
       layout: this.layout,
       dirtyFlags: this.dirtyFlags,
@@ -299,7 +341,7 @@ export class NativeTexturePages {
     });
   }
   restore(state) {
-    this.beforeMutation?.();
+    this.#observe();
     const flags = state.dirtyFlags,
       count = state.layout.grid[0] * state.layout.grid[1];
     if (
@@ -343,6 +385,7 @@ export class NativeTexturePages {
         ]);
         page.frame.rgba = new Uint8ClampedArray(this.stage.surfaces.get(page.surface).bytes.buffer);
       } else page.frame.rgba = new Uint8ClampedArray(bytes.buffer);
+      this.#registerRead(page.frame);
     }
   }
 }

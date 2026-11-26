@@ -201,8 +201,14 @@ held across `await`. A new bitmap allocation can regain ownership; restoring a
 method or taking a copy cannot revoke an earlier loan. Internal bitmap row/page
 copies use identity-checked owned access, while bitmap snapshots, clones, crops
 and page snapshots return independent copies. They do not lend the source.
-Page frames passed by the current graphics draw path to the replaceable GPU
-also count as borrowed; no GPU retention or callback purity is assumed.
+The default graphics draw path may retain the original frame/cache key inside
+the verified `ParticlesGL` instance and its original WebGL2 port. Its managed
+texture reads, cache hits, device validation and reconstruction first settle the
+page owner's pending output. Reader/cache/GL method replacement loses this
+qualification and permanently borrows the affected page; restoring a method
+does not revoke the loan. Public page frames and unknown GPU consumers keep the
+ordinary borrowing path. No pixel shadow cache is added, and cold World page
+reconstruction installs the same mutation and read fences.
 
 The pending frame is the owned empty writer allocation, retained when a later
 configuration replaces it. The final publication takes one independent pixel

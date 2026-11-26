@@ -77,6 +77,7 @@ export class NativeTextService {
           writer.pixels.height === height &&
           (!batch.pending || writer.parser.source.length === 0) &&
           nativeTextPublicationWriter(writer, nextConfig) &&
+          (!publicationSinks.has(batch) || publicationSinks.get(batch).eligible()) &&
           nativeTextGraphicsPublication(this.world.graphics),
         before: () => {
           if (batch.enabled && !batch.eligible()) return this.flushPublications();

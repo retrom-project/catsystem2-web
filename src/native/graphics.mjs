@@ -38,6 +38,7 @@ import {
   createD3DContext,
   snapshotD3DContext,
   restoreD3DContext,
+  nativeTextureReadOwned,
 } from '../render/particles-gl.mjs';
 import {
   initializeFESGraphics,
@@ -53,6 +54,8 @@ import {
   virtualD3DTextureCaps,
   virtualD3DGuardBand,
   uploadTextureFrame,
+  nativeTexturePagesOwned,
+  nativeTexturePageFrame,
 } from './texture-layout.mjs';
 import { NativeCursor } from './cursor.mjs';
 import { nativeInputBitmapMask } from './input.mjs';
@@ -68,6 +71,20 @@ const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) 
 const UNVERIFIED_REGISTRATION = 'unverified';
 const hasRegistration = (graph) =>
   graph && (typeof graph.registrationEnabled === 'boolean' || graph.registrationEnabled === null);
+function nativeTexturePageOptions(graphics) {
+  const settle = () => {
+    const text = graphics.world.text;
+    if (text?.publications?.size) text.settlePublications();
+  };
+  return {
+    stage: graphics.world.stageRenderer ?? null,
+    release: (frame) => graphics.world.getNativeGPU?.()?.releaseTextureFrame(frame),
+    trackDirty: graphics.tracksTextureDirty,
+    beforeMutation: settle,
+    readBarrier: settle,
+    owner: graphics,
+  };
+}
 const BASE_PLANE_MESSAGES = new Set([
   3, 4, 5, 6, 7, 8, 19, 47, 48, 50, 52, 53, 54, 89, 90, 92, 93, 94, 95, 96, 97, 98, 99, 100,
 ]);
@@ -167,15 +184,7 @@ export class NativeGraphics {
     texture.size.set(layout.configurationSize);
     for (const field of ['grid', 'bppY']) texture[field].set(layout[field]);
     texture.areas.forEach((row, i) => row.set(layout.areas[i]));
-    this.texturePages = new NativeTexturePages(layout, {
-      stage: this.world.stageRenderer ?? null,
-      release: (frame) => this.world.getNativeGPU?.()?.releaseTextureFrame(frame),
-      trackDirty: this.tracksTextureDirty,
-      beforeMutation: () => {
-        const text = this.world.text;
-        if (text?.publications?.size) text.settlePublications();
-      },
-    });
+    this.texturePages = new NativeTexturePages(layout, nativeTexturePageOptions(this));
   }
   get tracksTextureDirty() {
     // Internal uploads/clears are tracked independently of the native bounds-query API.
@@ -432,11 +441,7 @@ export class NativeGraphics {
     this.view.restore(view);
     this.texturePages?.close();
     this.texturePages = texturePages
-      ? new NativeTexturePages(texturePages.layout, {
-          stage: this.world.stageRenderer ?? null,
-          release: (frame) => this.world.getNativeGPU?.()?.releaseTextureFrame(frame),
-          trackDirty: this.tracksTextureDirty,
-        })
+      ? new NativeTexturePages(texturePages.layout, nativeTexturePageOptions(this))
       : null;
     if (texturePages) this.texturePages.restore(texturePages);
     this.cursor.restore(cursor);
@@ -606,6 +611,7 @@ export function nativeTextGraphicsPublication(graphics) {
     vram.registry === graphics.images &&
     handles.records.get(vram.dataHandle)?.type === 'bitmap-data' &&
     ordinaryPublicationConsumer(graphics.texturePages, 3) &&
+    nativeTexturePagesOwned(graphics.texturePages, graphics) &&
     !vram.canvasDirty &&
     nativeBitmapStorageOwned(vram) &&
     nativePublicationPixels(Object.getOwnPropertyDescriptor(nativeBitmapState(vram), 'rgba')?.value)
@@ -635,7 +641,8 @@ export function captureTextPublicationSink(graphics, width, height, offset) {
     pages = [],
     upload = graphics.view.active,
     dither = Boolean(texture.layout.dither),
-    dirtyFlags = texture.dirtyFlags;
+    dirtyFlags = texture.dirtyFlags,
+    checkedReaders = new Map();
   if (upload)
     for (const [index, page] of texture.pages) {
       const { frame } = page;
@@ -650,6 +657,7 @@ export function captureTextPublicationSink(graphics, width, height, offset) {
       if (
         ![16, 32].includes(page.bpp) ||
         nativePixelsWereBorrowed(frame.rgba) ||
+        !nativeTextureReadOwned(frame, checkedReaders) ||
         !nativePublicationPixels(frame.rgba) ||
         frame.rgba.length !== frame.width * frame.height * 4 ||
         (page.surface &&
@@ -663,6 +671,13 @@ export function captureTextPublicationSink(graphics, width, height, offset) {
       pages.push([index, { ...page, frame, surfaceObject }]);
     }
   return {
+    eligible() {
+      const readers = new Map();
+      return pages.every(
+        ([, page]) =>
+          !nativePixelsWereBorrowed(page.frame.rgba) && nativeTextureReadOwned(page.frame, readers),
+      );
+    },
     current: () =>
       state.width === targetWidth &&
       state.height === targetHeight &&
@@ -1892,7 +1907,10 @@ export class NativeGraphicTask {
         while (end < triangles.length && triangles[end].textureID === textureID) end++;
         const batch = triangles.slice(first, end);
         if (draws) {
-          const frame = textureID === -1 ? WHITE : this.graphics.texturePages.frame(textureID);
+          const frame =
+            textureID === -1
+              ? WHITE
+              : nativeTexturePageFrame(this.graphics.texturePages, textureID, gpu, this.graphics);
           draws.push({ triangles: batch, frame });
         } else {
           const frame = textureID === -1 ? WHITE : await this.graphics.meshTexture(textureID);
