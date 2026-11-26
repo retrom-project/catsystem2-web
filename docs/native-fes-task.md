@@ -1337,3 +1337,12 @@ inserts STRTABLE at index 32 before M2PLANE at index 33; .63 has M2PLANE at 32.
 The unnamed rows following those tables are not admitted object definitions.
 These catalogs select existing typed implementations; they do not claim every
 provider or resource shape of those implementations has been recovered.
+
+The .63 Main650 import is recovered through an original loaded Script VM and
+native CSS write/read. It reads an existing tag, sends its exact byte span to the
+FES bulk receiver and returns a control-1 boolean. The transfer uses the bank's
+current context; it does not select the FES context. A successful nonempty import
+selects `_LOAD_` without executing it. The integration test compares the full
+original CSS bytes, exports them through GAME_SAVE, then imports them in a new
+storage instance and an independently initialized World. This preserves the
+separate scalar-selection boundary and the existing file contract.
