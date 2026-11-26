@@ -45,109 +45,116 @@ function recordIO(world) {
   return calls;
 }
 
-test('fixed 2.6.1.23 Plane video keeps existing models until its MPEG decoder opens', async (t) => {
-  const profile = 'grisaia-jp-engine-2.6.1.23',
-    program = kcsProgram([
-      [37, 0x29f34710],
-      [37, 21],
-      [37, 256],
-      [43, 701, 8],
-      [37, 21],
-      [43, 702, 4],
-      [59],
-    ]),
-    source = Uint8Array.of(0, 0, 1, 0xba, 0x21, 0, 1),
-    world = await dataWorld(profile, { 'load.kcs': program, 'media/試験.mpg': source });
-  t.after(() => world.close({ flushFiles: false }));
-  world.game.nativeResources = {
-    entries: [{ name: 'movie', directory: 'media', extension: 'mpg' }],
-  };
-  const plane = await world.objects.create({ kind: 2, parent: world.root, nativeID: 21 }),
-    owner = world.graphics.get(plane),
-    base = await world.objects.create({ kind: 6, parent: world.root, nativeID: 22 }),
-    draw = await world.objects.create({ kind: 15, parent: world.root, nativeID: 23 }),
-    pixels = Uint8Array.of(37, 51, 67, 83, 101, 159, 181, 193);
-  let allowed = false,
-    opens = 0,
-    closes = 0;
-  world.host.nativeMovie = (filename, id) => ({
-    open(name, input) {
-      assert.equal(filename, 'media/試験.MPG');
-      assert.equal(name, filename);
-      assert.equal(id, plane);
-      assert.deepEqual(input.bytes, source);
-      opens++;
-      return allowed;
-    },
-    close() {
-      closes++;
-    },
-    configure() {},
-    metadata: () => ({ width: 2, height: 1, duration: 200n, alpha: false }),
-    frameStamp: () => 11,
-    decodedFrame: () => ({ width: 2, height: 1, rgba: pixels }),
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
+])
+  test(`${profile} Plane video keeps existing models until its MPEG decoder opens`, async (t) => {
+    const program = kcsProgram([
+        [37, 0x29f34710],
+        [37, 21],
+        [37, 256],
+        [43, 701, 8],
+        [37, 21],
+        [43, 702, 4],
+        [59],
+      ]),
+      source = Uint8Array.of(0, 0, 1, 0xba, 0x21, 0, 1),
+      world = await dataWorld(profile, { 'load.kcs': program, 'media/試験.mpg': source });
+    t.after(() => world.close({ flushFiles: false }));
+    world.game.nativeResources = {
+      entries: [{ name: 'movie', directory: 'media', extension: 'mpg' }],
+    };
+    const plane = await world.objects.create({ kind: 2, parent: world.root, nativeID: 21 }),
+      owner = world.graphics.get(plane),
+      base = await world.objects.create({ kind: 6, parent: world.root, nativeID: 22 }),
+      draw = await world.objects.create({ kind: 15, parent: world.root, nativeID: 23 }),
+      pixels = Uint8Array.of(37, 51, 67, 83, 101, 159, 181, 193);
+    let allowed = false,
+      opens = 0,
+      closes = 0;
+    world.host.nativeMovie = (filename, id) => ({
+      open(name, input) {
+        assert.equal(filename, 'media/試験.MPG');
+        assert.equal(name, filename);
+        assert.equal(id, plane);
+        assert.deepEqual(input.bytes, source);
+        opens++;
+        return allowed;
+      },
+      close() {
+        closes++;
+      },
+      configure() {},
+      metadata: () => ({ width: 2, height: 1, duration: 200n, alpha: false }),
+      frameStamp: () => 11,
+      decodedFrame: () => ({ width: 2, height: 1, rgba: pixels }),
+    });
+    const run = async (name) => {
+        const task = await world.spawnScript('load.kcs', {
+            parent: world.root,
+            initialExecute: false,
+          }),
+          machine = task.machine,
+          floor = machine.sp;
+        machine.writeString(name, 256);
+        await world.runtime.scheduler.execute(task);
+        assert.equal(machine.sp, floor + 8);
+        assert.equal(machine.load(floor), 0x29f34710);
+        return machine.load(floor + 4);
+      },
+      call = (id, args) => world.runtime.native('main', id, args, world.main.machine, world.main);
+    await world.sendEngine(plane, world.root, 42, 0, 0, {
+      payload: new NativeGraphicsPacket([0, 0, 0, floatBits(4), floatBits(3), 0, 0, 0xff123456]),
+    });
+    const graph = owner.graph;
+    assert.equal(await run('試験.MPG'), 0);
+    assert.equal(owner.graph, graph);
+    assert.equal(opens, 0);
+    world.graphics.createLogicalDevice();
+    owner.state.vramType = 2;
+    assert.equal(await run('試験.MPG'), 0);
+    assert.equal(owner.graph, graph);
+    assert.equal(opens, 0);
+    owner.state.vramType = 1;
+    assert.equal(await run('not-present'), 0);
+    assert.equal(owner.graph, graph);
+    assert.equal(opens, 0);
+    assert.equal(await run('試験.MPG'), 0);
+    assert.equal(owner.graph, graph);
+    assert.deepEqual([opens, closes], [1, 1]);
+    assert.equal(world.movies.sessions.size, 0);
+    assert.deepEqual(await call(701, [0, 0xffffffff]), { control: 2 });
+    await assert.rejects(
+      call(702, [world.nativeTaskID(draw)]),
+      /requires a Top, Plane or BasePlane/,
+    );
+    assert.deepEqual(await call(702, [0]), { control: 1, value: 0 });
+    assert.deepEqual(await call(702, [world.nativeTaskID(base)]), { control: 1, value: 0 });
+    assert.deepEqual(await call(702, [0xf002713c]), { control: 1, value: 0 });
+    await assert.rejects(run('unreviewed.avi'), /Unreviewed media type/);
+    assert.equal(owner.graph, graph);
+    allowed = true;
+    const previous = world.configuration.fields.general.disableMovie;
+    world.configuration.fields.general.disableMovie = true;
+    const handle = await run('試験.MPG'),
+      record = world.movies.get(handle);
+    world.configuration.fields.general.disableMovie = previous;
+    assert.ok(handle);
+    assert.equal(record.owner, plane);
+    assert.equal(record.prepared, true);
+    assert.deepEqual([owner.graph.type, owner.graph.width, owner.graph.height], [3, 2, 1]);
+    const frame = await world.planeMovies.retainedFrame(owner.graph.movie);
+    assert.deepEqual(frame.rgba, Uint8ClampedArray.of(37, 51, 67, 255, 101, 159, 181, 255));
+    assert.deepEqual(await call(702, [21]), { control: 1, value: handle });
+    assert.equal(world.movies.renderGate, 0);
+    await world.objects.release(plane);
+    assert.deepEqual(await call(702, [21]), { control: 1, value: 0 });
+    assert.deepEqual([opens, closes], [2, 2]);
+    assert.equal(world.runtime.handles.records.has(handle), false);
+    assert.equal(world.runtime.handles.records.has(record.bitmap), false);
   });
-  const run = async (name) => {
-      const task = await world.spawnScript('load.kcs', {
-          parent: world.root,
-          initialExecute: false,
-        }),
-        machine = task.machine,
-        floor = machine.sp;
-      machine.writeString(name, 256);
-      await world.runtime.scheduler.execute(task);
-      assert.equal(machine.sp, floor + 8);
-      assert.equal(machine.load(floor), 0x29f34710);
-      return machine.load(floor + 4);
-    },
-    call = (id, args) => world.runtime.native('main', id, args, world.main.machine, world.main);
-  await world.sendEngine(plane, world.root, 42, 0, 0, {
-    payload: new NativeGraphicsPacket([0, 0, 0, floatBits(4), floatBits(3), 0, 0, 0xff123456]),
-  });
-  const graph = owner.graph;
-  assert.equal(await run('試験.MPG'), 0);
-  assert.equal(owner.graph, graph);
-  assert.equal(opens, 0);
-  world.graphics.createLogicalDevice();
-  owner.state.vramType = 2;
-  assert.equal(await run('試験.MPG'), 0);
-  assert.equal(owner.graph, graph);
-  assert.equal(opens, 0);
-  owner.state.vramType = 1;
-  assert.equal(await run('not-present'), 0);
-  assert.equal(owner.graph, graph);
-  assert.equal(opens, 0);
-  assert.equal(await run('試験.MPG'), 0);
-  assert.equal(owner.graph, graph);
-  assert.deepEqual([opens, closes], [1, 1]);
-  assert.equal(world.movies.sessions.size, 0);
-  assert.deepEqual(await call(701, [0, 0xffffffff]), { control: 2 });
-  await assert.rejects(call(702, [world.nativeTaskID(draw)]), /requires a Top, Plane or BasePlane/);
-  assert.deepEqual(await call(702, [0]), { control: 1, value: 0 });
-  assert.deepEqual(await call(702, [world.nativeTaskID(base)]), { control: 1, value: 0 });
-  assert.deepEqual(await call(702, [0xf002713c]), { control: 1, value: 0 });
-  await assert.rejects(run('unreviewed.avi'), /Unreviewed media type/);
-  assert.equal(owner.graph, graph);
-  allowed = true;
-  const previous = world.configuration.fields.general.disableMovie;
-  world.configuration.fields.general.disableMovie = true;
-  const handle = await run('試験.MPG'),
-    record = world.movies.get(handle);
-  world.configuration.fields.general.disableMovie = previous;
-  assert.ok(handle);
-  assert.equal(record.owner, plane);
-  assert.equal(record.prepared, true);
-  assert.deepEqual([owner.graph.type, owner.graph.width, owner.graph.height], [3, 2, 1]);
-  const frame = await world.planeMovies.retainedFrame(owner.graph.movie);
-  assert.deepEqual(frame.rgba, Uint8ClampedArray.of(37, 51, 67, 255, 101, 159, 181, 255));
-  assert.deepEqual(await call(702, [21]), { control: 1, value: handle });
-  assert.equal(world.movies.renderGate, 0);
-  await world.objects.release(plane);
-  assert.deepEqual(await call(702, [21]), { control: 1, value: 0 });
-  assert.deepEqual([opens, closes], [2, 2]);
-  assert.equal(world.runtime.handles.records.has(handle), false);
-  assert.equal(world.runtime.handles.records.has(record.bitmap), false);
-});
 
 test('ordinary Plane movie GCALLs keep a real decoded frame, borrowed controls and cold aliases without original CPU', async () => {
   const first = await fixture(),
@@ -792,5 +799,108 @@ test('browser movie close rejects pending frame and seek waits without a late ca
     assert.equal(decoder.source, null);
   } finally {
     globalThis.document = previous;
+  }
+});
+
+test('2.6.1.67 MPEG borrower controls resume cold at saved position and release by Plane ownership', async () => {
+  const profile = 'bokutomo-engine-2.6.1.67',
+    source = Uint8Array.of(0, 0, 1, 0xba, 0x21, 0, 1),
+    pixels = Uint8Array.of(37, 51, 67, 83, 101, 159, 181, 193),
+    program = kcsProgram(
+      [[37, 21], [37, 256], [43, 701, 8], [37, 21], [43, 702, 4], [37, 240], [43, 71, 4], [59]],
+      [[256, 'clip']],
+    );
+  const make = async (initialize = true) => {
+    const world = await dataWorld(
+        profile,
+        { 'load.kcs': program, 'media/clip.mpg': source },
+        { initialize },
+      ),
+      events = [],
+      sessions = [];
+    world.game.nativeResources = {
+      entries: [{ name: 'movie', directory: 'media', extension: 'mpg' }],
+    };
+    world.host.nativeMovie = (filename, id) => {
+      let at = 0n;
+      const session = {
+        open(name, input) {
+          assert.equal(name, filename);
+          assert.deepEqual(input.bytes, source);
+          events.push(['open', id]);
+          return true;
+        },
+        metadata: () => ({ width: 2, height: 1, duration: 200n, alpha: false }),
+        frameStamp: () => at,
+        decodedFrame: () => ({ width: 2, height: 1, rgba: pixels }),
+        position: () => at,
+        configure() {},
+        play() {
+          events.push(['play']);
+          return true;
+        },
+        stop() {
+          events.push(['stop']);
+          return true;
+        },
+        seek(value) {
+          events.push(['seek', value]);
+          at = value;
+        },
+        close() {
+          events.push(['close']);
+        },
+        setPosition(value) {
+          at = value;
+        },
+      };
+      sessions.push(session);
+      return session;
+    };
+    return { world, events, sessions };
+  };
+  const first = await make(),
+    { world } = first;
+  let fresh;
+  try {
+    world.graphics.createLogicalDevice();
+    const plane = await world.objects.create({ kind: 2, parent: world.root, nativeID: 21 }),
+      script = await world.spawnScript('load.kcs', { initialExecute: false, parent: world.root });
+    await world.runtime.scheduler.execute(script);
+    const machine = script.machine,
+      handle = machine.load(machine.sp - 4),
+      record = world.movies.get(handle),
+      call = (id, args) => world.runtime.native('main', id, args, machine, script);
+    assert.ok(handle);
+    assert.equal(record.owner, plane);
+    assert.equal(world.movies.renderGate, 0);
+    assert.deepEqual(await call(266, [handle, 2]), { control: 1, value: 1 });
+    assert.deepEqual(await call(269, [handle]), { control: 1, value: 1 });
+    first.sessions[0].setPosition(90n);
+    const dto = structuredClone(world.snapshot());
+    fresh = await make(false);
+    await fresh.world.restore(structuredClone(dto));
+    assert.deepEqual(fresh.world.snapshot(), dto);
+    assert.deepEqual(fresh.events, []);
+    assert.equal(fresh.world.runtime.calls.get('main:701') ?? 0, 0);
+    const task = fresh.world.main,
+      invoke = (id, args) => fresh.world.runtime.native('main', id, args, task.machine, task);
+    assert.deepEqual(await invoke(267, [handle]), { control: 1, value: 1 });
+    assert.deepEqual(fresh.events, [['open', plane], ['seek', 90n], ['stop']]);
+    assert.equal(fresh.world.movies.get(handle).running, false);
+    await world.close({ flushFiles: false });
+    assert.equal(fresh.world.runtime.handles.records.has(handle), true);
+    await assert.rejects(invoke(268, [handle]), /Plane owns/);
+    const bitmap = fresh.world.movies.get(handle).bitmap;
+    await fresh.world.objects.release(plane);
+    assert.equal(fresh.world.runtime.handles.records.has(handle), false);
+    assert.equal(fresh.world.runtime.handles.records.has(bitmap), false);
+    assert.equal(fresh.events.filter((e) => e[0] === 'close').length, 1);
+    assert.equal(fresh.world.movies.renderGate, 0);
+    assert.equal(world.nativeEngine, undefined);
+    assert.equal(fresh.world.nativeEngine, undefined);
+  } finally {
+    await fresh?.world.close({ flushFiles: false });
+    await world.close({ flushFiles: false });
   }
 });

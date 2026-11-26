@@ -82,6 +82,18 @@ extensions, live recipients beyond the verified Top, Plane and BasePlane,
 and unresolved live pathname buffers remain protected. The unloaded, Top
 and BasePlane lookups return zero.
 
+Build 2.6.1.67 independently uses the same raw 41/84 load/borrow packets as
+2.6.1.63 (shared Plane messages 43/87). Its complete GCALLs execute its own
+CP932 formatting and category resolution. Its Plane receiver publishes the
+movie model and dimensions only after a mode-one hardware decoder prepares;
+missing devices, other VRAM modes and declined preparation retain the old
+model. The browser uses the existing logical/WebGL device authority and MPEG
+decoder boundary. Native software-device cases and arbitrary synthetic reply
+words remain captured evidence; they are not mapped to invented host modes
+or borrowed handles. The ordinary MPEG borrower is exercised through KCS,
+play/stop, queued completion, independent cold continuation and Plane release.
+Other legacy Plane codecs remain outside this admitted media domain.
+
 A missing source, disabled standard movie, incompatible VRAM mode or unavailable
 SDK Windows Media reader leaves no borrower. The effect loader does not use
 the standard movie disable gate. Once a source has opened, a decoder/graph
