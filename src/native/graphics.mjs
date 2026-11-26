@@ -429,6 +429,8 @@ export class NativeGraphics {
     return {
       base: motionVector(bytes, MOTION_ABI.base),
       pos: motionVector(bytes, MOTION_ABI.pos),
+      baseWords: Array.from({ length: 3 }, (_, i) => view.getUint32(MOTION_ABI.base + i * 4, true)),
+      posWords: Array.from({ length: 3 }, (_, i) => view.getUint32(MOTION_ABI.pos + i * 4, true)),
       matrix: Array.from({ length: 16 }, (_, i) =>
         view.getFloat32(MOTION_ABI.matrix + i * 4, true),
       ),

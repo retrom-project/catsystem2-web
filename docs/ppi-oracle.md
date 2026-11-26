@@ -727,3 +727,33 @@ frame ending at the VM boundary is included in the
 The corpus compares whole local/array state, aliases, mapped short frames and
 fresh cold continuation. File/texture loading and live attachment graphs are
 still separate unfinished work.
+
+## Modern live attachment queries
+
+The two modern Particle 2.0 tables recover attachment queries47–49 from each
+build's actual view, type registry, manager record and GraphGroup. Query47
+reads the registration word, independently of the model display flag. Queries48
+and49 copy base XY and position XYZ. Their float32 copies preserve raw words,
+including signaling NaNs, and fixed argv reads accept mapped prefixes and
+ignore trailing arguments. Output aliases follow the native store order.
+
+A detached particle, absent group or absent device writes zero. A provider that
+has not established a mapping, or a registered group without its model, remains
+diagnostic. NativeGraphics projects base/position words directly from current
+motion bytes; these projections add no checkpoint state. A new logical or GPU
+device must be attached independently when restoring a World.
+
+The original component lifecycle releases model and registry/list nodes but
+retains its60-byte record allocation. This observed native allocation is recorded
+separately from current JS resource ownership. The minimal authored KCS fixtures
+exercise the real original constructors, field setters, actor and destructor;
+they do not establish a complete original device startup or a game-authored
+particle scene. The current World checks resource loading, Main GCALL routing,
+independent cold restoration and graph deletion. See
+`tests/modern-particle-attachment-original.test.mjs` and
+`tests/modern-particle-attachment-world.test.mjs`.
+
+Count capacity, file/texture/render paths and unresolved graph attachment during
+loading remain distinct shapes requiring their own evidence. Recovering all
+Particle table slots does not complete the SDK, FES instructions, task messages
+or data-layout/ownership requirements.

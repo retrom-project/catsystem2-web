@@ -128,6 +128,8 @@ export class ParticleScriptInstance {
     this.attachmentPositionRequiresOwner = abi?.particle?.attachmentPositionRequiresOwner;
     this.attachmentReadsRegistrationWord = abi?.particle?.attachmentReadsRegistrationWord;
     this.missingAttachmentGroupWritesZero = abi?.particle?.missingAttachmentGroupWritesZero;
+    this.attachmentRequiresProvider = abi?.particle?.attachmentRequiresProvider;
+    this.attachmentCopiesRawWords = abi?.particle?.attachmentCopiesRawWords;
     this.count = count;
     this.width = f(width);
     this.height = f(height);
@@ -528,6 +530,8 @@ export class ParticleScriptInstance {
           return scalar(this.currentAttachment()?.disp || 0);
         if (this.attachmentDevicePresent?.() === false) return scalar(0);
         const attachment = this.currentAttachment();
+        if (attachment === undefined && this.attachmentRequiresProvider)
+          throw new Error('Particle attachment graph mapping is unavailable');
         if (!attachment) return scalar(0);
         const word = attachment.registrationWord;
         if (!Number.isInteger(word) || word < 0 || word > 0xffffffff)
@@ -537,10 +541,10 @@ export class ParticleScriptInstance {
       case 48:
       case 49: {
         const field = id === 48 ? 'base' : 'pos';
-        let position;
+        let position, attachment;
         if (this.attachmentPositionRequiresOwner) {
           if (this.attachPlane !== -1 && this.attachmentDevicePresent?.() !== false) {
-            const attachment = this.currentAttachment();
+            attachment = this.currentAttachment();
             position = attachment?.[field];
             // The native owner lookup reports null for a missing group. A
             // resolved group can still lack its model and leave scratch unwritten.
@@ -549,7 +553,17 @@ export class ParticleScriptInstance {
           }
           args.forEach((address) => machine.region(address, 4));
         } else position = this.currentAttachment()?.[field];
-        vectorOut(position || [0, 0, 0]);
+        const words = this.attachmentCopiesRawWords && attachment?.[`${field}Words`];
+        if (words) {
+          if (
+            words.length < args.length ||
+            !Array.from(words).every(
+              (word) => Number.isInteger(word) && word >= 0 && word <= 0xffffffff,
+            )
+          )
+            throw new Error('Particle attachment vector words are unavailable');
+          args.forEach((address, index) => machine.store(address, words[index]));
+        } else vectorOut(position || [0, 0, 0]);
         return voidReply();
       }
       case 50:

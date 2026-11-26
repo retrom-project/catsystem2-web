@@ -13,6 +13,7 @@ import {
   nativeParticleRandomSignatures,
   NATIVE_PARTICLE_GEOMETRY_IDS,
   nativeParticleGeometrySignatures,
+  nativeParticleAttachmentSignatures,
 } from './semantics.mjs';
 
 const contentDatabaseSlots = [
@@ -70,6 +71,11 @@ export default {
     stateCopiesRawWords: true,
     geometryUsesSSEWords: true,
     geometryArgumentsReadFrame: true,
+    attachmentReadsRegistrationWord: true,
+    attachmentPositionRequiresOwner: true,
+    missingAttachmentGroupWritesZero: true,
+    attachmentRequiresProvider: true,
+    attachmentCopiesRawWords: true,
     frameScale: 'sse-uint32',
   },
   xmlEncoding: 'Shift_JIS',
@@ -1943,15 +1949,18 @@ export default {
           34,
           ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'],
           ...NATIVE_PARTICLE_STATE_IDS['particle-v2'],
+          47,
+          48,
+          49,
           ...NATIVE_PARTICLE_GEOMETRY_IDS,
         ].sort((a, b) => a - b),
-        declared: [47, 48, 49],
       },
       signatures: [
         ...nativeInterpreterScalarSignatures('particle-v2'),
         ...nativeParticleStateSignatures('particle-v2'),
         ...nativeParticleRandomSignatures(),
         ...nativeParticleGeometrySignatures('particle-v2'),
+        ...nativeParticleAttachmentSignatures(),
       ],
       evidence: [
         {
@@ -1977,7 +1986,8 @@ export default {
         },
         {
           ids: [47, 48, 49],
-          value: 'sdk-4.01-header-and-pinned-game-wrapper',
+          value:
+            'Own physical 2.6.1.74 actual view.addGroup/type map and manager GraphGroup construction, original base/position/registration setters and full Particle KCS receiver. Whole VM/local/arrays/model/record, return/control, fixed argv, absent groups/device, raw float words and cold continuation are compared. Original deletion releases the model/map/list nodes but retains its 60-byte record allocation; no manual free is attributed to the original. Explicit view/configuration/rectangle OS services are not complete renderer/device or product-scene evidence. See tests/fixtures/modern-particle-attachment-golden.json.',
         },
       ],
     },

@@ -27,6 +27,7 @@ for (const build of golden.builds) {
       const script = await readKCS(code),
         options = {
           profile: build.profile,
+          attachment: () => null,
           count: c[0],
           fps: c[1],
           screenWidth: c[2],

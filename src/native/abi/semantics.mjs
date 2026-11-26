@@ -41525,3 +41525,16 @@ export function nativeParticleGeometrySignatures(table) {
     };
   });
 }
+
+export function nativeParticleAttachmentSignatures() {
+  return [
+    {
+      ids: [47, 48, 49],
+      fields: {
+        review: 'reviewed',
+        reviewReason:
+          'Own real view/manager/GraphGroup registration, original field writers and actual Particle KCS queries; fixed argv, raw float words, missing groups, complete data/control and independent cold continuation. Full device startup and file/texture resources are separate scopes.',
+      },
+    },
+  ];
+}
