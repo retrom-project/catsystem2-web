@@ -1459,6 +1459,9 @@ export class FESCoordinator {
       this.effects.model.entries.delete(object.handle);
       this.effects.model.packets.delete(object.handle);
     }
+    // Every native FES base owns a manager, including an empty object for
+    // which the JS motion target has not yet been needed.
+    this.world.motionLibrary.managerDestroyed();
   }
   serializeObject(object) {
     const result = clone({ ...object });
@@ -1530,6 +1533,7 @@ export class FESCoordinator {
       this.targetFor(this.top, false)?.clear();
       this.collection.graph.release(this.top);
       this.top = null;
+      this.world.motionLibrary.managerDestroyed();
     }
     this.targets.clear();
     for (const id of this.ownedTaskIDs)

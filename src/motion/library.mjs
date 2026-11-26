@@ -50,6 +50,10 @@ export class MotionLibrary {
   clear() {
     this.scripts.clear();
   }
+  managerDestroyed() {
+    if (this.profile && nativeABI(this.profile).motion?.sourceCacheRelease === 'manager-delete')
+      this.clear();
+  }
   snapshot() {
     return [...this.scripts].map(([key, entry]) => [key, entry.source.slice()]);
   }

@@ -102,6 +102,14 @@ The current library follows that invalidation boundary. Its default reader is
 bound to the current World's mode-3 mounted search, storage and resource-cache
 view; an explicitly supplied library reader retains authority. Cache folding is
 separate from the requested filename and each record's basic name.
+FES objects own a manager through their native base, even when no motion was
+added. The modern own BASE and CPLANE constructors/deleting destructors prove
+that destroying an empty object clears the same source list. Collection
+deletion, FES task teardown and the special top object now apply that manager
+policy too; stopping or clearing members does not. Other managers retain
+their already loaded actors and observe new bytes only on the next cache miss.
+Independent World restore preserves the current cache and the actors' original
+sources. Restoring into a populated World remains rejected before changing it.
 The internal World checkpoint stores the current source cache and the actual
 source bytes held by each live record. Records from one load share immutable
 source storage. An older actor survives a same-name file change and cache

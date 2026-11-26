@@ -49,15 +49,12 @@ const shared = (offset) => [0x13, (0x80000000 + offset) >>> 0],
   colorScript = kcsProgram([[21, shared(MOTION_ABI.pos), shared(MOTION_ABI.registers)], [59]]);
 function recordReads(world) {
   const reads = [],
-    game = world.motionLibrary.game;
-  for (const method of ['read', 'require']) {
-    const read = game[method].bind(game);
-    game[method] = (name) => {
-      if (name.endsWith('.kcs') && name !== 'case.kcs')
-        reads.push(name.toLowerCase().replace(/\.kcs$/, ''));
-      return read(name);
-    };
-  }
+    library = world.motionLibrary,
+    read = library.read;
+  library.read = (name) => {
+    reads.push(name.toLowerCase().replace(/\.kcs$/, ''));
+    return read(name);
+  };
   return reads;
 }
 
@@ -134,13 +131,12 @@ break
   });
 
   test(`${profile}: default missing and empty MOT return normally without consuming motion state; present/cache/fresh paths still execute`, async () => {
-    const world = await defaultFESWorld(profile, { 'screen.fes': source }),
-      game = world.motionLibrary.game,
-      readColor = game.read.bind(game);
+    const world = await defaultFESWorld(profile, { 'screen.fes': source });
     let fresh,
       emptyFresh,
       color = null;
-    game.read = (name) => (name === 'pcolor.kcs' ? color : readColor(name));
+    world.storage.read = async (name) =>
+      name.toLowerCase() === '@cat/mot/pcolor.kcs' ? color : null;
     const reads = recordReads(world);
     try {
       const h = await loadDefaultFES(world),
@@ -225,7 +221,7 @@ break
       const freshTask = fresh.objects.objects.get(h.id).implementation,
         restored = freshTask.player.root.collection.lookup('tint', 0),
         restoredTarget = freshTask.player.root.runtime.targetFor(restored, false);
-      assert.deepEqual(freshReads, ['pcolor']);
+      assert.deepEqual(freshReads, [], 'cold actors reuse their retained source bytes');
       assert.deepEqual(restoredTarget.snapshot(), target.snapshot());
       for (let frame = 0; frame < 2; frame++) {
         await world.tick();
@@ -295,19 +291,17 @@ break
       try {
         const h = await loadDefaultFES(world);
         await h.task.tick();
-        const game = world.motionLibrary.game,
-          read = game.read.bind(game);
-        game.read = (name) => {
-          if (name === 'inaccessible.kcs') throw expected;
-          return read(name);
+        world.storage.read = async (name) => {
+          if (name === '@cat/mot/inaccessible.kcs') throw expected;
+          return null;
         };
         await assert.rejects(h.task.player.notify(label), expected);
         const object = h.instance.collection.lookup('tint', 0),
           target = h.instance.runtime.targetFor(object, false);
         assert.equal(target.manager.records.size, 0);
         assert.equal(target.manager.nextHandle, 1);
-        assert.equal(world.motionLibrary.scripts.size, 0);
-        await assert.rejects(world.motionLibrary.load('required-absence'), /Missing resource:/);
+        assert.equal(world.motionLibrary.scripts.size, label === 'BAD' ? 1 : 0);
+        await assert.rejects(world.motionLibrary.load('required-absence'), /Missing mot resource:/);
         assert.equal(world.nativeEngine, undefined);
       } finally {
         await world.close();
