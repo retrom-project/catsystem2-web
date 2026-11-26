@@ -190,3 +190,12 @@ new persistent fields. Three-argument low-level readers keep their explicit
 model defaults. The localized fixture passes the same own-proved language list
 to the ordinary World constructor and replays 41 complete native Main frames,
 with five independent cold restores including extra-language and empty tables.
+
+Language prefixes are literal native map keys. An additional own nine-frame
+control registers `__proto__` through the real XML reader and retrieves its CSTL
+text through direct and Script wrappers. Unregistered `toString` and
+`constructor` spellings fall back to the source text. The CSTL parser now creates
+own data properties, and the reader checks own membership before lookup, so JS
+object members cannot become translations or hide a registered label. Two
+additional independent cold restores preserve the literal key without changing
+the checkpoint codec or layout.

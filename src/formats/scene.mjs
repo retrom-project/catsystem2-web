@@ -52,8 +52,7 @@ export function readTranslation(bytes) {
   const count = boundedCount(integer(), 256, 'CSTL languages'),
     languages = Array.from({ length: count }, string);
   const messages = boundedCount(integer(), 1000000, 'CSTL messages'),
-    result = {};
-  for (const lang of languages) result[lang] = [];
+    result = Object.fromEntries(languages.map((lang) => [lang, []]));
   for (let i = 0; i < messages; i++)
     for (const lang of languages) result[lang].push({ speaker: string(), text: string() });
   if (at !== bytes.length) throw new Error('CSTL trailing data');

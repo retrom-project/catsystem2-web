@@ -182,7 +182,10 @@ export class NativeSceneReader {
     const end = remaining.indexOf(0);
     if (end < 0) throw new Error('Unterminated native CST text');
     const source = remaining.subarray(0, end);
-    const locale = this.translations?.[language];
+    const locale =
+      this.translations && Object.hasOwn(this.translations, language)
+        ? this.translations[language]
+        : undefined;
     const translation = locale?.[block] ?? { speaker: '', text: '' };
     const kind = this.type(block, line);
     if (locale && kind === 0x21) return utf8.encode(translation.speaker.split('\0')[0]);
