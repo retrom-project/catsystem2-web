@@ -139,11 +139,20 @@ for (const version of [1, 2])
     assert.equal(empty.machine.pop(), 0xffffffff);
   });
 
-test('2.6.1.63 Particle keeps the desktop debug slot guarded', async () => {
-  const ptcl = await particle(1, [...call(0, [0])]);
-  assert.throws(() => ptcl.update(0), /Unreviewed PTCL native .*\/particle-v1\/0/);
-  assert.deepEqual([...ptcl.visibility], [1, 1]);
-  assert.equal(ptcl.calls.size, 0);
+test('2.6.1.63 Particle reaches the recovered logger and retains its invalid-format diagnostic', async () => {
+  const ptcl = await particle(1, [...call(0, [128])]);
+  ptcl.machine.writeString('particle logger', 128);
+  ptcl.machine.run();
+  assert.deepEqual(
+    ptcl.messages.map(({ text }) => text),
+    ['particle logger'],
+  );
+  assert.equal(ptcl.calls.get(0), 1);
+  const invalid = await particle(1, [...call(0, [128])]);
+  invalid.machine.writeString('%n[G512]', 128);
+  assert.throws(() => invalid.update(0), /Unsupported native format/);
+  assert.deepEqual([...invalid.visibility], [1, 1]);
+  assert.deepEqual(invalid.messages, []);
 });
 
 test('2.6.1.63 Main and Particle read the owning Top frame rate after restore', async (t) => {
