@@ -626,11 +626,22 @@ export class NativeDrawTask {
     await this.graphics.images.release(this.state.renderer.bitmap);
     this.state.renderer = null;
   }
+  async resizeRenderer(width, height) {
+    const renderer = this.state.renderer;
+    if (!renderer) return;
+    await this.graphics.images.release(renderer.bitmap);
+    renderer.bitmap = this.graphics.images.create(width, height, this.record.id);
+    renderer.width = width;
+    renderer.height = height;
+    renderer.dirty = true;
+    renderer.dirtyRects = [[0, 0, width, height]];
+    renderer.externalPaint = false;
+  }
 }
 
 export const NATIVE_DRAW_IDS = Object.freeze([
   0x100, 0x101, 0x102, 0x103, 0x104, 0x105, 0x106, 0x107, 0x108, 0x153, 0x154, 0x155, 0x156, 0x1c7,
-  0x1ce, 0x1cf, 0x1d0, 0x216, 0x291, 0x35e,
+  0x1ce, 0x1cf, 0x1d0, 0x216, 0x291, 0x297, 0x35e,
 ]);
 export async function nativeDraw(id, args, _machine, task, world) {
   if (!NATIVE_DRAW_IDS.includes(id)) return undefined;
@@ -650,6 +661,13 @@ export async function nativeDraw(id, args, _machine, task, world) {
     };
   };
   switch (id) {
+    case 0x297: {
+      const target = world.resolveTaskID(args[0], task.id),
+        draw = world.graphics.drawTasks.get(target);
+      if (!draw) throw new Error('Renderer resize requires a Draw task');
+      await draw.resizeRenderer(args[1] >>> 0, args[2] >>> 0);
+      return done();
+    }
     case 0x100:
       await graphics.send(args[0], task.id, 279, args[1], args[2]);
       return done();

@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [663],
+    value:
+      'Own Main663 at0x480680 sends raw282 with width/height to the real ImageList receiver and0x59c0a0 existing renderer resize. Complete GCALLs keep the renderer and retained entries, release its0x114 output and tile allocations, create the new output and repaint actual pixels at10x8 then4x3 after caller source release. Original borrowed addresses may be reused by the allocator; release events establish the lifetime. Independent cold continuation preserves logical resource identity. This is a distinct resize service, not the shared entry-replacement message.',
+  },
+  {
     ids: [259, 263, 264, 462, 463, 657],
     value:
       'Own complete Main259/263/264/462/463/657 GCALLs use the actual Top kind15 ImageList constructor, initialized renderer and Main365/428 decoded bitmap. Main259 raw256 updates an existing key or inserts a new one;263 changes its shown word;462/463 query and change the entry layer;657 borrows its live bitmap and returns zero for an absent key. Main264 writes the count scratch but returns control2, so it pushes no VM value. Actual CPU pixels, mapped outputs,1/2/0 counts, source release with retained references, entry removal and real parent-update destruction match. The missing layer query preserves the wrapper initial minus-one value. Uninitialized renderer count/layer shapes remain guarded.',
@@ -1812,6 +1817,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [663], fields: { review: 'reviewed' } },
         ...[259, 263, 264, 462, 463, 657].map((id) => ({
           ids: [id],
           fields: {

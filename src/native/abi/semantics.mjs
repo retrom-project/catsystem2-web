@@ -23119,6 +23119,34 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    663: {
+      name: 'draw.resizeRenderer',
+      family: 'draw',
+      signature: {
+        argumentWords: 3,
+        controlCodes: [2],
+        parameters: [
+          {
+            description: 'nativeID initialized Draw task',
+            name: 'task',
+            type: { kind: 'object-id', objectKind: 'Draw' },
+          },
+          {
+            description: 'u32 width',
+            name: 'width',
+            type: { kind: 'integer', bits: 32, signed: false },
+          },
+          {
+            description: 'u32 height',
+            name: 'height',
+            type: { kind: 'integer', bits: 32, signed: false },
+          },
+        ],
+        result: { kind: 'void' },
+        resultWritten: false,
+        review: 'declared',
+      },
+    },
     664: {
       name: 'fes.setNamedLocal',
       family: 'fes',

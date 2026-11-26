@@ -25,3 +25,12 @@ outputs, counts, visibility, update and insertion, every CPU pixel, automatic
 Script bitmap ownership, source release, entry removal and parent-update
 destruction. A fresh World resumes the same VM after source release. Raw
 addresses and temporary receipts remain in ignored local evidence.
+
+Main663 is `draw.resizeRenderer`: its own raw282 receiver resizes the existing
+renderer. It releases the old output bitmap and tile records, creates a blank
+output at the new dimensions and keeps the retained entries, their clipping
+rectangles, layer values, output offset and base-plane state. The old borrowed
+output ends with that allocation. A later CPU render redraws the retained
+sources, including sources whose caller has already released its bitmap.
+This is independent of the shared entry-replacement command. The .23 binding
+does not enable an unknown slot in another SDK.
