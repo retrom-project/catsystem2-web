@@ -9,7 +9,9 @@ import {
   borrowNativeTextureRead,
 } from '../render/particles-gl.mjs';
 const textureReadBarriers = new WeakMap(),
-  textureOwners = new WeakMap();
+  textureOwners = new WeakMap(),
+  texturePageMaps = new WeakMap(),
+  originalMapGet = Map.prototype.get;
 
 export function nativeTexturePagesOwned(pages, owner) {
   return (
@@ -21,8 +23,36 @@ export function nativeTexturePagesOwned(pages, owner) {
         Object.getOwnPropertyDescriptor(NativeTexturePages.prototype, key)?.value === value,
     ) &&
     Object.getOwnPropertyDescriptor(pages, 'beforeMutation')?.value ===
-      textureReadBarriers.get(pages)
+      textureReadBarriers.get(pages) &&
+    Object.getOwnPropertyDescriptor(pages, 'pages')?.value === texturePageMaps.get(pages) &&
+    Object.getPrototypeOf(texturePageMaps.get(pages)) === Map.prototype &&
+    textureMapMethods.every(
+      ([key, descriptor]) =>
+        !Object.hasOwn(texturePageMaps.get(pages), key) &&
+        Object.getOwnPropertyDescriptor(Map.prototype, key)?.value === descriptor.value &&
+        Object.getOwnPropertyDescriptor(Map.prototype, key)?.get === descriptor.get,
+    )
   );
+}
+// One synchronous acquisition of locally computed page indices. Settle before
+// inspecting an unknown input/provider, and never retain qualification afterward.
+export function nativeTexturePageFrames(pages, indices, gpu, owner) {
+  const barrier = textureReadBarriers.get(pages);
+  barrier?.();
+  const selected = Uint32Array.from(indices),
+    frames = [];
+  if (!barrier || !nativeTexturePagesOwned(pages, owner) || !nativeTextureConsumer(gpu)) {
+    for (const index of selected) frames.push(pages.frame(index));
+    return frames;
+  }
+  const records = texturePageMaps.get(pages);
+  for (const index of selected) {
+    const page = Reflect.apply(originalMapGet, records, [index]),
+      frame = page && Object.getOwnPropertyDescriptor(page, 'frame');
+    // An unexpected record/getter must run through the ordinary public fence.
+    frames.push(!page ? NULL_NATIVE_TEXTURE : (frame?.value ?? pages.frame(index)));
+  }
+  return frames;
 }
 // Privileged renderer entry. Public frame() keeps its permanent borrowing rule.
 export function nativeTexturePageFrame(pages, index, gpu, owner) {
@@ -150,6 +180,7 @@ export class NativeTexturePages {
       textureOwners.set(this, owner);
     }
     this.pages = new Map();
+    texturePageMaps.set(this, this.pages);
     this.allocateMissing();
     // The flag table covers the entire grid and starts clean after allocation.
     this.dirtyFlags = trackDirty ? new Uint32Array(layout.grid[0] * layout.grid[1]) : null;
@@ -368,6 +399,7 @@ export class NativeTexturePages {
     this.layout = structuredClone(state.layout);
     this.dirtyFlags = flags === null ? null : flags.slice();
     this.pages = new Map(structuredClone(state.pages));
+    texturePageMaps.set(this, this.pages);
     for (const [index, page] of this.pages) {
       if (
         !Number.isInteger(index) ||
@@ -404,6 +436,9 @@ export class NativeTexturePages {
 const texturePageMethods = Reflect.ownKeys(NativeTexturePages.prototype)
   .filter((key) => key !== 'constructor')
   .map((key) => [key, Object.getOwnPropertyDescriptor(NativeTexturePages.prototype, key).value]);
+const textureMapMethods = Reflect.ownKeys(Map.prototype)
+  .filter((key) => key !== 'constructor')
+  .map((key) => [key, Object.getOwnPropertyDescriptor(Map.prototype, key)]);
 
 // Shared synchronous page write; owned sinks contain only captured data records.
 export function uploadTextureFrame(

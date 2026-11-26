@@ -55,7 +55,7 @@ import {
   virtualD3DGuardBand,
   uploadTextureFrame,
   nativeTexturePagesOwned,
-  nativeTexturePageFrame,
+  nativeTexturePageFrames,
 } from './texture-layout.mjs';
 import { NativeCursor } from './cursor.mjs';
 import { nativeInputBitmapMask } from './input.mjs';
@@ -1899,6 +1899,8 @@ export class NativeGraphicTask {
         drawType: 0,
       };
       const draws = typeof gpu.drawTexturePages === 'function' ? [] : null;
+      const pageIndices = [],
+        pageDraws = [];
       for (let first = 0; first < triangles.length; ) {
         const { textureID } = triangles[first];
         let end = first + 1;
@@ -1907,18 +1909,28 @@ export class NativeGraphicTask {
         while (end < triangles.length && triangles[end].textureID === textureID) end++;
         const batch = triangles.slice(first, end);
         if (draws) {
-          const frame =
-            textureID === -1
-              ? WHITE
-              : nativeTexturePageFrame(this.graphics.texturePages, textureID, gpu, this.graphics);
-          draws.push({ triangles: batch, frame });
+          const draw = { triangles: batch, frame: WHITE };
+          draws.push(draw);
+          if (textureID !== -1) {
+            pageIndices.push(textureID);
+            pageDraws.push(draw);
+          }
         } else {
           const frame = textureID === -1 ? WHITE : await this.graphics.meshTexture(textureID);
           gpu.drawGeometry(batch, frame, options);
         }
         first = end;
       }
-      if (draws) gpu.drawTexturePages(draws, options);
+      if (draws) {
+        const frames = nativeTexturePageFrames(
+          this.graphics.texturePages,
+          pageIndices,
+          gpu,
+          this.graphics,
+        );
+        for (let i = 0; i < frames.length; i++) pageDraws[i].frame = frames[i];
+        gpu.drawTexturePages(draws, options);
+      }
       return;
     }
     gpu.drawGeometry(

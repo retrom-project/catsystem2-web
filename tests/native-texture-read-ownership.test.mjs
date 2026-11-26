@@ -5,6 +5,7 @@ import {
   NativeTexturePages,
   nativeTexturePagesOwned,
   nativeTexturePageFrame,
+  nativeTexturePageFrames,
 } from '../src/native/texture-layout.mjs';
 import {
   ParticlesGL,
@@ -127,6 +128,64 @@ test('a replaced page-frame provider runs only after its original owner barrier'
     nativeTexturePageFrame(pages, 0, {}, owner);
     assert.equal(calls, 1);
   } finally {
+    pages.close();
+  }
+});
+
+test('a synchronous page acquisition settles before inspecting indices and preserves their order', () => {
+  let pending = true;
+  const owner = {},
+    settle = () => {
+      pending = false;
+    },
+    pages = new NativeTexturePages(
+      { size: [1, 1], grid: [2, 1], areas: [[0, 0, 2, 1]], bppY: [0, 1], bpp: 32 },
+      { owner, readBarrier: settle, beforeMutation: settle },
+    );
+  try {
+    pending = true;
+    const indices = {
+      *[Symbol.iterator]() {
+        assert.equal(pending, false);
+        yield 1;
+        yield 0;
+      },
+    };
+    const frames = nativeTexturePageFrames(pages, indices, {}, owner);
+    assert.equal(frames[0], pages.pages.get(1).frame);
+    assert.equal(frames[1], pages.pages.get(0).frame);
+    assert(frames.every((frame) => !nativeTextureReadOwned(frame)));
+  } finally {
+    pages.close();
+  }
+});
+
+test('a replaced page Map port fails qualification and runs after settlement', () => {
+  let pending = true,
+    reads = 0;
+  const owner = {},
+    settle = () => {
+      pending = false;
+    },
+    pages = new NativeTexturePages(
+      { size: [1, 1], grid: [2, 1], areas: [[0, 0, 2, 1]], bppY: [0, 1], bpp: 32 },
+      { owner, readBarrier: settle, beforeMutation: settle },
+    );
+  try {
+    assert(nativeTexturePagesOwned(pages, owner));
+    const get = pages.pages.get;
+    pages.pages.get = function (...args) {
+      assert.equal(pending, false);
+      reads++;
+      return Reflect.apply(get, this, args);
+    };
+    assert.equal(nativeTexturePagesOwned(pages, owner), false);
+    pending = true;
+    const frames = nativeTexturePageFrames(pages, [0, 1], {}, owner);
+    assert.equal(reads, 2);
+    assert(frames.every((frame) => !nativeTextureReadOwned(frame)));
+  } finally {
+    delete pages.pages.get;
     pages.close();
   }
 });
