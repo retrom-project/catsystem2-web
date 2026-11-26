@@ -8,6 +8,8 @@ import {
   nativeInterpreterScalarSignatures,
   NATIVE_INTERPRETER_GEOMETRY_IDS,
   nativeInterpreterGeometrySignatures,
+  NATIVE_PARTICLE_STATE_IDS,
+  nativeParticleStateSignatures,
 } from './semantics.mjs';
 
 const contentDatabaseSlots = [
@@ -59,7 +61,12 @@ export default {
     relativeRotationUsesSSEWords: true,
     vectorComponentsUseSSEWords: true,
   },
-  particle: { debugUsesNativeLogger: true },
+  particle: {
+    debugUsesNativeLogger: true,
+    stateArgumentsReadFrame: true,
+    stateCopiesRawWords: true,
+    frameScale: 'sse-uint32',
+  },
   xmlEncoding: 'Shift_JIS',
   text: {
     freeTypeCharacterEncoding: 'cp932',
@@ -1883,12 +1890,17 @@ export default {
     'particle-v1': {
       count: 44,
       slots: {
-        recovered: [0, ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v1']],
-        declared: [
-          1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-        ],
+        recovered: [
+          0,
+          ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v1'],
+          ...NATIVE_PARTICLE_STATE_IDS['particle-v1'],
+        ].sort((a, b) => a - b),
+        declared: [22, 23, 24, 25, 26, 29, 33, 34, 37, 38],
       },
-      signatures: nativeInterpreterScalarSignatures('particle-v1'),
+      signatures: [
+        ...nativeInterpreterScalarSignatures('particle-v1'),
+        ...nativeParticleStateSignatures('particle-v1'),
+      ],
       evidence: [
         {
           ids: [0],
@@ -1897,10 +1909,12 @@ export default {
         },
         { ids: NATIVE_INTERPRETER_SCALAR_IDS['particle-v1'], value: scalarEvidence },
         {
-          ids: [
-            1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-            40,
-          ],
+          ids: NATIVE_PARTICLE_STATE_IDS['particle-v1'],
+          value:
+            'Own physical 2.6.1.74 actual Particle/base constructor, KCS actor/VM callback, original reference buffers/initializer and complete destructor, with explicit authored view/configuration projection. Whole local/arrays, control/result, fixed argv frames, raw signaling-NaN copies, uint32 frame conversion and cold data state are compared against current KCS. File/texture/renderer registration and live attachment graphs remain separate scopes. See tests/fixtures/modern-particle-state-golden.json.',
+        },
+        {
+          ids: [22, 23, 24, 25, 26, 29, 33, 34, 37, 38],
           value: 'sdk-4.01-header-and-pinned-game-wrapper',
         },
       ],
@@ -1908,13 +1922,17 @@ export default {
     'particle-v2': {
       count: 51,
       slots: {
-        recovered: [0, ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v2']],
-        declared: [
-          1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-          44, 45, 46, 47, 48, 49, 50,
-        ],
+        recovered: [
+          0,
+          ...NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'],
+          ...NATIVE_PARTICLE_STATE_IDS['particle-v2'],
+        ].sort((a, b) => a - b),
+        declared: [22, 23, 24, 25, 26, 29, 33, 34, 37, 38, 47, 48, 49],
       },
-      signatures: nativeInterpreterScalarSignatures('particle-v2'),
+      signatures: [
+        ...nativeInterpreterScalarSignatures('particle-v2'),
+        ...nativeParticleStateSignatures('particle-v2'),
+      ],
       evidence: [
         {
           ids: [0],
@@ -1923,10 +1941,12 @@ export default {
         },
         { ids: NATIVE_INTERPRETER_SCALAR_IDS['particle-v2'], value: scalarEvidence },
         {
-          ids: [
-            1, 2, 3, 4, 5, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-            40, 44, 45, 46, 47, 48, 49, 50,
-          ],
+          ids: NATIVE_PARTICLE_STATE_IDS['particle-v2'],
+          value:
+            'Own physical 2.6.1.74 actual Particle/base constructor, KCS actor/VM callback, original reference buffers/initializer and complete destructor, with explicit authored view/configuration projection. Whole local/arrays, control/result, fixed argv frames, raw signaling-NaN copies, uint32 frame conversion and cold data state are compared against current KCS. File/texture/renderer registration and live attachment graphs remain separate scopes. See tests/fixtures/modern-particle-state-golden.json.',
+        },
+        {
+          ids: [22, 23, 24, 25, 26, 29, 33, 34, 37, 38, 47, 48, 49],
           value: 'sdk-4.01-header-and-pinned-game-wrapper',
         },
       ],

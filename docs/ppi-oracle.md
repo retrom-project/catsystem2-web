@@ -614,10 +614,11 @@ particle-native `GetReg` interface.
 Some legacy `pt*` archive members invoke native0x17 with zero argument bytes,
 whereas the current generic slot 23 expects a matrix plus three angles. Their
 archive presence alone does not establish that the current loader executes
-them. This binding discrepancy remains explicit in coverage. The current generic
-executor's45 native slots have separately passed2,160 byte comparisons across
-both frozen engines; see the maintained MOT contracts and tests. Those checks
-do not resolve the legacy `pt*` binding discrepancy.
+them. This binding discrepancy remains explicit in coverage. The historical
+forced-scalar generic capture contains 2,160 comparisons across the two frozen
+engines. Its initialization and backend scope is separate from the current
+own-build evidence in the maintained MOT contracts and tests. Those checks do
+not resolve the legacy `pt*` binding discrepancy.
 
 Windows services and engine semantics must remain separate. DLL mapping,
 relocation, imported heap/TLS/error/timer APIs and process services are OS/ABI
@@ -676,3 +677,30 @@ Render acceptance must exercise arbitrary quads, atlas UVs, vertex alpha/color,
 all blend modes, attachment,3D projection, sort/z-shift, custom D3D state and
 both stock raster meshes. Game tests add coverage to those contracts; they do
 not replace them.
+
+## Modern PTCL state services
+
+The two pinned 2.6.1.74 and 2.6.1.76 builds now have own physical evidence for
+the state, viewport, position/register copies, quad copies, visibility, exit,
+whole-array backup/reset, attachment ID and blend-mode wrappers. The original
+Particle/base constructor, KCS actor and VM, callback/table setters, reference
+buffers, initializer and destructor execute unchanged. The authored view and
+empty manager projection is an explicit input boundary; this evidence does not
+cover original file/texture loading or full renderer/device construction.
+
+These wrappers read their fixed argv footprint independently of the GCALL
+declared word count. Mapped short frames and ignored tails remain valid;
+unavailable VM words remain diagnostic. ResetVertex and BackupVertex read zero
+arguments and copy the complete count × 112-byte array. Modern position and
+register copies preserve every source bit, including signaling NaNs. CalcFrame
+converts the unsigned FPS and frame to float32 before division/multiplication,
+then takes the low word of the CRT's signed 64-bit truncation and applies an
+unsigned minimum of one. Older profiles retain their separately proved rules.
+
+The public [state fixture](../tests/fixtures/modern-particle-state-golden.json)
+links each own capture hash and checks whole local memory, all seven particle
+arrays, observable state and independent cold continuation through real KCS.
+Attachment base/position/registration queries currently have empty-manager
+evidence only; live attachment graphs remain open. The constructor's current
+one-million-count resource limit, remaining geometry/texture/RNG wrappers and
+other unproved shapes remain separate unfinished SDK work.

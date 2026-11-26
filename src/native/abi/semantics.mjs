@@ -41470,3 +41470,20 @@ export function nativeInterpreterGeometrySignatures(table) {
     };
   });
 }
+
+export const NATIVE_PARTICLE_STATE_IDS = freeze({
+  'particle-v1': [1, 2, 3, 4, 5, 27, 28, 30, 31, 32, 35, 36, 39, 40],
+  'particle-v2': [1, 2, 3, 4, 5, 27, 28, 30, 31, 32, 35, 36, 39, 40, 44, 45, 46, 50],
+});
+
+export function nativeParticleStateSignatures(table) {
+  return NATIVE_PARTICLE_STATE_IDS[table].map((id) => ({
+    ids: [id],
+    fields: {
+      review: 'reviewed',
+      reviewReason:
+        'Own constructed Particle receiver, original actor/VM and buffer lifecycle, fixed argv read footprint, raw word copies and full observable data/cold comparisons. Renderer and live attachment graphs have separate evidence boundaries.',
+      ...([44, 45].includes(id) ? { argumentWords: 0, parameters: [] } : {}),
+    },
+  }));
+}

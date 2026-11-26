@@ -68,6 +68,13 @@ export function calcFrame(frame, fps, scale) {
     const frames = multiplyX87Integer(frame, f(unsignedRate / 60));
     return Math.max(1, frames >>> 0);
   }
+  if (scale === 'sse-uint32') {
+    const frames = f(f(f(rate) / 60) * f(frame));
+    // The CRT returns the low word of a signed 64-bit truncation, then the
+    // wrapper applies an unsigned minimum of one to that word.
+    const word = frames < 2 ** 63 ? frames >>> 0 : 0;
+    return Math.max(1, word);
+  }
   return Math.max(1, Math.trunc(f(f(rate / 60) * f(frame)))) >>> 0;
 }
 

@@ -345,7 +345,8 @@ test('2.6.1.63 Particle v2 routes authored rotation and projected bounds', () =>
     outputs.map((at) => bitsFloat(machine.load(at))),
     [320, 180, 960, 540],
   );
-  assert.throws(() => call(8, [0]), /Unreviewed PTCL native/);
+  assert.deepEqual(call(8, [0]), { control: 1, value: 0 });
+  assert.throws(() => call(51, []), /Unreviewed PTCL native/);
 });
 
 test('native projection golden keeps priority arithmetic and the zero denominator special case', () => {

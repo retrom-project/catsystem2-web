@@ -56,6 +56,9 @@ const particleScalarNames = new Map([
   [20, 'radianToDegree'],
   [21, 'integerAbs'],
 ]);
+const stateFrameIds = new Set([
+  1, 2, 3, 4, 5, 27, 28, 30, 31, 32, 35, 36, 39, 40, 44, 45, 46, 47, 48, 49, 50,
+]);
 // Components read by FMUL directly from a vertex, ordered by vertex index.
 const quadScaleMemoryOperands = [0b101, 0, 0, 0b110];
 
@@ -106,6 +109,8 @@ export class ParticleScriptInstance {
     this.interpreterMath = this.math?.interpreterUsesNativeScalarMath ? this.math : null;
     this.frameScale = abi?.particle?.frameScale;
     this.debugUsesNativeLogger = abi?.particle?.debugUsesNativeLogger;
+    this.stateArgumentsReadFrame = abi?.particle?.stateArgumentsReadFrame;
+    this.stateCopiesRawWords = abi?.particle?.stateCopiesRawWords;
     this.quadUsesX87 = abi?.particle?.quadUsesX87;
     this.textureCoordinatesUseX87 = abi?.particle?.textureCoordinatesUseX87;
     this.distanceUsesX87 = abi?.particle?.distanceUsesX87;
@@ -200,16 +205,18 @@ export class ParticleScriptInstance {
       argumentWords = entry ? entry.signature.argumentWords : contract.parameters.length;
     const scalarFrame =
       this.math?.scalarArgumentsReadFrame && ((id >= 6 && id <= 21) || (id >= 41 && id <= 43));
+    const stateFrame = this.stateArgumentsReadFrame && stateFrameIds.has(id);
     if (
       argumentWords !== null &&
       !scalarFrame &&
+      !stateFrame &&
       !(id === 0 && this.debugUsesNativeLogger) &&
       args.length !== argumentWords
     )
       throw new Error(
         `PTCL ${contract.name} requires ${argumentWords} arguments, received ${args.length}`,
       );
-    if (scalarFrame) args = scalarArgumentWords(args, machine, argumentWords);
+    if (scalarFrame || stateFrame) args = scalarArgumentWords(args, machine, argumentWords);
     this.calls.set(id, (this.calls.get(id) || 0) + 1);
     const scalar = (value) => nativeReply(1, value >>> 0);
     const real = (value) => scalar(floatBits(value));
@@ -329,9 +336,18 @@ export class ParticleScriptInstance {
         return voidReply();
       }
       case 27:
+        if (this.stateCopiesRawWords) {
+          new Uint32Array(this.positions.buffer).set([...args, 0], base);
+          return voidReply();
+        }
         this.positions.set([...floats(), 0], base);
         return voidReply();
       case 28:
+        if (this.stateCopiesRawWords) {
+          const words = new Uint32Array(this.positions.buffer);
+          args.forEach((address, i) => machine.store(address, words[base + i]));
+          return voidReply();
+        }
         vectorOut(this.positions.subarray(base, base + 3));
         return voidReply();
       case 29: {
@@ -366,6 +382,11 @@ export class ParticleScriptInstance {
       case 34:
         return real(this.random.frand(this.interpreterMath?.randomFloatUsesX87));
       case 35:
+        if (this.stateCopiesRawWords) {
+          const words = new Uint32Array(this.registers.buffer);
+          for (let i = 0; i < 32; i++) machine.store(args[0] + i * 4, words[i]);
+          return voidReply();
+        }
         for (let i = 0; i < 32; i++) putFloat(args[0] + i * 4, this.registers[i]);
         return voidReply();
       case 36:
