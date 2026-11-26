@@ -250,17 +250,30 @@ that stored buffer. Stop rewinds the decoder without restoring consumed
 silence, preserving static capacity by filling its remaining tail with silence.
 Pause retains the reader and cursor; cold restore retains the same ring,
 remaining prefix and output scheduling. Release discards the bank's decoded
-buffer owner. The new path covers PCM WAVE 8/16-bit source bytes; nonzero
-options for other codecs require their owning implementations and remain
-diagnostic. SDK23 has no raw Main935/936 slots.
+buffer owner. This path covers PCM WAVE 8/16-bit source bytes. SDK23 has no raw
+Main935/936 slots.
 
-The integer MS ADPCM decoding foundation preserves SDK67's own RIFF accounting,
+The integer MS ADPCM decoder preserves SDK63/SDK67's own RIFF accounting,
 signed prediction/adaptation and mono/stereo interleaving. Its advertised byte
 count comes from an initial scan after the format coefficients; actual reads
 restart at the data payload and stop eight bytes before the container chunk
 end. The two lengths remain separate. Invalid predictors and partial block
 headers retain diagnostics for the original's undefined memory reads. This
-foundation alone does not enable nonzero ADPCM options: the native reader also
-overwrites the original destination after consuming a partial silent prefix,
-and its seek operation restarts instead of honoring the target. Playback and
-queue integration require those separate byte-write and lifecycle contracts.
+reader overwrites the original destination after consuming a partial silent
+prefix, leaving the rest of the returned region with its previous bytes. Its
+seek operation restarts instead of honoring the target. Static capacity retains
+the advertised count plus the prefix, with the decoder's shorter output and
+remaining tail kept separate. Streams present the actual bounded ring and
+replace its scheduled source at refill boundaries; they do not approximate
+that discontinuous output with an offset into the source file. Pause, Stop,
+replacement loads, finite repeats, allocated banks and cold restore retain the
+same decoder/prefix/ring ownership. No checkpoint fields or production modules
+are added by this codec path.
+
+MS ADPCM is selected only by the proved SDK63/SDK67 policy, for mono/stereo
+4-bit blocks with owned coefficients and complete block headers. A stream
+whose half-second region splits a PCM frame remains diagnostic until its
+native word-write overrun is modeled; static decoding does not need that
+restriction. Other decoder options, including Ogg, remain diagnostic pending
+their own codec output and lifecycle proofs. Controlled VFS/COM output and
+scheduled AudioBuffer PCM checks do not establish physical device playback.

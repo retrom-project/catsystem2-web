@@ -6,7 +6,12 @@ import { nativeSoundGain, nativeLoopFrames } from './native/sound-math.mjs';
 import { readAudioSource } from './native/audio-source.mjs';
 import { nativeSoundPanGains, nativeSoundPositionPan } from './native/sound-values.mjs';
 import { spatialPlaybackRate } from './native/audio-spatial.mjs';
-import { sourcePCM, NativePCMWindows, NativePCMQueue } from './native/audio-pcm.mjs';
+import {
+  sourcePCM,
+  decodeNativeMSADPCM,
+  NativePCMWindows,
+  NativePCMQueue,
+} from './native/audio-pcm.mjs';
 
 const isVoice = (channel) =>
   channel.group === 'voice' || (channel.group === 'native' && channel.nativeCategory === 'voice');
@@ -139,6 +144,28 @@ export class AudioMixer {
     this.sourceMetadata = new WeakMap();
     this.pcmSources = new WeakMap();
     this.nativeDecoderBuffers = new Map();
+    this.nativeMSADPCM = false;
+  }
+  configureNativeCodecs({ msADPCM = false } = {}) {
+    this.nativeMSADPCM = msADPCM;
+  }
+  pcmBuffer(
+    pcm,
+    data = pcm.pcm,
+    frames = data.length / (pcm.channels * (pcm.bitsPerSample >>> 3)),
+  ) {
+    const buffer = this.context.createBuffer(pcm.channels, frames, pcm.sampleRate),
+      view = new DataView(data.buffer, data.byteOffset, data.byteLength),
+      stride = pcm.channels * (pcm.bitsPerSample >>> 3);
+    for (let channel = 0; channel < pcm.channels; channel++) {
+      const plane = buffer.getChannelData(channel);
+      for (let frame = 0; frame < data.length / stride; frame++)
+        plane[frame] =
+          pcm.bitsPerSample === 8
+            ? (data[frame * stride + channel] - 128) / 128
+            : view.getInt16(frame * stride + channel * 2, true) / 32768;
+    }
+    return buffer;
   }
   loadLoopPoints(bytes) {
     for (const record of readLoopPoints(bytes)) {
@@ -157,6 +184,23 @@ export class AudioMixer {
       if (channel.playing && !channel.loading && !channel.nativeDraining) this.startSource(channel);
   }
   async decodeBuffer(bytes, maxSamples = Infinity) {
+    const metadata = this.nativeMSADPCM ? readAudioSource(bytes) : null,
+      native = metadata?.formatTag === 2 ? decodeNativeMSADPCM(bytes) : null;
+    if (native) {
+      const frames = native.advertisedBytes / (native.channels * 2);
+      if (frames * native.channels > maxSamples) return null;
+      const buffer = this.pcmBuffer(native, native.pcm, frames);
+      this.sourceRates.set(buffer, native.sampleRate);
+      this.sourceMetadata.set(buffer, {
+        ...metadata,
+        pcmBytes: native.advertisedBytes,
+        sampleFrames: frames,
+        durationSeconds: frames / native.sampleRate,
+        nativeMSADPCM: true,
+      });
+      this.pcmSources.set(buffer, native);
+      return buffer;
+    }
     const rate = sourceSampleRate(bytes),
       decoder =
         rate >= 8000 && rate <= 96000 && typeof OfflineAudioContext !== 'undefined'
@@ -233,7 +277,7 @@ export class AudioMixer {
       const data = new Uint8Array(state.capacity),
         prefix = Math.min(data.length, state.prefixBytes);
       if (pcm.bitsPerSample === 8) data.fill(128);
-      data.set(pcm.pcm.subarray(0, data.length - prefix), prefix);
+      data.set(pcm.pcm.subarray(0, data.length - prefix), pcm.prefixOverwrites ? 0 : prefix);
       const view = new DataView(data.buffer);
       for (let c = 0; c < pcm.channels; c++) {
         const plane = prepared.getChannelData(c);
@@ -282,10 +326,13 @@ export class AudioMixer {
     const metadata = this.sourceMetadata.get(buffer),
       pcm = this.pcmSources.get(buffer);
     if (
-      metadata.codec !== 'wav' ||
-      metadata.formatTag !== 1 ||
-      ![8, 16].includes(metadata.bitsPerSample) ||
-      pcm.precision !== 'source-pcm'
+      !(
+        (metadata.codec === 'wav' &&
+          metadata.formatTag === 1 &&
+          [8, 16].includes(metadata.bitsPerSample) &&
+          pcm.precision === 'source-pcm') ||
+        (this.nativeMSADPCM && metadata.nativeMSADPCM && pcm.precision === 'native-ms-adpcm')
+      )
     )
       throw new Error('Native decoder option requires its owning codec implementation');
     const stride = pcm.channels * (pcm.bitsPerSample >>> 3),
@@ -295,10 +342,16 @@ export class AudioMixer {
         capacity:
           mode === 'stream'
             ? Math.floor((pcm.sampleRate * stride) / 2) * 8
-            : Number((BigInt(pcm.pcm.length) + BigInt(prefixBytes)) & 0xffffffffn),
+            : Number((BigInt(metadata.pcmBytes) + BigInt(prefixBytes)) & 0xffffffffn),
         prefixBytes,
       },
       previous = this.nativeDecoderBuffers.get(key);
+    if (
+      pcm.precision === 'native-ms-adpcm' &&
+      mode === 'stream' &&
+      Math.floor((pcm.sampleRate * stride) / 2) % stride
+    )
+      throw new Error('Native MS ADPCM stream read crossing a PCM frame is unrecovered');
     if (state.capacity % stride) throw new Error('Native decoder buffer splits a PCM frame');
     if (
       previous &&
@@ -517,10 +570,12 @@ export class AudioMixer {
       panLeft = this.context.createGain(),
       panRight = this.context.createGain(),
       merger = this.context.createChannelMerger(2);
-    source.buffer = channel.buffer;
+    const pcm = this.pcmSources.get(channel.buffer),
+      rawQueue = pcm?.prefixOverwrites && channel.nativeStreamQueue;
+    source.buffer = rawQueue ? this.pcmBuffer(pcm, rawQueue.ring) : channel.buffer;
     source.loop = !!channel.nativeStreamQueue || !!channel.loop;
-    source.loopStart = channel.loopStart;
-    source.loopEnd = channel.loopEnd;
+    source.loopStart = rawQueue ? 0 : channel.loopStart;
+    source.loopEnd = rawQueue ? source.buffer.duration : channel.loopEnd;
     source.connect(gain);
     gain.connect(panner);
     panner.connect(panLeft, 0);
@@ -555,7 +610,14 @@ export class AudioMixer {
             : null));
     channel.remainingDuration = remaining;
     this.setNativeSpatial(channel.channel, { ...channel.nativeSpatial, pan: channel.pan || 0 });
-    if (channel.nativeStreamQueue) {
+    if (rawQueue) {
+      const stride = pcm.channels * (pcm.bitsPerSample >>> 3),
+        position = Math.floor((channel.pcmOrigin + channel.pcmProgress) * pcm.sampleRate) * stride;
+      source.start(
+        channel.scheduled,
+        (position % rawQueue.ring.length) / (pcm.sampleRate * stride),
+      );
+    } else if (channel.nativeStreamQueue) {
       const pcm = this.pcmSources.get(channel.buffer),
         bytesPerSecond = pcm.sampleRate * pcm.channels * (pcm.bitsPerSample >>> 3),
         queue = channel.nativeStreamQueue,
@@ -1066,7 +1128,8 @@ export class AudioMixer {
       bytesPerSecond = pcm.sampleRate * stride,
       consumed = Math.floor((channel.pcmProgress * bytesPerSecond) / state.halfSecondBytes);
     if (channel.nativeStreamQueue) {
-      const queue = channel.nativeStreamQueue;
+      const queue = channel.nativeStreamQueue,
+        previousRefills = channel.pcmRefills;
       while (channel.pcmRefills < consumed) {
         const next = channel.pcmRefills++,
           cursor =
@@ -1089,6 +1152,13 @@ export class AudioMixer {
           this.events.push({ channel: channel.channel, reason: 'ended', frame: this.frame });
           break;
         }
+      }
+      // ADPCM's partial-prefix write can leave a hole containing the previous
+      // locked bytes. Present the actual four-second ring, replacing its source
+      // at refill boundaries rather than mapping that output onto a file offset.
+      if (pcm.prefixOverwrites && previousRefills !== channel.pcmRefills && channel.source) {
+        this.detach(channel);
+        this.startSource(channel);
       }
       return;
     }

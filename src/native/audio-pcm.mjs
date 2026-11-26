@@ -334,7 +334,7 @@ export class NativePCMQueue {
       throw new Error('Invalid native PCM queue checkpoint');
     this.count = count;
   }
-  read(length, end) {
+  read(length, end, previous) {
     if (!this.prefixRemaining) {
       const bytes = this.source.pcm.subarray(
         this.decoderByte,
@@ -348,7 +348,11 @@ export class NativePCMQueue {
       count = Math.min(data.length, Math.max(0, end - this.decoderByte)),
       bytes = new Uint8Array(prefix + count);
     if (this.source.bitsPerSample === 8) bytes.fill(128);
-    bytes.set(data.subarray(0, count), prefix);
+    if (this.source.prefixOverwrites) {
+      if (previous) bytes.set(previous.subarray(0, bytes.length));
+      bytes.fill(0, 0, prefix);
+      bytes.set(data.subarray(0, count));
+    } else bytes.set(data.subarray(0, count), prefix);
     this.prefixRemaining = (this.prefixRemaining ?? 0) - prefix;
     this.decoderByte += count;
     return bytes;
@@ -364,7 +368,7 @@ export class NativePCMQueue {
           half - written,
           Math.max(0, loopEnd - this.decoderByte) + (this.prefixRemaining ?? 0),
         ),
-        bytes = this.read(length, loopEnd);
+        bytes = this.read(length, loopEnd, this.ring.subarray(offset + written));
       this.ring.fill(silence, offset + written, offset + half);
       this.ring.set(bytes, offset + written);
       if (activity)
@@ -377,7 +381,7 @@ export class NativePCMQueue {
       if (written === half || this.count === 1) break;
       if (loopStart >= loopEnd) throw new Error('Native PCM queue has an empty loop');
       if (this.count) this.count--;
-      this.decoderByte = loopStart;
+      this.decoderByte = this.source.prefixOverwrites ? 0 : loopStart;
       this.restarts = (this.restarts + 1) >>> 0;
     }
     this.playedBytes =

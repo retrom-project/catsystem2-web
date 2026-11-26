@@ -373,6 +373,7 @@ export class NativeSound {
     if (category !== null && !soundCategories.has(category))
       throw new Error('Invalid native sound playback category');
     if (!this.audio?.preload) throw new Error('Native sound preload service is unavailable');
+    this.audio.configureNativeCodecs?.({ msADPCM: !!this.abi.sound.msADPCMUsesNativePCM });
     this.release(bank);
     const device = this.device[bank],
       voice = this.sceneVoicePreparation?.take(file, ownerID),
@@ -407,7 +408,7 @@ export class NativeSound {
           : m.pcmBytes;
       if (8 * halfSecond >= decodedBytes) device.sourceMode = 'static';
     }
-    if (this.abi.sound.decoderOptionAddsSilence && decoderOption) {
+    if ((this.abi.sound.decoderOptionAddsSilence && decoderOption) || m.nativeMSADPCM) {
       if (typeof this.audio.prepareNativeDecoderBuffer !== 'function')
         throw new Error('Native decoder prefix service is unavailable');
       const state = await this.audio.prepareNativeDecoderBuffer(
@@ -539,6 +540,7 @@ export class NativeSound {
     };
   }
   async restore(state) {
+    this.audio?.configureNativeCodecs?.({ msADPCM: !!this.abi.sound.msADPCMUsesNativePCM });
     if (state.device?.length !== this.bankCount || state.channels?.length !== this.bankCount)
       throw new Error('Native sound device checkpoint size');
     if (
