@@ -53,13 +53,18 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
     if (source?.bitmap) {
       const words = Array.from({ length: 10 }, (_, i) => a(i));
       if (id === 0x2de && nativeABI(world.profile).graphics.imageOwnerBlendPhysicalRows) {
+        const sourceBpp = images.get(source.bitmap).state.bpp,
+          targetBpp = images.get(target.bitmap).state.bpp,
+          mask = images.get(source.bitmap).state.mask >>> 0,
+          formats = nativeABI(world.profile).graphics.imageOwnerBlendRGB24 ? [3, 4] : [4];
         if (
-          images.get(source.bitmap).state.bpp !== 4 ||
-          images.get(target.bitmap).state.bpp !== 4 ||
+          !formats.includes(sourceBpp) ||
+          !formats.includes(targetBpp) ||
           images.get(source.bitmap).state.blendType ||
-          images.get(source.bitmap).state.mask >>> 0 > 4
+          mask > sourceBpp
         )
-          throw new Error('The image blend requires the reviewed RGBA scalar format');
+          throw new Error('The image blend requires a reviewed scalar pixel format');
+        if (targetBpp === 3 && mask) return done(); // The native mask dispatch has no RGB target function.
         words.operation = 'clipped-blend';
         words.blendPhysicalRows = true;
       }

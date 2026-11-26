@@ -208,7 +208,7 @@ const mainEvidence = [
   {
     ids: [716, 721, 722, 725, 729, 734],
     value:
-      'Own complete Script GCALLs use the original kcFileServer singleton, complete Settings defaults, software kcView and true Top/Script constructors. Main710 creates a real64-byte loaded image owner with its nonempty native layer vector;733 creates an independent blank target. Main716 packed multiplication and729 alpha scaling visit loaded layers,721 reads the live output alpha hint,722 changes that hint,725 copies a nonempty HG3 attribute tree and734 blends a legal source/target rectangle. All output pixels, metadata, copied attribute words, controls and Script+0x9c automatic-list references are compared. Null or bitmap-less721 leaves the original result unwritten and remains guarded; blank owners are not passed to the layer iterators.',
+      'Own complete Script GCALLs use the original kcFileServer singleton, complete Settings defaults, software kcView and true Top/Script constructors. Main710 creates a real64-byte loaded image owner with its nonempty native layer vector;733 creates an independent blank target. Main716 packed multiplication and729 alpha scaling visit loaded layers,721 reads the live output alpha hint,722 changes that hint,725 copies a nonempty HG3 attribute tree and734 blends a legal source/target rectangle. All output pixels, metadata, copied attribute words, controls and Script+0x9c automatic-list references are compared. Further actual Main710 single-layer HG3 RGB24 factories and Main7343-to4,4-to3,3-to3 rectangles match full pixels and independent cold. RGBA mask1 into RGB24 has no native dispatch function: its complete control2 wrapper preserves target pixels. Null or bitmap-less721 leaves the original result unwritten and remains guarded; blank owners are not passed to the layer iterators.',
   },
   {
     ids: [375, 431],
@@ -1730,6 +1730,7 @@ export default {
     sameSizeBitmapCopyClips: true,
     imageOwnerCopyPhysicalRows: true,
     imageOwnerBlendPhysicalRows: true,
+    imageOwnerBlendRGB24: true,
     retainedScalarRows: true,
     drawRetirementRetainsResources: true,
     drawCountAndLayerRequireRenderer: true,

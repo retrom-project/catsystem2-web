@@ -253,3 +253,12 @@ separate from a zero handle or an allocated zero-sized bitmap. Dimensions,
 pixels and queries that require real storage retain their precondition guards.
 Selector composition retains its separate HG2/HG3 binding; plain BMP admission
 does not enable BMP selectors, other headers or animated BMP frame maps.
+
+SDK23 Main710 can retain one ordinary HG3 RGB24 layer without converting its
+output to RGBA. Main734 therefore supports RGB24-to-RGBA, RGBA-to-RGB24 and
+RGB24-to-RGB24 normal scalar rectangles. RGB24 output exposes opaque alpha.
+An RGBA mask applied to an RGB24 target has no original mask dispatch function:
+the complete wrapper returns control2 and preserves all target pixels. Source
+masks remain restricted to real source components; other blend types and
+unsupported pixel classes retain specific guards. Actual Main710/734 GCALLs
+compare these ordinary pairs and their independent cold continuation.

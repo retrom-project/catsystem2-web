@@ -1,0 +1,295 @@
+{
+  "scope": "Actual Main710 single-layer HG3 factories create real RGB24/RGBA32 owners. Complete Main734 normal rectangles compare3->4,4->3,3->3 CPU paths and valid RGBA mask1 into RGB24, then normal release. Native source and destination header BPP is checked before processing. No fabricated owner, abnormal input, original code patch or device output.",
+  "originalReceipt": ".local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/draw16-20261127/ORIGINAL-OWNER-RGB24.json",
+  "originalReceiptSha256": "99dab716ab4107557b81a1e4005bfa87b291ae1822234a5693a1f6cecbc2e7d8",
+  "producerSha256": "259ecd6b93c1b247c781a44ae0d4d482c95780a9f4848c08882698543ba46871",
+  "helperSha256": "0b4fb98b0b02e4fcefe0e17e364db59c0add90ca2075358f87b8c4d0bef82294",
+  "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "resources": [
+    {
+      "name": "rgb24.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAYAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEQAAAAAAAAAAgAAABcAAAAPAAAAFQAAAA0AAAB4nONeksq5fT33OebPEnc0ubQALycFpHicY+Q4wFYTfMCctYb9DzMAGo0EHQ==",
+      "sha256": "bb9ba29eda7d7a1698171d3a71210f470ddea3c3dcdc020803fd35f0c313fc1a"
+    },
+    {
+      "name": "rgba32.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAE0AAAAAAAAAAgAAACAAAAAXAAAAFQAAAA0AAAB4nOM+cEAzVdX83y+mc/zGjw+av9TIcjhwwAEAfgUK1nicY+RgYK4xPCDOXLOTIR4AEM8DKA==",
+      "sha256": "b138dbea191a6d7e54fd3ce2a39e0fb4782595998881cc83ecb2263e70393bec"
+    },
+    {
+      "name": "back24.hg3",
+      "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAYAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEcAAAAAAAAAAgAAABwAAAATAAAAEwAAAA0AAAB4nJNeksrZncfVx7zhePcV1j/////nBwBQaAmleJxj5DjAVhN8wJwVRAAAGy0EYQ==",
+      "sha256": "d96792a73ed89bdb502e7373d18ddba1d4c034ca9d9cf1b7d1d6ce55a4c59383"
+    }
+  ],
+  "rows": [
+    {
+      "id": 710,
+      "args": [256],
+      "resultAddress": 36,
+      "list": 1,
+      "source": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      },
+      "target": null
+    },
+    {
+      "id": 710,
+      "args": [320],
+      "resultAddress": 40,
+      "list": 2,
+      "source": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      },
+      "target": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      }
+    },
+    {
+      "id": 734,
+      "args": [[19, 36], 0, 0, 3, 2, [19, 40], 0, 0, 3, 2],
+      "resultAddress": null,
+      "list": 2,
+      "source": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      },
+      "target": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      }
+    },
+    {
+      "id": 711,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "list": 1,
+      "source": null,
+      "target": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      }
+    },
+    {
+      "id": 711,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "list": 0,
+      "source": null,
+      "target": null
+    },
+    {
+      "id": 710,
+      "args": [320],
+      "resultAddress": 36,
+      "list": 1,
+      "source": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      },
+      "target": null
+    },
+    {
+      "id": 710,
+      "args": [384],
+      "resultAddress": 40,
+      "list": 2,
+      "source": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      },
+      "target": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "2K54/7yWYv+khlD/kmxC/3haMP9gShj/",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      }
+    },
+    {
+      "id": 734,
+      "args": [[19, 36], 0, 0, 3, 2, [19, 40], 0, 0, 3, 2],
+      "resultAddress": null,
+      "list": 2,
+      "source": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      },
+      "target": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//3t7e/+khlD/ZYu1/3lqVf+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      }
+    },
+    {
+      "id": 728,
+      "args": [[19, 36], 1],
+      "resultAddress": null,
+      "list": 2,
+      "source": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//",
+        "mask": 1,
+        "blendType": 0,
+        "alphaHint": 1
+      },
+      "target": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//3t7e/+khlD/ZYu1/3lqVf+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      }
+    },
+    {
+      "id": 734,
+      "args": [[19, 36], 0, 0, 3, 2, [19, 40], 0, 0, 3, 2],
+      "resultAddress": null,
+      "list": 2,
+      "source": {
+        "shape": [3, 2, 4],
+        "rgbaBase64": "H0l//zthlYBTcacAZYu1/3+dx0CXrd//",
+        "mask": 1,
+        "blendType": 0,
+        "alphaHint": 1
+      },
+      "target": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//3t7e/+khlD/ZYu1/3lqVf+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      }
+    },
+    {
+      "id": 711,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "list": 1,
+      "source": null,
+      "target": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//3t7e/+khlD/ZYu1/3lqVf+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      }
+    },
+    {
+      "id": 711,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "list": 0,
+      "source": null,
+      "target": null
+    },
+    {
+      "id": 710,
+      "args": [256],
+      "resultAddress": 36,
+      "list": 1,
+      "source": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      },
+      "target": null
+    },
+    {
+      "id": 710,
+      "args": [384],
+      "resultAddress": 40,
+      "list": 2,
+      "source": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      },
+      "target": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "2K54/7yWYv+khlD/kmxC/3haMP9gShj/",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      }
+    },
+    {
+      "id": 734,
+      "args": [[19, 36], 0, 0, 3, 2, [19, 40], 0, 0, 3, 2],
+      "resultAddress": null,
+      "list": 2,
+      "source": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      },
+      "target": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      }
+    },
+    {
+      "id": 711,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "list": 1,
+      "source": null,
+      "target": {
+        "shape": [3, 2, 3],
+        "rgbaBase64": "H0l//zthlf9Tcaf/ZYu1/3+dx/+Xrd//",
+        "mask": 0,
+        "blendType": 0,
+        "alphaHint": 1
+      }
+    },
+    {
+      "id": 711,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "list": 0,
+      "source": null,
+      "target": null
+    }
+  ]
+}
