@@ -136,3 +136,26 @@ texture interception evidence applies to operations consuming unwritten fields.
 Zero-count load/start and definitely sized empty reloads have defined paired
 behavior. Neither this group nor the
 auxiliary-table census establishes complete SDK or product acceptance.
+
+Modern `.74`/`.76` script tasks have a separate native graph-port enable bit.
+Loading creates a disabled entry; start registers the draw callback without
+enabling it. The first active idle enables the entry before running KCS and
+writing/sorting its auxiliary buffers. Stop disables it, and release deletes it.
+Starting an already enabled task retains the bit, while stop/start and reload
+remain disabled until idle. This state cannot be derived from `active` or
+`hasFrame`: a repeated start resets the particle clock but retains an enabled
+port. Each build has an own twelve-stage real port/aux-write protocol control.
+
+The current bank owns this one `nativeDrawEnabled` value. Default collection,
+GPU drawBank and previously collected Canvas items follow it. A FES parent can
+start a child after that child's logic phase; the child then waits for its first
+idle before contributing a default draw item. Direct unqualified buffer
+consumers still diagnose unknown indices. In particular, enabling a task whose
+depth allocation failed does not manufacture sorting data or hide its later
+uninitialized-index error.
+
+The internal checkpoint stores the port bit directly and requires it on restore
+for these native script banks. Cold restore retains disabled/enabled states
+without inferring them from buffers or clocks. This is the current development
+contract; native GAME_SAVE layout is unchanged. Other SDK builds retain their
+existing policy until independently proved.

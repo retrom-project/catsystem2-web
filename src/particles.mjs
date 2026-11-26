@@ -12,6 +12,8 @@ import { NativeBufferMemory } from './native/buffer-memory.mjs';
 const normalize = (name) => name.replaceAll('\\', '/').toLowerCase();
 const white = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
 const sceneBankCount = 8;
+const drawEligible = (bank) =>
+  bank.started && bank.instance?.active && bank.alpha !== 0 && bank.nativeDrawEnabled !== false;
 const bankRegisters = (bank) =>
   Object.defineProperty(bank, 'registers', {
     get() {
@@ -54,6 +56,7 @@ export class Particles {
     this.registry = registry;
     this.profile = profile;
     this.nativeRefBuffers = profile && nativeABI(profile).particle?.refBuffersFollowNativeHeap;
+    this.drawPortEnabledByIdle = profile && nativeABI(profile).particle?.drawPortEnabledByIdle;
     this.refBufferMemory = this.nativeRefBuffers
       ? (refBufferMemory ?? new NativeBufferMemory())
       : null;
@@ -334,6 +337,8 @@ export class Particles {
       : await (bank.family === 'plugin'
           ? this.readPlugin(bank.program)
           : this.scriptBytes(bank.program));
+    if (this.atlas && this.drawPortEnabledByIdle && bank.family === 'script')
+      bank.nativeDrawEnabled = false;
     if (bank.family === 'plugin') {
       await this.preloadData();
       const runtime = await this.pluginRuntime();
@@ -399,6 +404,7 @@ export class Particles {
     if (bank.family === 'plugin' && bank.attachmentNamespace === 'graph' && bank.instance)
       bank.instance.attachPlane = this.refreshAttachment(bank);
     bank.instance?.stop();
+    if (bank.nativeDrawEnabled !== undefined) bank.nativeDrawEnabled = false;
     bank.started = false;
     bank.retireAt = null;
     this.metadata(bank);
@@ -549,6 +555,9 @@ export class Particles {
       }
     }
     if (bank.started && bank.instance.active) {
+      // The native graph port is enabled before KCS and auxiliary sorting.
+      // A later undefined consumer must still diagnose its missing bytes.
+      if (bank.nativeDrawEnabled !== undefined && !bank.externalDraw) bank.nativeDrawEnabled = true;
       bank.instance.attachPlane = this.refreshAttachment(bank);
       if (bank.clockStart === null) {
         bank.clockStart = frame;
@@ -601,15 +610,13 @@ export class Particles {
   }
   async drawBank(key, gpu) {
     const bank = this.require(key);
-    if (!bank.started || !bank.instance.active || bank.alpha === 0) return;
+    if (!drawEligible(bank)) return;
     const batch = await this.drawBatch(bank);
     gpu.drawGeometry(batch.geometry, batch.image, batch.options);
   }
   drawItems() {
     return [...this.banks.values()]
-      .filter(
-        (bank) => bank.started && bank.instance?.active && bank.alpha !== 0 && !bank.externalDraw,
-      )
+      .filter((bank) => drawEligible(bank) && !bank.externalDraw)
       .map((bank) => ({
         type: 'particle',
         priority: bank.priority,
@@ -617,6 +624,7 @@ export class Particles {
         nativeRenderOrder: bank.nativeRenderOrder,
         drawGPU: async (gpu) => this.drawBank(bank.key, gpu),
         draw: async (context) => {
+          if (!drawEligible(bank)) return;
           this.gpu ||= new ParticlesGL(this.stage.width, this.stage.height);
           const batch = await this.drawBatch(bank),
             canvas = this.gpu.render(batch.geometry, batch.image, context.canvas, batch.options);
@@ -639,6 +647,7 @@ export class Particles {
         key: bank.key,
         order: bank.order,
         nativeRenderOrder: bank.nativeRenderOrder,
+        nativeDrawEnabled: bank.nativeDrawEnabled,
         family: bank.family,
         program: bank.program,
         texture: bank.texture,
@@ -665,7 +674,18 @@ export class Particles {
       })),
     };
   }
+  validateNativeDrawPortState(state) {
+    if (
+      this.atlas &&
+      this.drawPortEnabledByIdle &&
+      state.banks.some(
+        (bank) => bank.family === 'script' && typeof bank.nativeDrawEnabled !== 'boolean',
+      )
+    )
+      throw new Error('Particle checkpoint requires its native graph-port enable state');
+  }
   async restore(state) {
+    this.validateNativeDrawPortState(state);
     this.close();
     this.closed = false;
     this.banks = new Map();

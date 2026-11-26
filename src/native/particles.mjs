@@ -78,6 +78,7 @@ export class NativeParticles {
     return { ...this.host.snapshot(), textures: this.textures.snapshot() };
   }
   async restore(state) {
+    this.host.validateNativeDrawPortState(state);
     this.host.close();
     this.textures.restore(state.textures);
     await this.host.restore(state);
