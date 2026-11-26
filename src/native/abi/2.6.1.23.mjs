@@ -223,7 +223,7 @@ const mainEvidence = [
   {
     ids: [428, 648],
     value:
-      'Own Main428 at0x4899e0 decodes an ordinal frame from the actual Main365 twenty-byte encoded resource, writes the resolved frame ID through its third live VM argument, converts RGB24 to RGBA32 and inserts the real0x114 bitmap owner into Script+0x98. Main648 at0x489ea0 uses0x4d86a0 to compose HG2/HG3 tile IDs0–8 into a new bitmap: corners, repeated edges and repeated center, with normal partial edge clips. Actual loaded Script GCALLs preserve distinct ordinal/ID values, opaque and alpha pixels, typed resource/list ownership and explicit release. Unsupported formats and unproved empty/smaller target shapes stay guarded; this is not a blank-size constructor. Valid BMP24/32 and PNG Main428 calls return zero, preserve the third VM output and add no Script bitmap. Main648 on those files instead returns a real null-storage owner and inserts it in the automatic list; this defined shape remains specifically guarded pending its JS owner representation.',
+      'Own Main428 at0x4899e0 decodes an ordinal frame from the actual Main365 twenty-byte encoded resource, writes the resolved frame ID through its third live VM argument, converts RGB24 to RGBA32 and inserts the real0x114 bitmap owner into Script+0x98. Main648 at0x489ea0 uses0x4d86a0 to compose HG2/HG3 tile IDs0–8 into a new bitmap: corners, repeated edges and repeated center, with normal partial edge clips. Actual loaded Script GCALLs preserve distinct ordinal/ID values, opaque and alpha pixels, typed resource/list ownership and explicit release. Unsupported formats and unproved empty/smaller target shapes stay guarded; this is not a blank-size constructor. Valid BMP24/32 and PNG Main428 calls return zero, preserve the third VM output and add no Script bitmap. Main648 on those files instead returns a real null-storage owner and inserts it in the automatic list; the JS null-storage bitmap wrapper preserves that defined owner/list identity with no pixel allocation through explicit release, Script destruction and independent cold. Storage-dependent queries retain their guards.',
   },
   {
     ids: [370, 371, 374, 377, 378],
@@ -1724,6 +1724,7 @@ export default {
     imageCompositeBmpHeader: 40,
     imageCompositeBmpCompression: 0,
     bitmapOrdinalRejectedFormats: ['BMP', 'PNG'],
+    ninePieceEmptyFormats: ['BMP', 'PNG'],
     formattedBitmapPhysical: true,
     bitmapBlitUsesSourceSize: true,
     sameSizeBitmapCopyClips: true,

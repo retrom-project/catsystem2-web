@@ -246,8 +246,10 @@ automatic bitmap. Valid PNG files are rejected with zero by Main428, Main460
 and Main703; the latter still clears the requested output record pairs.
 
 Main648 ignores its decoder's non-HG return and returns a real0x114 owner with
-a null bitmap, inserted in the Script automatic list. This defined empty-owner
-shape remains guarded until the JS resource graph distinguishes that owner
-from an allocated zero-sized bitmap. It must not be converted to a zero handle.
+a null bitmap, inserted in the Script automatic list. The JS bitmap wrapper retains that identity with dataHandle0 and owns no
+bitmap-data or pixels. Its existing codec preserves it through cold restore;
+explicit release and Script automatic destruction free the wrapper. This is
+separate from a zero handle or an allocated zero-sized bitmap. Dimensions,
+pixels and queries that require real storage retain their precondition guards.
 Selector composition retains its separate HG2/HG3 binding; plain BMP admission
 does not enable BMP selectors, other headers or animated BMP frame maps.

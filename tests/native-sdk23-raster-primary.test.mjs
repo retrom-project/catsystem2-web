@@ -11,9 +11,7 @@ const golden = JSON.parse(
   marker = 0x70667231;
 for (const resource of golden.resources) {
   const original = golden.rows.filter((row) => row.source === resource.name),
-    rows = original.filter(
-      (row, i) => row.id !== 648 && !(row.id === 114 && original[i - 1]?.id === 648),
-    ),
+    rows = original,
     name = resource.name + '.kcs',
     files = {
       [resource.name]: Buffer.from(resource.base64, 'base64'),
@@ -49,6 +47,9 @@ for (const resource of golden.resources) {
         assert.equal(Buffer.from(await bitmap.pixels()).toString('base64'), row.bitmap.rgbaBase64);
       };
       for (const row of rows) {
+        const dataBefore = [...world.runtime.handles.records.values()].filter(
+          (r) => r.type === 'bitmap-data',
+        ).length;
         await world.runtime.scheduler.execute(task);
         assert.equal(m.sp, floor + 4, 'Main' + row.id + ' control');
         assert.equal(m.load(floor), marker);
@@ -56,6 +57,48 @@ for (const resource of golden.resources) {
         if (row.id === 428 || (row.id === 460 && !row.result))
           assert.equal(m.load(row.resultAddress), 0);
         if (row.id === 460 && row.result) await pixels(world, m.load(row.resultAddress), row);
+        if (row.id === 648) {
+          const handle = m.load(row.resultAddress),
+            empty = world.graphics.images.get(handle);
+          assert.equal(empty.dataHandle, 0, 'actual null-storage owner');
+          const alias = world.graphics.images.alias(handle);
+          assert.equal(world.graphics.images.get(alias).dataHandle, 0);
+          await world.graphics.images.release(alias);
+          assert.equal(
+            world.runtime.handles.records.has(handle),
+            true,
+            'independent empty wrapper',
+          );
+          assert.equal(
+            [...world.runtime.handles.records.values()].filter((r) => r.type === 'bitmap-data')
+              .length,
+            dataBefore,
+            'no zero-size pixel allocation',
+          );
+          const fresh = await dataWorld(profile, files, { initialize: false });
+          try {
+            await fresh.restore(structuredClone(world.snapshot()));
+            assert.equal(fresh.graphics.images.get(handle).dataHandle, 0);
+            const restored = fresh.runtime.scheduler.tasks.get(task.id);
+            await fresh.runtime.scheduler.execute(restored);
+            assert.equal(fresh.runtime.handles.records.has(handle), false, 'cold explicit release');
+          } finally {
+            await fresh.close({ flushFiles: false });
+          }
+          const retired = await dataWorld(profile, files, { initialize: false });
+          try {
+            await retired.restore(structuredClone(world.snapshot()));
+            await retired.sendEngine(task.id, retired.main.id, 3);
+            await retired.objects.tick(40);
+            assert.equal(
+              retired.runtime.handles.records.has(handle),
+              false,
+              'Script automatic release',
+            );
+          } finally {
+            await retired.close({ flushFiles: false });
+          }
+        }
         if (row.id === 703) {
           assert.equal(m.load(44), row.result);
           assert.equal(m.load(512), row.records[0]);
@@ -81,18 +124,9 @@ for (const resource of golden.resources) {
           [...world.runtime.handles.records.values()].filter(
             (r) => r.type === 'bitmap' && r.value.owner === task.id,
           ).length,
-          0,
-          'no automatic bitmap owner inserted',
+          row.list,
+          'actual automatic bitmap owner list',
         );
-      }
-      const encoded = (await world.runtime.native('main', 365, [256], m, task)).value;
-      try {
-        await assert.rejects(
-          world.runtime.native('main', 648, [encoded, 8, 6], m, task),
-          /Unreviewed encoded bitmap format/,
-        );
-      } finally {
-        await world.runtime.native('main', 366, [encoded], m, task);
       }
     },
   );

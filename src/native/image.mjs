@@ -877,7 +877,11 @@ export class NativeImages {
   }
   alias(handle, owner = null) {
     const bitmap = this.get(handle);
+    if (!bitmap.dataHandle) return this.createEmpty(owner);
     return this.add(new NativeBitmap(this, null, { dataHandle: bitmap.dataHandle, owner }));
+  }
+  createEmpty(owner = null) {
+    return this.handles.add('bitmap', new NativeBitmap(this, null, { owner }));
   }
   create(width, height, owner = null) {
     size(width, height, true);
@@ -1035,6 +1039,7 @@ export class NativeImages {
     const bitmap = this.handles.release(handle, 'bitmap');
     originalView(this.world, 'forgetImage', handle);
     if (
+      bitmap.dataHandle &&
       ![...this.handles.records.values()].some(
         (record) => record.type === 'bitmap' && record.value.dataHandle === bitmap.dataHandle,
       )

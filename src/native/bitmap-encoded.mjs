@@ -10,14 +10,16 @@ export async function nativeEncodedBitmap(world, id, argument, machine, task) {
   if (!handle && id === 428) return nativeReply(1, 0);
   if (!handle) throw new Error('Native nine-piece bitmap requires an encoded image owner');
   const buffers = world.runtime.imageDataBuffers,
-    bytes = buffers.data(buffers.pointer(handle));
+    bytes = buffers.data(buffers.pointer(handle)),
+    images = world.graphics.images,
+    format = rasterFormat(bytes)?.toUpperCase();
   if (
     id === 428 &&
-    nativeABI(world.profile).graphics.bitmapOrdinalRejectedFormats?.includes(
-      rasterFormat(bytes)?.toUpperCase(),
-    )
+    nativeABI(world.profile).graphics.bitmapOrdinalRejectedFormats?.includes(format)
   )
     return nativeReply(1, 0);
+  if (id === 648 && nativeABI(world.profile).graphics.ninePieceEmptyFormats?.includes(format))
+    return nativeReply(1, images.createEmpty(task.id));
   if (
     bytes.length < 4 ||
     bytes[0] !== 72 ||
@@ -26,8 +28,7 @@ export async function nativeEncodedBitmap(world, id, argument, machine, task) {
     (bytes[3] !== 50 && bytes[3] !== 51)
   )
     throw new Error('Unreviewed encoded bitmap format');
-  const image = await openImage(bytes),
-    images = world.graphics.images;
+  const image = await openImage(bytes);
   if (id === 428) {
     const index = argument(1) >>> 0,
       // The own HG2 wrapper exposes ordinal lookup only from format0x25.
