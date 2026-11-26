@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [259, 263, 264, 462, 463, 657],
+    value:
+      'Own complete Main259/263/264/462/463/657 GCALLs use the actual Top kind15 ImageList constructor, initialized renderer and Main365/428 decoded bitmap. Main259 raw256 updates an existing key or inserts a new one;263 changes its shown word;462/463 query and change the entry layer;657 borrows its live bitmap and returns zero for an absent key. Main264 writes the count scratch but returns control2, so it pushes no VM value. Actual CPU pixels, mapped outputs,1/2/0 counts, source release with retained references, entry removal and real parent-update destruction match. The missing layer query preserves the wrapper initial minus-one value. Uninitialized renderer count/layer shapes remain guarded.',
+  },
+  {
     ids: [731],
     value:
       'Own complete Main731 at0x4808e0 uses the actual Main66 kind15 kcTaskImageList0x90, original raw253 initialized renderer0x3c and Main710 loaded image owner. The wrapper copies the owner into field3 of its60-byte descriptor and sends raw254 with the caller/layer key, float32 transform, clamped alpha, shown and mode words. Actual disabled Draw Main340/raw264 renders CPU pixels without a device output; Main261 returns its borrowed bitmap. Original source-owner release retains the Draw input, entry removal clears it and the real parent update deletes the retired Draw. Full KCS pixels, controls, resource counts and independent cold match the shared logical retained-source graph; no GPU publication fence is changed.',
@@ -1710,6 +1715,7 @@ export default {
     imageOwnerDrawModes: [0, 1],
     retainedScalarRows: true,
     drawRetirementRetainsResources: true,
+    drawCountAndLayerRequireRenderer: true,
     screenCaptureOpaque: true,
     recordingRequiresFrame: true,
     screenEffectRetimesOnActiveInit: [38, 39, 50, 51, 52],
@@ -1805,6 +1811,28 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...[259, 263, 264, 462, 463, 657].map((id) => ({
+          ids: [id],
+          fields: {
+            review: 'reviewed',
+            resultWritten: [264, 462, 657].includes(id),
+            ...(id === 657
+              ? { result: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' } }
+              : {}),
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) =>
+              index === 0
+                ? { ...parameter, type: { kind: 'object-id', objectKind: 'Draw' } }
+                : id === 259 && index === 2
+                  ? {
+                      ...parameter,
+                      type: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' },
+                    }
+                  : id === 259 && index >= 3 && index <= 9
+                    ? { ...parameter, type: { kind: 'float', bits: 32 } }
+                    : parameter,
+            ),
+          },
+        })),
         ...[375, 431].map((id) => ({
           ids: [id],
           fields: {
