@@ -79,6 +79,7 @@ export default {
   scene: {
     cstFileMarkers: true,
     messageCountTypeSideEffects: true,
+    historyCursorTypeSideEffects: true,
     translations: false,
     implicitReaderUsesDirectBehavior: true,
     implicitTextRecordRequired: true,

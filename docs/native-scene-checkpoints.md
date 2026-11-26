@@ -161,3 +161,13 @@ that unused tail from logical bank contents. It does not assume equal compressed
 bytes or invent initialized padding. Existing method-level selector/checkpoint
 matrices remain separate evidence; this group adds 36 real Main frames per
 modern build with the real caller/Settings/FileServer bridge.
+
+Modern Cursor6 has an own real Main323 history/FileServer/CST/379 constructor
+bridge, covering 0/1/3/5 slots, rotation, final-block exclusion, text/speaker
+concatenation, command ordinals, misses, independent release, and cold restores.
+The cursor's readers call the same own Type methods as direct readers: `.74`
+therefore consumes F0/F1 markers while scanning text or commands, preserving the
+filename used by subsequent refresh checks. `.76` retains its no-marker Type
+behavior. The cursor policy is explicit for `.74`; it does not infer a new
+legacy-build policy. All Main frames and defined row/path/block/valid/body and
+filename fields are compared; no large native slot allocation is performed.

@@ -21,6 +21,10 @@ const basename = (name) => {
   return name.slice(last ? last + 1 : 0);
 };
 const fold = (name) => name.replace(/[A-Z]/g, (char) => char.toLowerCase());
+const readerBehavior = (services) => {
+  const behavior = services.profile ? nativeABI(services.profile).scene : undefined;
+  return behavior?.historyCursorTypeSideEffects ? behavior : undefined;
+};
 
 export class NativeHistoryCursor {
   constructor(sceneHandle, capacity) {
@@ -69,11 +73,12 @@ export class NativeHistoryCursor {
   }
   async text(row, services, message, speaker) {
     if (!(await this.refresh(row, services))) return 0;
+    const behavior = readerBehavior(services);
     message?.clear();
     speaker?.clear();
     let found = 0;
     for (let line = 0; ; line++) {
-      const type = row.reader.type(row.block, line);
+      const type = row.reader.type(row.block, line, behavior);
       if (type === -1) return found;
       if (type !== 0x20 && type !== 0x21) continue;
       const target = type === 0x20 ? message : speaker,
@@ -84,10 +89,11 @@ export class NativeHistoryCursor {
   }
   async voice(row, ordinal, services, target) {
     if (!(await this.refresh(row, services))) return 0;
+    const behavior = readerBehavior(services);
     target?.clear();
     let found = 0;
     for (let line = 0; ; line++) {
-      const type = row.reader.type(row.block, line);
+      const type = row.reader.type(row.block, line, behavior);
       if (type === -1) return 0;
       if (type !== 0x30) continue;
       if (found !== (ordinal | 0)) {
