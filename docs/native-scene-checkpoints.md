@@ -74,3 +74,21 @@ an undecodable CP932 name.
 Two public fixture tests dispatch through World, restore into a fresh World, continue storage, restoration and branching, and check independent ownership, raw UTF-8/invalid bytes, unaffected outside variables/strings, original branch quirks, self-copy and null-scene behavior. Full game history/replay UI acceptance remains a separate requirement.
 
 Public IndexedDB acceptance stores a complete World and a CSS save, reloads the browser document, and restores CSS banks and scene-local state through normal native dispatch. The JS-only fixture rejects any attempted EXE load. [Browser acceptance](../tests/browser/public.spec.mjs).
+
+The modern Scene history string wrappers also have own-build typed Script and
+Main323 owner comparisons. The `.74` and `.76` factories each create an empty
+caller string bank. Main334/335 and Script Main229/230 retain independent
+history copies, distinguish a missing string table from an absent key in an
+existing table, clamp the path index, and truncate stored narrow strings at 62
+bytes without repairing a split CP932 character. Main336/231 capture the current
+caller bank only for parsed `$str` references; later caller-bank edits do not
+change the captured values until another capture. Main337/232 expand found,
+missing, signed, hexadecimal, and literal reference forms in place.
+
+`modern-scene-strings.test.mjs` replays 41 complete Main frames per modern build,
+checks the serialized caller bank and dirty flag, and performs three independent
+checkpoint restores per build. The original receipts retain all native history
+record bytes. Newly allocated record padding after a string terminator remains
+uninitialized native data; the portable comparison checks logical names, keys,
+and string bytes through their terminators. This group does not establish raw
+CSS padding round trips, cross-task receiver lookup, or localized reader tails.
