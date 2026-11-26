@@ -139,6 +139,10 @@ frames. The same command in the main frame cursor continues after draining.
 `result` has this native return too. JavaScript asynchronous work for an
 original zero-return command retains its continuation. No pending host action
 or event continuation is replayed by a completed-action cold restore.
+An absent first operand to legacy `execfes` or `execkcs` returns zero and
+continues without creating a child. The check is for a missing operand, not
+an operand that expands to an empty filename. Later builds retain their own
+unmodified command policy.
 
 The legacy return-to-title menu command119 also uses inline Japanese text.
 Only 2.6.1.67 sends its preparation notification before the dialog; accepting

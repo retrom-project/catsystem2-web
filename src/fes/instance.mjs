@@ -1137,6 +1137,7 @@ export class FESInstance {
             : p(0);
         return this.nativeCommandReturn(-3, { queue: false });
       case 'execfes':
+        if (args[0] === undefined && fesBehavior?.emptyExecReturnsZero) return {};
         this.player.requestFES(
           this.text(args[0]),
           this,
@@ -1144,6 +1145,7 @@ export class FESInstance {
         );
         return this.nativeCommandReturn(-3, { queue: false });
       case 'execkcs':
+        if (args[0] === undefined && fesBehavior?.emptyExecReturnsZero) return {};
         this.exitCode = -1;
         this.player.requestKCS(this.text(args[0]), this);
         return this.nativeCommandReturn(-3, { queue: false });

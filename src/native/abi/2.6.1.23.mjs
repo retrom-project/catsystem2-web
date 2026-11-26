@@ -1599,6 +1599,7 @@ export default {
   },
   fes: {
     nativeQueueYieldStopsNotification: true,
+    emptyExecReturnsZero: true,
     shellErrorText: { storage: 'inline', caption: 'エラー' },
     definitionTypes: [
       'BASE',
