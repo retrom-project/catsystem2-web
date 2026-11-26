@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeStageSurface } from '../render/surfaces.mjs';
 import { mapABIMessage } from './abi/messages.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { bitsFloat, floatBits } from '../kcs.mjs';
@@ -249,7 +250,7 @@ export class NativeScreenEffectTask {
       return false;
     }
     const source = this.rendering.captures[slot],
-      surface = this.stage.surfaces.get(source),
+      surface = nativeStageSurface(this.stage.surfaces, source),
       id = this.surface(surface.width, surface.height, this.stage.surfacePixels(source));
     this.releaseSurface(this.state.work[slot]);
     this.state.work[slot] = id;
@@ -259,7 +260,7 @@ export class NativeScreenEffectTask {
   geometryOptions() {
     const screen = this.world.configuration.screen,
       capture = this.rendering.captures[0],
-      texture = capture && this.stage.surfaces.get(capture);
+      texture = capture && nativeStageSurface(this.stage.surfaces, capture);
     return {
       currentWidth: screen.currentWidth,
       windowedWidth: screen.width,
@@ -340,7 +341,7 @@ export class NativeScreenEffectTask {
     this.state.cache = [];
   }
   cacheRows(id, count, maximum, fade = false) {
-    const surface = this.stage.surfaces.get(id);
+    const surface = nativeStageSurface(this.stage.surfaces, id);
     return mosaicCache(
       this.stage.surfacePixels(id),
       surface.width,
@@ -412,7 +413,7 @@ export class NativeScreenEffectTask {
       borrowed = nativeABI(this.world.profile).graphics.screenEffectWipeBorrowsMask;
     if (!duration) throw new RangeError('Screen wipe duration divides by zero');
     const pixels = stage.surfacePixels(state.work[0]).slice(),
-      mask = stage.surfaces.get(state.mask).bytes,
+      mask = nativeStageSurface(stage.surfaces, state.mask).bytes,
       scale = threshold ? 256 : 512,
       position = Math.floor(
         (borrowed
@@ -565,7 +566,7 @@ export class NativeScreenEffectTask {
     if (!row) return this.record.kind === 51 ? 0 : state.lastTargetSlot;
     if (row.time !== state.lastKey) {
       const [width, height] = this.rendering.size(),
-        source = this.stage.surfaces.get(row.surface),
+        source = nativeStageSurface(this.stage.surfaces, row.surface),
         pixels = expandMosaic(
           source.bytes,
           source.width,
@@ -586,7 +587,7 @@ export class NativeScreenEffectTask {
   }
   paddedCaptureSurface(id) {
     if (!id) return id;
-    const source = this.stage.surfaces.get(id),
+    const source = nativeStageSurface(this.stage.surfaces, id),
       width = screenTextureSize(source.width),
       height = screenTextureSize(source.height);
     if (source.width === width && source.height === height) return id;
@@ -594,7 +595,7 @@ export class NativeScreenEffectTask {
       previous = this.paddedCaptureSource;
     if (previous?.id === id && previous.revision === source.revision) return current;
 
-    const target = current && this.stage.surfaces.get(current),
+    const target = current && nativeStageSurface(this.stage.surfaces, current),
       input = this.stage.surfacePixels(id),
       pixels = new Uint8Array(width * height * 4),
       stride = source.width * 4;

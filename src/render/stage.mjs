@@ -1,9 +1,23 @@
 // SPDX-License-Identifier: MPL-2.0
 import { originalView } from '../native/original-adapter.mjs';
 // Stage placement and pixel effects adapted from CatSystemKit StageLayout (OWCramer).
-import { StageSurfaces } from './surfaces.mjs';
+import {
+  StageSurfaces,
+  nativeStageSurface,
+  borrowNativeSurfaceStorage,
+  nativeStageSurfaceRecords,
+} from './surfaces.mjs';
 import { ParticlesGL, createD3DContext } from './particles-gl.mjs';
 import { EmoteMaterials } from '../emote/materials.mjs';
+const stageSurfaceOwners = new WeakMap();
+function stageSurfaceOwner(stage) {
+  const surfaces = stageSurfaceOwners.get(stage);
+  if (surfaces && Object.getOwnPropertyDescriptor(stage, 'surfaces')?.value === surfaces)
+    return surfaces;
+  // Fence the originally registered owner before evaluating a replacement port.
+  if (surfaces) borrowNativeSurfaceStorage(surfaces);
+  return stage.surfaces;
+}
 function boxBlur(pixels, width, height, radius, horizontal) {
   const count = horizontal ? width : height,
     lines = horizontal ? height : width,
@@ -28,19 +42,23 @@ function boxBlur(pixels, width, height, radius, horizontal) {
 export class StageRenderer {
   dispose() {
     if (this.disposed) return;
+    const owner = stageSurfaceOwners.get(this);
+    if (owner) nativeStageSurfaceRecords(owner);
     this.disposed = true;
     this.graphicsDevice?.close();
     this.gpu?.close();
     this.effects = new WeakMap();
     if (this.plane) this.plane.width = this.plane.height = this.mask.width = this.mask.height = 0;
-    this.surfaces.records.clear();
+    stageSurfaceOwner(this).clear();
     this.surfaceTargets.clear();
     this.surfaceDepths.clear();
     this.surfaceFrames.clear();
     this.frameDepth = null;
   }
   constructor(renderer, emote) {
-    this.surfaces = new StageSurfaces();
+    const surfaces = new StageSurfaces();
+    this.surfaces = surfaces;
+    stageSurfaceOwners.set(this, surfaces);
     this.surfaceTargets = new Map();
     this.surfaceDepths = new Map();
     this.surfaceFrames = new Map();
@@ -124,7 +142,7 @@ export class StageRenderer {
     flush();
   }
   drawEmoteSurface(id, geometry, { matrix } = {}) {
-    const surface = this.surfaces.get(id),
+    const surface = nativeStageSurface(stageSurfaceOwner(this), id),
       target = this.surfaceTarget(id),
       depthStencil = this.surfaceDepth(id, 75);
     this.gpu.withRenderTarget(
@@ -139,8 +157,8 @@ export class StageRenderer {
     return this.surfaceFrame(id);
   }
   createSurface(width, height, rgba) {
-    const id = this.surfaces.create({ width, height, pitch: width * 4, format: 'rgba8' });
-    if (rgba) this.surfaces.get(id).bytes.set(rgba);
+    const id = stageSurfaceOwner(this).create({ width, height, pitch: width * 4, format: 'rgba8' });
+    if (rgba) nativeStageSurface(stageSurfaceOwner(this), id).bytes.set(rgba);
     return id;
   }
   blendSurfaces(id, next, previous, alpha) {
@@ -150,7 +168,7 @@ export class StageRenderer {
       previous ? this.surfaceTarget(previous) : null,
       alpha,
     );
-    const surface = this.surfaces.get(id);
+    const surface = nativeStageSurface(stageSurfaceOwner(this), id);
     surface.revision = (surface.revision ?? 0) + 1;
     return this.surfaceFrame(id);
   }
@@ -158,7 +176,7 @@ export class StageRenderer {
     if (!this.gpu) throw new Error('Stage surface drawing requires a GPU');
     let target = this.surfaceTargets.get(id);
     if (!target) {
-      const surface = this.surfaces.get(id);
+      const surface = nativeStageSurface(stageSurfaceOwner(this), id);
       const frame = this.surfaceFrames.get(id);
       if (frame) this.gpu.releaseTextureFrame(frame);
       this.surfaceFrames.delete(id);
@@ -171,7 +189,7 @@ export class StageRenderer {
   surfaceDepth(id, format = this.depthFormat) {
     let depth = this.surfaceDepths.get(id);
     if (!depth) {
-      const surface = this.surfaces.get(id);
+      const surface = nativeStageSurface(stageSurfaceOwner(this), id);
       depth = this.gpu.createDepthStencil(
         surface.width,
         surface.height,
@@ -210,7 +228,7 @@ export class StageRenderer {
     return this.frameDepth;
   }
   surfaceFrame(id) {
-    const surface = this.surfaces.get(id),
+    const surface = stageSurfaceOwner(this).get(id),
       target = this.surfaceTargets.get(id);
     let frame = this.surfaceFrames.get(id);
     if (frame?.revision === (surface.revision ?? 0)) return frame;
@@ -222,13 +240,13 @@ export class StageRenderer {
     return frame;
   }
   surfacePixels(id) {
-    const surface = this.surfaces.get(id),
+    const surface = stageSurfaceOwner(this).get(id),
       target = this.surfaceTargets.get(id);
     if (target) surface.bytes.set(this.gpu.pixels(target));
     return surface.bytes;
   }
   writeSurface(id, bytes) {
-    const surface = this.surfaces.get(id);
+    const surface = nativeStageSurface(stageSurfaceOwner(this), id);
     if (bytes.length !== surface.bytes.length)
       throw new RangeError('Stage surface write dimensions differ');
     surface.bytes.set(bytes);
@@ -244,6 +262,7 @@ export class StageRenderer {
       });
   }
   releaseSurface(id) {
+    nativeStageSurface(stageSurfaceOwner(this), id);
     const target = this.surfaceTargets.get(id);
     if (target) this.gpu.destroyRenderTarget(target);
     const depth = this.surfaceDepths.get(id);
@@ -253,17 +272,25 @@ export class StageRenderer {
     const frame = this.surfaceFrames.get(id);
     if (frame) this.gpu?.releaseTextureFrame(frame);
     this.surfaceFrames.delete(id);
-    this.surfaces.release(id);
+    stageSurfaceOwner(this).release(id);
   }
   snapshotSurfaces(ids) {
+    const owner = stageSurfaceOwners.get(this);
+    if (owner) nativeStageSurfaceRecords(owner);
     for (const id of ids) {
-      this.surfacePixels(id);
+      const surface = nativeStageSurface(stageSurfaceOwner(this), id),
+        target = this.surfaceTargets.get(id);
+      if (target) surface.bytes.set(this.gpu.pixels(target));
       const depth = this.surfaceDepths.get(id);
-      if (depth) this.surfaces.get(id).depthStencil = this.gpu.snapshotDepthStencil(depth);
+      if (depth)
+        nativeStageSurface(stageSurfaceOwner(this), id).depthStencil =
+          this.gpu.snapshotDepthStencil(depth);
     }
-    return this.surfaces.snapshot(ids);
+    return stageSurfaceOwner(this).snapshot(ids);
   }
   restoreSurfaces(records) {
+    const owner = stageSurfaceOwners.get(this);
+    if (owner) nativeStageSurfaceRecords(owner);
     for (const [id] of records) {
       const target = this.surfaceTargets.get(id);
       if (target) this.gpu.destroyRenderTarget(target);
@@ -275,7 +302,7 @@ export class StageRenderer {
       if (frame) this.gpu?.releaseTextureFrame(frame);
       this.surfaceFrames.delete(id);
     }
-    this.surfaces.restore(records);
+    stageSurfaceOwner(this).restore(records);
   }
   effect(frame, picture) {
     if (!picture.mode?.length && !picture.tone?.length && !picture.blur?.length)

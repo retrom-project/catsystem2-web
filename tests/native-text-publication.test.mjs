@@ -6,6 +6,8 @@ import { defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mj
 import { textConfig, packTextConfiguration } from '../src/native/text-config.mjs';
 import { nativeTextPublicationWriter } from '../src/native/text.mjs';
 import { NativeScreenCapture } from '../src/native/screen-capture.mjs';
+import { nativeTexturePageStorage } from '../src/native/texture-layout.mjs';
+import { nativeTexturedPageBounds } from '../src/render/native-textured-geometry.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { authoredHG3 } from './fixtures/hg3.mjs';
 import {
@@ -847,7 +849,7 @@ test('a page storage failure keeps the same partial CPU write and propagates its
         assert(batch);
         await h.send(4, null, batch);
       }
-      const page = [...h.world.graphics.texturePages.pages.values()].find(
+      const page = [...nativeTexturePageStorage(h.world.graphics.texturePages).pages.values()].find(
         (p) => p.x < 51 && p.y < 29 && p.x + p.frame.width > 3 && p.y + p.frame.height > 5,
       );
       structuredClone(page.frame.rgba.buffer, { transfer: [page.frame.rgba.buffer] });
@@ -1031,6 +1033,131 @@ test('fresh World texture pages retain their public observation fence', async ()
     assert.equal(fresh.text.beginPublication(task, h.config), null);
   } finally {
     await fresh?.close({ flushFiles: false });
+    await h.world.close({ flushFiles: false });
+  }
+});
+
+test('the first foreign GPU draw getter observes a completed owned clear', async () => {
+  const rows = [];
+  for (const transaction of [false, true]) {
+    const h = await setup();
+    try {
+      const batch = transaction ? h.world.text.beginPublication(h.task, h.config) : null;
+      if (transaction) assert(batch);
+      await h.send(4, null, batch);
+      const observations = [];
+      await h.task.drawGPU({
+        get drawTexturePages() {
+          observations.push({
+            pending: h.world.text.publications.size,
+            revision: nativeBitmapState(h.vram).revision,
+          });
+          return () => {};
+        },
+      });
+      rows.push(observations);
+    } finally {
+      await h.world.close({ flushFiles: false });
+    }
+  }
+  assert(rows[0].length > 0);
+  assert.deepEqual(rows[1], rows[0]);
+  assert(rows[1].every((row) => row.pending === 0));
+});
+
+for (const field of ['pages', 'dirtyFlags', 'layout'])
+  test(`public page ${field} settles pending clear and prevents later deferred publication`, async () => {
+    const rows = [];
+    for (const transaction of [false, true]) {
+      const h = await setup();
+      try {
+        const pages = h.world.graphics.texturePages,
+          owned = nativeTexturePageStorage(pages),
+          first = [...owned.pages.values()][0],
+          batch = transaction ? h.world.text.beginPublication(h.task, h.config) : null;
+        if (transaction) assert(batch);
+        await h.send(4, null, batch);
+        const held = pages[field];
+        assert.equal(held, pages[field]);
+        settled(h);
+        await Promise.resolve();
+        first.frame.rgba[0] = 173;
+        assert.equal(h.world.text.beginPublication(h.task, h.config), null);
+        await h.world.text.flushPublications();
+        rows.push({
+          byte: first.frame.rgba[0],
+          vramRevision: nativeBitmapState(h.vram).revision,
+          pages: pages.snapshot(),
+        });
+      } finally {
+        await h.world.close({ flushFiles: false });
+      }
+    }
+    assert.equal(rows[0].byte, 173);
+    assert.deepEqual(rows[1], rows[0]);
+  });
+
+test('a foreign draw callback can capture the World on its first getter', async () => {
+  for (const transaction of [false, true]) {
+    const h = await setup();
+    try {
+      const batch = transaction ? h.world.text.beginPublication(h.task, h.config) : null;
+      if (transaction) assert(batch);
+      await h.send(4, null, batch);
+      let captures = 0;
+      await h.task.drawGPU({
+        get drawTexturePages() {
+          assert(h.world.snapshot());
+          captures++;
+          return () => {};
+        },
+      });
+      assert(captures > 0);
+    } finally {
+      await h.world.close({ flushFiles: false });
+    }
+  }
+});
+
+test('the default screen dirty-bounds scan uses owned layout metadata without lending pages', async () => {
+  const h = await setup();
+  try {
+    h.world.screenEffects.rendering.collectDirty();
+    nativeTexturedPageBounds(
+      h.task.plane.graph,
+      h.task.plane.state,
+      h.world.graphics.projection(),
+      h.world.graphics.texturePages,
+    );
+    const batch = h.world.text.beginPublication(h.task, h.config);
+    assert(batch);
+    await h.send(4, null, batch);
+    await h.world.text.flushPublications();
+    settled(h);
+  } finally {
+    await h.world.close({ flushFiles: false });
+  }
+});
+
+test('async drawing waits for an already started publication completion before callbacks', async () => {
+  const h = await setup();
+  try {
+    const batch = h.world.text.beginPublication(h.task, h.config);
+    assert(batch);
+    await h.send(4, null, batch);
+    const flushing = h.world.text.flushPublications();
+    let calls = 0;
+    await h.task.drawGPU({
+      get drawTexturePages() {
+        assert(h.world.snapshot());
+        calls++;
+        return () => {};
+      },
+    });
+    await flushing;
+    assert(calls > 0);
+    settled(h);
+  } finally {
     await h.world.close({ flushFiles: false });
   }
 });

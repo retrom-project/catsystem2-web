@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeStageSurface } from '../render/surfaces.mjs';
+import { nativeTexturePageStorage } from './texture-layout.mjs';
 import { originalView } from './original-adapter.mjs';
 // JS owns callback phases, captures, model ordering and submission.
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
@@ -218,7 +220,8 @@ export class NativeScreenEffectRenderer {
         }
         if (graph.boundsDirty)
           this.dirtyCurrent.set(unionRectangles(this.dirtyCurrent, graph.cachedBounds));
-        const layout = this.world.graphics.texturePages?.layout;
+        const pages = this.world.graphics.texturePages,
+          layout = pages ? nativeTexturePageStorage(pages).layout : undefined;
         if (!supportsNativeTexturedBounds(graph, task.state, projection, layout)) {
           gate('geometry-domain-unreviewed');
           continue;
@@ -262,7 +265,7 @@ export class NativeScreenEffectRenderer {
       if (!this.gpu) {
         if (this.queryRange(minimum, maximum))
           throw new Error('A nonempty screen capture requires its GPU renderer');
-        const bytes = new Uint8Array(this.stage.surfaces.get(id).bytes.length);
+        const bytes = new Uint8Array(nativeStageSurface(this.stage.surfaces, id).bytes.length);
         for (let at = 0; at < bytes.length; at += 4)
           bytes.set([(color >>> 16) & 255, (color >>> 8) & 255, color & 255, color >>> 24], at);
         this.stage.writeSurface(id, bytes);
@@ -277,7 +280,7 @@ export class NativeScreenEffectRenderer {
         },
         { depthStencil: this.stage.surfaceDepth(id) },
       );
-      const surface = this.stage.surfaces.get(id);
+      const surface = nativeStageSurface(this.stage.surfaces, id);
       surface.revision = (surface.revision ?? 0) + 1;
       return true;
     } finally {

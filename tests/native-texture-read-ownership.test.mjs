@@ -6,6 +6,7 @@ import {
   nativeTexturePagesOwned,
   nativeTexturePageFrame,
   nativeTexturePageFrames,
+  nativeTexturePageStorage,
 } from '../src/native/texture-layout.mjs';
 import {
   ParticlesGL,
@@ -42,8 +43,9 @@ test('a managed texture cache hit settles before its first frame or revision rea
     textureRevisions: new WeakMap([[frame, 1]]),
   });
   assert.equal(nativeTextureConsumer(gpu), false);
+  reads.length = 0; // Public cache assignment already fenced and lent its keys.
   assert.equal(gpu.managedTexture(frame), texture);
-  assert.deepEqual(reads, ['settle', 'borrow']);
+  assert.deepEqual(reads, ['settle']);
   assert.equal(pending, false);
   assert.equal(frame.revision, 1);
   assert.equal(nativeTextureReadOwned(frame), false);
@@ -101,7 +103,7 @@ test('a lent page frame stays borrowed after its rgba storage is replaced', () =
       { owner, readBarrier: settle, beforeMutation: settle },
     );
   try {
-    const frame = pages.pages.get(0).frame;
+    const frame = nativeTexturePageStorage(pages).pages.get(0).frame;
     assert(nativeTextureReadOwned(frame));
     assert.equal(pages.frame(0), frame);
     frame.rgba = new Uint8ClampedArray(4);
@@ -270,7 +272,11 @@ test('foreign frame proxies keep ordinary getters and cache ordering', () => {
   );
   assert.equal(nativeTextureReadOwned(frame), false);
   assert.equal(gpu.managedTexture(frame), texture);
-  assert.deepEqual(events, ['settle', 'borrow', 'rgba', 'revision']);
+  assert.deepEqual(
+    events.filter((event) => event !== 'settle'),
+    ['borrow', 'rgba', 'revision'],
+  );
+  assert.equal(events[0], 'settle');
 });
 
 test('an intrinsic frame accessor keeps ordinary cache order and permanently loses ownership', () => {
@@ -312,4 +318,99 @@ test('an intrinsic frame accessor keeps ordinary cache order and permanently los
   } finally {
     pages.close();
   }
+});
+
+for (const field of ['pages', 'dirtyFlags', 'layout'])
+  test(`public ${field} storage lends current and restored/future page frames`, () => {
+    let pending = false;
+    const owner = {},
+      barrier = () => {
+        pending = false;
+      },
+      pages = new NativeTexturePages(
+        { size: [1, 1], grid: [2, 1], areas: [[0, 0, 1, 1]], bppY: [0, 1], bpp: 32 },
+        { owner, beforeMutation: barrier, readBarrier: barrier, trackDirty: true },
+      );
+    try {
+      const first = nativeTexturePageStorage(pages).pages.get(0).frame;
+      assert(nativeTextureReadOwned(first));
+      pending = true;
+      const publicValue = pages[field];
+      assert.equal(pending, false);
+      assert.equal(publicValue, pages[field]);
+      assert.equal(nativeTexturePagesOwned(pages, owner), false);
+      assert.equal(nativeTextureReadOwned(first), false);
+      pages.allocateMissing({ areas: [[1, 0, 1, 1]], bppY: [0, 1] });
+      const second = nativeTexturePageStorage(pages).pages.get(1).frame;
+      assert.equal(nativeTextureReadOwned(second), false);
+      const saved = pages.snapshot();
+      pages.restore(saved);
+      assert(
+        [...nativeTexturePageStorage(pages).pages.values()].every(
+          (p) => !nativeTextureReadOwned(p.frame),
+        ),
+      );
+    } finally {
+      pages.close();
+    }
+  });
+
+test('GPU close settles cached producers before retirement or replacement cleanup callbacks', () => {
+  const frame = { rgba: new Uint8ClampedArray(4) },
+    gpu = Object.create(ParticlesGL.prototype);
+  gpu.textures = new Map([[frame, {}]]);
+  let pending = true,
+    retired = false,
+    released = false;
+  registerNativeTextureRead(
+    frame,
+    () => {
+      pending = false;
+    },
+    () => {},
+  );
+  Object.assign(gpu, {
+    canvas: {
+      removeEventListener() {
+        assert.equal(pending, false);
+      },
+    },
+    devicePort: {
+      retire() {
+        assert.equal(pending, false);
+        retired = true;
+      },
+    },
+    releaseResources() {
+      assert.equal(pending, false);
+      released = true;
+    },
+    gl: {
+      getExtension() {
+        return null;
+      },
+    },
+  });
+  gpu.close();
+  assert(retired && released);
+});
+
+test('public cache replacement lends newly assigned native keys before returning', () => {
+  const gpu = Object.create(ParticlesGL.prototype),
+    frame = { rgba: new Uint8ClampedArray(4), revision: 0 };
+  let pending = true;
+  registerNativeTextureRead(
+    frame,
+    () => {
+      pending = false;
+    },
+    () => {
+      assert.equal(pending, false);
+    },
+    true,
+  );
+  assert(nativeTextureReadOwned(frame));
+  gpu.textures = new Map([[frame, {}]]);
+  assert.equal(pending, false);
+  assert.equal(nativeTextureReadOwned(frame), false);
 });

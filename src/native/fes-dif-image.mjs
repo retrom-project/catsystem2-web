@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeStageSurface } from '../render/surfaces.mjs';
 // DIFIMAGE owns a retained JS owner-source, independently of a script's owner
 // handle and the Draw entry. It does not borrow an ordinary IMAGE wrapper.
 import { FESImages, initializeFESImage } from './fes-image-driver.mjs';
@@ -100,7 +101,7 @@ export class FESDifImages extends FESImages {
       if (!(await rendering.capture(0, f(request.minimum >>> 0), f(request.maximum >>> 0))))
         return false;
       const stage = this.world.stageRenderer,
-        surface = stage.surfaces.get(rendering.captures[0]),
+        surface = nativeStageSurface(stage.surfaces, rendering.captures[0]),
         input = stage.surfacePixels(rendering.captures[0]),
         [left, top, right, bottom] = this.world.graphics.view.drawingRectangle,
         width = (right - left) | 0,

@@ -2,6 +2,7 @@
 import { originalOwner, originalFeature, originalView } from './original-adapter.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { NativeGraphicsDevice } from './graphics-device.mjs';
+import { nativeStageSurface } from '../render/surfaces.mjs';
 import { nativeEngineWord } from './engine-message.mjs';
 // Native task graphics own graph state; construction alone does not load a
 // graph. Message handlers update loaded graphs through the renderer setters.
@@ -55,6 +56,7 @@ import {
   virtualD3DGuardBand,
   uploadTextureFrame,
   nativeTexturePagesOwned,
+  nativeTexturePageStorage,
   nativeTexturePageFrames,
 } from './texture-layout.mjs';
 import { NativeCursor } from './cursor.mjs';
@@ -640,11 +642,11 @@ export function captureTextPublicationSink(graphics, width, height, offset) {
   const texture = graphics.texturePages,
     pages = [],
     upload = graphics.view.active,
-    dither = Boolean(texture.layout.dither),
-    dirtyFlags = texture.dirtyFlags,
+    dither = Boolean(nativeTexturePageStorage(texture).layout.dither),
+    dirtyFlags = nativeTexturePageStorage(texture).dirtyFlags,
     checkedReaders = new Map();
   if (upload)
-    for (const [index, page] of texture.pages) {
+    for (const [index, page] of nativeTexturePageStorage(texture).pages) {
       const { frame } = page;
       if (
         page.x >= x + width ||
@@ -653,7 +655,9 @@ export function captureTextPublicationSink(graphics, width, height, offset) {
         page.y + frame.height <= Math.max(0, y)
       )
         continue;
-      const surfaceObject = page.surface ? texture.stage.surfaces.get(page.surface) : null;
+      const surfaceObject = page.surface
+        ? nativeStageSurface(texture.stage.surfaces, page.surface)
+        : null;
       if (
         ![16, 32].includes(page.bpp) ||
         nativePixelsWereBorrowed(frame.rgba) ||
@@ -675,7 +679,7 @@ export function captureTextPublicationSink(graphics, width, height, offset) {
       const readers = new Map();
       return pages.every(
         ([, page]) =>
-          !nativePixelsWereBorrowed(page.frame.rgba) && nativeTextureReadOwned(page.frame, readers),
+          nativeTextureReadOwned(page.frame, readers) && !nativePixelsWereBorrowed(page.frame.rgba),
       );
     },
     current: () =>
@@ -1858,9 +1862,16 @@ export class NativeGraphicTask {
         await this.world.sendEngine(task.record.id, this.record.id, message, w, l, context);
   }
   async drawGPU(gpu) {
+    const text = this.world.text;
+    text?.settlePublications();
+    if (text?.flushingPublication) await text.flushingPublication;
     return this.drawGraph(gpu, this.graph, this.state);
   }
   async drawGraph(gpu, inputGraph, state) {
+    // Drawing observes current pixels before any foreign GPU/geometry getter.
+    const text = this.world.text;
+    text?.settlePublications();
+    if (text?.flushingPublication) await text.flushingPublication;
     if (
       !inputGraph ||
       !state.shown ||
@@ -1890,7 +1901,7 @@ export class NativeGraphicTask {
         inputGraph,
         state,
         this.graphics.projection(),
-        this.graphics.texturePages.layout,
+        nativeTexturePageStorage(this.graphics.texturePages).layout,
         (graph, vertices, triangle) => this.graphics.effectVertices(graph, vertices, triangle),
       );
       const options = {

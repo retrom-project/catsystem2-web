@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
+import { nativeTexturePageStorage } from '../native/texture-layout.mjs';
 // The ordinary source/derived models share this actual division and projection.
 import { MOTION_ABI, motionVector, setMotionVector } from '../motion/abi.mjs';
 import {
@@ -118,7 +119,9 @@ export function nativeTexturedGeometry(
 // Only approved plain model queries enter here. Unchanged texture pages
 // cannot contribute damage, so clip and project only the dirty pages.
 export function nativeTexturedPageBounds(graph, state, projection, pages) {
-  const divided = divideNativeModel(graph, pages.layout, (id) => pages.isDirty(id));
+  const divided = divideNativeModel(graph, nativeTexturePageStorage(pages).layout, (id) =>
+    pages.isDirty(id),
+  );
   return nativeVertexBounds(nativeMeshGeometry(divided, state, projection));
 }
 

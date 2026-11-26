@@ -229,6 +229,17 @@ and later publication eligibility retain the complete GL qualification. Foreign
 frames keep ordinary getter order; an intrinsic frame whose header becomes an
 accessor permanently loses owned publication without invoking that getter early.
 
+Public GPU cache Maps, texture-page Maps/layout/dirty flags and Stage surface
+records retain their actual object and byte identities. Obtaining such storage
+first settles its producer and permanently lends that owner, including future
+cache/page entries and reconstructed storage. A public surface ID lends its
+backing record; lending the whole surface collection also covers future IDs.
+Default rendering and copy snapshots use short internal reads. Public surface
+frames/pixels keep their writable aliases. A draw call settles before its first
+foreign GPU or geometry getter, and eligibility checks a frame header before
+reading any potentially replaced pixel accessor. Primitive diagnostic summaries
+and independent snapshots never return cache keys or live pixel views.
+
 The pending frame is the owned empty writer allocation, retained when a later
 configuration replaces it. The final publication takes one independent pixel
 snapshot and writes the complete footprint. Previously borrowed raw VRAM keeps

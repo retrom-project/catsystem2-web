@@ -3,8 +3,10 @@
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
 import { copyBitmapRow } from './raster-kernel.mjs';
 import { nativeBitmapFrame, borrowNativePixels } from './image.mjs';
+import { nativeStageSurface, registerNativeSurfaceRead } from '../render/surfaces.mjs';
 import {
   nativeTextureConsumer,
+  nativeTextureReadOwned,
   nativeD3DContextReadOwned,
   registerNativeTextureRead,
   borrowNativeTextureRead,
@@ -12,20 +14,99 @@ import {
 const textureReadBarriers = new WeakMap(),
   textureOwners = new WeakMap(),
   texturePageMaps = new WeakMap(),
+  textureFlagArrays = new WeakMap(),
+  textureLayouts = new WeakMap(),
+  texturePublicLoans = new WeakSet(),
+  textureMapForEach = Map.prototype.forEach,
   originalMapGet = Map.prototype.get;
+
+const textureFields = {
+  pages: texturePageMaps,
+  dirtyFlags: textureFlagArrays,
+  layout: textureLayouts,
+};
+function borrowTextureStorage(pages) {
+  try {
+    textureReadBarriers.get(pages)?.();
+  } finally {
+    if (!texturePublicLoans.has(pages)) {
+      texturePublicLoans.add(pages);
+      const records = texturePageMaps.get(pages);
+      if (records)
+        Reflect.apply(textureMapForEach, records, [
+          (page) => {
+            const frame = Object.getOwnPropertyDescriptor(page, 'frame')?.value;
+            if (frame) borrowNativeTextureRead(frame);
+          },
+        ]);
+    }
+  }
+}
+function textureStorage(pages, key) {
+  const field = textureFields[key],
+    descriptor = Object.getOwnPropertyDescriptor(NativeTexturePages.prototype, key);
+  const original = Reflect.apply(originalMapGet, textureStoragePorts, [key]);
+  if (
+    field.has(pages) &&
+    Object.getPrototypeOf(pages) === NativeTexturePages.prototype &&
+    !Object.hasOwn(pages, key) &&
+    descriptor?.get === original.get &&
+    descriptor?.set === original.set
+  )
+    return field.get(pages);
+  borrowTextureStorage(pages);
+  return pages[key];
+}
+// Only core consumers use this short owned access. Public fields lend their
+// actual storage, including future entries, until this page owner is released.
+export function nativeTexturePageStorage(pages) {
+  return {
+    pages: textureStorage(pages, 'pages'),
+    dirtyFlags: textureStorage(pages, 'dirtyFlags'),
+    layout: textureStorage(pages, 'layout'),
+  };
+}
+
+// Copy-only qualification metadata. Observation never returns frame/Map/bytes.
+export function nativeTexturePageSummary(pages) {
+  textureReadBarriers.get(pages)?.();
+  const records = textureStorage(pages, 'pages'),
+    checked = new Map();
+  let count = 0,
+    owned = 0;
+  Reflect.apply(textureMapForEach, records, [
+    (page) => {
+      count++;
+      if (!texturePublicLoans.has(pages)) {
+        const frame = Object.getOwnPropertyDescriptor(page, 'frame')?.value;
+        if (frame && nativeTextureReadOwned(frame, checked)) owned++;
+      }
+    },
+  ]);
+  return {
+    pages: count,
+    owned,
+    borrowed: count - owned,
+    containerOwned: nativeTexturePagesOwned(pages, textureOwners.get(pages)),
+  };
+}
 
 export function nativeTexturePagesOwned(pages, owner) {
   return (
+    !texturePublicLoans.has(pages) &&
     textureOwners.get(pages) === owner &&
     Object.getPrototypeOf(pages) === NativeTexturePages.prototype &&
-    texturePageMethods.every(
-      ([key, value]) =>
+    texturePageMethods.every(([key, descriptor]) => {
+      const current = Object.getOwnPropertyDescriptor(NativeTexturePages.prototype, key);
+      return (
         !Object.hasOwn(pages, key) &&
-        Object.getOwnPropertyDescriptor(NativeTexturePages.prototype, key)?.value === value,
-    ) &&
+        current?.value === descriptor.value &&
+        current?.get === descriptor.get &&
+        current?.set === descriptor.set
+      );
+    }) &&
     Object.getOwnPropertyDescriptor(pages, 'beforeMutation')?.value ===
       textureReadBarriers.get(pages) &&
-    Object.getOwnPropertyDescriptor(pages, 'pages')?.value === texturePageMaps.get(pages) &&
     Object.getPrototypeOf(texturePageMaps.get(pages)) === Map.prototype &&
     textureMapMethods.every(
       ([key, descriptor]) =>
@@ -70,7 +151,10 @@ export function nativeTexturePageFrame(pages, index, gpu, owner) {
     return pages.frame(index);
   }
   barrier();
-  return pages.pages.get(index >>> 0)?.frame ?? NULL_NATIVE_TEXTURE;
+  return (
+    Reflect.apply(originalMapGet, texturePageMaps.get(pages), [index >>> 0])?.frame ??
+    NULL_NATIVE_TEXTURE
+  );
 }
 // The shared virtual D3D9 platform exposes this guard band for its captured limit.
 export function virtualD3DGuardBand(maximum) {
@@ -179,7 +263,7 @@ export class NativeTexturePages {
       owner = null,
     } = {},
   ) {
-    this.layout = structuredClone(layout);
+    textureLayouts.set(this, structuredClone(layout));
     this.releaseFrame = release;
     this.stage = stage;
     this.beforeMutation = beforeMutation;
@@ -187,29 +271,58 @@ export class NativeTexturePages {
       textureReadBarriers.set(this, readBarrier);
       textureOwners.set(this, owner);
     }
-    this.pages = new Map();
-    texturePageMaps.set(this, this.pages);
+    texturePageMaps.set(this, new Map());
     this.allocateMissing();
     // The flag table covers the entire grid and starts clean after allocation.
-    this.dirtyFlags = trackDirty ? new Uint32Array(layout.grid[0] * layout.grid[1]) : null;
+    textureFlagArrays.set(
+      this,
+      trackDirty ? new Uint32Array(layout.grid[0] * layout.grid[1]) : null,
+    );
+  }
+  get pages() {
+    borrowTextureStorage(this);
+    return textureFields.pages.get(this);
+  }
+  set pages(value) {
+    borrowTextureStorage(this);
+    textureFields.pages.set(this, value);
+  }
+  get dirtyFlags() {
+    borrowTextureStorage(this);
+    return textureFields.dirtyFlags.get(this);
+  }
+  set dirtyFlags(value) {
+    borrowTextureStorage(this);
+    textureFields.dirtyFlags.set(this, value);
+  }
+  get layout() {
+    borrowTextureStorage(this);
+    return textureFields.layout.get(this);
+  }
+  set layout(value) {
+    borrowTextureStorage(this);
+    textureFields.layout.set(this, value);
   }
   isDirty(index) {
     this.#observe();
     return Boolean(
-      this.dirtyFlags && index >= 0 && index < this.dirtyFlags.length && this.dirtyFlags[index],
+      textureStorage(this, 'dirtyFlags') &&
+        index >= 0 &&
+        index < textureStorage(this, 'dirtyFlags').length &&
+        textureStorage(this, 'dirtyFlags')[index],
     );
   }
   hasDirtyPages() {
     this.#observe();
-    return this.dirtyFlags?.some((flag) => flag !== 0) ?? false;
+    return textureStorage(this, 'dirtyFlags')?.some((flag) => flag !== 0) ?? false;
   }
   clearDirty() {
     this.#observe();
-    this.dirtyFlags?.fill(0);
+    textureStorage(this, 'dirtyFlags')?.fill(0);
   }
-  allocateMissing(texture = this.layout) {
+  allocateMissing(texture = textureStorage(this, 'layout')) {
     this.#observe();
-    const layout = this.layout;
+    const layout = textureStorage(this, 'layout');
     layout.areas = texture.areas.map((row) => Uint32Array.from(row));
     layout.bppY = Uint32Array.from(texture.bppY);
     const [width, height] = layout.size,
@@ -231,8 +344,8 @@ export class NativeTexturePages {
           for (let x = sx; x < right; x++) {
             if (y >= (layout.bppY[1] | 0) !== lower) continue;
             const index = x + y * columns;
-            if (this.pages.has(index)) continue;
-            if ((this.pages.size + 1) * width * height > 64 * 1024 * 1024)
+            if (textureStorage(this, 'pages').has(index)) continue;
+            if ((textureStorage(this, 'pages').size + 1) * width * height > 64 * 1024 * 1024)
               throw new RangeError('Native texture allocation exceeds bitmap capacity');
             const surface = this.stage?.createSurface(width, height) ?? null;
             const page = {
@@ -244,27 +357,34 @@ export class NativeTexturePages {
                 width,
                 height,
                 rgba: surface
-                  ? new Uint8ClampedArray(this.stage.surfaces.get(surface).bytes.buffer)
+                  ? new Uint8ClampedArray(
+                      nativeStageSurface(this.stage.surfaces, surface).bytes.buffer,
+                    )
                   : new Uint8ClampedArray(width * height * 4),
                 revision: 0,
               },
             };
-            this.#registerRead(page.frame);
-            this.pages.set(index, page);
+            this.#registerRead(page.frame, surface);
+            textureStorage(this, 'pages').set(index, page);
           }
       }
   }
-  #registerRead(frame) {
+  #registerRead(frame, surface = null) {
     const barrier = textureReadBarriers.get(this);
     if (barrier)
       registerNativeTextureRead(frame, barrier, () => borrowNativePixels(frame.rgba), true);
+    if (barrier && surface)
+      registerNativeSurfaceRead(this.stage.surfaces, surface, barrier, () =>
+        borrowNativeTextureRead(frame),
+      );
+    if (texturePublicLoans.has(this)) borrowNativeTextureRead(frame);
   }
   releaseRectangle(x, y, width, height) {
     this.#observe();
     const right = (x + width) | 0,
       bottom = (y + height) | 0;
     if (x >= right || y >= bottom) return;
-    for (const [index, page] of this.pages)
+    for (const [index, page] of textureStorage(this, 'pages'))
       if (
         x < page.x + page.frame.width &&
         page.x < right &&
@@ -273,7 +393,7 @@ export class NativeTexturePages {
       ) {
         this.releaseFrame(page.frame);
         if (page.surface) this.stage.releaseSurface(page.surface);
-        this.pages.delete(index);
+        textureStorage(this, 'pages').delete(index);
       }
   }
   #capturePublication(rectangle, input) {
@@ -289,7 +409,7 @@ export class NativeTexturePages {
     )
       return null;
     const pages = [];
-    for (const page of this.pages.values()) {
+    for (const page of textureStorage(this, 'pages').values()) {
       const { frame } = page;
       if (
         page.x >= right ||
@@ -298,7 +418,8 @@ export class NativeTexturePages {
         page.y + frame.height <= top
       )
         continue;
-      if (page.bpp !== 32 && (page.bpp !== 16 || this.layout.dither)) return null;
+      if (page.bpp !== 32 && (page.bpp !== 16 || textureStorage(this, 'layout').dither))
+        return null;
       let identity = this.#pageIdentities.get(page);
       if (!identity) {
         identity = Symbol();
@@ -315,7 +436,7 @@ export class NativeTexturePages {
     { textPublication = null, revisionSteps = 1 } = {},
   ) {
     this.#observe();
-    const dither = Boolean(this.layout.dither);
+    const dither = Boolean(textureStorage(this, 'layout').dither);
     const input = await nativeBitmapFrame(
         bitmap,
         textPublication ? { textPublication } : undefined,
@@ -334,7 +455,11 @@ export class NativeTexturePages {
       full = current && region.every((value, i) => value === current.rectangle[i]),
       changed = ownsFootprint && full && retained.changed;
     uploadTextureFrame(
-      { pages: this.pages, dirtyFlags: this.dirtyFlags, stage: this.stage },
+      {
+        pages: textureStorage(this, 'pages'),
+        dirtyFlags: textureStorage(this, 'dirtyFlags'),
+        stage: this.stage,
+      },
       input,
       region,
       changed,
@@ -348,14 +473,14 @@ export class NativeTexturePages {
     const right = (x + width) | 0,
       bottom = (y + height) | 0;
     if (x >= right || y >= bottom) return;
-    for (const [index, page] of this.pages) {
+    for (const [index, page] of textureStorage(this, 'pages')) {
       const { frame } = page,
         left = Math.max(x, page.x),
         top = Math.max(y, page.y),
         endX = Math.min(right, page.x + frame.width),
         endY = Math.min(bottom, page.y + frame.height);
       if (left >= endX || top >= endY) continue;
-      if (this.dirtyFlags) this.dirtyFlags[index] = 1;
+      if (textureStorage(this, 'dirtyFlags')) textureStorage(this, 'dirtyFlags')[index] = 1;
       for (let row = top; row < endY; row++)
         frame.rgba.fill(
           0,
@@ -363,20 +488,21 @@ export class NativeTexturePages {
           ((row - page.y) * frame.width + endX - page.x) * 4,
         );
       frame.revision++;
-      if (page.surface) this.stage.surfaces.get(page.surface).revision = frame.revision;
+      if (page.surface)
+        nativeStageSurface(this.stage.surfaces, page.surface).revision = frame.revision;
     }
   }
   close() {
     this.#observe();
-    for (const page of this.pages.values()) {
+    for (const page of textureStorage(this, 'pages').values()) {
       this.releaseFrame(page.frame);
       if (page.surface) this.stage.releaseSurface(page.surface);
     }
-    this.pages.clear();
+    textureStorage(this, 'pages').clear();
   }
   frame(index) {
     this.#observe();
-    const frame = this.pages.get(index >>> 0)?.frame ?? NULL_NATIVE_TEXTURE;
+    const frame = textureStorage(this, 'pages').get(index >>> 0)?.frame ?? NULL_NATIVE_TEXTURE;
     borrowNativeTextureRead(frame);
     borrowNativePixels(frame.rgba);
     return frame;
@@ -384,9 +510,9 @@ export class NativeTexturePages {
   snapshot() {
     this.#observe();
     return structuredClone({
-      layout: this.layout,
-      dirtyFlags: this.dirtyFlags,
-      pages: [...this.pages].map(([index, page]) => [
+      layout: textureStorage(this, 'layout'),
+      dirtyFlags: textureStorage(this, 'dirtyFlags'),
+      pages: [...textureStorage(this, 'pages')].map(([index, page]) => [
         index,
         { ...page, frame: { ...page.frame, rgba: encodeSparseBytes(page.frame.rgba) } },
       ]),
@@ -397,7 +523,7 @@ export class NativeTexturePages {
     const flags = state.dirtyFlags,
       count = state.layout.grid[0] * state.layout.grid[1];
     if (
-      this.dirtyFlags === null
+      textureStorage(this, 'dirtyFlags') === null
         ? flags !== null
         : !(flags instanceof Uint32Array) ||
           flags.length !== count ||
@@ -405,18 +531,17 @@ export class NativeTexturePages {
     )
       throw new Error('Invalid native texture page dirty flags checkpoint');
     this.close();
-    this.layout = structuredClone(state.layout);
-    this.dirtyFlags = flags === null ? null : flags.slice();
-    this.pages = new Map(structuredClone(state.pages));
-    texturePageMaps.set(this, this.pages);
-    for (const [index, page] of this.pages) {
+    textureLayouts.set(this, structuredClone(state.layout));
+    textureFlagArrays.set(this, flags === null ? null : flags.slice());
+    texturePageMaps.set(this, new Map(structuredClone(state.pages)));
+    for (const [index, page] of textureStorage(this, 'pages')) {
       if (
         !Number.isInteger(index) ||
         index < 0 ||
-        index >= this.layout.grid[0] * this.layout.grid[1] ||
+        index >= textureStorage(this, 'layout').grid[0] * textureStorage(this, 'layout').grid[1] ||
         ![16, 32].includes(page.bpp) ||
-        page.frame.width !== this.layout.size[0] ||
-        page.frame.height !== this.layout.size[1] ||
+        page.frame.width !== textureStorage(this, 'layout').size[0] ||
+        page.frame.height !== textureStorage(this, 'layout').size[1] ||
         page.frame.rgba?.length !== page.frame.width * page.frame.height * 4
       )
         throw new Error('Invalid native texture page checkpoint');
@@ -436,15 +561,17 @@ export class NativeTexturePages {
             },
           ],
         ]);
-        page.frame.rgba = new Uint8ClampedArray(this.stage.surfaces.get(page.surface).bytes.buffer);
+        page.frame.rgba = new Uint8ClampedArray(
+          nativeStageSurface(this.stage.surfaces, page.surface).bytes.buffer,
+        );
       } else page.frame.rgba = new Uint8ClampedArray(bytes.buffer);
-      this.#registerRead(page.frame);
+      this.#registerRead(page.frame, page.surface);
     }
   }
 }
 const texturePageMethods = Reflect.ownKeys(NativeTexturePages.prototype)
   .filter((key) => key !== 'constructor')
-  .map((key) => [key, Object.getOwnPropertyDescriptor(NativeTexturePages.prototype, key).value]);
+  .map((key) => [key, Object.getOwnPropertyDescriptor(NativeTexturePages.prototype, key)]);
 const textureMapMethods = Reflect.ownKeys(Map.prototype)
   .filter((key) => key !== 'constructor')
   .map((key) => [key, Object.getOwnPropertyDescriptor(Map.prototype, key)]);
@@ -496,6 +623,14 @@ export function uploadTextureFrame(
     }
     for (let step = 0; step < revisionSteps; step++) frame.revision++;
     if (page.surface)
-      (owned ? page.surfaceObject : stage.surfaces.get(page.surface)).revision = frame.revision;
+      (owned ? page.surfaceObject : nativeStageSurface(stage.surfaces, page.surface)).revision =
+        frame.revision;
   }
 }
+
+const textureStoragePorts = new Map(
+  ['pages', 'dirtyFlags', 'layout'].map((key) => [
+    key,
+    Object.getOwnPropertyDescriptor(NativeTexturePages.prototype, key),
+  ]),
+);
