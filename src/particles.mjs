@@ -281,7 +281,6 @@ export class Particles {
           texture,
           priority: bank.priority,
           externalDraw: bank.externalDraw,
-          requiresInitializedState: this.scriptLoadsBeforeTexture && bank.family === 'script',
         },
         previous,
       );
@@ -307,7 +306,10 @@ export class Particles {
       screenWidth: this.stage.width,
       screenHeight: this.stage.height,
       fps: this.fps,
-      priority: bank.nativeAtlas?.priority ?? bank.priority,
+      priority:
+        bank.family === 'script' && bank.nativeAtlas
+          ? bank.nativeAtlas.priority
+          : (bank.nativeAtlas?.priority ?? bank.priority),
       near: bank.nativeAtlas?.near,
       registers: spec.registers || [],
       attachPlane,
@@ -679,7 +681,7 @@ export class Particles {
           height: bank.height,
           screenWidth: this.stage.width,
           screenHeight: this.stage.height,
-          priority: bank.nativeAtlas?.priority ?? bank.priority,
+          priority: bank.nativeAtlas ? bank.nativeAtlas.priority : bank.priority,
           near: bank.nativeAtlas?.near,
           fps: this.fps,
           random: this.random,

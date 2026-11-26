@@ -48,9 +48,19 @@ new successful bank takes ownership again. An empty texture after a sized image
 retains its dimensions and stored priority while applying the requested near
 depth. External draw after a sized image also retains its previous near depth.
 An empty texture or external-draw request before a sized image has no initialized
-size or stored priority and requires a diagnostic. The modern atlas keeps
-unknown fields nullable, so an earlier uninitialized bank cannot supply
-invented zero values to a later script bank.
+size or stored priority. A zero-count bank can load, start, accept controls and
+restore while these fields remain nullable. The original initializer first
+consumes width and height for a nonzero particle count; that operation requires
+initialized dimensions. Projection-bounds queries separately require the
+stored priority. External draw before any image also leaves near depth unknown.
+Release retains each known or unknown field separately, so a partial state
+cannot supply invented zero values to a later bank.
+
+FES converts signed 32-bit priority to a finite single-precision value. Main and
+raw packets carry float words; nonfinite words currently retain the loader's
+diagnostic before atlas fields are written and remain an unproved input shape.
+Task restore accepts each unknown field as `null` and each known field as a
+finite number, matching the currently admitted native packet paths.
 
 Attachment assignment accepts a missing group. Resolution occurs when its KCS
 query needs the current graph; deleted or absent groups then produce the proved
@@ -76,7 +86,8 @@ texture-interface table is recorded separately; current surface owners are
 released on task destruction.
 
 Plugin resource shapes, large count allocation/overflow/failure, cache-worker
-behavior and wider SDK/message/layout coverage remain open. A first empty
-texture is original-uninitialized interception evidence. It does not classify a
-definitely sized empty reload as undefined. Neither this group nor the
+behavior and wider SDK/message/layout coverage remain open. First empty
+texture interception evidence applies to operations consuming unwritten fields.
+Zero-count load/start and definitely sized empty reloads have defined paired
+behavior. Neither this group nor the
 auxiliary-table census establishes complete SDK or product acceptance.

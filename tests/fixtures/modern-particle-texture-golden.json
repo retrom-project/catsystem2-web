@@ -1,5 +1,5 @@
 {
-  "scope": "Two own PE resource/renderer/native class lifecycles with actual CRT CPUID and D3DX initializer. Current JS NativeWorld/GameFiles/HG3/surfaces/data/cold are paired. Win32/D3D9 are explicit virtual OS interfaces; no physical Windows GPU, full game startup, authored scene or cache-worker completion claim.",
+  "scope": "Two own PE resource/renderer/native class lifecycles with actual CRT CPUID and D3DX initializer. Current JS NativeWorld/GameFiles/HG3/surfaces/data/cold are paired. Win32/D3D9 are explicit virtual OS interfaces; no physical Windows GPU, full game startup, authored scene or cache-worker completion claim. Follow-up count0 empty/external inputs prove load/start do not consume nullable dimensions/priority; guards apply at positive-count initialization and actual projection-field consumption. Earlier initial-empty interception applies to positive counts only.",
   "references": [
     {
       "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-rgba2x1.json",
@@ -136,6 +136,30 @@
     {
       "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-INITIAL-EMPTY-76.json",
       "sha256": "858d53512b7564891d8fc3658981398fd191808621fe9ac21485247fef3953bf"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-EMPTY-CONSUMPTION-74-count0-0.json",
+      "sha256": "c5209a470ba103d72e62594f44c7f76aa0626d79c432c87266b26dca608ab036"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-EMPTY-CONSUMPTION-74-count0-1.json",
+      "sha256": "be90178ca988cfd3aa7ff7f19e7e4ba0d37c6c3bfec422b7718b18dbebb36173"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-EMPTY-CONSUMPTION-74-count1-1.json",
+      "sha256": "9e3655ca0d3f5a015b0844fa3c44901d362e77ad489ae4be2f585b828531f907"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-EMPTY-CONSUMPTION-76-count0-0.json",
+      "sha256": "3bd2acf8ccaeb7186b3cd9c6bb287368825956d3b9a3142ac4ca41aaeb3f3c11"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-EMPTY-CONSUMPTION-76-count0-1.json",
+      "sha256": "d1f99f588b357a9e6e0b0c9f06261712d718c97fef9d4ae6daddcbdf6f34c124"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-EMPTY-CONSUMPTION-76-count1-1.json",
+      "sha256": "ecbee7cbcf2dd971006ef48e5d0bf65c970fd2cb06fae2f3bb40d4f9fb37ef27"
     }
   ],
   "versions": [
@@ -2065,7 +2089,329 @@
         },
         "observedWords": [2779096485, 2779096485, 2779096485],
         "scope": "Actual native allocator/ctor and initialized renderer leave these words unwritten when first texture is empty. Raw prototype inherited a generic success status label; this explicit classifier excludes it from functional counts. ExternalDraw skips this same image branch; first-use fields remain uninitialized."
-      }
+      },
+      "emptyConsumption": [
+        {
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-EMPTY-CONSUMPTION-74-count0-0.json",
+            "sha256": "c5209a470ba103d72e62594f44c7f76aa0626d79c432c87266b26dca608ab036"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 0,
+            "programName": "authored.kcs",
+            "textureName": "",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg==",
+            "initialEmptyTexture": true,
+            "externalDraw": false
+          },
+          "classification": "functional-unconsumed-nullable-fields",
+          "fieldReads": [],
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": 64000
+              },
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ]
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": 64000
+              },
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ]
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": 64000
+              },
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null]
+            }
+          ]
+        },
+        {
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-EMPTY-CONSUMPTION-74-count0-1.json",
+            "sha256": "be90178ca988cfd3aa7ff7f19e7e4ba0d37c6c3bfec422b7718b18dbebb36173"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 0,
+            "programName": "authored.kcs",
+            "textureName": "",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg==",
+            "initialEmptyTexture": true,
+            "externalDraw": true
+          },
+          "classification": "functional-unconsumed-nullable-fields",
+          "fieldReads": [],
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": null
+              },
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ]
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": null
+              },
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ]
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": null
+              },
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null]
+            }
+          ]
+        },
+        {
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-EMPTY-CONSUMPTION-74-count1-1.json",
+            "sha256": "9e3655ca0d3f5a015b0844fa3c44901d362e77ad489ae4be2f585b828531f907"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 1,
+            "programName": "authored.kcs",
+            "textureName": "",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg==",
+            "initialEmptyTexture": true,
+            "externalDraw": true
+          },
+          "classification": "capture-only-initializer-consumes-uninitialized-dimensions",
+          "fieldReads": [
+            {
+              "phase": "particle-initial-empty-texture-load",
+              "pc": 5049177,
+              "calls": 1
+            },
+            {
+              "phase": "particle-initial-empty-texture-load",
+              "pc": 5049291,
+              "calls": 1
+            },
+            {
+              "phase": "particle-initial-empty-texture-load",
+              "pc": 5049377,
+              "calls": 1
+            },
+            {
+              "phase": "particle-initial-empty-texture-load",
+              "pc": 5049393,
+              "calls": 1
+            },
+            {
+              "phase": "particle-start",
+              "pc": 5049177,
+              "calls": 1
+            },
+            {
+              "phase": "particle-start",
+              "pc": 5049291,
+              "calls": 1
+            },
+            {
+              "phase": "particle-start",
+              "pc": 5049377,
+              "calls": 1
+            },
+            {
+              "phase": "particle-start",
+              "pc": 5049393,
+              "calls": 1
+            }
+          ],
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": null
+              },
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "18e7fecf3efa48f68b72f3a10f2d3a7d5659e8883535c2130a20f6fed985f832",
+                "18e7fecf3efa48f68b72f3a10f2d3a7d5659e8883535c2130a20f6fed985f832",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "66aa5265fb25a9151e9b998b2153e6a19358611fed4e7bdc7b0885ef36ca04de",
+                "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450"
+              ]
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": null
+              },
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "18e7fecf3efa48f68b72f3a10f2d3a7d5659e8883535c2130a20f6fed985f832",
+                "18e7fecf3efa48f68b72f3a10f2d3a7d5659e8883535c2130a20f6fed985f832",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "66aa5265fb25a9151e9b998b2153e6a19358611fed4e7bdc7b0885ef36ca04de",
+                "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450"
+              ]
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": null
+              },
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null]
+            }
+          ]
+        }
+      ]
     },
     {
       "version": "76",
@@ -3993,7 +4339,329 @@
         },
         "observedWords": [2779096485, 2779096485, 2779096485],
         "scope": "Actual native allocator/ctor and initialized renderer leave these words unwritten when first texture is empty. Raw prototype inherited a generic success status label; this explicit classifier excludes it from functional counts. ExternalDraw skips this same image branch; first-use fields remain uninitialized."
-      }
+      },
+      "emptyConsumption": [
+        {
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-EMPTY-CONSUMPTION-76-count0-0.json",
+            "sha256": "3bd2acf8ccaeb7186b3cd9c6bb287368825956d3b9a3142ac4ca41aaeb3f3c11"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 0,
+            "programName": "authored.kcs",
+            "textureName": "",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg==",
+            "initialEmptyTexture": true,
+            "externalDraw": false
+          },
+          "classification": "functional-unconsumed-nullable-fields",
+          "fieldReads": [],
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": 64000
+              },
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ]
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": 64000
+              },
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ]
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": 64000
+              },
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null]
+            }
+          ]
+        },
+        {
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-EMPTY-CONSUMPTION-76-count0-1.json",
+            "sha256": "d1f99f588b357a9e6e0b0c9f06261712d718c97fef9d4ae6daddcbdf6f34c124"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 0,
+            "programName": "authored.kcs",
+            "textureName": "",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg==",
+            "initialEmptyTexture": true,
+            "externalDraw": true
+          },
+          "classification": "functional-unconsumed-nullable-fields",
+          "fieldReads": [],
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": null
+              },
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ]
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": null
+              },
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ]
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": null
+              },
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null]
+            }
+          ]
+        },
+        {
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-EMPTY-CONSUMPTION-76-count1-1.json",
+            "sha256": "ecbee7cbcf2dd971006ef48e5d0bf65c970fd2cb06fae2f3bb40d4f9fb37ef27"
+          },
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 1,
+            "programName": "authored.kcs",
+            "textureName": "",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg==",
+            "initialEmptyTexture": true,
+            "externalDraw": true
+          },
+          "classification": "capture-only-initializer-consumes-uninitialized-dimensions",
+          "fieldReads": [
+            {
+              "phase": "particle-initial-empty-texture-load",
+              "pc": 6251289,
+              "calls": 1
+            },
+            {
+              "phase": "particle-initial-empty-texture-load",
+              "pc": 6251403,
+              "calls": 1
+            },
+            {
+              "phase": "particle-initial-empty-texture-load",
+              "pc": 6251489,
+              "calls": 1
+            },
+            {
+              "phase": "particle-initial-empty-texture-load",
+              "pc": 6251505,
+              "calls": 1
+            },
+            {
+              "phase": "particle-start",
+              "pc": 6251289,
+              "calls": 1
+            },
+            {
+              "phase": "particle-start",
+              "pc": 6251403,
+              "calls": 1
+            },
+            {
+              "phase": "particle-start",
+              "pc": 6251489,
+              "calls": 1
+            },
+            {
+              "phase": "particle-start",
+              "pc": 6251505,
+              "calls": 1
+            }
+          ],
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": null
+              },
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "18e7fecf3efa48f68b72f3a10f2d3a7d5659e8883535c2130a20f6fed985f832",
+                "18e7fecf3efa48f68b72f3a10f2d3a7d5659e8883535c2130a20f6fed985f832",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "66aa5265fb25a9151e9b998b2153e6a19358611fed4e7bdc7b0885ef36ca04de",
+                "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450"
+              ]
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": null
+              },
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "18e7fecf3efa48f68b72f3a10f2d3a7d5659e8883535c2130a20f6fed985f832",
+                "18e7fecf3efa48f68b72f3a10f2d3a7d5659e8883535c2130a20f6fed985f832",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "66aa5265fb25a9151e9b998b2153e6a19358611fed4e7bdc7b0885ef36ca04de",
+                "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450"
+              ]
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "metadata": {
+                "width": null,
+                "height": null,
+                "priority": null,
+                "near": null
+              },
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null]
+            }
+          ]
+        }
+      ]
     }
   ]
 }

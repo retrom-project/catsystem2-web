@@ -220,7 +220,103 @@ for (const build of golden.versions) {
       await world.close({ flushFiles: false });
     }
   });
-  test(`${build.version} first empty or external texture state is diagnosed; a defined image can subsequently initialize it`, async () => {
+  test(`${build.version} zero-count empty or external banks retain unknown fields until an actual consumer needs them`, async () => {
+    for (const row of build.emptyConsumption.filter((r) => r.input.count === 0)) {
+      assert.equal(row.classification, 'functional-unconsumed-nullable-fields');
+      assert.deepEqual(row.fieldReads, []);
+      const world = await modernParticleMessageWorld(build.profile, {
+        [row.input.programName]: Buffer.from(row.input.script, 'base64'),
+      });
+      try {
+        world.graphics.createLogicalDevice();
+        const id = await world.objects.create({ kind: 16, parent: world.root }),
+          task = world.particles.get(id),
+          p = packet(row.input);
+        p.store(396, Number(row.input.externalDraw));
+        for (const e of row.expected) {
+          const op = { loaded: 0, started: 1, released: 3 }[e.label];
+          assert.equal(
+            await world.sendNativeEngine(
+              world.nativeTaskID(id),
+              world.main.id,
+              (build.version === '74' ? 309 : 314) + op,
+              0,
+              0,
+              op === 0 ? { payload: p } : {},
+            ),
+            NATIVE_UNWRITTEN_WORD,
+          );
+          assert.equal(task.active, e.active);
+          assert.deepEqual(
+            task.bank?.nativeAtlas
+              ? {
+                  width: task.bank.nativeAtlas.width,
+                  height: task.bank.nativeAtlas.height,
+                  priority: task.bank.nativeAtlas.priority,
+                  near: task.bank.nativeAtlas.near,
+                }
+              : task.state.atlas,
+            e.metadata,
+          );
+          if (task.bank) {
+            const instance = task.bank.instance;
+            assert.equal(instance.count, 0);
+            assert.equal(instance.width, null);
+            assert.equal(instance.height, null);
+            assert.equal(instance.priority, null);
+            assert.equal(instance.native(40, [], instance.machine).value, 0xffffffff);
+            const before = instance.machine.memory.slice();
+            assert.throws(
+              () => instance.native(38, [0x3f800000, 64, 68, 72, 76], instance.machine),
+              /priority is uninitialized at projection bounds/,
+            );
+            assert.deepEqual(instance.machine.memory, before);
+            for (let i = 0; i < arrayFields.length; i++) {
+              const a = instance[arrayFields[i]];
+              assert.equal(
+                hash(new Uint8Array(a.buffer, a.byteOffset, a.byteLength)),
+                e.buffers[i],
+              );
+            }
+            assert.equal(hash(instance.machine.memory), e.vm.local);
+            assert.equal(instance.machine.pc, e.vm.pc);
+            assert.equal(instance.machine.sp, e.vm.sp);
+            assert.equal(instance.machine.fp, e.vm.fp);
+          }
+          const fresh = await modernParticleMessageWorld(
+            build.profile,
+            {
+              [row.input.programName]: Buffer.from(row.input.script, 'base64'),
+            },
+            { initialize: false },
+          );
+          try {
+            fresh.graphics.createLogicalDevice();
+            await fresh.restore(
+              await deserializeCheckpoint(await serializeCheckpoint(world.snapshot())),
+            );
+            const copy = fresh.particles.get(id);
+            assert.deepEqual(copy.snapshot(), task.snapshot());
+            assert.deepEqual(copy.bank?.instance.snapshot(), task.bank?.instance.snapshot());
+          } finally {
+            await fresh.close({ flushFiles: false });
+          }
+        }
+        assert.deepEqual(task.state.atlas, row.expected.at(-1).metadata);
+        assert.equal(world.particles.textures.owned.size, 0);
+        p.store(260, 1);
+        await assert.rejects(
+          world.sendEngine(id, world.main.id, 314, 0, 0, { payload: p }),
+          /texture dimensions are uninitialized at particle initialization/,
+        );
+        assert.equal(task.bank, null);
+        assert.deepEqual(task.state.atlas, row.expected.at(-1).metadata);
+      } finally {
+        await world.close({ flushFiles: false });
+      }
+    }
+  });
+  test(`${build.version} positive-count first empty or external dimensions are diagnosed at initialization; a defined image can subsequently initialize them`, async () => {
     const row = build.cases.find((c) => c.name === 'rgba3x2'),
       input = row.input,
       files = {
@@ -243,7 +339,7 @@ for (const build of golden.versions) {
         else p.bytes(132, 128).fill(0);
         await assert.rejects(
           world.sendEngine(id, world.main.id, 314, 0, 0, { payload: p }),
-          /texture fields are uninitialized/,
+          /texture dimensions are uninitialized at particle initialization/,
         );
         assert.equal(task.bank, null);
         assert.equal(task.state.atlas, null);

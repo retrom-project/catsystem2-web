@@ -103,14 +103,19 @@ export class ParticleScriptInstance {
       budget = 5000000 /* instruction budget  */,
       screenBounds = projectionBounds,
     } = options;
+    const abi = profile === undefined ? null : nativeABI(profile),
+      nullableTexture = abi?.particle?.taskFieldsPersistWithoutBank;
     if (!Number.isSafeInteger(count) || count < 0 || count > 1000000)
       throw new RangeError('Invalid PTCL particle count');
     for (const [key, value] of Object.entries({ width, height, screenWidth, screenHeight }))
-      if (!Number.isFinite(value) || value < 0) throw new RangeError(`Invalid PTCL ${key}`);
+      if (
+        !(nullableTexture && (key === 'width' || key === 'height') && value === null) &&
+        (!Number.isFinite(value) || value < 0)
+      )
+        throw new RangeError(`Invalid PTCL ${key}`);
     this.script = script;
     this.profile = profile;
     this.table = script.scriptVersion === 0x20000 ? 'particle-v2' : 'particle-v1';
-    const abi = profile === undefined ? null : nativeABI(profile);
     this.nativeEntries = abi?.tables[this.table].entries ?? null;
     this.math = abi?.math;
     this.interpreterMath = this.math?.interpreterUsesNativeScalarMath ? this.math : null;
@@ -131,12 +136,12 @@ export class ParticleScriptInstance {
     this.attachmentRequiresProvider = abi?.particle?.attachmentRequiresProvider;
     this.attachmentCopiesRawWords = abi?.particle?.attachmentCopiesRawWords;
     this.count = count;
-    this.width = f(width);
-    this.height = f(height);
+    this.width = nullableTexture && width === null ? null : f(width);
+    this.height = nullableTexture && height === null ? null : f(height);
     this.screenWidth = screenWidth >>> 0;
     this.screenHeight = screenHeight >>> 0;
     this.fps = fps >>> 0;
-    this.priority = f(priority);
+    this.priority = nullableTexture && priority === null ? null : f(priority);
     this.near = near;
     this.attachPlane = attachPlane | 0;
     this.attachment = attachment;
@@ -164,8 +169,14 @@ export class ParticleScriptInstance {
     this.before = 0xffffffff;
     this.hasFrame = false;
     this.now = 0;
-    const quad = initialParticle(this.width, this.height).vertices;
-    for (let i = 0; i < this.count; i++) writePTCLQuad(this.quads, quad, i * 112);
+    if (this.count) {
+      if (this.width === null || this.height === null)
+        throw new Error(
+          'Native particle texture dimensions are uninitialized at particle initialization',
+        );
+      const quad = initialParticle(this.width, this.height).vertices;
+      for (let i = 0; i < this.count; i++) writePTCLQuad(this.quads, quad, i * 112);
+    }
     this.backupQuads.set(this.quads);
     for (const key of ['positions', 'bases', 'rotations', 'scales']) this[key].fill(0);
     for (let i = 0; i < this.count; i++) this.scales.set([1, 1, 1, 0], i * 4);
@@ -468,6 +479,8 @@ export class ParticleScriptInstance {
         return real(Math.sqrt(f(f(f(dx * dx) + f(dy * dy)) + f(dz * dz))));
       }
       case 38: {
+        if (this.priority === null)
+          throw new Error('Native particle texture priority is uninitialized at projection bounds');
         const outputs = args.slice(1);
         if (this.geometryUsesSSEWords) {
           outputs.forEach((address) => machine.region(address, 4));

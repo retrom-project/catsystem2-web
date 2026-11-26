@@ -159,7 +159,7 @@ export class NativeParticleTask {
   }
   atlasState() {
     const atlas = this.bank.nativeAtlas;
-    return atlas && ['width', 'height', 'priority'].every((k) => atlas[k] !== null)
+    return atlas
       ? { width: atlas.width, height: atlas.height, priority: atlas.priority, near: atlas.near }
       : null;
   }
@@ -301,8 +301,8 @@ export class NativeParticleTask {
       (!['script', 'plugin', null].includes(state.family) ||
         (state.atlas !== null &&
           (!state.atlas ||
-            !['width', 'height', 'priority', 'near'].every((k) =>
-              Number.isFinite(state.atlas[k]),
+            !['width', 'height', 'priority', 'near'].every(
+              (k) => state.atlas[k] === null || Number.isFinite(state.atlas[k]),
             ))) ||
         (state.registers !== null &&
           (!(state.registers instanceof Float32Array) || state.registers.length !== 32)))
