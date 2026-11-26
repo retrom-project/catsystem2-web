@@ -166,7 +166,10 @@ export class NativeSceneCheckpoints {
     return { strings, variables };
   }
   async apply(id, args, machine, task) {
-    if (args.length !== (id === 0x3e0 ? 4 : 3))
+    const readFrame = nativeABI(this.world.profile).scene?.argumentsReadFrame,
+      argument = (index) =>
+        index < args.length ? args[index] : readFrame ? machine.nativeArgument(index) : args[index];
+    if (!readFrame && args.length !== (id === 0x3e0 ? 4 : 3))
       throw new Error(`Native scene checkpoint 0x${id.toString(16)} has invalid arguments`);
     // 3E0 translates both VM destinations before testing its scene handle.
     const region = (address) => {
@@ -176,36 +179,39 @@ export class NativeSceneCheckpoints {
         return null;
       }
     };
+    let indexAddress, positionAddress;
     if (id === 0x3e0) {
-      region(args[1]);
-      region(args[2]);
+      indexAddress = argument(1);
+      positionAddress = argument(2);
+      region(indexAddress);
+      region(positionAddress);
     }
-    const scene = args[0] ? this.world.runtime.handles.get(args[0], 'scene-data') : null;
+    const scene = argument(0) ? this.world.runtime.handles.get(argument(0), 'scene-data') : null;
     if (!scene) return nativeReply(id === 0x3e0 ? 1 : 2, id === 0x3e0 ? 0 : undefined);
     if (id === 0x3e2) {
       await this.selection(null);
-      pruneSceneCheckpoints(scene.history, args[1], args[2]);
+      pruneSceneCheckpoints(scene.history, argument(1), argument(2));
       return nativeReply(2);
     }
     const selection = await this.selection(
-        this.world.runtime.services.format(args.at(-1), machine),
+        this.world.runtime.services.format(argument(id === 0x3e0 ? 3 : 2), machine),
       ),
       variables = this.world.runtime.variableBank(task, false),
       strings = this.world.runtime.stringBank(task, false);
     if (id === 0x3df) {
-      await appendSceneCheckpoint(scene.history, args[1], variables, strings, selection);
+      await appendSceneCheckpoint(scene.history, argument(1), variables, strings, selection);
       return nativeReply(2);
     }
     const ok = await restoreSceneCheckpoint(
       scene.history,
-      machine.load(args[1]),
-      machine.load(args[2]),
+      machine.load(indexAddress),
+      machine.load(positionAddress),
       variables,
       strings,
       selection,
       (index, position) => {
-        machine.store(args[1], index);
-        machine.store(args[2], position);
+        machine.store(indexAddress, index);
+        machine.store(positionAddress, position);
       },
     );
     return nativeReply(1, Number(ok));

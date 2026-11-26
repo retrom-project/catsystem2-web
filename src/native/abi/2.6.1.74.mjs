@@ -77,6 +77,7 @@ export default {
     vectorComponentsUseSSEWords: true,
   },
   scene: {
+    argumentsReadFrame: true,
     cstFileMarkers: true,
     messageCountTypeSideEffects: true,
     historyCursorTypeSideEffects: true,

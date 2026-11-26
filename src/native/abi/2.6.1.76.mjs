@@ -101,6 +101,7 @@ export default {
     vectorComponentsUseSSEWords: true,
   },
   scene: {
+    argumentsReadFrame: true,
     translationUnknownPrefixes: 'ignore',
     implicitReaderUsesDirectBehavior: true,
     implicitTextRecordRequired: true,

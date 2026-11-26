@@ -426,7 +426,18 @@ const implicit = new Map([
 ]);
 
 export function nativeSceneData(id, args, machine, services = {}) {
-  if (id === 0x260 && args.length !== 1)
+  const profileBehavior = services.profile ? nativeABI(services.profile).scene : undefined;
+  let argumentOffset = 0;
+  const argument = (index) => {
+    const frameIndex = index - argumentOffset;
+    if (frameIndex < 0) return 0;
+    return frameIndex < args.length
+      ? args[frameIndex]
+      : profileBehavior?.argumentsReadFrame
+        ? machine.nativeArgument(frameIndex)
+        : args[frameIndex];
+  };
+  if (id === 0x260 && !profileBehavior?.argumentsReadFrame && args.length !== 1)
     throw new Error('Native scene block count requires one scene owner word');
   if (id === 0xdb) {
     if (!services.initializeSceneData) return undefined;
@@ -435,27 +446,27 @@ export function nativeSceneData(id, args, machine, services = {}) {
   }
   if ([0xef, 0xf9, 0x181, 0x182].includes(id)) {
     if (!services.globalEntries) return undefined;
-    if (!args[0]) return word(0);
+    if (!argument(0)) return word(0);
     const legacy = services.profile && nativeABI(services.profile).scene?.legacyHistoryRecords;
     const direct = id === 0x181 || id === 0x182;
     if (direct && !services.handles) return undefined;
     if (!direct && !services.sceneDataForTask) return undefined;
     const source = direct
-      ? args[2]
-        ? services.handles.get(args[2], 'scene-data')
+      ? argument(2)
+        ? services.handles.get(argument(2), 'scene-data')
         : null
-      : services.sceneDataForTask(args[2]);
+      : services.sceneDataForTask(argument(2));
     const execute = (data) => {
       if (!data) return word(0);
-      const side = args[3] ? 'path' : 'seen';
+      const side = argument(3) ? 'path' : 'seen';
       if (id === 0xef || id === 0x181)
         services.globalEntries.write(
-          args[0],
-          args[1],
-          data.history.encode(side, !!args[4], legacy),
+          argument(0),
+          argument(1),
+          data.history.encode(side, !!argument(4), legacy),
         );
       else {
-        const bytes = services.globalEntries.read(args[0], args[1]);
+        const bytes = services.globalEntries.read(argument(0), argument(1));
         if (bytes === null) return word(0);
         data.history.decode(side, bytes, null, legacy);
       }
@@ -466,7 +477,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
   if (id === 0xea) {
     if (!services.sceneDataForTask) return undefined;
     if (!services.sceneData) return word(0);
-    const source = services.sceneDataForTask(args[0]);
+    const source = services.sceneDataForTask(argument(0));
     const execute = (data) => {
       if (!data) return word(0);
       const legacy = services.profile && nativeABI(services.profile).scene?.legacyHistoryRecords,
@@ -482,18 +493,25 @@ export function nativeSceneData(id, args, machine, services = {}) {
     if (services.sceneData === undefined) return undefined;
     if (!services.sceneData) return done();
     if (!services.sceneDataForTask) return undefined;
-    const source = services.sceneDataForTask(args[0]);
+    const source = services.sceneDataForTask(argument(0));
     const execute = (data) => {
-      const bytes = expandHistory(data?.history, args[1], args[2], cbytes(machine, args[3]), true);
-      machine.bytes(args[3], bytes.length + 2).set(bytes);
-      machine.store(args[3] + bytes.length, 0, 2);
+      const address = argument(3),
+        bytes = expandHistory(
+          data?.history,
+          argument(1),
+          argument(2),
+          cbytes(machine, address),
+          true,
+        );
+      machine.bytes(address, bytes.length + 2).set(bytes);
+      machine.store(address + bytes.length, 0, 2);
       return done();
     };
     return source && typeof source.then === 'function' ? source.then(execute) : execute(source);
   }
   if (id === 0x142) {
     if (!services.read || !services.format) return undefined;
-    const bytes = services.read(services.format(args[0], machine), 'scene');
+    const bytes = services.read(services.format(argument(0), machine), 'scene');
     return bytes && typeof bytes.then === 'function'
       ? bytes.then((value) => word(Number(value !== null)))
       : word(Number(bytes !== null));
@@ -510,19 +528,18 @@ export function nativeSceneData(id, args, machine, services = {}) {
   if (!explicit.has(id) && !implicit.has(id)) return undefined;
   const original = id;
   const direct = explicit.has(id);
-  const profileBehavior = services.profile ? nativeABI(services.profile).scene : undefined,
-    behavior =
-      direct || profileBehavior?.implicitReaderUsesDirectBehavior ? profileBehavior : undefined;
+  const behavior =
+    direct || profileBehavior?.implicitReaderUsesDirectBehavior ? profileBehavior : undefined;
   if (!direct && services.sceneData === undefined) return undefined;
   const data = direct
-    ? args[0]
-      ? services.handles?.get(args[0], 'scene-data')
+    ? argument(0)
+      ? services.handles?.get(argument(0), 'scene-data')
       : null
     : services.sceneData;
   if (!data) {
     if (!direct && [0xe1, 0xe2, 0xeb].includes(original))
       throw new Error('Native scene-data call dereferences a null task scene context');
-    if (direct && args[0] && !services.handles) return undefined;
+    if (direct && argument(0) && !services.handles) return undefined;
     if (
       [0x144, 0x14a, 0x14b, 0x150, 0x151, 0x3a6, 0x3d2, 0x3d5, 0x3e1].includes(
         implicit.get(id) ?? id,
@@ -535,13 +552,13 @@ export function nativeSceneData(id, args, machine, services = {}) {
   }
   if (!direct) {
     id = implicit.get(id);
-    args = [0, ...args];
+    argumentOffset = 1;
   }
   const { reader, history } = data,
     imagePreparation = services.world?.graphics?.images?.scenePreparation,
     voicePreparation = services.world?.sound?.sceneVoicePreparation;
   if (id === 0x144) {
-    services.handles.release(args[0], 'scene-data');
+    services.handles.release(argument(0), 'scene-data');
     services.world?.m2?.scenePreparation?.discard(data);
     imagePreparation?.discard(data);
     voicePreparation?.discard(data);
@@ -551,23 +568,24 @@ export function nativeSceneData(id, args, machine, services = {}) {
     if (!services.read || !services.format) return undefined;
     services.world?.m2?.scenePreparation?.discard();
     imagePreparation?.discard();
-    const filename = services.format(args[1], machine);
+    const filename = services.format(argument(1), machine);
     return data.load(filename, services.read, services.diagnostic, behavior).then((value) => {
       if (value) imagePreparation?.loaded(data);
       voicePreparation?.loaded(data, filename, value);
       return word(Number(value));
     });
   }
-  if (id === 0x146) return word(reader.type(args[1], args[2], behavior));
+  if (id === 0x146) return word(reader.type(argument(1), argument(2), behavior));
   if ([0x147, 0x409, 0x40d, 0x40e].includes(id)) {
-    if (!mapped(machine, args[1])) {
+    const destination = argument(1);
+    if (!mapped(machine, destination)) {
       if (!direct && behavior?.implicitTextDestinationRequired)
         throw new Error('Native CST text dereferences an unmapped destination');
       return word(0);
     }
     if ([0x409, 0x40e].includes(id) && !services.format) return undefined;
-    const bytes = reader.text(args[2], args[3], {
-      language: [0x409, 0x40e].includes(id) ? services.format(args[4], machine) : '',
+    const bytes = reader.text(argument(2), argument(3), {
+      language: [0x409, 0x40e].includes(id) ? services.format(argument(4), machine) : '',
       toUTF8: id === 0x40d || id === 0x40e,
     });
     if (
@@ -576,12 +594,12 @@ export function nativeSceneData(id, args, machine, services = {}) {
       (behavior?.directTextNull === 'reject' || (!direct && behavior?.implicitTextRecordRequired))
     )
       throw new Error('Native CST text has no readable record');
-    if (bytes) machine.writeStringBytes(bytes, args[1]);
+    if (bytes) machine.writeStringBytes(bytes, destination);
     return word(
       bytes
         ? bytes.length
         : original === 0xde || original === 0x40b
-          ? cbytes(machine, args[1]).length
+          ? cbytes(machine, destination).length
           : 0,
     );
   }
@@ -589,31 +607,31 @@ export function nativeSceneData(id, args, machine, services = {}) {
     if (!services.formatBytes && !services.format) return undefined;
     if (
       behavior?.directHistoryFormatFailure === 'zero' &&
-      (!mapped(machine, args[1]) || !mapped(machine, args[2]))
+      (!mapped(machine, argument(1)) || !mapped(machine, argument(2)))
     )
       return done();
-    const source = formatHistoryName(args[1], machine, services, 'alias'),
-      destination = formatHistoryName(args[2], machine, services, 'alias');
+    const source = formatHistoryName(argument(1), machine, services, 'alias'),
+      destination = formatHistoryName(argument(2), machine, services, 'alias');
     history.aliasSeen(source, destination);
     return done();
   }
   if (id === 0x148 || id === 0x149 || id === 0x14c) {
     if (!services.formatBytes && !services.format) return undefined;
-    if (behavior?.directHistoryFormatFailure === 'zero' && !mapped(machine, args[1]))
+    if (behavior?.directHistoryFormatFailure === 'zero' && !mapped(machine, argument(1)))
       return word(0);
     const operation = id === 0x14c ? 'query' : id === 0x148 ? 'mark' : 'path append',
-      formatted = formatHistoryName(args[1], machine, services, operation),
+      formatted = formatHistoryName(argument(1), machine, services, operation),
       name = direct ? stripHistoryExtension(formatted) : formatted;
     if (id === 0x14c) return word(history.seenValue(name));
     if (id === 0x148) {
-      if (name.length) history.markSeen(name, args[2]);
+      if (name.length) history.markSeen(name, argument(2));
       return word(1);
     }
-    const index = name.length ? history.appendPath(name, args[2]) : -1;
+    const index = name.length ? history.appendPath(name, argument(2)) : -1;
     if (id === 0x149 && index >= 0) {
-      services.world?.m2?.scenePreparation?.hint(data, name, args[2]);
-      imagePreparation?.hint(data, services.owner, args[2]);
-      voicePreparation?.hint(data, services.owner, args[2]);
+      services.world?.m2?.scenePreparation?.hint(data, name, argument(2));
+      imagePreparation?.hint(data, services.owner, argument(2));
+      voicePreparation?.hint(data, services.owner, argument(2));
     }
     return word(direct && behavior?.directPathResult !== 'success' ? index : 1);
   }
@@ -629,42 +647,49 @@ export function nativeSceneData(id, args, machine, services = {}) {
     return done();
   }
   if (id === 0x14d) {
-    const index = Math.min(args[1] >>> 0, history.path.length - 1),
-      entry = history.pathAt(args[1]);
-    machine.writeStringBytes(nameBytes(entry?.nameBytes ?? entry?.scene ?? ''), args[2]);
-    machine.store(args[3], entry?.value ?? -1);
+    const index = Math.min(argument(1) >>> 0, history.path.length - 1),
+      entry = history.pathAt(argument(1)),
+      nameAddress = argument(2),
+      valueAddress = argument(3);
+    machine.writeStringBytes(nameBytes(entry?.nameBytes ?? entry?.scene ?? ''), nameAddress);
+    machine.store(valueAddress, entry?.value ?? -1);
     return word(index);
   }
   if (id === 0x14e)
-    return word(Number(history.setString(args[1], args[2], args[3], cbytes(machine, args[4]))));
+    return word(
+      Number(
+        history.setString(argument(1), argument(2), argument(3), cbytes(machine, argument(4))),
+      ),
+    );
   if (id === 0x14f) {
-    const entry = history.getString(args[1], args[2], args[3]);
-    if (entry) machine.writeStringBytes(entry.bytes, args[4]);
+    const entry = history.getString(argument(1), argument(2), argument(3));
+    if (entry) machine.writeStringBytes(entry.bytes, argument(4));
     return word(Number(entry?.found ?? false));
   }
   if (id === 0x150) {
     if (!services.strings && (direct || !behavior?.implicitHistoryCaptureRequiresBank))
       return behavior?.historyCaptureUsesExistingBank ? done() : undefined;
-    scanReferences(cbytes(machine, args[3]), (index) => {
+    scanReferences(cbytes(machine, argument(3)), (index) => {
       if (!services.strings)
         throw new Error('Native scene string capture dereferences a null caller string bank');
       const value = services.strings.getBytes(index);
       if (value === undefined) return false;
-      history.setString(args[1], args[2], index, value);
+      history.setString(argument(1), argument(2), index, value);
       return true;
     });
     return done();
   }
   if (id === 0x151) {
-    const result = expandHistory(history, args[1], args[2], cbytes(machine, args[3]));
-    machine.bytes(args[3], result.length + 2).set(result);
-    machine.store(args[3] + result.length, 0, 2);
+    const address = argument(3),
+      result = expandHistory(history, argument(1), argument(2), cbytes(machine, address));
+    machine.bytes(address, result.length + 2).set(result);
+    machine.store(address + result.length, 0, 2);
     return done();
   }
   if (id === 0x152) {
     if (behavior?.cstFileMarkers)
-      machine.writeStringBytes(reader.fileNameBytes ?? empty(), args[1]);
-    else machine.writeString(reader.filename, args[1]);
+      machine.writeStringBytes(reader.fileNameBytes ?? empty(), argument(1));
+    else machine.writeString(reader.filename, argument(1));
     return word(reader.fileValue);
   }
   if (id === 0x260) return word(reader?.info(4) ?? 0);
@@ -672,19 +697,19 @@ export function nativeSceneData(id, args, machine, services = {}) {
     return word(reader.messageCount(behavior?.messageCountTypeSideEffects ? behavior : undefined));
   if (id === 0x3d6) return word(history.path.length - 1);
   if (id === 0x3d2) {
-    if (args[1] && history.path.length)
-      history.path.at(-1).extra = services.handles.get(args[1], 'global-file').raw();
+    if (argument(1) && history.path.length)
+      history.path.at(-1).extra = services.handles.get(argument(1), 'global-file').raw();
     return done();
   }
   if (id === 0x3d3) {
-    const extra = history.path[args[1] >>> 0]?.extra;
+    const extra = history.path[argument(1) >>> 0]?.extra;
     return word(
       extra?.length ? services.handles.add('global-file', NativeGlobalFile.fromRaw(extra)) : 0,
     );
   }
   if (id === 0x3d5 || id === 0x3e1) {
-    if (!args[1]) return done();
-    const source = services.handles.get(args[1], 'scene-data').history;
+    if (!argument(1)) return done();
+    const source = services.handles.get(argument(1), 'scene-data').history;
     if (id === 0x3e1) {
       services.world?.m2?.scenePreparation?.discard(data);
       imagePreparation?.discard(data);

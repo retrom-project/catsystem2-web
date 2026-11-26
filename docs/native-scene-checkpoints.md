@@ -199,3 +199,18 @@ own data properties, and the reader checks own membership before lookup, so JS
 object members cannot become translations or hide a registered label. Two
 additional independent cold restores preserve the literal key without changing
 the checkpoint codec or layout.
+
+Modern Scene, history-cursor and checkpoint wrappers read their fixed argument
+words from the mapped KCS frame. The declared GCALL byte count controls stack
+removal; it does not bound those native reads, and unused tail words do not
+change the wrapper's parameter positions. The build policy enables lazy reads
+of missing declared words for `.74` and `.76`, preserving the existing legacy
+policies. Actual unmapped required words still produce a memory diagnostic.
+
+The 64 own Main-frame controls also cover output pointers that alias later argv
+words. Text expansion, path/cursor outputs and checkpoint restore retain the
+translated destination addresses before writing, including a checkpoint index
+output that overwrites its position-address argument. The ordinary World/KCS
+comparison preserves complete local bytes, control and PC/SP/FP and performs six
+independent cold restores. No physical Scene pointer exposure, allocator-failure
+behavior or undefined record memory is admitted by this mapped-frame group.

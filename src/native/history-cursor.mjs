@@ -269,35 +269,40 @@ const output = (machine, address) => {
 };
 export function nativeHistoryCursor(id, args, machine, services = {}) {
   if (!NATIVE_HISTORY_CURSOR_IDS.includes(id) || !services.handles) return undefined;
+  const readFrame = services.profile && nativeABI(services.profile).scene?.argumentsReadFrame,
+    argument = (index) =>
+      index < args.length ? args[index] : readFrame ? machine.nativeArgument(index) : args[index];
   if (id === 0x17b) {
     if (!services.read) return undefined;
-    const cursor = new NativeHistoryCursor(args[0], args[1]);
+    const cursor = new NativeHistoryCursor(argument(0), argument(1));
     return cursor
       .initialize(services)
       .then(() => word(services.handles.add('history-cursor', cursor)));
   }
-  if (!args[0]) return id === 0x17c ? done() : word(0);
-  const cursor = services.handles.get(args[0], 'history-cursor');
+  if (!argument(0)) return id === 0x17c ? done() : word(0);
+  const cursor = services.handles.get(argument(0), 'history-cursor');
   if (id === 0x17c) {
-    services.handles.release(args[0], 'history-cursor');
+    services.handles.release(argument(0), 'history-cursor');
     return done();
   }
   if (id === 0x17d) {
     if (!services.read) return undefined;
-    return cursor.move(args[1], services).then(word);
+    return cursor.move(argument(1), services).then(word);
   }
-  const row = cursor.row(args[1], false);
+  const row = cursor.row(argument(1), false);
   if (!row?.valid) return word(0);
   if (id === 0x180) {
     // Unlike string destinations, these translated pointers are mandatory.
-    machine.store(args[2], row.path);
-    machine.store(args[3], row.block);
+    const pathAddress = argument(2),
+      blockAddress = argument(3);
+    machine.store(pathAddress, row.path);
+    machine.store(blockAddress, row.block);
     return word(1);
   }
   if (!services.read) return undefined;
   if (id === 0x17e)
     return cursor
-      .text(row, services, output(machine, args[2]), output(machine, args[3]))
+      .text(row, services, output(machine, argument(2)), output(machine, argument(3)))
       .then(word);
-  return cursor.voice(row, args[3], services, output(machine, args[2])).then(word);
+  return cursor.voice(row, argument(3), services, output(machine, argument(2))).then(word);
 }
