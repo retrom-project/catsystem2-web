@@ -56,7 +56,7 @@ async function pixels(world, handle, expected, label) {
   );
 }
 
-for (const scenario of ['sources', 'hg2-sources'])
+for (const scenario of ['sources', 'hg2-sources', 'source-cross-rebind'])
   test(
     'SDK23 ' +
       scenario +
@@ -153,7 +153,7 @@ for (const scenario of ['sources', 'hg2-sources'])
     },
   );
 
-for (const scenario of ['source-rebind', 'source-program'])
+for (const scenario of ['source-rebind', 'source-program', 'source-bitmap-program'])
   test(
     'SDK23 ' +
       scenario +
@@ -185,7 +185,7 @@ for (const scenario of ['source-rebind', 'source-program'])
         const draw = world.objects.objects.get(drawID).implementation;
         assert.equal(draw.state.renderer?.items.length ?? null, row.itemCount);
         if (row.bitmap) await pixels(world, draw.state.renderer.bitmap, row.bitmap, label);
-        if (row.id === 622)
+        if (row.id === 622 || row.id === 624)
           retainedSource = world.retainedDraw.record(
             draw,
             (world.nativeTaskID(task.id) | (8 << 16)) >>> 0,

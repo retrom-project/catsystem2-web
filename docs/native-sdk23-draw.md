@@ -56,8 +56,11 @@ review.
 The frame-source binding covers HG2 and HG3. Native HG2v25 enumeration stores
 every decoded frame in the same source map, including a single-frame source;
 the existing HG2v10/v20 decoder contracts supply their one-frame form. Ordinals
-remain distinct from frame IDs. Cross-class encoded rebinding and other decoded
-formats remain specific guarded follow-up shapes within the Image-to-Draw work. Replacing
+remain distinct from frame IDs. Encoded rebinding of an existing bitmap or array-retained source preserves
+that source and its loaded ANM. The array owner observes the replaced frames
+and geometry while keeping its original reference count. Nested image-owner
+rebinding and other decoded formats remain specific guarded follow-up shapes
+within the Image-to-Draw work. Replacing
 encoded frames keeps an already loaded ANM object and its control state; it does
 not create a new retained source or implicitly load a program.
 
