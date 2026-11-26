@@ -111,3 +111,21 @@ Main233/234 bridge uses the reviewed typed Scene resource instead. Canonical
 cannot become the semantic173 queued-message operation. The tests retain full
 36-frame Main comparisons per build and three cold restores per build. No FES
 source receiver or raw pointer layout is inferred from the Script cases.
+
+Own modern Main385/386 and Script Main239/249 now have a complete CSS record
+comparison through Main238/244, the original history parser, native file
+save/release/load (245/246/247), and independent GAME_SAVE-only reconstruction.
+The authored input includes nonzero bytes after the NUL in each 32-byte name
+and 64-byte string field. These bytes are defined input: all imported/exported
+48-byte records and 72-byte string pairs, the complete file payload, and the
+compressed CSS file match the own-build native result. No native padding is
+replaced or regenerated. Direct and Script owners keep their separate histories;
+missing entries and missing target contexts return zero without changing them.
+
+`modern-scene-css.test.mjs` replays 35 native Main frames per build, restores two
+independent internal checkpoints per build, and reconstructs a fresh World from
+only the native `save0071.dat` GAME_SAVE file per build. All writes use isolated
+fixture storage. The original native file providers are explicit memory-backed
+Win32 leaves; this is an authored SDK file/owner bridge, not a product-route or
+user-record measurement. History extras, full Scene checkpoints, and localized
+reader variants retain separate evidence requirements.
