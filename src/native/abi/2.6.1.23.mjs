@@ -182,7 +182,7 @@ const mainEvidence = [
   {
     ids: [622, 623, 624, 703, 704, 706, 707, 708, 709],
     value:
-      'Own complete HG2v25 multi-frame and HG3 GCALLs run the actual initialized platform/Script/Draw chain. Main703 produces72-byte tag1 bitmap or tag2 actual0xc4 source records;704 clears/releases them. Main706 writes nine geometry words and709 borrows ordinal0/1 independently of frame IDs0/2. Main707/708 retain a source and update transforms;624 explicitly loads ANM. Main622/623 decode real Main365 buffers and rebuild frame owners even for the same descriptor, retaining the source identity and any loaded ANM owner. The original frame map stores every HG2/HG3 frame, including one frame; prior own HG2v10/v20 decoder proofs supply their single-frame contracts. Caller release preserves Draw ownership, pixels, removal/destruction and independent cold continuation. Other decoded formats and cross-class rebinding remain guarded.',
+      'Own complete HG2v25 multi-frame and HG3 GCALLs run the actual initialized platform/Script/Draw chain. Main703 produces72-byte tag1 bitmap or tag2 actual0xc4 source records;704 clears/releases them. Main706 writes nine geometry words and709 borrows ordinal0/1 independently of frame IDs0/2. Main707/708 retain a source and update transforms;624 explicitly loads ANM. Main622/623 decode real Main365 buffers and rebuild frame owners even for the same descriptor, retaining the source identity and any loaded ANM owner. The original frame map stores every HG2/HG3 frame, including one frame; prior own HG2v10/v20 decoder proofs supply their single-frame contracts. Caller release preserves Draw ownership, pixels, removal/destruction and independent cold continuation. The same initialized Main703 tag1 accepts primary BI_RGB BMP24/32 pixels and returns zero with cleared record pairs for valid PNG. Other decoded formats and cross-class rebinding remain guarded.',
   },
 
   {
@@ -203,7 +203,7 @@ const mainEvidence = [
   {
     ids: [430, 460],
     value:
-      'Own complete Main430/460 Script GCALLs use the original system-information singleton, file server, Settings, software kcView and constructor-loaded ANM table. Main430 tests direct readable ANM and basename table fallback, first duplicate insertion and case-sensitive stored keys; no ANM execution is involved. Main460 returns an explicitly owned0x114 bitmap without entering the Script automatic list: ordinary HG3 frame zero retains RGB24, while selector composition allocates an RGBA result and combines valid named layers with original anchors, offsets and pixels. Eight positive forms cover HG2/HG3 files, RGB24, one/multiple selectors, skipped zero selectors and narrow multi-character basenames. No desktop/GPU action or synthetic receiver is used.',
+      'Own complete Main430/460 Script GCALLs use the original system-information singleton, file server, Settings, software kcView and constructor-loaded ANM table. Main430 tests direct readable ANM and basename table fallback, first duplicate insertion and case-sensitive stored keys; no ANM execution is involved. Main460 returns an explicitly owned0x114 bitmap without entering the Script automatic list: ordinary HG3 frame zero retains RGB24, while selector composition allocates an RGBA result and combines valid named layers with original anchors, offsets and pixels. Eight positive forms cover HG2/HG3 files, RGB24, one/multiple selectors, skipped zero selectors and narrow multi-character basenames. Further valid BMP24/32 Main460 GCALLs preserve RGBA primary pixels and explicit release; valid PNG returns zero without automatic bitmap ownership. Selector formats remain separately bound. No desktop/GPU action or synthetic receiver is used.',
   },
   {
     ids: [716, 721, 722, 725, 729, 734],
@@ -223,7 +223,7 @@ const mainEvidence = [
   {
     ids: [428, 648],
     value:
-      'Own Main428 at0x4899e0 decodes an ordinal frame from the actual Main365 twenty-byte encoded resource, writes the resolved frame ID through its third live VM argument, converts RGB24 to RGBA32 and inserts the real0x114 bitmap owner into Script+0x98. Main648 at0x489ea0 uses0x4d86a0 to compose HG2/HG3 tile IDs0–8 into a new bitmap: corners, repeated edges and repeated center, with normal partial edge clips. Actual loaded Script GCALLs preserve distinct ordinal/ID values, opaque and alpha pixels, typed resource/list ownership and explicit release. Unsupported formats and unproved empty/smaller target shapes stay guarded; this is not a blank-size constructor.',
+      'Own Main428 at0x4899e0 decodes an ordinal frame from the actual Main365 twenty-byte encoded resource, writes the resolved frame ID through its third live VM argument, converts RGB24 to RGBA32 and inserts the real0x114 bitmap owner into Script+0x98. Main648 at0x489ea0 uses0x4d86a0 to compose HG2/HG3 tile IDs0–8 into a new bitmap: corners, repeated edges and repeated center, with normal partial edge clips. Actual loaded Script GCALLs preserve distinct ordinal/ID values, opaque and alpha pixels, typed resource/list ownership and explicit release. Unsupported formats and unproved empty/smaller target shapes stay guarded; this is not a blank-size constructor. Valid BMP24/32 and PNG Main428 calls return zero, preserve the third VM output and add no Script bitmap. Main648 on those files instead returns a real null-storage owner and inserts it in the automatic list; this defined shape remains specifically guarded pending its JS owner representation.',
   },
   {
     ids: [370, 371, 374, 377, 378],
@@ -1719,6 +1719,11 @@ export default {
     bitmapCompositeUsesLegacyRows: true,
     imageCompositePreservesRGB24: true,
     imageCompositeFormats: ['HG2', 'HG3'],
+    imageCompositePlainFormats: ['HG2', 'HG3', 'BMP'],
+    imageCompositeRejectedPlainFormats: ['PNG'],
+    imageCompositeBmpHeader: 40,
+    imageCompositeBmpCompression: 0,
+    bitmapOrdinalRejectedFormats: ['BMP', 'PNG'],
     formattedBitmapPhysical: true,
     bitmapBlitUsesSourceSize: true,
     sameSizeBitmapCopyClips: true,

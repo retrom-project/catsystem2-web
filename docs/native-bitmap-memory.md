@@ -236,3 +236,18 @@ Resize interpolates physical bottom-up rows. RGBA4444 resize is a no-op; RGB24
 resize works in the game and is a no-op in the SDK, declared in ABI data.
 The alpha scaler preserves its unsigned-overflow lookup behavior and cached hint.
 No floating pixel tolerance was required by the covered algorithms.
+
+SDK23 raster formats depend on the calling operation. Complete GCALLs confirm
+that ordinary 40-byte-header BI_RGB BMP24/32 files load through Main460 and
+Main703's tag1 branch with RGBA pixels and normal explicit ownership. Main428
+uses the ordinal virtual method: BMP's original method is an explicit zero
+stub, so it returns zero without writing the third VM output or inserting an
+automatic bitmap. Valid PNG files are rejected with zero by Main428, Main460
+and Main703; the latter still clears the requested output record pairs.
+
+Main648 ignores its decoder's non-HG return and returns a real0x114 owner with
+a null bitmap, inserted in the Script automatic list. This defined empty-owner
+shape remains guarded until the JS resource graph distinguishes that owner
+from an allocated zero-sized bitmap. It must not be converted to a zero handle.
+Selector composition retains its separate HG2/HG3 binding; plain BMP admission
+does not enable BMP selectors, other headers or animated BMP frame maps.

@@ -2,6 +2,8 @@
 import { openImage } from '../formats/hg3.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { blendBitmapPixel } from './image.mjs';
+import { nativeABI } from './abi/index.mjs';
+import { rasterFormat } from '../formats/raster.mjs';
 
 export async function nativeEncodedBitmap(world, id, argument, machine, task) {
   const handle = argument(0) >>> 0;
@@ -9,6 +11,13 @@ export async function nativeEncodedBitmap(world, id, argument, machine, task) {
   if (!handle) throw new Error('Native nine-piece bitmap requires an encoded image owner');
   const buffers = world.runtime.imageDataBuffers,
     bytes = buffers.data(buffers.pointer(handle));
+  if (
+    id === 428 &&
+    nativeABI(world.profile).graphics.bitmapOrdinalRejectedFormats?.includes(
+      rasterFormat(bytes)?.toUpperCase(),
+    )
+  )
+    return nativeReply(1, 0);
   if (
     bytes.length < 4 ||
     bytes[0] !== 72 ||

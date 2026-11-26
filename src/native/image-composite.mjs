@@ -32,10 +32,32 @@ export class NativeImageComposites {
       if (handle && nativeABI(this.world.profile).graphics.imageCompositePreservesRGB24) {
         try {
           const image = await images.images.load(name),
-            formats = nativeABI(this.world.profile).graphics.imageCompositeFormats,
-            format = image instanceof HG2 ? 'HG2' : image instanceof HG3 ? 'HG3' : 'raster';
+            graphics = nativeABI(this.world.profile).graphics,
+            formats = graphics.imageCompositePlainFormats ?? graphics.imageCompositeFormats,
+            format =
+              image instanceof HG2
+                ? 'HG2'
+                : image instanceof HG3
+                  ? 'HG3'
+                  : image.format?.toUpperCase();
+          if (graphics.imageCompositeRejectedPlainFormats?.includes(format)) {
+            await images.release(handle);
+            return 0;
+          }
           if (formats && !formats.includes(format))
             throw new Error('Selector image input has no reviewed format binding');
+          if (format === 'BMP' && graphics.imageCompositeBmpHeader) {
+            const header = new DataView(
+              image.bytes.buffer,
+              image.bytes.byteOffset,
+              image.bytes.byteLength,
+            );
+            if (
+              header.getUint32(14, true) !== graphics.imageCompositeBmpHeader ||
+              header.getUint32(30, true) !== graphics.imageCompositeBmpCompression
+            )
+              throw new Error('The BMP primary header has no reviewed ABI binding');
+          }
           const frame = image.frame(0);
           if (frame?.bpp === 24) {
             const bitmap = images.get(handle);
