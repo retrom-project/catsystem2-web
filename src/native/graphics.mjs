@@ -18,8 +18,12 @@ import {
   NATIVE_IMAGE_IDS,
   nativeImage,
   nativePublicationPixels,
+  nativeBitmapState,
+  nativeBitmapStorageOwned,
+  nativePixelsWereBorrowed,
 } from './image.mjs';
 import { NativeHandles } from './handles.mjs';
+import { copyBitmapRow } from './raster-kernel.mjs';
 import { identity } from '../motion/matrix.mjs';
 import {
   nativeGraphGeometry,
@@ -48,6 +52,7 @@ import {
   negotiateNativeTextureLayout,
   virtualD3DTextureCaps,
   virtualD3DGuardBand,
+  uploadTextureFrame,
 } from './texture-layout.mjs';
 import { NativeCursor } from './cursor.mjs';
 import { nativeInputBitmapMask } from './input.mjs';
@@ -166,6 +171,10 @@ export class NativeGraphics {
       stage: this.world.stageRenderer ?? null,
       release: (frame) => this.world.getNativeGPU?.()?.releaseTextureFrame(frame),
       trackDirty: this.tracksTextureDirty,
+      beforeMutation: () => {
+        const text = this.world.text;
+        if (text?.publications?.size) text.settlePublications();
+      },
     });
   }
   get tracksTextureDirty() {
@@ -589,13 +598,115 @@ export function nativeTextGraphicsPublication(graphics) {
     return false;
   const handles = graphics.images.handles;
   if (!ordinaryPublicationConsumer(handles, 4)) return false;
-  const vram = handles.records.get(graphics.vramHandle)?.value;
+  const record = handles.records.get(graphics.vramHandle),
+    vram = record?.value;
   return (
+    record?.type === 'bitmap' &&
     ordinaryPublicationConsumer(vram, 2) &&
+    vram.registry === graphics.images &&
+    handles.records.get(vram.dataHandle)?.type === 'bitmap-data' &&
     ordinaryPublicationConsumer(graphics.texturePages, 3) &&
     !vram.canvasDirty &&
-    nativePublicationPixels(Object.getOwnPropertyDescriptor(vram.state, 'rgba')?.value)
+    nativeBitmapStorageOwned(vram) &&
+    nativePublicationPixels(Object.getOwnPropertyDescriptor(nativeBitmapState(vram), 'rgba')?.value)
   );
+}
+
+// Bind an already requested ordinary publication to its owned storage. Later
+// provider changes apply to later operations, never to this retained request.
+export function captureTextPublicationSink(graphics, width, height, offset) {
+  if (!nativeTextGraphicsPublication(graphics) || graphics.images.nativeMemory) return null;
+  const vram = graphics.images.handles.records.get(graphics.vramHandle).value,
+    state = nativeBitmapState(vram),
+    rgba = state.rgba,
+    [x, y] = offset,
+    targetWidth = state.width,
+    targetHeight = state.height;
+  if (
+    !offset.every(Number.isInteger) ||
+    x < 0 ||
+    y < 0 ||
+    targetWidth < Math.max(graphics.world.game.width, x + width) ||
+    targetHeight < Math.max(graphics.world.game.height, y + height) ||
+    rgba.length !== targetWidth * targetHeight * 4
+  )
+    return null;
+  const texture = graphics.texturePages,
+    pages = [],
+    upload = graphics.view.active,
+    dither = Boolean(texture.layout.dither),
+    dirtyFlags = texture.dirtyFlags;
+  if (upload)
+    for (const [index, page] of texture.pages) {
+      const { frame } = page;
+      if (
+        page.x >= x + width ||
+        page.y >= y + height ||
+        page.x + frame.width <= Math.max(0, x) ||
+        page.y + frame.height <= Math.max(0, y)
+      )
+        continue;
+      const surfaceObject = page.surface ? texture.stage.surfaces.get(page.surface) : null;
+      if (
+        ![16, 32].includes(page.bpp) ||
+        nativePixelsWereBorrowed(frame.rgba) ||
+        !nativePublicationPixels(frame.rgba) ||
+        frame.rgba.length !== frame.width * frame.height * 4 ||
+        (page.surface &&
+          (!surfaceObject ||
+            !Object.hasOwn(
+              Object.getOwnPropertyDescriptor(surfaceObject, 'revision') ?? {},
+              'value',
+            )))
+      )
+        return null;
+      pages.push([index, { ...page, frame, surfaceObject }]);
+    }
+  return {
+    current: () =>
+      state.width === targetWidth &&
+      state.height === targetHeight &&
+      Object.getOwnPropertyDescriptor(state, 'rgba')?.value === rgba,
+    publish(frame, revisionSteps) {
+      // Clipping is the same independent-source/destination clipping as blit.
+      const left = Math.max(0, x),
+        top = Math.max(0, y),
+        columns = Math.min(width, targetWidth - left),
+        rows = Math.min(height, targetHeight - top);
+      if (columns > 0 && rows > 0) {
+        for (let row = 0; row < rows; row++)
+          copyBitmapRow(
+            rgba,
+            ((row + top) * targetWidth + left) * 4,
+            frame.rgba,
+            row * width * 4,
+            columns * 4,
+            true,
+          );
+        state.source = null;
+        for (let step = 0; step < revisionSteps; step++) state.revision = (state.revision || 0) + 1;
+        vram.cachedFrame = null;
+        vram.canvas = null;
+      }
+      if (upload) {
+        const input = (vram.cachedFrame ??= {
+          width: targetWidth,
+          height: targetHeight,
+          rgba,
+          revision: state.revision,
+        });
+        uploadTextureFrame(
+          { pages, dirtyFlags },
+          input,
+          [x, y, x + width, y + height],
+          null,
+          revisionSteps,
+          dither,
+          true,
+        );
+      }
+    },
+  };
 }
 
 export class NativeGraphicTask {

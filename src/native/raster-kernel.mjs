@@ -5,6 +5,26 @@ import { blendBitmapPixel } from './image.mjs';
 import { affineBitmap } from './image-affine.mjs';
 
 const littleEndian = new Uint8Array(Uint32Array.of(1).buffer)[0] === 1;
+const typedPixels = Object.getPrototypeOf(Uint8ClampedArray.prototype),
+  pixelSet = typedPixels.set,
+  pixelBuffer = Object.getOwnPropertyDescriptor(typedPixels, 'buffer').get,
+  pixelOffset = Object.getOwnPropertyDescriptor(typedPixels, 'byteOffset').get,
+  OwnedPixels = Uint8ClampedArray;
+
+// A previously owned publication retains its original intrinsic byte sink.
+// Ordinary bitmap providers keep their existing live method calls.
+export function copyBitmapRow(destination, at, input, start, bytes, owned = false) {
+  if (owned)
+    Reflect.apply(pixelSet, destination, [
+      new OwnedPixels(
+        Reflect.apply(pixelBuffer, input, []),
+        Reflect.apply(pixelOffset, input, []) + start,
+        bytes,
+      ),
+      at,
+    ]);
+  else destination.set(input.subarray(start, start + bytes), at);
+}
 
 export function flipBitmapRows(bytes, width, height) {
   const output = new Uint8ClampedArray(bytes.length),

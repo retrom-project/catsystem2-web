@@ -184,14 +184,33 @@ Eligibility is checked before every resource message and output. Losing it first
 settles the last requested output, then runs the new provider. GDI and reentrant
 callbacks retain their original intermediate clear and redraw sequence.
 
+Each deferred request retains the already verified CPU bitmap and page sinks.
+Commit uses their shared synchronous row/page primitives, without calling a
+subsequently replaced output, bitmap or texture provider. The old request first
+completes its pixels, dirty flags and logical versions; the next operation uses
+the new provider. This prevents a provider's synchronous or asynchronous native
+or raw-memory reentry from waiting on its own publication. The completion
+promise exists before commit starts, and external observers still await it.
+Only allocated, bounded, owned storage is eligible; growing or resizing storage
+settles the old footprint through the existing observation barriers.
+
+Public bitmap state, pixel/frame views, canvas contexts and texture-page frames
+settle pending output before lending live storage. A lent state or buffer stays
+ineligible for its remaining lifetime, including reads or writes through aliases
+held across `await`. A new bitmap allocation can regain ownership; restoring a
+method or taking a copy cannot revoke an earlier loan. Internal bitmap row/page
+copies use identity-checked owned access, while bitmap snapshots, clones, crops
+and page snapshots return independent copies. They do not lend the source.
+Page frames passed by the current graphics draw path to the replaceable GPU
+also count as borrowed; no GPU retention or callback purity is assumed.
+
 The pending frame is the owned empty writer allocation, retained when a later
 configuration replaces it. The final publication takes one independent pixel
-snapshot and writes the complete footprint. Existing raw VRAM writes inside the
-footprint are overwritten; writes outside it survive. Public native dispatch,
+snapshot and writes the complete footprint. Previously borrowed raw VRAM keeps
+ordinary publication and its existing write order. Public native dispatch,
 VRAM bitmap reads, graphics reads/writes, stage preparation, screenshot capture,
 restore and close settle the transaction first. An in-flight flush also blocks
-later observers; its internal bitmap access carries only that flush's ephemeral
-token. A failed drive flushes the last requested frame before propagating its
+later observers. A failed drive flushes the last requested frame before propagating its
 error. Checkpoints require settled World/text state and contain no transaction.
 
 Publication versions retain their logical increments even when pixel copies are

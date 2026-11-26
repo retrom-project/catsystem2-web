@@ -1008,6 +1008,8 @@ export class NativeWorld {
     await this.flushConfiguration();
   }
   snapshot(audioTime = this.audio?.context?.currentTime) {
+    if (this.text.publications.size || this.text.flushingPublication)
+      throw new Error('Native world checkpoint requires a settled text publication');
     if (this.running || this.frameSettled)
       throw new Error('Native world checkpoint requires a settled frame');
     if (this.quitRequested || this.disposalRequested) throw new Error('Native world is closing');

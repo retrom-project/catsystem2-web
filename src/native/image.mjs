@@ -8,9 +8,92 @@ import { readNativeResource, nativeCategoryFilename } from './resource-file.mjs'
 import { ImageStore, HG3 } from '../formats/hg3.mjs';
 import { SceneImagePreparation } from './scene-image-preparation.mjs';
 import { parseNativeInteger } from './standard.mjs';
-import { blendPackedRow, packedBitmapWords } from './raster-kernel.mjs';
+import { blendPackedRow, packedBitmapWords, copyBitmapRow } from './raster-kernel.mjs';
 const f = Math.fround;
 const retainedBackings = new WeakMap();
+const ownedBitmaps = new WeakSet(),
+  ownedBitmapStates = new WeakSet(),
+  borrowedBitmapStates = new WeakSet(),
+  borrowedBitmapBuffers = new WeakSet(),
+  ownedBitmapAccess = Symbol();
+const bitmapBuffer = Object.getOwnPropertyDescriptor(
+  Object.getPrototypeOf(Uint8ClampedArray.prototype),
+  'buffer',
+).get;
+const dataViewBuffer = Object.getOwnPropertyDescriptor(DataView.prototype, 'buffer').get;
+function bitmapViewBuffer(view) {
+  try {
+    return Reflect.apply(bitmapBuffer, view, []);
+  } catch (error) {
+    if (!(error instanceof TypeError)) throw error;
+    return Reflect.apply(dataViewBuffer, view, []);
+  }
+}
+function bitmapStorage(bitmap) {
+  return bitmap.dataHandle
+    ? bitmap.registry.handles.get(bitmap.dataHandle, 'bitmap-data')
+    : bitmap._state;
+}
+function markBitmapBorrow(bitmap, view) {
+  const state = bitmapStorage(bitmap);
+  if (state && typeof state === 'object') {
+    borrowedBitmapStates.add(state);
+    view ??= Object.getOwnPropertyDescriptor(state, 'rgba')?.value;
+  }
+  borrowNativePixels(view);
+}
+export function borrowNativePixels(view) {
+  if (ArrayBuffer.isView(view)) borrowedBitmapBuffers.add(bitmapViewBuffer(view));
+}
+export function nativePixelsWereBorrowed(view) {
+  return ArrayBuffer.isView(view) && borrowedBitmapBuffers.has(bitmapViewBuffer(view));
+}
+function settleBitmapObservation(bitmap) {
+  const text = bitmap.registry?.world?.text;
+  if (text?.publications?.size) {
+    const vram = bitmap.registry.handles.records.get(
+      bitmap.registry.world.graphics.vramHandle,
+    )?.value;
+    if (vram?.dataHandle === bitmap.dataHandle) text.settlePublications();
+  }
+}
+// Privileged copy/summary consumers only; never return these records to a provider.
+export function nativeBitmapState(bitmap) {
+  return ownedBitmaps.has(bitmap) &&
+    Object.getPrototypeOf(bitmap) === NativeBitmap.prototype &&
+    !Object.hasOwn(bitmap, 'state') &&
+    Object.getOwnPropertyDescriptor(NativeBitmap.prototype, 'state')?.get === bitmapStateGetter
+    ? bitmapStorage(bitmap)
+    : bitmap.state;
+}
+export function nativeBitmapStorageOwned(bitmap) {
+  if (!ownedBitmaps.has(bitmap) || Object.getPrototypeOf(bitmap) !== NativeBitmap.prototype)
+    return false;
+  const state = nativeBitmapState(bitmap);
+  if (!ownedBitmapStates.has(state) || borrowedBitmapStates.has(state)) return false;
+  const view = Object.getOwnPropertyDescriptor(state, 'rgba')?.value;
+  return ArrayBuffer.isView(view) && !borrowedBitmapBuffers.has(bitmapViewBuffer(view));
+}
+export function nativeBitmapPixels(bitmap, options) {
+  if (
+    ownedBitmaps.has(bitmap) &&
+    Object.getPrototypeOf(bitmap) === NativeBitmap.prototype &&
+    !Object.hasOwn(bitmap, 'pixels') &&
+    Object.getOwnPropertyDescriptor(NativeBitmap.prototype, 'pixels')?.value === bitmapPixelsMethod
+  )
+    return Reflect.apply(bitmapPixelsMethod, bitmap, [{ ...options, [ownedBitmapAccess]: true }]);
+  return options ? bitmap.pixels(options) : bitmap.pixels();
+}
+export function nativeBitmapFrame(bitmap, options) {
+  if (
+    ownedBitmaps.has(bitmap) &&
+    Object.getPrototypeOf(bitmap) === NativeBitmap.prototype &&
+    !Object.hasOwn(bitmap, 'frame') &&
+    Object.getOwnPropertyDescriptor(NativeBitmap.prototype, 'frame')?.value === bitmapFrameMethod
+  )
+    return Reflect.apply(bitmapFrameMethod, bitmap, [{ ...options, [ownedBitmapAccess]: true }]);
+  return options ? bitmap.frame(options) : bitmap.frame();
+}
 const typedArray = Object.getPrototypeOf(Uint8ClampedArray.prototype),
   ordinaryTypedProperties = new Map(
     ['buffer', 'byteOffset', 'length', 'set', 'subarray'].map((key) => [
@@ -70,11 +153,13 @@ const intersect = (a, b) => {
 
 export class NativeBitmap {
   constructor(registry, state, { dataHandle = 0, owner = state?.owner ?? null } = {}) {
+    ownedBitmaps.add(this);
     this.registry = registry;
     this.dataHandle = dataHandle;
     this.owner = owner;
     this._state = state ? structuredClone(state) : null;
     if (this._state) {
+      ownedBitmapStates.add(this._state);
       delete this._state.owner;
       this._state.revision ??= 0;
     }
@@ -84,11 +169,24 @@ export class NativeBitmap {
     this.canvasRevision = -1;
   }
   get state() {
-    return this.dataHandle
-      ? this.registry.handles.get(this.dataHandle, 'bitmap-data')
-      : this._state;
+    settleBitmapObservation(this);
+    const state = bitmapStorage(this);
+    if (ownedBitmaps.has(this)) markBitmapBorrow(this);
+    return state;
   }
   set state(value) {
+    const text = this.registry?.world?.text;
+    if (text?.publications?.size) {
+      const vram = this.registry.handles.records.get(
+        this.registry.world.graphics.vramHandle,
+      )?.value;
+      if (vram?.dataHandle === this.dataHandle) text.settlePublications();
+    }
+    if (value && typeof value === 'object') {
+      borrowedBitmapStates.add(value);
+      const view = Object.getOwnPropertyDescriptor(value, 'rgba')?.value;
+      if (ArrayBuffer.isView(view)) borrowedBitmapBuffers.add(bitmapViewBuffer(view));
+    }
     if (this.dataHandle) {
       this.registry.handles.get(this.dataHandle, 'bitmap-data');
       if (!this.registry.nativeMemory?.replace(this.dataHandle, value))
@@ -96,13 +194,13 @@ export class NativeBitmap {
     } else this._state = value;
   }
   get width() {
-    return this.state.width;
+    return nativeBitmapState(this).width;
   }
   get height() {
-    return this.state.height;
+    return nativeBitmapState(this).height;
   }
   retainedBacking() {
-    const state = this.state,
+    const state = nativeBitmapState(this),
       slot = retainedBackings.get(state),
       backing = slot?.current;
     if (
@@ -113,10 +211,12 @@ export class NativeBitmap {
       Object.getOwnPropertyDescriptor(state, 'rgba')?.get !== slot.read
     )
       return null;
+    if (ownedBitmaps.has(this)) markBitmapBorrow(this);
     return backing;
   }
   publishRetainedBacking(pixels) {
-    const state = this.state,
+    settleBitmapObservation(this);
+    const state = nativeBitmapState(this),
       property = Object.getOwnPropertyDescriptor(state, 'rgba'),
       previous = retainedBackings.get(state),
       backing = { pixels, borrowed: false, publishing: false };
@@ -146,7 +246,7 @@ export class NativeBitmap {
     retainedBackings.set(state, slot);
     return backing;
   }
-  async pixels({ textPublication = null } = {}) {
+  async pixels({ textPublication = null, [ownedBitmapAccess]: owned = false } = {}) {
     const text = this.registry?.world?.text;
     if (
       (text?.publications?.size || text?.flushingPublication) &&
@@ -161,34 +261,42 @@ export class NativeBitmap {
       !this.registry.nativeMemory.isOwned?.(this.dataHandle)
     )
       return this.registry.nativeMemory.pixels(this.dataHandle);
-    if (!this.state.rgba) {
-      const { source, width, height } = this.state;
+    if (!nativeBitmapState(this).rgba) {
+      const { source, width, height } = nativeBitmapState(this);
       if (source) {
         const image = await this.registry.images.load(source.file),
           frame = image.frame(source.id);
         if (!frame) throw new Error(`Native bitmap source ${source.file}:${source.id} disappeared`);
         await image.decode(frame);
-        this.state.rgba = new Uint8ClampedArray(frame.rgba);
-      } else this.state.rgba = new Uint8ClampedArray(width * height * 4);
+        nativeBitmapState(this).rgba = new Uint8ClampedArray(frame.rgba);
+      } else nativeBitmapState(this).rgba = new Uint8ClampedArray(width * height * 4);
     }
-    return this.state.rgba;
+    const result = nativeBitmapState(this).rgba;
+    if (!owned && ownedBitmaps.has(this)) markBitmapBorrow(this, result);
+    return result;
   }
   async hasAlpha() {
-    if (this.state.bpp <= 3) return false;
-    if (!this.state.alphaHint) {
-      const rgba = await this.pixels();
-      this.state.alphaHint = rgba.some((word, index) => index % 4 === 3 && word !== 255) ? 2 : 1;
+    if (nativeBitmapState(this).bpp <= 3) return false;
+    if (!nativeBitmapState(this).alphaHint) {
+      const rgba = await nativeBitmapPixels(this);
+      nativeBitmapState(this).alphaHint = rgba.some(
+        (word, index) => index % 4 === 3 && word !== 255,
+      )
+        ? 2
+        : 1;
       await this.changed();
     }
-    return this.state.alphaHint === 2;
+    return nativeBitmapState(this).alphaHint === 2;
   }
   changed(revisionSteps = 1) {
-    for (let i = 0; i < revisionSteps; i++) this.state.revision = (this.state.revision || 0) + 1;
+    settleBitmapObservation(this);
+    for (let i = 0; i < revisionSteps; i++)
+      nativeBitmapState(this).revision = (nativeBitmapState(this).revision || 0) + 1;
     this.cachedFrame = null;
     this.canvas = null;
     return this.registry?.nativeMemory?.changed(this.dataHandle);
   }
-  async frame({ textPublication = null } = {}) {
+  async frame({ textPublication = null, [ownedBitmapAccess]: owned = false } = {}) {
     const text = this.registry?.world?.text;
     if (
       (text?.publications?.size || text?.flushingPublication) &&
@@ -202,31 +310,38 @@ export class NativeBitmap {
       this.registry.nativeMemory?.refs.data.has(this.dataHandle) &&
       !this.registry.nativeMemory.isOwned?.(this.dataHandle)
     )
-      await (textPublication ? this.pixels({ textPublication }) : this.pixels());
-    if (!this.cachedFrame || this.cachedFrame.revision !== this.state.revision)
+      await (textPublication
+        ? nativeBitmapPixels(this, { textPublication })
+        : nativeBitmapPixels(this));
+    if (!this.cachedFrame || this.cachedFrame.revision !== nativeBitmapState(this).revision)
       this.cachedFrame = {
         width: this.width,
         height: this.height,
-        rgba: await (textPublication ? this.pixels({ textPublication }) : this.pixels()),
-        revision: this.state.revision,
+        rgba: await (textPublication
+          ? nativeBitmapPixels(this, { textPublication })
+          : nativeBitmapPixels(this)),
+        revision: nativeBitmapState(this).revision,
       };
+    if (!owned && ownedBitmaps.has(this)) markBitmapBorrow(this, this.cachedFrame.rgba);
     return this.cachedFrame;
   }
   async context() {
+    settleBitmapObservation(this);
+    if (ownedBitmaps.has(this)) markBitmapBorrow(this);
     if (
       this.dataHandle &&
       this.registry.nativeMemory?.refs.data.has(this.dataHandle) &&
       !this.registry.nativeMemory.isOwned?.(this.dataHandle)
     )
-      await this.pixels();
-    if (!this.canvas || this.canvasRevision !== this.state.revision) {
+      await nativeBitmapPixels(this);
+    if (!this.canvas || this.canvasRevision !== nativeBitmapState(this).revision) {
       this.canvas = new OffscreenCanvas(this.width, this.height);
       const frame = await this.frame();
       if (frame.width && frame.height)
         this.canvas
           .getContext('2d')
           .putImageData(new ImageData(frame.rgba, frame.width, frame.height), 0, 0);
-      this.canvasRevision = this.state.revision;
+      this.canvasRevision = nativeBitmapState(this).revision;
       this.canvasDirty = false;
       const context = this.canvas.getContext('2d');
       for (const name of [
@@ -253,20 +368,26 @@ export class NativeBitmap {
     return this.canvas.getContext('2d');
   }
   commitCanvas() {
-    if (!this.canvas || !this.canvasDirty || this.canvasRevision !== this.state.revision) return;
-    this.state.rgba =
+    settleBitmapObservation(this);
+    if (
+      !this.canvas ||
+      !this.canvasDirty ||
+      this.canvasRevision !== nativeBitmapState(this).revision
+    )
+      return;
+    nativeBitmapState(this).rgba =
       this.width && this.height
         ? this.canvas.getContext('2d').getImageData(0, 0, this.width, this.height).data
         : new Uint8ClampedArray();
-    this.state.source = null;
-    this.state.revision++;
-    this.canvasRevision = this.state.revision;
+    nativeBitmapState(this).source = null;
+    nativeBitmapState(this).revision++;
+    this.canvasRevision = nativeBitmapState(this).revision;
     this.canvasDirty = false;
     this.cachedFrame = null;
   }
   clone() {
     this.commitCanvas();
-    const source = this.state,
+    const source = nativeBitmapState(this),
       state =
         this.width && this.height
           ? {
@@ -293,6 +414,7 @@ export class NativeBitmap {
     return new NativeBitmap(this.registry, state, { owner: this.owner });
   }
   async crop(left, top, width, height) {
+    settleBitmapObservation(this);
     // Copy raw bitmap pixels and reset canvas, anchor and clip
     // metadata. The source clip rectangle does not limit the copy.
     if (left < 0 || top < 0)
@@ -302,7 +424,7 @@ export class NativeBitmap {
     if (width <= 0 || height <= 0) return null;
     size(width, height);
     this.commitCanvas();
-    const input = await this.pixels(),
+    const input = await nativeBitmapPixels(this),
       rgba = new Uint8ClampedArray(width * height * 4);
     for (let y = 0; y < height; y++) {
       const at = ((top + y) * this.width + left) * 4;
@@ -319,7 +441,7 @@ export class NativeBitmap {
         offsetY: 0,
         baseX: 0,
         baseY: 0,
-        bpp: this.state.bpp,
+        bpp: nativeBitmapState(this).bpp,
         clip: [0, 0, width, height],
         attributes: [],
         source: null,
@@ -329,31 +451,33 @@ export class NativeBitmap {
     );
   }
   async fill(x, y, width, height, color) {
+    settleBitmapObservation(this);
     const rect = intersect(
       [x | 0, y | 0, (x + width) | 0, (y + height) | 0],
       [0, 0, this.width, this.height],
     );
     if (rect[0] === rect[2] || rect[1] === rect[3]) return false;
-    const rgba = await this.pixels(),
+    const rgba = await nativeBitmapPixels(this),
       value = [(color >>> 16) & 255, (color >>> 8) & 255, color & 255, color >>> 24];
     for (let row = rect[1]; row < rect[3]; row++)
       for (let column = rect[0]; column < rect[2]; column++)
         rgba.set(value, (row * this.width + column) * 4);
-    this.state.source = null;
+    nativeBitmapState(this).source = null;
     await this.changed();
     return true;
   }
   async tone(red, green, blue) {
-    if (this.state.bpp !== 4 || (red === 100 && green === 100 && blue === 100)) return;
+    settleBitmapObservation(this);
+    if (nativeBitmapState(this).bpp !== 4 || (red === 100 && green === 100 && blue === 100)) return;
     const table = [red, green, blue].map((percent) =>
       Uint8Array.from({ length: 256 }, (_, i) =>
         Math.min(255, Math.floor((Math.imul(i, percent) >>> 0) / 100)),
       ),
     );
-    const rgba = await this.pixels();
+    const rgba = await nativeBitmapPixels(this);
     for (let i = 0; i < rgba.length; i += 4)
       for (let c = 0; c < 3; c++) rgba[i + c] = table[c][rgba[i + c]];
-    this.state.source = null;
+    nativeBitmapState(this).source = null;
     await this.changed();
   }
   async blit(
@@ -374,13 +498,19 @@ export class NativeBitmap {
   ) {
     // Clip source and destination independently, then limit both to
     // the smaller extent. A negative destination does not advance the source.
+    settleBitmapObservation(this);
+    settleBitmapObservation(source);
     const sr = intersect([sx, sy, sx + width, sy + height], [0, 0, source.width, source.height]);
     const dr = intersect([dx, dy, dx + width, dy + height], [0, 0, this.width, this.height]);
     const count = Math.min(sr[2] - sr[0], dr[2] - dr[0]),
       rows = Math.min(sr[3] - sr[1], dr[3] - dr[1]);
     if (!count || !rows) return false;
-    const dest = await (textPublication ? this.pixels({ textPublication }) : this.pixels()),
-      input = await (textPublication ? source.pixels({ textPublication }) : source.pixels());
+    const dest = await (textPublication
+        ? nativeBitmapPixels(this, { textPublication })
+        : nativeBitmapPixels(this)),
+      input = await (textPublication
+        ? nativeBitmapPixels(source, { textPublication })
+        : nativeBitmapPixels(source));
     const data = source === this ? new Uint8ClampedArray(input) : input;
     const bulkCopy =
       copy &&
@@ -392,7 +522,7 @@ export class NativeBitmap {
       const start = (sourceY * source.width + sr[0]) * 4,
         output = ((dr[1] + y) * this.width + dr[0]) * 4;
       if (bulkCopy) {
-        dest.set(data.subarray(start, start + count * 4), output);
+        copyBitmapRow(dest, output, data, start, count * 4);
         continue;
       }
       if (!copy && dr[0] > 0 && dest.subarray(output - 4, output).every((v) => !v))
@@ -430,12 +560,13 @@ export class NativeBitmap {
         dest.set([data[last], data[last + 1], data[last + 2], 0], output + count * 4);
       }
     }
-    this.state.source = null;
+    nativeBitmapState(this).source = null;
     await (textPublication ? this.changed(revisionSteps) : this.changed());
     return true;
   }
   async resize(width, height, { legacyCells = false } = {}) {
-    const old = this.state;
+    settleBitmapObservation(this);
+    const old = nativeBitmapState(this);
     if (
       !legacyCells &&
       old.bpp !== 4 &&
@@ -483,7 +614,7 @@ export class NativeBitmap {
     }
     const pixels = new Uint8ClampedArray(nextWidth * nextHeight * 4);
     if (!empty && !(cells && old.bpp === 2)) {
-      const logical = await this.pixels(),
+      const logical = await nativeBitmapPixels(this),
         physical = new Uint8ClampedArray(logical.length);
       for (let y = 0; y < old.height; y++)
         physical.set(
@@ -521,7 +652,7 @@ export class NativeBitmap {
   }
   snapshot() {
     this.commitCanvas();
-    return structuredClone(this.state);
+    return structuredClone(nativeBitmapState(this));
   }
 }
 
@@ -673,6 +804,9 @@ export function resampleBitmap(
   return output;
 }
 
+const bitmapStateGetter = Object.getOwnPropertyDescriptor(NativeBitmap.prototype, 'state').get,
+  bitmapPixelsMethod = NativeBitmap.prototype.pixels,
+  bitmapFrameMethod = NativeBitmap.prototype.frame;
 export class NativeImages {
   constructor(world) {
     this.world = world;
@@ -697,11 +831,11 @@ export class NativeImages {
         // A bitmap's backing resource precedes its wrapper in handle order.
         // Commit its matching canvas before encoding that one shared resource.
         for (const { type, value } of this.handles.records.values())
-          if (type === 'bitmap' && value.state === state) value.commitCanvas();
+          if (type === 'bitmap' && nativeBitmapState(value) === state) value.commitCanvas();
         const native = this.nativeMemory?.snapshotState(state);
         return (
           native || {
-            ...state,
+            ...structuredClone({ ...state, rgba: null }),
             rgba: state.rgba == null ? state.rgba : encodeSparseBytes(state.rgba),
           }
         );
@@ -711,7 +845,12 @@ export class NativeImages {
         if (state.rgba == null) return state;
         if (state.rgba.length !== state.width * state.height * 4)
           throw new Error('Native bitmap checkpoint pixels do not match its dimensions');
-        return { ...state, rgba: new Uint8ClampedArray(decodeSparseBytes(state.rgba).buffer) };
+        const value = {
+          ...state,
+          rgba: new Uint8ClampedArray(decodeSparseBytes(state.rgba).buffer),
+        };
+        ownedBitmapStates.add(value);
+        return value;
       },
     });
     this.handles.registerType('bitmap', {
@@ -886,6 +1025,13 @@ export class NativeImages {
     return handle;
   }
   async release(handle, options) {
+    const text = this.world.text;
+    if (text?.publications?.size) {
+      const record = this.handles.records.get(handle),
+        vram = this.handles.records.get(this.world.graphics.vramHandle)?.value;
+      if (record?.type === 'bitmap' && vram && record.value.dataHandle === vram.dataHandle)
+        await text.flushPublications();
+    }
     const bitmap = this.handles.release(handle, 'bitmap');
     originalView(this.world, 'forgetImage', handle);
     if (

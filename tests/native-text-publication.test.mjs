@@ -8,6 +8,14 @@ import { nativeTextPublicationWriter } from '../src/native/text.mjs';
 import { NativeScreenCapture } from '../src/native/screen-capture.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { authoredHG3 } from './fixtures/hg3.mjs';
+import {
+  nativeBitmapState,
+  nativeBitmapPixels,
+  nativeBitmapStorageOwned,
+} from '../src/native/image.mjs';
+
+// These probes inspect the kernel's owned record. Public borrowing is exercised
+// explicitly below; probes never reset ownership or pass records to providers.
 
 const profiles = [
   'bokutomo-engine-2.6.1.67',
@@ -90,7 +98,7 @@ for (const loaded of [false, true])
         assert.equal(h.writer.decodedFonts.length, loaded ? 1 : 0);
         if (loaded) h.writer.setCharacterImage(0x8748, h.writer.decodedFonts[0]);
         assert(nativeTextPublicationWriter(h.writer, h.config));
-        const before = h.vram.state.revision,
+        const before = nativeBitmapState(h.vram).revision,
           batch = coalesce ? h.world.text.beginPublication(h.task, h.config) : null,
           replies = [];
         for (const [operation, bytes] of [
@@ -103,14 +111,14 @@ for (const loaded of [false, true])
           replies.push(await h.send(operation, bytes, batch));
         }
         await h.world.text.flushPublications();
-        assert.equal(h.vram.state.revision, before + 4);
+        assert.equal(nativeBitmapState(h.vram).revision, before + 4);
         if (batch) assert.equal(batch.physicalPublications, 1);
         results.push({
           replies,
           task: h.task.snapshot(),
           writer: h.writer.snapshot(),
           pixels: (await h.vram.pixels()).slice(),
-          revision: h.vram.state.revision,
+          revision: nativeBitmapState(h.vram).revision,
           pages: h.world.graphics.texturePages.snapshot(),
         });
         // Actual glyph consumption runs after settlement, including the missing
@@ -159,7 +167,7 @@ test('a dirty FES image font keeps the clear before resource lookup and replacem
       strings = world.text.fes,
       sourceObject = h.instance.byKey.get('uf'),
       vram = world.graphics.images.get(world.graphics.vramHandle),
-      before = vram.state.revision,
+      before = nativeBitmapState(vram).revision,
       read = strings.imageDataFor;
     let reads = 0;
     await strings.command(h.instance, object, 'clear');
@@ -170,7 +178,7 @@ test('a dirty FES image font keeps the clear before resource lookup and replacem
     };
     strings.imageDataFor = function (...args) {
       reads++;
-      assert.equal(vram.state.revision, before + 1);
+      assert.equal(nativeBitmapState(vram).revision, before + 1);
       assert.equal(world.text.publications.size, 0);
       return Reflect.apply(read, this, args);
     };
@@ -185,14 +193,14 @@ test('a dirty FES image font keeps the clear before resource lookup and replacem
 });
 
 test('loaded image-font replacement, nonempty input and capture settle prior empty outputs', async () => {
-  const h = await setup();
-  try {
-    await h.writer.userFont(imageFontBytes);
-    await h.writer.resourceMessage(10, 0x8740, 1);
-    for (const boundary of ['input', 'resource', 'capture', 'unknown-map']) {
+  for (const boundary of ['input', 'resource', 'capture', 'unknown-map']) {
+    const h = await setup();
+    try {
+      await h.writer.userFont(imageFontBytes);
+      await h.writer.resourceMessage(10, 0x8740, 1);
       await h.send(4);
       const batch = h.world.text.beginPublication(h.task, h.config),
-        before = h.vram.state.revision;
+        before = nativeBitmapState(h.vram).revision;
       assert(batch);
       await h.send(4, null, batch);
       if (boundary === 'input') {
@@ -204,7 +212,7 @@ test('loaded image-font replacement, nonempty input and capture settle prior emp
           resourceBytes: imageFontBytes,
           consumeResource() {
             assert(!batch.enabled);
-            assert.equal(h.vram.state.revision, before + 1);
+            assert.equal(nativeBitmapState(h.vram).revision, before + 1);
           },
         });
       } else if (boundary === 'capture') await h.vram.frame();
@@ -216,7 +224,12 @@ test('loaded image-font replacement, nonempty input and capture settle prior emp
       assert(!batch.enabled);
       assert.equal(batch.physicalPublications, 1);
       settled(h);
+    } finally {
+      await h.world.close({ flushFiles: false });
     }
+  }
+  const h = await setup();
+  try {
     let reads = 0;
     const descriptor = Object.getOwnPropertyDescriptor(h.writer, 'fontImages');
     Object.defineProperty(h.writer, 'fontImages', {
@@ -239,7 +252,7 @@ for (const profile of profiles)
     const h = await setup(profile);
     let fresh;
     try {
-      const before = h.vram.state.revision,
+      const before = nativeBitmapState(h.vram).revision,
         batch = h.world.text.beginPublication(h.task, h.config);
       assert(batch);
       const replies = [];
@@ -252,11 +265,14 @@ for (const profile of profiles)
         await batch.before();
         replies.push(await h.send(op, bytes, batch));
       }
-      assert.equal(h.vram.state.revision, before);
+      assert.equal(nativeBitmapState(h.vram).revision, before);
       assert.throws(() => h.world.text.snapshot(), /settled publication/);
+      assert.throws(() => h.world.snapshot(), /settled text publication/);
+      assert.equal(batch.enabled, true);
+      assert.equal(nativeBitmapState(h.vram).revision, before);
       await h.world.text.flushPublications();
       settled(h);
-      assert.equal(h.vram.state.revision, before + 4);
+      assert.equal(nativeBitmapState(h.vram).revision, before + 4);
       assert.equal(batch.physicalPublications, 1);
       assert.deepEqual(replies.slice(0, 3), [replies[0], replies[0], replies[0]]);
       assert.equal(replies[3], 1);
@@ -306,8 +322,8 @@ test('replacement glyph providers flush the current clear before the unknown cal
       assert(!batch.enabled);
       assert(!h.world.text.publications.size);
       assert(
-        h.vram.state.rgba
-          .subarray((5 * h.vram.width + 3) * 4, (5 * h.vram.width + 51) * 4)
+        nativeBitmapState(h.vram)
+          .rgba.subarray((5 * h.vram.width + 3) * 4, (5 * h.vram.width + 51) * 4)
           .every((n) => n === 0),
       );
       return Reflect.apply(original, this, args);
@@ -325,8 +341,12 @@ test('replacement glyph providers flush the current clear before the unknown cal
 });
 
 for (const boundary of [
+  'state',
   'pixels',
   'frame',
+  'page',
+  'bitmap-snapshot',
+  'page-snapshot',
   'alias',
   'ensureVRAM',
   'fill',
@@ -337,13 +357,17 @@ for (const boundary of [
   test(`public ${boundary} observes a settled preceding text clear`, async () => {
     const h = await setup();
     try {
-      const before = h.vram.state.revision,
+      const before = nativeBitmapState(h.vram).revision,
         batch = h.world.text.beginPublication(h.task, h.config);
       assert(batch);
       await h.send(4, null, batch);
-      assert.equal(h.vram.state.revision, before);
+      assert.equal(nativeBitmapState(h.vram).revision, before);
+      if (boundary === 'state') assert.equal(h.vram.state.revision, before + 1);
       if (boundary === 'pixels') await h.vram.pixels();
       if (boundary === 'frame') await h.vram.frame();
+      if (boundary === 'page') h.world.graphics.texturePages.frame(0);
+      if (boundary === 'bitmap-snapshot') assert.equal(h.vram.snapshot().revision, before + 1);
+      if (boundary === 'page-snapshot') h.world.graphics.texturePages.snapshot();
       if (boundary === 'alias') {
         const handle = h.world.graphics.images.alias(h.world.graphics.vramHandle);
         await h.world.graphics.images.get(handle).pixels();
@@ -357,7 +381,7 @@ for (const boundary of [
         h.world.stageRenderer = {
           gpu: { primaryTarget: { width: 1, height: 1 }, pixels: () => new Uint8Array(4) },
           async render() {
-            assert.equal(h.vram.state.revision, before + 1);
+            assert.equal(nativeBitmapState(h.vram).revision, before + 1);
           },
         };
         await new NativeScreenCapture(h.world).screenshot({ id: h.world.main.id });
@@ -373,7 +397,7 @@ for (const boundary of [
         );
         assert.equal(reply.value, 0);
       }
-      assert(h.vram.state.revision >= before + 1);
+      assert(nativeBitmapState(h.vram).revision >= before + 1);
       assert.equal(batch.enabled, false);
       settled(h);
     } finally {
@@ -444,17 +468,17 @@ test('one ordinary FES clear drive publishes once; first and unknown-provider dr
     await b.task.tick();
     const av = candidate.graphics.images.get(candidate.graphics.vramHandle),
       bv = control.graphics.images.get(control.graphics.vramHandle),
-      ar = av.state.revision,
-      br = bv.state.revision;
+      ar = nativeBitmapState(av).revision,
+      br = nativeBitmapState(bv).revision;
     control.text.beginPublication = () => null;
     await a.task.player.notify('CLEAR');
     await a.task.syncObjects();
     await b.task.player.notify('CLEAR');
     await b.task.syncObjects();
-    assert.equal(av.state.revision - ar, 4);
-    assert.equal(bv.state.revision - br, 4);
+    assert.equal(nativeBitmapState(av).revision - ar, 4);
+    assert.equal(nativeBitmapState(bv).revision - br, 4);
     assert.deepEqual(await av.pixels(), await bv.pixels());
-    assert.deepEqual(av.state, bv.state);
+    assert.deepEqual(nativeBitmapState(av), nativeBitmapState(bv));
     assert.deepEqual(
       candidate.graphics.texturePages.snapshot(),
       control.graphics.texturePages.snapshot(),
@@ -503,17 +527,19 @@ test('an in-flight flush serializes later public VRAM reads', async () => {
   }
 });
 
-test('a pending clear reasserts its full footprint while retaining outside raw VRAM writes', async () => {
+test('a previously borrowed raw VRAM view keeps ordinary write and clear order', async () => {
   const h = await setup();
   try {
     const raw = await h.vram.pixels(),
       inside = (5 * h.vram.width + 3) * 4,
       batch = h.world.text.beginPublication(h.task, h.config);
-    assert(batch);
-    await h.send(4, null, batch);
+    assert.equal(batch, null);
+    await h.send(4);
     raw[0] = 173;
     raw[inside] = 211;
-    await h.world.text.flushPublications();
+    assert.equal(raw[0], 173);
+    assert.equal(raw[inside], 211);
+    await h.send(4);
     assert.equal(raw[0], 173);
     assert.equal(raw[inside], 0);
     settled(h);
@@ -537,14 +563,14 @@ test('a failed FES profile edit flushes the last requested clear and propagates 
       strings = h.instance.runtime.strings,
       task = world.graphics.get(object.nativeTaskID),
       vram = world.graphics.images.get(world.graphics.vramHandle),
-      before = vram.state.revision;
+      before = nativeBitmapState(vram).revision;
     await strings.command(h.instance, object, 'clear');
     const layout = strings.layout(object);
     layout.profiles.prof = { index: -1, bytes: Uint8Array.of(65) };
     strings.saveLayout(object, layout);
     object.nativeTextState.dirty = true;
     await assert.rejects(strings.drive(h.instance, object), TypeError);
-    assert.equal(vram.state.revision, before + 3);
+    assert.equal(nativeBitmapState(vram).revision, before + 3);
     assert(task.text.sourceEvents.length === 0);
     assert((await vram.pixels()).every((n) => n === 0));
     settled({ world });
@@ -565,7 +591,11 @@ test('a reentrant GDI glyph callback keeps the original clear before raster outp
     const observe = (name) => {
       observations.push(name);
       assert.equal(batch.enabled, false);
-      assert(h.vram.state.rgba.subarray(offset, offset + 48 * 4).every((n) => n === 0));
+      assert(
+        nativeBitmapState(h.vram)
+          .rgba.subarray(offset, offset + 48 * 4)
+          .every((n) => n === 0),
+      );
     };
     fonts.source = {
       ready() {
@@ -677,26 +707,303 @@ test('a changing footprint or unknown bitmap/texture consumer keeps ordinary pub
   }
 });
 
-test('a failed final publication releases its barrier and propagates the provider error', async () => {
+test('a new failing provider runs only after the older owned request is complete', async () => {
+  const h = await setup();
+  try {
+    const before = nativeBitmapState(h.vram).revision,
+      batch = h.world.text.beginPublication(h.task, h.config);
+    assert(batch);
+    await h.send(4, null, batch);
+    const failure = new Error('new publication provider failed');
+    let calls = 0;
+    h.world.graphics.output = () => {
+      calls++;
+      assert.equal(nativeBitmapState(h.vram).revision, before + 1);
+      throw failure;
+    };
+    await batch.before();
+    assert.equal(calls, 0);
+    assert.equal(nativeBitmapState(h.vram).revision, before + 1);
+    await assert.rejects(h.send(4), (e) => e === failure);
+    assert.equal(calls, 1);
+    settled(h);
+    delete h.world.graphics.output;
+  } finally {
+    await h.world.close({ flushFiles: false });
+  }
+});
+
+for (const afterAwait of [false, true])
+  for (const site of ['output', 'ensureVRAM', 'pixels', 'frame', 'blit', 'changed', 'upload'])
+    test(`replaced ${site} reenters native/raw reads after settling its predecessor: await=${afterAwait}`, async () => {
+      const results = [];
+      for (const transaction of [false, true]) {
+        const h = await setup();
+        try {
+          const batch = transaction ? h.world.text.beginPublication(h.task, h.config) : null;
+          if (transaction) assert(batch);
+          await h.send(4, null, batch);
+          const owner = ['output', 'ensureVRAM'].includes(site)
+              ? h.world.graphics
+              : site === 'upload'
+                ? h.world.graphics.texturePages
+                : h.vram,
+            original = owner[site],
+            seen = [];
+          owner[site] = async function (...args) {
+            if (afterAwait) await Promise.resolve();
+            assert.equal(h.world.text.flushingPublication, null);
+            const reply = await h.world.runtime.native(
+              'main',
+              0,
+              [],
+              { debug: null, pc: 0 },
+              h.world.main,
+            );
+            // Read through the original pixel method if that is the provider replaced
+            // here, so this is real native/VRAM reentry rather than wrapper recursion.
+            const pixels =
+              site === 'pixels' ? await Reflect.apply(original, h.vram, []) : await h.vram.pixels();
+            assert(
+              pixels
+                .subarray((5 * h.vram.width + 3) * 4, (5 * h.vram.width + 51) * 4)
+                .every((n) => n === 0),
+            );
+            seen.push(reply);
+            return Reflect.apply(original, this, args);
+          };
+          if (batch) {
+            await batch.before();
+            assert.equal(seen.length, 0);
+          }
+          await h.send(4);
+          delete owner[site];
+          settled(h);
+          results.push({
+            seen,
+            task: h.task.snapshot(),
+            writer: h.writer.snapshot(),
+            vram: nativeBitmapState(h.vram),
+            pages: h.world.graphics.texturePages.snapshot(),
+          });
+        } finally {
+          await h.world.close({ flushFiles: false });
+        }
+      }
+      assert.deepEqual(results[1], results[0]);
+    });
+
+test('a captured pixel failure releases the completion barrier without pretending to publish', async () => {
+  const h = await setup();
+  try {
+    const before = nativeBitmapState(h.vram).revision,
+      batch = h.world.text.beginPublication(h.task, h.config);
+    assert(batch);
+    await h.send(4, null, batch);
+    const pixels = batch.pending.frame.rgba;
+    structuredClone(pixels.buffer, { transfer: [pixels.buffer] });
+    await assert.rejects(h.world.text.flushPublications(), TypeError);
+    assert.equal(batch.physicalPublications, 0);
+    assert.equal(nativeBitmapState(h.vram).revision, before);
+    settled(h);
+  } finally {
+    await h.world.close({ flushFiles: false });
+  }
+});
+
+for (const mutation of ['resize', 'grow-vram'])
+  test(`owned storage ${mutation} settles the old footprint before replacement`, async () => {
+    const results = [];
+    for (const transaction of [false, true]) {
+      const h = await setup();
+      try {
+        const originalPixels = await nativeBitmapPixels(h.vram),
+          batch = transaction ? h.world.text.beginPublication(h.task, h.config) : null;
+        if (transaction) assert(batch);
+        await h.send(4, null, batch);
+        if (mutation === 'resize') await h.vram.resize(160, 96);
+        else await h.world.graphics.ensureVRAM(256, 256);
+        const target = h.world.graphics.images.get(h.world.graphics.vramHandle);
+        settled(h);
+        results.push({
+          oldBytes: originalPixels.slice(),
+          state: structuredClone(target.state),
+          pages: h.world.graphics.texturePages.snapshot(),
+        });
+      } finally {
+        await h.world.close({ flushFiles: false });
+      }
+    }
+    assert.deepEqual(results[1], results[0]);
+  });
+
+test('a page storage failure keeps the same partial CPU write and propagates its error', async () => {
+  const results = [];
+  for (const transaction of [false, true]) {
+    const h = await setup();
+    try {
+      const batch = transaction ? h.world.text.beginPublication(h.task, h.config) : null;
+      if (transaction) {
+        assert(batch);
+        await h.send(4, null, batch);
+      }
+      const page = [...h.world.graphics.texturePages.pages.values()].find(
+        (p) => p.x < 51 && p.y < 29 && p.x + p.frame.width > 3 && p.y + p.frame.height > 5,
+      );
+      structuredClone(page.frame.rgba.buffer, { transfer: [page.frame.rgba.buffer] });
+      await assert.rejects(transaction ? h.world.text.flushPublications() : h.send(4), TypeError);
+      settled(h);
+      if (batch) assert.equal(batch.physicalPublications, 0);
+      results.push({
+        revision: nativeBitmapState(h.vram).revision,
+        pixels: (await h.vram.pixels()).slice(),
+        dirty: h.world.graphics.texturePages.dirtyFlags.slice(),
+      });
+    } finally {
+      await h.world.close({ flushFiles: false });
+    }
+  }
+  assert.deepEqual(results[1], results[0]);
+});
+
+for (const mutation of ['state', 'release-alias', 'clear-pages', 'release-pages'])
+  test(`owned storage ${mutation} commits the older clear before the mutation`, async () => {
+    const results = [];
+    for (const transaction of [false, true]) {
+      const h = await setup();
+      try {
+        const pixels = await nativeBitmapPixels(h.vram),
+          alias = h.world.graphics.images.alias(h.world.graphics.vramHandle),
+          batch = transaction ? h.world.text.beginPublication(h.task, h.config) : null;
+        if (transaction) assert(batch);
+        await h.send(4, null, batch);
+        if (mutation === 'state')
+          h.vram.state = { ...h.vram.state, rgba: new Uint8ClampedArray(pixels.length).fill(37) };
+        if (mutation === 'release-alias') await h.world.graphics.images.release(alias);
+        if (mutation === 'clear-pages') h.world.graphics.texturePages.clear(0, 0, 64, 64);
+        if (mutation === 'release-pages')
+          h.world.graphics.texturePages.releaseRectangle(0, 0, 64, 64);
+        settled(h);
+        if (batch) assert.equal(batch.physicalPublications, 1);
+        results.push({
+          original: pixels.slice(),
+          current: structuredClone(nativeBitmapState(h.vram)),
+          pages: h.world.graphics.texturePages.snapshot(),
+        });
+        if (mutation !== 'release-alias') await h.world.graphics.images.release(alias);
+      } finally {
+        await h.world.close({ flushFiles: false });
+      }
+    }
+    assert.deepEqual(results[1], results[0]);
+  });
+
+test('retained pixel copying never calls later typed-array species providers', async () => {
   const h = await setup();
   try {
     const batch = h.world.text.beginPublication(h.task, h.config);
     assert(batch);
     await h.send(4, null, batch);
-    const failure = new Error('publication provider failed');
-    h.world.graphics.output = () => {
-      throw failure;
-    };
-    await assert.rejects(batch.before(), (error) => error === failure);
-    assert.equal(batch.enabled, false);
+    let calls = 0;
+    Object.defineProperty(batch.pending.frame.rgba, 'constructor', {
+      configurable: true,
+      get() {
+        calls++;
+        throw Error('late species provider');
+      },
+    });
+    await h.world.text.flushPublications();
+    assert.equal(calls, 0);
+    assert.equal(batch.physicalPublications, 1);
     settled(h);
-    delete h.world.graphics.output;
-    await h.send(4);
-    assert(
-      h.vram.state.rgba
-        .subarray((5 * h.vram.width + 3) * 4, (5 * h.vram.width + 51) * 4)
-        .every((n) => n === 0),
-    );
+    delete batch.pending.frame.rgba.constructor;
+  } finally {
+    await h.world.close({ flushFiles: false });
+  }
+});
+
+for (const held of ['state', 'pixels', 'frame', 'alias', 'page'])
+  test(`a preexisting public ${held} alias keeps ordinary publication across await`, async () => {
+    const results = [];
+    for (const attemptTransaction of [false, true]) {
+      const h = await setup();
+      let alias;
+      try {
+        if (held === 'alias') alias = h.world.graphics.images.alias(h.world.graphics.vramHandle);
+        const owner = alias ? h.world.graphics.images.get(alias) : h.vram,
+          reference =
+            held === 'state' || held === 'alias'
+              ? owner.state
+              : held === 'pixels'
+                ? await owner.pixels()
+                : held === 'frame'
+                  ? await owner.frame()
+                  : h.world.graphics.texturePages.frame(0),
+          pixels = reference.rgba ?? reference,
+          before = reference.revision;
+        if (held !== 'page') assert.equal(nativeBitmapStorageOwned(h.vram), false);
+        const batch = attemptTransaction ? h.world.text.beginPublication(h.task, h.config) : null;
+        assert.equal(batch, null);
+        await h.send(4, null, batch);
+        await Promise.resolve();
+        if (before !== undefined)
+          assert.equal(reference.revision, before + Number(held !== 'frame'));
+        pixels[0] = 173;
+        if (held === 'state' || held === 'alias') {
+          reference.revision += 3;
+          owner.state = { ...reference, rgba: new Uint8ClampedArray(pixels).fill(37) };
+        }
+        await h.send(4);
+        // A later operation does not revoke a view already returned to a caller.
+        assert.equal(h.world.text.beginPublication(h.task, h.config), null);
+        results.push({
+          heldRevision: reference.revision,
+          heldPixels: pixels.slice(),
+          current: structuredClone(nativeBitmapState(h.vram)),
+          pages: h.world.graphics.texturePages.snapshot(),
+        });
+        settled(h);
+      } finally {
+        if (alias) await h.world.graphics.images.release(alias);
+        await h.world.close({ flushFiles: false });
+      }
+    }
+    assert.deepEqual(results[1], results[0]);
+  });
+
+test('independent copies preserve eligibility, while public borrowing lasts until new storage', async () => {
+  const h = await setup();
+  try {
+    const copy = h.vram.snapshot(),
+      clone = h.vram.clone(),
+      crop = await h.vram.crop(0, 0, 8, 8),
+      pages = h.world.graphics.texturePages.snapshot(),
+      checkpoint = h.world.snapshot();
+    const savedData = checkpoint.runtime.handles.records.find(([id]) => id === h.vram.dataHandle)[1]
+      .value;
+    savedData.clip[0] = 77;
+    assert.notEqual(nativeBitmapState(h.vram).clip[0], 77);
+    copy.rgba.fill(99);
+    (await clone.pixels()).fill(98);
+    (await crop.pixels()).fill(97);
+    pages.pages[0][1].frame.revision += 3;
+    assert(nativeBitmapStorageOwned(h.vram));
+    let batch = h.world.text.beginPublication(h.task, h.config);
+    assert(batch);
+    await h.send(4, null, batch);
+    await h.world.text.flushPublications();
+    const held = h.vram.state;
+    assert.equal(h.world.text.beginPublication(h.task, h.config), null);
+    await h.world.graphics.ensureVRAM(256, 256);
+    const next = h.world.graphics.images.get(h.world.graphics.vramHandle);
+    assert.notEqual(nativeBitmapState(next), held);
+    assert.notEqual(nativeBitmapState(next).rgba.buffer, held.rgba.buffer);
+    assert(nativeBitmapStorageOwned(next));
+    batch = h.world.text.beginPublication(h.task, h.config);
+    assert(batch);
+    await h.send(4, null, batch);
+    await h.world.text.flushPublications();
+    settled(h);
   } finally {
     await h.world.close({ flushFiles: false });
   }

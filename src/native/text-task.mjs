@@ -3,7 +3,11 @@
 // Recovered native resource ranges are selected per ABI. Other resource
 // producers use the World's canonical message numbers.
 import { nativeABI } from './abi/index.mjs';
-import { NativeGraphicTask, nativeTextGraphicsPublication } from './graphics.mjs';
+import {
+  NativeGraphicTask,
+  nativeTextGraphicsPublication,
+  captureTextPublicationSink,
+} from './graphics.mjs';
 import { NativeBitmap } from './image.mjs';
 import { NativeTextRuntime, NativeTextWriter, nativeTextPublicationWriter } from './text.mjs';
 import { nvTextConfig, textConfig, unpackTextConfiguration } from './text-config.mjs';
@@ -15,6 +19,11 @@ import { nativeDataMapped } from './data-text.mjs';
 import { installNativeLegacyText } from './text-legacy.mjs';
 import { installNativeDisplayLogs } from './text-log.mjs';
 const copyTextFrame = NativeTextWriter.prototype.frame;
+const publicationSinks = new WeakMap(),
+  publicationPixels = Object.getPrototypeOf(Uint8ClampedArray.prototype),
+  publicationLength = Object.getOwnPropertyDescriptor(publicationPixels, 'length').get,
+  publicationSet = publicationPixels.set,
+  OwnedPublicationPixels = Uint8ClampedArray;
 
 export class NativeTextService {
   constructor(world, { glyphs = new CanvasTextGlyphs() } = {}) {
@@ -24,6 +33,9 @@ export class NativeTextService {
     this.log = null;
     this.publications = new Map();
     this.flushingPublication = null;
+    Object.defineProperty(this, 'settlePublications', {
+      value: () => this.#settlePublications(),
+    });
   }
   async runtime() {
     await (this.ready ??= this.core.ready());
@@ -47,6 +59,7 @@ export class NativeTextService {
       width = dimensions.getInt32(4, true),
       height = dimensions.getInt32(8, true);
     if (width <= 0 || height <= 0 || !output) return null;
+    offset = [offset[0], offset[1]];
     const writer = this.core.writers.get(task.text.writer),
       batch = {
         task,
@@ -55,6 +68,7 @@ export class NativeTextService {
         enabled: true,
         physicalPublications: 0,
         eligible: (nextConfig = config) =>
+          !this.world.transitionalExe &&
           ordinaryTextTask(task) &&
           this.core.writers.get(task.text.writer) === writer &&
           task.text.output === output &&
@@ -70,6 +84,9 @@ export class NativeTextService {
         },
       };
     if (!batch.eligible()) return null;
+    const sink = captureTextPublicationSink(this.world.graphics, width, height, offset);
+    if (!sink) return null;
+    publicationSinks.set(batch, sink);
     this.publications.set(task, batch);
     this.world.runtime.textPublicationBarrier = () => this.flushPublications();
     return batch;
@@ -77,32 +94,47 @@ export class NativeTextService {
   flushPublications() {
     if (this.flushingPublication) return this.flushingPublication;
     if (!this.publications.size) return null;
-    const batches = [...this.publications.values()];
-    this.publications.clear();
-    for (const batch of batches) batch.enabled = false;
-    this.flushingPublication = (async () => {
-      for (const batch of batches) {
-        const { task, pending } = batch;
-        if (pending) {
-          this.flushingToken = batch;
-          const frame = { ...pending.frame, rgba: pending.frame.rgba.slice() };
-          await Reflect.apply(publishTextFrame, task, [
-            frame,
-            true,
-            null,
-            pending.offset,
-            batch,
-            pending.count,
-          ]);
-          batch.physicalPublications++;
-        }
-      }
-    })().finally(() => {
+    let resolve, reject;
+    const completion = new Promise((yes, no) => {
+      resolve = yes;
+      reject = no;
+    });
+    this.flushingPublication = completion.finally(() => {
       this.flushingToken = null;
       this.flushingPublication = null;
       this.world.runtime.textPublicationBarrier = null;
     });
+    try {
+      this.#settlePublications();
+      resolve();
+    } catch (error) {
+      reject(error);
+    }
     return this.flushingPublication;
+  }
+  // Synchronous owned data commit also fences synchronous storage mutators.
+  // No external provider or user callback runs inside this operation.
+  #settlePublications() {
+    const batches = [...this.publications.values()];
+    this.publications.clear();
+    for (const batch of batches) batch.enabled = false;
+    try {
+      for (const batch of batches) {
+        const { pending } = batch;
+        if (!pending) continue;
+        const sink = publicationSinks.get(batch);
+        if (!sink.current()) throw new Error('Owned text publication storage was replaced');
+        const pixels = new OwnedPublicationPixels(
+          Reflect.apply(publicationLength, pending.frame.rgba, []),
+        );
+        Reflect.apply(publicationSet, pixels, [pending.frame.rgba]);
+        sink.publish({ ...pending.frame, rgba: pixels }, pending.count);
+        batch.physicalPublications++;
+      }
+    } finally {
+      for (const batch of batches) publicationSinks.delete(batch);
+      if (!this.flushingPublication) this.world.runtime.textPublicationBarrier = null;
+    }
   }
   async restore(state) {
     if (this.publications.size || this.flushingPublication) await this.flushPublications();
@@ -202,7 +234,11 @@ export class NativeTextTask {
     if (batch) {
       if (!region && batch.eligible() && writer.parser.source.length === 0) {
         batch.pending = {
-          frame: writer.pixels,
+          frame: {
+            width: writer.pixels.width,
+            height: writer.pixels.height,
+            rgba: writer.pixels.rgba,
+          },
           offset: this.text.vram.slice(),
           count: (batch.pending?.count ?? 0) + 1,
         };
@@ -764,7 +800,6 @@ const taskPublicationMethods = [NativeTextTask, NativeTextService].map((type) =>
     ([key, d]) => key !== 'constructor' && typeof d.value === 'function',
   ),
 ]);
-const publishTextFrame = NativeTextTask.prototype.publishFrame;
 function ordinaryTextTask(task) {
   return [task, task.service].every((value, index) => {
     const [prototype, methods] = taskPublicationMethods[index];

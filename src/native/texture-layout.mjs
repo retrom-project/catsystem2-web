@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MPL-2.0
 // Texture page layout and retained pixel storage.
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
+import { copyBitmapRow } from './raster-kernel.mjs';
+import { nativeBitmapFrame, borrowNativePixels } from './image.mjs';
 // The shared virtual D3D9 platform exposes this guard band for its captured limit.
 export function virtualD3DGuardBand(maximum) {
   return [-maximum, -maximum, maximum, maximum];
@@ -92,27 +94,35 @@ export function textureDitherThreshold(x, y) {
 export class NativeTexturePages {
   #pageIdentities = new WeakMap();
 
-  constructor(layout, { release = () => {}, stage = null, trackDirty = false } = {}) {
+  constructor(
+    layout,
+    { release = () => {}, stage = null, trackDirty = false, beforeMutation = null } = {},
+  ) {
     this.layout = structuredClone(layout);
     this.releaseFrame = release;
     this.stage = stage;
+    this.beforeMutation = beforeMutation;
     this.pages = new Map();
     this.allocateMissing();
     // The flag table covers the entire grid and starts clean after allocation.
     this.dirtyFlags = trackDirty ? new Uint32Array(layout.grid[0] * layout.grid[1]) : null;
   }
   isDirty(index) {
+    this.beforeMutation?.();
     return Boolean(
       this.dirtyFlags && index >= 0 && index < this.dirtyFlags.length && this.dirtyFlags[index],
     );
   }
   hasDirtyPages() {
+    this.beforeMutation?.();
     return this.dirtyFlags?.some((flag) => flag !== 0) ?? false;
   }
   clearDirty() {
+    this.beforeMutation?.();
     this.dirtyFlags?.fill(0);
   }
   allocateMissing(texture = this.layout) {
+    this.beforeMutation?.();
     const layout = this.layout;
     layout.areas = texture.areas.map((row) => Uint32Array.from(row));
     layout.bppY = Uint32Array.from(texture.bppY);
@@ -157,6 +167,7 @@ export class NativeTexturePages {
       }
   }
   releaseRectangle(x, y, width, height) {
+    this.beforeMutation?.();
     const right = (x + width) | 0,
       bottom = (y + height) | 0;
     if (x >= right || y >= bottom) return;
@@ -210,10 +221,13 @@ export class NativeTexturePages {
     retained = null,
     { textPublication = null, revisionSteps = 1 } = {},
   ) {
+    this.beforeMutation?.();
     const dither = Boolean(this.layout.dither);
-    const input = await (textPublication ? bitmap.frame({ textPublication }) : bitmap.frame()),
+    const input = await nativeBitmapFrame(
+        bitmap,
+        textPublication ? { textPublication } : undefined,
+      ),
       region = rectangle ?? [0, 0, input.width, input.height],
-      [sx, sy, right, bottom] = region,
       previous = retained?.previous,
       current = retained && this.#capturePublication(retained.footprint, input),
       ownsFootprint =
@@ -226,42 +240,18 @@ export class NativeTexturePages {
         }),
       full = current && region.every((value, i) => value === current.rectangle[i]),
       changed = ownsFootprint && full && retained.changed;
-    for (const [index, page] of this.pages) {
-      const { frame } = page,
-        fullLeft = Math.max(0, sx, page.x),
-        fullTop = Math.max(0, sy, page.y),
-        fullRight = Math.min(input.width, right, page.x + frame.width),
-        fullBottom = Math.min(input.height, bottom, page.y + frame.height);
-      if (fullLeft >= fullRight || fullTop >= fullBottom) continue;
-      // The original force call marks the full texture footprint dirty even
-      // when the existing page bytes need no further write.
-      if (this.dirtyFlags) this.dirtyFlags[index] = 1;
-      const left = changed ? Math.max(fullLeft, changed[0]) : fullLeft,
-        top = changed ? Math.max(fullTop, changed[1]) : fullTop,
-        endX = changed ? Math.min(fullRight, changed[2]) : fullRight,
-        endY = changed ? Math.min(fullBottom, changed[3]) : fullBottom;
-      if (left >= endX || top >= endY) continue;
-      for (let y = top; y < endY; y++) {
-        const row = input.rgba.subarray((y * input.width + left) * 4, (y * input.width + endX) * 4),
-          at = ((y - page.y) * frame.width + left - page.x) * 4;
-        if (page.bpp === 32) frame.rgba.set(row, at);
-        else if (page.bpp === 16)
-          for (let i = 0; i < row.length; i++) {
-            const x = i >>> 2,
-              phaseY = y - top,
-              threshold = textureDitherThreshold(x, phaseY),
-              value = row[i],
-              increment = dither && i % 4 !== 3 && (value & 15) >= threshold;
-            frame.rgba[at + i] = Math.min(15, (value >>> 4) + Number(increment)) * 17;
-          }
-        else throw new Error(`Unsupported native texture depth ${page.bpp}`);
-      }
-      for (let step = 0; step < revisionSteps; step++) frame.revision++;
-      if (page.surface) this.stage.surfaces.get(page.surface).revision = frame.revision;
-    }
+    uploadTextureFrame(
+      { pages: this.pages, dirtyFlags: this.dirtyFlags, stage: this.stage },
+      input,
+      region,
+      changed,
+      revisionSteps,
+      dither,
+    );
     if (full || ownsFootprint) return this.#capturePublication(current.rectangle, input);
   }
   clear(x, y, width, height) {
+    this.beforeMutation?.();
     const right = (x + width) | 0,
       bottom = (y + height) | 0;
     if (x >= right || y >= bottom) return;
@@ -284,6 +274,7 @@ export class NativeTexturePages {
     }
   }
   close() {
+    this.beforeMutation?.();
     for (const page of this.pages.values()) {
       this.releaseFrame(page.frame);
       if (page.surface) this.stage.releaseSurface(page.surface);
@@ -291,9 +282,13 @@ export class NativeTexturePages {
     this.pages.clear();
   }
   frame(index) {
-    return this.pages.get(index >>> 0)?.frame ?? NULL_NATIVE_TEXTURE;
+    this.beforeMutation?.();
+    const frame = this.pages.get(index >>> 0)?.frame ?? NULL_NATIVE_TEXTURE;
+    borrowNativePixels(frame.rgba);
+    return frame;
   }
   snapshot() {
+    this.beforeMutation?.();
     return structuredClone({
       layout: this.layout,
       dirtyFlags: this.dirtyFlags,
@@ -304,6 +299,7 @@ export class NativeTexturePages {
     });
   }
   restore(state) {
+    this.beforeMutation?.();
     const flags = state.dirtyFlags,
       count = state.layout.grid[0] * state.layout.grid[1];
     if (
@@ -348,5 +344,56 @@ export class NativeTexturePages {
         page.frame.rgba = new Uint8ClampedArray(this.stage.surfaces.get(page.surface).bytes.buffer);
       } else page.frame.rgba = new Uint8ClampedArray(bytes.buffer);
     }
+  }
+}
+
+// Shared synchronous page write; owned sinks contain only captured data records.
+export function uploadTextureFrame(
+  { pages, dirtyFlags, stage },
+  input,
+  region,
+  changed,
+  revisionSteps,
+  dither,
+  owned = false,
+) {
+  const [sx, sy, right, bottom] = region;
+  for (const [index, page] of pages) {
+    const { frame } = page,
+      fullLeft = Math.max(0, sx, page.x),
+      fullTop = Math.max(0, sy, page.y),
+      fullRight = Math.min(input.width, right, page.x + frame.width),
+      fullBottom = Math.min(input.height, bottom, page.y + frame.height);
+    if (fullLeft >= fullRight || fullTop >= fullBottom) continue;
+    // The original force call marks the full texture footprint dirty even
+    // when the existing page bytes need no further write.
+    if (dirtyFlags) dirtyFlags[index] = 1;
+    const left = changed ? Math.max(fullLeft, changed[0]) : fullLeft,
+      top = changed ? Math.max(fullTop, changed[1]) : fullTop,
+      endX = changed ? Math.min(fullRight, changed[2]) : fullRight,
+      endY = changed ? Math.min(fullBottom, changed[3]) : fullBottom;
+    if (left >= endX || top >= endY) continue;
+    for (let y = top; y < endY; y++) {
+      const start = (y * input.width + left) * 4,
+        bytes = (endX - left) * 4,
+        row = owned ? null : input.rgba.subarray(start, start + bytes),
+        at = ((y - page.y) * frame.width + left - page.x) * 4;
+      if (page.bpp === 32) {
+        if (owned) copyBitmapRow(frame.rgba, at, input.rgba, start, bytes, true);
+        else frame.rgba.set(row, at);
+      } else if (page.bpp === 16)
+        for (let i = 0; i < (owned ? bytes : row.length); i++) {
+          const x = i >>> 2,
+            phaseY = y - top,
+            threshold = textureDitherThreshold(x, phaseY),
+            value = owned ? input.rgba[start + i] : row[i],
+            increment = dither && i % 4 !== 3 && (value & 15) >= threshold;
+          frame.rgba[at + i] = Math.min(15, (value >>> 4) + Number(increment)) * 17;
+        }
+      else throw new Error(`Unsupported native texture depth ${page.bpp}`);
+    }
+    for (let step = 0; step < revisionSteps; step++) frame.revision++;
+    if (page.surface)
+      (owned ? page.surfaceObject : stage.surfaces.get(page.surface)).revision = frame.revision;
   }
 }
