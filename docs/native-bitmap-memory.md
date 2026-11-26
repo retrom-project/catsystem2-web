@@ -48,6 +48,21 @@ word retain their original values; they are not replaced by decoded pixel depth.
 Normal HG2/HG3 KCS tests compare all output and surrounding seeded words, then
 restore and release the still-live encoded descriptor in an independent World.
 
+SDK23 `430` checks readable ANM presence, first directly and then through the
+constructor-loaded `anmtable.csv` mapping. Stored table keys preserve case and
+the first duplicate value; lookup normalizes the caller's basename. It returns a
+boolean without executing the ANM program. `460` loads frame zero of an HG2/HG3
+file or composes named selector layers. Ordinary RGB24 remains three bytes per
+pixel when no selector is present; selector output uses RGBA and preserves the
+old clipped scalar pixel rules, including untouched transparent RGB outside
+each layer. Alternate selector blend types remain protected.
+
+The `460` result has explicit bitmap ownership and does not join the Script
+automatic list. Its KCS tests compare original pixels, geometry and reference
+lifetime, then retain the result across independent cold restore and Script
+reload before explicit release. These caller-specific pixel rules leave global
+HG3 frame selection and other SDK profiles unchanged.
+
 SDK23 image-owner `716/721/722/725/729/734` operate on the existing typed
 image owner. The original file-server, Settings, software kcView, Top and Script
 constructors establish the loaded layer vector and its separate Script cleanup

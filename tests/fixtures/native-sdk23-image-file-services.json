@@ -1,0 +1,357 @@
+{
+  "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "originalReceiptSha256": "f9f1f1236c10a32e3515ea5b27186b166e56c0f9a428ea900fea51b7c9d04287",
+  "files": {
+    "x_1.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAAHAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEUAAAAAAAAAAgAAABgAAAAVAAAAFQAAAA0AAAB4nGOzt9fS0tIXFRUSBYEkexAAACIIA3R4nGPkYGCukfxwmiGe5wMrABSTA70=",
+    "x_02.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAMAAAAgAAAAAQAAAAEAAAAJAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAwAAABYAAAAQAAAAFQAAAA0AAAB4nLttLyoqKvofRIieE31oDwAn2ATaeJxj5GBgrjE8MJ2hnukPIwATQQOP",
+    "x_003.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAEAAAAYAAAA/////wIAAAAGAAAACQAAAAAAAAABAAAAAgAAAGltZzAwMDAAAAAAAEAAAAAAAAAAAQAAABQAAAAMAAAAFAAAAAwAAAB4nHv3/399aGhsaOjb//8BNIAICHicY+RoYNzP9kfqQ/YBfQAYtQSw",
+    "single.hg3": "SEctMwwAAAAAAwAAlQAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAAHAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEUAAAAAAAAAAgAAABgAAAAVAAAAFQAAAA0AAAB4nGOzt9fS0tIXFRUSBYEkexAAACIIA3R4nGPkYGCukfxwmiGe5wMrABSTA72TAAAAAAAAAHN0ZGluZm8AOAAAACgAAAACAAAAAwAAACAAAAABAAAAAQAAAAkAAAAIAAAAAAAAAAIAAAABAAAAaW1nMDAwMAAAAAAAQwAAAAAAAAADAAAAFgAAABAAAAAVAAAADQAAAHicu20vKioq+h9EiJ4TfWgPACfYBNp4nGPkYGCuMTwwnaGe6Q8jABNBA48AAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAAAQAAABgAAAD/////AgAAAAYAAAAJAAAAAAAAAAEAAAACAAAAaW1nMDAwMAAAAAAAQAAAAAAAAAABAAAAFAAAAAwAAAAUAAAADAAAAHice/f/f31oaGxo6Nv//wE0gAgIeJxj5Ghg3M/2R+pD9gF9ABi1BLA=",
+    "rgb.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAEAAAAYAAAA/////wIAAAAGAAAACQAAAAAAAAABAAAAAgAAAGltZzAwMDAAAAAAAEAAAAAAAAAAAQAAABQAAAAMAAAAFAAAAAwAAAB4nHv3/399aGhsaOjb//8BNIAICHicY+RoYNzP9kfqQ/YBfQAYtQSw",
+    "abc_1.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAAHAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEUAAAAAAAAAAgAAABgAAAAVAAAAFQAAAA0AAAB4nGOzt9fS0tIXFRUSBYEkexAAACIIA3R4nGPkYGCukfxwmiGe5wMrABSTA70=",
+    "abc_02.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAMAAAAgAAAAAQAAAAEAAAAJAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAwAAABYAAAAQAAAAFQAAAA0AAAB4nLttLyoqKvofRIieE31oDwAn2ATaeJxj5GBgrjE8MJ2hnukPIwATQQOP",
+    "扡c_1.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAAHAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEUAAAAAAAAAAgAAABgAAAAVAAAAFQAAAA0AAAB4nGOzt9fS0tIXFRUSBYEkexAAACIIA3R4nGPkYGCukfxwmiGe5wMrABSTA70=",
+    "扡c_02.hg3": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAMAAAAgAAAAAQAAAAEAAAAJAAAACAAAAAAAAAACAAAAAQAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAwAAABYAAAAQAAAAFQAAAA0AAAB4nLttLyoqKvofRIieE31oDwAn2ATaeJxj5GBgrjE8MJ2hnukPIwATQQOP",
+    "anmtable.csv": "c291cmNlCWZhbGxiYWNrDQpzb3VyY2UJbWlzc2luZw0KVVBQRVIJZmFsbGJhY2sNCg==",
+    "probe.hg2": "SEctMgwAAAAlAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAdAAAAIAAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAQAAAAAAAAACAAAA/////3icO/b///9VUPA+NDQUxp4UGhr66P///wBvyxXCeJxj5GBg+9DEuEfgAD/jHwYAGjsEGw==",
+    "direct.anm": "QU5NAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "fallback.anm": "QU5NAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+  },
+  "rows": [
+    {
+      "id": 430,
+      "name": "direct.hg3",
+      "string": {
+        "address": 512,
+        "text": "direct.hg3"
+      },
+      "control": 1,
+      "result": 1,
+      "bitmap": null,
+      "scriptBitmapCount": 0
+    },
+    {
+      "id": 430,
+      "name": "DIR/SOURCE.HG3",
+      "string": {
+        "address": 640,
+        "text": "DIR/SOURCE.HG3"
+      },
+      "control": 1,
+      "result": 1,
+      "bitmap": null,
+      "scriptBitmapCount": 0
+    },
+    {
+      "id": 430,
+      "name": "single.hg3",
+      "string": {
+        "address": 768,
+        "text": "single.hg3"
+      },
+      "control": 1,
+      "result": 0,
+      "bitmap": null,
+      "scriptBitmapCount": 0
+    },
+    {
+      "id": 430,
+      "name": "upper.hg3",
+      "string": {
+        "address": 896,
+        "text": "upper.hg3"
+      },
+      "control": 1,
+      "result": 0,
+      "bitmap": null,
+      "scriptBitmapCount": 0
+    },
+    {
+      "id": 460,
+      "name": "probe.hg2",
+      "string": {
+        "address": 1024,
+        "text": "probe.hg2"
+      },
+      "control": 1,
+      "result": null,
+      "bitmap": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "EzhdgqfM8RY7YIWqz/QZPmOIrdL3HEFmi7DV+h9EaY6z2P0iR2yRttsAJUpvlLne",
+        "metadata": {
+          "canvasWidth": 4,
+          "canvasHeight": 3,
+          "offsetX": 0,
+          "offsetY": 0,
+          "baseX": 2,
+          "baseY": -1,
+          "alphaHint": 2,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3],
+        "nativeRefCount": 1
+      },
+      "scriptBitmapCount": 0
+    },
+    {
+      "id": 114,
+      "control": 2,
+      "released": true,
+      "name": "probe.hg2",
+      "bitmap": null
+    },
+    {
+      "id": 460,
+      "name": "single.hg3",
+      "string": {
+        "address": 1152,
+        "text": "single.hg3"
+      },
+      "control": 1,
+      "result": null,
+      "bitmap": {
+        "width": 3,
+        "height": 2,
+        "bpp": 4,
+        "rgbaBase64": "Ezhd/6fM8f87YIX/z/QZ/2OIrf/3HEH/",
+        "metadata": {
+          "canvasWidth": 7,
+          "canvasHeight": 8,
+          "offsetX": 0,
+          "offsetY": 0,
+          "baseX": 2,
+          "baseY": 1,
+          "alphaHint": 1,
+          "mask": 0
+        },
+        "clip": [0, 0, 3, 2],
+        "nativeRefCount": 1
+      },
+      "scriptBitmapCount": 0
+    },
+    {
+      "id": 114,
+      "control": 2,
+      "released": true,
+      "name": "single.hg3",
+      "bitmap": null
+    },
+    {
+      "id": 460,
+      "name": "rgb.hg3",
+      "string": {
+        "address": 1280,
+        "text": "rgb.hg3"
+      },
+      "control": 1,
+      "result": null,
+      "bitmap": {
+        "width": 4,
+        "height": 1,
+        "bpp": 3,
+        "rgbaBase64": "W4Cl/+8UOf+DqM3/Fzxh/w==",
+        "metadata": {
+          "canvasWidth": 6,
+          "canvasHeight": 9,
+          "offsetX": -1,
+          "offsetY": 2,
+          "baseX": 1,
+          "baseY": 2,
+          "alphaHint": 1,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 1],
+        "nativeRefCount": 1
+      },
+      "scriptBitmapCount": 0
+    },
+    {
+      "id": 114,
+      "control": 2,
+      "released": true,
+      "name": "rgb.hg3",
+      "bitmap": null
+    },
+    {
+      "id": 460,
+      "name": "x,1.hg3",
+      "string": {
+        "address": 1408,
+        "text": "x,1.hg3"
+      },
+      "control": 1,
+      "result": null,
+      "bitmap": {
+        "width": 3,
+        "height": 2,
+        "bpp": 4,
+        "rgbaBase64": "Ezhd/6fM8f87YIX/z/QZ/2OIrf/3HEH/",
+        "metadata": {
+          "canvasWidth": 7,
+          "canvasHeight": 8,
+          "offsetX": 0,
+          "offsetY": 0,
+          "baseX": 2,
+          "baseY": 1,
+          "alphaHint": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 3, 2],
+        "nativeRefCount": 1
+      },
+      "scriptBitmapCount": 0
+    },
+    {
+      "id": 114,
+      "control": 2,
+      "released": true,
+      "name": "x,1.hg3",
+      "bitmap": null
+    },
+    {
+      "id": 460,
+      "name": "x,1,2.hg3",
+      "string": {
+        "address": 1536,
+        "text": "x,1,2.hg3"
+      },
+      "control": 1,
+      "result": null,
+      "bitmap": {
+        "width": 3,
+        "height": 4,
+        "bpp": 4,
+        "rgbaBase64": "AAAAADleg4DN8heAAAAAAGGGq4D1Gj+AEzhd/5i94v8sUXb/z/QZ/2OIrf/3HEH/",
+        "metadata": {
+          "canvasWidth": 9,
+          "canvasHeight": 8,
+          "offsetX": 0,
+          "offsetY": 0,
+          "baseX": 2,
+          "baseY": 1,
+          "alphaHint": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 3, 4],
+        "nativeRefCount": 1
+      },
+      "scriptBitmapCount": 0
+    },
+    {
+      "id": 114,
+      "control": 2,
+      "released": true,
+      "name": "x,1,2.hg3",
+      "bitmap": null
+    },
+    {
+      "id": 460,
+      "name": "x,0,2.hg3",
+      "string": {
+        "address": 1664,
+        "text": "x,0,2.hg3"
+      },
+      "control": 1,
+      "result": null,
+      "bitmap": {
+        "width": 2,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "OV6DgM3yF4BhhquA9Ro/gImu04AdQmeA",
+        "metadata": {
+          "canvasWidth": 9,
+          "canvasHeight": 8,
+          "offsetX": 1,
+          "offsetY": 1,
+          "baseX": 2,
+          "baseY": 1,
+          "alphaHint": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 2, 3],
+        "nativeRefCount": 1
+      },
+      "scriptBitmapCount": 0
+    },
+    {
+      "id": 114,
+      "control": 2,
+      "released": true,
+      "name": "x,0,2.hg3",
+      "bitmap": null
+    },
+    {
+      "id": 460,
+      "name": "x,0,0,3.hg3",
+      "string": {
+        "address": 1792,
+        "text": "x,0,0,3.hg3"
+      },
+      "control": 1,
+      "result": null,
+      "bitmap": {
+        "width": 4,
+        "height": 1,
+        "bpp": 4,
+        "rgbaBase64": "W4Cl/+8UOf+DqM3/Fzxh/w==",
+        "metadata": {
+          "canvasWidth": 6,
+          "canvasHeight": 9,
+          "offsetX": -1,
+          "offsetY": 2,
+          "baseX": 1,
+          "baseY": 2,
+          "alphaHint": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 1],
+        "nativeRefCount": 1
+      },
+      "scriptBitmapCount": 0
+    },
+    {
+      "id": 114,
+      "control": 2,
+      "released": true,
+      "name": "x,0,0,3.hg3",
+      "bitmap": null
+    },
+    {
+      "id": 460,
+      "name": "abc,1,2.hg3",
+      "string": {
+        "address": 1920,
+        "text": "abc,1,2.hg3"
+      },
+      "control": 1,
+      "result": null,
+      "bitmap": {
+        "width": 3,
+        "height": 4,
+        "bpp": 4,
+        "rgbaBase64": "AAAAADleg4DN8heAAAAAAGGGq4D1Gj+AEzhd/5i94v8sUXb/z/QZ/2OIrf/3HEH/",
+        "metadata": {
+          "canvasWidth": 9,
+          "canvasHeight": 8,
+          "offsetX": 0,
+          "offsetY": 0,
+          "baseX": 2,
+          "baseY": 1,
+          "alphaHint": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 3, 4],
+        "nativeRefCount": 1
+      },
+      "scriptBitmapCount": 0
+    },
+    {
+      "id": 114,
+      "control": 2,
+      "released": true,
+      "name": "abc,1,2.hg3",
+      "bitmap": null
+    }
+  ]
+}

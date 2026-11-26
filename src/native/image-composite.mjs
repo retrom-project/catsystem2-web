@@ -7,6 +7,7 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 import { nativeImageMetadata } from './image-buffer-info.mjs';
 import { nativeImagePathParts } from './image-file.mjs';
 import { nativeABI } from './abi/index.mjs';
+import { blendBitmapPixel } from './image.mjs';
 export const NATIVE_IMAGE_COMPOSITE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x1cc, words: 1, control: 1 }),
 ]);
@@ -24,7 +25,23 @@ export class NativeImageComposites {
       { stem, extension } = nativeImagePathParts(name);
     const selection = parseNativeResourceSelection(encodeCP932(stem));
     if (!selection) return 0;
-    if (!selection.selectors.length) return images.load(name, 0);
+    if (!selection.selectors.length) {
+      const handle = await images.load(name, 0);
+      if (handle && nativeABI(this.world.profile).graphics.imageCompositePreservesRGB24) {
+        try {
+          const frame = (await images.images.load(name)).frame(0);
+          if (frame?.bpp === 24) {
+            const bitmap = images.get(handle);
+            bitmap.state.bpp = 3;
+            await bitmap.changed();
+          }
+        } catch (error) {
+          await images.release(handle);
+          throw error;
+        }
+      }
+      return handle;
+    }
     const names = this.names(selection, extension),
       layers = [];
     for (const file of names) {
@@ -89,17 +106,32 @@ export class NativeImageComposites {
           height = Math.min(height, output.height - y);
           dx = x;
           dy = y;
-          if (width > 0 && height > 0)
-            await output.blit(source, {
-              dx,
-              dy: output.height - dy - height,
-              sx,
-              sy: source.height - sy - height,
-              width,
-              height,
-              copy: v.bpp === 3,
-              flipY: Boolean(v.blendType),
-            });
+          if (width > 0 && height > 0) {
+            if (nativeABI(this.world.profile).graphics.bitmapCompositeUsesLegacyRows) {
+              if (![3, 4].includes(v.bpp) || v.blendType)
+                throw new Error('Selector composition requires the reviewed scalar pixel format');
+              const pixels = await output.pixels(),
+                input = await source.pixels();
+              for (let y = 0; y < height; y++)
+                for (let x = 0; x < width; x++) {
+                  const from = ((source.height - 1 - sy - y) * source.width + sx + x) * 4,
+                    to = ((output.height - 1 - dy - y) * output.width + dx + x) * 4;
+                  if (input[from + 3]) blendBitmapPixel(pixels, to, input, from);
+                }
+              s.source = null;
+              await output.changed();
+            } else
+              await output.blit(source, {
+                dx,
+                dy: output.height - dy - height,
+                sx,
+                sy: source.height - sy - height,
+                width,
+                height,
+                copy: v.bpp === 3,
+                flipY: Boolean(v.blendType),
+              });
+          }
           const attrs = new Map((s.attributes ?? []).map((v) => [v.id, v]));
           for (const attr of v.attributes ?? []) attrs.set(attr.id, structuredClone(attr));
           s.attributes = [...attrs.values()].sort((a, b) => a.id - b.id);

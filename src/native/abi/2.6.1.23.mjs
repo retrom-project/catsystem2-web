@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [430, 460],
+    value:
+      'Own complete Main430/460 Script GCALLs use the original system-information singleton, file server, Settings, software kcView and constructor-loaded ANM table. Main430 tests direct readable ANM and basename table fallback, first duplicate insertion and case-sensitive stored keys; no ANM execution is involved. Main460 returns an explicitly owned0x114 bitmap without entering the Script automatic list: ordinary HG3 frame zero retains RGB24, while selector composition allocates an RGBA result and combines valid named layers with original anchors, offsets and pixels. Eight positive forms cover HG2/HG3 files, RGB24, one/multiple selectors, skipped zero selectors and narrow multi-character basenames. No desktop/GPU action or synthetic receiver is used.',
+  },
+  {
     ids: [716, 721, 722, 725, 729, 734],
     value:
       'Own complete Script GCALLs use the original kcFileServer singleton, complete Settings defaults, software kcView and true Top/Script constructors. Main710 creates a real64-byte loaded image owner with its nonempty native layer vector;733 creates an independent blank target. Main716 packed multiplication and729 alpha scaling visit loaded layers,721 reads the live output alpha hint,722 changes that hint,725 copies a nonempty HG3 attribute tree and734 blends a legal source/target rectangle. All output pixels, metadata, copied attribute words, controls and Script+0x9c automatic-list references are compared. Null or bitmap-less721 leaves the original result unwritten and remains guarded; blank owners are not passed to the layer iterators.',
@@ -1690,6 +1695,7 @@ export default {
     bitmapResizeUsesLegacyCells: true,
     bitmapToneSkipsNeutralOwner: true,
     bitmapCompositeUsesLegacyRows: true,
+    imageCompositePreservesRGB24: true,
     formattedBitmapPhysical: true,
     bitmapBlitUsesSourceSize: true,
     sameSizeBitmapCopyClips: true,
