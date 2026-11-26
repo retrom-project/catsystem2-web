@@ -4,7 +4,7 @@ import { openImage, HG3 } from '../formats/hg3.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeDataArgument, nativeDataMapped, nativeDataFormat } from './data-text.mjs';
-import { loadImageOwner } from './image-owner-load.mjs';
+import { loadImageOwner, requireImageSourceFormat } from './image-owner-load.mjs';
 import { RetainedAnimation } from './retained-animation.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 
@@ -99,6 +99,10 @@ export class NativeRenderSources {
     return source.bitmap;
   }
   async decode(bytes) {
+    requireImageSourceFormat(
+      bytes,
+      nativeABI(this.world.profile).graphics.renderSourceFrameFormats,
+    );
     const image = await openImage(bytes),
       images = this.world.graphics.images,
       candidates =
@@ -122,9 +126,23 @@ export class NativeRenderSources {
       throw error;
     }
   }
+  async replaceDecoded(handle, replacement) {
+    const source = this.get(handle),
+      decoded = this.handles.release(replacement, 'render-source'),
+      oldBitmaps = new Set([source.bitmap, ...source.frames.map((frame) => frame.bitmap)]);
+    for (const name of ['bitmap', 'frames', 'bounds', 'selected', 'sourceBitmap', 'bitmapRevision'])
+      source[name] = decoded[name];
+    if (source.animation)
+      source.animation.maxFrameKey = Math.max(0, ...source.frames.map((frame) => frame.key));
+    source.revision++;
+    for (const bitmap of oldBitmaps) if (bitmap) await this.world.graphics.images.release(bitmap);
+  }
   async load(name, task) {
     const owners = this.world.imageOwners,
-      owner = await loadImageOwner(owners, name, task, { describeLayers: true });
+      owner = await loadImageOwner(owners, name, task, {
+        describeLayers: true,
+        frameFormats: nativeABI(this.world.profile).graphics.renderSourceFrameFormats,
+      });
     if (!owner) return [];
     const record = owners.get(owner),
       layers = record.layers ?? [{ bitmap: record.bitmap, program: null }],
@@ -144,7 +162,9 @@ export class NativeRenderSources {
           tag: 2,
           handle: this.create({
             frames: layer.animation.frames,
-            program: layer.program,
+            program: nativeABI(this.world.profile).graphics.renderSourcesDeferProgram
+              ? null
+              : layer.program,
             bounds: layer.animation.bounds,
           }),
           name: layer.name,

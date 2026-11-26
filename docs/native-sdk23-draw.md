@@ -34,3 +34,27 @@ output ends with that allocation. A later CPU render redraws the retained
 sources, including sources whose caller has already released its bitmap.
 This is independent of the shared entry-replacement command. The .23 binding
 does not enable an unknown slot in another SDK.
+
+Main703 loads a sufficiently sized mapped output array with72-byte records:
+tag1 owns a bitmap and tag2 owns a retained source. Main704 releases the handle
+and clears the tag/handle pair without overwriting the record's name storage.
+Main706 writes nine geometry words; Main709 borrows the frame at the requested
+ordinal, independent of its encoded frame ID. Main707/708 retain a source for a
+Draw key and update its transforms. Rebinding the existing retained key keeps
+that source reference. Main624 loads its ANM program.
+
+Main622/623 bind encoded ImageData from Main365. In this SDK even the same
+descriptor rebuilds the decoded frame owners; the previous borrowed entry
+bitmap ends at that rebuild. Releasing the caller's output array or encoded
+descriptor preserves Draw ownership. Complete original GCALLs compare both
+record tags, metadata, distinct frame IDs, CPU pixels and reference counts
+through release, removal and destruction. A fresh World continues the same VM
+after the caller releases its array. Only the reviewed HG3/ANM shapes establish
+this binding; other image formats and transform modes require their own shape
+review.
+
+The current frame-source binding covers the compared HG3 path. HG2 frame-source
+enumeration, cross-class encoded rebinding and other decoded formats remain
+specific guarded follow-up shapes within the Image-to-Draw work. Replacing
+encoded frames keeps an already loaded ANM object and its control state; it does
+not create a new retained source or implicitly load a program.

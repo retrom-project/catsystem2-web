@@ -8,7 +8,19 @@ import { nativeABI } from './abi/index.mjs';
 import { HG3 } from '../formats/hg3.mjs';
 
 const decode = (bytes) => new TextDecoder('shift_jis').decode(bytes);
-export async function loadImageOwner(owners, name, task, { describeLayers = false } = {}) {
+export function requireImageSourceFormat(bytes, formats) {
+  if (!formats) return;
+  const signature = String.fromCharCode(...bytes.subarray(0, 4)),
+    format = signature === 'HG-2' ? 'HG2' : signature === 'HG-3' ? 'HG3' : null;
+  if (!formats.includes(format))
+    throw new Error('The retained source format has no reviewed ABI binding');
+}
+export async function loadImageOwner(
+  owners,
+  name,
+  task,
+  { describeLayers = false, frameFormats } = {},
+) {
   const world = owners.world,
     files = world.imageFiles,
     images = world.graphics.images;
@@ -33,6 +45,7 @@ export async function loadImageOwner(owners, name, task, { describeLayers = fals
   const animatedLayer = async (file) => {
     const bytes = await files.read(file);
     if (!bytes?.length) return;
+    requireImageSourceFormat(bytes, frameFormats);
     const out = new Uint8Array(36);
     let bounds = {
       offsetX: 0,

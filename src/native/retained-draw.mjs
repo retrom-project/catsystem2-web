@@ -211,7 +211,21 @@ export class NativeRetainedDraw {
     if (kind < 0) return false;
     const inputToken = fields[kind];
     let record = this.record(draw, key);
-    if (!record || (kind !== 2 && (record.kind !== kind || record.inputToken !== inputToken))) {
+    if (
+      record &&
+      kind === 1 &&
+      nativeABI(this.world.profile).graphics.drawEncodedBindingRebuildsFrames
+    ) {
+      if (record.kind !== 1)
+        throw new Error('The encoded Draw rebind source class has no reviewed ABI binding');
+      const replacement = await this.fromData(inputToken);
+      if (!replacement) return false;
+      await this.sources.replaceDecoded(record.source, replacement);
+      record.input = record.inputToken = inputToken;
+    } else if (
+      !record ||
+      (kind !== 2 && (record.kind !== kind || record.inputToken !== inputToken))
+    ) {
       let source;
       if (kind === 0) source = await this.fromBitmap(fields[0]);
       else if (kind === 1) source = await this.fromData(fields[1]);

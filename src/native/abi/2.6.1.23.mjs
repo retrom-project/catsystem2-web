@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [622, 623, 624, 703, 704, 706, 707, 708, 709],
+    value:
+      'Own complete GCALLs run the initialized file server, Settings, software kcView, Top/Script and Draw. Main703 produces72-byte records containing tag1 bitmap owners or tag2 actual0xc4 retained sources from valid HG3/ANM files;704 releases and clears each live record. Main706 writes all nine geometry words and709 borrows valid ordinal frames0/1. Main707/708 bind the retained source and change transforms without duplicating its reference;624 loads the actual ANM. Main622/623 decode the real Main365 encoded descriptor; even rebinding the same descriptor reconstructs the native frame owners and ends the previous borrowed frame. Caller array/data release leaves Draw references, normal CPU pixels and final removal/destruction match, and independent cold resumes the VM. No synthetic native receiver or platform output is used.',
+  },
+  {
     ids: [663],
     value:
       'Own Main663 at0x480680 sends raw282 with width/height to the real ImageList receiver and0x59c0a0 existing renderer resize. Complete GCALLs keep the renderer and retained entries, release its0x114 output and tile allocations, create the new output and repaint actual pixels at10x8 then4x3 after caller source release. Original borrowed addresses may be reused by the allocator; release events establish the lifetime. Independent cold continuation preserves logical resource identity. This is a distinct resize service, not the shared entry-replacement message.',
@@ -1722,6 +1727,11 @@ export default {
     retainedScalarRows: true,
     drawRetirementRetainsResources: true,
     drawCountAndLayerRequireRenderer: true,
+    drawEncodedBindingRebuildsFrames: true,
+    renderSourcesDeferProgram: true,
+    renderSourceFrameFormats: ['HG3'],
+    renderSources: { stride: 72, bytes: 276 },
+    retainedBytes: 196,
     screenCaptureOpaque: true,
     recordingRequiresFrame: true,
     screenEffectRetimesOnActiveInit: [38, 39, 50, 51, 52],
@@ -1817,6 +1827,50 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...[622, 623, 624, 703, 704, 706, 707, 708, 709].map((id) => ({
+          ids: [id],
+          fields: {
+            review: 'reviewed',
+            resultWritten: [703, 706, 709].includes(id),
+            ...(id === 709
+              ? { result: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' } }
+              : {}),
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) => {
+              if ([622, 623, 624, 707, 708].includes(id) && index === 0)
+                return { ...parameter, type: { kind: 'object-id', objectKind: 'Draw' } };
+              if ([622, 623, 707, 708].includes(id) && index === 2)
+                return {
+                  ...parameter,
+                  type: {
+                    kind: 'handle',
+                    handleKind: id < 700 ? 'image-data' : 'render-source',
+                    ownership: 'borrowed',
+                  },
+                };
+              if ([706, 709].includes(id) && index === 0)
+                return {
+                  ...parameter,
+                  type: { kind: 'handle', handleKind: 'render-source', ownership: 'borrowed' },
+                };
+              if (parameter.type.kind !== 'pointer') return parameter;
+              const formatted = (id === 624 && index === 2) || (id === 703 && index === 0);
+              return {
+                ...parameter,
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: formatted ? 'in' : id === 704 ? 'inout' : 'out',
+                  target: formatted
+                    ? { kind: 'format-string', encoding: 'CP932' }
+                    : {
+                        kind: 'record',
+                        name: id === 706 ? 'nine-word image metadata' : '72-byte render source',
+                      },
+                },
+              };
+            }),
+          },
+        })),
         { ids: [663], fields: { review: 'reviewed' } },
         ...[259, 263, 264, 462, 463, 657].map((id) => ({
           ids: [id],
