@@ -3,7 +3,11 @@
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
 import { copyBitmapRow } from './raster-kernel.mjs';
 import { nativeBitmapFrame, borrowNativePixels } from './image.mjs';
-import { nativeTextureConsumer, registerNativeTextureRead } from '../render/particles-gl.mjs';
+import {
+  nativeTextureConsumer,
+  registerNativeTextureRead,
+  borrowNativeTextureRead,
+} from '../render/particles-gl.mjs';
 const textureReadBarriers = new WeakMap(),
   textureOwners = new WeakMap();
 
@@ -11,6 +15,11 @@ export function nativeTexturePagesOwned(pages, owner) {
   return (
     textureOwners.get(pages) === owner &&
     Object.getPrototypeOf(pages) === NativeTexturePages.prototype &&
+    texturePageMethods.every(
+      ([key, value]) =>
+        !Object.hasOwn(pages, key) &&
+        Object.getOwnPropertyDescriptor(NativeTexturePages.prototype, key)?.value === value,
+    ) &&
     Object.getOwnPropertyDescriptor(pages, 'beforeMutation')?.value ===
       textureReadBarriers.get(pages)
   );
@@ -18,8 +27,10 @@ export function nativeTexturePagesOwned(pages, owner) {
 // Privileged renderer entry. Public frame() keeps its permanent borrowing rule.
 export function nativeTexturePageFrame(pages, index, gpu, owner) {
   const barrier = textureReadBarriers.get(pages);
-  if (!barrier || !nativeTexturePagesOwned(pages, owner) || !nativeTextureConsumer(gpu))
+  if (!barrier || !nativeTexturePagesOwned(pages, owner) || !nativeTextureConsumer(gpu)) {
+    barrier?.();
     return pages.frame(index);
+  }
   barrier();
   return pages.pages.get(index >>> 0)?.frame ?? NULL_NATIVE_TEXTURE;
 }
@@ -326,6 +337,7 @@ export class NativeTexturePages {
   frame(index) {
     this.#observe();
     const frame = this.pages.get(index >>> 0)?.frame ?? NULL_NATIVE_TEXTURE;
+    borrowNativeTextureRead(frame);
     borrowNativePixels(frame.rgba);
     return frame;
   }
@@ -389,6 +401,9 @@ export class NativeTexturePages {
     }
   }
 }
+const texturePageMethods = Reflect.ownKeys(NativeTexturePages.prototype)
+  .filter((key) => key !== 'constructor')
+  .map((key) => [key, Object.getOwnPropertyDescriptor(NativeTexturePages.prototype, key).value]);
 
 // Shared synchronous page write; owned sinks contain only captured data records.
 export function uploadTextureFrame(

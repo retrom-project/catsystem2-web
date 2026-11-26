@@ -35,6 +35,13 @@ export function registerNativeTextureRead(frame, settle, borrow) {
   if (!nativeTextureReadOwners.has(frame))
     nativeTextureReadOwners.set(frame, { settle, borrow, borrowed: false, readers: new Set() });
 }
+export function borrowNativeTextureRead(frame) {
+  const owner = nativeTextureReadOwners.get(frame);
+  if (owner) {
+    owner.borrowed = true;
+    owner.borrow();
+  }
+}
 export function nativeTextureReadOwned(frame, checked = new Map()) {
   const owner = nativeTextureReadOwners.get(frame);
   if (!owner || owner.borrowed) return false;

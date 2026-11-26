@@ -2,6 +2,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  NativeTexturePages,
+  nativeTexturePagesOwned,
+  nativeTexturePageFrame,
+} from '../src/native/texture-layout.mjs';
+import {
   ParticlesGL,
   nativeTextureConsumer,
   nativeTextureReadOwned,
@@ -79,4 +84,49 @@ test('foreign frame cache keys and foreign GPU objects retain their ordinary pat
   assert.equal(nativeTextureReadOwned(frame), false);
   assert.equal(gpu.managedTexture(frame), texture);
   assert.equal(nativeTextureConsumer({}), false);
+});
+
+test('a lent page frame stays borrowed after its rgba storage is replaced', () => {
+  const owner = {},
+    settle = () => {},
+    pages = new NativeTexturePages(
+      { size: [1, 1], grid: [1, 1], areas: [[0, 0, 1, 1]], bppY: [0, 1], bpp: 32 },
+      { owner, readBarrier: settle, beforeMutation: settle },
+    );
+  try {
+    const frame = pages.pages.get(0).frame;
+    assert(nativeTextureReadOwned(frame));
+    assert.equal(pages.frame(0), frame);
+    frame.rgba = new Uint8ClampedArray(4);
+    assert.equal(nativeTextureReadOwned(frame), false);
+  } finally {
+    pages.close();
+  }
+});
+
+test('a replaced page-frame provider runs only after its original owner barrier', () => {
+  let pending = true,
+    calls = 0;
+  const owner = {},
+    settle = () => {
+      pending = false;
+    },
+    pages = new NativeTexturePages(
+      { size: [1, 1], grid: [1, 1], areas: [[0, 0, 1, 1]], bppY: [0, 1], bpp: 32 },
+      { owner, readBarrier: settle, beforeMutation: settle },
+    );
+  try {
+    pending = true;
+    const original = pages.frame;
+    pages.frame = function (...args) {
+      assert.equal(pending, false);
+      calls++;
+      return Reflect.apply(original, this, args);
+    };
+    assert.equal(nativeTexturePagesOwned(pages, owner), false);
+    nativeTexturePageFrame(pages, 0, {}, owner);
+    assert.equal(calls, 1);
+  } finally {
+    pages.close();
+  }
 });
