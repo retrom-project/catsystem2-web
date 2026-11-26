@@ -81,6 +81,26 @@ only text and returns a pointer into the same buffer's reserved space using
 the [Windows CP932 conversion](native-widechar.md). Module handle zero
 resolves the main image's actual mounted filename.
 
+Ordinary Main444 (`module.version`) has four VM output destinations and no
+filename argument. It reads the selected main module's version-resource data,
+returns control `2` and stores the low 16 bits of each parsed `FileVersion` component
+as a full unsigned word. Raw and shared IDs are `444` in each supported build.
+Local, shared and aliased outputs retain their store order, including fixed live
+arguments outside the GCALL's declared width.
+
+The `2.6.1.23` helper accepts comma separators only. Its final component uses
+the third component's untrimmed delimiter offset as a copy limit: `1,2,333,4567`
+therefore ends in `456`, and a dotted-only version returns zeros. Other registered
+builds also accept dots and copy the complete final component. This query is
+separate from the fixed PE version used to select an exact engine ABI. Missing
+translation or `FileVersion` produces zero components; missing browser module
+authority remains diagnostic. A first component that leaves native numeric
+scratch unwritten is also diagnostic. The legacy fixed string fields require a
+terminating NUL and at most 255 ANSI bytes, while each parsed component fits
+its original 64-byte scratch.
+Version API failure captures describe the native boundary; they do not invent
+an unavailable browser module or an executable-free fallback.
+
 A pinned Japanese Wine probe compared 32 calls over both reference EXEs:
 size queries, full and truncated copies, root/translation/text lookups and
 missing names. The 115,124 bytes of return values, pointer offsets, error

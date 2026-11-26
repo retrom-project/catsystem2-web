@@ -19,9 +19,9 @@ selected or enabled by proximity to another version number.
 
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2                       |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | ------------------------------------------------ |
-| 2.6.1.23 | 869        | 688       | 57            | 17            | 107     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.63 | 938        | 657       | 80            | 19            | 182     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
-| 2.6.1.67 | 938        | 723       | 80            | 19            | 116     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.23 | 869        | 689       | 57            | 17            | 106     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.63 | 938        | 658       | 80            | 19            | 181     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
+| 2.6.1.67 | 938        | 724       | 80            | 19            | 115     | Generic 44 of 45, Particle 43 of 44 and 50 of 51 |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51                                     |
 | 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51                                     |
 

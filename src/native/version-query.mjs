@@ -25,7 +25,9 @@ function versionInteger(text, previous) {
 function ordinaryVersion(world) {
   const module = world.nativeModule;
   if (!module) throw new Error('Module version requires its actual uniquely selected main module');
-  const bytes = module.resource,
+  const abi = nativeABI(world.profile),
+    policy = abi.moduleVersion,
+    bytes = module.resource,
     view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
     translation = queryVersionResource(bytes, '\\VarFileInfo\\Translation'),
     values = [0, 0, 0, 0];
@@ -37,6 +39,38 @@ function ordinaryVersion(world) {
       0,
     name = pair.toString(16).padStart(8, '0'),
     field = queryVersionResource(bytes, `\\StringFileInfo\\${name}\\FileVersion`);
+  if (policy?.fieldByteLimit !== undefined) {
+    for (const key of [
+      'Comments',
+      'CompanyName',
+      'FileDescription',
+      'FileVersion',
+      'InternalName',
+      'LegalCopyright',
+      'LegalTrademarks',
+      'OriginalFilename',
+      'ProductName',
+      'ProductVersion',
+      'PrivateBuild',
+      'SpecialBuild',
+    ]) {
+      const entry = queryVersionResource(bytes, `\\StringFileInfo\\${name}\\${key}`);
+      if (!entry) continue;
+      if (!entry.text) throw new Error('Unsupported binary module string field');
+      let text = '',
+        terminated = false;
+      for (let i = 0; i < entry.count; i++) {
+        const unit = view.getUint16(entry.offset + i * 2, true);
+        if (!unit) {
+          terminated = true;
+          break;
+        }
+        text += String.fromCharCode(unit);
+      }
+      if (!terminated || registryEncodeANSI(text).length > policy.fieldByteLimit)
+        throw new Error('Module version string field exceeds its native fixed buffer');
+    }
+  }
   if (!field) return values;
   if (!field.text) throw new Error('Unsupported binary FileVersion value');
   let text = '';
@@ -45,18 +79,24 @@ function ordinaryVersion(world) {
     if (!char) break;
     text += String.fromCharCode(char);
   }
-  if (!nativeABI(world.profile).capabilities.unicodeOutput)
+  if (!abi.capabilities.unicodeOutput)
     text = Array.from(registryEncodeANSI(text), (byte) => String.fromCharCode(byte)).join('');
-  let previous;
+  let previous, previousWidth;
   for (let i = 0; i < 4; i++) {
     let split = text.indexOf(',');
-    if (split < 0) split = text.indexOf('.');
+    if (split < 0 && !policy?.commaOnly) split = text.indexOf('.');
     if (i < 3 && split < 0) break;
-    const part = (i < 3 ? text.slice(0, split) : text).replace(/^ +/, '');
+    let part = text;
+    if (i < 3) part = text.slice(0, split);
+    // The compact wrapper copies the last part with the third delimiter's
+    // byte offset, before trimming the last part's leading spaces.
+    else if (policy?.finalComponentUsesThirdWidth) part = text.slice(0, previousWidth);
+    part = part.replace(/^ +/, '');
     if (part.length >= 64)
       throw new Error('Unsupported FileVersion component exceeds native scratch');
     previous = versionInteger(part, previous);
     values[i] = previous & 0xffff;
+    if (i < 3) previousWidth = split;
     text = text.slice(split + 1);
   }
   return values;

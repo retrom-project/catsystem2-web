@@ -180,6 +180,12 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [444],
+    value:
+      'Own 2.6.1.23 Main444 reads four fixed live VM destinations and queries the actual main module RT_VERSION through GetModuleFileNameA(0). The original metadata helper, delimiter and integer parsing run through full GCALLs with real resource bytes. It stores four zero-extended low16 components in order through control2, preserving shared, aliased, argument-overlapping, zero-declared-width and trailing-word shapes. Missing translation or FileVersion leaves defined zero components. Captured OS Version API failures also zero them but do not supply absent browser module authority. The browser uses its uniquely selected module metadata; native uninitialized numeric scratch and overlong fixed string fields remain diagnostic.',
+  },
+
+  {
     ids: [192, 193, 194, 195],
     value:
       'Own 2.6.1.23 Registry wrappers run the original formatter, ANSI HKCU Software path, typed value calls and fixed live argv through full GCALLs. Each returns control 1; missing keys/values or API failures return zero and opened key handles close. DWORD zero is a successful existence query; raw narrow strings use strlen without formatting. Short buffers remain untouched, null translations query required byte length, and VM/shared/aliased destinations retain native write order. The ordinary browser platform uses the existing private persistent HKCU owner, not the system registry.',
@@ -1426,6 +1432,7 @@ export default {
   },
   plugins: { emoteDriver: null, requiredRenderer: null },
   registry: { keyFormatBytes: 250, valueFormatBytes: 255 },
+  moduleVersion: { fieldByteLimit: 255, commaOnly: true, finalComponentUsesThirdWidth: true },
   capabilities: {
     effekseerTask: false,
     embeddedJavaScript: false,
@@ -1671,6 +1678,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [444], fields: { review: 'reviewed', resultWritten: false } },
         { ids: [192, 193, 194, 195], fields: { review: 'reviewed', resultWritten: true } },
         { ids: [166, 167], fields: { review: 'reviewed' } },
         { ids: [165, 349, 569, 587], fields: { review: 'reviewed' } },

@@ -16064,8 +16064,8 @@ export const NATIVE_SEMANTICS = freeze({
       },
     },
     444: {
-      name: 'file.moduleVersion',
-      family: 'file',
+      name: 'module.version',
+      family: 'module',
       signature: {
         argumentWords: 4,
         controlCodes: [2],
@@ -16075,10 +16075,12 @@ export const NATIVE_SEMANTICS = freeze({
             name: 'major',
             type: {
               addressSpace: 'vm',
-              direction: 'unknown',
+              direction: 'out',
               kind: 'pointer',
               target: {
-                kind: 'unknown',
+                kind: 'integer',
+                bits: 32,
+                signed: false,
               },
             },
           },
@@ -16087,10 +16089,12 @@ export const NATIVE_SEMANTICS = freeze({
             name: 'minor',
             type: {
               addressSpace: 'vm',
-              direction: 'unknown',
+              direction: 'out',
               kind: 'pointer',
               target: {
-                kind: 'unknown',
+                kind: 'integer',
+                bits: 32,
+                signed: false,
               },
             },
           },
@@ -16099,10 +16103,12 @@ export const NATIVE_SEMANTICS = freeze({
             name: 'build',
             type: {
               addressSpace: 'vm',
-              direction: 'unknown',
+              direction: 'out',
               kind: 'pointer',
               target: {
-                kind: 'unknown',
+                kind: 'integer',
+                bits: 32,
+                signed: false,
               },
             },
           },
@@ -16111,10 +16117,12 @@ export const NATIVE_SEMANTICS = freeze({
             name: 'revision',
             type: {
               addressSpace: 'vm',
-              direction: 'unknown',
+              direction: 'out',
               kind: 'pointer',
               target: {
-                kind: 'unknown',
+                kind: 'integer',
+                bits: 32,
+                signed: false,
               },
             },
           },

@@ -122,7 +122,7 @@ function versionBlock(key, data = [], children = [], text = false) {
   return bytes;
 }
 function ownedVersionImage(profile, fileVersion, translated = true) {
-  const minor = profile.startsWith('sdk-') ? 74 : 76,
+  const minor = Number(profile.split('.').at(-1)),
     resource = Uint8Array.from(
       versionBlock(
         'VS_VERSION_INFO',
@@ -135,7 +135,9 @@ function ownedVersionImage(profile, fileVersion, translated = true) {
               versionBlock(
                 '041104b0',
                 [],
-                [versionBlock('FileVersion', versionWide(fileVersion), [], true)],
+                fileVersion === null
+                  ? []
+                  : [versionBlock('FileVersion', versionWide(fileVersion), [], true)],
               ),
             ],
           ),
@@ -230,10 +232,15 @@ async function ordinaryVersionFixture(profile, text, translated = true) {
   };
   return { world, reads, selected, cpu: () => cpu };
 }
-for (const profile of Object.keys(handlers)) {
+for (const profile of [
+  ...Object.keys(handlers),
+  'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
+]) {
   test(`ordinary main 1BC reads its selected module FileVersion and preserves aliases across cold restore in ${profile}`, async () => {
     const text = ' 0x10002, -3, +4, 0x12345suffix',
-      expected = [2, 65533, 4, 9029],
+      expected = [2, 65533, 4, profile.endsWith('.23') ? 0 : 9029],
       first = await ordinaryVersionFixture(profile, text),
       fresh = await ordinaryVersionFixture(profile, text);
     try {
@@ -284,9 +291,9 @@ for (const profile of Object.keys(handlers)) {
         [out, 2],
         [out, 65533],
         [out + 4, 4],
-        [out, 9029],
+        [out, expected[3]],
       ]);
-      assert.equal(m.load(out), 9029);
+      assert.equal(m.load(out), expected[3]);
       assert.equal(m.load(out + 4), 4);
       assert.deepEqual(fresh.reads, restoredReads);
       assert.equal(first.cpu() + fresh.cpu(), 0);
@@ -297,18 +304,34 @@ for (const profile of Object.keys(handlers)) {
   });
 }
 
-for (const profile of Object.keys(handlers)) {
+for (const profile of [
+  ...Object.keys(handlers),
+  'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
+]) {
   test(`ordinary main 1BC retains native separators, low words and missing resource results in ${profile}`, async () => {
-    const cases = [
-      ['1.2.3.4', [1, 2, 3, 4]],
-      ['0x10002.0x10003.0x10004.0x10005', [2, 3, 4, 5]],
-      ['65536, 65537, 2147483647, -2147483648', [0, 1, 65535, 0]],
-      ['1.2,3.4,5,6', [1, 3, 5, 6]],
-      ['1,,3,4', [1, 1, 3, 4]],
-      ['3,4', [3, 0, 0, 0]],
-      ['none', [0, 0, 0, 0]],
-      ['1.2.3.4', [0, 0, 0, 0], false],
-    ];
+    const cases = profile.endsWith('.23')
+      ? [
+          ['1.2.3.4', [0, 0, 0, 0]],
+          ['0x10002.0x10003.0x10004.0x10005', [0, 0, 0, 0]],
+          ['65536, 65537, 2147483647, -2147483648', [0, 1, 65535, 13108]],
+          ['1.2,3.4,5,6', [1, 3, 5, 6]],
+          ['1,,3,4', [1, 1, 3, 4]],
+          ['3,4', [3, 0, 0, 0]],
+          ['none', [0, 0, 0, 0]],
+          ['1.2.3.4', [0, 0, 0, 0], false],
+        ]
+      : [
+          ['1.2.3.4', [1, 2, 3, 4]],
+          ['0x10002.0x10003.0x10004.0x10005', [2, 3, 4, 5]],
+          ['65536, 65537, 2147483647, -2147483648', [0, 1, 65535, 0]],
+          ['1.2,3.4,5,6', [1, 3, 5, 6]],
+          ['1,,3,4', [1, 1, 3, 4]],
+          ['3,4', [3, 0, 0, 0]],
+          ['none', [0, 0, 0, 0]],
+          ['1.2.3.4', [0, 0, 0, 0], false],
+        ];
     for (const [text, expected, translated] of cases) {
       const fixture = await ordinaryVersionFixture(profile, text, translated);
       try {
@@ -425,6 +448,44 @@ for (const profile of Object.keys(handlers)) {
       await fresh?.dispose();
       await first?.dispose();
       environment.restore();
+    }
+  });
+}
+
+const legacyModuleVersion = JSON.parse(
+  await readFile(new URL('./fixtures/native-module-version-legacy-golden.json', import.meta.url)),
+);
+for (const own of legacyModuleVersion.versions) {
+  const profile = {
+    23: 'grisaia-jp-engine-2.6.1.23',
+    63: 'rebellions-jp-engine-2.6.1.63',
+    67: 'bokutomo-engine-2.6.1.67',
+  }[own.version];
+  test(`ordinary module.version matches own text fields and fixed buffer limits in ${profile}`, async () => {
+    for (const row of own.cases) {
+      const fixture = await ordinaryVersionFixture(profile, row.text, row.translated);
+      try {
+        await fixture.world.initialize('main.kcs');
+        const machine = fixture.world.main.machine;
+        assert.deepEqual(
+          [256, 260, 264, 268].map((at) => machine.load(at)),
+          row.values,
+          String(row.text),
+        );
+        assert.equal(fixture.cpu(), 0);
+      } finally {
+        await fixture.world.close();
+      }
+    }
+    const oversized = await ordinaryVersionFixture(profile, '1,2,3,' + '4'.repeat(250));
+    try {
+      await assert.rejects(oversized.world.initialize('main.kcs'), /native fixed buffer/);
+      assert.deepEqual(
+        [256, 260, 264, 268].map((at) => oversized.world.main.machine.load(at)),
+        [0, 0, 0, 0],
+      );
+    } finally {
+      await oversized.world.close();
     }
   });
 }
