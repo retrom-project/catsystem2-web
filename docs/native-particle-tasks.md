@@ -62,6 +62,30 @@ diagnostic before atlas fields are written and remain an unproved input shape.
 Task restore accepts each unknown field as `null` and each known field as a
 finite number, matching the currently admitted native packet paths.
 
+Modern script banks allocate reference buffers in the original order, with a
+four-byte reference header and DWORD request arithmetic. A recognized storage
+allocation failure leaves that owner absent and retains the other allocations,
+KCS and atlas. Initialization proceeds only when all seven data buffers exist;
+an uninitialized buffer retains no invented zero contents. Position and quad
+stores establish only their written byte ranges. Copying a saved quad buffer
+propagates its known ranges, so a later read of a fully written quad succeeds
+even when another buffer was never allocated. Missing or unwritten data is
+diagnosed when an operation consumes it. Programming and decoder errors keep
+their diagnostics.
+The [RefBuffer golden](../tests/fixtures/modern-particle-ref-buffer-golden.json)
+links both own v2 KCS-installed receiver/VM captures and their exact request
+and write/read inputs. Captured reads of unwritten A5 data are interception
+evidence and are excluded from functional data comparisons.
+
+The JS checkpoint stores each nullable buffer and its known ranges once. Cold
+restore rebinds those saved owners without retrying their allocation outcomes;
+release frees every successful owner. The original large-count request captures
+and current controlled-failure KCS tests allocate no large particle arrays.
+Successful large resident capacity, the two auxiliary sorting buffers and their
+idle/draw consumption remain separate validation scope; removing the artificial
+count check alone does not complete that resource lifecycle group. Older builds
+retain their existing allocation behavior until their own differences are proved.
+
 Attachment assignment accepts a missing group. Resolution occurs when its KCS
 query needs the current graph; deleted or absent groups then produce the proved
 zero result. The task retains no parallel graph-position cache.

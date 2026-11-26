@@ -69,6 +69,7 @@ export default {
     taskMessageStart: 309,
     taskMessagesUseRawTransport: true,
     taskFieldsPersistWithoutBank: true,
+    refBuffersFollowNativeHeap: true,
     scriptLoadsBeforeTexture: true,
     scriptLoadMissingReturnsUnwritten: true,
     deferGraphAttachment: true,

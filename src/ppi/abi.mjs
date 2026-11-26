@@ -1,5 +1,213 @@
 // SPDX-License-Identifier: MPL-2.0
 // Layouts from the frozen CatSystem2 4.01 particle SDK and the native copy bridge.
+import { NativeBufferMemory, NativeBufferAllocationError } from '../native/buffer-memory.mjs';
+
+export const PTCL_REF_BUFFERS = Object.freeze(
+  [
+    ['quads', 112, Uint8Array],
+    ['backupQuads', 112, Uint8Array],
+    ['bases', 16, Float32Array],
+    ['positions', 16, Float32Array],
+    ['rotations', 16, Float32Array],
+    ['scales', 16, Float32Array],
+    ['visibility', 4, Int32Array],
+    ['depthPairs', 8, Uint8Array],
+    ['sortIndices', 4, Uint32Array],
+  ].map(([name, stride, Type]) => Object.freeze({ name, stride, Type })),
+);
+
+export function particleRefBufferRequests(count, auxiliary = true) {
+  if (!Number.isInteger(count) || count < 0 || count > 0xffffffff)
+    throw new RangeError('Particle count is outside its DWORD ABI');
+  return PTCL_REF_BUFFERS.slice(0, auxiliary ? 9 : 7).map(({ name, stride }) => {
+    const payloadBytes = Math.imul(count, stride) >>> 0;
+    return { name, payloadBytes, requestedBytes: (payloadBytes + 4) >>> 0 };
+  });
+}
+
+const addKnownRange = (ranges, first, end) => {
+  if (first === end) return ranges;
+  const result = [];
+  for (const [lo, hi] of ranges) {
+    if (hi < first) result.push([lo, hi]);
+    else if (end < lo) {
+      result.push([first, end]);
+      first = lo;
+      end = hi;
+    } else {
+      first = Math.min(first, lo);
+      end = Math.max(end, hi);
+    }
+  }
+  result.push([first, end]);
+  return result;
+};
+
+// These bytes and their known ranges have one owner. Missing allocations and
+// allocated but unwritten bytes are different states; neither invents zeros.
+export class ParticleRefBuffers {
+  constructor(count, { memory = new NativeBufferMemory(), auxiliary = true, snapshot } = {}) {
+    this.count = count;
+    this.memory = memory;
+    this.entries = new Map();
+    this.known = new Map();
+    const requests = particleRefBufferRequests(count, auxiliary);
+    if (snapshot) this.validateSnapshot(snapshot, requests);
+    try {
+      for (const request of requests) {
+        const layout = PTCL_REF_BUFFERS.find((field) => field.name === request.name),
+          saved = snapshot?.fields[request.name];
+        let pointer = 0;
+        if (!snapshot || saved !== null) {
+          // HeapAlloc(0) still supplies a header-sized physical block. Overflowed
+          // payload requests retain their actual capacity until a consumer checks it.
+          const storageBytes = Math.max(4, request.requestedBytes);
+          if (snapshot) {
+            const bytes = new Uint8Array(storageBytes);
+            new DataView(bytes.buffer).setUint32(0, 1, true);
+            bytes.set(new Uint8Array(saved.buffer, saved.byteOffset, saved.byteLength), 4);
+            pointer = memory.reserve(storageBytes, bytes);
+          } else {
+            try {
+              pointer = memory.allocate(storageBytes);
+              if (!pointer)
+                throw new Error('Particle RefBuffer allocator returned an invalid address');
+            } catch (error) {
+              if (!(error instanceof NativeBufferAllocationError)) throw error;
+            }
+            if (pointer) memory.store(pointer, 1);
+          }
+        }
+        const bytes = pointer
+            ? memory.view(pointer + 4, Math.max(0, request.requestedBytes - 4))
+            : null,
+          value = bytes
+            ? new layout.Type(
+                bytes.buffer,
+                bytes.byteOffset,
+                bytes.byteLength / layout.Type.BYTES_PER_ELEMENT,
+              )
+            : null;
+        this.entries.set(request.name, { ...request, pointer, value });
+        this.known.set(
+          request.name,
+          snapshot ? snapshot.known[request.name].map((r) => r.slice()) : [],
+        );
+      }
+    } catch (error) {
+      this.close();
+      throw error;
+    }
+  }
+  validateSnapshot(state, requests) {
+    const names = requests
+      .map((r) => r.name)
+      .sort()
+      .join(',');
+    if (
+      !state ||
+      !state.fields ||
+      !state.known ||
+      Object.keys(state.fields).sort().join(',') !== names ||
+      Object.keys(state.known).sort().join(',') !== names
+    )
+      throw new Error('Particle RefBuffer checkpoint requires its exact owners');
+    for (const request of requests) {
+      const Type = PTCL_REF_BUFFERS.find((field) => field.name === request.name).Type,
+        value = state.fields[request.name],
+        length = Math.max(0, request.requestedBytes - 4),
+        ranges = state.known[request.name];
+      if (value !== null && (!(value instanceof Type) || value.byteLength !== length))
+        throw new Error(`Particle RefBuffer checkpoint ${request.name} length or type`);
+      if (!Array.isArray(ranges) || (value === null && ranges.length))
+        throw new Error(`Particle RefBuffer checkpoint ${request.name} known bytes`);
+      let previous = -1;
+      for (const range of ranges) {
+        if (
+          !Array.isArray(range) ||
+          range.length !== 2 ||
+          !range.every(Number.isSafeInteger) ||
+          range[0] < 0 ||
+          range[0] <= previous ||
+          range[1] <= range[0] ||
+          range[1] > length
+        )
+          throw new Error(`Particle RefBuffer checkpoint ${request.name} known range`);
+        previous = range[1];
+      }
+    }
+  }
+  get(name) {
+    if (this.closed) throw new Error('Particle RefBuffers are released');
+    const entry = this.entries.get(name);
+    if (!entry) throw new Error(`Particle RefBuffer was not requested: ${name}`);
+    return entry.value;
+  }
+  get dataReady() {
+    return PTCL_REF_BUFFERS.slice(0, 7).every(({ name, stride }) => {
+      const entry = this.entries.get(name),
+        size = this.count * stride;
+      return (
+        entry?.value !== null &&
+        entry.value.byteLength >= size &&
+        (!size || this.known.get(name).some(([lo, hi]) => lo === 0 && hi >= size))
+      );
+    });
+  }
+  span(name, offset, size, read = false) {
+    const value = this.get(name);
+    if (!Number.isSafeInteger(offset) || offset < 0 || !Number.isSafeInteger(size) || size < 0)
+      throw new RangeError('Particle RefBuffer access requires an unsigned byte range');
+    if (!size) return value;
+    if (!value) throw new Error(`Particle RefBuffer ${name} allocation is missing`);
+    if (offset + size > value.byteLength)
+      throw new RangeError(`Particle RefBuffer ${name} capacity does not cover its consumer`);
+    if (read && !this.known.get(name).some(([lo, hi]) => lo <= offset && hi >= offset + size))
+      throw new Error(`Particle RefBuffer ${name} bytes are uninitialized`);
+    return value;
+  }
+  mark(name, offset, size) {
+    this.span(name, offset, size);
+    this.known.set(name, addKnownRange(this.known.get(name), offset, offset + size));
+  }
+  copy(destination, source) {
+    const size = this.entries.get(destination)?.payloadBytes;
+    if (size === undefined || size !== this.entries.get(source)?.payloadBytes)
+      throw new Error('Particle RefBuffer copy requires matching payloads');
+    if (!size) return;
+    const to = this.span(destination, 0, size),
+      from = this.span(source, 0, size);
+    new Uint8Array(to.buffer, to.byteOffset, to.byteLength).set(
+      new Uint8Array(from.buffer, from.byteOffset, from.byteLength),
+    );
+    this.known.set(
+      destination,
+      this.known.get(source).map((range) => range.slice()),
+    );
+  }
+  snapshot() {
+    if (this.closed) throw new Error('Particle RefBuffers are released');
+    return {
+      fields: Object.fromEntries(
+        [...this.entries].map(([name, { value }]) => [name, value?.slice() ?? null]),
+      ),
+      known: Object.fromEntries(
+        [...this.known].map(([name, ranges]) => [name, ranges.map((range) => range.slice())]),
+      ),
+    };
+  }
+  close() {
+    if (this.closed) return;
+    this.closed = true;
+    for (const entry of this.entries.values())
+      if (entry.pointer) {
+        if (!this.memory.free(entry.pointer)) throw new Error('Particle RefBuffer lost its owner');
+        entry.pointer = 0;
+        entry.value = null;
+      }
+  }
+}
+
 export const PPI_ABI = Object.freeze({
   pluginType: 1,
   sdkVersion: 0x00020001,

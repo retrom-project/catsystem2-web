@@ -71,14 +71,22 @@ export function projectParticle(
 }
 
 export function scriptParticles(instance) {
-  return Array.from({ length: instance.count }, (_, i) => ({
-    vertices: instance.vertices(i),
-    base: [...instance.bases.subarray(i * 4, i * 4 + 3)],
-    pos: [...instance.positions.subarray(i * 4, i * 4 + 3)],
-    rot: [...instance.rotations.subarray(i * 4, i * 4 + 3)],
-    scale: [...instance.scales.subarray(i * 4, i * 4 + 3)],
-    disp: instance.visibility[i],
-  }));
+  return Array.from({ length: instance.count }, (_, i) => {
+    const vertices = instance.vertices(i);
+    if (instance.partialBuffers) {
+      for (const name of ['bases', 'positions', 'rotations', 'scales'])
+        instance.requireBuffer(name, i * 16, 12, true);
+      instance.requireBuffer('visibility', i * 4, 4, true);
+    }
+    return {
+      vertices,
+      base: [...instance.bases.subarray(i * 4, i * 4 + 3)],
+      pos: [...instance.positions.subarray(i * 4, i * 4 + 3)],
+      rot: [...instance.rotations.subarray(i * 4, i * 4 + 3)],
+      scale: [...instance.scales.subarray(i * 4, i * 4 + 3)],
+      disp: instance.visibility[i],
+    };
+  });
 }
 export function ppiParticles(instance) {
   const bytes = instance.records();

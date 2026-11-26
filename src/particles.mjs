@@ -6,6 +6,8 @@ import { ParticleRandom } from './ppi/random.mjs';
 import { linearInterpolate, roundInteger } from './ppi/numeric.mjs';
 import { scriptParticles, ppiParticles, particleGeometry } from './ppi/geometry.mjs';
 import { ParticlesGL } from './render/particles-gl.mjs';
+import { nativeABI } from './native/abi/index.mjs';
+import { NativeBufferMemory } from './native/buffer-memory.mjs';
 
 const normalize = (name) => name.replaceAll('\\', '/').toLowerCase();
 const white = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
@@ -43,6 +45,7 @@ export class Particles {
       atlas,
       projectGeometry = particleGeometry,
       scriptBounds,
+      refBufferMemory,
     } = {},
   ) {
     this.stage = stage;
@@ -50,6 +53,10 @@ export class Particles {
     this.images = images;
     this.registry = registry;
     this.profile = profile;
+    this.nativeRefBuffers = profile && nativeABI(profile).particle?.refBuffersFollowNativeHeap;
+    this.refBufferMemory = this.nativeRefBuffers
+      ? (refBufferMemory ?? new NativeBufferMemory())
+      : null;
     this.random = random;
     this.fps = fps;
     this.attachment = attachment;
@@ -260,7 +267,11 @@ export class Particles {
   async loadBank(bank, spec, previous, nativeTextureName, nativeProgramName) {
     if (!['script', 'plugin'].includes(bank.family))
       throw new Error(`Unknown particle executable family ${bank.family}`);
-    if (!Number.isSafeInteger(bank.count) || bank.count < 0 || bank.count > 1000000)
+    if (
+      !Number.isSafeInteger(bank.count) ||
+      bank.count < 0 ||
+      bank.count > (this.nativeRefBuffers && bank.family === 'script' ? 0xffffffff : 1000000)
+    )
       throw new RangeError('Invalid particle count');
     if (!Number.isFinite(bank.priority)) throw new Error('Invalid particle priority');
     const category = bank.family === 'plugin' ? 'ptclpi' : 'ptcl';
@@ -335,6 +346,9 @@ export class Particles {
       script.name = bank.program;
       bank.instance = new ParticleScriptInstance(script, {
         ...common,
+        refBufferMemory: this.refBufferMemory,
+        nativeTaskBuffers: Boolean(this.atlas) && this.nativeRefBuffers,
+        externalDraw: bank.externalDraw,
         profile: this.profile,
         screenBounds: this.scriptBounds,
         attachmentDevicePresent: this.stage.nativeGraphics
@@ -674,7 +688,7 @@ export class Particles {
       else {
         const script = await readKCS(await this.scriptBytes(bank.program));
         script.name = bank.program;
-        bank.instance = new ParticleScriptInstance(script, {
+        bank.instance = ParticleScriptInstance.fromSnapshot(script, saved.script, {
           profile: this.profile,
           count: bank.count,
           width: bank.width,
@@ -690,8 +704,10 @@ export class Particles {
           attachmentDevicePresent: this.stage.nativeGraphics
             ? () => Boolean(this.stage.nativeGraphics.device.attachment)
             : undefined,
+          refBufferMemory: this.refBufferMemory,
+          nativeTaskBuffers: Boolean(this.atlas) && this.nativeRefBuffers,
+          externalDraw: bank.externalDraw,
         });
-        bank.instance.restore(saved.script);
       }
       bank.instance.attachPlane = this.refreshAttachment(bank);
       this.metadata(bank);

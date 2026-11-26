@@ -10,7 +10,14 @@ import {
 } from '../kcs.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
 import { nativeScalarMath, nativeTrigWord, scalarArgumentWords } from '../native/scalar-math.mjs';
-import { PTCL_ABI, initialParticle, readPTCLQuad, writePTCLQuad } from './abi.mjs';
+import {
+  PTCL_ABI,
+  PTCL_REF_BUFFERS,
+  ParticleRefBuffers,
+  initialParticle,
+  readPTCLQuad,
+  writePTCLQuad,
+} from './abi.mjs';
 import { particleNativeContract } from './contracts.mjs';
 import { ParticleRandom } from './random.mjs';
 import { roundX87Single } from './x87.mjs';
@@ -102,10 +109,19 @@ export class ParticleScriptInstance {
       onDebug = null,
       budget = 5000000 /* instruction budget  */,
       screenBounds = projectionBounds,
+      refBufferMemory,
+      refBufferSnapshot,
+      nativeTaskBuffers = false,
+      externalDraw = false,
     } = options;
     const abi = profile === undefined ? null : nativeABI(profile),
       nullableTexture = abi?.particle?.taskFieldsPersistWithoutBank;
-    if (!Number.isSafeInteger(count) || count < 0 || count > 1000000)
+    this.nativeRefBuffers = abi?.particle?.refBuffersFollowNativeHeap;
+    if (
+      !Number.isSafeInteger(count) ||
+      count < 0 ||
+      count > (this.nativeRefBuffers ? 0xffffffff : 1000000)
+    )
       throw new RangeError('Invalid PTCL particle count');
     for (const [key, value] of Object.entries({ width, height, screenWidth, screenHeight }))
       if (
@@ -151,24 +167,83 @@ export class ParticleScriptInstance {
     this.budget = budget;
     this.screenBounds = screenBounds;
     this.registers = new Float32Array(32);
-    this.quads = new Uint8Array(count * PTCL_ABI.quadSize);
-    this.backupQuads = new Uint8Array(this.quads.length);
-    for (const key of ['positions', 'bases', 'rotations', 'scales'])
-      this[key] = new Float32Array(count * 4);
-    this.visibility = new Int32Array(count);
+    this.nativeTaskBuffers = Boolean(nativeTaskBuffers);
+    this.externalDraw = Boolean(externalDraw);
+    if (this.nativeRefBuffers) {
+      this.refBuffers = new ParticleRefBuffers(count, {
+        memory: refBufferMemory,
+        auxiliary: this.nativeTaskBuffers && !this.externalDraw,
+        snapshot: refBufferSnapshot,
+      });
+      this.bindRefBuffers();
+    } else {
+      this.quads = new Uint8Array(count * PTCL_ABI.quadSize);
+      this.backupQuads = new Uint8Array(this.quads.length);
+      for (const key of ['positions', 'bases', 'rotations', 'scales'])
+        this[key] = new Float32Array(count * 4);
+      this.visibility = new Int32Array(count);
+    }
     this.calls = new Map();
     this.messages = [];
     this.blendMode = 0;
-    this.machine = new KCSMachine(script, this, shared);
-    this.setRegisters(registers);
-    this.start();
+    try {
+      this.machine = new KCSMachine(script, this, shared);
+      this.setRegisters(registers);
+      if (!refBufferSnapshot) this.start();
+    } catch (error) {
+      this.refBuffers?.close();
+      throw error;
+    }
+  }
+  bindRefBuffers() {
+    this.refBufferMemory = this.refBuffers.memory;
+    for (const { name } of PTCL_REF_BUFFERS.slice(0, 7)) this[name] = this.refBuffers.get(name);
+    this.partialBuffers = !this.refBuffers.dataReady;
+  }
+  requireBuffer(name, offset, size, read = false) {
+    if (this.closed) throw new Error('Particle instance is released');
+    if (this.partialBuffers) this.refBuffers.span(name, offset, size, read);
+  }
+  markBuffer(name, offset, size) {
+    if (this.partialBuffers) this.refBuffers.mark(name, offset, size);
+  }
+  static fromSnapshot(script, state, options) {
+    if (
+      !state ||
+      state.count !== options.count ||
+      state.scriptVersion !== script.scriptVersion ||
+      state.codeSize !== script.codeSize ||
+      (options.profile &&
+        nativeABI(options.profile).particle?.refBuffersFollowNativeHeap &&
+        !state.buffers)
+    )
+      throw new Error(
+        'Particle checkpoint requires its matching script, count and RefBuffer owners',
+      );
+    const instance = new ParticleScriptInstance(script, {
+      ...options,
+      refBufferSnapshot: state.buffers,
+    });
+    try {
+      instance.restore(state, { restoreBuffers: false });
+      return instance;
+    } catch (error) {
+      instance.close();
+      throw error;
+    }
   }
   start() {
+    if (this.closed) throw new Error('Particle instance is released');
     this.active = true;
     this.frame = 0;
     this.before = 0xffffffff;
     this.hasFrame = false;
     this.now = 0;
+    if (this.refBuffers) {
+      if (PTCL_REF_BUFFERS.slice(0, 7).some(({ name }) => this[name] === null)) return;
+      for (const { name, stride } of PTCL_REF_BUFFERS.slice(0, 7))
+        this.refBuffers.span(name, 0, this.count * stride);
+    }
     if (this.count) {
       if (this.width === null || this.height === null)
         throw new Error(
@@ -181,6 +256,11 @@ export class ParticleScriptInstance {
     for (const key of ['positions', 'bases', 'rotations', 'scales']) this[key].fill(0);
     for (let i = 0; i < this.count; i++) this.scales.set([1, 1, 1, 0], i * 4);
     this.visibility.fill(1);
+    if (this.refBuffers) {
+      for (const { name, stride } of PTCL_REF_BUFFERS.slice(0, 7))
+        this.refBuffers.mark(name, 0, this.count * stride);
+      this.partialBuffers = false;
+    }
   }
   stop() {
     this.active = false;
@@ -191,6 +271,7 @@ export class ParticleScriptInstance {
     this.registers.set(values);
   }
   update(frame) {
+    if (this.closed) throw new Error('Particle instance is released');
     if (!this.active) return { active: false, executed: 0 };
     if (!Number.isInteger(frame) || frame < 0 || frame > 0xffffffff)
       throw new RangeError('Invalid PTCL frame counter');
@@ -212,14 +293,17 @@ export class ParticleScriptInstance {
     return { active: this.active, executed };
   }
   vertices(index) {
+    if (this.closed) throw new Error('Particle instance is released');
     if (!Number.isInteger(index) || index < 0 || index >= this.count)
       throw new RangeError('PTCL particle index');
+    this.requireBuffer('quads', index * 112, 112, true);
     return readPTCLQuad(this.quads, index * 112);
   }
   currentAttachment() {
     return this.attachPlane === -1 ? null : this.attachment(this.attachPlane);
   }
   native(id, args, machine) {
+    if (this.closed) throw new Error('Particle instance is released');
     const entry = this.nativeEntries?.[id];
     if (this.nativeEntries && entry?.status !== 'declared' && entry?.status !== 'recovered')
       throw new Error(`Unreviewed PTCL native ${this.profile}/${this.table}/${id}`);
@@ -390,21 +474,38 @@ export class ParticleScriptInstance {
         return voidReply();
       }
       case 27:
+        this.requireBuffer('positions', base * 4, 16);
         if (this.stateCopiesRawWords) {
-          new Uint32Array(this.positions.buffer).set([...args, 0], base);
+          new Uint32Array(
+            this.positions.buffer,
+            this.positions.byteOffset,
+            this.positions.length,
+          ).set([...args, 0], base);
+          this.markBuffer('positions', base * 4, 16);
           return voidReply();
         }
         this.positions.set([...floats(), 0], base);
+        this.markBuffer('positions', base * 4, 16);
         return voidReply();
       case 28:
+        this.requireBuffer('positions', base * 4, 12, true);
         if (this.stateCopiesRawWords) {
-          const words = new Uint32Array(this.positions.buffer);
+          const words = new Uint32Array(
+            this.positions.buffer,
+            this.positions.byteOffset,
+            this.positions.length,
+          );
           args.forEach((address, i) => machine.store(address, words[base + i]));
           return voidReply();
         }
         vectorOut(this.positions.subarray(base, base + 3));
         return voidReply();
       case 29: {
+        this.requireBuffer('quads', quadOffset + 20, 92);
+        if (this.width === null || this.height === null)
+          throw new Error(
+            'Native particle texture dimensions are uninitialized at texture coordinates',
+          );
         if (this.geometryUsesSSEWords) {
           const lo = sseFloat32Arithmetic('subtract', args[0], floatBits(0.5)),
             hi = sseFloat32Arithmetic('subtract', args[2], floatBits(0.5)),
@@ -414,7 +515,7 @@ export class ParticleScriptInstance {
               [lo, hi],
               [hi, hi],
             ],
-            view = new DataView(this.quads.buffer);
+            view = new DataView(this.quads.buffer, this.quads.byteOffset, this.quads.byteLength);
           values.forEach(([u, v], i) => {
             view.setUint32(
               quadOffset + i * 28 + 20,
@@ -427,6 +528,7 @@ export class ParticleScriptInstance {
               true,
             );
           });
+          for (let i = 0; i < 4; i++) this.markBuffer('quads', quadOffset + i * 28 + 20, 8);
           return voidReply();
         }
         // The native slot reads two diagonal values as raw float32 words.
@@ -439,18 +541,22 @@ export class ParticleScriptInstance {
           [lo, hi],
           [hi, hi],
         ];
-        const b = new DataView(this.quads.buffer);
+        const b = new DataView(this.quads.buffer, this.quads.byteOffset, this.quads.byteLength);
         for (let i = 0; i < 4; i++) {
           b.setFloat32(quadOffset + i * 28 + 20, divideResult(values[i][0] / this.width), true);
           b.setFloat32(quadOffset + i * 28 + 24, divideResult(values[i][1] / this.height), true);
         }
+        for (let i = 0; i < 4; i++) this.markBuffer('quads', quadOffset + i * 28 + 20, 8);
         return voidReply();
       }
       case 30:
+        this.requireBuffer('quads', quadOffset, 112, true);
         machine.bytes(args[0], 112).set(this.quads.subarray(quadOffset, quadOffset + 112));
         return voidReply();
       case 31:
+        this.requireBuffer('quads', quadOffset, 112);
         this.quads.set(machine.bytes(args[0], 112), quadOffset);
+        this.markBuffer('quads', quadOffset, 112);
         return voidReply();
       case 32:
         this.active = false;
@@ -518,7 +624,11 @@ export class ParticleScriptInstance {
         return voidReply();
       }
       case 39:
-        if (args[0] < this.count) this.visibility[args[0]] = args[1] | 0;
+        if (args[0] < this.count) {
+          this.requireBuffer('visibility', args[0] * 4, 4);
+          this.visibility[args[0]] = args[1] | 0;
+          this.markBuffer('visibility', args[0] * 4, 4);
+        }
         return voidReply();
       case 40:
         return scalar(this.count - 1);
@@ -531,10 +641,12 @@ export class ParticleScriptInstance {
       case 43:
         return real(triangleWave(...floats()));
       case 44:
-        this.quads.set(this.backupQuads);
+        if (this.partialBuffers) this.refBuffers.copy('quads', 'backupQuads');
+        else this.quads.set(this.backupQuads);
         return voidReply();
       case 45:
-        this.backupQuads.set(this.quads);
+        if (this.partialBuffers) this.refBuffers.copy('backupQuads', 'quads');
+        else this.backupQuads.set(this.quads);
         return voidReply();
       case 46:
         return scalar(this.attachPlane);
@@ -587,19 +699,28 @@ export class ParticleScriptInstance {
     }
   }
   snapshot() {
+    if (this.closed) throw new Error('Particle instance is released');
     return {
       scriptVersion: this.script.scriptVersion,
       codeSize: this.script.codeSize,
       count: this.count,
       machine: this.machine.snapshot(),
       shared: this.machine.shared.slice(),
-      quads: this.quads.slice(),
-      backupQuads: this.backupQuads.slice(),
-      positions: this.positions.slice(),
-      bases: this.bases.slice(),
-      rotations: this.rotations.slice(),
-      scales: this.scales.slice(),
-      visibility: this.visibility.slice(),
+      ...(this.refBuffers
+        ? {
+            buffers: this.refBuffers.snapshot(),
+            nativeTaskBuffers: this.nativeTaskBuffers,
+            externalDraw: this.externalDraw,
+          }
+        : {
+            quads: this.quads.slice(),
+            backupQuads: this.backupQuads.slice(),
+            positions: this.positions.slice(),
+            bases: this.bases.slice(),
+            rotations: this.rotations.slice(),
+            scales: this.scales.slice(),
+            visibility: this.visibility.slice(),
+          }),
       registers: this.registers.slice(),
       frame: this.frame,
       before: this.before,
@@ -611,23 +732,46 @@ export class ParticleScriptInstance {
       random: this.random.snapshot(),
     };
   }
-  restore(state) {
+  restore(state, { restoreBuffers = true } = {}) {
+    if (this.closed) throw new Error('Particle instance is released');
     if (
       state.scriptVersion !== this.script.scriptVersion ||
       state.codeSize !== this.script.codeSize ||
       state.count !== this.count
     )
       throw new Error('PTCL checkpoint does not match script or particle count');
-    for (const key of [
-      'quads',
-      'backupQuads',
-      'positions',
-      'bases',
-      'rotations',
-      'scales',
-      'visibility',
-      'registers',
-    ]) {
+    if (this.refBuffers) {
+      if (
+        state.nativeTaskBuffers !== this.nativeTaskBuffers ||
+        state.externalDraw !== this.externalDraw
+      )
+        throw new Error('Particle RefBuffer checkpoint task ownership mismatch');
+      if (restoreBuffers) {
+        const options = {
+          memory: this.refBufferMemory,
+          auxiliary: this.nativeTaskBuffers && !this.externalDraw,
+        };
+        this.refBuffers.validateSnapshot(state.buffers, [...this.refBuffers.entries.values()]);
+        this.refBuffers.close();
+        this.refBuffers = new ParticleRefBuffers(this.count, {
+          ...options,
+          snapshot: state.buffers,
+        });
+        this.bindRefBuffers();
+      }
+    }
+    for (const key of this.refBuffers
+      ? ['registers']
+      : [
+          'quads',
+          'backupQuads',
+          'positions',
+          'bases',
+          'rotations',
+          'scales',
+          'visibility',
+          'registers',
+        ]) {
       if (state[key]?.length !== this[key].length) throw new Error(`PTCL checkpoint ${key} length`);
       this[key].set(state[key]);
     }
@@ -638,5 +782,10 @@ export class ParticleScriptInstance {
     this.random.restore(state.random);
     for (const key of ['frame', 'before', 'hasFrame', 'now', 'active', 'blendMode', 'attachPlane'])
       this[key] = state[key];
+  }
+  close() {
+    if (this.closed) return;
+    this.closed = true;
+    this.refBuffers?.close();
   }
 }
