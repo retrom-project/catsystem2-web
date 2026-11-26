@@ -11,6 +11,8 @@ import { configurationQueryMachine } from './fixtures/configuration-query-fixtur
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeWorld as OrdinaryWorld } from '../src/native/world.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
+import { NativeFileStorage } from '../src/native/storage.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
 import { ParticleRandom } from '../src/ppi/random.mjs';
 import { memoryGame, kcsProgram } from './helpers.mjs';
@@ -445,7 +447,13 @@ function ordinaryRegistryFixture(profile, platform, quiet = false) {
   };
   return { world, events };
 }
-for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+for (const profile of [
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+  'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
+]) {
   test(`ordinary registry GCALLs retain raw bytes, persistence and cold World ownership in ${profile}`, async () => {
     const platform = new Map(),
       first = ordinaryRegistryFixture(profile, platform),
@@ -454,16 +462,16 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
     try {
       await first.world.initialize('main.kcs');
       const machine = first.world.main.machine,
-        sdk = profile.startsWith('sdk-');
+        ansi = !nativeABI(profile).capabilities.unicodeOutput;
       assert.deepEqual(
         [256, 260, 264, 268, 272, 276].map((x) => machine.load(x)),
-        [1, 1, 4, 1, sdk ? 4 : 3, 1],
+        [1, 1, 4, 1, ansi ? 4 : 3, 1],
       );
       assert.deepEqual(machine.bytes(832, 4), Uint8Array.of(0, 0, 0, 128));
       assert.deepEqual(
         machine.bytes(848, 8),
         Uint8Array.from(
-          sdk ? [65, 66, 67, 0, 165, 165, 165, 165] : [65, 66, 67, 0, 0, 165, 165, 165],
+          ansi ? [65, 66, 67, 0, 165, 165, 165, 165] : [65, 66, 67, 0, 0, 165, 165, 165],
         ),
       );
       assert.equal(machine.load(machine.sp - 4), 0x13579bdf);
@@ -529,7 +537,13 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
     }
   });
 }
-for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76']) {
+for (const profile of [
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+  'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
+]) {
   test(`ordinary registry settles IO and retains failed persistence across cold restore in ${profile}`, async () => {
     const platform = new Map(),
       first = ordinaryRegistryFixture(profile, platform, true),
@@ -571,9 +585,9 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       assert.equal(first.world.platformRegistry.handles.size, 0);
       const failure = new Error('owned registry write failed');
       first.world.storage.writePlatform = () => Promise.reject(failure);
-      await assert.rejects(
-        first.world.runtime.native('main', 0xc2, [512, 640, 9], machine, task),
-        (error) => error === failure,
+      assert.deepEqual(
+        await first.world.runtime.native('main', 0xc2, [512, 640, 9], machine, task),
+        { control: 1, value: 0 },
       );
       assert.equal(first.world.platformRegistry.dirty, true);
       assert.equal(first.world.platformRegistry.handles.size, 0);
@@ -600,3 +614,122 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
     }
   });
 }
+
+for (const profile of [
+  'sdk-4.01-engine-2.6.1.74',
+  'nekopara-vol3-engine-2.6.1.76',
+  'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
+]) {
+  test(`ordinary Registry keeps NativeFileStorage transaction abort nonfatal in ${profile}`, async () => {
+    const platform = new Map(),
+      { world } = ordinaryRegistryFixture(profile, platform, true);
+    let storage;
+    try {
+      await world.initialize('main.kcs');
+      const task = world.main,
+        machine = task.machine;
+      assert.deepEqual(await world.runtime.native('main', 194, [512, 640, 7], machine, task), {
+        control: 1,
+        value: 1,
+      });
+      const durable = platform.get('windows-hkcu').slice();
+      storage = new NativeFileStorage(world.game, 'registry-transaction-test');
+      storage.platformStore.records.set('windows-hkcu', { data: { bytes: durable } });
+      const failure = new DOMException(
+        'Controlled registry transaction abort',
+        'QuotaExceededError',
+      );
+      let aborts = 0;
+      storage.platformStore.db = {
+        close() {},
+        transaction() {
+          const tx = {};
+          tx.objectStore = () => ({
+            put() {
+              const request = { error: failure };
+              queueMicrotask(() => {
+                aborts++;
+                tx.error = failure;
+                tx.onabort?.();
+              });
+              return request;
+            },
+          });
+          return tx;
+        },
+      };
+      world.storage = storage;
+      assert.deepEqual(await world.runtime.native('main', 194, [512, 640, 9], machine, task), {
+        control: 1,
+        value: 0,
+      });
+      assert.equal(world.platformRegistry.dirty, true);
+      assert.deepEqual(await storage.readPlatform('windows-hkcu'), durable);
+      const live = world.platformRegistry.keys.get('SOFTWARE\\RETROMNORMAL\\17').get('VALUE_9');
+      assert.equal(new DataView(live.data.buffer).getUint32(0, true), 9);
+      assert.deepEqual(await world.runtime.native('main', 193, [512, 640, 896, 4], machine, task), {
+        control: 1,
+        value: 0,
+      });
+      await world.flush();
+      assert.equal(world.platformRegistry.dirty, true);
+      await world.close({ flushFiles: false });
+      assert.equal(world.closed, true);
+      assert.equal(world.platformRegistry.handles.size, 0);
+      assert.equal(aborts, 4, 'native write, query, explicit flush and close attempt persistence');
+      assert.deepEqual(await storage.readPlatform('windows-hkcu'), durable);
+    } finally {
+      if (!world.closed) await world.close({ flushFiles: false });
+      storage?.close();
+    }
+  });
+}
+
+test('ordinary Registry retries storage reads without swallowing malformed hive or VM input errors', async () => {
+  const platform = new Map();
+  const { world } = ordinaryRegistryFixture('bokutomo-engine-2.6.1.67', platform, true);
+  try {
+    await world.initialize('main.kcs');
+    const task = world.main,
+      machine = task.machine;
+    world.storage.readPlatform = async () => {
+      throw new Error('controlled hive read rejection');
+    };
+    assert.deepEqual(await world.runtime.native('main', 192, [512, 640], machine, task), {
+      control: 1,
+      value: 0,
+    });
+    assert.equal(world.platformRegistry, null);
+    assert.equal(world.platformRegistryLoading, null);
+    world.storage.readPlatform = async () => new TextEncoder().encode('{"keys":"invalid"}');
+    await assert.rejects(
+      world.runtime.native('main', 192, [512, 640], machine, task),
+      /Invalid registry hive/,
+    );
+    world.storage.readPlatform = async () => null;
+    assert.deepEqual(await world.runtime.native('main', 194, [512, 640, 7], machine, task), {
+      control: 1,
+      value: 1,
+    });
+    await assert.rejects(world.runtime.native('main', 195, [512, 640, 0x7f000000], machine, task));
+    assert.equal(world.platformRegistry.handles.size, 0);
+    machine.writeString('P'.repeat(251), 1024);
+    await assert.rejects(
+      world.runtime.native('main', 194, [1024, 640, 7], machine, task),
+      /native scratch/,
+    );
+    machine.writeString('N'.repeat(256), 1024);
+    await assert.rejects(
+      world.runtime.native('main', 194, [512, 1024, 7], machine, task),
+      /native scratch/,
+    );
+    await assert.rejects(
+      world.runtime.native('main', 192, [0x7f000000, 640], machine, task),
+      /not mapped/,
+    );
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});

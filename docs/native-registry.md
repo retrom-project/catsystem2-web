@@ -37,6 +37,18 @@ describes the corresponding query contract;
 [RegSetValueExW](https://learn.microsoft.com/en-us/windows/win32/api/winreg/nf-winreg-regsetvalueexw)
 describes the typed write boundary.
 
+The legacy builds `2.6.1.23`, `2.6.1.63` and `2.6.1.67` use the same raw and
+shared IDs `192–195` (`C0–C3`) with ANSI Registry calls. Each build retains its
+own wrapper evidence and admission. Their fixed argument words come from the live
+VM frame: a shorter declared GCALL width does not remove mapped trailing words,
+and additional declared words are ignored. The output buffer may be local,
+shared or aliased with a formatted input; the wrapper copies both names before
+writing query data. An unmapped destination for `C1` requests the required size.
+The data pointer for `C3` must remain mapped through its NUL terminator.
+Legacy formatted software paths are limited to 250 bytes and value names to
+255 bytes, matching their original fixed scratch buffers including the
+`Software\\` prefix and terminating NUL. Larger or unmapped inputs are diagnostic.
+
 ## Browser platform state
 
 `NativeRegistry` owns one case-insensitive HKCU tree and explicit open-key
@@ -51,13 +63,21 @@ creation and disposition semantics follow the measured API boundary and
 
 The feature factory awaits `readPlatform('windows-hkcu')` before returning.
 Successful key/value mutations await `writePlatform` in the same per-game
-platform namespace. Storage errors propagate; an unsuccessful flush remains
-dirty for retry, including after a settled checkpoint and cold restore. Hive data are invisible to native file enumeration and slot
+platform namespace. An ordinary GCALL maps a rejected platform read or write to control code `1`,
+result zero, and a host diagnostic. A mutation whose persistence failed remains
+dirty for retry, including after a settled checkpoint and cold restore.
+Explicit flush and close also report storage rejection without aborting the game;
+close clears open capabilities even when that retry fails. A failed transaction
+does not replace the previously durable hive. A later successful retry may persist
+the pending mutation. While persistence keeps rejecting, a later query returns
+zero rather than exposing a successful value from that dirty working hive.
+This retry policy belongs to browser persistence; it does not assert that a
+failed Win32 `RegSetValueEx` changes the native hive. Invalid VM arguments and corrupt hive data remain errors. Hive data are invisible to native file enumeration and slot
 files. Open capabilities survive a checkpoint; the ordinary persistent hive
 contains keys and values only. During restore the completed platform load is
 replaced synchronously by the saved hive, so a late read cannot overwrite it.
 A checkpoint rejects an outstanding registry call or initial platform load.
-Close waits for already started ordinary calls, flushes pending data and closes
+Close waits for already started ordinary calls, attempts pending persistence and closes
 their capabilities. An unused ordinary hive does not read platform storage.
 Ordinary World DTOs retain this owner directly; an attached original feature
 retains it in that feature's existing checkpoint instead of duplicating it.

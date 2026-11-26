@@ -180,6 +180,12 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [192, 193, 194, 195],
+    value:
+      'Own 2.6.1.23 Registry wrappers run the original formatter, ANSI HKCU Software path, typed value calls and fixed live argv through full GCALLs. Each returns control 1; missing keys/values or API failures return zero and opened key handles close. DWORD zero is a successful existence query; raw narrow strings use strlen without formatting. Short buffers remain untouched, null translations query required byte length, and VM/shared/aliased destinations retain native write order. The ordinary browser platform uses the existing private persistent HKCU owner, not the system registry.',
+  },
+
+  {
     ids: [166, 167],
     value:
       'Own Main166 and Main167 complete GCALLs preserve this build’s packed signed 16-bit target pan, unsigned 16-bit duration and control-2 stack contract. The actual Sound receiver stores the pan fade fields at its native current-minus-base frame, without changing unrelated control words. Main167 ignores its first float and stores only the second as maximum distance on a loaded primary DirectSound buffer, preserving minimum distance and capturing the actual DirectSound output calls. Absent device/backend/buffer and out-of-range banks retain their native no-change behavior. The other global native backend has no proved browser host mapping and remains open; it is independent of per-file streaming/static mode. A missing 3D output interface still retains the static buffer maximum. These setter proofs do not claim a playback-device or subsequent fade-tick differential.',
@@ -1419,6 +1425,7 @@ export default {
     dynamicMenus: null,
   },
   plugins: { emoteDriver: null, requiredRenderer: null },
+  registry: { keyFormatBytes: 250, valueFormatBytes: 255 },
   capabilities: {
     effekseerTask: false,
     embeddedJavaScript: false,
@@ -1664,6 +1671,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [192, 193, 194, 195], fields: { review: 'reviewed', resultWritten: true } },
         { ids: [166, 167], fields: { review: 'reviewed' } },
         { ids: [165, 349, 569, 587], fields: { review: 'reviewed' } },
         ...nativePreferenceDataSignatures([589]),

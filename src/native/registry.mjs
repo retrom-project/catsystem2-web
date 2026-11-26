@@ -53,6 +53,28 @@ const unhex = (value) => {
   return Uint8Array.from(value.match(/../g) ?? [], (part) => parseInt(part, 16));
 };
 
+class RegistryStorageFailure extends Error {
+  constructor(operation, cause) {
+    super(`Registry persistent ${operation} failed: ${cause?.message ?? String(cause)}`, { cause });
+    this.operation = operation;
+  }
+}
+
+async function registryStorageBoundary(world, operation, failure, native) {
+  try {
+    return await operation();
+  } catch (error) {
+    if (!(error instanceof RegistryStorageFailure)) throw error;
+    world.runtime.services.diagnostic?.({
+      native,
+      resource: 'windows-hkcu',
+      operation: error.operation,
+      error: error.cause?.message ?? String(error.cause),
+    });
+    return failure;
+  }
+}
+
 export class NativeRegistry {
   constructor({ read, write, world } = {}) {
     Object.assign(this, { read, write, world });
@@ -66,7 +88,12 @@ export class NativeRegistry {
     this.pending = new Set();
   }
   async load() {
-    const bytes = await this.read?.();
+    let bytes;
+    try {
+      bytes = await this.read?.();
+    } catch (error) {
+      throw new RegistryStorageFailure('read', error);
+    }
     if (bytes != null) {
       if (!(bytes instanceof Uint8Array)) throw new Error('Registry storage must return bytes');
       const state = JSON.parse(new TextDecoder().decode(bytes));
@@ -80,7 +107,12 @@ export class NativeRegistry {
         path,
         [...values].map(([name, { type, data }]) => [name, type, hex(data)]),
       ]);
-      await this.write(new TextEncoder().encode(JSON.stringify({ keys })));
+      const bytes = new TextEncoder().encode(JSON.stringify({ keys }));
+      try {
+        await this.write(bytes);
+      } catch (error) {
+        throw new RegistryStorageFailure('write', error);
+      }
     }
     this.dirty = false;
   }
@@ -166,18 +198,26 @@ export class NativeRegistry {
       ),
       wide = nativeABI(this.world.profile).capabilities.unicodeOutput,
       decode = wide ? decodeWindowsCP932 : registryDecodeANSI,
-      format = (address) => decode(nativeDataString(formatNativeAt(address, machine))),
+      limits = nativeABI(this.world.profile).registry,
+      format = (address, maximum) => {
+        if (!nativeDataMapped(machine, address))
+          throw new Error('Registry formatted input is not mapped');
+        const bytes = nativeDataString(formatNativeAt(address, machine));
+        if (maximum !== undefined && bytes.length > maximum)
+          throw new RangeError('Registry formatted input exceeds its native scratch');
+        return decode(bytes);
+      },
       writing = id === 0xc2 || id === 0xc3,
       opened = this.open(
         HKCU,
-        `Software\\${format(words[0])}`,
+        `Software\\${format(words[0], limits?.keyFormatBytes)}`,
         writing ? 0x20006 : 0x20019,
         writing,
       );
     if (opened.error) return nativeReply(1, 0);
     try {
       await this.flush();
-      const name = format(words[1]);
+      const name = format(words[1], limits?.valueFormatBytes);
       if (!writing) {
         const value = this.valueBytes(opened.handle, name, wide);
         if (value.error) return nativeReply(1, 0);
@@ -261,9 +301,12 @@ export class NativeRegistry {
     this.dirty = state.dirty;
   }
   async close() {
-    await Promise.allSettled([...this.pending]);
-    await this.flush();
-    this.handles.clear();
+    try {
+      await Promise.allSettled([...this.pending]);
+      await this.flush();
+    } finally {
+      this.handles.clear();
+    }
   }
 }
 
@@ -274,7 +317,12 @@ export function installNativeRegistry(world) {
     world.runtime.register('main', id, async (args, machine, task) => {
       if (originalOwner(world))
         return originalFeature(world, 'registry', 'apply', id, args, machine, task);
-      return (await ordinaryRegistry(world)).applyOrdinary(id, args, machine);
+      return registryStorageBoundary(
+        world,
+        async () => (await ordinaryRegistry(world)).applyOrdinary(id, args, machine),
+        nativeReply(1, 0),
+        id,
+      );
     });
 }
 
@@ -310,10 +358,16 @@ export async function restoreNativeRegistry(world, state) {
   if (state !== null) (await ordinaryRegistry(world)).restore(state);
 }
 export async function flushNativeRegistry(world) {
-  if (world.platformRegistryLoading) await (await world.platformRegistryLoading).flush();
+  if (world.platformRegistryLoading)
+    return registryStorageBoundary(
+      world,
+      async () => (await world.platformRegistryLoading).flush(),
+      false,
+    );
 }
 export async function closeNativeRegistry(world) {
   if (!world.platformRegistryLoading) return;
   const registry = await world.platformRegistryLoading;
-  if (originalView(world, 'registry') !== registry) await registry.close();
+  if (originalView(world, 'registry') !== registry)
+    await registryStorageBoundary(world, () => registry.close(), false);
 }
