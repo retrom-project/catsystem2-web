@@ -154,7 +154,6 @@ test('fixed 2.6.1.23 particle GCALLs route the exact kind-16 packets and keep th
 test('fixed 2.6.1.23 FES particle producer uses the same owned load and start receiver', async () => {
   const world = await particleWorld(profile);
   try {
-    world.graphics.createLogicalDevice();
     const { api, object, sync, task } = await setupParticle(world);
     configureFESParticle(object, {
       family: 0,

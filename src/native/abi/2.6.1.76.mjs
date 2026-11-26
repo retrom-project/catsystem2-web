@@ -58,6 +58,12 @@ export default {
   executableSha256: 'ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0',
   particle: {
     scriptVersionFallback: 'particle-v1',
+    taskMessageStart: 314,
+    taskMessagesUseRawTransport: true,
+    taskFieldsPersistWithoutBank: true,
+    scriptLoadsBeforeTexture: true,
+    scriptLoadMissingReturnsUnwritten: true,
+    deferGraphAttachment: true,
     debugUsesNativeLogger: true,
     stateArgumentsReadFrame: true,
     stateCopiesRawWords: true,

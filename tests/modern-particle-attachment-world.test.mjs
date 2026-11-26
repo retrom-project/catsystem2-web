@@ -73,5 +73,14 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
     await fresh.objects.release(planeID);
     assert.equal(fresh.graphics.attachment(graphID), null);
     assert.deepEqual(restored.bank.instance.machine.memory, saved);
+    restored.tick(2);
+    assert.deepEqual(read(restored), [0, 0, 0, 0, 0, 0]);
+    const missing = await dataWorld(profile, files, { initialize: false });
+    t.after(() => missing.close({ flushFiles: false }));
+    missing.graphics.createLogicalDevice();
+    await missing.restore(await deserializeCheckpoint(await serializeCheckpoint(fresh.snapshot())));
+    const unresolved = missing.particles.get(emitterID);
+    unresolved.tick(3);
+    assert.deepEqual(read(unresolved), [0, 0, 0, 0, 0, 0]);
   });
 }

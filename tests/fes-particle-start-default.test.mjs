@@ -1,7 +1,13 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { profiles, defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
+import {
+  profiles,
+  defaultParticleFESWorld as defaultFESWorld,
+  loadDefaultFES,
+} from './fixtures/default-fes-world.mjs';
+import { kcsProgram } from './helpers.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { notify } from './fixtures/fes-effekseer-world.mjs';
 
 async function expectMissingHead(instance, invoke, head) {
@@ -67,7 +73,10 @@ break
 `;
 
 async function open(profile) {
-  const world = await defaultFESWorld(profile, { 'screen.fes': ascii(source) });
+  const world = await defaultFESWorld(profile, {
+    'screen.fes': ascii(source),
+    'ptcl/bankless.kcs': kcsProgram([[59]]),
+  });
   world.ensureNativeEngine = () => {
     throw new Error('PARTICLE start must stay in the default JavaScript path');
   };
@@ -210,8 +219,18 @@ for (const profile of profiles) {
         children = objects.map((object) => child(h, object)),
         others = new Map(
           ['sound', 'image', 'effect'].map((name) => [name, h.instance.collection.lookup(name, 0)]),
-        ),
-        { traces, messages, reads } = observe(h, objects, others);
+        );
+      for (const record of children) {
+        await record.implementation.load({
+          family: 'script',
+          program: 'bankless',
+          texture: 'missing.hg3',
+          count: 1,
+          priority: 0,
+        });
+        await h.world.sendEngine(record.id, h.id, 317);
+      }
+      const { traces, messages, reads } = observe(h, objects, others);
       assert.deepEqual(
         [...others.values()].map((object) => object.nativeType),
         [9, 1, 7],
@@ -278,7 +297,7 @@ for (const profile of profiles) {
             running: false,
             bank: false,
             marker: 1,
-            result: 0,
+            result: NATIVE_UNWRITTEN_WORD,
           },
           {
             target: record.id,

@@ -32,7 +32,11 @@ export class NativeParticleCommands {
     if (!spec) return undefined;
     const world = this.world,
       messageOffset = nativeParticleMessageOffset(world.profile);
-    if (messageOffset && args.length !== spec.words)
+    if (
+      messageOffset &&
+      !nativeABI(world.profile).particle?.taskMessagesUseRawTransport &&
+      args.length !== spec.words
+    )
       throw new Error(`Particle native ${id} expects ${spec.words} arguments`);
     const a = Array.from({ length: spec.words }, (_, i) => nativeDataArgument(args, machine, i)),
       context = { flags: 0 },

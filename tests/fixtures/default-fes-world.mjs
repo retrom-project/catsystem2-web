@@ -59,6 +59,11 @@ export function fesNotificationMemory(label, name = null, index = 0) {
   };
 }
 export const profiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
+export async function defaultParticleFESWorld(...args) {
+  const world = await defaultFESWorld(...args);
+  world.graphics.createLogicalDevice();
+  return world;
+}
 const glyphs = {
   measure: (_font, text) => ({
     width: text.length * 4,

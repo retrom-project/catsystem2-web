@@ -1,7 +1,12 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { profiles, defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
+import {
+  profiles,
+  defaultParticleFESWorld as defaultFESWorld,
+  loadDefaultFES,
+} from './fixtures/default-fes-world.mjs';
+import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 import { notify } from './fixtures/fes-effekseer-world.mjs';
 import { kcsProgram, hg3 } from './helpers.mjs';
 
@@ -70,7 +75,6 @@ async function open(profile) {
     'quad.hg3': hg3(1, 1, Uint8Array.of(255, 255, 255, 255)),
   });
   try {
-    world.graphics.createLogicalDevice();
     const h = await loadDefaultFES(world);
     await h.task.tick();
     return { ...h, world, runtime: h.instance.runtime };
@@ -314,10 +318,10 @@ for (const profile of profiles) {
           result,
         ]),
         [children[0], children[2]].flatMap((record) => [
-          [record.id, h.id, 314, 0, 0, 1, 0],
-          [record.id, h.id, 319, 0, 0, 1, 0],
-          [record.id, h.id, 320, 0, 255, 1, 0],
-          [record.id, h.id, 315, 0, 0, 1, 0],
+          [record.id, h.id, 314, 0, 0, 1, NATIVE_UNWRITTEN_WORD],
+          [record.id, h.id, 319, 0, 0, 1, NATIVE_UNWRITTEN_WORD],
+          [record.id, h.id, 320, 0, 255, 1, NATIVE_UNWRITTEN_WORD],
+          [record.id, h.id, 315, 0, 0, 1, NATIVE_UNWRITTEN_WORD],
           [record.id, h.id, 318, 0, 0, 1, 1],
         ]),
       );

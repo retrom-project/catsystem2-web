@@ -19,6 +19,7 @@ export async function particleWorld(profile, { initialize = true } = {}) {
   );
   world.game.width = world.graphics.stage.width = 8;
   world.game.height = world.graphics.stage.height = 8;
+  world.graphics.createLogicalDevice();
   world.particles.host.registry = authoredPPIRegistry(['probe']);
   world.objects.register(1002, (record) => {
     const base = world.base(record),

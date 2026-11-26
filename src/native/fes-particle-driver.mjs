@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // FES PARTICLE owns authored state; the real kind16 task owns PTCL/PPI execution.
 import { nativeParticleMessageOffset } from './particle-commands.mjs';
+import { nativeABI } from './abi/index.mjs';
 
 const f = Math.fround;
 
@@ -50,6 +51,9 @@ export function setFESParticleRegisters(object, values) {
 export class FESParticleDriver {
   constructor(world) {
     this.world = world;
+    this.messageOffset = nativeABI(world.profile).particle?.taskMessagesUseRawTransport
+      ? 0
+      : nativeParticleMessageOffset(world.profile);
     // Native 314 starts from a zeroed 0x290 packet, even after a previous param.
     this.zeroRegisters = new Float32Array(32);
   }
@@ -123,7 +127,7 @@ export class FESParticleDriver {
     return this.world.sendEngine(
       resource.taskID,
       instance.runtimeID,
-      message + nativeParticleMessageOffset(this.world.profile),
+      message + this.messageOffset,
       0,
       l,
       context,

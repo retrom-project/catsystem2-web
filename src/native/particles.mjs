@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MPL-2.0
 // PTCL and PPI banks share the JS engine-side task and render contract.
-import { Particles } from '../particles.mjs';
+import { Particles, ParticleScriptResourceMissing } from '../particles.mjs';
 import { quietFloat32Bits } from '../ppi/numeric.mjs';
 import { nativeABI } from './abi/index.mjs';
+import { readNativeResource } from './resource-file.mjs';
 import { NATIVE_UNWRITTEN_WORD } from './engine-message.mjs';
 import { NativeParticleProjection } from './particle-projection.mjs';
 import { NativeParticleTextures } from './particle-textures.mjs';
@@ -49,6 +50,10 @@ export class NativeParticles {
       ...options,
       profile: world.profile,
       deferGraphAttachment: nativeABI(world.profile).particle?.deferGraphAttachment,
+      scriptLoadsBeforeTexture: nativeABI(world.profile).particle?.scriptLoadsBeforeTexture,
+      readScript: nativeABI(world.profile).particle?.scriptLoadsBeforeTexture
+        ? (name) => readNativeResource(world, name, 3)
+        : undefined,
     });
   }
   get(id) {
@@ -93,6 +98,8 @@ export class NativeParticleTask {
     this.key = `task:${record.id}`;
     this.base = this.world.base(record);
     this.state = { active: false, alpha: 256, attachment: -1 };
+    this.persistTaskFields = nativeABI(this.world.profile).particle?.taskFieldsPersistWithoutBank;
+    if (this.persistTaskFields) Object.assign(this.state, { registers: null, family: null });
   }
   get bank() {
     return this.owner.host.get(this.key);
@@ -106,14 +113,32 @@ export class NativeParticleTask {
   }
   async load(spec) {
     const active = this.active;
-    const bank = await this.owner.host.load(this.key, {
-      ...spec,
-      alpha: this.state.alpha,
-      attachPlane: this.state.attachment,
-      attachmentNamespace: 'graph',
-      autoStart: false,
-      autoRelease: false,
-    });
+    if (this.persistTaskFields) {
+      this.state.family = spec.family;
+      this.state.registers = new Float32Array(32);
+      this.state.registers.set(spec.registers ?? []);
+    }
+    let bank;
+    try {
+      bank = await this.owner.host.load(this.key, {
+        ...spec,
+        alpha: this.state.alpha,
+        attachPlane: this.state.attachment,
+        attachmentNamespace: 'graph',
+        autoStart: false,
+        autoRelease: false,
+      });
+    } catch (error) {
+      if (
+        nativeABI(this.world.profile).particle?.scriptLoadMissingReturnsUnwritten &&
+        error instanceof ParticleScriptResourceMissing
+      ) {
+        this.state.active = active;
+        return null;
+      }
+      throw error;
+    }
+    if (this.persistTaskFields) this.state.registers = null;
     this.bindScriptFrameRate(bank);
     // Native 13A resets clocks and resources but retains the active DWORD.
     // It does not implicitly call Init on a replacement DLL.
@@ -136,9 +161,15 @@ export class NativeParticleTask {
   async message([sender, message, w, l], context = {}) {
     const host = this.owner.host,
       offset = nativeParticleMessageOffset(this.world.profile),
-      canonical = message - offset,
-      unwritten = offset ? NATIVE_UNWRITTEN_WORD : 0;
-    if (offset && canonical >= 314 && canonical <= 321 && !this.world.graphics.device.attachment) {
+      rawTransport = nativeABI(this.world.profile).particle?.taskMessagesUseRawTransport,
+      canonical = message - (rawTransport && !context.nativeRaw ? 0 : offset),
+      unwritten = offset || rawTransport ? NATIVE_UNWRITTEN_WORD : 0;
+    if (
+      (offset || rawTransport) &&
+      canonical >= 314 &&
+      canonical <= 321 &&
+      !this.world.graphics.device.attachment
+    ) {
       context.nativeUnhandled = true;
       return NATIVE_UNWRITTEN_WORD;
     }
@@ -148,7 +179,11 @@ export class NativeParticleTask {
           await this.load(context.spec);
           return unwritten;
         }
-        if (!l && (context.nativePointer || (offset && !context.payload && !context.machine)))
+        if (
+          !l &&
+          (context.nativePointer ||
+            ((offset || rawTransport) && !context.payload && !context.machine))
+        )
           return unwritten;
         const memory = this.source(sender, context),
           bytes = memory.bytes(l, 0x290),
@@ -160,10 +195,16 @@ export class NativeParticleTask {
               .decode(end < 0 ? part : part.subarray(0, end))
               .replace(/^@cat\/(?:ptcl|ptclpi|image)\//, '');
           },
-          texture = string(132);
+          texture = string(132),
+          program = string(4),
+          authoredCategory = new TextDecoder().decode(bytes.subarray(4, 9)) === '@cat/';
         await this.load({
           family: view.getUint32(0, true) ? 'plugin' : 'script',
-          program: string(4),
+          program,
+          nativeProgramName:
+            rawTransport && !authoredCategory && view.getUint32(0, true) === 0
+              ? program
+              : undefined,
           texture,
           nativeTextureName: texture ? bytes.slice(132, 260) : undefined,
           count: view.getUint32(260, true),
@@ -174,7 +215,13 @@ export class NativeParticleTask {
         return unwritten;
       }
       case 0x13b:
-        this.state.active = true;
+        if (this.persistTaskFields && this.state.family === null)
+          throw new Error('Native particle start requires its initialized family');
+        this.state.active = !(
+          this.persistTaskFields &&
+          this.state.family === 'plugin' &&
+          !this.bank
+        );
         if (this.bank) host.start(this.key);
         return unwritten;
       case 0x13c:
@@ -183,6 +230,8 @@ export class NativeParticleTask {
         return unwritten;
       case 0x13d:
         this.state.active = false;
+        if (this.persistTaskFields && this.bank)
+          this.state.registers = this.bank.instance.registers.slice();
         host.end(this.key, { stop: false });
         return unwritten;
       case 0x13e:
@@ -191,13 +240,17 @@ export class NativeParticleTask {
         if (
           !l &&
           (context.nativePointer ||
-            (offset && !context.payload && !context.machine && !context.registers))
+            ((offset || rawTransport) &&
+              !context.payload &&
+              !context.machine &&
+              !context.registers))
         )
           throw new RangeError('Native particle registers require a mapped VM address');
         const values =
           context.registers ||
-          registers(this.source(sender, context).bytes(l, 128), Boolean(offset));
+          registers(this.source(sender, context).bytes(l, 128), Boolean(offset && !rawTransport));
         if (this.bank) host.set(this.key, values);
+        else if (this.persistTaskFields) this.state.registers = values.slice();
         return unwritten;
       }
       case 0x140:
@@ -218,10 +271,21 @@ export class NativeParticleTask {
     this.state.active = this.owner.host.busy(this.key);
   }
   snapshot() {
-    return { ...this.state };
+    return this.persistTaskFields
+      ? { ...this.state, registers: this.state.registers?.slice() ?? null }
+      : { ...this.state };
   }
   restore(state) {
-    this.state = { ...state };
+    if (
+      this.persistTaskFields &&
+      (!['script', 'plugin', null].includes(state.family) ||
+        (state.registers !== null &&
+          (!(state.registers instanceof Float32Array) || state.registers.length !== 32)))
+    )
+      throw new Error('Native particle task requires its unloaded register state');
+    this.state = this.persistTaskFields
+      ? { ...state, registers: state.registers?.slice() ?? null }
+      : { ...state };
   }
   close() {
     this.owner.host.end(this.key, { stop: false });

@@ -66,6 +66,12 @@ export default {
     vectorComponentsUseSSEWords: true,
   },
   particle: {
+    taskMessageStart: 309,
+    taskMessagesUseRawTransport: true,
+    taskFieldsPersistWithoutBank: true,
+    scriptLoadsBeforeTexture: true,
+    scriptLoadMissingReturnsUnwritten: true,
+    deferGraphAttachment: true,
     debugUsesNativeLogger: true,
     stateArgumentsReadFrame: true,
     stateCopiesRawWords: true,

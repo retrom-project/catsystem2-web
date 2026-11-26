@@ -1,7 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { profiles, defaultFESWorld, loadDefaultFES } from './fixtures/default-fes-world.mjs';
+import {
+  profiles,
+  defaultParticleFESWorld as defaultFESWorld,
+  loadDefaultFES,
+} from './fixtures/default-fes-world.mjs';
 import { notify } from './fixtures/fes-effekseer-world.mjs';
 
 async function expectMissingHead(instance, invoke, head) {

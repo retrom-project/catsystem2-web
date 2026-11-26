@@ -10,6 +10,18 @@ import { ParticlesGL } from './render/particles-gl.mjs';
 const normalize = (name) => name.replaceAll('\\', '/').toLowerCase();
 const white = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
 const sceneBankCount = 8;
+const bankRegisters = (bank) =>
+  Object.defineProperty(bank, 'registers', {
+    get() {
+      return this.instance?.registers ?? null;
+    },
+  });
+export class ParticleScriptResourceMissing extends Error {
+  constructor(name) {
+    super(`Missing ptcl resource: ${name}`);
+    this.name = 'ParticleScriptResourceMissing';
+  }
+}
 export class Particles {
   constructor(
     stage,
@@ -22,6 +34,8 @@ export class Particles {
       fps = 60,
       attachment,
       deferGraphAttachment = false,
+      scriptLoadsBeforeTexture = false,
+      readScript,
       now,
       clock,
       epoch = 0,
@@ -40,6 +54,8 @@ export class Particles {
     this.fps = fps;
     this.attachment = attachment;
     this.deferGraphAttachment = deferGraphAttachment;
+    this.scriptLoadsBeforeTexture = scriptLoadsBeforeTexture;
+    this.readScript = readScript;
     this.onDebug = onDebug;
     this.atlas = atlas;
     this.projectGeometry = projectGeometry;
@@ -61,9 +77,13 @@ export class Particles {
     return Math.trunc(n) | 0;
   }
   resource(category, name, extension) {
+    const missing = () => {
+      if (category === 'ptcl') throw new ParticleScriptResourceMissing(name);
+      throw new Error(`Missing ${category} resource: ${name}`);
+    };
     if (typeof this.game.resolveCategory === 'function') {
       const resolved = this.game.resolveCategory(name, category);
-      if (resolved === null) throw new Error(`Missing ${category} resource: ${name}`);
+      if (resolved === null) missing();
       return resolved;
     }
 
@@ -72,7 +92,7 @@ export class Particles {
       ? [file]
       : [`${category}/${file}`, `${category}.int/${file}`, file];
     const found = candidates.find((candidate) => this.game.has(candidate));
-    if (!found) throw new Error(`Missing ${category} resource: ${name}`);
+    if (!found) missing();
     return found;
   }
   get hasLooseLibraries() {
@@ -83,6 +103,12 @@ export class Particles {
     const path = name.replace(/^c:[\\/]catsystem2-web[\\/]/i, ''),
       bytes = await this.game.readLoose(path);
     if (bytes === null) throw new Error(`Missing loose particle library: ${name}`);
+    return bytes;
+  }
+  async scriptBytes(name) {
+    const bytes = this.readScript ? await this.readScript(name) : await this.game.require(name);
+    if (bytes === null) throw new ParticleScriptResourceMissing(name);
+    if (!(bytes instanceof Uint8Array)) throw new TypeError('Particle script requires file bytes');
     return bytes;
   }
   async preloadData() {
@@ -147,7 +173,7 @@ export class Particles {
   create(key) {
     if (this.closed) throw new Error('Particle host is closed');
     if (this.banks.has(key)) throw new Error(`Particle bank already exists: ${key}`);
-    const bank = {
+    const bank = bankRegisters({
       key,
       order: this.sequence++,
       loaded: false,
@@ -155,10 +181,9 @@ export class Particles {
       alpha: 255,
       attachPlane: -1,
       attachmentNamespace: 'graph',
-      registers: new Float32Array(32),
       speed: 1,
       clockStart: null,
-    };
+    });
     this.banks.set(key, bank);
     this.metadata(bank);
     return bank;
@@ -196,7 +221,7 @@ export class Particles {
     bank.attachment = attachment;
     return attachment?.id ?? bank.attachPlane;
   }
-  async load(key, { nativeTextureName, ...spec }) {
+  async load(key, { nativeTextureName, nativeProgramName, registers, ...spec }) {
     if (!this.game || !this.images)
       throw new Error('Particles require game resources and an image store');
     const previous = this.banks.get(key)?.nativeAtlas;
@@ -209,14 +234,19 @@ export class Particles {
       loaded: false,
       started: false,
       alpha: spec.alpha ?? 255,
-      registers: new Float32Array(32),
       clockStart: null,
       attachPlane: spec.attachPlane ?? -1,
       attachmentNamespace: spec.attachmentNamespace || 'graph',
       speed: spec.speed ?? 1,
     });
     try {
-      await this.loadBank(bank, spec, previous, nativeTextureName);
+      await this.loadBank(
+        bank,
+        { ...spec, registers },
+        previous,
+        nativeTextureName,
+        nativeProgramName,
+      );
     } catch (error) {
       try {
         if (this.banks.get(key) === bank) this.end(key, { stop: false });
@@ -227,7 +257,7 @@ export class Particles {
     }
     return bank;
   }
-  async loadBank(bank, spec, previous, nativeTextureName) {
+  async loadBank(bank, spec, previous, nativeTextureName, nativeProgramName) {
     if (!['script', 'plugin'].includes(bank.family))
       throw new Error(`Unknown particle executable family ${bank.family}`);
     if (!Number.isSafeInteger(bank.count) || bank.count < 0 || bank.count > 1000000)
@@ -235,10 +265,15 @@ export class Particles {
     if (!Number.isFinite(bank.priority)) throw new Error('Invalid particle priority');
     const category = bank.family === 'plugin' ? 'ptclpi' : 'ptcl';
     bank.program =
-      bank.family === 'plugin' && this.hasLooseLibraries
+      nativeProgramName ??
+      (bank.family === 'plugin' && this.hasLooseLibraries
         ? this.game.nativeResources.resolveLoose(bank.program, category)
-        : this.resource(category, bank.program, bank.family === 'plugin' ? 'ppi' : 'kcs');
+        : this.resource(category, bank.program, bank.family === 'plugin' ? 'ppi' : 'kcs'));
     if (bank.program === null) throw new Error(`Missing ${category} mount for ${spec.program}`);
+    const preparedScript =
+      bank.family === 'script' && this.scriptLoadsBeforeTexture
+        ? await readKCS(await this.scriptBytes(bank.program))
+        : null;
     if (this.atlas) {
       const texture = nativeTextureName ?? bank.texture;
       bank.nativeAtlas = await this.atlas.load(
@@ -276,9 +311,11 @@ export class Particles {
       onDebug: this.onDebug,
       autoStart: false,
     };
-    const bytes = await (bank.family === 'plugin'
-      ? this.readPlugin(bank.program)
-      : this.game.require(bank.program));
+    const bytes = preparedScript
+      ? null
+      : await (bank.family === 'plugin'
+          ? this.readPlugin(bank.program)
+          : this.scriptBytes(bank.program));
     if (bank.family === 'plugin') {
       await this.preloadData();
       const runtime = await this.pluginRuntime();
@@ -287,7 +324,7 @@ export class Particles {
         readParticleData: (name) => this.data(name),
       });
     } else {
-      const script = await readKCS(bytes);
+      const script = preparedScript ?? (await readKCS(bytes));
       script.name = bank.program;
       bank.instance = new ParticleScriptInstance(script, {
         ...common,
@@ -303,7 +340,6 @@ export class Particles {
       bank.instance.close?.({ stop: false });
       throw new Error('Particle load was closed or superseded');
     }
-    bank.registers.set(bank.instance.registers);
     bank.loaded = true;
     bank.nativeRenderOrder = this.stage.nativeGraphics?.allocateRenderOrder?.();
     this.metadata(bank);
@@ -364,9 +400,9 @@ export class Particles {
   set(key, values) {
     const bank = this.require(key);
     if (values.length > 32) throw new Error('Particle accepts at most 32 registers');
-    bank.registers.fill(0);
-    bank.registers.set(values);
-    bank.instance?.setRegisters(bank.registers);
+    const registers = new Float32Array(32);
+    registers.set(values);
+    bank.instance.setRegisters(registers);
   }
   alpha(key, value = 255) {
     const bank = this.require(key);
@@ -595,7 +631,6 @@ export class Particles {
         screenShift: bank.screenShift,
         loaded: bank.loaded,
         started: bank.started,
-        registers: bank.registers.slice(),
         pluginID: bank.family === 'plugin' ? bank.instance.id : null,
         script: bank.family === 'script' ? bank.instance.snapshot() : null,
       })),
@@ -625,12 +660,12 @@ export class Particles {
       });
     }
     for (const saved of state.banks) {
-      const bank = { ...saved, registers: new Float32Array(saved.registers) };
+      const bank = bankRegisters({ ...saved });
       this.banks.set(bank.key, bank);
       await this.bindBankImage(bank);
       if (bank.family === 'plugin') bank.instance = this.runtime.instances.get(saved.pluginID);
       else {
-        const script = await readKCS(await this.game.require(bank.program));
+        const script = await readKCS(await this.scriptBytes(bank.program));
         script.name = bank.program;
         bank.instance = new ParticleScriptInstance(script, {
           profile: this.profile,

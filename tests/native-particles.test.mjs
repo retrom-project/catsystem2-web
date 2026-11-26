@@ -56,6 +56,7 @@ function setup() {
         width: 8,
         height: 8,
         has: (name) => name === 'image/quad.hg3' || files.has(name),
+        read: async (name) => files.get(name) ?? null,
         require: async (name) => {
           if (!files.has(name)) throw new Error(`Missing fixture ${name}`);
           return files.get(name);
@@ -68,6 +69,7 @@ function setup() {
       },
       graphics: {
         stage,
+        device: { attachment: 'logical' },
         attachment: (id) => (id === 77 ? { base: [1, 2, 3], pos: [4, 5, 6], display: true } : null),
       },
       base: (record) => ({
@@ -102,8 +104,8 @@ test('native particle factory and main PTCL wrappers route real task IDs, raw re
   const id = await world.objects.create({ kind: 16 }),
     task = world.particles.get(id);
   assert.equal(task.bank, null);
-  await call(0x110, [id]);
-  assert.equal((await call(0x112, [id])).value, 1);
+  await assert.rejects(call(0x110, [id]), /requires its initialized family/);
+  assert.equal((await call(0x112, [id])).value, 0);
   await call(0x111, [id]);
   await call(0x1aa, [id, 128]);
   await call(0x1ab, [id, 77]);
@@ -226,6 +228,7 @@ test('the complete NativeWorld saves live PPI tasks and restores their JS execut
   let second;
   try {
     await first.initialize('main.kcs');
+    first.graphics.createLogicalDevice();
     const machine = first.main.machine;
     machine.writeString('probe', 32);
     machine.writeString('', 64);
@@ -243,6 +246,7 @@ test('the complete NativeWorld saves live PPI tasks and restores their JS execut
     await first.tick();
     const expected = [a, b].map((id) => first.particles.get(id).bank.instance.records());
     second = make();
+    second.graphics.createLogicalDevice();
     await second.restore(saved);
     await second.tick();
     await second.tick();
