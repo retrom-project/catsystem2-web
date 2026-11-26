@@ -40,6 +40,14 @@ computed rectangle. It leaves the VM bytes unchanged and returns success for
 allocated pixel storage, including entirely transparent pixels. Its SDK23
 pointer is therefore an input, rather than a rectangle output.
 
+SDK23 `375` reads a file's first 1,024 bytes at most and parses the first image
+header into nine mapped VM words. `431` instead parses the complete encoded
+container owned by `365` and clears its nine-word destination before querying
+all frames. HG2's depth-derived header word and the container parser's untouched
+word retain their original values; they are not replaced by decoded pixel depth.
+Normal HG2/HG3 KCS tests compare all output and surrounding seeded words, then
+restore and release the still-live encoded descriptor in an independent World.
+
 [NativeImages](../src/native/image.mjs) owns script bitmap pixels, metadata,
 attributes and aliasing in JS. Canvas presentation is a derived cache. A
 checkpoint saves the shared JS pixel backing once and preserves the bitmap

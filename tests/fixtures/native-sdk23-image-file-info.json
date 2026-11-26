@@ -1,0 +1,96 @@
+{
+  "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "scope": "Positive actual original375/IFile-header and431/Main365 encoded container GCALL; intact original text, no native invalid outputs.",
+  "cases": [
+    {
+      "format": "HG2",
+      "name": "info.hg3",
+      "base64": "SEctMgwAAAAlAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAMAAAABAAAAA8AAAALAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAACAAAA/////3icUzGUygAAAcMA2HicY+RwOFAPhvYAGVYFBg==",
+      "nativeReceiptSha256": "eb372ea3f5682bb33074bc152442e57cdb59475e475852e081d35f4674d09c86",
+      "producerSha256": "2f93b9f055da3a7cdeaf2b89f3360af06a74e92d33c01e30cf27cc4731dbd0c8",
+      "rows": [
+        {
+          "id": 375,
+          "args": [256, 100],
+          "resultAddress": 48,
+          "result": 1,
+          "outputs": [
+            0, 0, 4, 3, 4, 3, 0, 2, 4294967295, 826366249, 826366250, 826366251, 826366252,
+            826366253, 826366254, 826366255, 826366256, 826366257
+          ]
+        },
+        {
+          "id": 365,
+          "args": [256],
+          "resultAddress": 32,
+          "result": 536993184,
+          "outputs": [
+            0, 0, 4, 3, 4, 3, 0, 2, 4294967295, 826366249, 826366250, 826366251, 826366252,
+            826366253, 826366254, 826366255, 826366256, 826366257
+          ]
+        },
+        {
+          "id": 431,
+          "args": [[19, 32], 136],
+          "resultAddress": 48,
+          "result": 1,
+          "outputs": [0, 0, 4, 3, 4, 3, 0, 2, 4294967295, 0, 0, 4, 3, 4, 3, 0, 2, 4294967295]
+        },
+        {
+          "id": 366,
+          "args": [[19, 32]],
+          "resultAddress": null,
+          "result": null,
+          "outputs": [0, 0, 4, 3, 4, 3, 0, 2, 4294967295, 0, 0, 4, 3, 4, 3, 0, 2, 4294967295]
+        }
+      ]
+    },
+    {
+      "format": "HG3",
+      "name": "info.hg3",
+      "base64": "SEctMwwAAAAAAwAAgwAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAIAAAAgAAAA/////wIAAAAIAAAACQAAAAAAAAABAAAABQAAAGltZzAwMDAAAAAAADMAAAAAAAAAAgAAAAwAAAAEAAAADwAAAAsAAAB4nFMxlMoAAAHDANh4nGPkcDhQD4b2ABlWBQYAAAAABAAAAHN0ZGluZm8AOAAAACgAAAAEAAAAAwAAACAAAAADAAAA/v///woAAAALAAAAAAAAAAcAAAD9////aW1nMDAwMAAAAAAAMwAAAAAAAAADAAAADAAAAAQAAAAPAAAACwAAAHicUzGUygAAAcMA2HicY+RwOFAPhvYAGVYFBg==",
+      "nativeReceiptSha256": "999dd57a96c3e774a14b615238c1008a797c3aacdb428bc8f588d501825ca286",
+      "producerSha256": "2f93b9f055da3a7cdeaf2b89f3360af06a74e92d33c01e30cf27cc4731dbd0c8",
+      "rows": [
+        {
+          "id": 375,
+          "args": [256, 100],
+          "resultAddress": 48,
+          "result": 1,
+          "outputs": [
+            4294967295, 2, 2, 2, 8, 9, 4, 1, 5, 826366249, 826366250, 826366251, 826366252,
+            826366253, 826366254, 826366255, 826366256, 826366257
+          ]
+        },
+        {
+          "id": 365,
+          "args": [256],
+          "resultAddress": 32,
+          "result": 536993056,
+          "outputs": [
+            4294967295, 2, 2, 2, 8, 9, 4, 1, 5, 826366249, 826366250, 826366251, 826366252,
+            826366253, 826366254, 826366255, 826366256, 826366257
+          ]
+        },
+        {
+          "id": 431,
+          "args": [[19, 32], 136],
+          "resultAddress": 48,
+          "result": 1,
+          "outputs": [
+            4294967295, 2, 2, 2, 8, 9, 4, 1, 5, 4294967295, 4294967294, 4, 3, 10, 11, 0, 1, 5
+          ]
+        },
+        {
+          "id": 366,
+          "args": [[19, 32]],
+          "resultAddress": null,
+          "result": null,
+          "outputs": [
+            4294967295, 2, 2, 2, 8, 9, 4, 1, 5, 4294967295, 4294967294, 4, 3, 10, 11, 0, 1, 5
+          ]
+        }
+      ]
+    }
+  ]
+}

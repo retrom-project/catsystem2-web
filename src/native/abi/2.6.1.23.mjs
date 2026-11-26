@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [375, 431],
+    value:
+      'Own Main375 at0x4897b0 formats the CP932 image path, reads at most1024 bytes through the explicit IFile boundary and executes the original nine-word header parser. Own431 at0x489a90 consumes the true Main365 twenty-byte descriptor, zeros its nine-word output and runs the whole HG2/HG3 container parser. Full actual Script GCALLs compare distinct mapped spans and surrounding seeded words for valid HG2/HG3, including the HG2 header depth-derived word and the container helper untouched word after wrapper zeroing. Both return control1; no synthetic native owner, text patch or invalid-output probe is used.',
+  },
+  {
     ids: [376, 446, 468, 537, 538, 558, 564, 641],
     value:
       'Own loaded Script GCALLs run all three Main376 color modes and Main468 rotation,538 blur,558 mirror,564 raw mask and641 alpha scaling on actual Main365/428-owned asymmetric HG3 pixels. Main537 copies a nonempty ats0007 attribute tree into a real Main112 bitmap; Main536 then reads the five copied words, including transformed attributes after rotation/mirror. Main446 copies its mapped RECT into native stack scratch, scans the live bitmap there and returns1 when pixel storage exists; it never copies that rectangle back, including a wholly transparent bitmap. Full physical pixels, metadata, VM outputs and Script ownership are compared through the normal complete wrappers.',
@@ -1778,6 +1783,32 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...[375, 431].map((id) => ({
+          ids: [id],
+          fields: {
+            review: 'reviewed',
+            resultWritten: true,
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) => ({
+              ...parameter,
+              type:
+                index === 0
+                  ? id === 375
+                    ? {
+                        kind: 'pointer',
+                        addressSpace: 'vm',
+                        direction: 'in',
+                        target: { kind: 'format-string', encoding: 'CP932' },
+                      }
+                    : { kind: 'handle', handleKind: 'image-data', ownership: 'borrowed' }
+                  : {
+                      kind: 'pointer',
+                      addressSpace: 'vm',
+                      direction: 'out',
+                      target: { kind: 'record', name: 'nine-word image metadata' },
+                    },
+            })),
+          },
+        })),
         ...[376, 446, 468, 537, 538, 558, 564, 641].map((id) => ({
           ids: [id],
           fields: {
