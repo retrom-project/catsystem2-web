@@ -510,6 +510,8 @@ export class NativeRetainedDraw {
     const source = this.sources.get(record.source);
     await this.composite(source);
     const bitmap = this.sources.bitmap(record.source);
+    if (!bitmap && record.kind === 3 && nativeABI(this.world.profile).graphics.retainedEmptySources)
+      throw new Error('The empty image-owner Draw source has no reviewed ABI binding');
     if (!bitmap && !nativeABI(this.world.profile).graphics.retainedEmptySources) {
       await draw.removeEntry(record.key);
       return false;
