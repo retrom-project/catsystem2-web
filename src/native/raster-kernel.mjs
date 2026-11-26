@@ -121,7 +121,12 @@ export function rasterizeRetainedBitmap(
   state,
   item,
   region,
-  { flipDestinationY = false, firstDestinationRow = 0, written = null } = {},
+  {
+    flipDestinationY = false,
+    firstDestinationRow = 0,
+    written = null,
+    preserveTransparentRGB = true,
+  } = {},
 ) {
   if (!item.visible || !item.alpha || !state.width || !state.height) return;
   const mask = state.mask ?? 0,
@@ -151,10 +156,17 @@ export function rasterizeRetainedBitmap(
       clip,
       flipDestinationY,
       firstDestinationRow,
-      ...(blend
+      ...(blend || !preserveTransparentRGB
         ? {
-            blendPixel: (out, at, source, offset, alpha) =>
-              blendTypePixel(out, at, source, offset, alpha, blend, true),
+            blendPixel: (out, at, source, offset, alpha) => {
+              if (
+                !preserveTransparentRGB &&
+                !((((source[offset + 3] + 1) * (alpha & 65535)) >>> 8) & 255)
+              )
+                return;
+              if (blend) blendTypePixel(out, at, source, offset, alpha, blend, true);
+              else blendBitmapPixel(out, at, source, offset, alpha);
+            },
           }
         : {}),
     });
@@ -191,6 +203,7 @@ export function rasterizeRetainedBitmap(
     firstOutputRow = (flipDestinationY ? height - area[3] : area[1]) - firstDestinationRow,
     endOutputRow = firstOutputRow + area[3] - area[1],
     packedBlend =
+      preserveTransparentRGB &&
       logicalRows &&
       normal &&
       !copy &&
@@ -247,7 +260,7 @@ export function rasterizeRetainedBitmap(
         );
       continue;
     }
-    if (normal && area[0] > 0 && emptyPixel(output, at - 4))
+    if (preserveTransparentRGB && normal && area[0] > 0 && emptyPixel(output, at - 4))
       output.set([input[start], input[start + 1], input[start + 2], 0], at - 4);
     if (copyToClear) output.set(input.subarray(start, start + count * 4), at);
     else if (packedBlend)
@@ -260,11 +273,15 @@ export function rasterizeRetainedBitmap(
         else if (mask)
           output[destination + 3] =
             (((output[destination + 3] + 1) * (input[source + channel] + 1) - 1) & 65535) >>> 8;
-        else blendBitmapPixel(output, destination, input, source, item.alpha);
+        else if (
+          preserveTransparentRGB ||
+          (((input[source + 3] + 1) * (item.alpha & 65535)) >>> 8) & 255
+        )
+          blendBitmapPixel(output, destination, input, source, item.alpha);
       }
     const end = at + count * 4,
       last = start + (count - 1) * 4;
-    if (normal && area[2] < width && emptyPixel(output, end))
+    if (preserveTransparentRGB && normal && area[2] < width && emptyPixel(output, end))
       output.set([input[last], input[last + 1], input[last + 2], 0], end);
   }
 }

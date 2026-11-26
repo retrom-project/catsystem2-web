@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [731],
+    value:
+      'Own complete Main731 at0x4808e0 uses the actual Main66 kind15 kcTaskImageList0x90, original raw253 initialized renderer0x3c and Main710 loaded image owner. The wrapper copies the owner into field3 of its60-byte descriptor and sends raw254 with the caller/layer key, float32 transform, clamped alpha, shown and mode words. Actual disabled Draw Main340/raw264 renders CPU pixels without a device output; Main261 returns its borrowed bitmap. Original source-owner release retains the Draw input, entry removal clears it and the real parent update deletes the retired Draw. Full KCS pixels, controls, resource counts and independent cold match the shared logical retained-source graph; no GPU publication fence is changed.',
+  },
+  {
     ids: [430, 460],
     value:
       'Own complete Main430/460 Script GCALLs use the original system-information singleton, file server, Settings, software kcView and constructor-loaded ANM table. Main430 tests direct readable ANM and basename table fallback, first duplicate insertion and case-sensitive stored keys; no ANM execution is involved. Main460 returns an explicitly owned0x114 bitmap without entering the Script automatic list: ordinary HG3 frame zero retains RGB24, while selector composition allocates an RGBA result and combines valid named layers with original anchors, offsets and pixels. Eight positive forms cover HG2/HG3 files, RGB24, one/multiple selectors, skipped zero selectors and narrow multi-character basenames. No desktop/GPU action or synthetic receiver is used.',
@@ -1701,6 +1706,9 @@ export default {
     sameSizeBitmapCopyClips: true,
     imageOwnerCopyPhysicalRows: true,
     imageOwnerBlendPhysicalRows: true,
+    imageOwnerDrawModes: [0, 1],
+    retainedScalarRows: true,
+    drawRetirementRetainsResources: true,
     screenCaptureOpaque: true,
     recordingRequiresFrame: true,
     screenEffectRetimesOnActiveInit: [38, 39, 50, 51, 52],

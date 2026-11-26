@@ -83,6 +83,23 @@ source/output bitmaps and the external VRAM branch remain guarded. `721` with
 no output bitmap leaves the native result unwritten and remains protected.
 Blank owners are not passed to the loaded-layer iterators.
 
+SDK23 `731` binds an image owner to a real Draw task initialized by `256`,
+using the same retained resource graph. Its descriptor carries the float32
+position, base, rotation and scale plus clamped alpha, visibility and mode.
+The SDK23 CPU raster policy leaves zero effective-alpha pixels and rectangle
+borders untouched, for normal rows and affine sampling. Modes `0` and `1` are
+covered; other mode words remain guarded. Positive KCS tests compare full CPU
+pixels through rotated and scaled forms, replacing a key, releasing the source
+owner, independent cold restore, entry removal and Draw destruction.
+
+The Draw bitmap query returns a borrowed renderer bitmap. On SDK23, retirement
+keeps that renderer alive until the existing task update performs destruction;
+the bitmap ends with the Draw owner. The CPU policy preserves publication,
+revision and output ordering, and leaves other builds' raster behavior intact.
+The original tests disable external output and use the actual `340` render
+entry; GDI/Win32 ports and CPU startup calibration are supplied host boundaries,
+not native graphics behavior or a product clock service.
+
 [NativeImages](../src/native/image.mjs) owns script bitmap pixels, metadata,
 attributes and aliasing in JS. Canvas presentation is a derived cache. A
 checkpoint saves the shared JS pixel backing once and preserves the bitmap

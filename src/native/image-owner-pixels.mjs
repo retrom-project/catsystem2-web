@@ -10,6 +10,9 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
     images = world.graphics.images,
     first = a(0) >>> 0;
   if (id === 0x2db || id === 0x2dc) {
+    const modes = nativeABI(world.profile).graphics.imageOwnerDrawModes;
+    if (modes && !modes.includes(a(12)))
+      throw new Error('The image-owner Draw mode has no reviewed ABI binding');
     const packet = new NativeGraphicsPacket([
       0,
       0,

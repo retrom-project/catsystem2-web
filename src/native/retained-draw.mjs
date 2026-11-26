@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 // Retained sources, ANM clocks and Draw composition share the JS resource graph.
+import { nativeABI } from './abi/index.mjs';
 import { truncateFloat32 } from '../ppi/numeric.mjs';
 import { bitsFloat, floatBits } from '../kcs.mjs';
 import { NativeBitmap } from './image.mjs';
@@ -462,6 +463,7 @@ export class NativeRetainedDraw {
         state,
         { ...attrs, clip: input.clip ?? [0, 0, output.width, output.height] },
         [0, 0, output.width, output.height],
+        { preserveTransparentRGB: !nativeABI(this.world.profile).graphics.retainedScalarRows },
       );
     }
     output.state.rgba = flipBitmapRows(pixels, output.width, output.height);
@@ -609,6 +611,7 @@ export class NativeRetainedDraw {
         flipDestinationY: true,
         firstDestinationRow: firstRow,
         written: cleared ? [] : null,
+        preserveTransparentRGB: !nativeABI(this.world.profile).graphics.retainedScalarRows,
       };
     if (replaceRows) {
       // Cleared rows need no copy. Preserve both outside ranges in the new

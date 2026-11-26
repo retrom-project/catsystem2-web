@@ -48,7 +48,8 @@ export class NativeDrawTask {
     const key = (sender | (w << 16)) >>> 0;
     switch (message) {
       case 3:
-        await this.close();
+        if (!nativeABI(this.world.profile).graphics.drawRetirementRetainsResources)
+          await this.close();
         return this.base.message(words, context);
       case 19:
         return 0; // Explicit original message handler branch.
