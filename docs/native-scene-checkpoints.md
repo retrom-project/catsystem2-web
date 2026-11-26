@@ -92,3 +92,22 @@ record bytes. Newly allocated record padding after a string terminator remains
 uninitialized native data; the portable comparison checks logical names, keys,
 and string bytes through their terminators. This group does not establish raw
 CSS padding round trips, cross-task receiver lookup, or localized reader tails.
+
+The modern cross-task wrappers use the source Script's history even when the
+source has no interpreter. Main234 copies both native history lists into the
+caller's existing context, including self-copy; a missing target or a target
+without Scene data returns zero. The copied history remains independent of
+later source edits, clear, and Main219 replacement. Main233 reads the source
+history when expanding references and preserves missing references verbatim.
+A caller without Scene data returns before reading its text buffer.
+
+The own `.74` wrappers send Script raw message 173; `.76` sends 175. The `.74`
+`taskQueries` mapping converts only kind12 raw173 to semantic175, with the inverse
+recorded separately. An empty Script context writes two zero pointer outputs
+without writing the message result. A loaded context's physical reader/history
+pointer outputs remain protected outside original-engine ownership; the ordinary
+Main233/234 bridge uses the reviewed typed Scene resource instead. Canonical
+`sendEngine` and raw `sendNativeEngine` have separate controls so the raw query
+cannot become the semantic173 queued-message operation. The tests retain full
+36-frame Main comparisons per build and three cold restores per build. No FES
+source receiver or raw pointer layout is inferred from the Script cases.

@@ -540,6 +540,10 @@ export default {
     taskDumpWrapper: 34,
     areaNonReceiver: 262,
     channels: {
+      taskQueries: {
+        raw: [{ min: 173, max: 173, offset: 2, kinds: [12] }],
+        canonical: [{ min: 175, max: 175, offset: -2, kinds: [12] }],
+      },
       fesSound: {
         raw: [
           {
