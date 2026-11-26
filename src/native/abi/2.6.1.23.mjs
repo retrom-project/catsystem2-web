@@ -1701,6 +1701,7 @@ export default {
     bitmapToneSkipsNeutralOwner: true,
     bitmapCompositeUsesLegacyRows: true,
     imageCompositePreservesRGB24: true,
+    imageCompositeFormats: ['HG2', 'HG3'],
     formattedBitmapPhysical: true,
     bitmapBlitUsesSourceSize: true,
     sameSizeBitmapCopyClips: true,

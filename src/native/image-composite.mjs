@@ -8,6 +8,8 @@ import { nativeImageMetadata } from './image-buffer-info.mjs';
 import { nativeImagePathParts } from './image-file.mjs';
 import { nativeABI } from './abi/index.mjs';
 import { blendBitmapPixel } from './image.mjs';
+import { HG2 } from '../formats/hg2.mjs';
+import { HG3 } from '../formats/hg3.mjs';
 export const NATIVE_IMAGE_COMPOSITE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x1cc, words: 1, control: 1 }),
 ]);
@@ -29,7 +31,12 @@ export class NativeImageComposites {
       const handle = await images.load(name, 0);
       if (handle && nativeABI(this.world.profile).graphics.imageCompositePreservesRGB24) {
         try {
-          const frame = (await images.images.load(name)).frame(0);
+          const image = await images.images.load(name),
+            formats = nativeABI(this.world.profile).graphics.imageCompositeFormats,
+            format = image instanceof HG2 ? 'HG2' : image instanceof HG3 ? 'HG3' : 'raster';
+          if (formats && !formats.includes(format))
+            throw new Error('Selector image input has no reviewed format binding');
+          const frame = image.frame(0);
           if (frame?.bpp === 24) {
             const bitmap = images.get(handle);
             bitmap.state.bpp = 3;
@@ -51,7 +58,13 @@ export class NativeImageComposites {
         try {
           const bytes = await this.world.imageFiles.readResolved(resolved),
             out = new Uint8Array(36);
-          if (!bytes || !nativeImageMetadata(bytes, 0, false, out).success) continue;
+          if (!bytes) continue;
+          const formats = nativeABI(this.world.profile).graphics.imageCompositeFormats,
+            magic = String.fromCharCode(...bytes.subarray(0, 4)),
+            format = magic === 'HG-2' ? 'HG2' : magic === 'HG-3' ? 'HG3' : 'raster';
+          if (formats && !formats.includes(format))
+            throw new Error('Selector image input has no reviewed format binding');
+          if (!nativeImageMetadata(bytes, 0, false, out).success) continue;
           const view = new DataView(out.buffer),
             v = Array.from({ length: 9 }, (_, i) => view.getInt32(i * 4, true));
           state = {
@@ -64,7 +77,8 @@ export class NativeImageComposites {
             baseX: v[7],
             baseY: v[8],
           };
-        } catch {
+        } catch (error) {
+          if (nativeABI(this.world.profile).graphics.imageCompositeFormats) throw error;
           continue;
         }
       }
@@ -92,6 +106,13 @@ export class NativeImageComposites {
         const h = await images.load(file, 0);
         if (!h) continue;
         try {
+          const formats = nativeABI(this.world.profile).graphics.imageCompositeFormats;
+          if (formats) {
+            const image = await images.images.load(file),
+              format = image instanceof HG2 ? 'HG2' : image instanceof HG3 ? 'HG3' : 'raster';
+            if (!formats.includes(format))
+              throw new Error('Selector image input has no reviewed format binding');
+          }
           const source = images.get(h),
             v = source.state;
           let dx = Math.max(0, v.offsetX - s.offsetX) + s.baseX - v.baseX,

@@ -55,7 +55,8 @@ boolean without executing the ANM program. `460` loads frame zero of an HG2/HG3
 file or composes named selector layers. Ordinary RGB24 remains three bytes per
 pixel when no selector is present; selector output uses RGBA and preserves the
 old clipped scalar pixel rules, including untouched transparent RGB outside
-each layer. Alternate selector blend types remain protected.
+each layer. Other encoded formats and alternate selector blend types remain
+protected.
 
 The `460` result has explicit bitmap ownership and does not join the Script
 automatic list. Its KCS tests compare original pixels, geometry and reference

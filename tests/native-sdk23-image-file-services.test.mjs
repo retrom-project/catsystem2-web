@@ -92,3 +92,22 @@ test('SDK23 KCS ANM presence and selector factories match actual initialized ori
     );
   }
 });
+
+test('SDK23 protects an unreviewed decoded image format and releases its tentative bitmap', async (t) => {
+  const world = await dataWorld(profile, {
+    'format-guard.kcs': kcsProgram([[37, 256], [43, 460, 4], [59]], [[256, 'unreviewed.image']]),
+  });
+  t.after(() => world.close({ flushFiles: false }));
+  const images = world.graphics.images,
+    before = [...world.runtime.handles.records.keys()];
+  // The injected decoder represents an unsupported format without invoking a
+  // browser codec or an original malformed-input path.
+  images.load = async () => images.create(1, 1);
+  images.images.load = async () => ({});
+  const task = await world.spawnScript('format-guard.kcs', {
+    parent: world.main.id,
+    initialExecute: false,
+  });
+  await assert.rejects(world.runtime.scheduler.execute(task), /no reviewed format binding/);
+  assert.deepEqual([...world.runtime.handles.records.keys()], before);
+});
