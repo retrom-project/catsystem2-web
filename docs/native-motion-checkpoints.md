@@ -38,6 +38,12 @@ are a raw capture outside this lifetime acceptance; no initial value is inferred
 from them. The virtual OS providers and standalone KCS caller do not establish
 full application startup or a physical Windows GPU result.
 
+The manager's internal checkpoint stores its speed as a raw float32 word.
+This preserves negative zero and NaN payloads through a cold restore; the
+native CSS motion-record layout is unchanged. The modern Main state fixture
+also checks complete KCS local frames, overlapping output pointers, empty and
+null-manager controls, and independent cold restores of both banks and flags.
+
 The game serializer/load pair is `78A2F0`/`78A420`; the SDK pair is
 `622400`/`622540`. `scripts/verify-native-motion-checkpoint.mjs` executes each
 original serializer and main `13C` refresh wrapper against authored ordered

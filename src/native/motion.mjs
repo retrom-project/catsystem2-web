@@ -258,7 +258,7 @@ export function nativeMotion(id, args, machine, services = {}, owner) {
         manager.update(word(1) >>> 0, word(2) !== 0);
         return value(Number(manager.lastProcessed));
       case 0x134:
-        manager.speed = bitsFloat(word(1));
+        manager.speedWord = word(1) >>> 0;
         return done();
       case 0x135: {
         const instance = manager.records.get(word(1))?.instance,

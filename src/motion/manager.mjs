@@ -4,9 +4,16 @@ import { MOTION_ABI, initialMotionObject } from './abi.mjs';
 import { ParticleRandom } from '../ppi/random.mjs';
 import { nativeABI } from '../native/abi/index.mjs';
 import { roundX87Single } from '../ppi/x87.mjs';
+import { bitsFloat, floatBits } from '../kcs/vm.mjs';
 
 const f = Math.fround;
 export class MotionManager {
+  get speed() {
+    return bitsFloat(this.speedWord);
+  }
+  set speed(value) {
+    this.speedWord = floatBits(value);
+  }
   constructor({
     profile,
     base = initialMotionObject(),
@@ -103,7 +110,7 @@ export class MotionManager {
       profile: this.profile,
       base: this.base.slice(),
       working: this.working.slice(),
-      speed: this.speed,
+      speedWord: this.speedWord,
       flags: this.flags,
       nextHandle: this.nextHandle,
       random: this.random.snapshot(),
@@ -121,6 +128,9 @@ export class MotionManager {
       state.profile !== this.profile ||
       state.base?.length !== MOTION_ABI.objectSize ||
       state.working?.length !== MOTION_ABI.objectSize ||
+      !Number.isInteger(state.speedWord) ||
+      state.speedWord < 0 ||
+      state.speedWord > 0xffffffff ||
       typeof this.loadScript !== 'function'
     )
       throw new Error('MOT manager checkpoint/profile/loader mismatch');
@@ -138,7 +148,7 @@ export class MotionManager {
     }
     this.base.set(state.base);
     this.working.set(state.working);
-    this.speed = f(state.speed);
+    this.speedWord = state.speedWord;
     this.flags = state.flags;
     this.nextHandle = state.nextHandle;
     this.random.restore(state.random);
