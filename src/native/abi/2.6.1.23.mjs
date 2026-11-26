@@ -180,6 +180,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [376, 446, 468, 537, 538, 558, 564, 641],
+    value:
+      'Own loaded Script GCALLs run all three Main376 color modes and Main468 rotation,538 blur,558 mirror,564 raw mask and641 alpha scaling on actual Main365/428-owned asymmetric HG3 pixels. Main537 copies a nonempty ats0007 attribute tree into a real Main112 bitmap; Main536 then reads the five copied words, including transformed attributes after rotation/mirror. Main446 copies its mapped RECT into native stack scratch, scans the live bitmap there and returns1 when pixel storage exists; it never copies that rectangle back, including a wholly transparent bitmap. Full physical pixels, metadata, VM outputs and Script ownership are compared through the normal complete wrappers.',
+  },
+  {
     ids: [428, 648],
     value:
       'Own Main428 at0x4899e0 decodes an ordinal frame from the actual Main365 twenty-byte encoded resource, writes the resolved frame ID through its third live VM argument, converts RGB24 to RGBA32 and inserts the real0x114 bitmap owner into Script+0x98. Main648 at0x489ea0 uses0x4d86a0 to compose HG2/HG3 tile IDs0–8 into a new bitmap: corners, repeated edges and repeated center, with normal partial edge clips. Actual loaded Script GCALLs preserve distinct ordinal/ID values, opaque and alpha pixels, typed resource/list ownership and explicit release. Unsupported formats and unproved empty/smaller target shapes stay guarded; this is not a blank-size constructor.',
@@ -1773,6 +1778,31 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        ...[376, 446, 468, 537, 538, 558, 564, 641].map((id) => ({
+          ids: [id],
+          fields: {
+            review: 'reviewed',
+            resultWritten: id === 446 || id === 537,
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) =>
+              parameter.type.kind === 'handle'
+                ? {
+                    ...parameter,
+                    type: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' },
+                  }
+                : parameter.type.kind === 'pointer'
+                  ? {
+                      ...parameter,
+                      type: {
+                        kind: 'pointer',
+                        addressSpace: 'vm',
+                        direction: 'in',
+                        target: { kind: 'record', name: 'RECT' },
+                      },
+                    }
+                  : parameter,
+            ),
+          },
+        })),
         { ids: [428, 648], fields: { review: 'reviewed' } },
         ...[370, 371, 374, 377, 378].map((id) => ({
           ids: [id],

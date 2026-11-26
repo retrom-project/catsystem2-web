@@ -30,6 +30,16 @@ selection. Other encoded formats, empty nine-piece dimensions and destinations
 smaller than a source tile remain guarded. Shared semantic names do not admit
 these entries for other builds.
 
+SDK23 pixel commands `376/468/538/558/564/641` reuse the shared color,
+rotation, canvas-bounded blur, mirror, raw mask and alpha operations. A complete
+KCS sequence compares every intermediate pixel and metadata field with the
+original. `537` merges a real HG3 attribute tree into a separately constructed
+bitmap; subsequent `536` queries preserve all five words and transformed origins.
+The original `446` copies its VM RECT into stack scratch and discards the
+computed rectangle. It leaves the VM bytes unchanged and returns success for
+allocated pixel storage, including entirely transparent pixels. Its SDK23
+pointer is therefore an input, rather than a rectangle output.
+
 [NativeImages](../src/native/image.mjs) owns script bitmap pixels, metadata,
 attributes and aliasing in JS. Canvas presentation is a derived cache. A
 checkpoint saves the shared JS pixel backing once and preserves the bitmap

@@ -1,0 +1,691 @@
+{
+  "executableSha256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "nativeReceiptSha256": "1946fc4f367830051e1eaacb6019448627eac23c9b0e9c0d8f0a19d0241d7924",
+  "producerSha256": "ac3110564fe710f5912c7c7f231ab4fc43fa38855ce5ec479c9bd5c6aab2eb58",
+  "scope": "Actual Main365/428 and Main112 typed native bitmaps; complete loaded Script GCALL, physical alpha bounds, nonempty HG3 attribute copy and three color modes, rotation, blur, mirror, mask, alpha. Positive ordinary formats/dimensions only; original text intact and no low-page data access.",
+  "resource": {
+    "name": "pixels.hg3",
+    "base64": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAAAAAAAAAAAEAAAAAwAAAAEAAAAAAAAAAAAAAGltZzAwMDAAZgAAAFYAAAAAAAAAAwAAACcAAAApAAAAFwAAAA8AAAB4nGM7cEDliQoYiD95osJ+nB0MFI4fZ9d6pQUBr1atOtAAAA/4Dc94nGPkaFBm0Jc4wM32wYnrAycAGZAD+mF0czAwMDcAAAAAABQAAAAKAAAA7P///x4AAADY////IwGA/w=="
+  },
+  "rows": [
+    {
+      "id": 365,
+      "args": [256],
+      "resultAddress": 32,
+      "result": null,
+      "outputs": [0, 0, 0, 0, 0, 0, 0],
+      "source": null,
+      "target": null
+    },
+    {
+      "id": 428,
+      "args": [[19, 32], 0, 124],
+      "resultAddress": 36,
+      "result": null,
+      "outputs": [0, 0, 0, 0, 0, 0, 0],
+      "source": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "DSlZAB40YIAvP2f/QEpuAFFVdQBiYHwAc2uDAIR2igCVgZEApoyYALeXnwDIoqYA",
+        "metadata": {
+          "canvasWidth": 4,
+          "canvasHeight": 3,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      },
+      "target": null
+    },
+    {
+      "id": 446,
+      "args": [[19, 36], 100],
+      "resultAddress": 48,
+      "result": 1,
+      "outputs": [0, 0, 0, 0, 0, 0, 0],
+      "source": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "DSlZAB40YIAvP2f/QEpuAFFVdQBiYHwAc2uDAIR2igCVgZEApoyYALeXnwDIoqYA",
+        "metadata": {
+          "canvasWidth": 4,
+          "canvasHeight": 3,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      },
+      "target": null
+    },
+    {
+      "id": 112,
+      "args": [4, 3],
+      "resultAddress": 40,
+      "result": null,
+      "outputs": [0, 0, 0, 0, 0, 0, 0],
+      "source": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "DSlZAB40YIAvP2f/QEpuAFFVdQBiYHwAc2uDAIR2igCVgZEApoyYALeXnwDIoqYA",
+        "metadata": {
+          "canvasWidth": 4,
+          "canvasHeight": 3,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 446,
+      "args": [[19, 40], 100],
+      "resultAddress": 48,
+      "result": 1,
+      "outputs": [0, 0, 0, 0, 0, 0, 0],
+      "source": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "DSlZAB40YIAvP2f/QEpuAFFVdQBiYHwAc2uDAIR2igCVgZEApoyYALeXnwDIoqYA",
+        "metadata": {
+          "canvasWidth": 4,
+          "canvasHeight": 3,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 537,
+      "args": [
+        [19, 40],
+        [19, 36]
+      ],
+      "resultAddress": 48,
+      "result": 1,
+      "outputs": [0, 0, 0, 0, 0, 0, 0],
+      "source": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "DSlZAB40YIAvP2f/QEpuAFFVdQBiYHwAc2uDAIR2igCVgZEApoyYALeXnwDIoqYA",
+        "metadata": {
+          "canvasWidth": 4,
+          "canvasHeight": 3,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 536,
+      "args": [[19, 40], 7, 100, 104, 108, 112, 116],
+      "resultAddress": 48,
+      "result": 1,
+      "outputs": [10, 4294967276, 30, 4294967256, 4286578979, 0, 0],
+      "source": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "DSlZAB40YIAvP2f/QEpuAFFVdQBiYHwAc2uDAIR2igCVgZEApoyYALeXnwDIoqYA",
+        "metadata": {
+          "canvasWidth": 4,
+          "canvasHeight": 3,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 376,
+      "args": [[19, 36], 1],
+      "resultAddress": null,
+      "result": null,
+      "outputs": [10, 4294967276, 30, 4294967256, 4286578979, 0, 0],
+      "source": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "JSUlADAwMIA9PT3/SkpKAFZWVgBjY2MAbm5uAHt7ewCHh4cAlJSUAKCgoACtra0A",
+        "metadata": {
+          "canvasWidth": 4,
+          "canvasHeight": 3,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 376,
+      "args": [[19, 36], 2],
+      "resultAddress": null,
+      "result": null,
+      "outputs": [10, 4294967276, 30, 4294967256, 4286578979, 0, 0],
+      "source": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "QikBAE00DIBZQBj/Z04mAHJZMQCAZz8AinFJAJh/VwCki2MAsJdvALyjewDJsIgA",
+        "metadata": {
+          "canvasWidth": 4,
+          "canvasHeight": 3,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 376,
+      "args": [[19, 36], 3],
+      "resultAddress": null,
+      "result": null,
+      "outputs": [10, 4294967276, 30, 4294967256, 4286578979, 0, 0],
+      "source": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "vdb+ALLL84Cmv+f/mLHZAI2mzgB/mMAAdY62AGeAqABbdJwAT2iQAENchAA2T3cA",
+        "metadata": {
+          "canvasWidth": 4,
+          "canvasHeight": 3,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 468,
+      "args": [[19, 36], 90],
+      "resultAddress": null,
+      "result": null,
+      "outputs": [10, 4294967276, 30, 4294967256, 4286578979, 0, 0],
+      "source": {
+        "width": 3,
+        "height": 4,
+        "bpp": 4,
+        "rgbaBase64": "mLHZAGeAqAA2T3cApr/n/3WOtgBDXIQAssvzgH+YwABPaJAAvdb+AI2mzgBbdJwA",
+        "metadata": {
+          "canvasWidth": 3,
+          "canvasHeight": 4,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 3,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 3, 4]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 538,
+      "args": [[19, 36], 1, 1],
+      "resultAddress": null,
+      "result": null,
+      "outputs": [10, 4294967276, 30, 4294967256, 4286578979, 0, 0],
+      "source": {
+        "width": 3,
+        "height": 4,
+        "bpp": 4,
+        "rgbaBase64": "pr/nMKa/5xAAAAAAqcLqeKvD6ygAAAAAqsPrYKvE7CAAAAAAscryGLLL8wgAAAAA",
+        "metadata": {
+          "canvasWidth": 3,
+          "canvasHeight": 4,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 3,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 3, 4]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 558,
+      "args": [[19, 36], 1],
+      "resultAddress": null,
+      "result": null,
+      "outputs": [10, 4294967276, 30, 4294967256, 4286578979, 0, 0],
+      "source": {
+        "width": 3,
+        "height": 4,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAKa/5xCmv+cwAAAAAKvD6yipwup4AAAAAKvE7CCqw+tgAAAAALLL8wixyvIY",
+        "metadata": {
+          "canvasWidth": 3,
+          "canvasHeight": 4,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 3, 4]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 564,
+      "args": [[19, 36], 2147483651],
+      "resultAddress": null,
+      "result": null,
+      "outputs": [10, 4294967276, 30, 4294967256, 4286578979, 0, 0],
+      "source": {
+        "width": 3,
+        "height": 4,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAKa/5xCmv+cwAAAAAKvD6yipwup4AAAAAKvE7CCqw+tgAAAAALLL8wixyvIY",
+        "metadata": {
+          "canvasWidth": 3,
+          "canvasHeight": 4,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 2147483651
+        },
+        "clip": [0, 0, 3, 4]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 641,
+      "args": [[19, 36], 50],
+      "resultAddress": null,
+      "result": null,
+      "outputs": [10, 4294967276, 30, 4294967256, 4286578979, 0, 0],
+      "source": {
+        "width": 3,
+        "height": 4,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAKa/5wimv+cYAAAAAKvD6xSpwuo8AAAAAKvE7BCqw+swAAAAALLL8wSxyvIM",
+        "metadata": {
+          "canvasWidth": 3,
+          "canvasHeight": 4,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 2147483651
+        },
+        "clip": [0, 0, 3, 4]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 536,
+      "args": [[19, 36], 7, 100, 104, 108, 112, 116],
+      "resultAddress": 48,
+      "result": 1,
+      "outputs": [4294967276, 10, 30, 4294967256, 4286578979, 0, 0],
+      "source": {
+        "width": 3,
+        "height": 4,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAKa/5wimv+cYAAAAAKvD6xSpwuo8AAAAAKvE7BCqw+swAAAAALLL8wSxyvIM",
+        "metadata": {
+          "canvasWidth": 3,
+          "canvasHeight": 4,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 2147483651
+        },
+        "clip": [0, 0, 3, 4]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 446,
+      "args": [[19, 36], 100],
+      "resultAddress": 48,
+      "result": 1,
+      "outputs": [4294967276, 10, 30, 4294967256, 4286578979, 0, 0],
+      "source": {
+        "width": 3,
+        "height": 4,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAKa/5wimv+cYAAAAAKvD6xSpwuo8AAAAAKvE7BCqw+swAAAAALLL8wSxyvIM",
+        "metadata": {
+          "canvasWidth": 3,
+          "canvasHeight": 4,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 2,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 2147483651
+        },
+        "clip": [0, 0, 3, 4]
+      },
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 114,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "result": null,
+      "outputs": [4294967276, 10, 30, 4294967256, 4286578979, 0, 0],
+      "source": null,
+      "target": {
+        "width": 4,
+        "height": 3,
+        "bpp": 4,
+        "rgbaBase64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "metadata": {
+          "canvasWidth": 0,
+          "canvasHeight": 0,
+          "offsetX": 0,
+          "offsetY": 0,
+          "alphaHint": 0,
+          "baseX": 0,
+          "baseY": 0,
+          "mask": 0
+        },
+        "clip": [0, 0, 4, 3]
+      }
+    },
+    {
+      "id": 114,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "result": null,
+      "outputs": [4294967276, 10, 30, 4294967256, 4286578979, 0, 0],
+      "source": null,
+      "target": null
+    },
+    {
+      "id": 366,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "result": null,
+      "outputs": [4294967276, 10, 30, 4294967256, 4286578979, 0, 0],
+      "source": null,
+      "target": null
+    }
+  ]
+}
