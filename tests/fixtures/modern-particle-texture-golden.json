@@ -1,0 +1,3999 @@
+{
+  "scope": "Two own PE resource/renderer/native class lifecycles with actual CRT CPUID and D3DX initializer. Current JS NativeWorld/GameFiles/HG3/surfaces/data/cold are paired. Win32/D3D9 are explicit virtual OS interfaces; no physical Windows GPU, full game startup, authored scene or cache-worker completion claim.",
+  "references": [
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-rgba2x1.json",
+      "sha256": "82144c626804de23dccca1a5be945d2e1a3edf4264732a6f84c38315e2ae0cdb"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-74-rgba2x1.json",
+      "sha256": "114bd4cab241f80956fb4856e1cff42237ee50df513e68eb21c34b3edd50839f"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-rgba3x2.json",
+      "sha256": "29aac7a2713f2d049c88b34de59d151e3aab3d3007e61aecde3516afe585f57e"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-74-rgba3x2.json",
+      "sha256": "f555bbf3ceec1111d8efb7884e6a7cb4a927b894064eb4b9287eed03b80563b4"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-rgba1x3.json",
+      "sha256": "d32555dcf54a276847755aa8d55b17e0a1cd66a878293c908eadb9923fe99259"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-74-rgba1x3.json",
+      "sha256": "4b8cb56e596df75e0121a6f1e9559a8f984fc159a80d51ff24a60800aac53fd0"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-unicode2x1.json",
+      "sha256": "e20954598aa08a604a456ca8c710efbece788c06e62d8db728d09ed050ffb924"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-74-unicode2x1.json",
+      "sha256": "3ac9fdef7e0ded573074452cae3fbd042f4f8440a698b8e72978151c453ea1aa"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-count0.json",
+      "sha256": "36b678ac3412d7a45e092d508d8faa70622c656aa3fa6373f2106c065f2211f7"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-74-count0.json",
+      "sha256": "ee103e6b3f509d53dbbab1d5173340aa723e883b4b37b9df56acb0d8c7d91dd2"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-count1.json",
+      "sha256": "f0019fde947a8a00b93407ad4680834bf3e70bded4ace84545e023b6b46fdd3c"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-74-count1.json",
+      "sha256": "d4689efe1cc72e9e33644b7beb99a5dbf04dae2dda4ea95b0646b995e9f9c844"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-rgba3x2-retained.json",
+      "sha256": "8536fda402aa09dca40e977b959f18797810f53d8d80c2012c14fad9cce38106"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-RETAINED-74-rgba3x2.json",
+      "sha256": "4a689cf676ae811bdd5ed916a0518e3dcc81259e666a590e28e4b40d41bc00dd"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-FAILURE-INITIALIZED-74.json",
+      "sha256": "e0d9ad33667c8416ea128eaaed075f8dd5998080a445588bc328d78c2b06ff9c"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-EXTERNAL-INITIALIZED-74.json",
+      "sha256": "53103a064a98c6126ee36a98eacf1331df62f02cd9f380f02c472f014f478011"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-INITIAL-EMPTY-74.json",
+      "sha256": "f1c16aa3371369e41a3ec9cf9397846000240fb659ca17b949c0425d642d2a4c"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-rgba2x1.json",
+      "sha256": "ed601a9ec612bc0186ee9ce0584529e6f3410fc8703c144f2969e52302835970"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-76-rgba2x1.json",
+      "sha256": "c6d664befc8350868a110d41c71a928d0591f1bb92e90a4909ef29dfbacdaeb2"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-rgba3x2.json",
+      "sha256": "2b47c5b6a33d21ffae2ff4e518f7afbe3443911dc3be3365d97b0848bf4032ae"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-76-rgba3x2.json",
+      "sha256": "29dc9241d54583f9d745281cc186ec07e8742ed2f9dbec2115e5754c893d27de"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-rgba1x3.json",
+      "sha256": "051eeab334559c5ba14e394e72cd8ab3e1d9a870ed2b358ad7e824e5613e5621"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-76-rgba1x3.json",
+      "sha256": "240f2b5f593556db842e2bc47d3826be4d0cb01ab04186478cd71869a25c5201"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-unicode2x1.json",
+      "sha256": "b75dac16559316c3bff665fe77d6168a29bb63dd61e2495ec93cc780083e3bbc"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-76-unicode2x1.json",
+      "sha256": "5a7abd9fa475ba6c5a04fb442e233fe68e14b998f1aea8c41e287bbeb0547299"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-count0.json",
+      "sha256": "60537e0ff3bf247d587c21402103ffd789bd7ca2b0fa41297685e1730e3671d4"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-76-count0.json",
+      "sha256": "2fb17a063da1ad89982f025fa85e5b884eebbddbaa9efe8ed67ff90603168fef"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-count1.json",
+      "sha256": "c43e38c7c3920808b68a6a982a559a90fb1a8b5ad6c84b10508a3237be7235c7"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-76-count1.json",
+      "sha256": "5c1c3fa7f43641c7c7e53740f7bcf16ea77191ed9da835d920a9b795da5f60e6"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-rgba3x2-retained.json",
+      "sha256": "bb00ff5abde98c6bd02a1e9304e096a79de536d2d37271827abb1d1b44c361e0"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-RETAINED-76-rgba3x2.json",
+      "sha256": "ff51c2c945fe2cfc84f8520d98832f6dbbaaaeffb3778e4fe5d411b41ac4f9b2"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-FAILURE-INITIALIZED-76.json",
+      "sha256": "cd3ab060bf25cbbec2644f029ad317ddc36caae69f20e590030bfb38cf965eaf"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-EXTERNAL-INITIALIZED-76.json",
+      "sha256": "46f55c0ae8d1343a92c9ab27431de8b84b662e38330a9cb3bf7f6784ba0b9ca6"
+    },
+    {
+      "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-INITIAL-EMPTY-76.json",
+      "sha256": "858d53512b7564891d8fc3658981398fd191808621fe9ac21485247fef3953bf"
+    }
+  ],
+  "versions": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "cases": [
+        {
+          "name": "rgba2x1",
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-rgba2x1.json",
+            "sha256": "82144c626804de23dccca1a5be945d2e1a3edf4264732a6f84c38315e2ae0cdb"
+          },
+          "initialization": {
+            "cpu": 6527840,
+            "isaAddress": 13201268,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 4292978,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              4297128, 4302157, 4309797, 4309989, 4310609, 4297281, 4312046, 4310299, 4298525,
+              4297192, 4302356, 4311130, 4286389, 4281999, 4311346, 4284366, 4285253, 4310937,
+              4299500, 4297648, 4296226, 4296349, 4310447, 4299881, 4279457, 4312441, 4312250,
+              4277585, 4311582, 4311830, 4279883, 4277717, 4277879, 4278042, 4277437, 4309797,
+              4281023, 4281453, 4275723, 4278491, 4287360, 4287301, 4278884, 4278209, 4281296,
+              4280471, 4289348, 4282671, 4298861, 4299800, 4299163, 4298681, 4299636, 4299344,
+              4298996, 4299728, 4280675, 4280825, 4271349, 4309585, 4306873, 4307257, 4307605,
+              4306406, 4308826, 4308390, 4307878, 4284760, 4285668, 4307878, 4290582, 4300757,
+              4288140, 4279169
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "6dd89385569c3ad75a2bf9e2191fc064d42d62290057976a3cb5eae3bb120671",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "rgba3x2",
+          "input": {
+            "width": 3,
+            "height": 2,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0CFtOP/QXCfAP0sW0C56Bf/",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAgAAACAAAAAYAAAACwAAAAMAAAB4nGNftUpUVFSWgUFLS0tTVFRLS0vJvp6BgQEAOBQD53icSzzAAAACpgEi"
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-rgba3x2.json",
+            "sha256": "29aac7a2713f2d049c88b34de59d151e3aab3d3007e61aecde3516afe585f57e"
+          },
+          "initialization": {
+            "cpu": 6527840,
+            "isaAddress": 13201268,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 4292978,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              4297128, 4302157, 4309797, 4309989, 4310609, 4297281, 4312046, 4310299, 4298525,
+              4297192, 4302356, 4311130, 4286389, 4281999, 4311346, 4284366, 4285253, 4310937,
+              4299500, 4297648, 4296226, 4296349, 4310447, 4299881, 4279457, 4312441, 4312250,
+              4277585, 4311582, 4311830, 4279883, 4277717, 4277879, 4278042, 4277437, 4309797,
+              4281023, 4281453, 4275723, 4278491, 4287360, 4287301, 4278884, 4278209, 4281296,
+              4280471, 4289348, 4282671, 4298861, 4299800, 4299163, 4298681, 4299636, 4299344,
+              4298996, 4299728, 4280675, 4280825, 4271349, 4309585, 4306873, 4307257, 4307605,
+              4306406, 4308826, 4308390, 4307878, 4284760, 4285668, 4307878, 4290582, 4300757,
+              4288140, 4279169
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "6dd89385569c3ad75a2bf9e2191fc064d42d62290057976a3cb5eae3bb120671",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "rgba1x3",
+          "input": {
+            "width": 1,
+            "height": 3,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0CFtOP/",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAQAAAAMAAAAgAAAAAAAAAAAAAAABAAAAAwAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADYAAAAAAAAAAwAAABQAAAAMAAAACgAAAAIAAAB4nGNftUqWgUFTVFTJvh4AEm0CrHicM5QAAAB8AEo="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-rgba1x3.json",
+            "sha256": "d32555dcf54a276847755aa8d55b17e0a1cd66a878293c908eadb9923fe99259"
+          },
+          "initialization": {
+            "cpu": 6527840,
+            "isaAddress": 13201268,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 4292978,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              4297128, 4302157, 4309797, 4309989, 4310609, 4297281, 4312046, 4310299, 4298525,
+              4297192, 4302356, 4311130, 4286389, 4281999, 4311346, 4284366, 4285253, 4310937,
+              4299500, 4297648, 4296226, 4296349, 4310447, 4299881, 4279457, 4312441, 4312250,
+              4277585, 4311582, 4311830, 4279883, 4277717, 4277879, 4278042, 4277437, 4309797,
+              4281023, 4281453, 4275723, 4278491, 4287360, 4287301, 4278884, 4278209, 4281296,
+              4280471, 4289348, 4282671, 4298861, 4299800, 4299163, 4298681, 4299636, 4299344,
+              4298996, 4299728, 4280675, 4280825, 4271349, 4309585, 4306873, 4307257, 4307605,
+              4306406, 4308826, 4308390, 4307878, 4284760, 4285668, 4307878, 4290582, 4300757,
+              4288140, 4279169
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "6dd89385569c3ad75a2bf9e2191fc064d42d62290057976a3cb5eae3bb120671",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 1,
+              "height": 3,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e5ecf28d850838f8a1b0eb0461d4a6cd99e52cd06a013a522cc61d22a9c8afa2",
+                "e5ecf28d850838f8a1b0eb0461d4a6cd99e52cd06a013a522cc61d22a9c8afa2",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 1,
+                "height": 4,
+                "rgba": "hbTj/8n4J0ANPGsAAAAAAA=="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 1,
+              "height": 3,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e5ecf28d850838f8a1b0eb0461d4a6cd99e52cd06a013a522cc61d22a9c8afa2",
+                "e5ecf28d850838f8a1b0eb0461d4a6cd99e52cd06a013a522cc61d22a9c8afa2",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 1,
+                "height": 4,
+                "rgba": "hbTj/8n4J0ANPGsAAAAAAA=="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 1,
+              "height": 3,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 1,
+              "height": 3,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e5ecf28d850838f8a1b0eb0461d4a6cd99e52cd06a013a522cc61d22a9c8afa2",
+                "e5ecf28d850838f8a1b0eb0461d4a6cd99e52cd06a013a522cc61d22a9c8afa2",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 1,
+                "height": 4,
+                "rgba": "hbTj/8n4J0ANPGsAAAAAAA=="
+              }
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "unicode2x1",
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "猫.kcs",
+            "textureName": "桜.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "桜.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-unicode2x1.json",
+            "sha256": "e20954598aa08a604a456ca8c710efbece788c06e62d8db728d09ed050ffb924"
+          },
+          "initialization": {
+            "cpu": 6527840,
+            "isaAddress": 13201268,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 4292978,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              4297128, 4302157, 4309797, 4309989, 4310609, 4297281, 4312046, 4310299, 4298525,
+              4297192, 4302356, 4311130, 4286389, 4281999, 4311346, 4284366, 4285253, 4310937,
+              4299500, 4297648, 4296226, 4296349, 4310447, 4299881, 4279457, 4312441, 4312250,
+              4277585, 4311582, 4311830, 4279883, 4277717, 4277879, 4278042, 4277437, 4309797,
+              4281023, 4281453, 4275723, 4278491, 4287360, 4287301, 4278884, 4278209, 4281296,
+              4280471, 4289348, 4282671, 4298861, 4299800, 4299163, 4298681, 4299636, 4299344,
+              4298996, 4299728, 4280675, 4280825, 4271349, 4309585, 4306873, 4307257, 4307605,
+              4306406, 4308826, 4308390, 4307878, 4284760, 4285668, 4307878, 4290582, 4300757,
+              4288140, 4279169
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "6dd89385569c3ad75a2bf9e2191fc064d42d62290057976a3cb5eae3bb120671",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "count0",
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 0,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-count0.json",
+            "sha256": "36b678ac3412d7a45e092d508d8faa70622c656aa3fa6373f2106c065f2211f7"
+          },
+          "initialization": {
+            "cpu": 6527840,
+            "isaAddress": 13201268,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 4292978,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              4297128, 4302157, 4309797, 4309989, 4310609, 4297281, 4312046, 4310299, 4298525,
+              4297192, 4302356, 4311130, 4286389, 4281999, 4311346, 4284366, 4285253, 4310937,
+              4299500, 4297648, 4296226, 4296349, 4310447, 4299881, 4279457, 4312441, 4312250,
+              4277585, 4311582, 4311830, 4279883, 4277717, 4277879, 4278042, 4277437, 4309797,
+              4281023, 4281453, 4275723, 4278491, 4287360, 4287301, 4278884, 4278209, 4281296,
+              4280471, 4289348, 4282671, 4298861, 4299800, 4299163, 4298681, 4299636, 4299344,
+              4298996, 4299728, 4280675, 4280825, 4271349, 4309585, 4306873, 4307257, 4307605,
+              4306406, 4308826, 4308390, 4307878, 4284760, 4285668, 4307878, 4290582, 4300757,
+              4288140, 4279169
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "6dd89385569c3ad75a2bf9e2191fc064d42d62290057976a3cb5eae3bb120671",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "count1",
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 1,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-count1.json",
+            "sha256": "f0019fde947a8a00b93407ad4680834bf3e70bded4ace84545e023b6b46fdd3c"
+          },
+          "initialization": {
+            "cpu": 6527840,
+            "isaAddress": 13201268,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 4292978,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              4297128, 4302157, 4309797, 4309989, 4310609, 4297281, 4312046, 4310299, 4298525,
+              4297192, 4302356, 4311130, 4286389, 4281999, 4311346, 4284366, 4285253, 4310937,
+              4299500, 4297648, 4296226, 4296349, 4310447, 4299881, 4279457, 4312441, 4312250,
+              4277585, 4311582, 4311830, 4279883, 4277717, 4277879, 4278042, 4277437, 4309797,
+              4281023, 4281453, 4275723, 4278491, 4287360, 4287301, 4278884, 4278209, 4281296,
+              4280471, 4289348, 4282671, 4298861, 4299800, 4299163, 4298681, 4299636, 4299344,
+              4298996, 4299728, 4280675, 4280825, 4271349, 4309585, 4306873, 4307257, 4307605,
+              4306406, 4308826, 4308390, 4307878, 4284760, 4285668, 4307878, 4290582, 4300757,
+              4288140, 4279169
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "6dd89385569c3ad75a2bf9e2191fc064d42d62290057976a3cb5eae3bb120671",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "3f1664aa23a74123f9aeff8a716eb40349254b346ef4ede6353b7de0a26641d9",
+                "3f1664aa23a74123f9aeff8a716eb40349254b346ef4ede6353b7de0a26641d9",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "66aa5265fb25a9151e9b998b2153e6a19358611fed4e7bdc7b0885ef36ca04de",
+                "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "3f1664aa23a74123f9aeff8a716eb40349254b346ef4ede6353b7de0a26641d9",
+                "3f1664aa23a74123f9aeff8a716eb40349254b346ef4ede6353b7de0a26641d9",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "66aa5265fb25a9151e9b998b2153e6a19358611fed4e7bdc7b0885ef36ca04de",
+                "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "3f1664aa23a74123f9aeff8a716eb40349254b346ef4ede6353b7de0a26641d9",
+                "3f1664aa23a74123f9aeff8a716eb40349254b346ef4ede6353b7de0a26641d9",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "66aa5265fb25a9151e9b998b2153e6a19358611fed4e7bdc7b0885ef36ca04de",
+                "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "rgba3x2-retained",
+          "input": {
+            "width": 3,
+            "height": 2,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 1107296256,
+            "reloadPriorityWord": 3239051264,
+            "reloadTextureName": "",
+            "rgba": "DTxrAMn4J0CFtOP/QXCfAP0sW0C56Bf/",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAgAAACAAAAAYAAAACwAAAAMAAAB4nGNftUpUVFSWgUFLS0tTVFRLS0vJvp6BgQEAOBQD53icSzzAAAACpgEi"
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-74-rgba3x2-retained.json",
+            "sha256": "8536fda402aa09dca40e977b959f18797810f53d8d80c2012c14fad9cce38106"
+          },
+          "initialization": {
+            "cpu": 6527840,
+            "isaAddress": 13201268,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 4292978,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              4297128, 4302157, 4309797, 4309989, 4310609, 4297281, 4312046, 4310299, 4298525,
+              4297192, 4302356, 4311130, 4286389, 4281999, 4311346, 4284366, 4285253, 4310937,
+              4299500, 4297648, 4296226, 4296349, 4310447, 4299881, 4279457, 4312441, 4312250,
+              4277585, 4311582, 4311830, 4279883, 4277717, 4277879, 4278042, 4277437, 4309797,
+              4281023, 4281453, 4275723, 4278491, 4287360, 4287301, 4278884, 4278209, 4281296,
+              4280471, 4289348, 4282671, 4298861, 4299800, 4299163, 4298681, 4299636, 4299344,
+              4298996, 4299728, 4280675, 4280825, 4271349, 4309585, 4306873, 4307257, 4307605,
+              4306406, 4308826, 4308390, 4307878, 4284760, 4285668, 4307878, 4290582, 4300757,
+              4288140, 4279169
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "6dd89385569c3ad75a2bf9e2191fc064d42d62290057976a3cb5eae3bb120671",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "empty-reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 64009,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": null
+            },
+            {
+              "label": "empty-started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 64009,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": null
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "failure",
+          "input": {
+            "width": 3,
+            "height": 2,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 1107296256,
+            "reloadPriorityWord": 3239051264,
+            "reloadTextureName": "",
+            "rgba": "DTxrAMn4J0CFtOP/QXCfAP0sW0C56Bf/",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAgAAACAAAAAYAAAACwAAAAMAAAB4nGNftUpUVFSWgUFLS0tTVFRLS0vJvp6BgQEAOBQD53icSzzAAAACpgEi"
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-FAILURE-INITIALIZED-74.json",
+            "sha256": "e0d9ad33667c8416ea128eaaed075f8dd5998080a445588bc328d78c2b06ff9c"
+          },
+          "initialization": {
+            "cpu": 6527840,
+            "isaAddress": 13201268,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 4292978,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              4297128, 4302157, 4309797, 4309989, 4310609, 4297281, 4312046, 4310299, 4298525,
+              4297192, 4302356, 4311130, 4286389, 4281999, 4311346, 4284366, 4285253, 4310937,
+              4299500, 4297648, 4296226, 4296349, 4310447, 4299881, 4279457, 4312441, 4312250,
+              4277585, 4311582, 4311830, 4279883, 4277717, 4277879, 4278042, 4277437, 4309797,
+              4281023, 4281453, 4275723, 4278491, 4287360, 4287301, 4278884, 4278209, 4281296,
+              4280471, 4289348, 4282671, 4298861, 4299800, 4299163, 4298681, 4299636, 4299344,
+              4298996, 4299728, 4280675, 4280825, 4271349, 4309585, 4306873, 4307257, 4307605,
+              4306406, 4308826, 4308390, 4307878, 4284760, 4285668, 4307878, 4290582, 4300757,
+              4288140, 4279169
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "6dd89385569c3ad75a2bf9e2191fc064d42d62290057976a3cb5eae3bb120671",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "missing-script",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "empty-reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 64009,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": null
+            },
+            {
+              "label": "empty-started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 64009,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": null
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "external",
+          "input": {
+            "width": 3,
+            "height": 2,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 1107296256,
+            "reloadPriorityWord": 3239051264,
+            "reloadTextureName": "authored.hg3",
+            "reloadExternalDraw": true,
+            "rgba": "DTxrAMn4J0CFtOP/QXCfAP0sW0C56Bf/",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAgAAACAAAAAYAAAACwAAAAMAAAB4nGNftUpUVFSWgUFLS0tTVFRLS0vJvp6BgQEAOBQD53icSzzAAAACpgEi"
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-EXTERNAL-INITIALIZED-74.json",
+            "sha256": "53103a064a98c6126ee36a98eacf1331df62f02cd9f380f02c472f014f478011"
+          },
+          "initialization": {
+            "cpu": 6527840,
+            "isaAddress": 13201268,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 4292978,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              4297128, 4302157, 4309797, 4309989, 4310609, 4297281, 4312046, 4310299, 4298525,
+              4297192, 4302356, 4311130, 4286389, 4281999, 4311346, 4284366, 4285253, 4310937,
+              4299500, 4297648, 4296226, 4296349, 4310447, 4299881, 4279457, 4312441, 4312250,
+              4277585, 4311582, 4311830, 4279883, 4277717, 4277879, 4278042, 4277437, 4309797,
+              4281023, 4281453, 4275723, 4278491, 4287360, 4287301, 4278884, 4278209, 4281296,
+              4280471, 4289348, 4282671, 4298861, 4299800, 4299163, 4298681, 4299636, 4299344,
+              4298996, 4299728, 4280675, 4280825, 4271349, 4309585, 4306873, 4307257, 4307605,
+              4306406, 4308826, 4308390, 4307878, 4284760, 4285668, 4307878, 4290582, 4300757,
+              4288140, 4279169
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "6dd89385569c3ad75a2bf9e2191fc064d42d62290057976a3cb5eae3bb120671",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "external-reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": null
+            },
+            {
+              "label": "external-started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": null
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        }
+      ],
+      "initialUndefined": {
+        "original": {
+          "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-INITIAL-EMPTY-74.json",
+          "sha256": "f1c16aa3371369e41a3ec9cf9397846000240fb659ca17b949c0425d642d2a4c"
+        },
+        "classification": "capture-only-original-uninitialized-fields",
+        "fields": ["width", "height", "priority"],
+        "allocation": {
+          "bytes": 1368,
+          "flags": 0,
+          "contents": 165
+        },
+        "observedWords": [2779096485, 2779096485, 2779096485],
+        "scope": "Actual native allocator/ctor and initialized renderer leave these words unwritten when first texture is empty. Raw prototype inherited a generic success status label; this explicit classifier excludes it from functional counts. ExternalDraw skips this same image branch; first-use fields remain uninitialized."
+      }
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "cases": [
+        {
+          "name": "rgba2x1",
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-rgba2x1.json",
+            "sha256": "ed601a9ec612bc0186ee9ce0584529e6f3410fc8703c144f2969e52302835970"
+          },
+          "initialization": {
+            "cpu": 7999648,
+            "isaAddress": 12133860,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 5139178,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              5185171, 5190918, 5185381, 5185573, 5198624, 5185324, 5199845, 5198314, 5187070,
+              5185235, 5200049, 5188602, 5057753, 5053363, 5199145, 5055730, 5056617, 5198952,
+              5188045, 5186193, 5184269, 5184392, 5198462, 5188426, 5050821, 5200484, 5200293,
+              5048605, 5199381, 5199629, 5051247, 5048737, 5048899, 5049062, 5048457, 5185381,
+              5052387, 5052817, 5046743, 5049511, 5058724, 5058665, 5049904, 5049229, 5052660,
+              5051835, 5060712, 5054035, 5187406, 5188345, 5187708, 5187226, 5188181, 5187889,
+              5187541, 5188273, 5052039, 5052189, 5042363, 5198102, 5195390, 5195774, 5196122,
+              5194923, 5197343, 5196907, 5196395, 5056124, 5057032, 5196395, 5136877, 5189518,
+              5059504, 5050189
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "0696f2a9332e4d7e56f1d7664aed50992da4aa2275606a7f6a5a627b964523f8",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "rgba3x2",
+          "input": {
+            "width": 3,
+            "height": 2,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0CFtOP/QXCfAP0sW0C56Bf/",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAgAAACAAAAAYAAAACwAAAAMAAAB4nGNftUpUVFSWgUFLS0tTVFRLS0vJvp6BgQEAOBQD53icSzzAAAACpgEi"
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-rgba3x2.json",
+            "sha256": "2b47c5b6a33d21ffae2ff4e518f7afbe3443911dc3be3365d97b0848bf4032ae"
+          },
+          "initialization": {
+            "cpu": 7999648,
+            "isaAddress": 12133860,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 5139178,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              5185171, 5190918, 5185381, 5185573, 5198624, 5185324, 5199845, 5198314, 5187070,
+              5185235, 5200049, 5188602, 5057753, 5053363, 5199145, 5055730, 5056617, 5198952,
+              5188045, 5186193, 5184269, 5184392, 5198462, 5188426, 5050821, 5200484, 5200293,
+              5048605, 5199381, 5199629, 5051247, 5048737, 5048899, 5049062, 5048457, 5185381,
+              5052387, 5052817, 5046743, 5049511, 5058724, 5058665, 5049904, 5049229, 5052660,
+              5051835, 5060712, 5054035, 5187406, 5188345, 5187708, 5187226, 5188181, 5187889,
+              5187541, 5188273, 5052039, 5052189, 5042363, 5198102, 5195390, 5195774, 5196122,
+              5194923, 5197343, 5196907, 5196395, 5056124, 5057032, 5196395, 5136877, 5189518,
+              5059504, 5050189
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "0696f2a9332e4d7e56f1d7664aed50992da4aa2275606a7f6a5a627b964523f8",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "rgba1x3",
+          "input": {
+            "width": 1,
+            "height": 3,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0CFtOP/",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAQAAAAMAAAAgAAAAAAAAAAAAAAABAAAAAwAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADYAAAAAAAAAAwAAABQAAAAMAAAACgAAAAIAAAB4nGNftUqWgUFTVFTJvh4AEm0CrHicM5QAAAB8AEo="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-rgba1x3.json",
+            "sha256": "051eeab334559c5ba14e394e72cd8ab3e1d9a870ed2b358ad7e824e5613e5621"
+          },
+          "initialization": {
+            "cpu": 7999648,
+            "isaAddress": 12133860,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 5139178,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              5185171, 5190918, 5185381, 5185573, 5198624, 5185324, 5199845, 5198314, 5187070,
+              5185235, 5200049, 5188602, 5057753, 5053363, 5199145, 5055730, 5056617, 5198952,
+              5188045, 5186193, 5184269, 5184392, 5198462, 5188426, 5050821, 5200484, 5200293,
+              5048605, 5199381, 5199629, 5051247, 5048737, 5048899, 5049062, 5048457, 5185381,
+              5052387, 5052817, 5046743, 5049511, 5058724, 5058665, 5049904, 5049229, 5052660,
+              5051835, 5060712, 5054035, 5187406, 5188345, 5187708, 5187226, 5188181, 5187889,
+              5187541, 5188273, 5052039, 5052189, 5042363, 5198102, 5195390, 5195774, 5196122,
+              5194923, 5197343, 5196907, 5196395, 5056124, 5057032, 5196395, 5136877, 5189518,
+              5059504, 5050189
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "0696f2a9332e4d7e56f1d7664aed50992da4aa2275606a7f6a5a627b964523f8",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 1,
+              "height": 3,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e5ecf28d850838f8a1b0eb0461d4a6cd99e52cd06a013a522cc61d22a9c8afa2",
+                "e5ecf28d850838f8a1b0eb0461d4a6cd99e52cd06a013a522cc61d22a9c8afa2",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 1,
+                "height": 4,
+                "rgba": "hbTj/8n4J0ANPGsAAAAAAA=="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 1,
+              "height": 3,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e5ecf28d850838f8a1b0eb0461d4a6cd99e52cd06a013a522cc61d22a9c8afa2",
+                "e5ecf28d850838f8a1b0eb0461d4a6cd99e52cd06a013a522cc61d22a9c8afa2",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 1,
+                "height": 4,
+                "rgba": "hbTj/8n4J0ANPGsAAAAAAA=="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 1,
+              "height": 3,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 1,
+              "height": 3,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e5ecf28d850838f8a1b0eb0461d4a6cd99e52cd06a013a522cc61d22a9c8afa2",
+                "e5ecf28d850838f8a1b0eb0461d4a6cd99e52cd06a013a522cc61d22a9c8afa2",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 1,
+                "height": 4,
+                "rgba": "hbTj/8n4J0ANPGsAAAAAAA=="
+              }
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "unicode2x1",
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 3,
+            "programName": "猫.kcs",
+            "textureName": "桜.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "桜.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-unicode2x1.json",
+            "sha256": "b75dac16559316c3bff665fe77d6168a29bb63dd61e2495ec93cc780083e3bbc"
+          },
+          "initialization": {
+            "cpu": 7999648,
+            "isaAddress": 12133860,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 5139178,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              5185171, 5190918, 5185381, 5185573, 5198624, 5185324, 5199845, 5198314, 5187070,
+              5185235, 5200049, 5188602, 5057753, 5053363, 5199145, 5055730, 5056617, 5198952,
+              5188045, 5186193, 5184269, 5184392, 5198462, 5188426, 5050821, 5200484, 5200293,
+              5048605, 5199381, 5199629, 5051247, 5048737, 5048899, 5049062, 5048457, 5185381,
+              5052387, 5052817, 5046743, 5049511, 5058724, 5058665, 5049904, 5049229, 5052660,
+              5051835, 5060712, 5054035, 5187406, 5188345, 5187708, 5187226, 5188181, 5187889,
+              5187541, 5188273, 5052039, 5052189, 5042363, 5198102, 5195390, 5195774, 5196122,
+              5194923, 5197343, 5196907, 5196395, 5056124, 5057032, 5196395, 5136877, 5189518,
+              5059504, 5050189
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "0696f2a9332e4d7e56f1d7664aed50992da4aa2275606a7f6a5a627b964523f8",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "148bde3d8b8f9f6a14c196250a32fd88e7b3194f411a621a9237a07e62bd20ff",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "count0",
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 0,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-count0.json",
+            "sha256": "60537e0ff3bf247d587c21402103ffd789bd7ca2b0fa41297685e1730e3671d4"
+          },
+          "initialization": {
+            "cpu": 7999648,
+            "isaAddress": 12133860,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 5139178,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              5185171, 5190918, 5185381, 5185573, 5198624, 5185324, 5199845, 5198314, 5187070,
+              5185235, 5200049, 5188602, 5057753, 5053363, 5199145, 5055730, 5056617, 5198952,
+              5188045, 5186193, 5184269, 5184392, 5198462, 5188426, 5050821, 5200484, 5200293,
+              5048605, 5199381, 5199629, 5051247, 5048737, 5048899, 5049062, 5048457, 5185381,
+              5052387, 5052817, 5046743, 5049511, 5058724, 5058665, 5049904, 5049229, 5052660,
+              5051835, 5060712, 5054035, 5187406, 5188345, 5187708, 5187226, 5188181, 5187889,
+              5187541, 5188273, 5052039, 5052189, 5042363, 5198102, 5195390, 5195774, 5196122,
+              5194923, 5197343, 5196907, 5196395, 5056124, 5057032, 5196395, 5136877, 5189518,
+              5059504, 5050189
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "0696f2a9332e4d7e56f1d7664aed50992da4aa2275606a7f6a5a627b964523f8",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "count1",
+          "input": {
+            "width": 2,
+            "height": 1,
+            "count": 1,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 0,
+            "reloadPriorityWord": 0,
+            "reloadTextureName": "authored.hg3",
+            "rgba": "DTxrAMn4J0A=",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGNfJcugKapkDwAG+gFueJwT5AAAACwAGg=="
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-count1.json",
+            "sha256": "c43e38c7c3920808b68a6a982a559a90fb1a8b5ad6c84b10508a3237be7235c7"
+          },
+          "initialization": {
+            "cpu": 7999648,
+            "isaAddress": 12133860,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 5139178,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              5185171, 5190918, 5185381, 5185573, 5198624, 5185324, 5199845, 5198314, 5187070,
+              5185235, 5200049, 5188602, 5057753, 5053363, 5199145, 5055730, 5056617, 5198952,
+              5188045, 5186193, 5184269, 5184392, 5198462, 5188426, 5050821, 5200484, 5200293,
+              5048605, 5199381, 5199629, 5051247, 5048737, 5048899, 5049062, 5048457, 5185381,
+              5052387, 5052817, 5046743, 5049511, 5058724, 5058665, 5049904, 5049229, 5052660,
+              5051835, 5060712, 5054035, 5187406, 5188345, 5187708, 5187226, 5188181, 5187889,
+              5187541, 5188273, 5052039, 5052189, 5042363, 5198102, 5195390, 5195774, 5196122,
+              5194923, 5197343, 5196907, 5196395, 5056124, 5057032, 5196395, 5136877, 5189518,
+              5059504, 5050189
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "0696f2a9332e4d7e56f1d7664aed50992da4aa2275606a7f6a5a627b964523f8",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "3f1664aa23a74123f9aeff8a716eb40349254b346ef4ede6353b7de0a26641d9",
+                "3f1664aa23a74123f9aeff8a716eb40349254b346ef4ede6353b7de0a26641d9",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "66aa5265fb25a9151e9b998b2153e6a19358611fed4e7bdc7b0885ef36ca04de",
+                "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "3f1664aa23a74123f9aeff8a716eb40349254b346ef4ede6353b7de0a26641d9",
+                "3f1664aa23a74123f9aeff8a716eb40349254b346ef4ede6353b7de0a26641d9",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "66aa5265fb25a9151e9b998b2153e6a19358611fed4e7bdc7b0885ef36ca04de",
+                "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 2,
+              "height": 1,
+              "priority": 0,
+              "near": 64000,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "3f1664aa23a74123f9aeff8a716eb40349254b346ef4ede6353b7de0a26641d9",
+                "3f1664aa23a74123f9aeff8a716eb40349254b346ef4ede6353b7de0a26641d9",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "374708fff7719dd5979ec875d56cd2286f6d3cf7ec317a3b25632aab28ec37bb",
+                "66aa5265fb25a9151e9b998b2153e6a19358611fed4e7bdc7b0885ef36ca04de",
+                "67abdd721024f0ff4e0b3f4c2fc13bc5bad42d0b7851d456d88d203d15aaa450"
+              ],
+              "texture": {
+                "width": 2,
+                "height": 1,
+                "rgba": "DTxrAMn4J0A="
+              }
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "rgba3x2-retained",
+          "input": {
+            "width": 3,
+            "height": 2,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 1107296256,
+            "reloadPriorityWord": 3239051264,
+            "reloadTextureName": "",
+            "rgba": "DTxrAMn4J0CFtOP/QXCfAP0sW0C56Bf/",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAgAAACAAAAAYAAAACwAAAAMAAAB4nGNftUpUVFSWgUFLS0tTVFRLS0vJvp6BgQEAOBQD53icSzzAAAACpgEi"
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-INITIALIZED-76-rgba3x2-retained.json",
+            "sha256": "bb00ff5abde98c6bd02a1e9304e096a79de536d2d37271827abb1d1b44c361e0"
+          },
+          "initialization": {
+            "cpu": 7999648,
+            "isaAddress": 12133860,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 5139178,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              5185171, 5190918, 5185381, 5185573, 5198624, 5185324, 5199845, 5198314, 5187070,
+              5185235, 5200049, 5188602, 5057753, 5053363, 5199145, 5055730, 5056617, 5198952,
+              5188045, 5186193, 5184269, 5184392, 5198462, 5188426, 5050821, 5200484, 5200293,
+              5048605, 5199381, 5199629, 5051247, 5048737, 5048899, 5049062, 5048457, 5185381,
+              5052387, 5052817, 5046743, 5049511, 5058724, 5058665, 5049904, 5049229, 5052660,
+              5051835, 5060712, 5054035, 5187406, 5188345, 5187708, 5187226, 5188181, 5187889,
+              5187541, 5188273, 5052039, 5052189, 5042363, 5198102, 5195390, 5195774, 5196122,
+              5194923, 5197343, 5196907, 5196395, 5056124, 5057032, 5196395, 5136877, 5189518,
+              5059504, 5050189
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "0696f2a9332e4d7e56f1d7664aed50992da4aa2275606a7f6a5a627b964523f8",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "empty-reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 64009,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": null
+            },
+            {
+              "label": "empty-started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 64009,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": null
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "failure",
+          "input": {
+            "width": 3,
+            "height": 2,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 1107296256,
+            "reloadPriorityWord": 3239051264,
+            "reloadTextureName": "",
+            "rgba": "DTxrAMn4J0CFtOP/QXCfAP0sW0C56Bf/",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAgAAACAAAAAYAAAACwAAAAMAAAB4nGNftUpUVFSWgUFLS0tTVFRLS0vJvp6BgQEAOBQD53icSzzAAAACpgEi"
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-FAILURE-INITIALIZED-76.json",
+            "sha256": "cd3ab060bf25cbbec2644f029ad317ddc36caae69f20e590030bfb38cf965eaf"
+          },
+          "initialization": {
+            "cpu": 7999648,
+            "isaAddress": 12133860,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 5139178,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              5185171, 5190918, 5185381, 5185573, 5198624, 5185324, 5199845, 5198314, 5187070,
+              5185235, 5200049, 5188602, 5057753, 5053363, 5199145, 5055730, 5056617, 5198952,
+              5188045, 5186193, 5184269, 5184392, 5198462, 5188426, 5050821, 5200484, 5200293,
+              5048605, 5199381, 5199629, 5051247, 5048737, 5048899, 5049062, 5048457, 5185381,
+              5052387, 5052817, 5046743, 5049511, 5058724, 5058665, 5049904, 5049229, 5052660,
+              5051835, 5060712, 5054035, 5187406, 5188345, 5187708, 5187226, 5188181, 5187889,
+              5187541, 5188273, 5052039, 5052189, 5042363, 5198102, 5195390, 5195774, 5196122,
+              5194923, 5197343, 5196907, 5196395, 5056124, 5057032, 5196395, 5136877, 5189518,
+              5059504, 5050189
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "0696f2a9332e4d7e56f1d7664aed50992da4aa2275606a7f6a5a627b964523f8",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "missing-script",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "empty-reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 64009,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": null
+            },
+            {
+              "label": "empty-started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 64009,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": null
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              },
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        },
+        {
+          "name": "external",
+          "input": {
+            "width": 3,
+            "height": 2,
+            "count": 3,
+            "programName": "authored.kcs",
+            "textureName": "authored.hg3",
+            "priorityWord": 1107296256,
+            "reloadPriorityWord": 3239051264,
+            "reloadTextureName": "authored.hg3",
+            "reloadExternalDraw": true,
+            "rgba": "DTxrAMn4J0CFtOP/QXCfAP0sW0C56Bf/",
+            "script": "S0NTAAIAAAAAAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+            "texture": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAwAAAAIAAAAgAAAAAAAAAAAAAAADAAAAAgAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAAEMAAAAAAAAAAgAAACAAAAAYAAAACwAAAAMAAAB4nGNftUpUVFSWgUFLS0tTVFRLS0vJvp6BgQEAOBQD53icSzzAAAACpgEi"
+          },
+          "original": {
+            "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-TEXTURE-EXTERNAL-INITIALIZED-76.json",
+            "sha256": "46f55c0ae8d1343a92c9ab27431de8b84b662e38330a9cb3bf7f6784ba0b9ca6"
+          },
+          "initialization": {
+            "cpu": 7999648,
+            "isaAddress": 12133860,
+            "cpuBefore": 0,
+            "cpuAfter": 2,
+            "initializer": 5139178,
+            "selector": 2,
+            "features": [
+              {
+                "feature": 10,
+                "value": 1
+              },
+              {
+                "feature": 7,
+                "value": 0
+              }
+            ],
+            "dispatch": [
+              5185171, 5190918, 5185381, 5185573, 5198624, 5185324, 5199845, 5198314, 5187070,
+              5185235, 5200049, 5188602, 5057753, 5053363, 5199145, 5055730, 5056617, 5198952,
+              5188045, 5186193, 5184269, 5184392, 5198462, 5188426, 5050821, 5200484, 5200293,
+              5048605, 5199381, 5199629, 5051247, 5048737, 5048899, 5049062, 5048457, 5185381,
+              5052387, 5052817, 5046743, 5049511, 5058724, 5058665, 5049904, 5049229, 5052660,
+              5051835, 5060712, 5054035, 5187406, 5188345, 5187708, 5187226, 5188181, 5187889,
+              5187541, 5188273, 5052039, 5052189, 5042363, 5198102, 5195390, 5195774, 5196122,
+              5194923, 5197343, 5196907, 5196395, 5056124, 5057032, 5196395, 5136877, 5189518,
+              5059504, 5050189
+            ],
+            "controlWord": 895,
+            "mxcsr": 8096,
+            "scope": "Own actual CRT CPUID and D3DX initializer0/1 execute; supported OS feature inputs3/6/8/10,7false match existing independently proved modern host boundary. No scalar baseline is used after this initializer."
+          },
+          "originalTextSha256": "0696f2a9332e4d7e56f1d7664aed50992da4aa2275606a7f6a5a627b964523f8",
+          "originalTextUnchangedAfterParticle": true,
+          "expected": [
+            {
+              "label": "loaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": {
+                "width": 4,
+                "height": 2,
+                "rgba": "QXCfAP0sW0C56Bf/AAAAAA08awDJ+CdAhbTj/wAAAAA="
+              }
+            },
+            {
+              "label": "released",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": null,
+              "buffers": [null, null, null, null, null, null, null],
+              "texture": null
+            },
+            {
+              "label": "external-reloaded",
+              "control": 0,
+              "out": 3435973836,
+              "active": false,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": null
+            },
+            {
+              "label": "external-started",
+              "control": 0,
+              "out": 3435973836,
+              "active": true,
+              "alpha": 256,
+              "attachment": -1,
+              "width": 3,
+              "height": 2,
+              "priority": 32,
+              "near": 63968,
+              "registers": "d06ae5e5776ecb5da001954a0fa722ec73b78656b055ecb26bc6158911e10c34",
+              "vm": {
+                "pc": 0,
+                "sp": 4096,
+                "fp": 4096,
+                "local": "9f1dcbc35c350d6027f98be0f5c8b43b42ca52b7604459c0c42be3aa88913d47"
+              },
+              "buffers": [
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "73ca563faf7fd160fdcde78b6242a5478d90f1ede6c9b136dd0e94a20b707e7d",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "17b0761f87b081d5cf10757ccc89f12be355c70e2e29df288b65b30710dcbcd1",
+                "2f63dc05b2da824ce198349b5c28ce235a6ee813835e4b1b46764e1a9320b856",
+                "11047585fe102fbb5cadb42446612a578d88c6ef5ed076bb7ac360c4f9e4373d"
+              ],
+              "texture": null
+            }
+          ],
+          "ownership": {
+            "retainedNativeRecords": [
+              {
+                "bytes": 60
+              }
+            ],
+            "providerTables": [
+              {
+                "kind": "Direct3D9",
+                "size": 68
+              },
+              {
+                "kind": "Device9",
+                "size": 476
+              },
+              {
+                "kind": "Surface9",
+                "size": 68
+              },
+              {
+                "kind": "Texture9",
+                "size": 88
+              }
+            ],
+            "newDeviceObjectsAfterTaskDestroy": 0,
+            "openFilesAfterTaskDestroy": 0,
+            "rendererSingletonAfterDestroy": 0
+          }
+        }
+      ],
+      "initialUndefined": {
+        "original": {
+          "path": ".local/phase11/modern-auxiliary-tables/ORIGINAL-PARTICLE-INITIAL-EMPTY-76.json",
+          "sha256": "858d53512b7564891d8fc3658981398fd191808621fe9ac21485247fef3953bf"
+        },
+        "classification": "capture-only-original-uninitialized-fields",
+        "fields": ["width", "height", "priority"],
+        "allocation": {
+          "bytes": 1368,
+          "flags": 0,
+          "contents": 165
+        },
+        "observedWords": [2779096485, 2779096485, 2779096485],
+        "scope": "Actual native allocator/ctor and initialized renderer leave these words unwritten when first texture is empty. Raw prototype inherited a generic success status label; this explicit classifier excludes it from functional counts. ExternalDraw skips this same image branch; first-use fields remain uninitialized."
+      }
+    }
+  ]
+}

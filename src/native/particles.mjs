@@ -31,7 +31,9 @@ export class NativeParticles {
   constructor(world, options = {}) {
     this.world = world;
     this.tasks = new Map();
-    this.textures = new NativeParticleTextures(world);
+    this.textures = new NativeParticleTextures(world, {
+      nullableFields: nativeABI(world.profile).particle?.taskFieldsPersistWithoutBank,
+    });
     this.projection = new NativeParticleProjection();
     this.scriptUsesTaskFrameRate = nativeABI(world.profile).particle?.scriptUsesTaskFrameRate;
     this.host = new Particles(world.graphics.stage, {
@@ -99,7 +101,8 @@ export class NativeParticleTask {
     this.base = this.world.base(record);
     this.state = { active: false, alpha: 256, attachment: -1 };
     this.persistTaskFields = nativeABI(this.world.profile).particle?.taskFieldsPersistWithoutBank;
-    if (this.persistTaskFields) Object.assign(this.state, { registers: null, family: null });
+    if (this.persistTaskFields)
+      Object.assign(this.state, { registers: null, family: null, atlas: null });
   }
   get bank() {
     return this.owner.host.get(this.key);
@@ -114,6 +117,7 @@ export class NativeParticleTask {
   async load(spec) {
     const active = this.active;
     if (this.persistTaskFields) {
+      if (this.bank) this.state.atlas = this.atlasState();
       this.state.family = spec.family;
       this.state.registers = new Float32Array(32);
       this.state.registers.set(spec.registers ?? []);
@@ -122,6 +126,7 @@ export class NativeParticleTask {
     try {
       bank = await this.owner.host.load(this.key, {
         ...spec,
+        nativeAtlasState: this.persistTaskFields ? this.state.atlas : undefined,
         alpha: this.state.alpha,
         attachPlane: this.state.attachment,
         attachmentNamespace: 'graph',
@@ -138,7 +143,10 @@ export class NativeParticleTask {
       }
       throw error;
     }
-    if (this.persistTaskFields) this.state.registers = null;
+    if (this.persistTaskFields) {
+      this.state.registers = null;
+      this.state.atlas = null;
+    }
     this.bindScriptFrameRate(bank);
     // Native 13A resets clocks and resources but retains the active DWORD.
     // It does not implicitly call Init on a replacement DLL.
@@ -148,6 +156,12 @@ export class NativeParticleTask {
     bank.instance.stopped = !active;
     this.owner.host.metadata(bank);
     return bank;
+  }
+  atlasState() {
+    const atlas = this.bank.nativeAtlas;
+    return atlas && ['width', 'height', 'priority'].every((k) => atlas[k] !== null)
+      ? { width: atlas.width, height: atlas.height, priority: atlas.priority, near: atlas.near }
+      : null;
   }
   source(sender, context) {
     const memory =
@@ -230,8 +244,10 @@ export class NativeParticleTask {
         return unwritten;
       case 0x13d:
         this.state.active = false;
-        if (this.persistTaskFields && this.bank)
+        if (this.persistTaskFields && this.bank) {
           this.state.registers = this.bank.instance.registers.slice();
+          this.state.atlas = this.atlasState();
+        }
         host.end(this.key, { stop: false });
         return unwritten;
       case 0x13e:
@@ -272,19 +288,32 @@ export class NativeParticleTask {
   }
   snapshot() {
     return this.persistTaskFields
-      ? { ...this.state, registers: this.state.registers?.slice() ?? null }
+      ? {
+          ...this.state,
+          registers: this.state.registers?.slice() ?? null,
+          atlas: this.state.atlas && { ...this.state.atlas },
+        }
       : { ...this.state };
   }
   restore(state) {
     if (
       this.persistTaskFields &&
       (!['script', 'plugin', null].includes(state.family) ||
+        (state.atlas !== null &&
+          (!state.atlas ||
+            !['width', 'height', 'priority', 'near'].every((k) =>
+              Number.isFinite(state.atlas[k]),
+            ))) ||
         (state.registers !== null &&
           (!(state.registers instanceof Float32Array) || state.registers.length !== 32)))
     )
-      throw new Error('Native particle task requires its unloaded register state');
+      throw new Error('Native particle task requires its unloaded resource state');
     this.state = this.persistTaskFields
-      ? { ...state, registers: state.registers?.slice() ?? null }
+      ? {
+          ...state,
+          registers: state.registers?.slice() ?? null,
+          atlas: state.atlas && { ...state.atlas },
+        }
       : { ...state };
   }
   close() {

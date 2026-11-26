@@ -42,6 +42,16 @@ be started after release without recreating its bank, matching the original.
 Register messages preserve the modern receiver's raw float words, including
 signaling NaNs, through self-copy and cold restore.
 
+The loaded bank also owns texture dimensions, stored priority and near depth.
+Release or a failed script reload transfers these four fields into the task; a
+new successful bank takes ownership again. An empty texture after a sized image
+retains its dimensions and stored priority while applying the requested near
+depth. External draw after a sized image also retains its previous near depth.
+An empty texture or external-draw request before a sized image has no initialized
+size or stored priority and requires a diagnostic. The modern atlas keeps
+unknown fields nullable, so an earlier uninitialized bank cannot supply
+invented zero values to a later script bank.
+
 Attachment assignment accepts a missing group. Resolution occurs when its KCS
 query needs the current graph; deleted or absent groups then produce the proved
 zero result. The task retains no parallel graph-position cache.
@@ -50,8 +60,23 @@ The tracked [message golden](../tests/fixtures/modern-particle-message-golden.js
 links own original receipts and separates original-uninitialized interception
 cases from functional comparisons. The original resources are authored minimum
 inputs. Missing nonempty textures exercise the defined 256-pixel fallback and
-original registration cleanup. Successful decoded texture/device startup,
-plugin resource shapes, empty-texture uninitialized dimensions, extreme count
-allocation/overflow/failure cases, and wider SDK/message/layout coverage remain
-open. Neither this group nor the auxiliary-table census establishes complete
-SDK or product acceptance.
+original registration cleanup.
+The [texture resource golden](../tests/fixtures/modern-particle-texture-golden.json)
+adds actual own view, display-capability, renderer and device initialization,
+HG3 decode/upload, original KCS and seven buffers through load, start, missing
+script, release, reload and destruction. It runs the own CRT CPUID and D3DX
+initializer with selector two and verifies original executable code bytes before
+and after execution. The Win32 and D3D9 interfaces are explicit virtual OS
+providers; this is separate from a physical Windows GPU or full application
+startup. Narrow CP932 Japanese filenames, zero/one particle counts, transparent
+RGB and texture padding have current World and independent cold counterparts.
+The original retains a 60-byte graph record for each registered load; an
+external-draw reload does not register another graph. The provider's
+texture-interface table is recorded separately; current surface owners are
+released on task destruction.
+
+Plugin resource shapes, large count allocation/overflow/failure, cache-worker
+behavior and wider SDK/message/layout coverage remain open. A first empty
+texture is original-uninitialized interception evidence. It does not classify a
+definitely sized empty reload as undefined. Neither this group nor the
+auxiliary-table census establishes complete SDK or product acceptance.

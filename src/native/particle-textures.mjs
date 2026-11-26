@@ -4,8 +4,9 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 import { nativeParticleNear } from '../ppi/numeric.mjs';
 
 export class NativeParticleTextures {
-  constructor(world) {
+  constructor(world, { nullableFields = false } = {}) {
     this.world = world;
+    this.nullableFields = nullableFields;
     this.stage = world.stageRenderer;
     this.owned = new Set();
   }
@@ -17,17 +18,23 @@ export class NativeParticleTextures {
     if (!this.owned.delete(pointer)) throw new Error('Particle atlas was already released');
     this.stage.releaseSurface(pointer);
   }
-  async load({ texture, priority, externalDraw }, previous) {
+  async load({ texture, priority, externalDraw, requiresInitializedState }, previous) {
     const bytes = texture instanceof Uint8Array ? texture : encodeCP932((texture ?? '') + '\0');
     if (bytes.length > 128 || !bytes.includes(0))
       throw new RangeError('Particle texture name does not fit its 128 byte field');
     const atlas = {
       pointer: 0,
-      width: previous?.width ?? 0,
-      height: previous?.height ?? 0,
-      priority: previous?.priority ?? 0,
+      width: previous?.width ?? (this.nullableFields ? null : 0),
+      height: previous?.height ?? (this.nullableFields ? null : 0),
+      priority: previous?.priority ?? (this.nullableFields ? null : 0),
       near: previous?.near ?? 0,
     };
+    if (
+      requiresInitializedState &&
+      (externalDraw || !bytes[0]) &&
+      ['width', 'height', 'priority'].some((field) => atlas[field] === null)
+    )
+      throw new Error('Native particle texture fields are uninitialized');
     if (externalDraw) return atlas;
     atlas.near = nativeParticleNear(priority);
     if (!bytes[0]) return atlas;

@@ -221,10 +221,10 @@ export class Particles {
     bank.attachment = attachment;
     return attachment?.id ?? bank.attachPlane;
   }
-  async load(key, { nativeTextureName, nativeProgramName, registers, ...spec }) {
+  async load(key, { nativeTextureName, nativeProgramName, nativeAtlasState, registers, ...spec }) {
     if (!this.game || !this.images)
       throw new Error('Particles require game resources and an image store');
-    const previous = this.banks.get(key)?.nativeAtlas;
+    const previous = this.banks.get(key)?.nativeAtlas ?? nativeAtlasState;
     if (this.banks.has(key)) this.end(key, { stop: false });
     const bank = this.create(key);
     Object.assign(bank, {
@@ -277,7 +277,12 @@ export class Particles {
     if (this.atlas) {
       const texture = nativeTextureName ?? bank.texture;
       bank.nativeAtlas = await this.atlas.load(
-        { texture, priority: bank.priority, externalDraw: bank.externalDraw },
+        {
+          texture,
+          priority: bank.priority,
+          externalDraw: bank.externalDraw,
+          requiresInitializedState: this.scriptLoadsBeforeTexture && bank.family === 'script',
+        },
         previous,
       );
       if (bank.texture && !bank.externalDraw && !bank.nativeAtlas.pointer)

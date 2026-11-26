@@ -43,7 +43,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
     }
     plane.setRegistrationEnabled(true, 0x81234567);
     m.writeString('query', 128);
-    m.writeString('', 160);
+    m.writeString('missing.hg3', 160);
     for (let i = 0; i < 32; i++) m.store(512 + i * 4, 0);
     assert.deepEqual(await native(0x10f, [targetID, 128, 160, 1, 0, 512]), {
       control: 1,

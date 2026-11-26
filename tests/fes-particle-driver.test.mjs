@@ -132,7 +132,7 @@ for (const profile of profiles) {
       configureFESParticle(h.object, {
         family: 0,
         program: 'probe',
-        texture: '',
+        texture: 'missing.hg3',
         count: 1,
         priority: 12,
       });
