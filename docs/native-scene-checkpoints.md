@@ -141,3 +141,23 @@ new data buffer and ignore that saved pointer; only this DWORD is normalized
 in portable comparisons. Capacity, used size, tag, and payload are compared
 without masks. The 38 complete Main frames per build also cover CP932 aliases,
 missing extras, independent file releases, and three checkpoint restores.
+
+Modern full Scene checkpoints have an own typed Main/VM bridge through the
+complete startup XML Settings reader. The fixture selects two local variables
+through `GAME/flag` and two strings through the mounted `config` XML. The native
+FileServer reads the actual selector file for Main991/992; Main994 follows its
+own branch/prune path. The comparisons cover ordered checkpoint chains, earlier
+Scene fallback, signed position misses, missing selector files, selected and
+unselected caller-bank values, all 64 initialized variable words, and three cold
+restores per build. The JS World fixture explicitly applies the same startup
+configuration supplied to the native Settings reader.
+
+Each chain is decompressed and compared by its defined position, variable
+payload, string IDs/bytes and declared string size. The string serializer's
+final eight unread padding bytes can change native compression length and chain
+offsets; those raw bytes remain in the original captures. The comparison
+validates each native/JS chain's internal offsets separately and excludes only
+that unused tail from logical bank contents. It does not assume equal compressed
+bytes or invent initialized padding. Existing method-level selector/checkpoint
+matrices remain separate evidence; this group adds 36 real Main frames per
+modern build with the real caller/Settings/FileServer bridge.
