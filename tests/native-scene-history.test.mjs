@@ -165,7 +165,11 @@ async function crossTaskSceneOwners(t, profile) {
   assert.equal(world.runtime.sceneData(empty), null);
 }
 
-for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
+])
   test(`${profile} cross-task Scene follows Script owners and copies compact histories after interpreter removal`, (t) =>
     crossTaskSceneOwners(t, profile));
 
@@ -213,6 +217,7 @@ async function rawScenePointerQuery(t, profile, raw) {
 
 for (const [profile, raw] of [
   ['grisaia-jp-engine-2.6.1.23', 162],
+  ['rebellions-jp-engine-2.6.1.63', 169],
   ['bokutomo-engine-2.6.1.67', 170],
 ])
   test(`${profile} raw Scene pointer query maps the actual Script kind without stopping its interpreter`, (t) =>
@@ -392,7 +397,11 @@ test('2.6.1.67 Scene history GCALLs keep CP932 aliases and import compact save r
   );
 });
 
-for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+for (const profile of [
+  'grisaia-jp-engine-2.6.1.23',
+  'rebellions-jp-engine-2.6.1.63',
+  'bokutomo-engine-2.6.1.67',
+])
   test(`${profile} KCS CSS history uses the designated Script owner and restores both compact sides`, (t) =>
     verifyTaskHistoryCSS(profile, t));
 

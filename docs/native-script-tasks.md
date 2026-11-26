@@ -185,6 +185,36 @@ mutations. Fresh World restoration preserves those identities. External raw
 replacement of a reader's CSTL allocation has not received separate differential
 coverage and is not implied by the canonical-load tests.
 
+The legacy Script Scene query is raw 162 in .23, 169 in .63 and 170 in .67;
+all three map to semantic 175 only for Script kind 12. An absent Scene context
+writes two null pointers without stopping the interpreter. An initialized context
+keeps ordinary JS history ownership; exposing physical reader/history addresses
+still requires an explicitly supplied original-engine owner.
+
+The .63 task-local Scene wrappers 219–235, history save/restore 239/249, existence
+query 322 and explicit numbered-string entries 334/335/337 now use the shared
+Scene implementation. Initialization replaces both resources and releases the old
+handle. Implicit CST queries update the file-name/value markers just like the
+explicit .63 reader. Task-local history names retain their extension; explicit
+seen/path names use the existing extension-stripping rule. Cross-task operations
+resolve the live Script owner through its Top, including a retained owner whose
+interpreter has already been removed. Copies own their history bytes.
+
+The regression executes authored KCS through all 23 wrappers, copies between two
+Script owners, writes a native CSS file through Main245, exports its GAME_SAVE
+file view and reads it through Main247/249 in a separate World and VM. A separate
+snapshot restore checks Scene ownership after interpreter replacement. Original
+legacy records define their numeric fields and C-string bytes through NUL;
+unused name/string tails can contain native stack bytes. The finite original
+fixture compares only those defined bytes. Import and subsequent copy/save keep
+all bytes supplied in a file, including its unused tails. The reader constructor initializes its filename and file value to empty/zero,
+including over a nonzero-filled allocation. Its cursor/size words remain
+uninitialized until a successful load. Empty-reader text and unmapped object
+storage are not assigned portable values from accidental native memory.
+The capture/expand wrappers can write a zero to the native reply storage on a
+missing-context branch while still returning control 2. Their `resultWritten`
+metadata stays null; the VM does not push a result for that control code.
+
 ## Evidence
 
 Public tests use authored bytecode and data. Optional scene-memory tests execute
