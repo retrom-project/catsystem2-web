@@ -130,6 +130,18 @@ Earlier probes which observed only Add and state queries do not establish
 accepted code. The JS loader retains its signature check; native failed-shell
 consumers outside the captured delete/update controls remain protected.
 
+Modern fixed wrapper reads are independent of the GCALL's declared argv size.
+Mapped trailing words remain available when the declaration is short, and
+unused tails are ignored. This includes Main387/388's three/four fixed words.
+For Main300/302, the original wrapper resolves the output addresses before
+writing: an output may overlap later argv words without redirecting subsequent
+writes. Short-frame calls now retain those addresses too; the usual complete
+argument array keeps its existing fast path. Own complete Main frames cover
+unaligned buffers, overlapping output regions, guest address zero, argv overlap,
+CSS tails and independent cold restores. Truly unmapped consumed argv words
+remain diagnosed. These two wrapper policies are enabled only for the modern
+builds proved by that fixture; the earlier builds retain their current policy.
+
 Manager-created modern records leave their object and frame bytes untouched
 until the respective input copy and VM update. Their internal checkpoint keeps
 that qualification too, including a deferred record which has never run. Direct

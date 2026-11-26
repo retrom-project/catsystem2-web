@@ -119,18 +119,23 @@ function setState(manager, working, word, machine) {
   }
   manager.setBank(working, bytes);
 }
-function getState(manager, working, word, machine) {
+function getState(manager, working, word, machine, capturePointers) {
+  // Declared words are already detached from VM memory. Snapshot mapped
+  // trailing words before an overlapping output can change a later address.
+  const addresses = capturePointers ? transfer.map(([index]) => word(index)) : null;
   for (const [index, offset, length] of transfer) {
+    let address;
     if (working && index === 9) {
       // This mode needs a mapped host pointer. Zero is
       // a valid guest data address; an unmapped VM pointer translates to NULL.
       try {
-        machine.region(word(index), length);
+        address = addresses ? addresses[index - 1] : word(index);
+        machine.region(address, length);
       } catch {
         continue;
       }
-    }
-    machine.writeBytes(word(index), manager.readBank(working, offset, length));
+    } else address = addresses ? addresses[index - 1] : word(index);
+    machine.writeBytes(address, manager.readBank(working, offset, length));
   }
 }
 
@@ -218,7 +223,13 @@ export function nativeMotion(id, args, machine, services = {}, owner) {
         return done();
       case 0x12c:
       case 0x12e:
-        getState(manager, id === 0x12e, word, machine);
+        getState(
+          manager,
+          id === 0x12e,
+          word,
+          machine,
+          behavior?.statePointersReadBeforeWrite && args.length < 10,
+        );
         return done();
       case 0x12f:
         manager.copyBank(false, true);

@@ -63,6 +63,8 @@ export default {
     recordStartsUninitialized: true,
     managerLifetime: 'explicit-delete',
     sourceCacheRelease: 'manager-delete',
+    statePointersReadBeforeWrite: true,
+    persistenceArgumentsReadFrame: true,
     controlIgnoresArgumentTail: true,
     geometryArgumentsReadFrame: true,
     currentMatrixFallback: true,
