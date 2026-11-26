@@ -262,3 +262,13 @@ the complete wrapper returns control2 and preserves all target pixels. Source
 masks remain restricted to real source components; other blend types and
 unsupported pixel classes retain specific guards. Actual Main710/734 GCALLs
 compare these ordinary pairs and their independent cold continuation.
+
+The .23 primary image path accepts ordinary PSD RGB8 raw and PackBits merged
+composites and KCF three/four-byte pixels. Its PSD reader skips three channels
+of RLE row lengths even when the file declares a merged alpha channel, then
+produces opaque output. This is a caller-scoped decode option; other SDKs keep
+their selected decoder behavior. KCF preserves the header pixel depth. Complete
+Main460/703 VM comparisons cover every output byte and cold ownership. For
+both formats Main428 uses the original ordinal-reader zero stub without writing
+the third output. Main648 still returns an automatically owned null-storage
+wrapper; the helper's zero result does not become the wrapper's result.

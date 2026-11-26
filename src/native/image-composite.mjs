@@ -10,6 +10,7 @@ import { nativeABI } from './abi/index.mjs';
 import { blendBitmapPixel } from './image.mjs';
 import { HG2 } from '../formats/hg2.mjs';
 import { HG3 } from '../formats/hg3.mjs';
+import { PSD } from '../formats/psd.mjs';
 export const NATIVE_IMAGE_COMPOSITE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x1cc, words: 1, control: 1 }),
 ]);
@@ -57,6 +58,31 @@ export class NativeImageComposites {
               header.getUint32(30, true) !== graphics.imageCompositeBmpCompression
             )
               throw new Error('The BMP primary header has no reviewed ABI binding');
+          }
+          if (format === 'PSD' && graphics.imageCompositePsd) {
+            const policy = graphics.imageCompositePsd,
+              header = new DataView(
+                image.bytes.buffer,
+                image.bytes.byteOffset,
+                image.bytes.byteLength,
+              ),
+              psd = new PSD(image.bytes, { rleChannels: policy.rleChannels });
+            if (
+              header.getUint16(22) !== policy.depth ||
+              header.getUint16(24) !== policy.mode ||
+              !policy.channels.includes(psd.channels) ||
+              !policy.compression.includes(psd.compression)
+            )
+              throw new Error('The PSD primary header has no reviewed ABI binding');
+            const bitmap = images.get(handle);
+            bitmap.state.rgba = psd.decode();
+            bitmap.state.source = null;
+            await bitmap.changed();
+          }
+          if (format === 'KCF' && graphics.imageCompositeKcfPixelDepth) {
+            const bitmap = images.get(handle);
+            bitmap.state.bpp = image.pixelSize;
+            await bitmap.changed();
           }
           const frame = image.frame(0);
           if (frame?.bpp === 24) {

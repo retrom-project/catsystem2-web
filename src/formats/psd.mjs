@@ -5,7 +5,7 @@
 import { Binary } from '../binary.mjs';
 
 export class PSD {
-  constructor(bytes) {
+  constructor(bytes, { rleChannels } = {}) {
     this.binary = new Binary(bytes, 'PSD');
     const b = this.binary,
       be16 = (at) => {
@@ -33,7 +33,7 @@ export class PSD {
     at += 4 + be32(at);
     this.compression = be16(at);
     at += 2;
-    if (this.compression === 1) at += this.height * this.channels * 2;
+    if (this.compression === 1) at += this.height * (rleChannels ?? this.channels) * 2;
     b.range(at, 0);
     this.dataOffset = at;
   }
