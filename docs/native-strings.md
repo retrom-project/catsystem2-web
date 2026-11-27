@@ -36,13 +36,6 @@ original, then finds the new end. When the source and destination overlap,
 later reads can see bytes just written. An overlapping raw copy that overwrites
 its unread terminator has no defined completed result and receives a diagnostic.
 
-Main519 clears its destination byte before snapshotting the source, then selects
-one token from the private grouped-token scratch. Its unsigned missing-index,
-literal-parenthesis policy and malformed-group errors remain unchanged. Each call
-uses one DataView for that scratch, rather than one per byte. The selected token
-is copied into an independent exact-sized buffer before the guest write; scratch,
-tokens and guest byte views are never cached across calls.
-
 Raw comparisons reverse the arguments. Formatted comparisons use the given
 order and two scratch strings 1,024 bytes apart; the second can replace the
 first's suffix. Case-sensitive results subtract signed bytes; the original

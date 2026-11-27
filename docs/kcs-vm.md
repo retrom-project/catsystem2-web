@@ -41,9 +41,6 @@ GCALL 的第二个操作数规定实参字节数。回调返回值是控制码�
 宿主返回 `nativeReply(control, value?, wait?)`。未知调用和不正确的结果协议抛出有位置的错误，
 不返回默认 0。浏览器异步 I/O 由 scheduler 在当前逻辑帧内等待并恢复该调用，
 操作只执行一次；这与 guest 主动暂停到下一帧不同。
-GCALL 每次独立分配实参数组并顺序读取当前栈，不复用宿主持有的数组。VM 按原顺序
-一次取得 reply 的 control/value/wait 并校验，直接消费这些局部值；不再创建随后即丢弃的
-第二个标准化 reply 对象。getter、诊断、结果入栈和 wait 复制的次序保持。
 
 `NativeRuntime.register(table, id, handler)` 的内部回调接收
 `(args, machine, task, scheduler)`；installer 通过闭包持有它自己的 World 和服务。
@@ -51,17 +48,9 @@ GCALL 每次独立分配实参数组并顺序读取当前栈，不复用宿主�
 这些路径不构造内建 fallback 的临时服务对象，也不隐式选择或创建变量/字符串 bank。
 需要这些操作的回调必须通过它持有的 World/runtime 明确执行。
 
-主表内建变量 bank、Main45/519 字符串操作和 Main515–518 原始字典按语义族准备本次服务：
-字符串操作只用当前 profile；变量族每次捕获 expression context，再选择当前任务 bank 和初始化资格；
-原始字典每次捕获当前 handles。实际服务字段保留原服务视图的 own/enumerable 规则，
-getter 在本次调用中读取一次，允许重入；这些小对象不跨调用复用。无关服务 getter、
-scene 查询和全局条目闭包不在这些族中构造。只对 runtime 自己创建的服务容器走此路；
-替换整个容器（包括 Proxy）的调用仍走完整 fallback。注册 handler、unknown/reserved/constant
-准入、publication barrier 和固定 ABI 校验都先于内建族，用户注册仍可覆盖内建行为。
-
-其余主表内建 fallback 从当前 `runtime.services` 构造完整的本次服务视图，
+只有进入主表内建 fallback 时才从当前 `runtime.services` 构造本次调用的服务视图，
 保留 getter 的本次读取、当前任务/上下文和 bank/scene 服务的原有选择规则。
-所有服务视图不跨 GCALL 缓存。所有分派路径仍检查固定 ABI 的控制码，并保留同步异常、
+该对象不跨 GCALL 缓存。所有分派路径仍检查固定 ABI 的控制码，并保留同步异常、
 异步完成和 guest 暂停的原有顺序；内部回调不额外接收这个服务对象。
 普通 World 的已实现 MOT、round、lerp 和 spline 包装通过同一注册入口执行，
 每次只捕获该族实际消费的当前服务及创建调用的 `task.id`；冷加载已开始的调用保留

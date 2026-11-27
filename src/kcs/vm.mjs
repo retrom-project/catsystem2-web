@@ -26,7 +26,7 @@ export function bitsFloat(value) {
   view.setUint32(0, value, true);
   return view.getFloat32(0, true);
 }
-function validateNativeResult(control, value) {
+export function nativeReply(control, value, wait) {
   if (!Number.isInteger(control) || control < 0 || control > 5)
     throw new Error(`Invalid KCS native control ${control}`);
   const returnsValue = control === 1 || control === 3;
@@ -34,10 +34,6 @@ function validateNativeResult(control, value) {
     throw new Error('A KCS result native must supply a 32-bit result');
   if (!returnsValue && value !== undefined)
     throw new Error('A void KCS native cannot supply a result');
-  return returnsValue;
-}
-export function nativeReply(control, value, wait) {
-  const returnsValue = validateNativeResult(control, value);
   const reply = { control };
   if (returnsValue) reply.value = value >>> 0;
   if (wait) reply.wait = wait;
@@ -420,25 +416,19 @@ export class KCSMachine {
   completeNative(reply, instructionPC, next, count, call) {
     if (!reply || typeof reply !== 'object' || typeof reply.then === 'function')
       throw new Error(`KCS native ${call.id.toString(16)} must return an explicit control reply`);
-    // Read an arbitrary host reply once, before validation or callbacks, just
-    // as nativeReply's arguments are evaluated. The normalized object would
-    // remain local to this method; keep its fields without allocating it.
-    const control = reply.control,
-      value = reply.value,
-      wait = reply.wait;
-    if (validateNativeResult(control, value)) {
-      const word = value >>> 0;
-      if (word === NATIVE_RESULT_SENTINEL)
+    const checked = nativeReply(reply.control, reply.value, reply.wait);
+    if (checked.control === 1 || checked.control === 3) {
+      if (checked.value === NATIVE_RESULT_SENTINEL)
         this.host?.diagnostic?.({ type: 'native-result-sentinel', id: call.id, pc: instructionPC });
-      this.push(word);
+      this.push(checked.value);
     }
-    if (control === 5) {
+    if (checked.control === 5) {
       this.steps--;
       this.sp += count;
       next = instructionPC;
     }
-    if (control === 0 || control >= 3) this.suspended = true;
-    this.waiting = wait ? { ...wait, native: call.id } : null;
+    if (checked.control === 0 || checked.control >= 3) this.suspended = true;
+    this.waiting = checked.wait ? { ...checked.wait, native: call.id } : null;
     return next;
   }
   waitMessage(address) {
@@ -557,8 +547,7 @@ export class KCSMachine {
       if (count % 4 || count > this.sp) throw new Error('KCS invalid native arguments');
       this.sp -= count;
       this.nativeArgumentBase = this.sp;
-      const args = new Array(count / 4);
-      for (let i = 0; i < args.length; i++) args[i] = this.load(this.sp + i * 4);
+      const args = Array.from({ length: count / 4 }, (_, i) => this.load(this.sp + i * 4));
       if (!this.host?.native) throw new Error(`KCS native host absent for ${id.toString(16)}`);
       const reply = this.host.native(id, args, this);
       next = this.completeNative(reply, instructionPC, next, count, { id, args });
