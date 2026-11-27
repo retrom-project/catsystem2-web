@@ -397,3 +397,29 @@ lookup. The .63 policy therefore forwards an empty filename on failure, preservi
 the existing source program and wrapper control2. Other builds retain their
 selected behavior. A receiver-packet regression covers this distinction in
 addition to the unchanged output pixels.
+
+The .63 nested-owner group follows the same actual resource chain for Main710,
+Main731, caller release and Draw retirement. Its 196-byte retained group keeps
+the original 64-byte ImageOwner when Main623 replaces its decoded frames.
+The current build policy preserves that group identity and owner reference.
+Separate HG2 two-frame inputs use narrow CP932 filenames; valid ordinal frames,
+ANM lookup, caller-array release and later Draw removal compare the full pixels
+and selected state. Raw unselected object words remain capture-only.
+
+This build separates source update from rasterization. Main340's receiver calls
+the renderer without first running its frame update, while the normal derived
+draw callback calls update before raster. Rasterization therefore keeps the
+cached source state instead of implicitly advancing children after a layer
+mutation. The ordinary update function remains in the normal draw path.
+Main342 and the graphics preparation caller have current-only cache regressions;
+six independent checkpoints cover the retained owner, encoded rebind, frames
+and caller release. The existing capture path still renders Stage, and snapshot
+stores the retained graph without adding an update or changing public loans.
+
+The complete original group contains thirty-three GCALL frames. A separate
+ten-frame consumer group includes one direct original derived draw callback
+with its Draw output disabled. In total it uses twenty-three target and
+twenty-six dependency GCALLs plus that one callback. This direct callback
+observation does not establish the original Base/collector active filtering,
+enabled animation cadence, capture pixels or hardware output. Those boundaries
+remain separate from the compared resource and software-renderer shapes.

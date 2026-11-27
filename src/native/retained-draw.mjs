@@ -626,7 +626,8 @@ export class NativeRetainedDraw {
     for (const record of this.items.values())
       if (record.surface === draw.record.id) {
         await this.syncOwner(record.source);
-        this.advance(record.source);
+        if (!nativeABI(this.world.profile).graphics.drawRasterKeepsSourceState)
+          this.advance(record.source);
         if (this.needsPull(record)) await this.pull(draw, record);
       }
     for (const item of draw.state.renderer.items) {

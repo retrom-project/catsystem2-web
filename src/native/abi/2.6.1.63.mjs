@@ -1183,7 +1183,10 @@ export default {
     drawBitmapRequiresRenderer: true,
     renderSourcesDeferProgram: true,
     drawMissingAnimationSendsEmpty: true,
-    renderSourceFrameFormats: ['HG3'],
+    drawRasterKeepsSourceState: true,
+    drawEncodedBindingRebuildsFrames: true,
+    renderSourceFrameFormats: ['HG2', 'HG3'],
+    retainedAllImageFrames: true,
     retainedSourcesUseStoredLayer: true,
     renderSources: { stride: 72, bytes: 276 },
     retainedBytes: 196,
@@ -1302,7 +1305,7 @@ export default {
         {
           ids: renderSourceOperations,
           value:
-            'Own SDK63 true resource/allocator/View/Script GCALLs compare72-byte arrays withtag1 bitmap andtag2 actual196-byte source constructor5222b0, nine-word metadata and two valid ordinal frames. The initialized Draw retains that source through caller array release, normal transform updates, explicit ANM load/missing ANM no-change, signed layer and bitmap/encoded packet binding, software output and actual Script retirement. Twenty-one target and twenty-three dependency calls preserve tags/untouched name words, control/result, source refs and every selected bitmap pixel. Raw addresses/unselected source words remain capture-only; other formats, nested source ownership and capacity/alias shapes remain separately qualified.',
+            'Own SDK63 true resource/allocator/View/Script GCALLs compare72-byte arrays withtag1 bitmap andtag2 actual196-byte source constructor5222b0, nine-word metadata and two valid ordinal frames. The initialized Draw retains that source through caller array release, normal transform updates, explicit ANM load/missing ANM no-change, signed layer and bitmap/encoded packet binding, software output and actual Script retirement. Twenty-one target and twenty-three dependency calls preserve tags/untouched name words, control/result, source refs and every selected bitmap pixel. Follow-up G6 qualifies two-frame HG2 inputs with CP932 names and preserves the actual ImageOwner holder when encoded replacement rebuilds its retained source frames. Rasterization keeps cached source state; the normal derived draw has a separate update call. Raw addresses/unselected source words remain capture-only; other formats, enabled cadence, Base active filtering and capacity/alias shapes remain separately qualified.',
         },
         {
           ids: drawResourceOperations,
@@ -1820,7 +1823,7 @@ export default {
         {
           ids: [257, 259, 731, 732],
           value:
-            '2.6.1.63 own raw Draw 268/270 receive a zeroed fifteen-word packet with source in the bitmap or image-owner slot, unsigned clamped opacity and the original transform order.',
+            '2.6.1.63 own raw Draw 268/270 receive a zeroed fifteen-word packet with source in the bitmap or image-owner slot, unsigned clamped opacity and the original transform order. Main731 also has the G6 actual Main710 multi-frame/ANM owner bridge: its retained group holds the same64-byte owner through encoded replacement and caller release; software pixels and current cold state are compared. This follow-up does not extend Main732 shapes.',
         },
         {
           ids: [625],
@@ -1905,7 +1908,7 @@ export default {
         {
           ids: [710, 711, 714, 726, 730, 733, 736],
           value:
-            '2.6.1.63 own Script image collection load and release, canvas dimensions, per-layer blur and resize, and four-byte canvas creation and fill.',
+            '2.6.1.63 own Script image collection load and release, canvas dimensions, per-layer blur and resize, and four-byte canvas creation and fill. G6 separately compares Main710/711 with a real multi-frame HG3/ANM model retained by Draw, caller automatic-list removal, final entry release and Script retirement; the other entries keep their existing scope.',
         },
         {
           ids: [539],
