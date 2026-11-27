@@ -12,6 +12,7 @@ import { PARTICLE_BLEND_FACTORS } from '../ppi/abi.mjs';
 import { bitsFloat } from '../kcs/vm.mjs';
 import { advanceD3DContext } from '../ppi/render-state.mjs';
 import { appendNativeLinePixels } from './native-lines.mjs';
+import { createNativePortMatcher } from './port-reflection.mjs';
 const nativeTextureReaders = new WeakSet(),
   nativeTexturePorts = new WeakMap(),
   nativeTextureCaches = new WeakMap(),
@@ -41,6 +42,7 @@ if (typeof WebGLPort === 'function')
     nativeWebGLShape.push([prototype, Object.getOwnPropertyDescriptors(prototype)]);
     prototype = Object.getPrototypeOf(prototype);
   }
+const matchNativeWebGLPort = createNativePortMatcher(nativeWebGLShape, 'drawingBufferWidth');
 function sameDescriptor(current, original) {
   return (
     current?.value === original.value &&
@@ -337,9 +339,10 @@ export function nativeTextureConsumer(gpu) {
   )
     return false;
   const gl = nativeTexturePorts.get(gpu);
+  if (!nativeWebGLShape.length || Object.getPrototypeOf(gl) !== WebGLPort.prototype) return false;
+  const matched = matchNativeWebGLPort(gl);
   return Boolean(
-    nativeWebGLShape.length &&
-      Object.getPrototypeOf(gl) === WebGLPort.prototype &&
+    matched ??
       nativeWebGLShape.every(([prototype, descriptors]) =>
         Reflect.ownKeys(descriptors).every(
           (key) =>
