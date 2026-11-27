@@ -62,13 +62,14 @@ const primitiveIDs = new Set([
   ...Array.from({ length: 4 }, (_, i) => 0x203 + i),
 ]);
 const ownServiceDescriptor = Object.getOwnPropertyDescriptor;
+const applyServiceGetter = Reflect.apply;
 function primitiveService(current, key) {
   const field = ownServiceDescriptor(current, key);
   if (!field?.enumerable) return undefined;
   return 'value' in field
     ? field.value
     : field.get
-      ? Reflect.apply(field.get, current, [])
+      ? applyServiceGetter(field.get, current, [])
       : undefined;
 }
 function nativePrimitive(runtime, id, args, machine, task, current) {
@@ -96,7 +97,9 @@ function nativePrimitive(runtime, id, args, machine, task, current) {
 // A recovered declaration is not an implementation. Every dispatch must return
 // an explicit control reply or report an unsupported call with its guest state.
 export class NativeRuntime {
-  #primitiveServices;
+  // Ownership only, not cached service values; replacing services must not
+  // retain the old container or its resources for the lifetime of the runtime.
+  #primitiveServices = new WeakSet();
   constructor({ profile, read, services = {}, shared, budget }) {
     const abi = nativeABI(profile);
     this.profile = profile;
@@ -124,7 +127,7 @@ export class NativeRuntime {
           ? (address, machine) => encodeCP932(services.format(address, machine))
           : formatNativeAt),
     };
-    this.#primitiveServices = this.services;
+    this.#primitiveServices.add(this.services);
     this.imageDataBuffers = new NativeDataBuffers({
       memory: new NativeBufferMemory({
         resolveReference: (ref, reader) =>
@@ -320,7 +323,7 @@ export class NativeRuntime {
     if (entry.status === 'reserved') reply = nativeReply(2);
     else if (entry.status === 'constant-zero') reply = nativeReply(1, 0);
     else if (this.handlers.has(key)) reply = this.handlers.get(key)(args, machine, task, scheduler);
-    else if (primitive && (currentServices = this.services) === this.#primitiveServices)
+    else if (primitive && this.#primitiveServices.has((currentServices = this.services)))
       reply = nativePrimitive(this, id, args, machine, task, currentServices);
     else if (table === 'main') {
       const services = {

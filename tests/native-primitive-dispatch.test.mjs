@@ -232,6 +232,17 @@ test('replaced service containers retain full fallback; barriers, registration a
   );
   assert.deepEqual(call(0x207, [256, 128, 1]), nativeReply(1, 1));
   assert.equal(fallbackReads, 1);
+  const other = await runtimeFor();
+  Object.defineProperty(other.runtime.services, 'unrelated', {
+    enumerable: true,
+    get() {
+      fallbackReads++;
+      return 1;
+    },
+  });
+  runtime.services = other.runtime.services;
+  assert.deepEqual(call(0x207, [256, 128, 1]), nativeReply(1, 1));
+  assert.equal(fallbackReads, 2, 'another runtime owns a different service container');
   runtime.services = original;
   runtime.textPublicationBarrier = () => {
     events.push('barrier');
