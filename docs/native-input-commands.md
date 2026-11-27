@@ -173,7 +173,9 @@ words while preserving button-enable state. These two policies are explicit to
 this build; the other SDK policies retain their independently verified behavior.
 Six fresh Worlds resume the same loaded VM across visibility, clear/rebind and
 child-before-parent retirement. The normal hint in this proof is an independent
-sibling; it does not qualify cyclic ancestor hint graphs.
+sibling; self/ancestor Plane hints are guarded before changing the retained hint, because
+the original hide/broadcast chain recurses for that topology. Other cyclic hint
+graphs remain outside this qualification.
 
 This metadata fixture does not deliver a key or qualify application binding
 publication. The SDK23 application publisher is statically identified, but it

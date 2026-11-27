@@ -127,3 +127,28 @@ test('SDK23 loaded Plane/Base metadata, visibility, clear/rebind and six indepen
     await w.close({ flushFiles: false });
   }
 });
+
+test('SDK23 rejects an unqualified ancestor hint cycle before changing the retained hint', async () => {
+  const w = await make();
+  try {
+    const t = await w.spawnScript('input-g1', { initialExecute: false });
+    await w.runtime.native('main', 209, [512], t.machine, t);
+    await step(w, t, 0);
+    const childID = t.machine.load(68),
+      parentID = t.machine.load(64),
+      child = w.graphics.get(w.resolveTaskID(childID, t.id));
+    assert.equal(child.state.imageIndex, -1);
+    await assert.rejects(
+      () => w.runtime.native('main', 102, [childID, parentID], t.machine, t),
+      /ancestor visibility cycle/,
+    );
+    await assert.rejects(
+      () => w.runtime.native('main', 102, [childID, childID], t.machine, t),
+      /ancestor visibility cycle/,
+    );
+    assert.equal(child.state.imageIndex, -1);
+    compare(w, t, golden.rows[0]);
+  } finally {
+    await w.close({ flushFiles: false });
+  }
+});

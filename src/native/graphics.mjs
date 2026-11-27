@@ -1513,6 +1513,12 @@ export class NativeGraphicTask {
         return 0;
       }
       case 77:
+        if (this.planeVisibilityUpdatesInput) {
+          const target = this.world.resolveTaskID(l, this.record.id);
+          for (let owner = this.record; owner; owner = this.world.objects.objects.get(owner.parent))
+            if (owner.id === target && owner.kind === 2)
+              throw new Error('Native Plane hint cannot form an ancestor visibility cycle');
+        }
         this.state.imageIndex = l | 0;
         if (
           this.world.profile &&
