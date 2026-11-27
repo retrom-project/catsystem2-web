@@ -91,3 +91,17 @@ without private resources. Existing generic math cases remain independent too.
 Reproduce the checked-in scalar golden with
 `node scripts/capture-native-calculations.mjs --check scalar` (or `--write` after
 reviewing an intentional change). The same tool handles each migrated family.
+
+The fixed SDK23 `9f3a5ad0…` normal-host bridge in
+`sdk23-numeric-memory.test.mjs` supplements the existing body/calibration corpus.
+Main54/57/62/63/64/397 run through an actual Main143-loaded Script with the
+qualified CRT/FileServer/controller Root. Finite acos, abs, degree/radian,
+integer-abs and ordered y/x atan2 results feed native variable stores, expression
+reads and later formatted strings. Negative angles, signed-zero abs and zero
+unit conversions are included. Complete result words, output spans and canaries
+are exact for these finite inputs, including four independent current cold
+continuations and source-format overwrite before later consumption.
+
+This 14-target/30-GCALL bridge does not repeat the large scalar matrices or
+extend the existing special-value, plugin FPCW or arbitrary numeric-domain
+qualification. No arithmetic implementation or ABI registration changed.
