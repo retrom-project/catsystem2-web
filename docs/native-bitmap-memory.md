@@ -423,3 +423,23 @@ twenty-six dependency GCALLs plus that one callback. This direct callback
 observation does not establish the original Base/collector active filtering,
 enabled animation cadence, capture pixels or hardware output. Those boundaries
 remain separate from the compared resource and software-renderer shapes.
+
+## SDK 2.6.1.67 initialized bitmap calls
+
+The .67 bitmap group independently constructs its own CRT, Settings, FileServer,
+Window/Device, software View and Main66/Main143 owning Script VM. Its normal CRT
+prelude encodes the math callbacks before the reference heap's actual logger
+formats its message. The initial host attempt missing that precondition is
+retained as zero-target failed host evidence. No private allocator, formatter,
+parser or constructor is replaced; the old .23 and W9 host redirects do not
+qualify this resource chain.
+
+Thirty-eight target and nine dependency GCALLs compare the thirteen ordinary
+bitmap metadata/pixel entries, including their full selected RGBA pixels,
+geometry/cache/clip fields, explicit attributes, returns and release. Forty-four
+current full KCS frames and eight independent cold continuations match those
+own .67 results using the shared implementation. Main112 explicitly clears its
+successful pixel allocation through the original zero routine. Main377's null
+owner would leave the result unwritten and remains diagnosed. Other formats,
+shared/aliased layouts, retained Draw and physical hardware output keep their
+separate qualification boundaries.
