@@ -138,12 +138,16 @@ test('a count0 host callback still observes its wait and presents without an inv
     });
     player = await core(() => timer);
     player.canvas.onPresent = () => presentations++;
+    player.inputBindings.keyboard({ code: 'Enter' }, true);
+    const queuedInput = player.inputBindings.events.length;
+    assert(queuedInput > 0);
     const pc = player.world.main.machine.pc;
     let wait = player.beginFrameWait();
     timer = 8;
     await player.step(0, wait, player.frameWaitTime(wait));
     await player.render();
     assert.equal(player.world.main.machine.pc, pc);
+    assert.equal(player.inputBindings.events.length, queuedInput);
     assert.equal(player.world.frame, 0);
     wait = player.beginFrameWait();
     player.suspendFramePacing();
@@ -153,6 +157,7 @@ test('a count0 host callback still observes its wait and presents without an inv
     await player.step(1, wait, player.frameWaitTime(wait));
     await player.render();
     assert.equal(player.world.frame, 1);
+    assert.equal(player.inputBindings.events.length, 0);
     assert.equal(presentations, 2);
   } finally {
     await player?.dispose();

@@ -75,3 +75,11 @@ position relative to input actions. Replacing a World invalidates the previous
 World's callback; a restored World gets a fresh wait. The Runtime adapter stops
 and awaits an inflight update and presentation before host suspension. Its
 GAME_SAVE transport remains separate from the internal instant checkpoint.
+
+The consumer tests drive the actual World graph: FES beforeStep starts and
+updates its real MOT manager once at the absolute Frame; Particle constructors,
+load/start wrappers and per-particle mains receive one update; STRING draws
+with its previous elapsed time before adding the current Frame delta. A
+same-bucket return preserves queued keyboard input, and an independent cold
+FES/MOT continuation retains the timer phase and manager start tick. These
+checks do not replace the original executable's factory and VM evidence.
