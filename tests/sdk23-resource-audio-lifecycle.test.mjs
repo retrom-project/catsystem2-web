@@ -127,6 +127,7 @@ function compare(world, row, group) {
 for (const [group, coldPoints] of [
   ['static', [4, 15, 19, 35]],
   ['group', [3, 19, 21, 23]],
+  ['controls', [9, 11]],
 ])
   for (const coldAt of [null, ...coldPoints])
     test(`SDK23 primary ${group} original GCALL chain${coldAt === null ? '' : `, independent cold${coldAt}`}`, async () => {

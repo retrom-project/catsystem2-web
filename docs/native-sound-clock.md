@@ -1,5 +1,19 @@
 # Native sound timing and bank commands
 
+SDK23 primary-source regressions reuse its corrected native WAV decoder and
+DirectSound buffer receipts for static play, pause, resume, stop, completion
+notifications, group selection and release. The current counterpart executes
+real GCALLs through `AudioMixer`, with the same authored PCM and independent
+cold owners. A finite volume transition also compares the original Base
+constructor and Sound Frame callbacks at 100, 101, 102, 103 and 106 against the
+current control records and volume query. These are ordinary callback Frame
+inputs; neither a fabricated raw step nor elapsed media time supplies them.
+
+The comparison ports capture COM operations and matching WebAudio sources.
+They do not prove physical output, the isolated manager's gain initialization,
+alternate global backends, or additional stream continuation shapes. The
+native bank's load type and the manager's backend selection remain separate.
+
 `NativeSound.now()` reads the World's shared system clock and truncates it to
 the DWORD returned by `timeGetTime`. It supplies PLV start times and sample
 indices. `AudioContext.currentTime` supplies media timing elsewhere; it cannot
