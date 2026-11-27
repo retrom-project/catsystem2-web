@@ -41,6 +41,8 @@ export async function setFESBaseImage(graphics, instance, object) {
   } else await draw.setBaseImage(instance.runtime.images.currentBitmap(object));
 }
 export async function closeFESGraphics(graphics, record, player) {
-  for (const players of graphics.fesSurfaces.values()) players.delete(record.id);
-  for (const instance of player?.instances ?? []) await instance.runtime.close();
+  for (const players of graphics.fesSurfaces.values())
+    if (players.get(record.id) === player) players.delete(record.id);
+  for (const instance of player?.instances ?? [])
+    await instance.runtime.close({ metadataOnly: player.nativeCoreReplaced === true });
 }

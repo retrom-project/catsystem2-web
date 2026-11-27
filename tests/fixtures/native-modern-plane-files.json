@@ -1,0 +1,2333 @@
+{
+  "scope": "Own exact 0e1dde74 / ee6-76 normal Win32 file paths, actual factory Script/parsed Actor+VM carrier, Root/Input and 64x64 COM view; no GPU/full application/INT category mount evidence",
+  "versions": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "peSHA256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "original": {
+        "path": ".local/phase11/sdk-modern-plane-file-models-20261128/ORIGINAL-FILE-V3-74.json",
+        "sha256": "3ba9e30005c8647455154703c32d3c1923ffeaf568951c2ebbcd62c520167a8f"
+      },
+      "startupXML": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp>32</bpp></TEXTURE><APP><imgcache>0</imgcache></APP><ETC><cache>0</cache></ETC><INT><int00><name>kcs</name><int></int><ext>kcs</ext><dir></dir></int00></INT></document>",
+      "resources": {
+        "file\\shape.kx2": [
+          75, 88, 50, 0, 0, 0, 0, 192, 0, 0, 128, 191, 0, 0, 192, 64, 0, 0, 160, 64, 2, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 66, 96, 64, 32, 255, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 200,
+          66, 16, 32, 64, 128, 0, 0, 0, 0, 0, 0, 192, 64, 0, 0, 200, 66, 192, 160, 128, 192, 0, 0,
+          0, 65, 0, 0, 0, 0, 0, 0, 200, 66, 16, 32, 64, 128, 0, 0, 0, 65, 0, 0, 192, 64, 0, 0, 200,
+          66, 128, 192, 224, 255, 0, 0, 0, 0, 0, 0, 192, 64, 0, 0, 200, 66, 192, 160, 128, 192
+        ],
+        "file\\replacement.kx2": [
+          75, 88, 50, 0, 0, 0, 0, 192, 0, 0, 128, 191, 0, 0, 0, 64, 0, 0, 64, 64, 2, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 200, 66, 96, 64, 32, 255, 0, 0, 128, 64, 0, 0, 0, 0, 0, 0, 200,
+          66, 16, 32, 64, 128, 0, 0, 0, 0, 0, 0, 128, 64, 0, 0, 200, 66, 192, 160, 128, 192, 0, 0,
+          128, 64, 0, 0, 0, 0, 0, 0, 200, 66, 16, 32, 64, 128, 0, 0, 128, 64, 0, 0, 128, 64, 0, 0,
+          200, 66, 128, 192, 224, 255, 0, 0, 0, 0, 0, 0, 128, 64, 0, 0, 200, 66, 192, 160, 128, 192
+        ],
+        "file\\複製.kx2": [
+          75, 88, 50, 0, 0, 0, 0, 192, 0, 0, 128, 191, 0, 0, 0, 64, 0, 0, 64, 64, 2, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 200, 66, 96, 64, 32, 255, 0, 0, 128, 64, 0, 0, 0, 0, 0, 0, 200,
+          66, 16, 32, 64, 128, 0, 0, 0, 0, 0, 0, 128, 64, 0, 0, 200, 66, 192, 160, 128, 192, 0, 0,
+          128, 64, 0, 0, 0, 0, 0, 0, 200, 66, 16, 32, 64, 128, 0, 0, 128, 64, 0, 0, 128, 64, 0, 0,
+          200, 66, 128, 192, 224, 255, 0, 0, 0, 0, 0, 0, 128, 64, 0, 0, 200, 66, 192, 160, 128, 192
+        ]
+      },
+      "cases": [
+        {
+          "id": 66,
+          "args": [2, "caller", 128],
+          "dependency": true,
+          "save": "plane",
+          "text": "Modern file Plane",
+          "ordinal": 0,
+          "control": 1,
+          "result": "owned:plane",
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": false,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 66,
+          "args": [6, "caller", 128],
+          "dependency": true,
+          "save": "base",
+          "text": "Modern BasePlane",
+          "ordinal": 1,
+          "control": 1,
+          "result": "owned:base",
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 542,
+          "args": [],
+          "dependency": true,
+          "ordinal": 2,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 112,
+          "args": [8, 8],
+          "dependency": true,
+          "save": "bitmap",
+          "ordinal": 3,
+          "control": 1,
+          "result": "owned:bitmap",
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 117,
+          "args": ["bitmap", 0, 0, 8, 8, 3227549856],
+          "dependency": true,
+          "ordinal": 4,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 117,
+          "args": ["bitmap", 0, 0, 4, 8, 2151686160],
+          "dependency": true,
+          "ordinal": 5,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 115,
+          "args": [0, 0, 0, 8, 8, "bitmap", 0, 0, 8, 8],
+          "dependency": true,
+          "ordinal": 6,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 114,
+          "args": ["bitmap"],
+          "dependency": true,
+          "ordinal": 7,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 81,
+          "args": [0],
+          "ordinal": 8,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 81,
+          "args": ["plane", 192],
+          "text": "file\\shape.kx2",
+          "textAt": 192,
+          "ordinal": 9,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 6,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [
+            {
+              "path": "file\\shape.kx2",
+              "destination": false,
+              "mode": 3,
+              "primaryRegistered": false
+            },
+            {
+              "path": "file\\shape.kx2",
+              "destination": true,
+              "mode": 3,
+              "primaryRegistered": false
+            }
+          ],
+          "input": [],
+          "packets": [
+            {
+              "raw": 67,
+              "w": 0,
+              "path": "file\\shape.kx2"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 88,
+          "args": ["plane", 1120403456],
+          "dependency": true,
+          "ordinal": 10,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 6,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 59,
+              "w": 0,
+              "path": null
+            },
+            {
+              "raw": 47,
+              "w": 0,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 84,
+          "args": ["plane", 1082130432, 1084227584, 0, 0],
+          "dependency": true,
+          "ordinal": 11,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 6,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 49,
+              "w": 0,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 95,
+          "args": ["plane", 0],
+          "dependency": true,
+          "ordinal": 12,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 6,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [
+            {
+              "canonical": 126,
+              "w": 100,
+              "l": 2146429448,
+              "registration": {
+                "owner": "plane",
+                "priority": 100,
+                "mask": 7,
+                "bounds": [4, 5, 12, 11]
+              }
+            }
+          ],
+          "packets": [
+            {
+              "raw": 87,
+              "w": 3,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 92,
+          "args": ["plane", 1],
+          "dependency": true,
+          "ordinal": 13,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 6,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [
+            {
+              "canonical": 133,
+              "w": "plane",
+              "l": 0
+            }
+          ],
+          "packets": [
+            {
+              "raw": 45,
+              "w": 0,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "operation": "frame",
+          "frame": 1,
+          "label": "textured-shown",
+          "ordinal": 14,
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 6,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "draws": [
+            {
+              "triangles": [
+                [
+                  {
+                    "x": 3.5,
+                    "y": 4.5,
+                    "z": 0.9984615445137024,
+                    "w": 1,
+                    "color": 4280303712,
+                    "u": 0,
+                    "v": 0
+                  },
+                  {
+                    "x": 11.5,
+                    "y": 4.5,
+                    "z": 0.9984615445137024,
+                    "w": 1,
+                    "color": 4280303712,
+                    "u": 1,
+                    "v": 0
+                  },
+                  {
+                    "x": 3.5,
+                    "y": 10.5,
+                    "z": 0.9984615445137024,
+                    "w": 1,
+                    "color": 4280303712,
+                    "u": 0,
+                    "v": 0.75
+                  }
+                ],
+                [
+                  {
+                    "x": 3.5,
+                    "y": 10.5,
+                    "z": 0.9984615445137024,
+                    "w": 1,
+                    "color": 2151686160,
+                    "u": 0,
+                    "v": 0.75
+                  },
+                  {
+                    "x": 11.5,
+                    "y": 4.5,
+                    "z": 0.9984615445137024,
+                    "w": 1,
+                    "color": 2151686160,
+                    "u": 1,
+                    "v": 0
+                  },
+                  {
+                    "x": 11.5,
+                    "y": 10.5,
+                    "z": 0.9984615445137024,
+                    "w": 1,
+                    "color": 2151686160,
+                    "u": 1,
+                    "v": 0.75
+                  }
+                ]
+              ],
+              "texture": {
+                "width": 8,
+                "height": 8,
+                "rgba": [
+                  68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 102, 136, 170,
+                  204, 102, 136, 170, 204, 102, 136, 170, 204, 102, 136, 170, 204, 68, 34, 17, 136,
+                  68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 102, 136, 170, 204, 102, 136,
+                  170, 204, 102, 136, 170, 204, 102, 136, 170, 204, 68, 34, 17, 136, 68, 34, 17,
+                  136, 68, 34, 17, 136, 68, 34, 17, 136, 102, 136, 170, 204, 102, 136, 170, 204,
+                  102, 136, 170, 204, 102, 136, 170, 204, 68, 34, 17, 136, 68, 34, 17, 136, 68, 34,
+                  17, 136, 68, 34, 17, 136, 102, 136, 170, 204, 102, 136, 170, 204, 102, 136, 170,
+                  204, 102, 136, 170, 204, 68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 68,
+                  34, 17, 136, 102, 136, 170, 204, 102, 136, 170, 204, 102, 136, 170, 204, 102, 136,
+                  170, 204, 68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 102,
+                  136, 170, 204, 102, 136, 170, 204, 102, 136, 170, 204, 102, 136, 170, 204, 68, 34,
+                  17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 102, 136, 170, 204,
+                  102, 136, 170, 204, 102, 136, 170, 204, 102, 136, 170, 204, 68, 34, 17, 136, 68,
+                  34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 102, 136, 170, 204, 102, 136, 170,
+                  204, 102, 136, 170, 204, 102, 136, 170, 204
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": 82,
+          "args": ["plane", 192],
+          "text": "file\\replacement.kx2",
+          "textAt": 192,
+          "ordinal": 15,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\replacement.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [
+            {
+              "path": "file\\replacement.kx2",
+              "destination": false,
+              "mode": 3,
+              "primaryRegistered": false
+            },
+            {
+              "path": "file\\replacement.kx2",
+              "destination": true,
+              "mode": 3,
+              "primaryRegistered": false
+            }
+          ],
+          "input": [],
+          "packets": [
+            {
+              "raw": 68,
+              "w": 0,
+              "path": "file\\replacement.kx2"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 343,
+          "args": ["plane", 768, 772],
+          "dependency": true,
+          "outputs": [[768, 8]],
+          "ordinal": 16,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [768, 0],
+            [769, 0],
+            [770, 128],
+            [771, 64],
+            [772, 0],
+            [773, 0],
+            [774, 128],
+            [775, 64]
+          ],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\replacement.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 73,
+              "w": 537222916,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "operation": "frame",
+          "frame": 2,
+          "label": "colored-replacement-hidden",
+          "ordinal": 17,
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\replacement.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "draws": []
+        },
+        {
+          "id": 92,
+          "args": ["plane", 1],
+          "dependency": true,
+          "ordinal": 18,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\replacement.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [
+            {
+              "canonical": 133,
+              "w": "plane",
+              "l": 0
+            }
+          ],
+          "packets": [
+            {
+              "raw": 45,
+              "w": 0,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "operation": "frame",
+          "frame": 3,
+          "label": "colored-shown",
+          "ordinal": 19,
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\replacement.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "draws": [
+            {
+              "triangles": [
+                [
+                  {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0.9215384721755981,
+                    "w": 0.0011111111380159855,
+                    "color": 4280303712,
+                    "u": 0,
+                    "v": 0
+                  },
+                  {
+                    "x": 4.44444465637207,
+                    "y": 0,
+                    "z": 0.9215384721755981,
+                    "w": 0.0011111111380159855,
+                    "color": 2151686160,
+                    "u": 0,
+                    "v": 0
+                  },
+                  {
+                    "x": 0,
+                    "y": 4.44444465637207,
+                    "z": 0.9215384721755981,
+                    "w": 0.0011111111380159855,
+                    "color": 3229655232,
+                    "u": 0,
+                    "v": 0
+                  }
+                ],
+                [
+                  {
+                    "x": 4.44444465637207,
+                    "y": 0,
+                    "z": 0.9215384721755981,
+                    "w": 0.0011111111380159855,
+                    "color": 2151686160,
+                    "u": 0,
+                    "v": 0
+                  },
+                  {
+                    "x": 4.44444465637207,
+                    "y": 4.44444465637207,
+                    "z": 0.9215384721755981,
+                    "w": 0.0011111111380159855,
+                    "color": 4292919424,
+                    "u": 0,
+                    "v": 0
+                  },
+                  {
+                    "x": 0,
+                    "y": 4.44444465637207,
+                    "z": 0.9215384721755981,
+                    "w": 0.0011111111380159855,
+                    "color": 3229655232,
+                    "u": 0,
+                    "v": 0
+                  }
+                ]
+              ],
+              "texture": null
+            }
+          ]
+        },
+        {
+          "id": 82,
+          "args": ["plane", 192],
+          "text": "file\\shape.kx2",
+          "textAt": 192,
+          "ordinal": 20,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [
+            {
+              "path": "file\\shape.kx2",
+              "destination": false,
+              "mode": 3,
+              "primaryRegistered": false
+            },
+            {
+              "path": "file\\shape.kx2",
+              "destination": true,
+              "mode": 3,
+              "primaryRegistered": false
+            }
+          ],
+          "input": [],
+          "packets": [
+            {
+              "raw": 68,
+              "w": 0,
+              "path": "file\\shape.kx2"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 343,
+          "args": ["plane", 768, 772],
+          "dependency": true,
+          "outputs": [[768, 8]],
+          "ordinal": 21,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [768, 0],
+            [769, 0],
+            [770, 0],
+            [771, 65],
+            [772, 0],
+            [773, 0],
+            [774, 192],
+            [775, 64]
+          ],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 73,
+              "w": 537222916,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 82,
+          "args": ["plane", 192],
+          "text": "file\\missing.kx2",
+          "textAt": 192,
+          "ordinal": 22,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [
+            {
+              "path": "file\\missing.kx2",
+              "destination": false,
+              "mode": 3,
+              "primaryRegistered": false
+            }
+          ],
+          "input": [],
+          "packets": [
+            {
+              "raw": 68,
+              "w": 0,
+              "path": "file\\missing.kx2"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 343,
+          "args": ["plane", 768, 772],
+          "dependency": true,
+          "outputs": [[768, 8]],
+          "ordinal": 23,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [768, 0],
+            [769, 0],
+            [770, 0],
+            [771, 65],
+            [772, 0],
+            [773, 0],
+            [774, 192],
+            [775, 64]
+          ],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 73,
+              "w": 537222916,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "operation": "frame",
+          "frame": 4,
+          "label": "missing-keeps-metadata-not-model",
+          "ordinal": 24,
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "draws": []
+        },
+        {
+          "id": 346,
+          "args": ["plane", 192, 0],
+          "text": "file\\ignored.kx3",
+          "textAt": 192,
+          "ordinal": 25,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 69,
+              "w": 0,
+              "path": "file\\ignored.kx3"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 346,
+          "args": ["plane", 192, 4294967295],
+          "text": "file\\ignored.kx3",
+          "textAt": 192,
+          "ordinal": 26,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 69,
+              "w": 4294967295,
+              "path": "file\\ignored.kx3"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 81,
+          "args": ["base", 192],
+          "text": "file\\shape.kx2",
+          "textAt": 192,
+          "ordinal": 27,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "receiver": "base",
+              "raw": 67,
+              "w": 0,
+              "path": "file\\shape.kx2"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 82,
+          "args": ["base", 192],
+          "text": "file\\replacement.kx2",
+          "textAt": 192,
+          "ordinal": 28,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "receiver": "base",
+              "raw": 68,
+              "w": 0,
+              "path": "file\\replacement.kx2"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 346,
+          "args": ["base", 192, 0],
+          "text": "file\\ignored.kx3",
+          "textAt": 192,
+          "ordinal": 29,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "receiver": "base",
+              "raw": 69,
+              "w": 0,
+              "path": "file\\ignored.kx3"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 82,
+          "args": [0],
+          "ordinal": 30,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 67,
+          "args": ["plane"],
+          "dependency": true,
+          "ordinal": 31,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [
+            {
+              "canonical": 127,
+              "w": 0,
+              "l": 4
+            }
+          ],
+          "packets": [
+            {
+              "raw": 3,
+              "w": 0,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 67,
+          "args": ["base"],
+          "dependency": true,
+          "ordinal": 32,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "receiver": "base",
+              "raw": 3,
+              "w": 0,
+              "path": ""
+            }
+          ],
+          "draws": []
+        },
+        {
+          "operation": "update",
+          "frame": 5,
+          "label": "normal-retirement",
+          "ordinal": 33,
+          "state": {
+            "planeLive": false,
+            "baseLive": false,
+            "plane": null,
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "draws": []
+        }
+      ],
+      "coldAfter": [9, 15, 19, 22]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "peSHA256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "original": {
+        "path": ".local/phase11/sdk-modern-plane-file-models-20261128/ORIGINAL-FILE-V4-76.json",
+        "sha256": "740d3973e390688b3441fa75af49b88d5f8d329c1ecb69e57021226e668eed1f"
+      },
+      "startupXML": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp>32</bpp></TEXTURE><APP><imgcache>0</imgcache></APP><ETC><cache>0</cache></ETC><INT><int00><name>kcs</name><int></int><ext>kcs</ext><dir></dir></int00></INT></document>",
+      "resources": {
+        "file\\shape.kx2": [
+          75, 88, 50, 0, 0, 0, 0, 192, 0, 0, 128, 191, 0, 0, 192, 64, 0, 0, 160, 64, 2, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 0, 200, 66, 96, 64, 32, 255, 0, 0, 0, 65, 0, 0, 0, 0, 0, 0, 200,
+          66, 16, 32, 64, 128, 0, 0, 0, 0, 0, 0, 192, 64, 0, 0, 200, 66, 192, 160, 128, 192, 0, 0,
+          0, 65, 0, 0, 0, 0, 0, 0, 200, 66, 16, 32, 64, 128, 0, 0, 0, 65, 0, 0, 192, 64, 0, 0, 200,
+          66, 128, 192, 224, 255, 0, 0, 0, 0, 0, 0, 192, 64, 0, 0, 200, 66, 192, 160, 128, 192
+        ],
+        "file\\replacement.kx2": [
+          75, 88, 50, 0, 0, 0, 0, 192, 0, 0, 128, 191, 0, 0, 0, 64, 0, 0, 64, 64, 2, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 200, 66, 96, 64, 32, 255, 0, 0, 128, 64, 0, 0, 0, 0, 0, 0, 200,
+          66, 16, 32, 64, 128, 0, 0, 0, 0, 0, 0, 128, 64, 0, 0, 200, 66, 192, 160, 128, 192, 0, 0,
+          128, 64, 0, 0, 0, 0, 0, 0, 200, 66, 16, 32, 64, 128, 0, 0, 128, 64, 0, 0, 128, 64, 0, 0,
+          200, 66, 128, 192, 224, 255, 0, 0, 0, 0, 0, 0, 128, 64, 0, 0, 200, 66, 192, 160, 128, 192
+        ],
+        "file\\複製.kx2": [
+          75, 88, 50, 0, 0, 0, 0, 192, 0, 0, 128, 191, 0, 0, 0, 64, 0, 0, 64, 64, 2, 0, 0, 0, 0, 0,
+          0, 0, 0, 0, 0, 0, 0, 0, 200, 66, 96, 64, 32, 255, 0, 0, 128, 64, 0, 0, 0, 0, 0, 0, 200,
+          66, 16, 32, 64, 128, 0, 0, 0, 0, 0, 0, 128, 64, 0, 0, 200, 66, 192, 160, 128, 192, 0, 0,
+          128, 64, 0, 0, 0, 0, 0, 0, 200, 66, 16, 32, 64, 128, 0, 0, 128, 64, 0, 0, 128, 64, 0, 0,
+          200, 66, 128, 192, 224, 255, 0, 0, 0, 0, 0, 0, 128, 64, 0, 0, 200, 66, 192, 160, 128, 192
+        ]
+      },
+      "cases": [
+        {
+          "id": 66,
+          "args": [2, "caller", 128],
+          "dependency": true,
+          "save": "plane",
+          "text": "Modern file Plane",
+          "ordinal": 0,
+          "control": 1,
+          "result": "owned:plane",
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": false,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 66,
+          "args": [6, "caller", 128],
+          "dependency": true,
+          "save": "base",
+          "text": "Modern BasePlane",
+          "ordinal": 1,
+          "control": 1,
+          "result": "owned:base",
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 542,
+          "args": [],
+          "dependency": true,
+          "ordinal": 2,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 112,
+          "args": [8, 8],
+          "dependency": true,
+          "save": "bitmap",
+          "ordinal": 3,
+          "control": 1,
+          "result": "owned:bitmap",
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 117,
+          "args": ["bitmap", 0, 0, 8, 8, 3227549856],
+          "dependency": true,
+          "ordinal": 4,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 117,
+          "args": ["bitmap", 0, 0, 4, 8, 2151686160],
+          "dependency": true,
+          "ordinal": 5,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 115,
+          "args": [0, 0, 0, 8, 8, "bitmap", 0, 0, 8, 8],
+          "dependency": true,
+          "ordinal": 6,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 114,
+          "args": ["bitmap"],
+          "dependency": true,
+          "ordinal": 7,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 81,
+          "args": [0],
+          "ordinal": 8,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 0,
+              "rect": [0, 0, 0, 0],
+              "filename": ""
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 81,
+          "args": ["plane", 192],
+          "text": "file\\shape.kx2",
+          "textAt": 192,
+          "ordinal": 9,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 6,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [
+            {
+              "path": "file\\shape.kx2",
+              "destination": false,
+              "mode": 3,
+              "primaryRegistered": false
+            },
+            {
+              "path": "file\\shape.kx2",
+              "destination": true,
+              "mode": 3,
+              "primaryRegistered": false
+            }
+          ],
+          "input": [],
+          "packets": [
+            {
+              "raw": 69,
+              "w": 0,
+              "path": "file\\shape.kx2"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 88,
+          "args": ["plane", 1120403456],
+          "dependency": true,
+          "ordinal": 10,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 6,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 61,
+              "w": 0,
+              "path": null
+            },
+            {
+              "raw": 49,
+              "w": 0,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 84,
+          "args": ["plane", 1082130432, 1084227584, 0, 0],
+          "dependency": true,
+          "ordinal": 11,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 6,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 51,
+              "w": 0,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 95,
+          "args": ["plane", 0],
+          "dependency": true,
+          "ordinal": 12,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 6,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [
+            {
+              "canonical": 126,
+              "w": 100,
+              "l": 2146426376,
+              "registration": {
+                "owner": "plane",
+                "priority": 100,
+                "mask": 7,
+                "bounds": [4, 5, 12, 11]
+              }
+            }
+          ],
+          "packets": [
+            {
+              "raw": 89,
+              "w": 3,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 92,
+          "args": ["plane", 1],
+          "dependency": true,
+          "ordinal": 13,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 6,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [
+            {
+              "canonical": 133,
+              "w": "plane",
+              "l": 0
+            }
+          ],
+          "packets": [
+            {
+              "raw": 47,
+              "w": 0,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "operation": "frame",
+          "frame": 1,
+          "label": "textured-shown",
+          "ordinal": 14,
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 6,
+              "rect": [3221225472, 3212836864, 1090519040, 1086324736],
+              "filename": "file\\shape.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "draws": [
+            {
+              "triangles": [
+                [
+                  {
+                    "x": 3.5,
+                    "y": 4.5,
+                    "z": 0.9984615445137024,
+                    "w": 1,
+                    "color": 4280303712,
+                    "u": 0,
+                    "v": 0
+                  },
+                  {
+                    "x": 11.5,
+                    "y": 4.5,
+                    "z": 0.9984615445137024,
+                    "w": 1,
+                    "color": 4280303712,
+                    "u": 1,
+                    "v": 0
+                  },
+                  {
+                    "x": 3.5,
+                    "y": 10.5,
+                    "z": 0.9984615445137024,
+                    "w": 1,
+                    "color": 4280303712,
+                    "u": 0,
+                    "v": 0.75
+                  }
+                ],
+                [
+                  {
+                    "x": 3.5,
+                    "y": 10.5,
+                    "z": 0.9984615445137024,
+                    "w": 1,
+                    "color": 2151686160,
+                    "u": 0,
+                    "v": 0.75
+                  },
+                  {
+                    "x": 11.5,
+                    "y": 4.5,
+                    "z": 0.9984615445137024,
+                    "w": 1,
+                    "color": 2151686160,
+                    "u": 1,
+                    "v": 0
+                  },
+                  {
+                    "x": 11.5,
+                    "y": 10.5,
+                    "z": 0.9984615445137024,
+                    "w": 1,
+                    "color": 2151686160,
+                    "u": 1,
+                    "v": 0.75
+                  }
+                ]
+              ],
+              "texture": {
+                "width": 8,
+                "height": 8,
+                "rgba": [
+                  68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 102, 136, 170,
+                  204, 102, 136, 170, 204, 102, 136, 170, 204, 102, 136, 170, 204, 68, 34, 17, 136,
+                  68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 102, 136, 170, 204, 102, 136,
+                  170, 204, 102, 136, 170, 204, 102, 136, 170, 204, 68, 34, 17, 136, 68, 34, 17,
+                  136, 68, 34, 17, 136, 68, 34, 17, 136, 102, 136, 170, 204, 102, 136, 170, 204,
+                  102, 136, 170, 204, 102, 136, 170, 204, 68, 34, 17, 136, 68, 34, 17, 136, 68, 34,
+                  17, 136, 68, 34, 17, 136, 102, 136, 170, 204, 102, 136, 170, 204, 102, 136, 170,
+                  204, 102, 136, 170, 204, 68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 68,
+                  34, 17, 136, 102, 136, 170, 204, 102, 136, 170, 204, 102, 136, 170, 204, 102, 136,
+                  170, 204, 68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 102,
+                  136, 170, 204, 102, 136, 170, 204, 102, 136, 170, 204, 102, 136, 170, 204, 68, 34,
+                  17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 102, 136, 170, 204,
+                  102, 136, 170, 204, 102, 136, 170, 204, 102, 136, 170, 204, 68, 34, 17, 136, 68,
+                  34, 17, 136, 68, 34, 17, 136, 68, 34, 17, 136, 102, 136, 170, 204, 102, 136, 170,
+                  204, 102, 136, 170, 204, 102, 136, 170, 204
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "id": 82,
+          "args": ["plane", 192],
+          "text": "file\\複製.kx2",
+          "textAt": 192,
+          "ordinal": 15,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [
+            {
+              "path": "file\\複製.kx2",
+              "destination": false,
+              "mode": 3,
+              "primaryRegistered": false
+            },
+            {
+              "path": "file\\複製.kx2",
+              "destination": true,
+              "mode": 3,
+              "primaryRegistered": false
+            }
+          ],
+          "input": [],
+          "packets": [
+            {
+              "raw": 70,
+              "w": 0,
+              "path": "file\\複製.kx2"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 343,
+          "args": ["plane", 768, 772],
+          "dependency": true,
+          "outputs": [[768, 8]],
+          "ordinal": 16,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [768, 0],
+            [769, 0],
+            [770, 128],
+            [771, 64],
+            [772, 0],
+            [773, 0],
+            [774, 128],
+            [775, 64]
+          ],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 75,
+              "w": 537303220,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "operation": "frame",
+          "frame": 2,
+          "label": "colored-replacement-hidden",
+          "ordinal": 17,
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "draws": []
+        },
+        {
+          "id": 92,
+          "args": ["plane", 1],
+          "dependency": true,
+          "ordinal": 18,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [
+            {
+              "canonical": 133,
+              "w": "plane",
+              "l": 0
+            }
+          ],
+          "packets": [
+            {
+              "raw": 47,
+              "w": 0,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "operation": "frame",
+          "frame": 3,
+          "label": "colored-shown",
+          "ordinal": 19,
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": true
+          },
+          "reads": [],
+          "input": [],
+          "draws": [
+            {
+              "triangles": [
+                [
+                  {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0.9215384721755981,
+                    "w": 0.0011111111380159855,
+                    "color": 4280303712,
+                    "u": 0,
+                    "v": 0
+                  },
+                  {
+                    "x": 4.44444465637207,
+                    "y": 0,
+                    "z": 0.9215384721755981,
+                    "w": 0.0011111111380159855,
+                    "color": 2151686160,
+                    "u": 0,
+                    "v": 0
+                  },
+                  {
+                    "x": 0,
+                    "y": 4.44444465637207,
+                    "z": 0.9215384721755981,
+                    "w": 0.0011111111380159855,
+                    "color": 3229655232,
+                    "u": 0,
+                    "v": 0
+                  }
+                ],
+                [
+                  {
+                    "x": 4.44444465637207,
+                    "y": 0,
+                    "z": 0.9215384721755981,
+                    "w": 0.0011111111380159855,
+                    "color": 2151686160,
+                    "u": 0,
+                    "v": 0
+                  },
+                  {
+                    "x": 4.44444465637207,
+                    "y": 4.44444465637207,
+                    "z": 0.9215384721755981,
+                    "w": 0.0011111111380159855,
+                    "color": 4292919424,
+                    "u": 0,
+                    "v": 0
+                  },
+                  {
+                    "x": 0,
+                    "y": 4.44444465637207,
+                    "z": 0.9215384721755981,
+                    "w": 0.0011111111380159855,
+                    "color": 3229655232,
+                    "u": 0,
+                    "v": 0
+                  }
+                ]
+              ],
+              "texture": null
+            }
+          ]
+        },
+        {
+          "id": 82,
+          "args": ["plane", 192],
+          "text": "file\\missing.kx2",
+          "textAt": 192,
+          "ordinal": 20,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [
+            {
+              "path": "file\\missing.kx2",
+              "destination": false,
+              "mode": 3,
+              "primaryRegistered": false
+            }
+          ],
+          "input": [],
+          "packets": [
+            {
+              "raw": 70,
+              "w": 0,
+              "path": "file\\missing.kx2"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 343,
+          "args": ["plane", 768, 772],
+          "dependency": true,
+          "outputs": [[768, 8]],
+          "ordinal": 21,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [768, 0],
+            [769, 0],
+            [770, 128],
+            [771, 64],
+            [772, 0],
+            [773, 0],
+            [774, 128],
+            [775, 64]
+          ],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 75,
+              "w": 537303220,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 346,
+          "args": ["plane", 192, 0],
+          "text": "file\\ignored.kx3",
+          "textAt": 192,
+          "ordinal": 22,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 71,
+              "w": 0,
+              "path": "file\\ignored.kx3"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 346,
+          "args": ["plane", 192, 4294967295],
+          "text": "file\\ignored.kx3",
+          "textAt": 192,
+          "ordinal": 23,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "raw": 71,
+              "w": 4294967295,
+              "path": "file\\ignored.kx3"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 81,
+          "args": ["base", 192],
+          "text": "file\\shape.kx2",
+          "textAt": 192,
+          "ordinal": 24,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "receiver": "base",
+              "raw": 69,
+              "w": 0,
+              "path": "file\\shape.kx2"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 82,
+          "args": ["base", 192],
+          "text": "file\\replacement.kx2",
+          "textAt": 192,
+          "ordinal": 25,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "receiver": "base",
+              "raw": 70,
+              "w": 0,
+              "path": "file\\replacement.kx2"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 346,
+          "args": ["base", 192, 0],
+          "text": "file\\ignored.kx3",
+          "textAt": 192,
+          "ordinal": 26,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "receiver": "base",
+              "raw": 71,
+              "w": 0,
+              "path": "file\\ignored.kx3"
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 82,
+          "args": [0],
+          "ordinal": 27,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [],
+          "draws": []
+        },
+        {
+          "id": 67,
+          "args": ["plane"],
+          "dependency": true,
+          "ordinal": 28,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [
+            {
+              "canonical": 127,
+              "w": 0,
+              "l": 4
+            }
+          ],
+          "packets": [
+            {
+              "raw": 3,
+              "w": 0,
+              "path": null
+            }
+          ],
+          "draws": []
+        },
+        {
+          "id": 67,
+          "args": ["base"],
+          "dependency": true,
+          "ordinal": 29,
+          "control": 2,
+          "result": null,
+          "changed": [],
+          "state": {
+            "planeLive": true,
+            "baseLive": true,
+            "plane": {
+              "ownShown": 1,
+              "drawType": 7,
+              "rect": [3221225472, 3212836864, 1082130432, 1082130432],
+              "filename": "file\\複製.kx2"
+            },
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "packets": [
+            {
+              "receiver": "base",
+              "raw": 3,
+              "w": 0,
+              "path": ""
+            }
+          ],
+          "draws": []
+        },
+        {
+          "operation": "update",
+          "frame": 5,
+          "label": "normal-retirement",
+          "ordinal": 30,
+          "state": {
+            "planeLive": false,
+            "baseLive": false,
+            "plane": null,
+            "primaryModelRegistered": false
+          },
+          "reads": [],
+          "input": [],
+          "draws": []
+        }
+      ],
+      "coldAfter": [9, 15, 19, 20]
+    }
+  ]
+}

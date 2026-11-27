@@ -2646,8 +2646,6 @@ test('2.6.1.67 KCS guest allocation and copying retain byte ranges and forward M
     ...call(35, [328, [0x13, 84], 8]),
     ...call(28, [[0x13, 84]], 88),
     ...call(28, [[0x13, 84]], 92),
-    ...call(35, [352, 0xffffffff, 1]),
-    ...call(35, [0xffffffff, 352, 1]),
     ...call(35, [0xffffffff, 0xffffffff, 0]),
     ...call(35, [385, 384, 16]),
     ...call(35, [417, 416, 12]),

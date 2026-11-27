@@ -1,0 +1,515 @@
+{
+  "group": "a1",
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "script": "numeric-a1",
+  "marker": 592336129,
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-numeric-memory-20261128/ORIGINAL-A1.json",
+    "sha256": "316843450a144f79d1d85592d29ab5e15da143cca87ea7562e18ed7158bbba4c"
+  },
+  "qualification": "Intact original loaded Script/Main with qualified normal CRT/FileServer/controller Root. Finite scalar/percentage and defined custom helper overlap; no arbitrary FP or pointer-domain admission.",
+  "budget": {
+    "target": 14,
+    "support": 9,
+    "bootstrapGCALL": 3,
+    "carrier65": 3,
+    "finalWait71": 1,
+    "allGCALL": 30,
+    "businessScriptFrames": 4
+  },
+  "outputWords": 22,
+  "inputs": {
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+    "program": "S0NTAAIAAAAAAAAANAAAABYMAABKDAAAAAAAAAAAAAAAEAAAABAAAEoMAAAAAAAALBgAAHicZdY/aBt3FMDxn68qaDDFJR48eBA83w/TM47+1ZWpVTtgkIdQPKQQUA4SKquBmNYYF0zIcIMGDS5o8OBBgwYZNHjwoMGDIaJo0KDBtC5kyJAhQ4ZAPWTIYHC530/n+1pdxId3755/793Jeq5M/PSjuHJ8fHysJVBKRa7BdfgAbsCH8BHchFtwG+7AJ/Ap3IXP4HO4B/fhATyEL+BL+PqL2CoROwEn4Ul4Cp6GZ+BZOAXPwfPwApyG83ABXoHX4HV4A34Ib8KP4MfwE/gpXIGfw9vwDrwH78Ov4ACuwXX4AG7Ah/AR3IRbcBvuwCfwKdyFz+BzuAf34QE8hC/gS/gN/BZ+B7+HP8Af4Sv4E/wZvobVl3j/4SQ8CU/B0/AMPAun4Dl4Hl6A03AeLsAr8Bq8Dm/AD+FN+BH8GH4CP4Ur8HN4G96B9+B9+BUcwDW4Dh/ADfgQPoKbcAtuwx34BD6Fu/AZfA734D48gIfwBXwJv4Hfwu/g9/AH+CN8BX+CP8PXxs+K7qIWNRE6Vy2XtCSMM9mCryVpnNovulomjRez1bKWKeNSJpfVMm3sp3aLWmaM3cVcVcuscbmUyWlJGS/5qYqWOeOiu5jRMm9cLZcyWhaM82k/pSVt/KLoVrTkozp5LQWb46f2tKxEdXJa1lBn3eYUfKVlw/jXrV+KWgKcrRbVXNJSj2q+1HKAszVQ89D4u2x4tqOJeG5NzK1l51bI+1raxkoppaVj/+7vYU7P5ixnfS194/tupaxlMJrn8pKWoZ2nuffC+OXW7m9alBOfLeGMzpbVkjRO5/37WiYd22OmqmXKsT1m01qmjQt+WHPGeC7rfaslcOJz1kbxb7Jaeoj3I696sqSUkoQJ2zVKqc2eJ8txuDYKXz3w5Ic4bJare+GnJ6tx2O5Z/97c3HiyFocboyLBqvl87ckfE0pJ0ly0O5hjCjZMwb/V6KJrGvLkn7iU3dLsfhO+5Z58pW5LNW8vevJ1fE/LVH0QBtToJN0/77Rj9rp77fF2OqNsFdyZyUkUVne6PL3t8s5gu1H4dXQRzdul0K4LwXg75+Pn3t3a2Y6+3M9+3qpEX277YO2X2+YEyKkhp84cBzl4QepO9EA8+Svuw+6pvfEHYldW+4PbG+9g8P/JhwFMfogwJm+XXPszopyxqnbrDf+felKK7vn+P1Ug2gE=",
+    "archives": [
+      {
+        "name": "startup.xml",
+        "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg=="
+      },
+      {
+        "name": "scripts.int",
+        "data": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABudW1lcmljLWExLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAK0DAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAFgwAAEoMAAAAAAAAAAAAAAAQAAAAEAAASgwAAAAAAAAsGAAAeJxl1j9oG3cUwPGfrypoMMUlHjx4EDzfD9Mzjv7VlalVO2CQh1A8pBBQDhIqq4GY1hgXTMhwgwYNLmjw4EGDBhk0ePCgwYMhomjQoMG0LmTIkCFDhkA9ZMhgcLnfT+f7Wl3Eh3fvnn/v3cl6rkz89KO4cnx8fKwlUEpFrsF1+ABuwIfwEdyEW3Ab7sAn8Cnchc/gc7gH9+EBPIQv4Ev4+ovYKhE7ASfhSXgKnoZn4Fk4Bc/B8/ACnIbzcAFegdfgdXgDfghvwo/gx/AT+ClcgZ/D2/AOvAfvw6/gAK7BdfgAbsCH8BHchFtwG+7AJ/Ap3IXP4HO4B/fhATyEL+BL+A38Fn4Hv4c/wB/hK/gT/Bm+htWXeP/hJDwJT8HT8Aw8C6fgOXgeXoDTcB4uwCvwGrwOb8AP4U34EfwYfgI/hSvwc3gb3oH34H34FRzANbgOH8AN+BA+gptwC27DHfgEPoW78Bl8DvfgPjyAh/AFfAm/gd/C7+D38Af4I3wFf4I/w9fGz4ruohY1ETpXLZe0JIwz2YKvJWmc2i+6WiaNF7PVspYp41Iml9UybeyndotaZozdxVxVy6xxuZTJaUkZL/mpipY546K7mNEyb1wtlzJaFozzaT+lJW38ouhWtOSjOnktBZvjp/a0rER1clrWUGfd5hR8pWXD+NetX4paApytFtVc0lKPar7UcoCzNVDz0Pi7bHi2o4l4bk3MrWXnVsj7WtrGSimlpWP/7u9hTs/mLGd9LX3j+26lrGUwmufykpahnae598L45dbub1qUE58t4YzOltWSNE7n/ftaJh3bY6aqZcqxPWbTWqaNC35Yc8Z4Lut9qyVw4nPWRvFvslp6iPcjr3qypJSShAnbNUqpzZ4ny3G4NgpfPfDkhzhslqt74acnq3HY7ln/3tzceLIWhxujIsGq+XztyR8TSknSXLQ7mGMKNkzBv9Xoomsa8uSfuJTd0ux+E77lnnylbks1by968nV8T8tUfRAG1Ogk3T/vtGP2unvt8XY6o2wV3JnJSRRWd7o8ve3yzmC7Ufh1dBHN26XQrgvBeDvn4+fe3drZjr7cz37eqkRfbvtg7Zfb5gTIqSGnzhwHOXhB6k70QDz5K+7D7qm98QdiV1b7g9sb72Dw/8mHAUx+iDAmb5dc+zOinLGqdusN/596Uoru+f4/VSDaAQ=="
+      },
+      {
+        "name": "images.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "ptcl.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "scenes.int",
+        "data": "S0lGAAAAAAA="
+      }
+    ]
+  },
+  "rows": [
+    {
+      "phase": 0,
+      "label": "finite scalar/unit results feed actual variable and expression/format consumers",
+      "outputs": [
+        1065749138, 1078984704, 1057360530, 1106247680, 17, 1075235812, 22, 1024, 42, 2779096485,
+        2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+      ],
+      "spans": [
+        {
+          "at": 252,
+          "bytes": [
+            0, 0, 0, 0, 97, 61, 37, 46, 51, 102, 91, 71, 49, 50, 56, 93, 32, 120, 61, 37, 46, 50,
+            102, 91, 71, 49, 51, 50, 93, 32, 114, 61, 37, 46, 51, 102, 91, 71, 49, 51, 54, 93, 32,
+            100, 61, 37, 46, 49, 102, 91, 71, 49, 52, 48, 93, 32, 107, 61, 37, 100, 91, 71, 49, 52,
+            52, 93, 32, 116, 61, 37, 46, 51, 102, 91, 71, 49, 52, 56, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ]
+        },
+        {
+          "at": 636,
+          "bytes": [
+            0, 0, 0, 0, 36, 50, 43, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0
+          ]
+        },
+        {
+          "at": 1020,
+          "bytes": [
+            165, 165, 165, 165, 97, 61, 49, 46, 48, 52, 55, 32, 120, 61, 51, 46, 50, 53, 32, 114,
+            61, 48, 46, 53, 50, 52, 32, 100, 61, 51, 48, 46, 48, 32, 107, 61, 49, 55, 32, 116, 61,
+            50, 46, 51, 53, 54, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 1,
+      "label": "negative angle and signed-zero/zero identities continue through the same loaded VM",
+      "outputs": [
+        1065749138, 1078984704, 1057360530, 1106247680, 17, 1075235812, 22, 1024, 42, 3217625051,
+        3266576384, 0, 0, 0, 3209236443, 1152, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485
+      ],
+      "spans": [
+        {
+          "at": 252,
+          "bytes": [
+            0, 0, 0, 0, 97, 61, 37, 46, 51, 102, 91, 71, 49, 50, 56, 93, 32, 120, 61, 37, 46, 50,
+            102, 91, 71, 49, 51, 50, 93, 32, 114, 61, 37, 46, 51, 102, 91, 71, 49, 51, 54, 93, 32,
+            100, 61, 37, 46, 49, 102, 91, 71, 49, 52, 48, 93, 32, 107, 61, 37, 100, 91, 71, 49, 52,
+            52, 93, 32, 116, 61, 37, 46, 51, 102, 91, 71, 49, 52, 56, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ]
+        },
+        {
+          "at": 636,
+          "bytes": [
+            0, 0, 0, 0, 36, 50, 43, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0
+          ]
+        },
+        {
+          "at": 1020,
+          "bytes": [
+            165, 165, 165, 165, 97, 61, 49, 46, 48, 52, 55, 32, 120, 61, 51, 46, 50, 53, 32, 114,
+            61, 48, 46, 53, 50, 52, 32, 100, 61, 51, 48, 46, 48, 32, 107, 61, 49, 55, 32, 116, 61,
+            50, 46, 51, 53, 54, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 110, 101, 103, 61, 45, 49, 46, 53, 55, 49, 32, 122, 61, 48, 46, 48,
+            32, 97, 61, 45, 48, 46, 55, 56, 53, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 2,
+      "label": "source format/expression overwritten before independent bank and new formatter consumption",
+      "outputs": [
+        1065749138, 1078984704, 1057360530, 1106247680, 17, 1075235812, 22, 1024, 42, 3217625051,
+        3266576384, 0, 0, 0, 3209236443, 1152, 17, 34, 1280, 2779096485, 2779096485, 2779096485
+      ],
+      "spans": [
+        {
+          "at": 252,
+          "bytes": [
+            0, 0, 0, 0, 114, 101, 112, 108, 97, 99, 101, 100, 0, 0, 0, 0, 32, 120, 61, 37, 46, 50,
+            102, 91, 71, 49, 51, 50, 93, 32, 114, 61, 37, 46, 51, 102, 91, 71, 49, 51, 54, 93, 32,
+            100, 61, 37, 46, 49, 102, 91, 71, 49, 52, 48, 93, 32, 107, 61, 37, 100, 91, 71, 49, 52,
+            52, 93, 32, 116, 61, 37, 46, 51, 102, 91, 71, 49, 52, 56, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ]
+        },
+        {
+          "at": 636,
+          "bytes": [
+            0, 0, 0, 0, 114, 101, 112, 108, 97, 99, 101, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ]
+        },
+        {
+          "at": 1020,
+          "bytes": [
+            165, 165, 165, 165, 97, 61, 49, 46, 48, 52, 55, 32, 120, 61, 51, 46, 50, 53, 32, 114,
+            61, 48, 46, 53, 50, 52, 32, 100, 61, 51, 48, 46, 48, 32, 107, 61, 49, 55, 32, 116, 61,
+            50, 46, 51, 53, 54, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 110, 101, 103, 61, 45, 49, 46, 53, 55, 49, 32, 122, 61, 48, 46, 48,
+            32, 97, 61, 45, 48, 46, 55, 56, 53, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 49, 55, 47, 51, 52, 0, 0, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 3,
+      "label": "zero unit conversions and meaningful final consumer after earlier sources change",
+      "outputs": [
+        1065749138, 1078984704, 1057360530, 1106247680, 17, 1075235812, 22, 1024, 42, 3217625051,
+        3266576384, 0, 0, 0, 3209236443, 1152, 17, 34, 1280, 0, 0, 1408
+      ],
+      "spans": [
+        {
+          "at": 252,
+          "bytes": [
+            0, 0, 0, 0, 114, 101, 112, 108, 97, 99, 101, 100, 0, 0, 0, 0, 32, 120, 61, 37, 46, 50,
+            102, 91, 71, 49, 51, 50, 93, 32, 114, 61, 37, 46, 51, 102, 91, 71, 49, 51, 54, 93, 32,
+            100, 61, 37, 46, 49, 102, 91, 71, 49, 52, 48, 93, 32, 107, 61, 37, 100, 91, 71, 49, 52,
+            52, 93, 32, 116, 61, 37, 46, 51, 102, 91, 71, 49, 52, 56, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ]
+        },
+        {
+          "at": 636,
+          "bytes": [
+            0, 0, 0, 0, 114, 101, 112, 108, 97, 99, 101, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+          ]
+        },
+        {
+          "at": 1020,
+          "bytes": [
+            165, 165, 165, 165, 97, 61, 49, 46, 48, 52, 55, 32, 120, 61, 51, 46, 50, 53, 32, 114,
+            61, 48, 46, 53, 50, 52, 32, 100, 61, 51, 48, 46, 48, 32, 107, 61, 49, 55, 32, 116, 61,
+            50, 46, 51, 53, 54, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 110, 101, 103, 61, 45, 49, 46, 53, 55, 49, 32, 122, 61, 48, 46, 48,
+            32, 97, 61, 45, 48, 46, 55, 56, 53, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 49, 55, 47, 51, 52, 0, 0, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 122, 101, 114,
+            111, 61, 48, 46, 48, 47, 48, 46, 48, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    }
+  ],
+  "copyBranches": [],
+  "nativeCalls": [
+    {
+      "id": 66,
+      "phase": -1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 209,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 143,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 54,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1065749138
+    },
+    {
+      "id": 57,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1078984704
+    },
+    {
+      "id": 62,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1057360530
+    },
+    {
+      "id": 63,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1106247680
+    },
+    {
+      "id": 64,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 17
+    },
+    {
+      "id": 397,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1075235812
+    },
+    {
+      "id": 211,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 213,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 22
+    },
+    {
+      "id": 14,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1024
+    },
+    {
+      "id": 17,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 42
+    },
+    {
+      "id": 65,
+      "phase": 0,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 62,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 3217625051
+    },
+    {
+      "id": 63,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 3266576384
+    },
+    {
+      "id": 57,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 64,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 54,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 397,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 3209236443
+    },
+    {
+      "id": 14,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1152
+    },
+    {
+      "id": 65,
+      "phase": 1,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 210,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 17
+    },
+    {
+      "id": 213,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 34
+    },
+    {
+      "id": 14,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1280
+    },
+    {
+      "id": 65,
+      "phase": 2,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 62,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 63,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 14,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1408
+    },
+    {
+      "id": 71,
+      "phase": 3,
+      "control": 4,
+      "outputWritten": false
+    }
+  ],
+  "coldAt": [0, 1, 2, 3]
+}

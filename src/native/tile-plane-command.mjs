@@ -12,6 +12,9 @@ async function ordinaryTilePlaneCommand(world, args, machine, task) {
   const word = (index) => args[index] ?? machine.nativeArgument(index),
     target = word(0);
   if (!target) return nativeReply(2);
+  const owner = world.resolveTaskID(target, task.id);
+  if (owner === null || world.objects.objects.get(owner)?.kind !== 2)
+    throw new Error('Native tiled Plane requires a reviewed Plane receiver');
   const payload = new NativeGraphicsPacket(
     [0, 0, 0, word(1), word(2), undefined, undefined, undefined, word(3), word(4)],
     { unwritten: [5, 6, 7] },

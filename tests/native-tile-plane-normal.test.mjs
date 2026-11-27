@@ -33,6 +33,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       scene = await dataWorld(profile, files);
     let fresh;
     try {
+      scene.graphics.createLogicalDevice();
       const drawID = await scene.objects.create({
           kind: 15,
           parent: scene.main.id,
@@ -200,6 +201,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       const dto = scene.snapshot(),
         decoded = await deserializeCheckpoint(await serializeCheckpoint(dto));
       fresh = await dataWorld(profile, files, { initialize: false });
+      fresh.graphics.createLogicalDevice();
       fresh.runtime.native = () => {
         throw new Error('Tile restore replayed a native command');
       };

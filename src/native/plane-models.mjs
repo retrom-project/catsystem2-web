@@ -4,6 +4,7 @@ import { MOTION_ABI, motionVector, setMotionVector } from '../motion/abi.mjs';
 import { multiply, multiplySSE, rotation } from '../motion/matrix.mjs';
 import { linearInterpolate, x87AddWords } from '../ppi/numeric.mjs';
 import { bitsFloat, floatBits } from '../kcs/vm.mjs';
+import { readNativeResource } from './resource-file.mjs';
 const f = Math.fround;
 export function decodePlaneKX2(bytes, { allowUnknownSignature = false } = {}) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
@@ -34,7 +35,7 @@ export function decodePlaneKX2(bytes, { allowUnknownSignature = false } = {}) {
     vram: true,
   };
 }
-function sample(graph, scalarWords) {
+function sample(graph) {
   const bytes = new Uint8Array(128),
     view = new DataView(bytes.buffer);
   for (const [at, offset] of [
@@ -43,10 +44,14 @@ function sample(graph, scalarWords) {
     [44, MOTION_ABI.scale],
   ]) {
     motionVector(graph.kx2, offset).forEach((n, i) => view.setFloat32(at + i * 4, n, true));
-    if (scalarWords) view.setFloat32(at + 12, 1, true);
+    view.setFloat32(at + 12, 1, true);
   }
   bytes.set(graph.kx2.subarray(MOTION_ABI.matrix, MOTION_ABI.matrix + 64), 60);
-  view.setUint32(8, new DataView(graph.kx2.buffer).getUint32(MOTION_ABI.display, true), true);
+  const display =
+    typeof graph.registrationEnabled === 'boolean'
+      ? (graph.registrationWord ?? Number(graph.registrationEnabled))
+      : new DataView(graph.kx2.buffer).getUint32(MOTION_ABI.display, true);
+  view.setUint32(8, display, true);
   view.setUint32(124, new DataView(graph.kx2.buffer).getUint32(MOTION_ABI.color, true), true);
   return bytes;
 }
@@ -54,13 +59,10 @@ export class NativePlaneTrail {
   constructor(task, graphicsABI) {
     this.task = task;
     this.scalarWords = graphicsABI?.planeTrailUsesScalarWords;
-    this.usesShapeWords = graphicsABI?.planeTrailUsesShapeWords;
     this.multiplyMatrix = graphicsABI?.planeTrailMatrixMultiplySSE ? multiplySSE : multiply;
   }
   dimension(axis) {
-    return this.usesShapeWords
-      ? bitsFloat(this.task.state.shapeWords?.[axis + 3] ?? 0)
-      : this.task.planeBounds()[axis + 2];
+    return bitsFloat(this.task.state.shapeWords?.[axis + 3] ?? 0);
   }
   get state() {
     return this.task.state.trail;
@@ -69,13 +71,15 @@ export class NativePlaneTrail {
     for (const graph of this.state?.graphs ?? []) this.task.graphics.graphs.delete(graph.nativeID);
     this.task.state.trail = null;
   }
-  configure(words) {
+  async configure(words) {
     const task = this.task,
       source = task.graph;
     if (!words || !source || (this.scalarWords && !task.graphics.device.attachment)) {
       this.close();
       return;
     }
+    if (![1, 2, 5, 6, 7].includes(source.type) || [8, 9].includes(task.state.drawType))
+      throw new Error('Plane trail source has no reviewed clone constructor');
     const mode = words[11] >>> 0,
       stride = mode === 1 ? 2 : mode >= 2 && mode <= 5 ? 1 : words[1] | 0,
       count = words[0] | 0,
@@ -84,42 +88,64 @@ export class NativePlaneTrail {
       throw new RangeError('Plane trail history exceeds its native ID range');
     if (mode >= 1 && mode <= 5 && length) task.planeBounds();
     this.close();
-    const head = sample(source, this.scalarWords),
+    const head = sample(source),
       history = [head],
       graphs = [],
-      delta = words.slice(7, 11).map((word) => bitsFloat(word ?? 0));
-    for (let i = 1; i <= length; i++) {
-      const bytes = head.slice(),
-        view = new DataView(bytes.buffer),
-        previous = new DataView(history[i - 1].buffer),
-        active = i % stride === 0,
-        nativeID = ((task.record.nativeID << 16) | i) >>> 0;
-      view.setUint32(0, Number(active), true);
-      view.setUint32(8, 0, true);
-      view.setUint32(4, active || mode ? nativeID : 0, true);
-      for (let j = 0; j < 4; j++)
-        view.setFloat32(28 + j * 4, f(previous.getFloat32(28 + j * 4, true) - delta[j]), true);
-      history.push(bytes);
-      if (active || mode) {
-        const graph = structuredClone(source);
-        Object.assign(graph, { nativeID, renderOrder: task.graphics.allocateRenderOrder() });
-        new DataView(graph.kx2.buffer).setUint32(MOTION_ABI.display, 0, true);
-        graphs.push(graph);
-        task.graphics.graphs.set(nativeID, graph);
+      delta = words.slice(7, 11).map((word) => bitsFloat(word ?? 0)),
+      state = (task.state.trail = {
+        words: words.slice(),
+        mode,
+        stride,
+        length,
+        history,
+        graphs,
+        delta,
+        enabled: true,
+      });
+    try {
+      for (let i = 1; i <= length; i++) {
+        const bytes = head.slice(),
+          view = new DataView(bytes.buffer),
+          previous = new DataView(history[i - 1].buffer),
+          active = i % stride === 0,
+          nativeID = ((task.record.nativeID << 16) | i) >>> 0;
+        view.setUint32(0, Number(active), true);
+        view.setUint32(8, 0, true);
+        view.setUint32(4, active || mode ? nativeID : 0, true);
+        for (let j = 0; j < 4; j++)
+          view.setFloat32(28 + j * 4, f(previous.getFloat32(28 + j * 4, true) - delta[j]), true);
+        history.push(bytes);
+        if (active || mode) {
+          const graph = structuredClone(source);
+          if (source.type === 6 || source.type === 7) {
+            // Native trail construction reloads each file-backed model independently.
+            // The Plane filename is a separate retained word, not a live source cache.
+            const filename = task.state.modelFilename,
+              data = await readNativeResource(task.world, filename);
+            if (this.state !== state) return;
+            if (!data?.length) continue;
+            const model = decodePlaneKX2(data, { allowUnknownSignature: true });
+            if (!model) continue;
+            Object.assign(graph, model, { type: source.type, vram: source.vram, filename });
+          }
+          if (this.state !== state) return;
+          Object.assign(graph, {
+            nativeID,
+            renderOrder: task.graphics.allocateRenderOrder(),
+            registrationEnabled: false,
+            registrationWord: 0,
+          });
+          new DataView(graph.kx2.buffer).setUint32(MOTION_ABI.display, 0, true);
+          graphs.push(graph);
+          task.graphics.graphs.set(nativeID, graph);
+        }
       }
+      if ((mode === 4 || mode === 5) && length && task.graph) this.configureStrip();
+      if (mode < 4) this.updateGraphs();
+    } catch (error) {
+      if (this.state === state) this.close();
+      throw error;
     }
-    task.state.trail = {
-      words: words.slice(),
-      mode,
-      stride,
-      length,
-      history,
-      graphs,
-      delta,
-      enabled: true,
-    };
-    if ((mode === 4 || mode === 5) && length) this.configureStrip();
-    if (mode < 4) this.updateGraphs();
   }
   configureStrip() {
     const state = this.state,
@@ -172,7 +198,7 @@ export class NativePlaneTrail {
     return true;
   }
   pushSample(bytes) {
-    if (this.shift(bytes) && !this.scalarWords) this.updateGraphs();
+    this.shift(bytes);
   }
   tick() {
     if (
@@ -182,7 +208,7 @@ export class NativePlaneTrail {
       !this.task.state.renderPaused &&
       new DataView(this.task.graph.kx2.buffer).getInt32(MOTION_ABI.display, true)
     ) {
-      if (this.shift(sample(this.task.graph, this.scalarWords))) this.updateGraphs();
+      if (this.shift(sample(this.task.graph))) this.updateGraphs();
     }
   }
   updateGraphs() {
@@ -270,7 +296,13 @@ export class NativePlaneTrail {
         true,
       );
       graph.style = { ...this.task.state, trail: null, colorOverride: 1 };
-      new DataView(graph.kx2.buffer).setUint32(MOTION_ABI.display, view.getUint32(8, true), true);
+      // Native trail update publishes the registry display word as well as model data.
+      const display = view.getUint32(8, true);
+      if (typeof graph.registrationEnabled === 'boolean' || graph.registrationEnabled === null) {
+        graph.registrationEnabled = Boolean(display);
+        graph.registrationWord = display;
+      }
+      new DataView(graph.kx2.buffer).setUint32(MOTION_ABI.display, display, true);
       graph.priority = base[2];
       this.task.graphics.graphs.set(graph.nativeID, graph);
     }

@@ -24,12 +24,16 @@ export async function findFESInitialButton(instance, world, point, live) {
       if (entry.savedType !== 6) continue;
       validateFESButtonInitialHandle(entry);
       if (entry.initialHandle === 0) continue;
-      const object = instance.collection.graph.get(entry.initialHandle);
+      const initial = instance.player.nativeInitialObject?.(entry) ?? {
+          instance,
+          object: instance.collection.graph.get(entry.initialHandle),
+        },
+        object = initial.object;
       if (!object)
         throw new Error('FES mouse-hit reads a deleted initial BUTTON before resource cleanup');
       if (object.nativeType !== 6)
         throw new Error('FES mouse-hit initial identity is not a BUTTON');
-      const position = fesPositionQuery(instance, object, 'image'),
+      const position = fesPositionQuery(initial.instance, object, 'image'),
         left = position[0],
         top = position[1],
         right = (left + (object.width | 0)) | 0,
@@ -46,7 +50,11 @@ export async function findFESInitialButton(instance, world, point, live) {
             ? await bitmapSample(bitmap, (point[0] - left) | 0, (point[1] - top) | 0, true)
             : 0;
       if (!live()) return null;
-      if (entries[at] !== entry || instance.collection.graph.get(entry.initialHandle) !== object)
+      if (
+        entries[at] !== entry ||
+        (instance.player.nativeInitialObject?.(entry)?.object ??
+          instance.collection.graph.get(entry.initialHandle)) !== object
+      )
         throw new Error('FES mouse-hit initial identity changed during its pixel query');
       if (color >>> 24) return reference(entry);
     }

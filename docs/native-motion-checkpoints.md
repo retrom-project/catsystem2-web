@@ -273,3 +273,70 @@ VM callback 也指向该接收者，并核对整个共享记录、VM 数据和�
 
 随机数入口复用每版已封的整数/浮点 MT19937 完整状态向量，
 新增真实 KCS 的零尾字、一尾字、两尾字及冷恢复对照，不重跑物理大向量。
+
+The own SDK63/67 secondary fixture uses true CRT, configured FileServer mounts,
+a typed Script loaded by Main143 and its actual GCALL dispatcher. Small parsed
+MOT resources cover single/all start ticks, copied finite registers and zero
+count, the stored active DWORD (including two), individual/group skip, finite
+speed, deferred starts, delayed execution below its threshold, clear/rebind and
+explicit release. SDK63 Main305/306/309/312 are now registered for these normal
+shapes; both builds use their own x87 register-loader bodies. Sixteen independent
+current cold continuations retain the manager and record states. Initial
+working/object/frame bytes excluded by the fixture remain unqualified; captured
+heap bytes are not initial values. This bridge does not establish FES phase
+order or source-cache invalidation.
+
+The SDK63/67 FES consumer fixture separately qualifies Main448's trailing MOT
+phase and Main630 notification completion. Each own original journal records
+MOT addition before the object/manager update. A frame-derived position advances
+from0/9 to1/9 on successive Root updates; a normal CHANGE callback creates a new
+instance at0/15, which advances to1/15 on the next update. The notification path
+now completes the existing trailing phase after successful decoding and its
+liveness check. SDK23 uses this same qualified phase; modern before-decode frame
+behavior remains unchanged. Normal live-Core retirement clears the shared MOT
+source list in both older builds. Eight independent consumer cold continuations
+supplement the sixteen secondary continuations. These are CPU state and actual
+callback/Root consumer controls, without drawing, Present or GPU claims. The
+fresh-load control first runs an ordinary Root Frame0: Base clocks initialize,
+but FES decoding remains disabled until Main448. Its disabled gate also survives
+an independent cold restore. Captures taken before that normal clock producer
+remain diagnostic records and do not establish numeric clock equivalence.
+
+The subsequent SDK63/67 Core-replacement protocol closes that earlier gap for
+ordinary CPLANE/MOT and actual parsed Script consumers. A bank-supplying Script
+creates its own FES through Main66, loads/starts it, replaces its Core through
+Main447, invokes Main630 and finally retires the FES before releasing its bank.
+The controller created by the first Core remains live after replacement and
+updates its own Plane through Main94. The new Core's callback returns13/15.
+The task-owned resource FIFO retains the old Plane until the next resource
+visit requests native deletion; the following Root frame collects it. The new
+Plane and controller retire with the FES, and actual manager destruction then
+clears the MOT source cache. Both exact originals record36 wrapper entries and
+seven Root callbacks; a separate63 write trace identifies the actual raw3
+sender and deferred collection. Captured Main77 results in the nested original
+Top's root0 namespace remain excluded from pairing. The observer's permanent
+freed-address tombstones also cannot establish absence after allocator reuse.
+
+Native child-FES/Script slots and the resource FIFO belong to the FES task,
+separately from its replaceable Core. The browser keeps those task resources,
+input and surface bindings across replacement. Superseded interpreter metadata
+is reclaimed without inventing a native manager-destructor/cache event. A FIFO
+BUTTON initial-object borrower retains its particular old Core's semantic
+identity until the last such entry is removed; equal local handles in a new
+Core do not alias it. These bounded owners and pending handoffs are explicit in
+the current internal checkpoint, including their private-bank context and Core
+identity. There is no older-development-snapshot fallback or GAME_SAVE change.
+The BUTTON cross-Core and interrupted-handoff checks are current ownership
+counterexamples derived from the existing initial-pointer consumer; they are
+not additional original dynamic glyph, hit-pixel or GPU evidence.
+
+The original overwritten Core itself is not destructed or freed in the
+observed normal shutdown, although its task children and live resources have
+normal retirement. The browser preserves those observable consumers and cache
+semantics rather than reproducing the superseded allocations. This does not establish
+global unreachability: the old native bank registration also persists, but no
+additional legal Core-specific consumer is established here. The native
+fixture closes its inner Top before its outer supplying Script; the reused
+Root0 current fixture preserves that provider lifetime explicitly. Full
+Application/Device publication and broader replacement formats, callbacks and
+platform resources remain separate qualification boundaries.

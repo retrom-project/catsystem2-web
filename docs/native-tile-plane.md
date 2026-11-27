@@ -61,3 +61,22 @@ malformed geometry remain unsupported. Node tests exercise actual GCALL through
 a real Draw-owned base plane, row-major children, VM/transport/lifecycle and
 settled cold DTO equality without command or RNG replay. Physical GPU pixel
 acceptance is recorded separately; these Node assertions do not establish it.
+
+## Modern file-model replacement bridge
+
+The exact 74/ee6-76 normal factory Script/Root/View context now also covers a
+file-backed KX2 parent followed by Main433. This removes the primary model,
+registers the empty parent hidden and appends textured children in row-major
+order. A repeated call retains earlier children and appends the new group;
+old shown children remain shown while the new group waits for the normal
+parent display notification. Parent retirement then releases the complete
+subtree. The source/UV packet still retains its unwritten words.
+
+The paired fixture compares actual 64×64 COM-memory submitted vertices and
+8×8 texture RGBA, with two independent cold continuations per build. Parent
+empty-model bounds remain guarded; they are not inferred to be zero. A tiled
+parent is also outside the reviewed trail clone-constructor shapes and keeps
+a qualification guard rather than cloning its empty primary geometry. This is the ordinary
+Main433 business route, independent of the stopped Tile address flow, and
+is not a physical GPU or PFB acceptance claim. See
+`tests/fixtures/native-modern-plane-tiles.json`.

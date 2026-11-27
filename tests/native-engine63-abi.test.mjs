@@ -581,7 +581,7 @@ test('2.6.1.63 KX2 keeps occupied Plane registrations and selects the original m
     const graph = owner.graph;
     assert.ok(graph);
     assert.equal(graph.vram, vram);
-    assert.equal(graph.registrationEnabled, true);
+    assert.equal(graph.registrationEnabled, false); // New native KX2 records start hidden.
     assert.equal(owner.state.drawType, drawType);
     assert.deepEqual(owner.state.rect, [1.25, -2.5, 3.75, 5.5]);
     await call(slot, target, 'missing');

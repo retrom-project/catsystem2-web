@@ -1,0 +1,76 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "inputs": {
+    "program": "S0NTAAIAAAAAAAAANAAAAN4DAAASBAAAAAAAAAAAAAAAEAAAABAAABIEAAAAAAAAvAcAAHicbZI7SwNBEMfnjgtECBiMRQoLcbhtFjs7G6PRGIgiXNCUHiooiIKeaJkiYIoUKexsUnhg4Sew0Phq/AwWKfwcPnb27nbutFl+/Oex83LRKW6hwCIAuAgAIHCBcZXxKuMG4w3GTeKH+693gW3GHcZdxj3GfcZXxIF/cChw21I8XT3xBe4Sn9Nf+5bxaWuflWVPYMcy9XSJd46PAoED4r2LYFbgDfFp4AcCb7VO/nfElUbzdw5D4rW65wkcEdfXayDwkzgMw1Ag2IYdxnnGBcZFxpOMy4ynbABJk2cLkTTy1FbG1VvS21IzkrioXApmQSW9Jid5JYIVucRGSF6JTtooMacEhxK2SG5lYnhyFzfnJr4lnqkqyiTMsBLb2RLpbkr6egZkfFTf5Y0cVfGUkXGM5Je0LGlhupLIb0hZn2M/fXoSK/Ek48BrO2mzz8JH2fBe0o7EVzMafeguyW+mhj9+HZbbIuOlnekM/pMlLkGStZEWeDf4kVNCLbbN/wBHn4xH",
+    "source": "#DEFINE\r\nBASE marker\r\n#START\r\nresult 11\r\nnext WAIT\r\n#WAIT\r\n#ALT\r\nresult _SAVEOBJ_\r\nnext WAIT\r\n",
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48aW50MDQ+PG5hbWU+ZmVzPC9uYW1lPjxpbnQ+ZmVzLmludDwvaW50PjxleHQ+ZmVzPC9leHQ+PGRpcj5mZXMtbG9vc2U8L2Rpcj48L2ludDA0PjwvSU5UPjwvZG9jdW1lbnQ+"
+  },
+  "rows": [
+    {
+      "frame": 0,
+      "label": "qualified small Draw/FES with pending normal ALT label",
+      "pc": 766,
+      "words": [3405691582, 3405691582, 1, 3405691582, 3405691582, 3405691582],
+      "expanded": [
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+      ],
+      "roles": [
+        [64, 4],
+        [68, 3],
+        [72, 0],
+        [76, 5],
+        [80, 7],
+        [84, 0]
+      ]
+    },
+    {
+      "frame": 1,
+      "label": "actual later decode result, Script exit word and normal native close",
+      "pc": 972,
+      "words": [4294967295, 37, 1, 0, 9, 3405691582],
+      "expanded": [
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+      ],
+      "roles": [
+        [64, 4],
+        [68, 3],
+        [72, 0],
+        [76, 5],
+        [80, 7],
+        [84, 0]
+      ]
+    },
+    {
+      "frame": 2,
+      "label": "full Root collects FES and Draw before caller and supplier cleanup",
+      "pc": 989,
+      "words": [4294967295, 37, 1, 0, 9, 3405691582],
+      "expanded": [
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+      ],
+      "roles": [
+        [64, 4],
+        [68, 3],
+        [72, 0],
+        [76, 5],
+        [80, 7],
+        [84, 0]
+      ]
+    }
+  ],
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-task-message-context-20261128/ORIGINAL-TM2-CONSUMER.json",
+    "sha256": "45d4b9dd004f4da80c0b8f51b33a37714db8023d43e70a780d382255d9e92cdf",
+    "complete": true,
+    "allClosed": true,
+    "actual": {
+      "allGCALL": 28,
+      "targetGCALL": 9,
+      "newBusinessDirect": 3,
+      "existingHostSteps": 36
+    }
+  }
+}

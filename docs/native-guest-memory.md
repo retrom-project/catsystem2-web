@@ -26,3 +26,29 @@ release and allocation extremes remain outside this group. Existing mapped-read,
 allocation-limit and ownership guards remain in force. The shared legacy
 rectangle group uses separate caller-owned 16-byte spans and is documented in
 [native-rectangles.md](native-rectangles.md).
+
+## SDK23 normal copy/fill consumer bridge
+
+Main35 in fixed SDK23 `9f3a5ad0…` uses the same already implemented forward
+8-byte/4-byte algorithm family selected by `copyUsesMMX`. Its normal initialized
+helper was observed taking the 8-byte loop for 16-byte spans and the 4-byte MMX
+loop for 12-byte spans. The SDK23 profile now selects that existing algorithm.
+Forward overlapping chunks can read bytes changed by an earlier chunk, so a
+whole-span snapshot copy was incorrect. Separate spans, identical aliases,
+backward overlap, low-byte fill and complete canaries are also checked.
+
+The shared implementation validates nonzero VM spans before any write. The
+original SDK67 helper's raw physical-NULL shortcut does not prove that any
+nonzero unknown VM address is a no-op; the old two expectations are replaced by
+actual loaded-VM rejection controls for both SDK23 and SDK67. No VM address is
+invented to stand for a process NULL, and zero is still a valid mapped VM offset.
+A zero-length custom copy performs no byte access. SDK63 and the modern builds
+are not given this copy algorithm by inference from the SDK23 sample.
+
+`sdk23-numeric-memory.test.mjs` compares the original byte order, then consumes
+an overlap-dependent DWORD through Main211/210 and the formatter. A retained
+before-fix control reads a different value; the corrected chain reads
+`0x21222324` (`555885348`) and keeps it after source-prefix overwrite and an
+independent current cold continuation. The original whole-text/normal cleanup
+and pure VM checks use the current checkpoint contract. This is a bounded native
+helper proof, not a claim about arbitrary C memcpy overlap or alternate CPU modes.

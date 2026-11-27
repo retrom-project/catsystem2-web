@@ -39,10 +39,15 @@ export class NativePlaneModelCommands {
           : id === 0x52
             ? this.coloredKx2CategoryCount
             : 0;
-    if (kx2CategoryCount && args[0] !== 0 && args.length < 2)
+    if ((id === 0x51 || id === 0x52) && args[0] !== 0 && args.length < 2)
       throw new Error('Native KX2 requires a target and filename format');
     const target = nativeDataArgument(args, machine, 0);
     if (!target && id !== 0x18f) return nativeReply(2);
+    if (id === 0x18e || id === 0x18f) {
+      const owner = world.resolveTaskID(target, task.id);
+      if (owner === null || world.objects.objects.get(owner)?.kind !== 2)
+        throw new Error('Native Plane trail requires a reviewed Plane receiver');
+    }
     const a = Array.from({ length: modelCommands.get(id) }, (_, i) =>
       nativeDataArgument(args, machine, i),
     );
@@ -52,7 +57,7 @@ export class NativePlaneModelCommands {
     if (id === 0x51 || id === 0x52 || id === 0x15a) {
       const legacyKx3 = id === 0x15a && this.kx3CategoryCount > 0,
         category = id === 0x15a ? 'kx3' : 'kx2';
-      if (legacyKx3 || kx2CategoryCount) {
+      {
         const owner = world.resolveTaskID(target, task.id);
         if (owner !== null && ![2, 6].includes(world.objects.objects.get(owner)?.kind))
           throw new Error(
