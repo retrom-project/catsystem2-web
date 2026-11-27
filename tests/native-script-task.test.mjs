@@ -303,7 +303,7 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
       await world.close({ flushFiles: false });
     }
   });
-  test(`${profile} Script reload retains its scene and bank resources while releasing automatic MOT managers`, async () => {
+  test(`${profile} Script reload retains its scene, bank resources and explicitly deleted MOT managers`, async () => {
     const world = make();
     try {
       await world.initialize('main.kcs');
@@ -322,10 +322,11 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
       assert.equal(reloaded.context.sceneData, handle);
       assert.equal(world.runtime.sceneData(reloaded), data);
       assert.equal(data.history.seenValue('authored'), 9);
-      assert.equal(world.runtime.handles.records.has(manager), false);
+      assert.equal(world.runtime.handles.records.has(manager), true);
       assert.equal(world.runtime.handles.records.has(other), true);
       await world.objects.release(task.id);
       assert.equal(world.runtime.handles.records.has(handle), false);
+      assert.equal(world.runtime.handles.records.has(manager), true);
     } finally {
       await world.close({ flushFiles: false });
     }

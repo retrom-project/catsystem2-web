@@ -158,8 +158,53 @@ export class NativeRuntime {
     handles.registerType('scene-data', {
       snapshot: (data) => data.snapshot(),
       restore: (state) => new NativeSceneData().restore(state),
+      release: (data, owner) => {
+        if (!data.borrowedReferences) return [];
+        return data.borrowedReferences.map((handle, i) => {
+          const type = ['scene-reader-reference', 'scene-history-reference'][i],
+            value = handles.get(handle, type);
+          if (value.owner !== owner) throw new Error('Scene borrowed reference has another owner');
+          return { handle, type, value };
+        });
+      },
     });
+    for (const type of ['scene-reader-reference', 'scene-history-reference'])
+      handles.registerType(type, {
+        snapshot: (value) => ({ owner: value.owner }),
+        restore: (value) => ({ owner: value.owner }),
+        release: () => {
+          throw new Error('Borrowed Scene references can only be retired with their owner');
+        },
+      });
     return handles;
+  }
+  scenePointers(handle) {
+    if (!handle) return [0, 0];
+    if (!nativeABI(this.profile).scene?.borrowedSceneReferences)
+      throw new Error('Unreviewed Scene borrowed reference ABI');
+    const data = this.handles.get(handle, 'scene-data');
+    if (!data.borrowedReferences) {
+      if (this.handles.next > 0x7ffffffe)
+        throw new Error('Native Scene borrowed reference space exhausted');
+      data.borrowedReferences = ['scene-reader-reference', 'scene-history-reference'].map((type) =>
+        this.handles.add(type, { owner: handle }),
+      );
+    }
+    this.sceneDataFromPointers(...data.borrowedReferences);
+    return [...data.borrowedReferences];
+  }
+  sceneDataFromPointers(reader, history) {
+    if (!reader && !history) return null;
+    if (!nativeABI(this.profile).scene?.borrowedSceneReferences)
+      throw new Error('Unreviewed Scene borrowed reference ABI');
+    const first = this.handles.get(reader, 'scene-reader-reference'),
+      second = this.handles.get(history, 'scene-history-reference');
+    if (first.owner !== second.owner)
+      throw new Error('Scene borrowed references have different owners');
+    const data = this.handles.get(first.owner, 'scene-data');
+    if (data.borrowedReferences?.[0] !== reader || data.borrowedReferences?.[1] !== history)
+      throw new Error('Scene borrowed reference pair no longer belongs to its owner');
+    return data;
   }
   variableBank(task, create = true) {
     if (!task.context.variableBank && create)
@@ -319,6 +364,36 @@ export class NativeRuntime {
         const owner =
           (scheduler ?? this.scheduler).tasks.get(resolved) ??
           (record?.kind === 12 ? record : null);
+        if (
+          world &&
+          owner?.context &&
+          record?.kind !== 12 &&
+          nativeABI(this.profile).scene?.borrowedSceneReferences
+        )
+          throw new Error('Unreviewed Scene query receiver for borrowed references');
+        if (
+          world &&
+          record?.kind === 12 &&
+          nativeABI(this.profile).scene?.borrowedSceneReferences
+        ) {
+          const values = new Map();
+          return world
+            .sendNativeEngine(
+              id,
+              task.id,
+              nativeABI(this.profile).scene.borrowedSceneReferences.rawMessage,
+              0,
+              4,
+              {
+                payload: { store: (at, value) => values.set(at, value) },
+              },
+            )
+            .then(() => {
+              if (!values.has(0) || !values.has(4))
+                throw new Error('Scene query did not write its borrowed reference pair');
+              return this.sceneDataFromPointers(values.get(0), values.get(4));
+            });
+        }
         return owner?.context ? this.sceneData(owner) : null;
       };
       services.globalEntries = createGlobalEntries(this.handles);

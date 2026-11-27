@@ -547,13 +547,16 @@ export function createNativeScriptTask(world, record) {
       }
       if (id === 175) {
         const handle = record.context.sceneData;
-        if (handle && !originalOwner(world))
+        const borrowed = nativeABI(world.profile).scene?.borrowedSceneReferences;
+        if (handle && !borrowed && !originalOwner(world))
           throw new Error(
             'Physical CST reader/history pointers require explicit original-engine ownership',
           );
-        const [reader, history] = handle
-          ? await originalFeature(world, 'scene-memory', 'pointers', handle)
-          : [0, 0];
+        const [reader, history] = borrowed
+          ? world.runtime.scenePointers(handle)
+          : handle
+            ? await originalFeature(world, 'scene-memory', 'pointers', handle)
+            : [0, 0];
         memory().store(wParam, reader);
         memory().store(lParam, history);
         return NATIVE_UNWRITTEN_WORD;

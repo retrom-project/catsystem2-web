@@ -8,9 +8,8 @@ own reader filename/value. The cursor keeps independent readers while borrowing
 its live Scene owner without an additional reference; normal cleanup releases
 the cursor before that owner. Six independent current cold points preserve
 these identities, complete initialized output bytes and marker state.
-Only SDK23 enables this newly qualified cursor marker policy. Physical raw162
-pointer output, extra object layouts and native CSS reconstruction remain
-separate parts of the Scene/history business chain.
+Only SDK23 enables this newly qualified cursor marker policy. Extra object
+layouts and physical raw162 pointer arithmetic remain protected.
 
 SDK23 Main385/386 now also have a true loaded Script bridge through the native
 CSS writer and a newly loaded CSS/Scene owner. Both legacy history lists keep
@@ -23,6 +22,27 @@ in-memory Windows storage port; this qualifies the native CSS format and owner
 lifetime, without extending the physical-disk or platform GAME_SAVE contract.
 Main576's known Script route and missing-record result are separately observed;
 they do not establish an optional task-state deserializer.
+
+SDK23 raw162 exposes two borrowed resource identities in the current
+NativeHandles domain. The actual SceneData remains their sole owner: repeated
+queries return the same pair, content loads keep it, and Scene replacement or
+normal Script disposal retires the pair together. Borrowing does not retain or
+copy the Scene and releasing either borrowed identity is rejected. The native
+Main233/234/239/249 callers now resolve the qualified Script query through its
+raw receiver before using that owner. The true child Script bridge covers
+changed string output, history copy, CSS export/import into a replacement Scene
+and consumption after the source retires; independent current cold points keep
+both identities and owner authority.
+
+The optional NativeHandles codec release hook returns a typed identity cleanup
+plan. The handle space validates the complete plan and current record identities
+before retiring any record; a failed, repeated or reentrant cleanup cannot
+partially retire this pair or erase records installed by restoration. Codecs
+without the hook keep ordinary release behavior. These identities provide no
+arbitrary byte access and other SDK builds retain their existing raw-pointer
+guard. Current checkpoints keep this optional pair in the Scene/handle records;
+the public native GAME_SAVE layout is unchanged. Main688's optional serializer
+still lacks a qualified normal creator/consumer and remains unknown.
 
 Main323 creates an independent owner containing a CST reader and a history
 owner; Main324 destroys both and releases the enclosing RefBuffer. Main219

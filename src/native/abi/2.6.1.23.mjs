@@ -807,7 +807,7 @@ const mainEvidence = [
   {
     ids: crossTaskSceneOperations,
     value:
-      'Own 2.6.1.23 wrappers 0x485a30/0x485bf0 route raw 162 through the original task tree to Script 0x45377b, then expand retained strings or copy both compact history lists independently of the source interpreter.',
+      'Own 2.6.1.23 wrappers 0x485a30/0x485bf0 route raw 162 through the original task tree to Script 0x45377b, then expand retained strings or copy both compact history lists independently of the source interpreter. A true ApplicationRoot/loaded child Script now bridges live expansion/copy through the real receiver; current raw162 returns stable borrowed NativeHandles identities with the Scene as sole owner. No C++ pointer arithmetic or byte-layout contract is enabled. See tests/fixtures/sdk23-scene-cross-owner-golden.json.',
   },
   {
     ids: explicitHistoryStringOperations,
@@ -817,7 +817,7 @@ const mainEvidence = [
   {
     ids: taskSceneCSSOperations,
     value:
-      'Own 2.6.1.23 wrappers 0x483c10/0x484680 take four words, query raw 162 through the real Script tree and save/load one compact history side through the original in-memory CSS owner while preserving the other side.',
+      'Own 2.6.1.23 wrappers 0x483c10/0x484680 take four words, query raw 162 through the real Script tree and save/load one compact history side through the original in-memory CSS owner while preserving the other side. The true loaded child Script bridge now includes Scene replacement, import into its current owner and independent consumption after normal source retirement.',
   },
   {
     ids: [322],
@@ -832,7 +832,7 @@ const mainEvidence = [
   {
     ids: [385, 386],
     value:
-      'Own 2.6.1.23 four-word CSS scene history wrappers and 0x5a39e0 headerless 40-byte records',
+      'Own 2.6.1.23 four-word CSS scene history wrappers and 0x5a39e0 headerless 40-byte records. True loaded Script/native CSS writer-reader and fresh Scene owners preserve complete authored name/string padding, raw buffer ownership and exact CSS file bytes; tests/fixtures/sdk23-scene-css-owner-golden.json records the controlled OS-memory storage qualification.',
   },
   {
     ids: [255],
@@ -1493,6 +1493,7 @@ export default {
     implicitTextDestinationRequired: true,
     cstFileMarkers: true,
     historyCursorTypeSideEffects: true,
+    borrowedSceneReferences: { rawMessage: 162 },
     directTextNull: 'reject',
     directPathResult: 'success',
   },

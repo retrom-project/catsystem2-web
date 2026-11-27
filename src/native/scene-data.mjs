@@ -370,6 +370,7 @@ export class NativeSceneData {
   constructor({ languages = [] } = {}) {
     this.reader = new NativeSceneReader(languages);
     this.history = new NativeSceneHistory();
+    this.borrowedReferences = null;
   }
   async load(name, read, diagnostic, behavior) {
     const bytes = await read(name, 'scene');
@@ -394,11 +395,24 @@ export class NativeSceneData {
     return success;
   }
   snapshot() {
-    return { reader: this.reader.snapshot(), history: this.history.snapshot() };
+    return {
+      reader: this.reader.snapshot(),
+      history: this.history.snapshot(),
+      ...(this.borrowedReferences ? { borrowedReferences: [...this.borrowedReferences] } : {}),
+    };
   }
   restore(state) {
     this.reader.restore(state.reader);
     this.history.restore(state.history);
+    if (
+      state.borrowedReferences !== undefined &&
+      (!Array.isArray(state.borrowedReferences) ||
+        state.borrowedReferences.length !== 2 ||
+        state.borrowedReferences.some((id) => !Number.isInteger(id) || id < 1 || id > 0x7fffffff) ||
+        state.borrowedReferences[0] === state.borrowedReferences[1])
+    )
+      throw new Error('Invalid Scene borrowed reference pair');
+    this.borrowedReferences = state.borrowedReferences ? [...state.borrowedReferences] : null;
     return this;
   }
 }
