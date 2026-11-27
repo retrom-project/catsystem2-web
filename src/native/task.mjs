@@ -169,7 +169,9 @@ export function nativeTask(id, args, machine, task, services) {
           bytes: (address, count) => bytes.subarray(address, address + count),
         };
         return then(
-          world.sendNativeEngine(args[0], task.id, id === 0x45 ? 172 : 173, 0, 0, {
+          // These are internal Script messages. Native raw173 is a different
+          // query in some builds, so resolve the target and keep this channel canonical.
+          world.sendEngine(resolve(args[0]), task.id, id === 0x45 ? 172 : 173, 0, 0, {
             payload,
             flags: 1,
           }),

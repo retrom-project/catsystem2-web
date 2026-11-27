@@ -25,6 +25,15 @@ simple-Plane branches. Their control2/no-output observations are not successful
 message delivery to a Script callback. Main69 transports four opaque words;
 the four-byte user tag `stop` is separate from the real native destroy message3.
 
+Main69/70 generate internal canonical Script messages172/173. Their native target
+ID is resolved before using the canonical World dispatcher. The external raw
+dispatcher retains each build's actual query mapping: SDK74 raw173 is Scene
+query175, which writes its mapped destinations and leaves its result word
+unwritten. Passing an internal queued message through that raw channel caused
+ordinary self-posts to fail during initial Script execution. Five-build parsed
+callers, real recipient tag copyback/FIFO and independent cold continuations
+cover the corrected boundary. An ignored recipient still cannot invent a result.
+
 `src/native/script-task.mjs` owns the Script task, its KCS loader, message queue,
 debug queries and automatic resource lifetime. `src/kcs/debug.mjs` implements
 the compiler's symbol records. `src/native/scene-memory.mjs` maps the existing
