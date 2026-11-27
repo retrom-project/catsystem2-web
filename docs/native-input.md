@@ -41,10 +41,13 @@ Direct callers that omit context retain the four-argument dispatcher boundary.
 The separate pointer-activation and drag routes are outside this change.
 
 [Bindings](../src/native/input-bindings.mjs) hold the shared physical device's
-80 × 4 sampled and live source masks. Each logical key has one repeat word shared
-by all slots. Press updates both masks, release updates the live mask, and frame
-completion copies live to sampled. A release can consequently remain visible
-until the next sample. The 32-byte physical bitmap covers 256 virtual keys and
+profile-specific 64 or 80 × 4 sampled and live source masks. Each logical key has
+one repeat word shared by all slots. Press updates both masks. The modern
+callbacks clear only live on release; frame completion copies live to sampled,
+so release can remain visible until the next sample. SDK23's original mouse
+callback instead clears both masks immediately. Its explicit policy preserves
+that difference without changing keyboard or other-build defaults. The 32-byte physical bitmap
+covers 256 virtual keys and
 mouse codes; it is independent of the logical key masks. Author mode selects
 whether the physical callbacks scan 32 or 80 logical definitions.
 
@@ -142,3 +145,21 @@ original engine owner (or the explicit device-pointer provider). A normal reques
 fails before acquiring an original feature; it does not manufacture zero, a
 World/native ID or an ordinary resource handle as a C++ object address. Complete
 owned0-key Root/Input queries and ordinary pointer coordinates remain unchanged.
+
+SDK23's normal Device row-setter accepts an 84-byte record and copies it into
+both of its tables before clearing their four key-state words. A bounded
+original qualification sends six mouse edges through the actual registered
+WndProc and the same Device/Input into two separately loaded Script callbacks.
+The current adapter uses startup KEYCUSTOMIZE through NativeConfiguration and
+NativeInputBindings, preserving the original down/up callback packets, priority,
+disable, replacement and live callback changes. Eight independent current cold
+continuations preserve both callback VMs and input/binding owners. Normal
+retirement removes the regions; later Root frames retain the completed packets.
+
+This is the conservative Device API qualification. The original Application
+publisher remains static evidence: its complete WinMain aggregate was not
+constructed by this host. The smaller Root/View controller is not substituted
+for that aggregate, and the supplied API record does not qualify WinMain
+configuration publication. The virtual Windows capture/cursor leaves prove
+memory-port semantics only, not physical HID, a desktop or GPU output. No
+GAME_SAVE word, public Runtime protocol or clock phase changed.

@@ -1867,6 +1867,7 @@ export default {
     },
   },
   input: {
+    mouseReleaseUpdatesSampled: true,
     activeQueryUsesRawWord: true,
     bitmapMaskNativeRows: true,
     cursorWarpNativeBounds: true,
