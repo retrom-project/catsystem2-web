@@ -485,3 +485,23 @@ through the original GCALL address map to the unique live name, preserving
 list order and the original report. No target behavior or pixels are inferred
 from current JS for this correction. Shared/foreign owners, unproved formats,
 resource extremes and hardware output remain separate scopes.
+
+## SDK 2.6.1.67 Draw entries and software output
+
+The own Main66 kind15 factory constructs a 148-byte Draw through `487ee0`
+with vtable `662f74`, the real software View and its retained renderer.
+Twenty target and twenty-eight dependency GCALLs compare forty-five frames
+for eight entry, layer, count, resize and ImageOwner-binding operations.
+Receiver packets are captured at the actual derived vtable slot +28 in this
+same group: raw 271/276/269 become canonical 282/287/280 once. Main264 writes
+only the original temporary result slot while returning control2, so it does
+not push a VM result. Borrowed entry/output bitmaps keep their ownership.
+
+The .67 policies preserve retained ImageOwners, accumulate the original old
+and new dirty bounds, and hold resources across retirement until the actual
+parent update destroys the Draw. Every selected software output pixel,
+Script resource count, offset, pending flag and result/control matches own
+original evidence; eight independent current checkpoints execute the next
+call. Renderer-less count/layer calls stay protected. These frames do not
+qualify full Base/collector cadence, physical GPU or capture output, additional
+formats or resource extremes.

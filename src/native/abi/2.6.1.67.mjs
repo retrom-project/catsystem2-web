@@ -20,6 +20,7 @@ const mainConstantZero = [
   171, 174, 175, 176, 177, 178, 179, 181, 183, 186, 236, 432, 551, 554, 555, 575, 580, 909, 925,
 ];
 
+const drawResourceOperations = [259, 263, 264, 462, 463, 657, 663, 731];
 const imageOwnerPixelOperations = [716, 721, 722, 725, 729, 734];
 const encodedImageOperations = [375, 428, 430, 431, 460, 648];
 const bitmapPixelOperations = [376, 377, 378, 446, 468, 538, 558, 564, 641];
@@ -1328,6 +1329,10 @@ export default {
   },
   graphics: {
     bitmapAlphaQueryRequiresOwner: true,
+    drawRetirementRetainsResources: true,
+    drawRetainsImageOwner: true,
+    drawAccumulatesBounds: true,
+    drawCountAndLayerRequireRenderer: true,
     imageOwnerAlphaQueryRequiresBitmap: true,
     imageOwnerBlendPhysicalRows: true,
     imageOwnerBlendRGB24: true,
@@ -1404,10 +1409,9 @@ export default {
       slots: {
         unknown: [
           12, 81, 82, 89, 90, 91, 95, 96, 97, 98, 99, 115, 120, 121, 122, 130, 133, 134, 135, 199,
-          201, 202, 208, 237, 264, 279, 280, 281, 282, 283, 287, 288, 346, 391, 398, 399, 433, 441,
-          442, 443, 457, 532, 588, 600, 601, 622, 623, 624, 628, 657, 663, 669, 681, 682, 688, 690,
-          691, 692, 703, 704, 705, 706, 707, 708, 709, 735, 837, 838, 839, 840, 841, 842, 843, 879,
-          880, 881,
+          201, 202, 208, 237, 279, 280, 281, 282, 283, 287, 288, 346, 391, 398, 399, 433, 441, 442,
+          443, 457, 532, 588, 600, 601, 622, 623, 624, 628, 669, 681, 682, 688, 690, 691, 692, 703,
+          704, 705, 706, 707, 708, 709, 735, 837, 838, 839, 840, 841, 842, 843, 879, 880, 881,
         ],
         recovered: [
           1, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
@@ -1420,43 +1424,48 @@ export default {
           166, 167, 168, 192, 193, 194, 195, 196, 197, 198, 200, 203, 204, 205, 206, 207, 209, 210,
           211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228,
           229, 230, 231, 232, 233, 234, 235, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248,
-          249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 265, 266, 267,
-          268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 284, 285, 286, 289, 290, 291, 292,
-          293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309, 310,
-          311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327, 328,
-          329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345, 347,
-          348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364, 365,
-          366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382, 383,
-          384, 385, 386, 387, 388, 389, 390, 392, 393, 394, 395, 396, 397, 400, 401, 402, 403, 404,
-          405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421, 422,
-          423, 424, 425, 426, 427, 428, 430, 431, 434, 435, 436, 437, 438, 440, 444, 445, 446, 447,
-          448, 449, 450, 451, 452, 453, 454, 455, 456, 458, 459, 460, 461, 462, 463, 464, 465, 466,
-          467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484,
-          485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501, 502,
-          503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520,
-          521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 533, 534, 535, 536, 537, 538, 539,
-          540, 541, 542, 549, 557, 558, 564, 565, 566, 567, 568, 569, 570, 571, 572, 576, 577, 582,
-          583, 584, 585, 586, 587, 589, 590, 591, 592, 593, 594, 595, 596, 597, 598, 599, 602, 603,
-          604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621,
-          625, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 645, 646, 647, 648,
-          649, 650, 651, 653, 654, 655, 658, 659, 662, 664, 665, 666, 667, 668, 674, 675, 676, 677,
-          678, 679, 680, 683, 684, 685, 689, 693, 694, 695, 696, 697, 698, 699, 700, 701, 702, 710,
-          711, 712, 713, 714, 715, 716, 717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727, 728,
-          729, 730, 731, 732, 733, 734, 736, 737, 738, 739, 740, 741, 742, 743, 744, 745, 746, 747,
-          748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765,
-          766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783,
-          784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801,
-          802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819,
-          820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 844,
-          845, 846, 847, 848, 849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862,
-          863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 882, 883,
-          884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901,
-          902, 903, 904, 905, 934, 935, 936, 937,
+          249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 266,
+          267, 268, 269, 270, 271, 272, 273, 274, 275, 276, 277, 278, 284, 285, 286, 289, 290, 291,
+          292, 293, 294, 295, 296, 297, 298, 299, 300, 301, 302, 303, 304, 305, 306, 307, 308, 309,
+          310, 311, 312, 313, 314, 315, 316, 317, 318, 319, 320, 321, 322, 323, 324, 325, 326, 327,
+          328, 329, 330, 331, 332, 333, 334, 335, 336, 337, 338, 339, 340, 341, 342, 343, 344, 345,
+          347, 348, 349, 350, 351, 352, 353, 354, 355, 356, 357, 358, 359, 360, 361, 362, 363, 364,
+          365, 366, 367, 368, 369, 370, 371, 372, 373, 374, 375, 376, 377, 378, 379, 380, 381, 382,
+          383, 384, 385, 386, 387, 388, 389, 390, 392, 393, 394, 395, 396, 397, 400, 401, 402, 403,
+          404, 405, 406, 407, 408, 409, 410, 411, 412, 413, 414, 415, 416, 417, 418, 419, 420, 421,
+          422, 423, 424, 425, 426, 427, 428, 430, 431, 434, 435, 436, 437, 438, 440, 444, 445, 446,
+          447, 448, 449, 450, 451, 452, 453, 454, 455, 456, 458, 459, 460, 461, 462, 463, 464, 465,
+          466, 467, 468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483,
+          484, 485, 486, 487, 488, 489, 490, 491, 492, 493, 494, 495, 496, 497, 498, 499, 500, 501,
+          502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519,
+          520, 521, 522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 533, 534, 535, 536, 537, 538,
+          539, 540, 541, 542, 549, 557, 558, 564, 565, 566, 567, 568, 569, 570, 571, 572, 576, 577,
+          582, 583, 584, 585, 586, 587, 589, 590, 591, 592, 593, 594, 595, 596, 597, 598, 599, 602,
+          603, 604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617, 618, 619, 620,
+          621, 625, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 645, 646, 647,
+          648, 649, 650, 651, 653, 654, 655, 657, 658, 659, 662, 663, 664, 665, 666, 667, 668, 674,
+          675, 676, 677, 678, 679, 680, 683, 684, 685, 689, 693, 694, 695, 696, 697, 698, 699, 700,
+          701, 702, 710, 711, 712, 713, 714, 715, 716, 717, 718, 719, 720, 721, 722, 723, 724, 725,
+          726, 727, 728, 729, 730, 731, 732, 733, 734, 736, 737, 738, 739, 740, 741, 742, 743, 744,
+          745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762,
+          763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780,
+          781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798,
+          799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816,
+          817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834,
+          835, 836, 844, 845, 846, 847, 848, 849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859,
+          860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877,
+          878, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898,
+          899, 900, 901, 902, 903, 904, 905, 934, 935, 936, 937,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: drawResourceOperations,
+          value:
+            'Own SDK67 Main66 actual kind15 factory constructs148-byte Draw through487ee0/vtable662f74 and attaches the real software View. Twenty target and twenty-eight dependency GCALLs compare45 frames of sender-keyed entry replacement/show/layer/count scratch, borrowed bitmap queries, resize and retained ImageOwner binding/release, cached bounds and every selected output pixel. The actual derived receiver at vtable+28 captures raw271/276/269 packets in this same group; canonical messages remain282/287/280. Main264 returns control2 despite writing its temporary result slot. Original parent update destroys the retired Draw after retained resources remain live until that update. Eight independent current checkpoints continue the same resources. Renderer-less preconditions, unproved collector cadence, formats, capacities and GPU output remain separate shapes.',
+        },
         {
           ids: imageOwnerPixelOperations,
           value:
@@ -1784,7 +1793,7 @@ export default {
             'Own 2.6.1.67 area wrappers 0x4b2a90–0x4b2f20 select initializers after Base message 13, then start, stop, query and finalize via raw246–248 and 250. The original crossfade receiver 0x482380 reads its 44-byte packet via raw264, retains the two borrowed bitmaps and writes its activity word on raw248. Main200 writes the result under control 1; the other wrappers return 2.',
         },
         {
-          ids: [462, 463, 464],
+          ids: [464],
           value:
             'Own 2.6.1.67 Draw kind15 raw287–289 query and set the sender-keyed retained layer and refresh its live material. Main462 initializes the result to -1 before routing and returns control 1; Main463/464 use control 2.',
         },
@@ -1794,7 +1803,7 @@ export default {
             'Own 2.6.1.67 Main625 0x4a0ca0 directs raw284 to the Draw owner at 0x487978; it passes the sender-keyed entry and enabled DWORD, with control 2 and no result.',
         },
         {
-          ids: [731, 732],
+          ids: [732],
           value:
             'Own 2.6.1.67 wrappers 0x4a0f90/0x4a1090 build the 60-byte Draw packet with the Script image-owner field, seven F32 transforms and unsigned alpha clamped to 255. The kind15 receiver uses raw269/271 and retains the sender-keyed bitmap across replacement. Control 2 leaves the result untouched.',
         },
@@ -1824,7 +1833,7 @@ export default {
             'Own 2.6.1.67 0x49e420 snapshots both CP932 comma lists before clearing the guest destination. Each literal @ selects the old field at the same index or the byte 0x30. Nonempty fields are joined with commas; control 2 writes no result.',
         },
         {
-          ids: [263, 339],
+          ids: [339],
           value:
             'Own 2.6.1.67 Draw kind15 switch 0x4872b0 selects raw276 or raw278. Main263 toggles the live sender-keyed item at 0x520ed0; Main339 adds signed extents to create the four rectangle words for the same item at 0x520f30. Control 2 writes no guest result.',
         },
@@ -2099,7 +2108,7 @@ export default {
             'Own 2.6.1.67 trigonometry wrappers load one f32 through x87, call the original six CRT operations at 0x5b0020, 0x5b0630, 0x5b0b20, 0x5b02a0, 0x5b0150 and 0x5b03f0, and store one rounded f32 via control 1. The initialized sine, cosine and tangent reduce large angles using their native CRT ranges. Generic uses separate wrappers to those same recipients. Both Particle tables alias the complete Main bodies.',
         },
         {
-          ids: [257, 258, 259],
+          ids: [257, 258],
           value:
             'Own 2.6.1.67 Main257 and Main259 send 60-byte bitmap packets with 255-clamped alpha through Draw raw 269 and 271. Renderer paths 0x5218f0/0x521cf0 attach or replace the sender-keyed bitmap and its transform. Main258 sends raw 270; 0x521200 removes that key. Control 2 leaves the result unwritten.',
         },
@@ -2614,6 +2623,24 @@ export default {
         },
       ],
       signatures: [
+        ...drawResourceOperations.map((id) => ({
+          ids: [id],
+          fields: {
+            review: 'reviewed',
+            resultWritten: [462, 657].includes(id),
+            ...(id === 657
+              ? { result: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' } }
+              : {}),
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) =>
+              index === 0
+                ? {
+                    ...parameter,
+                    type: { kind: 'object-id', objectKind: 'Draw' },
+                  }
+                : parameter,
+            ),
+          },
+        })),
         ...imageOwnerPixelOperations.map((id) => ({
           ids: [id],
           fields: {
@@ -3783,7 +3810,6 @@ export default {
           },
         },
         { ids: [200], fields: { resultWritten: true } },
-        { ids: [462], fields: { resultWritten: true } },
         { ids: [710, 717, 718, 719, 720, 724, 733], fields: { resultWritten: true } },
         { ids: [598], fields: { resultWritten: true } },
         { ids: [520], fields: { resultWritten: true } },
@@ -3871,7 +3897,7 @@ export default {
         { ids: [285], fields: { resultWritten: true } },
         { ids: [286], fields: { resultWritten: false } },
         { ids: [50, 51, 52, 53, 54, 55], fields: { resultWritten: true } },
-        { ids: [257, 258, 259], fields: { resultWritten: false } },
+        { ids: [257, 258], fields: { resultWritten: false } },
         { ids: [261], fields: { resultWritten: true } },
         { ids: [112, 364, 365, 368, 370, 371, 372, 373, 374], fields: { resultWritten: true } },
         { ids: [114, 362, 363, 366, 367, 369], fields: { resultWritten: false } },
