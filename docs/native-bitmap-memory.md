@@ -505,3 +505,21 @@ original evidence; eight independent current checkpoints execute the next
 call. Renderer-less count/layer calls stay protected. These frames do not
 qualify full Base/collector cadence, physical GPU or capture output, additional
 formats or resource extremes.
+
+## SDK 2.6.1.67 source arrays and retained ANM resources
+
+Twenty-one target and twenty-three dependency own GCALLs compare forty-one
+normal frames for nine source-array, metadata, ordinal and retained-binding
+entries. Main703 produces 72-byte records with a bitmap tag or an actual
+196-byte source constructed by `523b80`; unused name words retain the input
+sentinel. Own consumers qualify the program at +72 and reference count at
++188. Creation leaves the program empty until explicit ANM loading.
+
+The same sender-keyed Draw keeps the source alive after caller-array release,
+uses signed stored layers, and accepts bitmap/encoded replacement. Missing
+ANM still sends the original empty-name packet. The .67 raw messages
+269/271/282 become canonical 280/282/293 once. Selected software pixels,
+metadata, references, guest writes, control/results and final parent-update
+release match current full KCS calls and eight independent cold continuations.
+HG2 and nested owner forms follow in their own group. Other formats, shared
+or foreign resources, capacity extremes and GPU presentation remain open.

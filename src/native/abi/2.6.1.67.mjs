@@ -20,6 +20,7 @@ const mainConstantZero = [
   171, 174, 175, 176, 177, 178, 179, 181, 183, 186, 236, 432, 551, 554, 555, 575, 580, 909, 925,
 ];
 
+const renderSourceOperations = [622, 623, 624, 703, 704, 706, 707, 708, 709];
 const drawResourceOperations = [259, 263, 264, 462, 463, 657, 663, 731];
 const imageOwnerPixelOperations = [716, 721, 722, 725, 729, 734];
 const encodedImageOperations = [375, 428, 430, 431, 460, 648];
@@ -1329,6 +1330,12 @@ export default {
   },
   graphics: {
     bitmapAlphaQueryRequiresOwner: true,
+    renderSourcesDeferProgram: true,
+    drawMissingAnimationSendsEmpty: true,
+    retainedSourcesUseStoredLayer: true,
+    renderSources: { stride: 72, bytes: 276 },
+    retainedBytes: 196,
+    drawAnimationVariableRequiresRenderer: true,
     drawRetirementRetainsResources: true,
     drawRetainsImageOwner: true,
     drawAccumulatesBounds: true,
@@ -1410,8 +1417,8 @@ export default {
         unknown: [
           12, 81, 82, 89, 90, 91, 95, 96, 97, 98, 99, 115, 120, 121, 122, 130, 133, 134, 135, 199,
           201, 202, 208, 237, 279, 280, 281, 282, 283, 287, 288, 346, 391, 398, 399, 433, 441, 442,
-          443, 457, 532, 588, 600, 601, 622, 623, 624, 628, 669, 681, 682, 688, 690, 691, 692, 703,
-          704, 705, 706, 707, 708, 709, 735, 837, 838, 839, 840, 841, 842, 843, 879, 880, 881,
+          443, 457, 532, 588, 600, 601, 628, 669, 681, 682, 688, 690, 691, 692, 705, 735, 837, 838,
+          839, 840, 841, 842, 843, 879, 880, 881,
         ],
         recovered: [
           1, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
@@ -1442,25 +1449,31 @@ export default {
           539, 540, 541, 542, 549, 557, 558, 564, 565, 566, 567, 568, 569, 570, 571, 572, 576, 577,
           582, 583, 584, 585, 586, 587, 589, 590, 591, 592, 593, 594, 595, 596, 597, 598, 599, 602,
           603, 604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617, 618, 619, 620,
-          621, 625, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 645, 646, 647,
-          648, 649, 650, 651, 653, 654, 655, 657, 658, 659, 662, 663, 664, 665, 666, 667, 668, 674,
-          675, 676, 677, 678, 679, 680, 683, 684, 685, 689, 693, 694, 695, 696, 697, 698, 699, 700,
-          701, 702, 710, 711, 712, 713, 714, 715, 716, 717, 718, 719, 720, 721, 722, 723, 724, 725,
-          726, 727, 728, 729, 730, 731, 732, 733, 734, 736, 737, 738, 739, 740, 741, 742, 743, 744,
-          745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762,
-          763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780,
-          781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798,
-          799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816,
-          817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834,
-          835, 836, 844, 845, 846, 847, 848, 849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859,
-          860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877,
-          878, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898,
-          899, 900, 901, 902, 903, 904, 905, 934, 935, 936, 937,
+          621, 622, 623, 624, 625, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 641,
+          645, 646, 647, 648, 649, 650, 651, 653, 654, 655, 657, 658, 659, 662, 663, 664, 665, 666,
+          667, 668, 674, 675, 676, 677, 678, 679, 680, 683, 684, 685, 689, 693, 694, 695, 696, 697,
+          698, 699, 700, 701, 702, 703, 704, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715, 716,
+          717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727, 728, 729, 730, 731, 732, 733, 734,
+          736, 737, 738, 739, 740, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753,
+          754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771,
+          772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789,
+          790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807,
+          808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825,
+          826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 844, 845, 846, 847, 848, 849, 850,
+          851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868,
+          869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 882, 883, 884, 885, 886, 887, 888, 889,
+          890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 934, 935,
+          936, 937,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: renderSourceOperations,
+          value:
+            'Own SDK67 complete GCALLs create72-byte source arrays with tag1 bitmap or tag2 actual196-byte constructor523b80. Twenty-one target and twenty-three dependency calls compare41 normal frames, nine-word metadata, two valid ordinal bitmaps, original reference counts and all selected software pixels. Actual Draw retains the source after caller-array release and consumes explicit ANM, missing-ANM empty packet, signed layer and bitmap/encoded replacement through raw269/271/282 exactly once. Own constructor leaves the program slot empty until explicit load; program+72 and refs+188 are observed after actual consumers. Parent update frees the retained source with the Draw. Eight independent current checkpoints continue real KCS calls; other formats, foreign/shared layouts, resource extremes and GPU output remain separate scopes.',
+        },
         {
           ids: drawResourceOperations,
           value:
@@ -2623,6 +2636,50 @@ export default {
         },
       ],
       signatures: [
+        ...renderSourceOperations.map((id) => ({
+          ids: [id],
+          fields: {
+            review: 'reviewed',
+            resultWritten: [703, 706, 709].includes(id),
+            ...(id === 709
+              ? { result: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' } }
+              : {}),
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) => {
+              if ([622, 623, 624, 707, 708].includes(id) && index === 0)
+                return { ...parameter, type: { kind: 'object-id', objectKind: 'Draw' } };
+              if ([622, 623, 707, 708].includes(id) && index === 2)
+                return {
+                  ...parameter,
+                  type: {
+                    kind: 'handle',
+                    handleKind: id < 700 ? 'image-data' : 'render-source',
+                    ownership: 'borrowed',
+                  },
+                };
+              if ([706, 709].includes(id) && index === 0)
+                return {
+                  ...parameter,
+                  type: { kind: 'handle', handleKind: 'render-source', ownership: 'borrowed' },
+                };
+              if (parameter.type.kind !== 'pointer') return parameter;
+              const formatted = (id === 624 && index === 2) || (id === 703 && index === 0);
+              return {
+                ...parameter,
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: formatted ? 'in' : id === 704 ? 'inout' : 'out',
+                  target: formatted
+                    ? { kind: 'format-string', encoding: 'CP932' }
+                    : {
+                        kind: 'record',
+                        name: id === 706 ? 'nine-word image metadata' : '72-byte render source',
+                      },
+                },
+              };
+            }),
+          },
+        })),
         ...drawResourceOperations.map((id) => ({
           ids: [id],
           fields: {
