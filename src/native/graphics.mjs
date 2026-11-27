@@ -73,7 +73,8 @@ const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) 
 const UNVERIFIED_REGISTRATION = 'unverified';
 const hasRegistration = (graph) =>
   graph && (typeof graph.registrationEnabled === 'boolean' || graph.registrationEnabled === null);
-const hiddenMeshRegistration = (graph) => graph.mesh && graph.registrationEnabled === false;
+const hiddenModelRegistration = (graph) =>
+  (graph.mesh || graph.type === 6 || graph.type === 7) && graph.registrationEnabled === false;
 function nativeTexturePageOptions(graphics) {
   const settle = () => {
     const text = graphics.world.text;
@@ -488,7 +489,7 @@ export class NativeGraphics {
       ),
       display:
         graph.style?.shown !== false &&
-        !hiddenMeshRegistration(graph) &&
+        !hiddenModelRegistration(graph) &&
         view.getInt32(MOTION_ABI.display, true) !== 0,
       registrationWord: graph.registrationWord,
     };
@@ -776,6 +777,7 @@ export class NativeGraphicTask {
       bindExtra: 0,
       inputTracksGraph: false,
       rect: [0, 0, 0, 0],
+      modelFilename: '',
       imageIndex: -1,
       shown: true,
       renderPaused: true,
@@ -918,15 +920,14 @@ export class NativeGraphicTask {
       blendMode: this.state.blendMode,
       nativeGraph: this.graph,
       nativeTaskWorldID: this.record.id,
-      visible: plane.visible && this.state.shown && !hiddenMeshRegistration(this.graph),
+      visible: plane.visible && this.state.shown && !hiddenModelRegistration(this.graph),
     });
     if (this.graph.colors?.length === 1) plane.color = this.graph.colors[0];
   }
   unload() {
     this.trail?.close();
     this.graph = null;
-    this.state.rect = [0, 0, 0, 0];
-    this.state.drawType = 0;
+    // Model release does not overwrite the separate Plane metadata words.
     this.sync();
   }
   async unregisterInput() {
@@ -1260,12 +1261,15 @@ export class NativeGraphicTask {
           type: textured ? 6 : 7,
           vram: textured,
           filename,
-          ...(legacy ? { registrationEnabled: graph.triangles.length > 0 } : {}),
+          // All five original KX2 loaders register a new model with display word zero.
+          registrationEnabled: false,
+          registrationWord: 0,
         });
         if (legacy) {
           this.graph.registrationWord = Number(this.graph.registrationEnabled);
           this.state.drawType = textured ? 5 : 6;
         }
+        this.state.modelFilename = filename;
         this.state.rect = [graph.rect[0], graph.rect[1], graph.width, graph.height];
         return 0;
       }
@@ -1510,12 +1514,18 @@ export class NativeGraphicTask {
         this.updateGraphInputArea();
         await this.broadcast(67, w, l, context);
         return 0;
-      case 68:
+      case 68: {
+        const [left, top] = this.state.rect,
+          drawType = this.state.drawType;
         this.unregisterGraph();
         this.unload();
+        // Original reset clears the size words, retaining origin, type and filename.
+        this.state.rect = [left, top, 0, 0];
+        this.state.drawType = drawType;
         if (this.planeResetReleasesTrackedInput && this.state.inputTracksGraph)
           await this.unregisterInput();
         return 0;
+      }
       case 74:
         return ((this.state.blocked ? 0x80000000 : 0) | this.state.phase) >>> 0;
       case 75: {
@@ -1955,7 +1965,7 @@ export class NativeGraphicTask {
     if (
       !inputGraph ||
       !state.shown ||
-      hiddenMeshRegistration(inputGraph) ||
+      hiddenModelRegistration(inputGraph) ||
       inputGraph.renderEnabled === false ||
       !new DataView(inputGraph.kx2.buffer).getInt32(MOTION_ABI.display, true)
     )
