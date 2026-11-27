@@ -7,6 +7,32 @@ call a menu selected by a game filename. The complete original task handler is
 still being audited; this document distinguishes the implemented message
 contracts from the remaining controls and parser work.
 
+For the pinned 2.6.1.23 build, loading a FES borrows the sending Script's
+variable bank. It does not acquire ownership of that bank. Each interpreter
+registers its own 512-word private context and named values. Two FES instances
+can share the supplier while keeping those contexts separate. Reinitializing
+one interpreter starts fresh private words, named defaults and result state;
+the other instance retains its state. Normal retirement unregisters the FES
+context while the supplying Script and bank remain alive.
+
+Main665/666 copy only when the actual caller has a registered private context.
+A Script with its own initialized bank need not have the inherited context
+that a child Script registers during Main143 loading. In that absent-context
+shape the original calls are defined no-ops. Calling the wrappers or observing
+unchanged words does not prove a successful copy. The inherited-caller copy
+contract remains distinct from this shape, and names are not word storage.
+Current internal checkpoints retain the actual interpreter contexts and
+continue their loaded programs without rerunning notifications. This does not
+add anything to the original GAME_SAVE/CSS file layout.
+
+The original FES first-update input setup walks to a real kind1 Top ancestor.
+Calling the Top constructor alone leaves the Base kind and is insufficient
+for this dependency. The original application controller initializer creates
+both its View and Top and writes that kind; the corresponding controller
+disposal owns both objects. Test hosts must preserve this ownership and close
+borrowing FES instances before their supplier Script. A supplier-first native
+destruction boundary is not a successful lifecycle result.
+
 CGL-backed `loadlist` and `loadlist2` keep the original selected filename bytes.
 The parser records each variant CString offset and length into the same owned
 `CGGallery.listBytes` resource already retained for its explicit original
