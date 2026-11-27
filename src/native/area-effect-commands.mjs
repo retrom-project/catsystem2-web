@@ -31,6 +31,17 @@ export class NativeAreaEffectCommands {
   async apply(id, args, machine, task) {
     const spec = byID.get(id);
     if (!spec) return undefined;
+    const policy = nativeABI(this.world.profile).messages;
+    if (policy.areaAdditionalServices?.includes(id)) {
+      if (args.length !== spec.words)
+        throw new Error(`Area native ${id} expects ${spec.words} argument words`);
+      const kinds = policy.areaServiceKinds[id];
+      if (kinds) {
+        const record = this.world.objects.objects.get(this.world.resolveTaskID(args[0], task.id));
+        if (!record || !kinds.includes(record.kind))
+          throw new Error(`Area native ${id} requires a reviewed receiver`);
+      }
+    }
     const a = Array.from({ length: spec.words }, (_, i) => nativeDataArgument(args, machine, i)),
       world = this.world,
       abi = nativeABI(world.profile),
@@ -50,13 +61,13 @@ export class NativeAreaEffectCommands {
       const packet = new NativeGraphicsPacket();
       packet.bytes(0, 64).set(machine.bytes(a[1], 64));
       const record = world.objects.objects.get(world.resolveTaskID(a[0], task.id)),
-        raw = mapABIMessage(world.profile, 'area', 'raw', 262),
+        raw = mapABIMessage(world.profile, 'area', 'raw', 262, record?.kind),
         message =
           record && !world.areaEffects?.tasks.has(record.id)
-            ? mapABIMessage(world.profile, 'base', 'canonical', raw)
+            ? mapABIMessage(world.profile, 'base', 'canonical', raw, record.kind)
             : 262;
-      // SDK raw257 reaches Base as259 on a foreign receiver. Area receivers
-      // retain their canonical matrix operation262.
+      // Translate in the actual receiver's namespace. For SDK23 Base0 and
+      // area26/27 this stays unhandled; the wrapper's private copy is still real.
       await send(message, 0, packet);
       return nativeReply(2);
     }
@@ -73,7 +84,10 @@ export class NativeAreaEffectCommands {
         nativeResult: out,
         resultMemory: memory,
       });
-      if (!Number.isInteger(value) && abi.messages.areaQueriesRequireReply)
+      if (
+        !Number.isInteger(value) &&
+        (abi.messages.areaQueriesRequireReply || policy.areaAdditionalServices?.includes(id))
+      )
         throw new Error('Area effect query did not write its result');
       const kind = Number.isInteger(value) ? value : memory.load(out);
       if (id === 0xc8) return nativeReply(1, kind);

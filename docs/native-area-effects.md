@@ -53,6 +53,50 @@ parameters and advances the phase with per-tick truncation and one
 frequency subtraction. Original raw outputs and the three fixed KCS
 call sites are checked separately from product route smoke tests.
 
+### SDK 2.6.1.23 finish, matrix copy and source replacement
+
+Main 198, 199 and 202 use the shared controls with this build's typed message
+mapping. Main 198 accepts the reviewed Wipe1/Fade kinds 26/27 and sends raw 232
+(canonical 258). An uninitialized receiver returns without an upload. An
+initialized receiver uploads its destination and clears activity, including a
+repeat call after it has already stopped. Its reply word remains unwritten;
+the wrapper returns control 2 without a value.
+
+Main 199 translates its VM pointer and copies all 64 bytes to a distinct local
+packet before dispatching raw 236. The reviewed Base kind 0 and area kinds 26/27
+do not consume that matrix: their derived/Base dispatch returns unhandled and
+leaves the output word unwritten. Later writes to the original VM storage cannot
+change the copied packet. This preserves the wrapper's real memory operation
+without adding a numerical transform or matrix state to these receivers. Other
+receiver kinds remain protected.
+
+Main 202 first obtains a written raw 12 kind reply. For kind 26/27 it translates
+the five-DWORD packet and sends raw 234 (canonical 260); the receiver replaces
+only the source and destination bitmap handles. It borrows both owners without
+retaining or aliasing them and preserves its clock, work allocation and other
+parameters. A different written kind returns before reading the packet. An
+unwritten kind reply raises a VM error. Only kind 27 gains the separately
+reviewed initializer mapping raw 249 to canonical 275; this mapping does not
+enable another receiver kind or SDK build.
+
+The original kind 27 initializer leaves its owned work pixels zeroed until
+normal drawing. Kind 26 copies its initial source. That difference is a
+2.6.1.23 ABI policy; the shared defaults for other builds stay unchanged.
+The source, destination and mask owners must outlive the effect. Destroying
+the effect releases its work image, and the creator Script's later destruction
+releases its automatic bitmap list.
+
+`tests/native-sdk23-areas.test.mjs` replays a compact fixture from complete
+mode-1 view/Top/Script constructors, real Main 66 factories and 16 original
+family GCALLs. It checks exact packet bits and reply knownness separately from
+numeric state, live replacement pixels/alpha through ordinary VRAM output,
+forced and repeated finish, two-level Script cleanup and two independent cold
+continuations. Current-only guard tests cover wrong arity, unreviewed receiver
+kinds and an unwritten kind reply. The original short group uses defined,
+same-size RGBA inputs and zero origins. Other formats and geometry combinations
+are outside this short group; existing format and storage-bound checks remain
+in force. Unwritten kind replies and unreviewed receiver shapes remain protected.
+
 CPU effects keep physical bitmap row addressing. WipeAlpha's work allocation,
 mask offset, blend rectangle and upload rectangle remain distinct, including
 the natural-end reset of its mask offset. The speed table is sampled on start.

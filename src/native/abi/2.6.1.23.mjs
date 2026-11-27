@@ -98,6 +98,7 @@ export const engine23CommonHeads = {
 
 const legacyTaskWordOperations = [126, 127, 128, 129, 131, 132, 138, 139];
 const legacyTextServices = [130, 133, 134, 135, 391, 456, 585, 599];
+const areaAdditionalServices = [198, 199, 202];
 const rectangleOperations = [214, 215, 216, 217];
 const mainGeometryOperations = [350, 351, 352, 353, 354, 355, 356, 357];
 const motionGeometryOperations = [27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37];
@@ -378,6 +379,11 @@ const mainEvidence = [
     ids: [616],
     value:
       'Own 2.6.1.23 Main 616 and kind 48 raw 412 read the actual configured STRING writer: pending source returns signed -1 without parsing, page-limited drawing leaves one character, normal task updates preserve the page limit, and finish/clear give 0/-1. Real VM comparison, bitmap ownership and destruction were checked after complete mode 1 constructors.',
+  },
+  {
+    ids: areaAdditionalServices,
+    value:
+      'Own 2.6.1.23 wrappers 0x486a10/0x486a40/0x486b90 and actual Main66 kind26/27/Base constructors: raw232 forces the initialized bitmap endpoint, raw236 copies a complete local matrix but the reviewed receivers leave it unhandled, and raw234 replaces only the two borrowed bitmap pointers after a written kind26/27 query. Complete Script GCALLs cover live pixels, unchanged refs and two-level destruction.',
   },
   {
     ids: [136, 137],
@@ -1568,6 +1574,8 @@ export default {
     systemEntropy: null,
   },
   messages: {
+    areaAdditionalServices,
+    areaServiceKinds: { 198: [26, 27], 199: [0, 26, 27] },
     channels: {
       taskQueries: {
         unmapped: 'reject',
@@ -1576,8 +1584,16 @@ export default {
       },
       base: {
         unmapped: 'reject',
-        raw: [...baseMessages, ...[13, 23, 24, 29].map((id) => toMessage(id, -1))],
-        canonical: [...baseMessages, ...[12, 22, 23, 28].map((id) => toMessage(id, 1))],
+        raw: [
+          ...baseMessages,
+          ...[13, 23, 24, 29].map((id) => toMessage(id, -1)),
+          { ...toMessage(262, -26), kinds: [0] },
+        ],
+        canonical: [
+          ...baseMessages,
+          ...[12, 22, 23, 28].map((id) => toMessage(id, 1)),
+          { ...toMessage(236, 26), kinds: [0] },
+        ],
       },
       control: {
         unmapped: 'reject',
@@ -1621,8 +1637,18 @@ export default {
       },
       area: {
         unmapped: 'reject',
-        raw: [257, 258, 259, 261, 263, 264, 273, 274].map((id) => toMessage(id, -26)),
-        canonical: [231, 232, 233, 235, 237, 238, 247, 248].map((id) => toMessage(id, 26)),
+        raw: [
+          ...[257, 258, 259, 261, 263, 264, 273, 274].map((id) => toMessage(id, -26)),
+          { ...toMessage(260, -26), kinds: [26, 27] },
+          { ...toMessage(262, -26), kinds: [0, 26, 27] },
+          { ...toMessage(275, -26), kinds: [27] },
+        ],
+        canonical: [
+          ...[231, 232, 233, 235, 237, 238, 247, 248].map((id) => toMessage(id, 26)),
+          { ...toMessage(234, 26), kinds: [26, 27] },
+          { ...toMessage(236, 26), kinds: [0, 26, 27] },
+          { ...toMessage(249, 26), kinds: [27] },
+        ],
       },
       planeMovie: {
         unmapped: 'reject',
@@ -1729,6 +1755,7 @@ export default {
     macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
   },
   graphics: {
+    areaBlankWorkKinds: [27],
     bitmapAlphaQueryRequiresOwner: true,
     imageOwnerAlphaQueryRequiresBitmap: true,
     bitmapResizeUsesLegacyCells: true,
@@ -2329,6 +2356,39 @@ export default {
             ...(id === 391
               ? { result: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' } }
               : {}),
+          },
+        })),
+        ...areaAdditionalServices.map((id) => ({
+          ids: [id],
+          fields: {
+            review: 'reviewed',
+            resultWritten: false,
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) =>
+              index === 0
+                ? {
+                    ...parameter,
+                    type: {
+                      kind: 'object-id',
+                      objectKind:
+                        id === 202 ? 'Task' : id === 198 ? 'area-effect' : 'Base-or-area-effect',
+                    },
+                  }
+                : {
+                    ...parameter,
+                    type: {
+                      kind: 'pointer',
+                      addressSpace: 'vm',
+                      direction: 'in',
+                      target: {
+                        kind: 'record',
+                        name:
+                          id === 199
+                            ? '64-byte local matrix packet'
+                            : 'five DWORDs with source and destination bitmap handles',
+                      },
+                    },
+                  },
+            ),
           },
         })),
         {

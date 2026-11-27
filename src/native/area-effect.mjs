@@ -73,6 +73,7 @@ export class NativeAreaEffectTask {
     const graphics = nativeABI(this.world.profile).graphics;
     this.rasterX87 = record.kind === 18 && graphics.areaRasterX87 === true;
     this.defaultSpeed = graphics.areaDefaultSpeed;
+    this.blankWork = graphics.areaBlankWorkKinds?.includes(record.kind) === true;
     this.legacyAreaColors =
       graphics.areaLegacyColors === true && [26, 27, 30].includes(record.kind);
     this.positionedWipeMask = graphics.positionedAreaWipeKinds?.includes(record.kind) === true;
@@ -507,8 +508,8 @@ export class NativeAreaEffectTask {
           : undefined,
       );
     state.work = images.create(state.width, state.height, this.record.id);
-    // The positioned wipe allocates a zeroed surface and writes only its masked rectangle.
-    if (this.positionedWipeMask) {
+    // These receivers allocate a zeroed surface; normal drawing writes it later.
+    if (this.positionedWipeMask || this.blankWork) {
       state.initialized = true;
       return;
     }
