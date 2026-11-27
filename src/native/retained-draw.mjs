@@ -676,8 +676,10 @@ export class NativeRetainedDraw {
       const bitmap = this.world.graphics.images.get(item.image);
       bitmap.commitCanvas();
       if (item.imageRevision !== bitmap.state.revision) {
-        draw.mark(item, true);
-        draw.mark(item);
+        if (nativeABI(this.world.profile).graphics.drawBitmapChangesInvalidateItems !== false) {
+          draw.mark(item, true);
+          draw.mark(item);
+        }
         item.imageRevision = bitmap.state.revision;
       }
     }

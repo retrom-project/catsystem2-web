@@ -749,3 +749,36 @@ attachment is absent. Its zero DIB bytes are capture-only. This qualifies
 Base/Draw cadence and software composition, not configured View output,
 physical GPU, Stage or capture pixels. Configured owner validation follows
 as a separate resource prerequisite.
+
+## SDK63 and SDK67 bitmap composite and tone
+
+The fingerprinted builds qualify Main120/121 through their own four-word
+wrappers, actual bitmap factories and parsed Script VMs. Composite takes
+initialized twelve-byte bitmap-handle/signed-XY records and an input RECT. It
+clears the clipped rectangle before applying the selected physical pixel kernels.
+The bounded group covers RGB24 copy, skipped zero/RGBA layers, empty and partial
+rectangles and separate source/destination owners. Tone uses integer percentage
+tables for the three color bytes of a four-byte bitmap; alpha is unchanged.
+Neutral100/100/100 returns before owner access, and RGB24 is an original no-op.
+These are finite normal forms, not proof of arbitrary overlap, formats or modes.
+
+A kind15 Draw created by Main66/Main256 consumes the same actual bitmap data
+through Main257 and software Main340. Source pixel writes alone leave that
+entry's cached Draw output intact; only an explicit entry invalidation or
+rebind selects a redraw. Both builds therefore disable the shared automatic
+bitmap-revision-to-Draw-dirty step. Pixel access, revision updates, explicit
+areas/force, P2 loans and other builds retain their existing behavior.
+
+Main118 makes an independent copy. Draw keeps shared data after its creator
+bitmap is released, while replacement/removal releases the former data at the
+normal lifetime boundary. Eight independent current cold continuations per
+build compare initialized bitmap/Draw pixels, metadata, ownership and caller
+control/output writes. No physical GPU, display capture, uninitialized output,
+alias input or native file-layout change is inferred from this group.
+
+A separate normal enabled Root/Base/Draw group confirms that cached-source rule
+outside the disabled Main340 callback: original Root logic/draw reaches the
+actual derived receiver and software rasterizer, source tone alone preserves
+cached output, and an explicit entry position change redraws the new pixels.
+The group adds one target/eighteen total GCALLs and five stop/Root direct calls
+per build, with two additional current cold continuations.
