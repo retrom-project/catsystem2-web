@@ -1239,12 +1239,14 @@ export class NativeGraphicTask {
           if (at >= 2048) throw new RangeError('Plane model filename is too long');
           name.push(byte);
         }
-        const filename = new TextDecoder('shift_jis').decode(Uint8Array.from(name)),
-          data = await readNativeResource(this.world, filename);
+        const filename = new TextDecoder('shift_jis').decode(Uint8Array.from(name));
+        // Modern receivers remove the old registry key before the file reader.
+        // Legacy receivers read first and reject an occupied key at registration.
         if (!legacy) this.unload();
-        if (!data || (legacy && !data.length)) return 0;
-        const graph = decodePlaneKX2(data, { allowUnknownSignature: legacy });
-        if (!graph) return 0;
+        const data = await readNativeResource(this.world, filename);
+        if (!data || !data.length) return 0;
+        const graph = decodePlaneKX2(data, { allowUnknownSignature: true });
+        if (!graph || this.graph) return 0;
         if (legacy) {
           if (this.graph || !this.graphics.device.ready || this.state.vramType !== 1) return 0;
           if (
