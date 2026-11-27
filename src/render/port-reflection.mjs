@@ -61,6 +61,14 @@ function originalReflection() {
   return true;
 }
 
+// Native descriptor records inherit Object.prototype. Direct field reads are
+// pure only when these names were absent at capture and that prototype still
+// matches completely; the guard above itself always uses own-field reads.
+const plainDescriptorFields =
+  !has(prototypes[0].descriptors, 'value') &&
+  !has(prototypes[0].descriptors, 'get') &&
+  !has(prototypes[0].descriptors, 'set');
+
 // null selects the caller's original per-member path. false is a complete
 // descriptor mismatch. No receiver, current descriptor or qualification leaks.
 export function createNativePortMatcher(rows, brandKey) {
@@ -79,7 +87,7 @@ export function createNativePortMatcher(rows, brandKey) {
       brand = { prototype, getter: descriptor.get, descriptor };
   }
   return (receiver) => {
-    if (!brand || !saved.length || !originalReflection()) return null;
+    if (!plainDescriptorFields || !brand || !saved.length || !originalReflection()) return null;
     if (!same(own(brand.prototype, brandKey), brand.descriptor)) return null;
     // The captured WebIDL getter checks the receiver's actual platform brand;
     // a Proxy around it does not acquire that brand. Never invoke a replacement.
@@ -104,7 +112,9 @@ export function createNativePortMatcher(rows, brandKey) {
         if (
           has(receiverFields, key) ||
           !has(current, key) ||
-          !same(current[key], row.descriptors[key])
+          current[key].value !== row.descriptors[key].value ||
+          current[key].get !== row.descriptors[key].get ||
+          current[key].set !== row.descriptors[key].set
         )
           return false;
       }
