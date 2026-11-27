@@ -469,11 +469,6 @@ export function createNativeFESTask(world, record) {
           !world.runtime.handles.records.has(handle);
       if (!releasedDuringDisposal)
         this.variableBank()?.unregisterContext(this.variableContextKey());
-      for (const key of ['kcsTaskID', 'childTaskID']) {
-        const id = this.childTasks[key];
-        if (id != null && world.objects.objects.has(id)) await world.objects.release(id);
-        this.childTasks[key] = null;
-      }
       world.host.nativeFESClosed?.(record, world);
       await world.graphics.closeFES(record, this.player);
       if (this.pendingPlayer) {
@@ -484,6 +479,10 @@ export function createNativeFESTask(world, record) {
       for (const player of this.retainedPlayers.values()) await this.reclaimPlayer(player);
       this.retainedPlayers.clear();
       await input.close();
+      // These are Base-owned task children. The task's ensuing Base teardown
+      // releases them after its Core/resources, rather than the Core deleting
+      // a still-live Script or child FES while its own destructor is pending.
+      this.childTasks.kcsTaskID = this.childTasks.childTaskID = null;
       this.player = null;
     },
     async close() {

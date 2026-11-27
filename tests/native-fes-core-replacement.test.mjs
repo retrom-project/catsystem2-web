@@ -12,6 +12,7 @@ import { findFESInitialButton } from '../src/native/fes-button-navigation.mjs';
 const golden = JSON.parse(
   await readFile(new URL('./fixtures/native-fes-core-replacement.json', import.meta.url)),
 );
+const coreDestructionConsumers = new WeakMap();
 function bootstrap() {
   const initial = [];
   for (const [at, text] of [
@@ -47,7 +48,7 @@ function bootstrap() {
 async function open(build, initialize = true) {
   const inputs = build.inputs,
     bytes = (name) => Buffer.from(inputs[name], 'base64');
-  return modernParticleMessageWorld(
+  const world = await modernParticleMessageWorld(
     build.profile,
     {
       'startup.xml': bytes('xml'),
@@ -66,6 +67,17 @@ async function open(build, initialize = true) {
     },
     { initialize },
   );
+  const managerDestroyed = world.motionLibrary.managerDestroyed.bind(world.motionLibrary),
+    observations = [];
+  coreDestructionConsumers.set(world, observations);
+  world.motionLibrary.managerDestroyed = () => {
+    const records = [...world.objects.objects.values()],
+      owner = records.find((record) => record.name === 'business FES');
+    if (owner?.state === 'releasing')
+      observations.push(records.some((record) => record.name === 'controller'));
+    return managerDestroyed();
+  };
+  return world;
 }
 async function close(world) {
   // The original fixture closes its inner Top/FES tree before the outer
@@ -133,6 +145,12 @@ function compare(world, phase, observed) {
   if (phase.frame >= 5) {
     assert(!world.objects.objects.has(observed.oldPlane));
     assert(!world.objects.objects.has(observed.newPlane));
+    if (!observed.checkedCoreDestruction) {
+      const consumers = coreDestructionConsumers.get(world);
+      assert(consumers.length > 0);
+      assert(consumers.every(Boolean), 'Core destructor precedes Base-owned Script retirement');
+      observed.checkedCoreDestruction = true;
+    }
   }
 }
 for (const build of golden.builds)
