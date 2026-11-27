@@ -195,3 +195,13 @@ then resumes an independently serialized World at each intermediate phase.
 This supplements the existing broader formatter vectors with the actual SDK23
 VM/caller context; it does not qualify arbitrary printf conversions or locale
 behavior. All 24 target calls matched without a production change.
+
+G2 follows real bytewise split, parenthesis-group split, select, join and replace
+outputs into separate native string consumers. Two independently constructed
+Main515 dictionaries receive the same unformatted CP932 key; Main517 retains
+the first value, key bytes are owned independently of the VM source, and Main518
+keeps the second owner usable after the first is released. It distinguishes raw
+case-sensitive keys from formatted/ordered dictionaries, checks the unsigned
+missing sentinel and Main519's clear-before-read alias behavior, and resumes at
+three independent cold points. The 26 target calls matched without changing the
+existing dictionary, token or checkpoint implementation.
