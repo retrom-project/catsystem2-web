@@ -62,11 +62,12 @@ const primitiveIDs = new Set([
   ...Array.from({ length: 4 }, (_, i) => 0x203 + i),
 ]);
 const ownServiceDescriptor = Object.getOwnPropertyDescriptor;
+const hasOwnServiceField = Object.hasOwn;
 const applyServiceGetter = Reflect.apply;
 function primitiveService(current, key) {
   const field = ownServiceDescriptor(current, key);
   if (!field?.enumerable) return undefined;
-  return 'value' in field
+  return hasOwnServiceField(field, 'value')
     ? field.value
     : field.get
       ? applyServiceGetter(field.get, current, [])

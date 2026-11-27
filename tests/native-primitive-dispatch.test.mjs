@@ -124,6 +124,21 @@ test('primitive service getters and reentry capture current expression context a
     assert.deepEqual(call(0xd5, [128]), nativeReply(1, value));
   }
   assert.deepEqual(events, ['context', 'nested', 'bank', 'context', 'nested', 'bank']);
+  const inheritedValue = Object.getOwnPropertyDescriptor(Object.prototype, 'value');
+  let descriptorResult;
+  try {
+    Object.defineProperty(Object.prototype, 'value', {
+      configurable: true,
+      get() {
+        throw new Error('missing descriptor fields must not invoke inherited getters');
+      },
+    });
+    descriptorResult = call(0xd5, [128]);
+  } finally {
+    Reflect.deleteProperty(Object.prototype, 'value');
+    if (inheritedValue) Object.defineProperty(Object.prototype, 'value', inheritedValue);
+  }
+  assert.deepEqual(descriptorResult, nativeReply(1, 71));
   const nextBank = new NativeVariableBank();
   nextBank.initialize(16);
   nextBank.contextValue = 83;
