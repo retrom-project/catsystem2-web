@@ -611,3 +611,30 @@ rejection from an unproved capability; neither requires another file read,
 mutable bitmap field or new checkpoint layout. The existing SDK23 composite
 header/compression values are only changed to equivalent singleton lists;
 its format and ownership policy is unchanged.
+
+## SDK63/67 merged PSD paths
+
+Each exact build executes forty target and thirty-three dependency GCALLs for
+five complete three-by-two merged RGB PSD resources. The dependencies include
+the three real Script bootstrap calls. All direct bridge invocations are
+separately retained (119/122, including the73 GCALLs). Seventy full current VM
+frames and eight independent internal cold continuations per build compare
+pixels, metadata, unchanged outputs, references, owner lists and controls.
+
+Plain Main460, formatted Main111 and static Main703 preserve the own decoder's
+three-byte-plane interpretation: merged alpha is discarded, sixteen-bit raw
+samples are read as byte planes, and RLE skips exactly three channels' row
+lengths even for a four-channel file. The four-channel RLE fixture uses valid
+single-pixel literal runs so that this defined native offset remains bounded.
+The detached native PSD decode leaves the shared image's decoded frame cache
+unchanged. Other channel/depth/compression combinations remain guarded.
+
+Both actual PSD constructors call the base data constructor, which explicitly
+calls SetRectEmpty on the clip rectangle. Its four zero words are initialized
+metadata, rather than an inference from heap contents. The first current red
+with a full-image rectangle is retained; only these two proved build policies
+now preserve the native empty rectangle. Metadata/ordinal queries return zero
+without writing their outputs; nine-piece loading creates its real empty
+owner. These bitmap and static-source results do not establish later retained
+Draw, clipping or physical presentation behavior; those consumers remain in
+the following resource group.

@@ -102,6 +102,16 @@ export class RasterImage {
         throw new UnsupportedNativeImageFormat('Native KCF pixel layout');
     } else if (this.format === 'psd') {
       this.psd = new PSD(this.bytes);
+      rasterHeaders.set(
+        this,
+        Object.freeze({
+          format: 'PSD',
+          depth: b.view.getUint16(22),
+          mode: b.view.getUint16(24),
+          channels: this.psd.channels,
+          compression: this.psd.compression,
+        }),
+      );
       width = this.psd.width;
       height = this.psd.height;
     } else if (this.format === 'jpeg') {

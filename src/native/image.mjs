@@ -7,6 +7,7 @@ import { nativeImagePathParts, nativeBmpDisposition } from './image-file.mjs';
 import { readNativeResource, nativeCategoryFilename } from './resource-file.mjs';
 import { ImageStore, HG3 } from '../formats/hg3.mjs';
 import { UnsupportedNativeImageFormat, rasterImageHeader } from '../formats/raster.mjs';
+import { PSD } from '../formats/psd.mjs';
 import { SceneImagePreparation } from './scene-image-preparation.mjs';
 import { parseNativeInteger } from './standard.mjs';
 import { blendPackedRow, packedBitmapWords, copyBitmapRow } from './raster-kernel.mjs';
@@ -933,7 +934,7 @@ export class NativeImages {
             ? this.images.resolve(file)
             : file;
       if (!resolved) return 0;
-      let image, frame;
+      let image, frame, source;
       try {
         image = await this.images.load(file);
         const bmpInfo = rasterImageHeader(image),
@@ -943,7 +944,23 @@ export class NativeImages {
         frame = image.frame(id);
         if (!frame) return 0;
         this.scenePreparation.apply(image, frame);
-        await image.decode(frame);
+        const header = rasterImageHeader(image),
+          psd = nativeABI(this.world.profile).graphics.nativePsd;
+        if (header?.format === 'PSD' && psd) {
+          if (
+            header.mode !== psd.mode ||
+            !psd.channels.includes(header.channels) ||
+            !psd.compressions[header.depth]?.includes(header.compression)
+          )
+            throw new UnsupportedNativeImageFormat(
+              'The PSD layout has no reviewed ABI binding',
+              header,
+            );
+          source = new PSD(image.bytes, { rleChannels: psd.rleChannels }).decode();
+        } else {
+          await image.decode(frame);
+          source = frame.rgba;
+        }
       } catch (error) {
         this.world.host?.nativeDiagnostic?.({ type: 'image-invalid', file, error: error.message });
         if (
@@ -959,8 +976,7 @@ export class NativeImages {
           throw error;
         return 0;
       }
-      const source = frame.rgba,
-        state = this.decodedState(image, frame, source),
+      const state = this.decodedState(image, frame, source),
         ownsPixels =
           ArrayBuffer.isView(source) &&
           state.rgba.buffer instanceof ArrayBuffer &&
@@ -979,6 +995,10 @@ export class NativeImages {
     return this.add(bitmap);
   }
   decodedState(image, frame, pixels = frame.rgba) {
+    const psd =
+      rasterImageHeader(image)?.format === 'PSD'
+        ? nativeABI(this.world.profile).graphics.nativePsd
+        : null;
     return {
       width: frame.width,
       height: frame.height,
@@ -994,7 +1014,7 @@ export class NativeImages {
         (!(image instanceof HG3) || nativeABI(this.world.profile).graphics.preserveRGB24)
           ? 3
           : 4,
-      clip: [0, 0, frame.width, frame.height],
+      clip: psd?.clip ? [...psd.clip] : [0, 0, frame.width, frame.height],
       attributes: frame.attributes ?? [],
       blendType: frame.blendType ?? 0,
       imageMode: frame.imageMode ?? 0,
