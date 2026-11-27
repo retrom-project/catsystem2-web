@@ -325,3 +325,23 @@ reload; selectors combine normal named HG3 layers. Other formats, shared VM
 frames, unproved empty/smaller nine-piece outputs and extreme resources remain
 separate qualification work. These are software resource pixels, not physical
 GPU or product acceptance.
+
+The .63 loaded-owner group adds twenty-eight target GCALLs and twenty-six
+constructor/query/mask/release dependencies, including one supplemental
+RGBA-mask-to-RGB-target check. Actual Main710 objects own a
+nonempty layer vector and either an RGBA or RGB24 output; Main733 creates the
+independent blank target without a layer vector. All forty-eight current KCS
+frames compare the constructor-written eleven-word information block, dirty
+word, alpha hints, physical pixels, copied attributes, automatic Script list
+order and explicit release. Eight independent checkpoints continue with the
+next real call. The actual constructor zeros its information fields explicitly;
+raw addresses and unselected owner/header words stay capture-only.
+
+For this build, ordinary RGBA Main734 blends retain the existing bitmap
+blitter's transparent RGB and adjacent edge behavior. Masks use the native
+physical component/alpha path. Source clipping uses local bitmap coordinates;
+the destination still receives the source offset. RGB24-to-RGBA, RGBA-to-RGB24
+and RGB24-to-RGB24 results are separately compared, including offset inputs and
+the defined mask no-op for an RGB target. These build policies do not change
+.23 or .67. A null or bitmap-less Main721 would leave the original result
+unwritten and stays diagnosed; no original invalid-pointer probe was run.

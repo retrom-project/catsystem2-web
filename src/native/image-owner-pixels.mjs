@@ -70,8 +70,11 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
         if ((blendType && sourceBpp === 3) || (!blendType && targetBpp === 3 && mask))
           return done();
         words.blendType = blendType;
-        words.operation = 'clipped-blend';
+        words.operation = nativeABI(world.profile).graphics.imageOwnerBlendLocalCoordinates
+          ? 'blend'
+          : 'clipped-blend';
         words.blendPhysicalRows = true;
+        words.transparentEdges = nativeABI(world.profile).graphics.imageOwnerBlendTransparentEdges;
       }
       if (id === 0x2df) {
         words.operation = 'clipped-copy';

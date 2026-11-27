@@ -208,6 +208,21 @@ export async function bitmapTransfer(world, destination, source, args, copy, tas
   dx = dr[0];
   dy = dr[1];
   if (args.blendPhysicalRows) {
+    if (
+      args.transparentEdges &&
+      source.state.bpp === 4 &&
+      destination.state.bpp === 4 &&
+      !source.state.mask &&
+      !args.blendType
+    )
+      return destination.blit(source, {
+        sx,
+        sy: source.height - sy - height,
+        dx,
+        dy: destination.height - dy - height,
+        width,
+        height,
+      });
     const pixels = await destination.pixels(),
       input = sameBacking ? pixels : await source.pixels();
     for (let row = 0; row < height; row++)

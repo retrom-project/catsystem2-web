@@ -21,6 +21,7 @@ const mainConstantZero = [
   171, 174, 175, 176, 177, 178, 179, 181, 183, 186, 236, 432, 551, 554, 555, 575, 580, 909, 925,
 ];
 
+const imageOwnerPixelOperations = [716, 721, 722, 725, 729, 734];
 const encodedImageOperations = [375, 428, 430, 431, 460, 648];
 const bitmapPixelOperations = [370, 376, 377, 378, 446, 468, 538, 558, 564, 641];
 const galleryTableOperations = Array.from({ length: 12 }, (_, i) => 405 + i);
@@ -1163,6 +1164,11 @@ export default {
     planePoseRequiresDevice: true,
     planeResetReleasesTrackedInput: true,
     bitmapAlphaQueryRequiresOwner: true,
+    imageOwnerAlphaQueryRequiresBitmap: true,
+    imageOwnerBlendPhysicalRows: true,
+    imageOwnerBlendRGB24: true,
+    imageOwnerBlendTransparentEdges: true,
+    imageOwnerBlendLocalCoordinates: true,
     imageCompositePreservesRGB24: true,
     imageCompositeFormats: ['HG2', 'HG3'],
     ninePieceTransparentEdges: true,
@@ -1231,8 +1237,8 @@ export default {
           139, 199, 202, 208, 214, 215, 216, 217, 237, 255, 264, 279, 280, 281, 282, 283, 287, 288,
           289, 290, 291, 292, 293, 305, 306, 309, 312, 391, 441, 442, 443, 456, 457, 462, 463, 467,
           532, 570, 585, 588, 599, 600, 601, 622, 623, 624, 628, 657, 658, 659, 663, 669, 677, 678,
-          679, 680, 682, 688, 690, 691, 692, 703, 704, 705, 706, 707, 708, 709, 716, 721, 722, 725,
-          729, 734, 837, 838, 839, 840, 841, 842, 843,
+          679, 680, 682, 688, 690, 691, 692, 703, 704, 705, 706, 707, 708, 709, 837, 838, 839, 840,
+          841, 842, 843,
         ],
 
         reserved: mainReserved,
@@ -1267,20 +1273,25 @@ export default {
           625, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 645, 646, 647, 648,
           649, 650, 651, 653, 654, 655, 662, 664, 665, 666, 667, 668, 674, 675, 676, 681, 683, 684,
           685, 689, 693, 694, 695, 696, 697, 698, 699, 700, 701, 702, 710, 711, 712, 713, 714, 715,
-          717, 718, 719, 720, 723, 724, 726, 727, 728, 730, 731, 732, 733, 735, 736, 737, 738, 739,
-          740, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757,
-          758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775,
-          776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793,
-          794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811,
-          812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829,
-          830, 831, 832, 833, 834, 835, 836, 844, 845, 846, 847, 848, 849, 850, 851, 852, 853, 854,
-          855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872,
-          873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890,
-          891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 934, 935, 936,
-          937,
+          716, 717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727, 728, 729, 730, 731, 732, 733,
+          734, 735, 736, 737, 738, 739, 740, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751,
+          752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769,
+          770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787,
+          788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805,
+          806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823,
+          824, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 844, 845, 846, 847, 848,
+          849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866,
+          867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884,
+          885, 886, 887, 888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902,
+          903, 904, 905, 934, 935, 936, 937,
         ],
       },
       evidence: [
+        {
+          ids: imageOwnerPixelOperations,
+          value:
+            'Own 2.6.1.63 complete Main716/721/722/725/729/734 GCALLs use original CRT/Settings/FileServer/software View and true Main710 loaded64-byte ImageOwners or Main733 blank targets. Twenty-eight target and twenty-six dependency calls compare RGBA32 and HG3 RGB24 pixels, alpha hints, packed multiplication, half alpha, four masks, mapped nonempty attributes, automatic Script owner order, geometry/cache words and explicit destruction. RGB24 source/target pairings keep the native depth; mask dispatch and alpha-query preconditions remain separate. The null or bitmap-less alpha query leaves its original result unwritten and is diagnosed. Blank owners are not passed to layer iterators; foreign pointers, unreviewed formats, shared frames, allocation failures and retained renderer shapes remain outside this group.',
+        },
         {
           ids: encodedImageOperations,
           value:
@@ -2230,6 +2241,20 @@ export default {
         },
       ],
       signatures: [
+        ...imageOwnerPixelOperations.map((id) => ({
+          ids: [id],
+          fields: {
+            review: 'reviewed',
+            resultWritten: [721, 725].includes(id),
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) => ({
+              ...parameter,
+              type:
+                index === 0 || (id === 725 && index === 1) || (id === 734 && index === 5)
+                  ? { kind: 'handle', handleKind: 'image-owner', ownership: 'borrowed' }
+                  : parameter.type,
+            })),
+          },
+        })),
         ...encodedImageOperations.map((id) => ({
           ids: [id],
           fields: {
