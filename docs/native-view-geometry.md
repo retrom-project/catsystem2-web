@@ -31,7 +31,8 @@ in place; other SDK policies are unchanged.
 
 `tests/native-sdk23-view-mesh.test.mjs` uses actual factory/VM calls and frozen
 native COM vertex submissions at two near distances. It keeps those submission
-observations separate from physical GPU and texture-sampling evidence.
+observations separate from physical GPU evidence. Configured texture content and
+alpha have their own COM-memory qualification in the Plane fixture.
 
 During migration, the injected `syncViewGeometry` capability in
 [`oracle/transitional-exe.mjs`](../oracle/transitional-exe.mjs) projects JS state

@@ -17,19 +17,29 @@ the candidate while keeping the old model and its data. Main 83 explicitly
 unloads the old model and allows a later Main 467 to succeed. Destroying the
 Plane removes its model before the parent Script's later task retirement.
 
-The first admitted shapes use finite vertices, texture selector zero and the
-original default unconfigured page grid. Its actual D3D submission has no bound
-texture and uses the shared white fallback. The VM-created bitmap upload and
-source release in the same fixture are distinct observations; they do not prove
-texture sampling. Configured pages, other selectors and receiver kinds remain
-protected while their actual Settings/provider construction chain is reviewed.
+The same mode1 construction reads ordinary `config/startup.xml` TEXTURE size,
+grid, allocation areas and format settings before creating its texture provider.
+A configured two-page fixture uploads distinct RGBA content, releases the Script
+bitmap owners and observes each mesh selector bound to its retained 8×8 COM
+texture. Main 541 releases pages intersecting a pixel rectangle; Main 542
+allocates missing configured pages. Re-uploading a released page changes the
+existing model's next texture while preserving the other page. Original provider
+lookup uses an unsigned index bound and tests missing entries. Those cases bind
+no texture, using the same white fallback observed with the default empty grid.
+There is no special global ID-zero rule.
 
 `tests/native-sdk23-view-mesh.test.mjs` checks real GCALL stack/control, private
-copy isolation, occupied-key rejection, explicit unload/reload, the actual shared
-renderer geometry and default frame, Plane destruction and three independent
-cold continuations. Original draw packets come from complete mode1 constructors
-and the actual Top/view rendering path into generic COM memory leaves. These
-leaves are not a claim of native hardware pixels or physical presentation.
+copy isolation, occupied-key rejection, explicit unload/reload, renderer geometry,
+complete texture bytes and alpha, page and bitmap retirement, Plane destruction
+and five independent cold continuations. Original packets come from complete
+mode1 constructors and the actual Top/view rendering path into generic COM memory
+leaves. The retained receipts also use explicit CRT/allocation and file-service
+instruction redirects while keeping target function bodies and PE text bytes
+unchanged. They establish the observed target state and submitted content; they do
+not establish original allocator, archive mount or stream ownership end to end,
+nor physical GPU/shader sampling or presentation. Nonfinite vertex inputs, nonpositive record counts, other typed
+receivers, unreviewed existing model classes and inactive/device-less views remain
+protected. This does not enable Main 467 in another SDK.
 
 ## SDK 2.6.1.74 Plane and Input commands
 

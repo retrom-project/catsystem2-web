@@ -132,23 +132,15 @@ export async function nativeMesh(id, args, machine, task, world) {
         throw new Error('Divided mesh native requires its initialized mode1 manager');
       if (record.implementation.graph && record.implementation.graph.type !== 3)
         throw new Error('Divided mesh replacement requires a reviewed existing model');
-      if (
-        policy.unconfiguredPagesOnly &&
-        Array.from(world.configuration.fields.texture.grid).some((value) => value !== 0)
-      )
-        throw new Error('Divided mesh native requires reviewed texture provider configuration');
       mapABIMessage(world.profile, 'planeMesh', 'raw', 83, record.kind);
       const count = args[2] | 0;
       if (count <= 0) throw new RangeError('Divided mesh native requires a positive record count');
       const source = machine.bytes(args[1], count * 64),
         view = new DataView(source.buffer, source.byteOffset, source.byteLength);
-      for (let i = 0; i < count; i++) {
-        if (policy.unconfiguredPagesOnly && view.getUint32(i * 64, true) !== 0)
-          throw new Error('Divided mesh native requires a reviewed texture selector');
+      for (let i = 0; i < count; i++)
         for (let word = 1; word < 16; word++)
           if (!Number.isFinite(view.getFloat32(i * 64 + word * 4, true)))
             throw new RangeError('Divided mesh native requires reviewed finite vertex records');
-      }
     }
     if (id === 0x1d2) await world.sendNativeEngine(args[0], task.id, 82, 0, args[1]);
     else {

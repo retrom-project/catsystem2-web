@@ -1767,7 +1767,7 @@ export default {
   },
   graphics: {
     cameraNearRequiresMode1: true,
-    dividedMesh: { receiverKinds: [2], rejectOccupiedModel: true, unconfiguredPagesOnly: true },
+    dividedMesh: { receiverKinds: [2], rejectOccupiedModel: true },
     areaBlankWorkKinds: [27],
     bitmapAlphaQueryRequiresOwner: true,
     imageOwnerAlphaQueryRequiresBitmap: true,

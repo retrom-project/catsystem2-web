@@ -5,11 +5,16 @@ import { test } from 'node:test';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
 import { floatBits } from '../src/kcs.mjs';
+import { parseNativeXML } from '../src/native/xml.mjs';
+import { nativeTexturePageSummary } from '../src/native/texture-layout.mjs';
 import { NATIVE_UNWRITTEN_WORD } from '../src/native/engine-message.mjs';
 const golden = JSON.parse(
     await readFile(new URL('./fixtures/native-sdk23-view-mesh-golden.json', import.meta.url)),
   ),
   marker = 0x67727068;
+const configuration = (evidence) => ({
+  startup: evidence.startup && parseNativeXML(Uint8Array.from(evidence.startup)),
+});
 const plane = (world, m) =>
   [...world.objects.objects.values()].find((r) => r.kind === 2 && r.nativeID === m.load(32))
     ?.implementation;
@@ -102,7 +107,7 @@ for (const [key, evidence] of Object.entries(golden.cases))
           [[256, 'Mesh']],
         ),
       },
-      world = await dataWorld(golden.profile, files);
+      world = await dataWorld(golden.profile, files, configuration(evidence));
     t.after(() => world.close({ flushFiles: false }));
     world.graphics.createLogicalDevice();
     const task = await world.spawnScript('mesh.kcs', {
@@ -175,12 +180,20 @@ for (const [key, evidence] of Object.entries(golden.cases))
           );
           assert.deepEqual(
             [...draw.frame.rgba],
-            expected.texture.first8x8,
-            'defined unconfigured-page fallback; not proof of uploaded texture sampling',
+            expected.texture.rgba ?? expected.texture.first8x8,
+            evidence.startup
+              ? 'configured page bytes/alpha match the original COM memory texture'
+              : 'defined unconfigured-page fallback; not proof of uploaded texture sampling',
           );
         }
       }
-      if (row.label === 'release-upload-source')
+      if (row.pageCount !== undefined && current.graphics.texturePages)
+        assert.equal(
+          nativeTexturePageSummary(current.graphics.texturePages).pages,
+          row.pageCount,
+          row.label + ' actual configured page release/allocation',
+        );
+      if (['release-upload-source', 'release-replacement-upload'].includes(row.label))
         assert.equal(
           current.runtime.handles.records.has(m.load(64)),
           false,
@@ -195,8 +208,18 @@ for (const [key, evidence] of Object.entries(golden.cases))
     };
     for (const [i, row] of evidence.rows.entries()) {
       await step(world, task, row, packets);
-      if (['mesh-two', 'render-same-mesh-near500'].includes(row.label)) {
-        const fresh = await dataWorld(golden.profile, files, { initialize: false });
+      if (
+        [
+          'mesh-two',
+          'render-same-mesh-near500',
+          'mesh-two-texture-selectors',
+          'render-retained-model-new-page',
+        ].includes(row.label)
+      ) {
+        const fresh = await dataWorld(golden.profile, files, {
+          initialize: false,
+          ...configuration(evidence),
+        });
         fresh.graphics.createLogicalDevice();
         try {
           await fresh.restore(structuredClone(world.snapshot()));
@@ -211,7 +234,7 @@ for (const [key, evidence] of Object.entries(golden.cases))
     }
     await retire(world, task);
   });
-test('SDK23 view/mesh keeps unreviewed mode, receiver, provider and record shapes protected', async (t) => {
+test('SDK23 view/mesh keeps unreviewed mode, receiver and vertex record shapes protected', async (t) => {
   const code = kcsProgram(
       [
         ...[2, 6].flatMap((kind, i) => [
@@ -245,12 +268,6 @@ test('SDK23 view/mesh keeps unreviewed mode, receiver, provider and record shape
   await assert.rejects(call(12, [floatBits(-1)]), /positive finite/);
   await assert.rejects(call(467, [foreign, 1024, 1]), /reviewed Plane receiver/);
   await assert.rejects(call(467, [target, 1024, 0]), /positive record count/);
-  world.configuration.fields.texture.grid.set([1, 1]);
-  await assert.rejects(call(467, [target, 1024, 1]), /texture provider configuration/);
-  world.configuration.fields.texture.grid.set([0, 0]);
-  m.store(1024, 1);
-  await assert.rejects(call(467, [target, 1024, 1]), /texture selector/);
-  m.store(1024, 0);
   m.store(1028, 0x7fc00000);
   await assert.rejects(call(467, [target, 1024, 1]), /finite vertex/);
   world.graphics.view.configure({ active: false });
@@ -258,3 +275,59 @@ test('SDK23 view/mesh keeps unreviewed mode, receiver, provider and record shape
   assert.equal(plane(world, m).graph, null, 'no protected shape publishes a model');
   assert.equal(world.graphics.cameraNearWord, floatBits(1000));
 });
+
+// Native provider lookup checks its unsigned bound and missing page before the
+// same no-texture binding observed in the original default-grid fixture.
+for (const missing of [false, true])
+  test(`SDK23 actual VM uses the defined white fallback for ${missing ? 'an unallocated page' : 'an unsigned index outside the grid'}`, async (t) => {
+    const source = golden.cases.flat.initialSource.slice(0, 16);
+    source[0] = missing ? 0 : 0xffffffff;
+    const code = kcsProgram(
+        [
+          ...source.flatMap((word, i) => [
+            [37, word],
+            [38, 1024 + i * 4],
+          ]),
+          [37, 2],
+          [37, [0x13, 88]],
+          [37, 256],
+          [43, 66, 12],
+          [38, 32],
+          [37, [0x13, 32]],
+          [37, 1024],
+          [37, 1],
+          [43, 467, 12],
+          [37, [0x13, 32]],
+          [37, 1],
+          [43, 92, 8],
+          [43, 65, 0],
+          [59],
+        ],
+        [[256, 'Fallback Plane']],
+      ),
+      startup = missing
+        ? parseNativeXML(
+            Buffer.from(
+              '<?xml version="1.0" encoding="Shift_JIS"?><document><TEXTURE><vt><x>1</x><y>1</y></vt></TEXTURE></document>',
+            ),
+          )
+        : undefined,
+      world = await dataWorld(golden.profile, { 'fallback.kcs': code }, { startup });
+    t.after(() => world.close({ flushFiles: false }));
+    world.graphics.createLogicalDevice();
+    const caller = await world.spawnScript('fallback.kcs', {
+      parent: world.main.id,
+      initialExecute: false,
+    });
+    caller.machine.store(88, world.nativeTaskID(world.main.id));
+    await world.runtime.scheduler.execute(caller);
+    const model = plane(world, caller.machine),
+      frames = [];
+    assert.equal(model.graph.mesh[0].textureID >>> 0, source[0]);
+    await model.drawGPU({ drawGeometry: (_geometry, frame) => frames.push(frame) });
+    assert.equal(frames.length, 1);
+    assert.deepEqual(
+      [frames[0].width, frames[0].height, ...frames[0].rgba],
+      [1, 1, 255, 255, 255, 255],
+    );
+  });

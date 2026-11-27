@@ -12,6 +12,7 @@ export async function dataWorld(
     initialize = true,
     storage = { read: async () => null, write: async () => true },
     glyphs,
+    startup,
     soundConfiguration,
   } = {},
 ) {
@@ -26,7 +27,7 @@ export async function dataWorld(
       random,
       host: glyphs ? { nativeTextGlyphs: () => glyphs } : {},
       images: {},
-      configuration: new NativeConfiguration({ profile }),
+      configuration: new NativeConfiguration({ profile, startup }),
       soundConfiguration,
       motionLibrary: new MotionLibrary(game, { profile, random }),
       storage,
