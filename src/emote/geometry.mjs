@@ -14,8 +14,6 @@ import {
 import { EmotePatch, patchDivisions } from './mesh.mjs';
 const f = Math.fround;
 const skipParentTransform = 0x400000; /* PSB inheritance flag bypasses the parent transform  */
-const fields = ['flipX', 'flipY', 'angle', 'scaleX', 'scaleY', 'slantX', 'slantY'];
-const flags = [4, 8, 16, 32, 64, 128, 256];
 
 function nodeRecord(layer, group, parent) {
   return {
@@ -245,21 +243,35 @@ export class EmoteGeometry {
       node.separator = false;
       node.ancestor = ancestor;
       if (!active) {
-        for (const name of [...fields, 'x', 'y', 'z', 'opacity']) s[name] = parent[name];
+        s.flipX = parent.flipX;
+        s.flipY = parent.flipY;
+        s.angle = parent.angle;
+        s.scaleX = parent.scaleX;
+        s.scaleY = parent.scaleY;
+        s.slantX = parent.slantX;
+        s.slantY = parent.slantY;
+        s.x = parent.x;
+        s.y = parent.y;
+        s.z = parent.z;
+        s.opacity = parent.opacity;
         node.matrix.set(parentMatrix);
       } else {
         const mask = l.inheritMask ?? 0;
-        for (const name of fields) node.transformState[name] = s[name];
+        node.transformState.flipX = s.flipX;
+        node.transformState.flipY = s.flipY;
+        node.transformState.angle = s.angle;
+        node.transformState.scaleX = s.scaleX;
+        node.transformState.scaleY = s.scaleY;
+        node.transformState.slantX = s.slantX;
+        node.transformState.slantY = s.slantY;
         localMatrix(node.scratch, s, l.transformOrder);
-        for (let i = 0; i < fields.length; i++) {
-          const name = fields[i],
-            inherit = mask & flags[i],
-            p = parent;
-          if (!inherit) continue;
-          if (name === 'flipX' || name === 'flipY') s[name] = s[name] !== Boolean(p[name]);
-          else if (name === 'scaleX' || name === 'scaleY') s[name] *= p[name];
-          else s[name] += p[name];
-        }
+        if (mask & 4) s.flipX = s.flipX !== Boolean(parent.flipX);
+        if (mask & 8) s.flipY = s.flipY !== Boolean(parent.flipY);
+        if (mask & 16) s.angle += parent.angle;
+        if (mask & 32) s.scaleX *= parent.scaleX;
+        if (mask & 64) s.scaleY *= parent.scaleY;
+        if (mask & 128) s.slantX += parent.slantX;
+        if (mask & 256) s.slantY += parent.slantY;
         const x = s.x,
           y = s.y,
           z = s.z;
@@ -282,13 +294,13 @@ export class EmoteGeometry {
           node.matrix[3] = f(f(p[1] * q[2]) + f(p[3] * q[3]));
         } else {
           const t = node.transformState;
-          for (let i = 0; i < fields.length; i++)
-            if (mask & flags[i]) {
-              const name = fields[i];
-              if (name === 'flipX' || name === 'flipY') t[name] = s[name] !== Boolean(root[name]);
-              else if (name === 'scaleX' || name === 'scaleY') t[name] = s[name] / root[name];
-              else t[name] = s[name] - root[name];
-            }
+          if (mask & 4) t.flipX = s.flipX !== Boolean(root.flipX);
+          if (mask & 8) t.flipY = s.flipY !== Boolean(root.flipY);
+          if (mask & 16) t.angle = s.angle - root.angle;
+          if (mask & 32) t.scaleX = s.scaleX / root.scaleX;
+          if (mask & 64) t.scaleY = s.scaleY / root.scaleY;
+          if (mask & 128) t.slantX = s.slantX - root.slantX;
+          if (mask & 256) t.slantY = s.slantY - root.slantY;
           localMatrix(node.scratch, t, l.transformOrder);
           const q = node.scratch,
             p = rootMatrix;

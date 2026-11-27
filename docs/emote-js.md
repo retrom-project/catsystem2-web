@@ -115,6 +115,13 @@ Root weights and opacity apply to each corner before the gradient. Repeated
 requests for an identical controller target retain an earlier finish, matching
 the DLL's looping-timeline behavior.
 
+Layer updates copy and inherit the fixed transform channels through direct,
+ordered property accesses. Inactive layers avoid a temporary field-name array.
+Every update still evaluates the layer tree, matrices and patches and rewrites
+all emitted packet vertices, including when the pose is unchanged. This keeps
+live accessors and publicly held packet bytes observable without caching a
+previous pose or retaining trust across frames.
+
 Mesh packets, projected vertices, patch scratch and topology buffers belong to
 an instance and are reused. `StageRenderer.drawEmote(geometry, {matrix,viewport})`
 submits them through the existing shared `ParticlesGL` device and texture cache.
