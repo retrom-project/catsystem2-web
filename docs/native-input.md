@@ -18,6 +18,23 @@ than the internal canonical numbers. Main wrappers first query input through
 native task ID zero. A nested Top with a nonzero native ID can therefore fail
 that original lookup; the emulator preserves this routing behavior.
 
+The legacy63/67 current keyboard consumer controls use the normally created
+primary Root with native ID0, a typed Plane and two independently loaded Script
+waiters. They cover browser virtual-key translation, actual Root dispatch,
+receiver changes, unregister/re-register, Script reload, FES Core replacement,
+source retirement and fresh-World continuation. These controls supply explicit
+startup configuration; they do not prove that the original Application has
+published its Device table.
+
+Full native Application publication remains a separate qualification boundary.
+Its real Core constructs a CThread that copies an initialized opaque Win32
+critical section into a container. The virtual platform registers initialization
+at the original address and rejects an uninitialized destination; zero bytes or
+a copied record cannot establish another lock's ownership. The complete
+WinMain/thread/quit chain therefore cannot inherit the smaller Window/Device
+row-setter proof. Primary Root routing, the configuration Apply publisher and
+the startup binding publisher also remain distinct.
+
 Main 0x11D ORs all four physical-source queries, preserving their pulse consumption.
 Main 0x11E resets active regions, previous coordinates and the cursor refresh
 flag; it does not clear the device pulse table. Main 0x18B sets a CP932 cursor filename
