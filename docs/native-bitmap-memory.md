@@ -305,3 +305,23 @@ Main377's null-owner result is unwritten, so that shape has a precise diagnostic
 This group covers RGBA32 storage; RGB24/packed formats, shared or aliased frames,
 additional resource factories and retained Draw require their own qualification.
 It adds no native save fields and does not establish hardware or product pixels.
+
+The next .63 group independently qualifies Main375/428/430/431/460/648 with
+the same true resource chain. Twenty-eight target and twenty-seven dependency
+calls compare the nine-word file/container outputs, HG2/HG3 ordinal endpoints,
+RGB24-to-RGBA decoding, nine-piece pixels, narrow CP932 filenames, missing files
+and explicit/automatic ownership. The three extra setup calls repair a fixture
+mount location within the original total call budget: four table queries use
+the actual View constructor's `images.int/anmtable.csv`, while the earlier
+absent-table negative observations retain their original scope. Eight fresh
+checkpoints continue through real subsequent KCS calls. The follow-up Main536
+outputs also cover the nonempty attribute tree after rotation and mirror.
+
+The own .63 RGBA blitter fills an adjacent all-zero destination pixel with the
+edge RGB and keeps alpha zero. Nine-piece assembly preserves this behavior via
+an explicit build policy; it is not inferred for .23, .67 or modern builds.
+Main460 plain HG3 preserves RGB24 and owns its result independently of Script
+reload; selectors combine normal named HG3 layers. Other formats, shared VM
+frames, unproved empty/smaller nine-piece outputs and extreme resources remain
+separate qualification work. These are software resource pixels, not physical
+GPU or product acceptance.

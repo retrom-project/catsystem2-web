@@ -67,12 +67,25 @@ export async function nativeEncodedBitmap(world, id, argument, machine, task) {
       if (width < w || height < h)
         throw new Error('Unreviewed nine-piece bitmap smaller than its source tile');
       const draw = (x, y, columns = w, rows = h) => {
-        for (let row = 0; row < rows; row++)
+        for (let row = 0; row < rows; row++) {
+          if (nativeABI(world.profile).graphics.ninePieceTransparentEdges && frame.bpp === 32) {
+            const edge = (column, sourceColumn) => {
+              const target = ((height - 1 - y - row) * width + column) * 4,
+                source = ((h - 1 - row) * w + sourceColumn) * 4;
+              if (pixels.subarray(target, target + 4).every((value) => value === 0))
+                pixels.set(frame.rgba.subarray(source, source + 3), target);
+            };
+            // The own RGBA blitter copies the adjacent RGB into an empty
+            // destination pixel, retaining its transparent alpha byte.
+            if (x > 0) edge(x - 1, 0);
+            if (x + columns < width) edge(x + columns, columns - 1);
+          }
           for (let column = 0; column < columns; column++) {
             const source = ((h - 1 - row) * w + column) * 4,
               target = ((height - 1 - y - row) * width + x + column) * 4;
             blendBitmapPixel(pixels, target, frame.rgba, source, 255);
           }
+        }
       };
       if (id < 4) draw(id & 1 ? width - w : 0, id & 2 ? height - h : 0);
       else if (id < 6)
