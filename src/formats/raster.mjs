@@ -98,6 +98,15 @@ export class RasterImage {
       height = b.u16(6);
       this.stride = b.u16(8);
       this.pixelSize = b.u16(10);
+      rasterHeaders.set(
+        this,
+        Object.freeze({
+          format: 'KCF',
+          pixelSize: this.pixelSize,
+          stride: this.stride,
+          mode: b.u32(16),
+        }),
+      );
       if (![3, 4].includes(this.pixelSize) || this.stride < width * this.pixelSize)
         throw new UnsupportedNativeImageFormat('Native KCF pixel layout');
     } else if (this.format === 'psd') {

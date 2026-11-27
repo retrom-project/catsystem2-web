@@ -945,7 +945,20 @@ export class NativeImages {
         if (!frame) return 0;
         this.scenePreparation.apply(image, frame);
         const header = rasterImageHeader(image),
-          psd = nativeABI(this.world.profile).graphics.nativePsd;
+          graphics = nativeABI(this.world.profile).graphics,
+          psd = graphics.nativePsd,
+          kcf = graphics.nativeKcf;
+        if (
+          header?.format === 'KCF' &&
+          kcf &&
+          (!kcf.pixelSizes.includes(header.pixelSize) ||
+            !kcf.modes.includes(header.mode) ||
+            header.stride !== ((frame.width * header.pixelSize + 3) & ~3))
+        )
+          throw new UnsupportedNativeImageFormat(
+            'The KCF layout has no reviewed ABI binding',
+            header,
+          );
         if (header?.format === 'PSD' && psd) {
           if (
             header.mode !== psd.mode ||
@@ -995,10 +1008,10 @@ export class NativeImages {
     return this.add(bitmap);
   }
   decodedState(image, frame, pixels = frame.rgba) {
-    const psd =
-      rasterImageHeader(image)?.format === 'PSD'
-        ? nativeABI(this.world.profile).graphics.nativePsd
-        : null;
+    const header = rasterImageHeader(image),
+      graphics = nativeABI(this.world.profile).graphics,
+      psd = header?.format === 'PSD' ? graphics.nativePsd : null,
+      kcf = header?.format === 'KCF' ? graphics.nativeKcf : null;
     return {
       width: frame.width,
       height: frame.height,
@@ -1009,9 +1022,9 @@ export class NativeImages {
       baseX: frame.baseX,
       baseY: frame.baseY,
       alphaHint: frame.alpha === undefined ? (frame.alphaHint ?? 0) : Number(frame.alpha) + 1,
-      bpp:
-        frame.bpp === 24 &&
-        (!(image instanceof HG3) || nativeABI(this.world.profile).graphics.preserveRGB24)
+      bpp: kcf
+        ? header.pixelSize
+        : frame.bpp === 24 && (!(image instanceof HG3) || graphics.preserveRGB24)
           ? 3
           : 4,
       clip: psd?.clip ? [...psd.clip] : [0, 0, frame.width, frame.height],

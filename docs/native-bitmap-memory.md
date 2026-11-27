@@ -638,3 +638,23 @@ without writing their outputs; nine-piece loading creates its real empty
 owner. These bitmap and static-source results do not establish later retained
 Draw, clipping or physical presentation behavior; those consumers remain in
 the following resource group.
+
+## SDK63/67 KCF byte depth and KCLZ modes
+
+Each own build executes thirty-six target and twenty-nine dependency GCALLs,
+including the three real Script bootstrap calls. Five complete three-by-two
+KCF resources cover literal and bounded overlapping back-references across
+native modes0–4. Both PE files contain the same initialized mode-bit table;
+no substitute initializer or decompressor is installed. Direct bridge totals
+are111/114 and include those65 GCALLs. Sixty-two current full-frame comparisons
+and eight independent internal cold continuations per build retain pixels,
+metadata, control codes, outputs, references and releases.
+
+The native primary and static source preserve a three-byte KCF bitmap, while
+Main111 converts it to four-byte storage. The initial JS four-byte primary red
+is retained. Private header metadata now selects the proved native byte depth
+for these two builds without changing the shared decoded frame. The tested
+RGB24 rows have explicit zero padding; nonstandard strides and other raw
+padding-memory consumers remain outside this proof. Ordinal and metadata
+queries retain their defined zero/untouched outputs, and nine-piece loading
+retains its real empty owner. Other build policies are unchanged.
