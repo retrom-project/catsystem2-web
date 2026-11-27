@@ -39,26 +39,30 @@ test('one paced dispatch advances the actual FES and MOT consumers once at their
     const panel = fes.instance.byKey.get('panel'),
       target = fes.instance.runtime.targetFor(panel, false),
       motion = [...target.manager.records.values()][0];
-    assert.equal(motion.instance.messages.length, 0);
-    timer = 100;
-    await frame(world);
-    assert.equal(world.frame, 6);
-    assert.equal(fes.task.player.frameCount, 2);
-    assert.equal(motion.startTick, 6);
+    // SDK23 decodes the attachment before its MOT phase in this same dispatch.
     assert.deepEqual(
       motion.instance.messages.map(({ frame }) => frame),
       [0],
     );
+    timer = 100;
+    await frame(world);
+    assert.equal(world.frame, 6);
+    assert.equal(fes.task.player.frameCount, 2);
+    assert.equal(motion.startTick, 1);
+    assert.deepEqual(
+      motion.instance.messages.map(({ frame }) => frame),
+      [0, 5],
+    );
     timer = 108;
     assert.equal(await frame(world), false);
     assert.equal(fes.task.player.frameCount, 2);
-    assert.equal(motion.instance.messages.length, 1);
+    assert.equal(motion.instance.messages.length, 2);
     timer = 117;
     await frame(world);
     assert.equal(fes.task.player.frameCount, 3);
     assert.deepEqual(
       motion.instance.messages.map(({ frame }) => frame),
-      [0, 1],
+      [0, 5, 6],
     );
     let coldTimer = 1000;
     const saved = structuredClone(world.snapshot());
@@ -83,7 +87,7 @@ test('one paced dispatch advances the actual FES and MOT consumers once at their
       restoredMotion.instance.messages.map(({ frame }) => frame),
       motion.instance.messages.map(({ frame }) => frame),
     );
-    assert.equal(motion.instance.messages.at(-1).frame, 2);
+    assert.equal(motion.instance.messages.at(-1).frame, 7);
     assert.deepEqual(fresh.framePacer.snapshot(), world.framePacer.snapshot());
   } finally {
     await fresh?.close({ flushFiles: false });

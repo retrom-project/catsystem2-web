@@ -28,6 +28,17 @@ position-output result. The earlier missing-directory case remains separate
 evidence of absent resources. MOT managers are independent resource handles;
 this does not introduce a MOT task-message endpoint.
 
+The fixed SDK23 FES decoder updates its object/MOT tree after decoding the
+current command continuation. Queue return -3 first drains the native records
+and resumes decoding; it does not insert an intermediate MOT update. The
+profile records this order explicitly, while other builds keep their existing
+phase. Collection count sampling stays before decode. A declared CPLANE MOT
+writes KX2 position at byte offsets 24/28 from registers at 156/160, so its
+actual position and SimplePlane geometry change in the same Main448 start
+frame. The current loaded callback/Main210 path and independent cold restores
+retain that position without waiting another frame. The source-cache fixture
+above writes VRAM X at byte0 and remains a separate ownership test.
+
 Motion checkpoints preserve the original manager's allocated capacity as
 well as its used bytes. The first DWORD is used length. Refreshing a smaller
 manager reuses the allocation: filename padding, bytes beyond used length and

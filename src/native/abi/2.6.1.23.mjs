@@ -1728,6 +1728,7 @@ export default {
     mxcsr: null,
   },
   fes: {
+    motionUpdateAfterDecode: true,
     nativeQueueYieldStopsNotification: true,
     emptyExecReturnsZero: true,
     shellErrorText: { storage: 'inline', caption: 'エラー' },

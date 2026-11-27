@@ -272,6 +272,9 @@ export class FESPlayer {
         await s.flushNativeRecords(executorEntry);
         await tick();
       }
+      // Queue-yield decoding completes before profiles with a trailing MOT phase
+      // visit their object tree. A throwing decoder never publishes that phase.
+      s.runtime?.afterStep?.();
       if (!s.keySkipControlOnly || !s.skipControl) s.clickL = 0;
       if (s.runtime) {
         if (!s.keySkipContinuous && !s.skipControl) s.skipPressed = false;

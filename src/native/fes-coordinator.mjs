@@ -713,6 +713,13 @@ export class FESCoordinator {
       const object = this.collection.lookup(entry.nameBytes, entry.index);
       if (object?.nativeType === 4) object.beforeCount = object.currentCount;
     }
+    if (!nativeABI(this.world.profile).fes.motionUpdateAfterDecode) this.updateMotions();
+  }
+  afterStep() {
+    if (nativeABI(this.world.profile).fes.motionUpdateAfterDecode) this.updateMotions();
+  }
+  updateMotions() {
+    if (this.closed) return;
     const record = this.world.objects.objects.get(this.instance.runtimeID),
       frame = ((record.effectiveFrame ?? 0) - (record.pausedFrames ?? 0)) >>> 0;
     for (const root of this.collection.graph.children()) this.motions.update(root, frame);
