@@ -46,7 +46,11 @@ function sample(graph, scalarWords) {
     if (scalarWords) view.setFloat32(at + 12, 1, true);
   }
   bytes.set(graph.kx2.subarray(MOTION_ABI.matrix, MOTION_ABI.matrix + 64), 60);
-  view.setUint32(8, new DataView(graph.kx2.buffer).getUint32(MOTION_ABI.display, true), true);
+  const display =
+    typeof graph.registrationEnabled === 'boolean'
+      ? (graph.registrationWord ?? Number(graph.registrationEnabled))
+      : new DataView(graph.kx2.buffer).getUint32(MOTION_ABI.display, true);
+  view.setUint32(8, display, true);
   view.setUint32(124, new DataView(graph.kx2.buffer).getUint32(MOTION_ABI.color, true), true);
   return bytes;
 }
@@ -270,7 +274,13 @@ export class NativePlaneTrail {
         true,
       );
       graph.style = { ...this.task.state, trail: null, colorOverride: 1 };
-      new DataView(graph.kx2.buffer).setUint32(MOTION_ABI.display, view.getUint32(8, true), true);
+      // Native trail update publishes the registry display word as well as model data.
+      const display = view.getUint32(8, true);
+      if (typeof graph.registrationEnabled === 'boolean' || graph.registrationEnabled === null) {
+        graph.registrationEnabled = Boolean(display);
+        graph.registrationWord = display;
+      }
+      new DataView(graph.kx2.buffer).setUint32(MOTION_ABI.display, display, true);
       graph.priority = base[2];
       this.task.graphics.graphs.set(graph.nativeID, graph);
     }

@@ -3,6 +3,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { dataWorld } from './fixtures/data-world.mjs';
+import { floatBits } from '../src/kcs.mjs';
 import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
@@ -105,6 +106,26 @@ for (const profile of [
             'native complete manager priority window',
           );
         }
+        await restored.message([0, 42, 0, 0], {
+          payload: new NativeGraphicsPacket([
+            0,
+            0,
+            0,
+            floatBits(8),
+            floatBits(6),
+            0,
+            0,
+            0xff4080c0,
+          ]),
+        });
+        assert.equal(restored.graph.registrationEnabled, false);
+        assert.equal(
+          await count(restored),
+          0,
+          'ordinary rectangle starts hidden independently of own shown',
+        );
+        await restored.message([0, 47, 0, 1]);
+        assert((await count(restored)) > 0, 'normal show publishes ordinary rectangle');
       } finally {
         if (fresh) await close(fresh);
         await close(w);

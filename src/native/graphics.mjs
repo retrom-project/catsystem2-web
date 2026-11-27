@@ -73,8 +73,7 @@ const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) 
 const UNVERIFIED_REGISTRATION = 'unverified';
 const hasRegistration = (graph) =>
   graph && (typeof graph.registrationEnabled === 'boolean' || graph.registrationEnabled === null);
-const hiddenModelRegistration = (graph) =>
-  (graph.mesh || graph.type === 6 || graph.type === 7) && graph.registrationEnabled === false;
+const hiddenModelRegistration = (graph) => graph.registrationEnabled === false;
 function nativeTexturePageOptions(graphics) {
   const settle = () => {
     const text = graphics.world.text;
@@ -1313,10 +1312,10 @@ export class NativeGraphicTask {
             : 0;
         if (!this.planeVisibilityUpdatesInput) this.setInputDisplay();
         this.sync();
-        if (this.planeVisibilityUpdatesInput) {
+        if (this.planeVisibilityUpdatesInput)
           await this.updateVisibleInput(l, inputDisplay, context);
-          await this.broadcast(48, w, l, context);
-        }
+        // Every native Plane show broadcasts the child visibility notification.
+        await this.broadcast(48, w, l, context);
         return 0;
       }
       case 48:

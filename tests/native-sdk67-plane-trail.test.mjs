@@ -8,6 +8,7 @@ import { floatBits } from '../src/kcs.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
 import { NativeResources } from '../src/native/resources.mjs';
+import { NativeGraphicsPacket } from '../src/native/graphics-task.mjs';
 import { compareNativeDrawItems } from '../src/native/graphics-render.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 const golden = JSON.parse(
@@ -187,3 +188,37 @@ for (const boundary of golden.coldAfter)
       await close(w);
     }
   });
+
+test('SDK67 configure-before-show samples registration display and cold clones publish on later Frames', async () => {
+  const w = await make();
+  let fresh;
+  try {
+    const t = await caller(w);
+    for (const row of golden.cases.slice(0, 3)) await step(w, t, row);
+    const task = plane(w, t);
+    assert.equal(task.graph.registrationEnabled, false);
+    await task.message([0, 79, 1, 0], {
+      payload: new NativeGraphicsPacket(
+        [1, 1, 128, floatBits(1), floatBits(1), floatBits(1), undefined, 0, 0, 0, undefined, 0, 0],
+        { unwritten: [6, 10] },
+      ),
+    });
+    assert.equal(new DataView(task.state.trail.history[0].buffer).getUint32(8, true), 0);
+    await task.message([0, 47, 0, 1]);
+    await w.objects.update(w.root, 1);
+    await w.objects.drawTick(1);
+    assert.equal(task.state.trail.graphs[0].registrationEnabled, false);
+    fresh = await make(false);
+    await fresh.restore(await deserializeCheckpoint(await serializeCheckpoint(w.snapshot())));
+    const restored = plane(fresh, fresh.runtime.scheduler.tasks.get(t.id));
+    await fresh.objects.update(fresh.root, 2);
+    await fresh.objects.drawTick(2);
+    assert.equal(restored.state.trail.graphs[0].registrationEnabled, true);
+    assert.equal(restored.state.trail.graphs[0].registrationWord, 1);
+    await restored.message([0, 79, 0, 0]);
+    assert.equal(restored.state.trail, null);
+  } finally {
+    if (fresh) await close(fresh);
+    await close(w);
+  }
+});
