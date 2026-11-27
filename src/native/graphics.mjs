@@ -848,7 +848,7 @@ export class NativeGraphicTask {
     return this.world.inputFor?.(this.record.id);
   }
   planeBounds() {
-    if (this.tilePlaneRequiresEmptyOwner && this.graph?.type === 5 && this.state.drawType === 8)
+    if (this.graph?.type === 5 && [8, 9].includes(this.state.drawType))
       throw new Error('Native tiled parent geometry bounds are undefined');
     return this.state.rect;
   }

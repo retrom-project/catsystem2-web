@@ -22,8 +22,8 @@ selected or enabled by proximity to another version number.
 | 2.6.1.23 | 869        | 770       | 57            | 17            | 25      | 45 / 44 / 51               |
 | 2.6.1.63 | 938        | 800       | 80            | 19            | 39      | 45 / 44 / 51               |
 | 2.6.1.67 | 938        | 800       | 80            | 19            | 39      | 45 / 44 / 51               |
-| 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51               |
-| 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51               |
+| 2.6.1.74 | 1009       | 860       | 82            | 19            | 48      | 45 / 44 / 51               |
+| 2.6.1.76 | 1055       | 923       | 58            | 17            | 57      | 45 / 44 / 51               |
 
 The registry represents 5,509 slots, including 2,344 SDK74/Game76 slots.
 The older auxiliary tables now register all entries, including their nine own-PE

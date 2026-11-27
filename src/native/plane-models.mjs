@@ -78,6 +78,8 @@ export class NativePlaneTrail {
       this.close();
       return;
     }
+    if (![1, 2, 5, 6, 7].includes(source.type) || [8, 9].includes(task.state.drawType))
+      throw new Error('Plane trail source has no reviewed clone constructor');
     const mode = words[11] >>> 0,
       stride = mode === 1 ? 2 : mode >= 2 && mode <= 5 ? 1 : words[1] | 0,
       count = words[0] | 0,
@@ -113,7 +115,7 @@ export class NativePlaneTrail {
         for (let j = 0; j < 4; j++)
           view.setFloat32(28 + j * 4, f(previous.getFloat32(28 + j * 4, true) - delta[j]), true);
         history.push(bytes);
-        if ((active || mode) && [1, 2, 5, 6, 7].includes(source.type)) {
+        if (active || mode) {
           const graph = structuredClone(source);
           if (source.type === 6 || source.type === 7) {
             // Native trail construction reloads each file-backed model independently.
