@@ -1784,7 +1784,7 @@ export default {
         {
           ids: [136, 137],
           value:
-            'Own kind8 raw112 copies the borrowed bitmap through the initialized glyph managers using 0x54cc60. Raw113 retains the first signed rectangle for each low-16-bit character through 0x54dc60, including a distinct shadow manager when configured. A zero bitmap skips the send. The original glyph bitmap retains RGB when a resampled cell rounds to alpha zero. Both wrappers return control 2 without a result write.',
+            'Own kind8 raw112 copies the borrowed bitmap through the initialized glyph managers using 0x54cc60. Raw113 retains the first signed rectangle for each low-16-bit character through 0x54dc60, including a distinct shadow manager when configured. A zero bitmap skips the send. The original glyph bitmap retains RGB when a resampled cell rounds to alpha zero. Both wrappers return control 2 without a result write. The own true-CRT/Main143/kind8 group now confirms private font copies from Main112/117, creator mutation/release, first-key retention, independent task rebind, actual Root frame consumers, complete initialized RGBA and allocation-generation retirement, paired with eight independent current cold continuations. The unchanged virtual COM-memory/GDI setup produced no physical GPU proof; all seven glyphs were atlas-mapped, with fallback GDI glyph calls prohibited.',
         },
         {
           ids: legacyTextStateSlots,

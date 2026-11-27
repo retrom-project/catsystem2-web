@@ -325,7 +325,7 @@ font size, marks and alignment in the separate forty-byte cells. Main130 and133
 consult actual graph registration. A newly configured graph is unregistered, so
 hidden force/restart operations leave playback inactive even when the Base
 display word is set. Both builds now use the existing shared registration policy.
-Nonempty glyph raster and published output are a following qualification group.
+The following atlas group qualifies nonempty bitmap raster and ordinary Root consumers.
 
 Main134 converts its valid CP932 input into a temporary terminated sixteen-bit
 packet; the kind8 receiver ignores it and Main135's scalar message through its
@@ -343,3 +343,25 @@ RefHeap allocations remain recorded separately from JavaScript cell storage.
 Only pixels written by a proved clear are compared. Glyph/provider rendering,
 physical GPU output, unsupported formats, unknown recipients and the separate
 Application-to-Device logical key publisher remain outside this state group.
+
+Main136/137 now have a separate complete native group for each build. Both copy
+an owned Main112/117 bitmap into each font manager and keep the first rectangle
+for a low-sixteen-bit character code. Changing and releasing the caller bitmap
+does not alter either private font copy. Replacing one task's atlas preserves
+its existing character map and leaves the other task's atlas intact. Main391
+continues to borrow the same output owner. Allocation-generation journals, rather
+than address equality, confirm normal bitmap/font/Task retirement.
+
+The bounded case uses seven atlas-mapped glyphs, including CP932, a marker and
+two lines. Real Root logic frames consume the reveal schedule; force/restart,
+clear, replacement, hide and retirement retain exact cells and complete RGBA in
+both current VM and eight independent cold continuations per build. The first
+native capture omitted an initial Root clock frame: its mixed time origins stay
+as a separate precondition record. The corrected sequence starts at Root frame
+zero, without writing Task clock fields or changing runtime defaults.
+
+This group uses the existing GDI context leaves and COM-memory View. It invokes
+no fallback GDI glyph provider and records no GPU drawing commands. Physical
+presentation, arbitrary glyph rectangles/fonts and the Application key-binding
+publisher remain separate qualification gaps. Neither another SDK nor an
+unreviewed receiver is enabled by the SDK63 atlas policy.
