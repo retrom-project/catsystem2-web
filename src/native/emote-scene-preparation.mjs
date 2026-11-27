@@ -104,6 +104,28 @@ function witness(value) {
   return held;
 }
 
+function currentRange(range, hit, body) {
+  const file = ownDescriptor(hit, 'file')?.value;
+  if (!file || file !== range.file) return false;
+  const ownRead = ownDescriptor(file, 'read'),
+    read = ownRead ?? ownDescriptor(prototypeOf(file), 'read'),
+    url = ownDescriptor(file, 'url'),
+    blob = ownDescriptor(file, 'blob');
+  return (
+    range.epoch === body &&
+    ownDescriptor(hit, 'offset')?.value === range.offset &&
+    ownDescriptor(hit, 'size')?.value === range.size &&
+    ownDescriptor(file, 'size')?.value === range.sourceSize &&
+    ownDescriptor(file, 'modifiedMs')?.value === range.modifiedMs &&
+    read?.value === range.read &&
+    (url
+      ? 'value' in url && url.value === range.backing
+      : blob
+        ? 'value' in blob && blob.value === range.backing
+        : file === range.backing)
+  );
+}
+
 function modelDeclarations(reader, block) {
   const { count } = reader.blockInfo(block),
     declarations = [];
@@ -193,18 +215,32 @@ export class M2ScenePreparation {
     return active;
   }
 
-  #current(job) {
-    const { world } = this.owner;
-    const history = job.scene.history.path.at(-1);
+  #current(job, completed = false) {
+    const world = ownDescriptor(this.owner, 'world')?.value;
+    if (world !== job.world) return false;
+    // The active-scene lookup can call public collection ports. Read the
+    // current history and consumer only after those callbacks have returned.
+    const active = this.#activeScene();
+    const reader = ownDescriptor(job.scene, 'reader')?.value,
+      historyOwner = ownDescriptor(job.scene, 'history')?.value,
+      path = historyOwner && ownDescriptor(historyOwner, 'path')?.value,
+      length = path && ownDescriptor(path, 'length')?.value,
+      history = length && ownDescriptor(path, length - 1)?.value,
+      closed = ownDescriptor(world, 'closed'),
+      disposing = ownDescriptor(world, 'disposalRequested');
     return (
-      !apply(signalAborted, job.signal, []) &&
-      !world.disposalRequested &&
-      !world.closed &&
-      job.scene.reader.body === job.body &&
+      (completed || !apply(signalAborted, job.signal, [])) &&
+      (!disposing || ('value' in disposing && !disposing.value)) &&
+      (!closed || ('value' in closed && !closed.value)) &&
+      reader &&
+      ownDescriptor(reader, 'body')?.value === job.body &&
       history === job.history &&
-      history?.value === job.historyValue &&
-      this.#activeScene() === job.scene &&
-      (!job.model || this.#currentDocument(job))
+      history &&
+      ownDescriptor(history, 'value')?.value === job.historyValue &&
+      active === job.scene &&
+      (!job.model || this.#currentDocument(job)) &&
+      this.#job === job &&
+      !job.cancelled
     );
   }
 
@@ -269,6 +305,7 @@ export class M2ScenePreparation {
 
     const history = scene.history.path.at(-1);
     const job = {
+      world,
       scene,
       body,
       name,
@@ -284,7 +321,7 @@ export class M2ScenePreparation {
       .catch(() => {})
       .finally(() => {
         this.#pending = false;
-        if (this.#job === job && !this.#current(job)) this.discard();
+        if (this.#job === job && !this.#current(job)) this.#discardJob(undefined, job);
       });
   }
 
@@ -351,22 +388,21 @@ export class M2ScenePreparation {
     if (!job || job.model !== model) return;
     try {
       if (this.#current(job)) job.consumer = witness(record);
-      else this.#discardJob();
+      else this.#discardJob(undefined, job);
     } catch {
-      this.#discardJob();
+      this.#discardJob(undefined, job);
     }
   }
 
   endDocument(model, record) {
     const job = this.#job;
     if (job?.model === model && job.consumer && apply(weakHas, job.consumer, [record]))
-      this.#discardJob();
+      this.#discardJob(undefined, job);
   }
 
   take(model, bytes, record) {
     const job = this.#job;
     if (!job || job.model !== model) return null;
-    let prepared = null;
     try {
       if (
         !job.prepared ||
@@ -376,15 +412,30 @@ export class M2ScenePreparation {
       )
         return null;
       const file = this.#mount(model, 'm2psb');
-      if (file && matchesArchiveRange(job.range, file, job.body)) prepared = job.prepared;
+      if (!file || !matchesArchiveRange(job.range, file, job.body)) return null;
+      // Finish the old channel before the final witness check. Abort listeners
+      // may cancel this job, replace its consumer, or start a successor. Our
+      // own completion abort is distinct from discard(), which marks canceled.
+      apply(abort, job.abort, []);
+      if (!this.#current(job, true) || !matchesArchiveRange(job.range, file, job.body)) return null;
+      const prepared = job.prepared;
+      // Lookup, range access and cleanup may all reenter. The final check is
+      // after them; comparison uses only intrinsic, non-shared byte storage.
+      if (
+        !samePackedBytes(bytes, prepared.packed) ||
+        !this.#current(job, true) ||
+        !currentRange(job.range, file, job.body) ||
+        !this.#currentDocument(job) ||
+        this.#job !== job ||
+        job.cancelled
+      )
+        return null;
+      return prepared;
     } catch {
-      prepared = null;
+      return null;
     } finally {
-      this.#discardJob();
+      this.#discardJob(undefined, job);
     }
-    // The final comparison follows all lookup/cleanup callbacks. A callback
-    // that changes the consumer's real input cannot publish stale expansion.
-    return prepared && samePackedBytes(bytes, prepared.packed) ? prepared : null;
   }
 
   keepAtlas(document, scene) {
@@ -394,19 +445,24 @@ export class M2ScenePreparation {
 
   releaseAtlas(document) {
     if (this.#atlasOwner && (document === undefined || this.#atlasOwner.document === document)) {
-      this.#atlasOwner.document.discardPreparedAtlas();
+      const previous = this.#atlasOwner;
       this.#atlasOwner = null;
+      previous.document.discardPreparedAtlas();
     }
   }
 
   discard(scene) {
-    if (scene === undefined || this.#atlasOwner?.scene === scene) this.releaseAtlas();
-    this.#discardJob(scene);
+    const job = this.#job;
+    try {
+      if (scene === undefined || this.#atlasOwner?.scene === scene) this.releaseAtlas();
+    } finally {
+      this.#discardJob(scene, job);
+    }
   }
 
-  #discardJob(scene) {
-    const job = this.#job;
-    if (job && (scene === undefined || job.scene === scene)) {
+  #discardJob(scene, job = this.#job) {
+    if (job && this.#job === job && (scene === undefined || job.scene === scene)) {
+      job.cancelled = true;
       this.#job = null;
       apply(abort, job.abort, []);
     }

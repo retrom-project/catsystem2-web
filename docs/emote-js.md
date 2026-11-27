@@ -48,6 +48,10 @@ A weak record/map witness and the scene body, history entry and mounted backing
 must still match at consumption. An unfinished,
 canceled, replaced or out-of-budget job falls back immediately to ordinary
 loading, without waiting for its worker.
+Consumption rechecks the same job, cancellation, current consumer/map, history
+and mounted backing after lookup and channel cleanup callbacks. Cleanup removes
+only its captured job; a callback-created successor survives. Atlas ownership is
+detached before its release callback, which cannot erase a new owner's record.
 
 Preparation accepts at most 8 MiB packed and 72 MiB expanded bytes, adding 8 MiB
 container headroom to the former 64 MiB expansion policy. The optional atlas

@@ -213,6 +213,66 @@ if (!componentChild) {
     f.owner.documents.set('model', consumer);
     f.owner.documents.set('model', { document: {} });
     assert.equal(f.preparation.take('model', f.packed, consumer), null);
+
+    // A valid preliminary check cannot authorize a result across the later
+    // mounted-file callback. Cleanup belongs to the captured job, not whatever
+    // successor the callback may create.
+    const lookup = f.owner.world.game.nativeCandidates;
+    for (const action of ['cancel', 'replace', 'new-job', 'throw']) {
+      f.owner.world.game.nativeCandidates = lookup;
+      f.owner.documents = new Map([['model', f.live]]);
+      f.preparation.resume();
+      await turn();
+      f.finish();
+      await turn();
+      let callbacks = 0;
+      const thirdParty = { document: {} };
+      f.owner.world.game.nativeCandidates = (name) => {
+        if (name === 'model') {
+          callbacks++;
+          if (action === 'replace') f.owner.documents.set('model', thirdParty);
+          else {
+            f.preparation.discard(f.scene);
+            if (action === 'new-job') {
+              f.owner.world.game.nativeCandidates = lookup;
+              f.preparation.resume();
+            }
+          }
+          if (action === 'throw') throw new Error('Lookup stopped');
+        }
+        return lookup(name);
+      };
+      assert.equal(f.consume(), null, action);
+      assert.equal(callbacks, 1);
+      if (action === 'replace') assert.equal(f.owner.documents.get('model'), thirdParty);
+      if (action === 'new-job') {
+        const count = f.requests.length;
+        await turn();
+        assert.equal(f.requests.length, count + 1, 'old cleanup keeps the new job');
+        f.finish();
+        await turn();
+        assert(f.consume(), 'the successor remains consumable');
+      }
+    }
+    f.owner.world.game.nativeCandidates = lookup;
+    f.owner.documents = new Map([['model', f.live]]);
+    f.preparation.resume();
+    await turn();
+    f.finish();
+    await turn();
+    const count = f.requests.length;
+    f.preparation.keepAtlas({ discardPreparedAtlas: () => f.preparation.resume() }, f.scene);
+    // Change the block identity so the nested hint replaces the old job.
+    f.scene.history.path.at(-1).value = 0;
+    f.preparation.discard(f.scene);
+    await turn();
+    assert.equal(f.requests.length, count);
+    f.scene.history.path.at(-1).value = 1;
+    f.preparation.resume();
+    await turn();
+    f.finish();
+    await turn();
+    assert(f.consume(), 'atlas cleanup leaves the successor hint usable');
   });
 
   test('immediate consumption and branch/close cancellation never wait or accept a late worker result', async (t) => {
