@@ -50,6 +50,29 @@ function readyRasterSources(graphics, bitmap, pixels, items) {
   return layers;
 }
 
+async function cacheRasterAlpha(bitmap, state, item, area) {
+  if (
+    state.bpp !== 4 ||
+    state.alphaHint ||
+    item.mode ||
+    !item.visible ||
+    !item.alpha ||
+    state.mask ||
+    state.blendType
+  )
+    return;
+  const x =
+      ((state.offsetX | 0) + truncateFloat32(item.position[0]) - truncateFloat32(item.base[0])) | 0,
+    y =
+      ((state.offsetY | 0) + truncateFloat32(item.position[1]) - truncateFloat32(item.base[1])) | 0,
+    clip = state.clip ?? [0, 0, state.width, state.height];
+  if (
+    Math.max(area[0], item.clip[0], x + clip[0]) < Math.min(area[2], item.clip[2], x + clip[2]) &&
+    Math.max(area[1], item.clip[1], y + clip[1]) < Math.min(area[3], item.clip[3], y + clip[3])
+  )
+    await bitmap.hasAlpha();
+}
+
 function forceRasterSources(layers, height) {
   const sources = new Map();
   let bytes = 0;
@@ -261,7 +284,10 @@ export class NativeRetainedDraw {
   }
   async fromData(handle) {
     const buffers = this.world.runtime.imageDataBuffers;
-    return this.sources.decode(buffers.data(buffers.pointer(handle)));
+    const graphics = nativeABI(this.world.profile).graphics;
+    return this.sources.decode(buffers.data(buffers.pointer(handle)), {
+      emptyFormats: graphics.encodedEmptyFrameFormats ?? graphics.renderSourceEmptyFrameFormats,
+    });
   }
   async bind(draw, key, fields) {
     const kind = fields.slice(0, 4).findIndex(Boolean);
@@ -280,6 +306,14 @@ export class NativeRetainedDraw {
         throw new Error('The encoded Draw rebind source class has no reviewed ABI binding');
       const replacement = await this.fromData(inputToken);
       if (!replacement) return false;
+      if (
+        nativeABI(this.world.profile).graphics.drawEncodedEmptySources &&
+        record.kind !== 1 &&
+        !this.sources.bitmap(replacement)
+      ) {
+        await this.sources.release(replacement);
+        throw new Error('The empty encoded Draw rebind source class has no reviewed ABI binding');
+      }
       await this.sources.replaceDecoded(record.source, replacement);
       if (record.kind === 1) record.input = record.inputToken = inputToken;
     } else if (
@@ -599,7 +633,9 @@ export class NativeRetainedDraw {
     const bitmap = this.sources.bitmap(record.source);
     if (!bitmap && record.kind === 3 && nativeABI(this.world.profile).graphics.retainedEmptySources)
       throw new Error('The empty image-owner Draw source has no reviewed ABI binding');
-    if (!bitmap && !nativeABI(this.world.profile).graphics.retainedEmptySources) {
+    const graphics = nativeABI(this.world.profile).graphics,
+      emptyEncoded = graphics.drawEncodedEmptySources && record.kind === 1;
+    if (!bitmap && !graphics.retainedEmptySources && !emptyEncoded) {
       await draw.removeEntry(record.key);
       return false;
     }
@@ -783,7 +819,13 @@ export class NativeRetainedDraw {
         // A cleared region can use its ready normal sources in one
         // synchronous pass. The rasterizer records each clipped write area.
         if (reuse || cleared || forceSources) {
-          for (const { item, state, rgba } of reuse ? ready : cleared ? clearSources : forceLayers)
+          for (const { item, state, rgba } of reuse
+            ? ready
+            : cleared
+              ? clearSources
+              : forceLayers) {
+            if (nativeABI(this.world.profile).graphics.retainedRasterCachesAlphaHint)
+              await cacheRasterAlpha(images.get(item.image), state, item, area);
             rasterizeRetainedBitmap(
               rows,
               renderer.width,
@@ -794,25 +836,28 @@ export class NativeRetainedDraw {
               area,
               options,
             );
+          }
         } else {
           for (const item of items) {
             const source = images.get(item.image);
             source.commitCanvas();
             const pixels = await source.pixels(),
               state = source.state,
-              geometry = item.rasterGeometry,
-              packetState = geometry
-                ? {
-                    ...state,
-                    ...geometry,
-                    clip: [
-                      state.clip[0],
-                      state.clip[1],
-                      Math.min(state.clip[2], geometry.width),
-                      Math.min(state.clip[3], geometry.height),
-                    ],
-                  }
-                : state;
+              geometry = item.rasterGeometry;
+            if (nativeABI(this.world.profile).graphics.retainedRasterCachesAlphaHint)
+              await cacheRasterAlpha(source, state, item, area);
+            const packetState = geometry
+              ? {
+                  ...state,
+                  ...geometry,
+                  clip: [
+                    state.clip[0],
+                    state.clip[1],
+                    Math.min(state.clip[2], geometry.width),
+                    Math.min(state.clip[3], geometry.height),
+                  ],
+                }
+              : state;
             if (
               item.mode &&
               geometry &&

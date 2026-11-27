@@ -11,6 +11,7 @@ import { blendBitmapPixel } from './image.mjs';
 import { HG2 } from '../formats/hg2.mjs';
 import { HG3 } from '../formats/hg3.mjs';
 import { PSD } from '../formats/psd.mjs';
+import { rasterImageHeader } from '../formats/raster.mjs';
 import { blendTypePixel } from './raster-kernel.mjs';
 export const NATIVE_IMAGE_COMPOSITE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x1cc, words: 1, control: 1 }),
@@ -48,7 +49,11 @@ export class NativeImageComposites {
           }
           if (formats && !formats.includes(format))
             throw new Error('Selector image input has no reviewed format binding');
-          if (format === 'BMP' && graphics.imageCompositeBmpHeaders) {
+          if (
+            format === 'BMP' &&
+            graphics.imageCompositeBmpHeaders &&
+            (!graphics.nativeBmp || !rasterImageHeader(image))
+          ) {
             const header = new DataView(
               image.bytes.buffer,
               image.bytes.byteOffset,
@@ -56,7 +61,9 @@ export class NativeImageComposites {
             );
             if (
               !graphics.imageCompositeBmpHeaders.includes(header.getUint32(14, true)) ||
-              !graphics.imageCompositeBmpCompressions.includes(header.getUint32(30, true))
+              !graphics.imageCompositeBmpCompressions.includes(header.getUint32(30, true)) ||
+              (graphics.nativeBmp &&
+                (header.getUint32(14, true) === 12 || header.getUint32(30, true) === 6))
             )
               throw new Error('The BMP primary header has no reviewed ABI binding');
           }

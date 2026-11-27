@@ -84,6 +84,9 @@ export class RasterImage {
           header,
           selectorBits: b.bytes.length >= 30 ? b.u16(28) : null,
           compression: header === 12 ? 0 : b.bytes.length >= 34 ? b.u32(30) : null,
+          pixelBits:
+            b.bytes.length >= (header === 12 ? 26 : 30) ? b.u16(header === 12 ? 24 : 28) : null,
+          pixelOffset: b.u32(10),
         });
       rasterHeaders.set(this, info);
       if (![12, 40].includes(header))

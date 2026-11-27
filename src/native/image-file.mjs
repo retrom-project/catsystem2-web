@@ -13,8 +13,7 @@ export const NATIVE_IMAGE_FILE_CONTRACTS = Object.freeze([
 ]);
 export function nativeBmpDisposition(info, policy) {
   if (!policy || info?.format !== 'BMP') return 'unrestricted';
-  if (![info.header, info.selectorBits, info.compression].every(Number.isInteger))
-    return 'guarded';
+  if (![info.header, info.selectorBits, info.compression].every(Number.isInteger)) return 'guarded';
   if (
     !policy.selectorBits.includes(info.selectorBits) ||
     !policy.nativeHeaders.includes(info.header)
@@ -23,6 +22,19 @@ export function nativeBmpDisposition(info, policy) {
   if (
     !policy.reviewedHeaders.includes(info.header) ||
     !policy.reviewedCompressions[info.selectorBits].includes(info.compression)
+  )
+    return 'guarded';
+  if (
+    info.header === 12 &&
+    (!policy.core?.pixelBits.includes(info.pixelBits) ||
+      !policy.core.selectorBits.includes(info.selectorBits) ||
+      !policy.core.pixelOffsets.includes(info.pixelOffset))
+  )
+    return 'guarded';
+  if (
+    info.compression === 6 &&
+    (!policy.alphaBitfields?.pixelBits.includes(info.pixelBits) ||
+      !policy.alphaBitfields.pixelOffsets.includes(info.pixelOffset))
   )
     return 'guarded';
   return 'reviewed';

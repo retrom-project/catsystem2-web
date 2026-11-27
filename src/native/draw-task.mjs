@@ -498,8 +498,13 @@ export class NativeDrawTask {
     // Original resource setters may already have destroyed the previous bitmap.
     // Its last valid geometry still invalidates the pixels it occupied.
     if (old) this.mark(old, true);
-    if (!values.image && !nativeABI(this.world.profile).graphics.retainedEmptySources)
-      throw new Error('The empty Draw source has no reviewed ABI binding');
+    if (!values.image && !nativeABI(this.world.profile).graphics.retainedEmptySources) {
+      const encoded =
+        nativeABI(this.world.profile).graphics.drawEncodedEmptySources &&
+        this.retained()?.record(this, key);
+      if (!encoded || encoded.kind !== 1 || encoded.source !== values.retained)
+        throw new Error('The empty Draw source has no reviewed ABI binding');
+    }
     const source = values.image && this.graphics.images.get(values.image),
       alias = !source
         ? 0

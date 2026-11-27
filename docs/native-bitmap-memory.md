@@ -658,3 +658,42 @@ RGB24 rows have explicit zero padding; nonstandard strides and other raw
 padding-memory consumers remain outside this proof. Ordinal and metadata
 queries retain their defined zero/untouched outputs, and nine-piece loading
 retains its real empty owner. Other build policies are unchanged.
+
+## SDK63/67 retained raster consumers
+
+The final group uses four already proved BMP/PSD/KCF3/KCF4 resources through
+actual Main710 owners, kind15 Draw construction, Main731, borrowed Main657,
+caller release, last entry removal and actual root-tree destruction. Separate
+Main622/623 calls retain a real logical entry with an empty ordinal frame map;
+Main657 returns zero and rendering skips it. Releasing the encoded input does
+not invalidate the retained entry. This empty admission is limited to the
+proved encoded source class. Animated file sources and empty ImageOwner
+classes retain their guards; the same source record controls live and cold
+qualification.
+
+Both builds execute44 target and36 dependency GCALLs, including the real
+three-call Script bootstrap. The77 complete current frames and eight fresh
+internal cold continuations compare software output, initialized metadata,
+borrow identity, typed input bytes, owner lists and release. All126/129 direct
+bridge calls are separately journalled and include those80 GCALLs. Renderer
+pixels before the first actual raster are capture-only. No extra direct frame
+callback, Base/collector cadence, Stage/capture or physical GPU proof is added.
+
+An actual nonempty normal raster caches a four-byte source's alpha result.
+The initial JS red left that field unknown after drawing. The own policies now
+query it at the existing pixel-consumption point, after the source's ordinary
+read/commit boundary. Empty PSD clip rectangles and three-byte KCF inputs do
+not perform the query. Bitmap-backed fast and ordinary raster paths use the
+same condition; source update, public loans and publication order are retained.
+Current-only checks also retain the cache through graphics preparation and
+Main342. Native GAME_SAVE, CSS and CTS layouts are unchanged.
+
+Two remaining BMP header controls use complete ordinary small files. CORE12
+is admitted only with the proved24-bit actual depth, selector24 at byte28 and
+pixel offset54; an ordinary CORE file rejected earlier at the selector remains
+a defined rejection. ALPHABITFIELDS compression6 is admitted only for32-bit
+storage and pixel offset70. Both preserve the native fixed byte54 copy rather
+than interpreting masks or correcting the file offset. Other CORE/bitfield
+layouts, arbitrary padding-memory consumers, PSD color/depth variants,
+animated raster sources, resource extremes and hardware presentation remain
+open. These shape extensions introduce no new SDK slots or build admission.

@@ -108,11 +108,14 @@ export class NativeRenderSources {
       (source.retainedOwner ? this.world.imageOwners.get(source.ownerHandle).bitmap : 0)
     );
   }
-  async decode(bytes) {
+  async decode(
+    bytes,
+    { emptyFormats = nativeABI(this.world.profile).graphics.renderSourceEmptyFrameFormats } = {},
+  ) {
     const empty = requireImageSourceFormat(
       bytes,
       nativeABI(this.world.profile).graphics.renderSourceFrameFormats,
-      nativeABI(this.world.profile).graphics.renderSourceEmptyFrameFormats,
+      emptyFormats,
     );
     if (empty) return this.create();
     const image = await openImage(bytes),
