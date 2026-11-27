@@ -130,3 +130,18 @@ posts window message `0x466`; neither arbitrary author-mode changes nor the
 window-side behavior are enabled by this bridge. Teardown debug-fill writes in
 the observation are cleanup events, not new metadata producers. Four independent
 current cold points retain the owned state and resume later real VM consumers.
+
+C2 sends complete finite voice/message/effect blocks through Main360, using a
+real VM allocation for the voice source. It releases that allocation normally,
+overwrites the remaining guest sources, and reads the Settings-owned copies
+through Main359 into later variables, expressions and formatted strings. A
+second set replaces the first, including a zero raw effect flag. This proves the
+stored word and its Script consumer, not an audio/visual device effect. Main360
+does not invoke the separate configuration-refresh callback.
+
+All four getter destinations may alias: the original copies voice, message,
+effect, then window in that order. The loaded VM test checks that final result,
+full bounded spans and surrounding canaries. Four independent C2 cold points
+restore the owned configuration and resume subsequent consumers after the old
+World closes. Together C1/C2 use 18 original target calls, 59 total GCALLs and
+eight real Script frames; the reused true-host journal is recorded separately.

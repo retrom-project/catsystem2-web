@@ -7,7 +7,7 @@ import { parseXML } from '../src/xml.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 
 const bytes = (value) => new Uint8Array(Buffer.from(value, 'base64'));
-for (const group of ['c1']) {
+for (const group of ['c1', 'c2']) {
   const golden = JSON.parse(
     await readFile(
       new URL(`./fixtures/sdk23-configuration-metadata-${group}-golden.json`, import.meta.url),
