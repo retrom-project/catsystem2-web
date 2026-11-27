@@ -1271,13 +1271,16 @@ export class NativeGraphicTask {
       case 80:
         this.trail.pushSample(bytes(l, 128));
         return 0;
-      case 47:
+      case 47: {
+        let inputDisplay;
         this.state.renderPaused = !l;
         this.state.shown = Boolean(l);
-        if (hasRegistration(this.graph)) {
-          const parent = this.state.inheritPosition
-            ? this.graphics.get(this.record.parent)?.graph
-            : null;
+        const registered = hasRegistration(this.graph),
+          parent =
+            this.state.inheritPosition && (registered || this.planeVisibilityUpdatesInput)
+              ? this.graphics.get(this.record.parent)?.graph
+              : null;
+        if (registered) {
           if (!this.state.inheritPosition) this.setRegistrationEnabled(this.state.shown, l >>> 0);
           else if (parent) {
             // A known miss retains the old word. A parent with unverified
@@ -1291,13 +1294,23 @@ export class NativeGraphicTask {
               );
           }
         }
-        this.setInputDisplay();
+        if (
+          this.planeVisibilityUpdatesInput &&
+          this.state.buttonEnabled &&
+          this.state.receiver !== -1 &&
+          hasRegistration(parent)
+        )
+          inputDisplay = this.state.shown
+            ? nativeEngineWord(parent.registrationWord, 'Native parent renderer display')
+            : 0;
+        if (!this.planeVisibilityUpdatesInput) this.setInputDisplay();
         this.sync();
         if (this.planeVisibilityUpdatesInput) {
-          await this.updateVisibleInput(l);
+          await this.updateVisibleInput(l, inputDisplay, context);
           await this.broadcast(48, w, l, context);
         }
         return 0;
+      }
       case 48:
         this.state.renderPaused = !l;
         if (hasRegistration(this.graph))
@@ -1312,8 +1325,9 @@ export class NativeGraphicTask {
             true,
           );
         this.sync();
-        this.setInputDisplay();
-        if (this.planeVisibilityUpdatesInput) await this.updateVisibleInput(l);
+        if (this.planeVisibilityUpdatesInput)
+          await this.updateVisibleInput(l, this.state.shown ? l >>> 0 : 0, context);
+        else this.setInputDisplay();
         await this.broadcast(48, w, l, context);
         return 0;
       case 49:
@@ -1841,13 +1855,18 @@ export class NativeGraphicTask {
       ...context,
     });
   }
-  async updateVisibleInput(display) {
-    const region = this.input?.get(this.record.id);
-    if (this.state.buttonEnabled && region) {
-      region.enabled = this.state.shown && Boolean(display);
-      if (!region.enabled) region.active = 0;
-      this.input.changed = true;
+  async updateVisibleInput(display, inputDisplay, context) {
+    const input = this.input;
+    // Direct visibility without inheritance has no Input message. Inherited
+    // raw43 supplies the parent's renderer word; child raw44 supplies its own
+    // incoming word. Neither is replaced by the direct raw43 argument.
+    if (this.state.buttonEnabled && this.state.receiver !== -1 && inputDisplay !== undefined) {
+      if (!input?.message) throw new Error('Native Plane visibility requires its Input owner');
+      const flags = { flags: context.flags ?? 0 };
+      await input.message(134, this.record.id, inputDisplay, flags);
+      if (!inputDisplay) await input.message(132, this.record.id, 0, flags);
     }
+    const region = input?.get(this.record.id);
     if (this.state.phase !== 3) {
       if (region?.active && this.state.button?.[3]) await this.selectButton(1);
       else if (this.state.button?.[0]) await this.selectButton(0);
@@ -1856,9 +1875,6 @@ export class NativeGraphicTask {
       await this.world.sendNativeEngine(this.state.imageIndex, this.record.id, 47, 0, 0);
   }
   setInputDisplay() {
-    // SDK23 raw43/44 only sends Input enable messages after raw67 enabled
-    // its button state. A Base-style raw83 registration does not set that flag.
-    if (this.planeVisibilityUpdatesInput && !this.state.buttonEnabled) return;
     const region = this.input?.get(this.record.id);
     if (!region) return;
     const parent = this.graphics.get(this.record.parent),
