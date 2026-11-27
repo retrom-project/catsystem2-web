@@ -1419,6 +1419,7 @@ export default {
     drawEnablePendingPolicy: 'rising-edge',
     drawBitmapRequiresRenderer: true,
     textureCapsPolicy: 'virtual-d3d9',
+    cameraNearRequiresMode1: true,
     texturedBoundsQuery: null,
     coordinateModeRequiresGraph: true,
     planePoseQueriesRequireReply: true,
@@ -1447,16 +1448,16 @@ export default {
       count: 938,
       slots: {
         unknown: [
-          12, 81, 82, 89, 90, 91, 95, 96, 97, 98, 99, 115, 120, 121, 122, 130, 133, 134, 135, 199,
-          201, 202, 208, 237, 279, 280, 281, 282, 283, 287, 288, 346, 391, 398, 399, 433, 441, 442,
-          443, 457, 532, 588, 600, 601, 628, 669, 681, 682, 688, 690, 691, 692, 705, 735, 837, 838,
-          839, 840, 841, 842, 843, 879, 880, 881,
+          81, 82, 89, 90, 91, 95, 96, 97, 98, 99, 115, 120, 121, 122, 130, 133, 134, 135, 199, 201,
+          202, 208, 237, 279, 280, 281, 282, 283, 287, 288, 346, 391, 398, 399, 433, 441, 442, 443,
+          457, 532, 588, 600, 601, 628, 669, 681, 682, 688, 690, 691, 692, 705, 735, 837, 838, 839,
+          840, 841, 842, 843, 879, 880, 881,
         ],
         recovered: [
-          1, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27,
-          28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
-          50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
-          72, 73, 74, 75, 76, 77, 78, 79, 80, 83, 84, 85, 86, 87, 88, 92, 93, 94, 100, 101, 102,
+          1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+          27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48,
+          49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70,
+          71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 83, 84, 85, 86, 87, 88, 92, 93, 94, 100, 101, 102,
           103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 116, 117, 118, 119, 123, 124,
           125, 126, 127, 128, 129, 131, 132, 136, 137, 138, 139, 140, 142, 143, 144, 145, 146, 147,
           148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165,
@@ -1501,6 +1502,11 @@ export default {
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: [12],
+          value:
+            'Own SDK67 Main12 executes in the actual Main66/Main143-loaded Script after true CRT, SettingsXML, FileServer, Window, caps and mode1 View/renderer construction. Three positive finite Float32 near words pass through the real wrapper and store the exact manager word without a result write, control2. Original bodies and whole-text hash remain unchanged; the mounted XML creates two8x8 texture pages through the existing pure COM-memory provider. Main8/739/740/787 mapped independent outputs and current cold state are compared. No foreign receiver, absent manager, non-finite near, arbitrary argv, actual GPU or Stage behavior is admitted.',
+        },
         {
           ids: renderSourceOperations,
           value:
@@ -2668,6 +2674,7 @@ export default {
         },
       ],
       signatures: [
+        { ids: [12], fields: { review: 'reviewed', resultWritten: false } },
         ...renderSourceOperations.map((id) => ({
           ids: [id],
           fields: {

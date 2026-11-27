@@ -1243,6 +1243,7 @@ export default {
     textureCapsPolicy: 'virtual-d3d9',
     textureReleaseUsesExistingOwner: true,
     fullPositionCoordinatesUseX87: true,
+    cameraNearRequiresMode1: true,
     texturedBoundsQuery: null,
     coordinateModeRequiresGraph: true,
   },
@@ -1275,21 +1276,21 @@ export default {
       count: 938,
       slots: {
         unknown: [
-          12, 18, 20, 22, 26, 27, 28, 31, 34, 37, 39, 40, 48, 65, 89, 90, 91, 96, 97, 98, 99, 102,
-          103, 110, 120, 121, 122, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138,
-          139, 199, 202, 208, 214, 215, 216, 217, 237, 255, 279, 280, 281, 282, 283, 287, 288, 289,
-          290, 291, 292, 293, 305, 306, 309, 312, 391, 441, 442, 443, 456, 457, 467, 532, 570, 585,
-          588, 599, 600, 601, 628, 658, 659, 669, 677, 678, 679, 680, 682, 688, 690, 691, 692, 705,
-          837, 838, 839, 840, 841, 842, 843,
+          18, 20, 22, 26, 27, 28, 31, 34, 37, 39, 40, 48, 65, 89, 90, 91, 96, 97, 98, 99, 102, 103,
+          110, 120, 121, 122, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139,
+          199, 202, 208, 214, 215, 216, 217, 237, 255, 279, 280, 281, 282, 283, 287, 288, 289, 290,
+          291, 292, 293, 305, 306, 309, 312, 391, 441, 442, 443, 456, 457, 467, 532, 570, 585, 588,
+          599, 600, 601, 628, 658, 659, 669, 677, 678, 679, 680, 682, 688, 690, 691, 692, 705, 837,
+          838, 839, 840, 841, 842, 843,
         ],
 
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
         recovered: [
-          1, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 19, 21, 23, 24, 25, 29, 30, 32, 33, 35,
-          36, 38, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,
-          62, 63, 64, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84,
-          85, 86, 87, 88, 92, 93, 94, 95, 100, 101, 104, 105, 106, 107, 108, 109, 111, 112, 113,
+          1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 21, 23, 24, 25, 29, 30, 32, 33,
+          35, 36, 38, 41, 42, 43, 44, 45, 46, 47, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+          61, 62, 63, 64, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83,
+          84, 85, 86, 87, 88, 92, 93, 94, 95, 100, 101, 104, 105, 106, 107, 108, 109, 111, 112, 113,
           114, 115, 116, 117, 118, 119, 123, 124, 125, 140, 142, 143, 144, 145, 146, 147, 148, 149,
           150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167,
           168, 192, 193, 194, 195, 196, 197, 198, 200, 201, 203, 204, 205, 206, 207, 209, 210, 211,
@@ -1330,6 +1331,11 @@ export default {
         ],
       },
       evidence: [
+        {
+          ids: [12],
+          value:
+            'Own SDK63 Main12 executes in the actual Main66/Main143-loaded Script after true CRT, SettingsXML, FileServer, Window, caps and mode1 View/renderer construction. Three positive finite Float32 near words pass through the real wrapper and store the exact manager word without a result write, control2. Original bodies and whole-text hash remain unchanged; the mounted XML creates two8x8 texture pages through the existing pure COM-memory provider. Main8/739/740/787 mapped independent outputs and current cold state are compared. No foreign receiver, absent manager, non-finite near, arbitrary argv, actual GPU or Stage behavior is admitted.',
+        },
         {
           ids: renderSourceOperations,
           value:
@@ -2294,6 +2300,7 @@ export default {
         },
       ],
       signatures: [
+        { ids: [12], fields: { review: 'reviewed', resultWritten: false } },
         ...renderSourceOperations.map((id) => ({
           ids: [id],
           fields: {

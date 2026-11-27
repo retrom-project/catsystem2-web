@@ -34,6 +34,18 @@ native COM vertex submissions at two near distances. It keeps those submission
 observations separate from physical GPU evidence. Configured texture content and
 alpha have their own COM-memory qualification in the Plane fixture.
 
+SDK63 and SDK67 admit Main12 for the same positive finite, initialized mode1
+shape, proved separately in each executable. Their true CRT, Settings/FileServer,
+caps and View constructors create the attachment and manager; a real Main66
+publishes a kind1 Top under the Main143-loaded Script. Main12 stores the exact
+Float32 word at that manager's `+0xd8` and returns control2 without a result.
+The own-build View queries and three distances are replayed by
+`native-legacy-configured-view.test.mjs`, including eight independent cold
+continuations per build. The new host attaches its own logical device before
+restore: device endpoints are not checkpoint data. These query/store and
+COM-memory observations do not prove GPU pixels, Stage presentation, other
+distance shapes or occupied mesh replacement.
+
 During migration, the injected `syncViewGeometry` capability in
 [`oracle/transitional-exe.mjs`](../oracle/transitional-exe.mjs) projects JS state
 one way into the original renderer records. NativeGraphics setters and renderer

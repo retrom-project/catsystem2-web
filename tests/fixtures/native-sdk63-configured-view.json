@@ -1,0 +1,290 @@
+{
+  "profile": "rebellions-jp-engine-2.6.1.63",
+  "original": {
+    "path": ".local/phase11/sdk63-67-base-collector-20261127/ORIGINAL-C3-VIEW-MESH-63.json",
+    "sha256": "aca78bfb6ce1ff57f7e0b289a784b2aa38516b9c9babe60bcf896f0f9a439228"
+  },
+  "scope": "C3A only complete normal View/near prefix, actual factory Top and configured native mode1 owner. Remainder of33 original frames is retained for pending mesh/collector evidence, not asserted here. No GPU/Stage/pointer alias claims.",
+  "startupXML": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><ETC><cache>0</cache></ETC><APP><imgcache>0</imgcache></APP><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp32y>0</bpp32y><bpp16y>1</bpp16y><bpp>32</bpp><filter_min>1</filter_min><filter_mag>1</filter_mag></TEXTURE><INT><int00><name>kcs</name><int>scripts.int</int><ext>kcs</ext><dir>scripts-loose</dir></int00><int01><name>scene</name><int>scene.int</int><ext>cst</ext><dir>scene-loose</dir></int01><int02><name>fes</name><int>tables.int</int><ext>tbl</ext><dir>tables-loose</dir></int02><int03><name>image</name><int>images.int</int><ext>hg3</ext><dir>images-loose</dir></int03></INT></document>",
+  "cases": [
+    {
+      "id": 66,
+      "args": [1, "caller", 128],
+      "save": "top",
+      "text": "C3 published Top",
+      "textAt": 128,
+      "ordinal": 0,
+      "control": 1,
+      "result": "owned:top",
+      "changed": [],
+      "outputWords": [
+        2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485, 2779096485, 2779096485
+      ],
+      "nearWord": 1148846080,
+      "view": {
+        "enabled": 1,
+        "attachment": true,
+        "manager": true
+      }
+    },
+    {
+      "id": 8,
+      "args": [512, 516],
+      "ordinal": 1,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [512, 64],
+        [513, 0],
+        [514, 0],
+        [515, 0],
+        [516, 64],
+        [517, 0],
+        [518, 0],
+        [519, 0]
+      ],
+      "outputWords": [
+        64, 64, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485
+      ],
+      "nearWord": 1148846080,
+      "view": {
+        "enabled": 1,
+        "attachment": true,
+        "manager": true
+      }
+    },
+    {
+      "id": 739,
+      "args": [520, 524],
+      "ordinal": 2,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [520, 0],
+        [521, 0],
+        [522, 0],
+        [523, 0],
+        [524, 0],
+        [525, 0],
+        [526, 0],
+        [527, 0]
+      ],
+      "outputWords": [
+        64, 64, 0, 0, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485
+      ],
+      "nearWord": 1148846080,
+      "view": {
+        "enabled": 1,
+        "attachment": true,
+        "manager": true
+      }
+    },
+    {
+      "id": 740,
+      "args": [528, 532],
+      "ordinal": 3,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [528, 0],
+        [529, 0],
+        [530, 0],
+        [531, 0],
+        [532, 64],
+        [533, 0],
+        [534, 0],
+        [535, 0]
+      ],
+      "outputWords": [
+        64, 64, 0, 0, 0, 64, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+      ],
+      "nearWord": 1148846080,
+      "view": {
+        "enabled": 1,
+        "attachment": true,
+        "manager": true
+      }
+    },
+    {
+      "id": 787,
+      "args": [536, 540, 544, 548],
+      "ordinal": 4,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [536, 0],
+        [537, 0],
+        [538, 0],
+        [539, 0],
+        [540, 0],
+        [541, 0],
+        [542, 0],
+        [543, 0],
+        [544, 64],
+        [545, 0],
+        [546, 0],
+        [547, 0],
+        [548, 64],
+        [549, 0],
+        [550, 0],
+        [551, 0]
+      ],
+      "outputWords": [
+        64, 64, 0, 0, 0, 64, 0, 0, 64, 64, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485, 2779096485, 2779096485
+      ],
+      "nearWord": 1148846080,
+      "view": {
+        "enabled": 1,
+        "attachment": true,
+        "manager": true
+      }
+    },
+    {
+      "id": 12,
+      "args": [1065353216],
+      "ordinal": 5,
+      "control": 2,
+      "result": null,
+      "changed": [],
+      "outputWords": [
+        64, 64, 0, 0, 0, 64, 0, 0, 64, 64, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485, 2779096485, 2779096485
+      ],
+      "nearWord": 1065353216,
+      "view": {
+        "enabled": 1,
+        "attachment": true,
+        "manager": true
+      }
+    },
+    {
+      "id": 8,
+      "args": [552, 556],
+      "ordinal": 6,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [552, 64],
+        [553, 0],
+        [554, 0],
+        [555, 0],
+        [556, 64],
+        [557, 0],
+        [558, 0],
+        [559, 0]
+      ],
+      "outputWords": [
+        64, 64, 0, 0, 0, 64, 0, 0, 64, 64, 64, 64, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485
+      ],
+      "nearWord": 1065353216,
+      "view": {
+        "enabled": 1,
+        "attachment": true,
+        "manager": true
+      }
+    },
+    {
+      "id": 12,
+      "args": [1148846080],
+      "ordinal": 7,
+      "control": 2,
+      "result": null,
+      "changed": [],
+      "outputWords": [
+        64, 64, 0, 0, 0, 64, 0, 0, 64, 64, 64, 64, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485
+      ],
+      "nearWord": 1148846080,
+      "view": {
+        "enabled": 1,
+        "attachment": true,
+        "manager": true
+      }
+    },
+    {
+      "id": 787,
+      "args": [560, 564, 568, 572],
+      "ordinal": 8,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [560, 0],
+        [561, 0],
+        [562, 0],
+        [563, 0],
+        [564, 0],
+        [565, 0],
+        [566, 0],
+        [567, 0],
+        [568, 64],
+        [569, 0],
+        [570, 0],
+        [571, 0],
+        [572, 64],
+        [573, 0],
+        [574, 0],
+        [575, 0]
+      ],
+      "outputWords": [
+        64, 64, 0, 0, 0, 64, 0, 0, 64, 64, 64, 64, 0, 0, 64, 64, 2779096485, 2779096485
+      ],
+      "nearWord": 1148846080,
+      "view": {
+        "enabled": 1,
+        "attachment": true,
+        "manager": true
+      }
+    },
+    {
+      "id": 12,
+      "args": [1048576000],
+      "ordinal": 9,
+      "control": 2,
+      "result": null,
+      "changed": [],
+      "outputWords": [
+        64, 64, 0, 0, 0, 64, 0, 0, 64, 64, 64, 64, 0, 0, 64, 64, 2779096485, 2779096485
+      ],
+      "nearWord": 1048576000,
+      "view": {
+        "enabled": 1,
+        "attachment": true,
+        "manager": true
+      }
+    },
+    {
+      "id": 739,
+      "args": [576, 580],
+      "ordinal": 10,
+      "control": 2,
+      "result": null,
+      "changed": [
+        [576, 0],
+        [577, 0],
+        [578, 0],
+        [579, 0],
+        [580, 0],
+        [581, 0],
+        [582, 0],
+        [583, 0]
+      ],
+      "outputWords": [64, 64, 0, 0, 0, 64, 0, 0, 64, 64, 64, 64, 0, 0, 64, 64, 0, 0],
+      "nearWord": 1048576000,
+      "view": {
+        "enabled": 1,
+        "attachment": true,
+        "manager": true
+      }
+    }
+  ],
+  "coldAfter": [0, 1, 2, 4, 5, 7, 8, 9]
+}
