@@ -25,6 +25,24 @@ Current internal checkpoints retain the actual interpreter contexts and
 continue their loaded programs without rerunning notifications. This does not
 add anything to the original GAME_SAVE/CSS file layout.
 
+For a Main143-loaded child Script that actually inherits its parent's bank,
+Main665/666 copy the fixed 512 private words between that Script's registered
+context and the current FES interpreter. The word storage is copied, rather
+than aliased; subsequent callbacks change the FES words without changing the
+saved Script words. Named storage remains with each context. Rebuilding a FES
+creates fresh defaults before an explicit copy, and a later FES lifetime does
+not reuse its predecessor's private state. Retiring borrowing FES instances
+before the child Script unregisters both levels while their supplier remains.
+
+Original frame probes must match their dispatch scope. A selected Script
+subtree update does not run an ancestor Top's null-route sweep. Present-null
+keys still reserve native IDs until that Top is updated, so a later factory can
+receive a different ID and child traversal position from a complete World tick.
+Both paths use the same internal update traversal; this is no ID-allocation
+policy change or public runtime/checkpoint API. A retired object is not a valid
+sampling target, including when a later-created FES retires later in the same
+parent walk that delivered its close request.
+
 The original FES first-update input setup walks to a real kind1 Top ancestor.
 Calling the Top constructor alone leaves the Base kind and is insufficient
 for this dependency. The original application controller initializer creates

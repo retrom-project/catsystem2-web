@@ -234,40 +234,44 @@ export class NativeObjects {
       throw new Error(`Task ${id} message ${words[1]} did not return a word`);
     return reply >>> 0;
   }
+  async update(id, frame, context = {}) {
+    const record = this.objects.get(id);
+    if (record) await this.#update(record, frame, context);
+  }
+  async #update(record, clock, context) {
+    if (record.state !== 'active') return;
+    clock >>>= 0;
+    if (record.implementation.runsBaseLogic === false) {
+      // These original vtables replace the Base logic phase entirely.
+      if (record.hostDestroyRequested) await this.release(record.id);
+      else await record.implementation.tick?.(clock, context);
+      return;
+    }
+    if (record.userValue)
+      record.pausedFrames = ((record.pausedFrames ?? 0) + clock - (record.lastFrame ?? 0)) >>> 0;
+    else record.effectiveFrame = clock;
+    record.lastFrame = clock;
+    record.implementation.beforeChildren?.(context);
+    // The original walk resolves live signed native route keys.
+    await this.eachChild(record, (child) => this.#update(child, record.effectiveFrame, context));
+    if (!this.objects.has(record.id)) return;
+    await this.pruneRoutes?.(record);
+    if (record.destroyRequested) {
+      await this.release(record.id);
+      return;
+    }
+    const queued = this.queue.filter((q) => q.target === record.id);
+    this.queue = this.queue.filter((q) => q.target !== record.id);
+    for (const message of queued) {
+      if (!this.objects.has(record.id)) break;
+      // Queued words retain sender provenance only. The current drain
+      // executor, not the enqueue caller, owns this actual execution.
+      await this.send(record.id, message.words, { executorEntry: context.executorEntry });
+    }
+    if (this.objects.has(record.id))
+      await record.implementation.tick?.(record.effectiveFrame, context);
+  }
   async tick(frame, context = {}) {
-    const visit = async (record, clock) => {
-      if (record.state !== 'active') return;
-      clock >>>= 0;
-      if (record.implementation.runsBaseLogic === false) {
-        // These original vtables replace the Base logic phase entirely.
-        if (record.hostDestroyRequested) await this.release(record.id);
-        else await record.implementation.tick?.(clock, context);
-        return;
-      }
-      if (record.userValue)
-        record.pausedFrames = ((record.pausedFrames ?? 0) + clock - (record.lastFrame ?? 0)) >>> 0;
-      else record.effectiveFrame = clock;
-      record.lastFrame = clock;
-      record.implementation.beforeChildren?.(context);
-      // The original walk resolves live signed native route keys.
-      await this.eachChild(record, (child) => visit(child, record.effectiveFrame));
-      if (!this.objects.has(record.id)) return;
-      await this.pruneRoutes?.(record);
-      if (record.destroyRequested) {
-        await this.release(record.id);
-        return;
-      }
-      const queued = this.queue.filter((q) => q.target === record.id);
-      this.queue = this.queue.filter((q) => q.target !== record.id);
-      for (const message of queued) {
-        if (!this.objects.has(record.id)) break;
-        // Queued words retain sender provenance only. The current drain
-        // executor, not the enqueue caller, owns this actual execution.
-        await this.send(record.id, message.words, { executorEntry: context.executorEntry });
-      }
-      if (this.objects.has(record.id))
-        await record.implementation.tick?.(record.effectiveFrame, context);
-    };
     let rootID = -1;
     for (;;) {
       const root = [...this.objects.values()]
@@ -275,7 +279,7 @@ export class NativeObjects {
         .sort((a, b) => a.id - b.id)[0];
       if (!root) break;
       rootID = root.id;
-      await visit(root, frame);
+      await this.#update(root, frame, context);
     }
   }
   async drawTick(frame, context = {}) {
