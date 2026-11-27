@@ -372,3 +372,28 @@ Renderer-less count/layer operations retain their precondition diagnostics;
 Main657 instead explicitly writes zero when the renderer or entry is absent.
 Foreign owners, capacity extremes, other source/layout shapes and hardware
 output retain their separate qualification boundaries.
+
+The .63 source-array group qualifies Main622/623/624/703/704/706/707/708/709
+with twenty-one target GCALLs and twenty-three resource/Draw dependencies.
+Main703 writes 72-byte records: a single HG3 frame owns a tag1 bitmap, while
+multiple frames own a tag2 source from the actual 196-byte constructor. Names
+outside the selected outputs stay untouched. Main706 writes the nine-word
+metadata block; Main709 borrows the two valid ordinal frames. A Draw entry
+retains the source after Main704 clears and releases the caller's records.
+Entry removal then releases the final source and its frames. Encoded bitmap
+binding, signed layers, explicit ANM load and final Script destruction share
+the compared sequence.
+
+Forty-one current full KCS frames compare record words, typed identities,
+metadata, reference counts, receiver packets and all selected pixels. Eight
+independent checkpoints continue through the next real call, including caller
+release with a still-live retained source. Raw addresses and other source words
+remain capture-only. This group's source-frame admission is HG3; other formats,
+nested owner models and capacity/alias variants remain separate work.
+
+Main624 sends its receiver message even when ANM lookup fails. The original
+clears its filename scratch and only copies a resolved name on a successful
+lookup. The .63 policy therefore forwards an empty filename on failure, preserving
+the existing source program and wrapper control2. Other builds retain their
+selected behavior. A receiver-packet regression covers this distinction in
+addition to the unchanged output pixels.

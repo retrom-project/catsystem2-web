@@ -2,6 +2,7 @@
 import { nativeReply } from '../kcs/vm.mjs';
 import { nativeDataArgument, nativeDataFormat } from './data-text.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
+import { nativeABI } from './abi/index.mjs';
 export const NATIVE_DRAW_COMMAND_CONTRACTS = Object.freeze(
   [
     [0x2c3, 13],
@@ -38,7 +39,8 @@ export class NativeDrawCommands {
       const bytes = nativeDataFormat(args, machine, this.world.runtime.services, 2),
         name = bytes ? new TextDecoder('shift_jis').decode(bytes) : '',
         path = await this.world.imageFiles.locate(name);
-      if (path) await send(293, 0, { payload: { string: () => path } });
+      if (path || nativeABI(this.world.profile).graphics.drawMissingAnimationSendsEmpty)
+        await send(293, 0, { payload: { string: () => path ?? '' } });
     } else if (id === 0x370) {
       await send(312, 0, { payload: new NativeGraphicsPacket([a(2), a(3)]) });
     } else await send(id === 0x271 ? 295 : id === 0x36f ? 311 : 313, a(2));
