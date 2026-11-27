@@ -102,6 +102,17 @@ unknown. This registration adds no frontend: the existing JavaScript FES route
 already enforces two words and returns control2. Other unknown slots and
 unregistered versions retain their explicit gates.
 
+The FES task's separate running gate starts disabled. Native Main447 prepares
+the interpreter and source without enabling ordinary FES decoding; Main448
+enables it and immediately invokes the normal FES update. The Base task clock
+continues to update while this gate is disabled. Constructor, receiver and Frame
+branches establish this common rule in all five admitted builds; SDK63/67 also
+have the fresh-load, Root Frame0, Main448 and notification consumer controls.
+The JavaScript host `load` convenience caller explicitly schedules advancement
+after a successful source load. The internal checkpoint stores the required
+boolean gate directly, including the loaded-but-not-started state; native
+GAME_SAVE has no new field or layout change.
+
 | Canonical messages | Behavior and limits                                                                                                                                                                                                                                   |
 | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 3                  | Set the private `_EXITCODE_` to -1 and send sound-bank message 210 before the base destruction request; actual resource release remains deferred.                                                                                                     |

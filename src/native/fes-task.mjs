@@ -33,6 +33,7 @@ export function createNativeFESTask(world, record) {
   Object.assign(implementation, {
     input,
     player: null,
+    runEnabled: false,
     surface: null,
     soundTaskID: null,
     sleepValue: 0,
@@ -143,7 +144,11 @@ export function createNativeFESTask(world, record) {
     async load(name, sender) {
       const bank = world.runtime.variableBank(sender, false);
       await this.initialize(bank?.words ? sender.context.variableBank : 0);
-      return this.loadSource(name);
+      const loaded = await this.loadSource(name);
+      // The host convenience loader schedules ordinary advancement. The SDK
+      // wrappers use initialize/loadSource and explicitly start with Main448.
+      if (loaded) this.runEnabled = true;
+      return loaded;
     },
     async loadSource(name) {
       if (!this.player)
@@ -185,7 +190,7 @@ export function createNativeFESTask(world, record) {
       const player = this.player,
         live = () =>
           this.player === player && record.state !== 'releasing' && !player?.root?.runtime?.closed;
-      if (this.sleepValue || !player?.root || !live()) return;
+      if (!this.runEnabled || this.sleepValue || !player?.root || !live()) return;
       this.variableBank()?.selectContext(this.variableContextKey());
       await input.tick();
       if (!live()) return;
@@ -201,6 +206,7 @@ export function createNativeFESTask(world, record) {
     snapshot() {
       return {
         player: this.player?.snapshot() ?? null,
+        runEnabled: this.runEnabled,
         input: input.snapshot(),
         surface: this.surface,
         drawBinding: this.player?.nativeDraw ?? null,
@@ -214,6 +220,8 @@ export function createNativeFESTask(world, record) {
       };
     },
     async restore(state) {
+      if (typeof state.runEnabled !== 'boolean') throw new Error('Invalid FES running gate');
+      this.runEnabled = state.runEnabled;
       this.surface = state.surface;
       this.soundTaskID = state.soundTaskID;
       this.sleepValue = state.sleepValue;
@@ -348,6 +356,7 @@ export function createNativeFESTask(world, record) {
         return NATIVE_UNWRITTEN_WORD;
       }
       if (message === 333) {
+        this.runEnabled = true;
         await this.tick(record.effectiveFrame, context);
         return NATIVE_UNWRITTEN_WORD;
       }
@@ -396,6 +405,8 @@ export function createNativeFESTask(world, record) {
           index = name === null ? 0 : memory.load(wParam + 32) | 0;
         await player.notify(labelBytes(memory, lParam), name, index);
         if (!live()) return NATIVE_UNWRITTEN_WORD;
+        // A successful native notification also completes its trailing MOT phase.
+        root?.runtime?.afterStep();
         if (!input.state.sleeping) {
           await world.graphics.syncFES(record, player, {
             resourcesOnly: true,

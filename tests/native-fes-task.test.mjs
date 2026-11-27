@@ -251,7 +251,7 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
       assert.equal(record.exitCode, -1);
       assert.equal(record.implementation.player.root.local(0), 0);
       await world.sendEngine(id, world.main.id, 342, 0, 7);
-      await record.implementation.tick();
+      await nativeFES(448, [world.nativeTaskID(id)], world.main.machine, world.main, world);
       assert.equal(record.implementation.player.root.local(0), 0);
       await world.sendEngine(id, world.main.id, 342, 0, 0);
       await record.implementation.tick();

@@ -362,6 +362,7 @@ export default {
   },
   motion: {
     managerLifetime: 'explicit-delete',
+    sourceCacheRelease: 'manager-delete',
     zeroWidthRotationReadsStack: true,
     currentMatrixFallback: true,
     matrixMemoryOperationsUseNativeOrder: true,
@@ -1161,6 +1162,7 @@ export default {
     mxcsr: null,
   },
   fes: {
+    motionUpdateAfterDecode: true,
     nativeQueueYieldStopsNotification: true,
     emptyExecReturnsZero: true,
     shellErrorText: { storage: 'inline', caption: '実行エラー' },

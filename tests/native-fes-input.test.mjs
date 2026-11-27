@@ -207,7 +207,7 @@ test('FES sleep hides retained entries and plane tasks while preserving authored
     });
   try {
     const h = await loadDefaultFES(world);
-    await h.task.tick();
+    await world.sendEngine(h.id, world.main.id, 333);
     const { player, input } = h.task,
       panel = h.instance.byKey.get('panel'),
       buttonID = input.state.buttons[0][1];

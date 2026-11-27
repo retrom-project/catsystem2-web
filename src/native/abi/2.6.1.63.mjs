@@ -330,6 +330,7 @@ export default {
   },
   motion: {
     managerLifetime: 'explicit-delete',
+    sourceCacheRelease: 'manager-delete',
     addUsesFormat: true,
     nativeFilenameQuery: true,
     splineUsesX87: true,
@@ -993,6 +994,7 @@ export default {
     mxcsr: null,
   },
   fes: {
+    motionUpdateAfterDecode: true,
     nativeQueueYieldStopsNotification: true,
     emptyExecReturnsZero: true,
     shellErrorText: { storage: 'inline', caption: '実行エラー' },

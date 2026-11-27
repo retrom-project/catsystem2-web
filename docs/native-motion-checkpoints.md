@@ -285,3 +285,31 @@ current cold continuations retain the manager and record states. Initial
 working/object/frame bytes excluded by the fixture remain unqualified; captured
 heap bytes are not initial values. This bridge does not establish FES phase
 order or source-cache invalidation.
+
+The SDK63/67 FES consumer fixture separately qualifies Main448's trailing MOT
+phase and Main630 notification completion. Each own original journal records
+MOT addition before the object/manager update. A frame-derived position advances
+from0/9 to1/9 on successive Root updates; a normal CHANGE callback creates a new
+instance at0/15, which advances to1/15 on the next update. The notification path
+now completes the existing trailing phase after successful decoding and its
+liveness check. SDK23 uses this same qualified phase; modern before-decode frame
+behavior remains unchanged. Normal live-Core retirement clears the shared MOT
+source list in both older builds. Eight independent consumer cold continuations
+supplement the sixteen secondary continuations. These are CPU state and actual
+callback/Root consumer controls, without drawing, Present or GPU claims. The
+fresh-load control first runs an ordinary Root Frame0: Base clocks initialize,
+but FES decoding remains disabled until Main448. Its disabled gate also survives
+an independent cold restore. Captures taken before that normal clock producer
+remain diagnostic records and do not establish numeric clock equivalence.
+
+Repeated Main447 initialization is explicitly outside that equivalence: the old
+receivers overwrite the owning Core pointer and construct new managers while
+the observed cache stays populated; Web currently closes its old interpreter.
+The earlier original reload rows are retained as open evidence and excluded
+from the final paired fixture. Final live-Core retirement has its own normal
+receiver control. The original journal does not establish whether other native
+references can reach the overwritten Core or that normal application shutdown
+reclaims it. A complete Core replacement/retained-consumer ownership group is
+still required; no leaked native allocation or alternative checkpoint layout is
+emulated here. The current fixture uses the World's constructed Root for the
+native kind1 Top prerequisite and does not qualify nested native-ID namespaces.
