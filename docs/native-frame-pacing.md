@@ -2,8 +2,8 @@
 
 `src/native/frame-pacer.mjs` separates an observed host wait, the ordinary game
 Frame word, and the raw step supplied to a task update. It does not create waits
-or estimate their count from elapsed time. Main442/443 remain protected until
-the complete SDK23 source, dispatch and Script contracts have been validated.
+or estimate their count from elapsed time. The fixed SDK23 Main442/443 binding requires the actual Script owner and a
+known accumulator; an update without a qualified raw source remains protected.
 
 For the fixed SDK2.6.1.23 executable `9f3a5ad0…`, the dispatcher completes its
 pacer loop, calls the Root update once with two independent words, and draws.
@@ -83,3 +83,24 @@ with its previous elapsed time before adding the current Frame delta. A
 same-bucket return preserves queued keyboard input, and an independent cold
 FES/MOT continuation retains the timer phase and manager start tick. These
 checks do not replace the original executable's factory and VM evidence.
+
+Main442 resets the owned Script accumulator and returns control2 without
+writing a VM output. Main443 returns control1 with `u32(x + (x >>> 2))`. Only
+SDK23 registers these shared meanings. Successful reload keeps the same Script
+word and rebinds the World's main-task alias to its newly loaded VM; a separate
+Script constructor initializes a separate zero word. Current internal cold
+state retains the exact u32 value and knownness with that owner.
+
+The bounded true-host group executes23 total GCALLs,8 Script updates and3
+normal mode messages using the unchanged original private bodies. It covers
+zero/reset, a Frame jump with one raw increment, mode0, inactivity, resumption,
+completion, reload and another Script. The browser source observation covers
+24 natural rAF returns, actual UHD730 rendering and an independent cold
+continuation. It observes no same-bucket return; that branch retains its
+focused module and World-test qualification. Neither result is a Windows
+Sleep measurement or a performance result.
+
+The actual CSS GAME_SAVE writer and reader transport only the game's explicit
+records. A fresh World and Script do not inherit this private accumulator from
+a game file. The focused VM save/close/read test checks the original-format
+record bytes and constructor state; it does not add fields to native saves.

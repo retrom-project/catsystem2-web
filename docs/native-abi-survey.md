@@ -160,9 +160,10 @@ routing miss establishes an original whole-slot stub.
 
 `442`/`443` operate on the real Script's unsigned accumulator at `+0x1e4`.
 Its update follows Base and precedes VM execution while active. The original
-second update input comes from host frame-pacer wait sampling. The current
-World has no corresponding input, so these entries remain protected without a
-frame, clock or constant substitute. The separate 88-byte Script diagnostic
+second update input comes from host frame-pacer wait sampling. The observed-cooperative-wait SDK23 driver now supplies that independent raw
+word through the whole dispatch. The reviewed Script shape is recovered;
+Worlds without a qualified raw source retain unknown-value protection. No
+Frame difference, elapsed time or constant substitutes for observed returns. The separate 88-byte Script diagnostic
 dump omits this field; that export alone does not prove the GAME_SAVE reader.
 Main `588` likewise keeps its established split: an active original manager
 leaves the caller's result unwritten, while an absent manager has a defined zero

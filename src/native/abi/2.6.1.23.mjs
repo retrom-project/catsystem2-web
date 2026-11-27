@@ -183,6 +183,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [442, 443],
+    value:
+      'Own fixed SDK23 Main442 resets the caller kcTaskScript accumulator at +0x1e4, returns control2 and leaves its output unwritten. Main443 writes u32(x + (x >>> 2)) and returns control1. True original CRT/FileServer/Window/View/Top and actual factory-loaded VM run23 total GCALLs and8 normal Script updates: Base precedes raw accumulation, mode0 still accumulates, inactivity skips it, completion happens after the current increment, same Script reload retains the word and a new Script starts at constructor zero. The raw word is independently produced by the original Q32/carry/delayed-step algorithm fed by actual browser cooperative-wait returns; its units are scheduler-dependent, not elapsed milliseconds. A browser observation of24 natural rAF returns includes independent current-checkpoint cold and ordinary rendering. Unqualified update sources remain guarded; this does not reproduce Windows Sleep returns or add timing state to GAME_SAVE.',
+  },
+  {
     ids: [532],
     value:
       'Own Main532 returns control2 without writing its output. Target0 skips routing; actual Base0 and Wipe39 raw354 both return unhandled1 and leave the reply and task state untouched. A separate true original loaded-VM group initializes the Wipe frame through actual parent100/102 updates and Base41a760 before start: current102/start100/end104 and activity remain unchanged across Main532. Factory/support/carrier/cleanup included27 total GCALLs; original dependency bodies and normal disposal are intact. This is an unhandled action, not a finish operation; other receiver kinds stay guarded.',

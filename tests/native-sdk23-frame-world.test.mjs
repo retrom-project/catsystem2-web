@@ -66,8 +66,8 @@ test('same-bucket waits do not update or consume the caller, and presentation se
     await assert.rejects(world.tick(), /observed pacing dispatch/);
     world.completeHostFrame();
     assert(world.snapshot().framePacer);
-    assert.equal(nativeABI(profile).tables.main.entries[442].status, 'unknown');
-    assert.equal(nativeABI(profile).tables.main.entries[443].status, 'unknown');
+    assert.equal(nativeABI(profile).tables.main.entries[442].status, 'recovered');
+    assert.equal(nativeABI(profile).tables.main.entries[443].status, 'recovered');
   } finally {
     await world.close();
   }

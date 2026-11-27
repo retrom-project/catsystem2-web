@@ -62,8 +62,17 @@ export function createNativeScriptTask(world, record) {
   record.scriptDebugHook ??= 0;
   record.scriptMessages ??= [];
   if (nativeABI(world.profile).framePacing) {
-    record.scriptUpdateAccumulator ??= 0;
-    record.scriptUpdateAccumulatorKnown ??= true;
+    if (!world.restoring) {
+      record.scriptUpdateAccumulator ??= 0;
+      record.scriptUpdateAccumulatorKnown ??= true;
+    }
+    if (
+      !Number.isInteger(record.scriptUpdateAccumulator) ||
+      record.scriptUpdateAccumulator < 0 ||
+      record.scriptUpdateAccumulator > 0xffffffff ||
+      typeof record.scriptUpdateAccumulatorKnown !== 'boolean'
+    )
+      throw new Error('Native Script accumulator requires its current owned word and knownness');
   }
   world.runtime.stringBank({ context: record.context });
   Object.assign(implementation, {
@@ -220,6 +229,7 @@ export function createNativeScriptTask(world, record) {
       if (present) {
         task.messages = record.scriptMessages;
         await this.bindMachineShared();
+        if (world.main?.id === record.id) world.main = task;
       }
       if (present) record.scriptEnabled = 1;
       record.scriptLoaded = 1;
@@ -605,6 +615,24 @@ export function createNativeScriptTask(world, record) {
 
 export function installNativeScripts(world) {
   const game = world.game;
+  if (nativeABI(world.profile).framePacing === 'observed-cooperative-wait') {
+    for (const id of [442, 443])
+      world.runtime.register('main', id, (args, _machine, task) => {
+        if (args.length) throw new Error(`Native Script accumulator ${id} expects no arguments`);
+        const record = world.objects.objects.get(task.id);
+        if (record?.kind !== 12 || typeof record.scriptUpdateAccumulatorKnown !== 'boolean')
+          throw new Error('Native Script accumulator requires its actual Script owner');
+        if (id === 442) {
+          record.scriptUpdateAccumulator = 0;
+          record.scriptUpdateAccumulatorKnown = true;
+          return nativeReply(2);
+        }
+        if (!record.scriptUpdateAccumulatorKnown)
+          throw new Error('Native Script accumulator requires its observed update source');
+        const value = record.scriptUpdateAccumulator;
+        return nativeReply(1, (value + (value >>> 2)) >>> 0);
+      });
+  }
   world.runtime.register('main', 0x8f, async (args, machine, task) => {
     if (args.length !== 3) throw new Error('KCS script load expects three arguments');
     const source = world.runtime.services.format(args[1], machine),

@@ -16096,6 +16096,35 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    442: {
+      name: 'script.resetUpdateAccumulator',
+      family: 'script',
+      signature: {
+        argumentWords: 0,
+        controlCodes: [2],
+        parameters: [],
+        result: { description: 'void', kind: 'void' },
+        resultWritten: false,
+        review: 'declared',
+      },
+    },
+    443: {
+      name: 'script.queryUpdateAccumulator',
+      family: 'script',
+      signature: {
+        argumentWords: 0,
+        controlCodes: [1],
+        parameters: [],
+        result: {
+          description: 'u32(value + (value >>> 2))',
+          bits: 32,
+          kind: 'integer',
+          signed: false,
+        },
+        resultWritten: true,
+        review: 'declared',
+      },
+    },
     444: {
       name: 'module.version',
       family: 'module',
