@@ -333,7 +333,9 @@ not additional original dynamic glyph, hit-pixel or GPU evidence.
 The original overwritten Core itself is not destructed or freed in the
 observed normal shutdown, although its task children and live resources have
 normal retirement. The browser preserves those observable consumers and cache
-semantics rather than reproducing the unreachable allocation leak. The native
+semantics rather than reproducing the superseded allocations. This does not establish
+global unreachability: the old native bank registration also persists, but no
+additional legal Core-specific consumer is established here. The native
 fixture closes its inner Top before its outer supplying Script; the reused
 Root0 current fixture preserves that provider lifetime explicitly. Full
 Application/Device publication and broader replacement formats, callbacks and
