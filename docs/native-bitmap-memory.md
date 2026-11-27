@@ -463,3 +463,25 @@ Node Buffer rather than the resource interface's Uint8Array; that author
 failure is preserved separately. These calls do not qualify other formats,
 shared or alias layouts, empty/smaller nine-piece destinations, resource
 extremes or hardware presentation.
+
+## SDK 2.6.1.67 loaded ImageOwner pixels
+
+The own Main710/Main733 wrappers allocate sixty-four-byte ImageOwners through
+`569810`, enter the calling Script's actual automatic-owner list, and retain
+276-byte bitmap wrappers. Twenty-eight target and twenty-three dependency
+GCALLs compare forty-eight frames for six pixel entries: alpha query/toggle,
+physical metadata copy, color and alpha masks, all four blend modes, local
+coordinates, transparent RGB neighbors and RGBA/RGB24 sources and targets.
+The selected pixels, owner info, clip, reference counts, untouched VM bytes,
+control/results and explicit releases match the shared implementation under
+own .67 policies. Eight independent current cold continuations retain the
+same owned resources and execute the next KCS call. The original alpha query
+leaves its result unwritten without a bitmap; that shape stays diagnosed.
+
+The merged original group's final allocation reuses a previously released
+owner address. Its read-only observer originally labelled that address by
+the first historical name. Fixture normalization resolves that recorded name
+through the original GCALL address map to the unique live name, preserving
+list order and the original report. No target behavior or pixels are inferred
+from current JS for this correction. Shared/foreign owners, unproved formats,
+resource extremes and hardware output remain separate scopes.
