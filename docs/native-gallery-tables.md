@@ -19,3 +19,28 @@ Variants require exactly 86,400 bytes, comprising twenty groups of eight 540-byt
 Name tables contain a DWORD row count and four 32-byte columns per 128-byte row. Row checks are signed and column checks unsigned. A leading zero marks an absent field. Copies follow the C string into later columns when necessary. Malformed strings crossing their allocation produce a diagnostic. Missing or wrong-sized variant files produce a valid empty table. Missing name files return zero.
 
 Both ABI differential sequences compare controls, results, every VM byte, handle lifecycle and subsequent queries through independent dispatch. Pure JS tests restore table handles without an EXE and check ownership isolation. Historical full-parser verification remains available against the oracle facade. [Differential](../tests/differential/native-gallery-tables.test.mjs), [oracle facade](../oracle/gallery-tables.mjs).
+
+## SDK 2.6.1.63 normal resource callers
+
+This build independently admits Main405–416 from its own executable. Original
+CRT, Settings, FileServer, Window and WindowDevice initialization, followed by
+Main66 and Main143, supplies the actual Script VM. Forty Gallery calls use the
+original narrow formatter, `fes` category, real mounted KIF reads, RefBuffer
+allocation/copy and table constructors/destructors. Three caller setup GCALLs
+are counted separately. No renderer, glyph drawing or Windows host process is
+part of this protocol; its small original-format resources are authored parser
+fixtures, not a shipped gallery scene.
+
+The World/KCS test compares all forty calls, exact local output spans including
+the variant's two NUL writes and the name's one NUL write, control/results,
+unchanged non-output memory, row order and duplicates, retained owner bytes and
+release isolation. Eight fresh World checkpoint restores preserve the loaded
+resource bytes without re-reading their source data. These are internal
+resource checkpoints; Gallery handles do not add a native GAME_SAVE section.
+The separately accepted Scene CSS/GAME_SAVE path reconstructs history cursors.
+
+Empty fields, zero counts, ordinary endpoint misses and missing resources are
+included. Shared-bound callers, cross-layout calls, malformed table sizes or
+counts, unterminated fields, unproven frame shapes and allocation failures are
+outside this group. Existing typed owner and memory diagnostics remain in place;
+these tests do not establish complete SDK acceptance.

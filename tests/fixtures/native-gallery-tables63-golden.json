@@ -1,0 +1,1106 @@
+{
+  "profile": "rebellions-jp-engine-2.6.1.63",
+  "original": {
+    "path": ".local/phase11/sdk63-history-gallery-plan-20261127/ORIGINAL-GALLERY63-NORMAL.json",
+    "sha256": "2c692560053c66927d076d6c37628f72bcc6205cefe784291e2e5834d6020265",
+    "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+    "textSha256": "89320bbab145f475216fceb5c1d8f0e4181c9f73f61f087ed6d26caf1e12789a",
+    "targetCalls": 40,
+    "dependencyCalls": 3,
+    "resources": [
+      {
+        "name": "scripts.int",
+        "bytes": 158,
+        "sha256": "9442059383f82373349dda4ad41b31d6221a3d9a51d68c2c0b13e4dfe84c96e1",
+        "provenance": "small legal authored original-format fixture"
+      },
+      {
+        "name": "scene.int",
+        "bytes": 96,
+        "sha256": "c5372105602356172e97857ba5084fdbb6eb148d2193ddc7a739f994b65ccf9a",
+        "provenance": "small legal authored original-format fixture"
+      },
+      {
+        "name": "tables.int",
+        "bytes": 173488,
+        "sha256": "e0cf083a24a1e6a1066a124db4a7d6b5a9208b074059ed86132fc3f40a7b33da",
+        "provenance": "small legal authored original-format fixture"
+      }
+    ],
+    "tables": [
+      {
+        "name": "台%帳.tbl",
+        "bytes": 86400,
+        "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+      },
+      {
+        "name": "names.tbl",
+        "bytes": 388,
+        "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+      },
+      {
+        "name": "emptyvariants.tbl",
+        "bytes": 86400,
+        "sha256": "c15a958bf2806ac93920a2a2b014d7fbc81e9dfd5f20eef74175eee08928e2d1"
+      },
+      {
+        "name": "zeronames.tbl",
+        "bytes": 4,
+        "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "label": "missing names",
+      "id": 412,
+      "args": [64],
+      "result": 0,
+      "control": 1,
+      "outputs": [],
+      "state": [],
+      "text": "missing",
+      "kind": "names",
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "variants formatted CP932 path",
+      "id": 405,
+      "args": [64],
+      "result": "owned:variants",
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "save": "variants",
+      "text": "台%%帳",
+      "kind": "variants",
+      "source": "台%帳.tbl",
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "variant group count",
+      "id": 407,
+      "args": ["variants"],
+      "result": 2,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "first file count",
+      "id": 408,
+      "args": ["variants", 0],
+      "result": 3,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "second file count",
+      "id": 408,
+      "args": ["variants", 1],
+      "result": 1,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "empty last file group",
+      "id": 408,
+      "args": ["variants", 19],
+      "result": 0,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "first choice count",
+      "id": 409,
+      "args": ["variants", 0, 0],
+      "result": 3,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "second choice count",
+      "id": 410,
+      "args": ["variants", 0, 0],
+      "result": 2,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "first reference",
+      "id": 411,
+      "args": ["variants", 0, 0, 0, 0, 256],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            105, 109, 103, 48, 44, 48, 44, 65, 44, 67, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "combined reference",
+      "id": 411,
+      "args": ["variants", 0, 0, 1, 1, 256],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            105, 109, 103, 48, 44, 66, 44, 48, 44, 69, 44, 68, 44, 70, 0, 0, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "CP932 base and long mask",
+      "id": 411,
+      "args": ["variants", 1, 0, 2, 0, 256],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            147, 250, 150, 123, 44, 48, 44, 48, 44, 67, 44, 48, 44, 48, 44, 48, 44, 48, 44, 48, 44,
+            48, 44, 48, 44, 48, 44, 48, 44, 48, 44, 48, 44, 48, 44, 90, 0, 0, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "empty base",
+      "id": 411,
+      "args": ["variants", 0, 2, 0, 0, 256],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            44, 48, 44, 65, 44, 67, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "choice endpoint miss",
+      "id": 411,
+      "args": ["variants", 0, 0, 3, 0, 256],
+      "result": 0,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "names owner",
+      "id": 412,
+      "args": [64],
+      "result": "owned:names",
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "names",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "save": "names",
+      "text": "names",
+      "kind": "names",
+      "source": "names.tbl",
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "name count",
+      "id": 414,
+      "args": ["names"],
+      "result": 3,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "names",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "first row exists",
+      "id": 415,
+      "args": ["names", 0, 0],
+      "result": 1,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "names",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "first ordered name",
+      "id": 416,
+      "args": ["names", 0, 0, 256],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            143, 100, 149, 161, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "names",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "duplicate ordered name",
+      "id": 416,
+      "args": ["names", 1, 0, 256],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            143, 100, 149, 161, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "names",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "empty field exists",
+      "id": 415,
+      "args": ["names", 1, 1],
+      "result": 0,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "names",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "empty field keeps output",
+      "id": 416,
+      "args": ["names", 1, 1, 256],
+      "result": 0,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "names",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "last ordered CP932 name",
+      "id": 416,
+      "args": ["names", 2, 3, 256],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            147, 250, 150, 123, 150, 188, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "names",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "row endpoint exists",
+      "id": 415,
+      "args": ["names", 3, 0],
+      "result": 0,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "names",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "row endpoint keeps output",
+      "id": 416,
+      "args": ["names", 3, 0, 256],
+      "result": 0,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "names",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "independent names owner",
+      "id": 412,
+      "args": [64],
+      "result": "owned:independent",
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "names",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        },
+        {
+          "name": "independent",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "save": "independent",
+      "text": "names",
+      "kind": "names",
+      "source": "names.tbl",
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close first names",
+      "id": 413,
+      "args": ["names"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "independent",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "independent retained count",
+      "id": 414,
+      "args": ["independent"],
+      "result": 3,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "independent",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "independent retained name",
+      "id": 416,
+      "args": ["independent", 2, 3, 256],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            147, 250, 150, 123, 150, 188, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        },
+        {
+          "name": "independent",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 3,
+          "bytes": 388,
+          "sha256": "46b6c3b7c48f4bbb21dc633e12f586ce0c7c233c5cf06dd6701d830f57dd5813"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close independent names",
+      "id": 413,
+      "args": ["independent"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [
+        {
+          "name": "variants",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 2,
+          "bytes": 86400,
+          "sha256": "0a598c85b92084a479f636e83c33e0f3914570d0c77570fb2252b95b75338a2e"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close variants",
+      "id": 406,
+      "args": ["variants"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "empty variants owner",
+      "id": 405,
+      "args": [64],
+      "result": "owned:empty",
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "empty",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 0,
+          "bytes": 86400,
+          "sha256": "c15a958bf2806ac93920a2a2b014d7fbc81e9dfd5f20eef74175eee08928e2d1"
+        }
+      ],
+      "save": "empty",
+      "text": "emptyvariants",
+      "kind": "variants",
+      "source": "emptyvariants.tbl",
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "empty variants count",
+      "id": 407,
+      "args": ["empty"],
+      "result": 0,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "empty",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 0,
+          "bytes": 86400,
+          "sha256": "c15a958bf2806ac93920a2a2b014d7fbc81e9dfd5f20eef74175eee08928e2d1"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "empty variants keeps output",
+      "id": 411,
+      "args": ["empty", 0, 0, 0, 0, 256],
+      "result": 0,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "empty",
+          "kind": "variants",
+          "dataPresent": true,
+          "count": 0,
+          "bytes": 86400,
+          "sha256": "c15a958bf2806ac93920a2a2b014d7fbc81e9dfd5f20eef74175eee08928e2d1"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close empty variants",
+      "id": 406,
+      "args": ["empty"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "missing variants still owner",
+      "id": 405,
+      "args": [64],
+      "result": "owned:missing",
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "missing",
+          "kind": "variants",
+          "dataPresent": false,
+          "count": 0,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "save": "missing",
+      "text": "missing",
+      "kind": "variants",
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "missing variants count",
+      "id": 407,
+      "args": ["missing"],
+      "result": 0,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "missing",
+          "kind": "variants",
+          "dataPresent": false,
+          "count": 0,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close missing variants",
+      "id": 406,
+      "args": ["missing"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "zero names owner",
+      "id": 412,
+      "args": [64],
+      "result": "owned:zero",
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "zero",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 0,
+          "bytes": 4,
+          "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+        }
+      ],
+      "save": "zero",
+      "text": "zeronames",
+      "kind": "names",
+      "source": "zeronames.tbl",
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "zero names count",
+      "id": 414,
+      "args": ["zero"],
+      "result": 0,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "zero",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 0,
+          "bytes": 4,
+          "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "zero names miss",
+      "id": 415,
+      "args": ["zero", 0, 0],
+      "result": 0,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "zero",
+          "kind": "names",
+          "dataPresent": true,
+          "count": 0,
+          "bytes": 4,
+          "sha256": "df3f619804a92fdb4057192dc43dd748ea778adc52bc498ce80524c014b81119"
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close zero names",
+      "id": 413,
+      "args": ["zero"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    }
+  ]
+}

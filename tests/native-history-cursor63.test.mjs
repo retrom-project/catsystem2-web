@@ -184,7 +184,7 @@ test('63 actual World KCS callers match thirty own Cursor GCALLs, seven Scene de
   assert.equal(live.size, 0);
   for (let id = 379; id <= 384; id++)
     assert.equal(nativeABI(profile).tables.main.entries[id].status, 'recovered');
-  assert.equal(nativeABI(profile).tables.main.entries[405].status, 'unknown');
+  assert.equal(nativeABI(profile).tables.main.entries[391].status, 'unknown');
 });
 
 test('63 native CSS history reconstructs a fresh cursor through independent GAME_SAVE storage', async (t) => {
