@@ -76,7 +76,7 @@ export class NativeWindow {
       message === 0x10 ||
       message === 0x410 ||
       (this.directCloseMessage !== undefined && message === this.directCloseMessage) ||
-      [0x467, 0x468].includes(message) ||
+      [0x464, 0x467, 0x468].includes(message) ||
       Boolean(this.world.configuration.language && [0x46e, 0x46f, 0x470].includes(message)) ||
       (message === 0x112 && (wParam & 0xfff0) === 0xf020)
     );
@@ -311,6 +311,12 @@ export class NativeWindow {
     return true;
   }
   async message(message) {
+    if (message.message === 0x464) {
+      const enabled = message.lParam !== 0;
+      this.world.menu.set(0x77, enabled);
+      this.world.host.nativeMenuChanged?.(0x77, enabled);
+      return true;
+    }
     if (message.message === 0x468) {
       await this.sendEvent(21);
       return true;

@@ -1,0 +1,240 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "originalReceipt": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-host-media-window-20261128/ORIGINAL-G1-QUALIFIED.json",
+  "originalReceiptSha256": "985591a43f709a5502b89fd43addf3aeadb46633df656adc1f3dc952ab9aaf5d",
+  "scope": "Loaded typed Script, real CRT stream writer/read consumer, exact C1/C2/C4 replies; Main393/9 enqueue only. Partial host uses real native Root/View and normal memory OS services; no physical desktop/output proof.",
+  "script": "host-output-g1",
+  "marker": 593170433,
+  "coldAt": [0, 1, 2, 3],
+  "inputs": {
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PG13X3Bvcz4xNzwvbXdfcG9zPjx3aWR0aD4zMjwvd2lkdGg+PGhlaWdodD4yNDwvaGVpZ2h0Pjx2X3dpZHRoPjMyPC92X3dpZHRoPjx2X2hlaWdodD4yNDwvdl9oZWlnaHQ+PC9TQ1JFRU4+PFRFWFRVUkU+PHNpemU+PHg+ODwveD48eT44PC95Pjwvc2l6ZT48dnQ+PHg+MjwveD48eT4xPC95PjwvdnQ+PGFyZWEwMD48c3g+MDwvc3g+PHN5PjA8L3N5PjxkeD4yPC9keD48ZHk+MTwvZHk+PC9hcmVhMDA+PGJwcDMyeT4wPC9icHAzMnk+PGJwcDE2eT4xPC9icHAxNnk+PGJwcD4zMjwvYnBwPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPnB0Y2w8L25hbWU+PGludD5wdGNsLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5wdGNsLWxvb3NlPC9kaXI+PC9pbnQwMj48aW50MDM+PG5hbWU+c2NlbmU8L25hbWU+PGludD5zY2VuZXMuaW50PC9pbnQ+PGV4dD5jc3Q8L2V4dD48ZGlyPnNjZW5lcy1sb29zZTwvZGlyPjwvaW50MDM+PGludDA0PjxuYW1lPmNvbmZpZzwvbmFtZT48aW50Pm1ldGFkYXRhLmludDwvaW50PjxleHQ+eG1sPC9leHQ+PGRpcj5tZXRhZGF0YS1sb29zZTwvZGlyPjwvaW50MDQ+PC9JTlQ+PC9kb2N1bWVudD4=",
+    "archives": [
+      {
+        "name": "startup.xml",
+        "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PG13X3Bvcz4xNzwvbXdfcG9zPjx3aWR0aD4zMjwvd2lkdGg+PGhlaWdodD4yNDwvaGVpZ2h0Pjx2X3dpZHRoPjMyPC92X3dpZHRoPjx2X2hlaWdodD4yNDwvdl9oZWlnaHQ+PC9TQ1JFRU4+PFRFWFRVUkU+PHNpemU+PHg+ODwveD48eT44PC95Pjwvc2l6ZT48dnQ+PHg+MjwveD48eT4xPC95PjwvdnQ+PGFyZWEwMD48c3g+MDwvc3g+PHN5PjA8L3N5PjxkeD4yPC9keD48ZHk+MTwvZHk+PC9hcmVhMDA+PGJwcDMyeT4wPC9icHAzMnk+PGJwcDE2eT4xPC9icHAxNnk+PGJwcD4zMjwvYnBwPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPnB0Y2w8L25hbWU+PGludD5wdGNsLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5wdGNsLWxvb3NlPC9kaXI+PC9pbnQwMj48aW50MDM+PG5hbWU+c2NlbmU8L25hbWU+PGludD5zY2VuZXMuaW50PC9pbnQ+PGV4dD5jc3Q8L2V4dD48ZGlyPnNjZW5lcy1sb29zZTwvZGlyPjwvaW50MDM+PGludDA0PjxuYW1lPmNvbmZpZzwvbmFtZT48aW50Pm1ldGFkYXRhLmludDwvaW50PjxleHQ+eG1sPC9leHQ+PGRpcj5tZXRhZGF0YS1sb29zZTwvZGlyPjwvaW50MDQ+PC9JTlQ+PC9kb2N1bWVudD4="
+      },
+      {
+        "name": "scripts.int",
+        "data": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABob3N0LW91dHB1dC1nMS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAKoBAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAtQMAAOkDAAAAAAAAAAAAAAAQAAAAEAAA6QMAAAAAAABqBwAAeJxd0jFLw1AQB/BLUrFCh4KDkxI43i2FQiDg4BJBjIOD4BgyaFusSwttAh0zdIjQoUOHDg4OBhwcHBwc/Ciufg999xJy6fbjz+V/7yAKrW6ECouiKAgzAKi8FM6FV8Jr4Y3wVviZvQ8AzfnMEbuEc+GV8Fp4I7wVfhZ+EX4VfhN+F/4Q/hT+Ev5mj6fzhDCwtJVKI8ILduj5PuEVO+4nC8JrdsK337Bn99qB6AHTk0YhYYvt+X5M2Gb3k0VC2GED93TZl4+zOSHY3O+qlLDFjkLPJ2yz/VjPd9i3o8GUMGNPhq4iXLLTKPQIczPvx//zK7veBQ5AD39tgDIwP4h2D58sAGyZwLzP1vGpnm5DHVhQzvXwHMomhYPx3aQ64GE0dKsD5tN0Vh0wGNUHHIkfyKzLdtdZzWc1Hr7c3V8+2dnpyJpPrkoP6gCaQaPU/BMBlx5DWUoYmGqn6lMmOQz4+xM92OXBXMRuvfJnTwdhFZz9AYsCoyw="
+      },
+      {
+        "name": "metadata.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "scenes.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "images.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "ptcl.int",
+        "data": "S0lGAAAAAAA="
+      }
+    ]
+  },
+  "rows": [
+    {
+      "phase": 0,
+      "label": "loaded caller formats a CP932 diagnostic and writes the first real line; settings request is sent to its actual Window",
+      "outputs": [0, 2779096485, 2779096485],
+      "file": "Rmlyc3QgNw0K",
+      "source": [
+        70, 105, 114, 115, 116, 32, 37, 117, 91, 71, 49, 52, 52, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "reader": [
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+      ],
+      "fullScreen": 0,
+      "multiWindowPosition": 17
+    },
+    {
+      "phase": 1,
+      "label": "source overwrite preserves committed bytes; the next formatted append and menu re-enable use the live caller",
+      "outputs": [0, 0, 2779096485],
+      "file": "Rmlyc3QgNw1TZWNvbmQgMjMNCg==",
+      "source": [
+        99, 104, 97, 110, 103, 101, 100, 32, 115, 111, 117, 114, 99, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "reader": [
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+      ],
+      "fullScreen": 0,
+      "multiWindowPosition": 17
+    },
+    {
+      "phase": 2,
+      "label": "empty line uses the original end cursor; close requests remain queued for the normal Window handler",
+      "outputs": [0, 0, 2779096485],
+      "file": "Rmlyc3QgNw1TZWNvbmQgMjMNDQo=",
+      "source": [
+        99, 104, 97, 110, 103, 101, 100, 32, 115, 111, 117, 114, 99, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "reader": [
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+      ],
+      "fullScreen": 0,
+      "multiWindowPosition": 17
+    },
+    {
+      "phase": 3,
+      "label": "an independent normal CRT reader consumes the written file then releases its handle",
+      "outputs": [0, 0, 20],
+      "file": "Rmlyc3QgNw1TZWNvbmQgMjMNDQo=",
+      "source": [
+        99, 104, 97, 110, 103, 101, 100, 32, 115, 111, 117, 114, 99, 101, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "reader": [
+        70, 105, 114, 115, 116, 32, 55, 13, 83, 101, 99, 111, 110, 100, 32, 50, 51, 13, 13, 10, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+        165, 165, 165, 165, 165, 165, 165
+      ],
+      "fullScreen": 0,
+      "multiWindowPosition": 17
+    }
+  ],
+  "ledger": [
+    {
+      "id": 66,
+      "phase": -1,
+      "outputWritten": true,
+      "control": 1
+    },
+    {
+      "id": 209,
+      "phase": -1,
+      "outputWritten": false,
+      "control": 2
+    },
+    {
+      "id": 143,
+      "phase": -1,
+      "outputWritten": false,
+      "control": 2
+    },
+    {
+      "id": 741,
+      "phase": 0,
+      "outputWritten": true,
+      "control": 1
+    },
+    {
+      "id": 393,
+      "phase": 0,
+      "outputWritten": false,
+      "control": 2
+    },
+    {
+      "id": 567,
+      "phase": 0,
+      "outputWritten": false,
+      "control": 2
+    },
+    {
+      "id": 1,
+      "phase": 0,
+      "outputWritten": false,
+      "control": 2
+    },
+    {
+      "id": 65,
+      "phase": 0,
+      "outputWritten": false,
+      "control": 4
+    },
+    {
+      "id": 567,
+      "phase": 1,
+      "outputWritten": false,
+      "control": 2
+    },
+    {
+      "id": 393,
+      "phase": 1,
+      "outputWritten": false,
+      "control": 2
+    },
+    {
+      "id": 741,
+      "phase": 1,
+      "outputWritten": true,
+      "control": 1
+    },
+    {
+      "id": 65,
+      "phase": 1,
+      "outputWritten": false,
+      "control": 4
+    },
+    {
+      "id": 567,
+      "phase": 2,
+      "outputWritten": false,
+      "control": 2
+    },
+    {
+      "id": 1,
+      "phase": 2,
+      "outputWritten": false,
+      "control": 2
+    },
+    {
+      "id": 9,
+      "phase": 2,
+      "outputWritten": false,
+      "control": 2
+    },
+    {
+      "id": 9,
+      "phase": 2,
+      "outputWritten": false,
+      "control": 2
+    },
+    {
+      "id": 65,
+      "phase": 2,
+      "outputWritten": false,
+      "control": 4
+    },
+    {
+      "id": 29,
+      "phase": 3,
+      "outputWritten": true,
+      "control": 1
+    },
+    {
+      "id": 30,
+      "phase": 3,
+      "outputWritten": true,
+      "control": 1
+    },
+    {
+      "id": 32,
+      "phase": 3,
+      "outputWritten": false,
+      "control": 2
+    },
+    {
+      "id": 71,
+      "phase": 3,
+      "outputWritten": false,
+      "control": 4
+    }
+  ]
+}

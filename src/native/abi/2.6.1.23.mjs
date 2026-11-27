@@ -1692,6 +1692,7 @@ export default {
     scriptForward: [9, 10, 19, cursorVisibility, 64],
     screenEvent: 18,
     tilePlaneCommand: 42,
+    windowDirectClose: 0x433,
     windowClosePreparation: false,
     windowTitleConfirmation: {
       caption: 'タイトル画面に戻る',

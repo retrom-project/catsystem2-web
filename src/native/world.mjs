@@ -396,8 +396,7 @@ export class NativeWorld {
         date: () => new Date(this.clock.utcNow()),
         systemMenu: {
           setEnabled: (id, enabled) => {
-            this.menu.set(id, enabled);
-            host.nativeMenuChanged?.(id, enabled);
+            this.window.post(0x464, 0, Number(enabled));
           },
         },
         log: (text) => host.nativeLog?.(text),
