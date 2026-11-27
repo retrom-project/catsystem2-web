@@ -277,7 +277,7 @@ test('SDK23 Text9 admits only its reviewed typed legacy wrappers', () => {
   assert.equal(abi.tables.main.entries[616].signature.result.signed, true);
   for (const version of ['2.6.1.63', '2.6.1.67']) {
     const text = abiForEngineVersion(version).text;
-    assert.equal(text.legacyTextServices, undefined);
+    assert.deepEqual(text.legacyTextServices, [391]);
     assert.equal(text.remainingTaskKinds, undefined);
     assert.equal(text.gdiSBCSUsesMeasuredWidth, undefined);
     assert.equal(text.gdiFixedGlyphHalfCell, undefined);

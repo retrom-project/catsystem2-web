@@ -17,7 +17,7 @@ The modules separate the recovered contracts:
   the per-ABI packets from canonical configuration.
 - [`legacy-text-state.mjs`](../src/native/legacy-text-state.mjs) and
   [`text-legacy.mjs`](../src/native/text-legacy.mjs) implement task 8's separate
-  1116-byte configuration, 40-byte cells, wrappers, image fonts and frame logic.
+  per-build 1116/1128-byte configuration, 40-byte cells, wrappers, image fonts and frame logic.
   Messages 114/115 remain unhandled, as in the reviewed original receiver.
 - [`text-task.mjs`](../src/native/text-task.mjs) implements the canonical task
   messages and actual World frame clocks. STRING observes `userValue`; NV has
@@ -310,3 +310,36 @@ native dispatch barrier, and screenshots compose only after pending work has
 settled. Presented-frame recording and host thumbnails continue to read the
 presented framebuffer. The regular World checkpoint guard rejects an active
 frame; direct text checkpoints also reject an unsettled publication.
+
+## SDK63 and SDK67 StringPlane state and ownership
+
+Each exact build's Main66 kind8 factory runs its own 1904-byte constructor under
+an actual Script and Root. Main123 copies the 96-byte caller header and counted
+CP932 line-break units into a 1128-byte receiver packet. The normal group uses
+small four-channel bitmaps, bounded sixteen-cell storage and deferred parsing;
+it does not consume glyphs. Main124 has two fixed words in both builds, with
+its own formatted-byte expansion before the receiver.
+
+Main126–129,131/132,138/139 and456 retain full option words, cursors, spacing,
+font size, marks and alignment in the separate forty-byte cells. Main130 and133
+consult actual graph registration. A newly configured graph is unregistered, so
+hidden force/restart operations leave playback inactive even when the Base
+display word is set. Both builds now use the existing shared registration policy.
+Nonempty glyph raster and published output are a following qualification group.
+
+Main134 converts its valid CP932 input into a temporary terminated sixteen-bit
+packet; the kind8 receiver ignores it and Main135's scalar message through its
+base default. This establishes a receiver-specific ignored shape, not a global
+constant-result stub. Main391 returns zero before configuration or the existing
+bitmap owner without retaining it. Reconfiguration releases the old bitmap;
+normal Root retirement releases the final owner. JavaScript handles preserve
+these ownership relations without comparing physical addresses as integers.
+
+The original group executes 27 target and 18 bootstrap/dependency GCALLs per
+build, with one real EngineStop and two actual Root logic frames. Each current
+VM replay checks the copied configuration, all initialized scalar fields and
+character cells, plus eight independent cold continuations. Native font/DC and
+RefHeap allocations remain recorded separately from JavaScript cell storage.
+Only pixels written by a proved clear are compared. Glyph/provider rendering,
+physical GPU output, unsupported formats, unknown recipients and the separate
+Application-to-Device logical key publisher remain outside this state group.
