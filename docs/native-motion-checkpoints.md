@@ -273,3 +273,15 @@ VM callback 也指向该接收者，并核对整个共享记录、VM 数据和�
 
 随机数入口复用每版已封的整数/浮点 MT19937 完整状态向量，
 新增真实 KCS 的零尾字、一尾字、两尾字及冷恢复对照，不重跑物理大向量。
+
+The own SDK63/67 secondary fixture uses true CRT, configured FileServer mounts,
+a typed Script loaded by Main143 and its actual GCALL dispatcher. Small parsed
+MOT resources cover single/all start ticks, copied finite registers and zero
+count, the stored active DWORD (including two), individual/group skip, finite
+speed, deferred starts, delayed execution below its threshold, clear/rebind and
+explicit release. SDK63 Main305/306/309/312 are now registered for these normal
+shapes; both builds use their own x87 register-loader bodies. Sixteen independent
+current cold continuations retain the manager and record states. Initial
+working/object/frame bytes excluded by the fixture remain unqualified; captured
+heap bytes are not initial values. This bridge does not establish FES phase
+order or source-cache invalidation.
