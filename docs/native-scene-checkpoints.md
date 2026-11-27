@@ -1,5 +1,17 @@
 # Scene-local checkpoints
 
+The fixed SDK23 Scene owner now has a normal loaded Script/Main bridge through
+the actual CRT, FileServer, ApplicationRoot and mounted CatScene reader. Count
+selectors return block/line counts without consuming F0/F1 markers. Ordinary
+type calls and history-cursor text scans consume those markers and update their
+own reader filename/value. The cursor keeps independent readers while borrowing
+its live Scene owner without an additional reference; normal cleanup releases
+the cursor before that owner. Six independent current cold points preserve
+these identities, complete initialized output bytes and marker state.
+Only SDK23 enables this newly qualified cursor marker policy. Physical raw162
+pointer output, extra object layouts and native CSS reconstruction remain
+separate parts of the Scene/history business chain.
+
 Main323 creates an independent owner containing a CST reader and a history
 owner; Main324 destroys both and releases the enclosing RefBuffer. Main219
 instead replaces the reader/history fields of its real Script callback owner.

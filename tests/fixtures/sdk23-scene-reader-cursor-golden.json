@@ -1,0 +1,486 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "scope": "True ApplicationRoot/loaded Script and actual Main Scene/resource owner, marker/count-sentinel semantics, actual history cursor consuming F0/F1 blocks, independent reader state, normal cursor-before-Scene disposal. No private redirects, written PC/provider fields, invalid inputs or original reruns.",
+  "source": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-scene-history-css-20261127/ORIGINAL-G1.json",
+    "sha256": "af3976d1487f628196b7e1816ef243a150a06ae71e753ffb4da1f17baba7882b",
+    "bytes": 61496
+  },
+  "inputs": {
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+    "mainProgram": "S0NTAAIAAAAAAAAANAAAAFcMAACLDAAAAAAAAAAAAAAAEAAAABAAAIsMAAAAAAAArhgAAHicfdYhbFpBHMfxo31LEAiSVVRUNDkgTR5pEBVNVvGWvm5sYxvZSFaBaFKWVDRbk5Gsydj2BAKBQCAQCAQkCAQCgUBUVCAqKioqKioqKioQFRVNWLhreV/ea2ZePrn7vbt/3l3eXVQGLrMyKr///PY1JkVAiKjMre7+iElDOS+EiMmgss5YyNjIJJU/fvmwFZOOsr26+Tkmi8oZlSkpt1qtVkyKOdcGHIRDcBhegBfhJXgZjsArcBxOwGvwOrwBW7ANJ+EUnIYz8DachXfgHLwH78MHcB4+hAuwAxfhElyGK3AVrsF1uAE34TbcgbtwD+7DA/gIPoaH8Al8Cp/B5/AFfAlfwdfwDTyCb+E7+B4W89j/cBAOwWF4AV6El+BlOAKvwHE4Aa/B6/AGbME2nIRTcBrOwNtwFt6Bc/AevA8fwHn4EC7ADlyES3AZrsBVuAbX4QbchNtwB+7CPbgPD+Aj+BgewifwKXwGn8MX8CV8BV/DN/AIvoXv4HtYGNj/cBAOwWF4AV6El+BlOAKvwHE4Aa/B6/AGbME2nIRTcBrOwNtwFt6Bc/AevA8fwHn4EC7ADlyES3AZrsBVuAbX4QbchNtwB+7CPbgPDwwhTLkZEEIKdaGwhBDR5+qpLi+m3Jp0BlWng87xeDyOqpdM+WoSCalIke9PgzOREiNzk/c/uVOUp52mOrCloZorquGleKhzdgZfEVVfJOCN1BCxvEXU0alPdT3KvBrl9SQYVsHG09U2n65WX/Seqc6kW0rbF5lTkTdupMOC1Kqk3Gq76NxVT32ST85DU753q+0hqKf45Y5ie2u28fn0cRpUAzrugH1fUJ9hjgr+cYMDX1D/bPXK/XWDR56gKX+7JR7/r0R9soe9JQ59Qf2btAxPiSf8xIZnQ5xORzFlIfCwzo8L/3a2QS/izAqdIf3uMe3bIKa6/euR5EhvNfHQ8OIf56LoLw==",
+    "cst": "Q2F0U2NlbmV8AAAAmwAAAHicRYu9CsIwGEXPhx2c3AQXIeIcqQ66dOnWrUteIIYMwdKA9e8d+rL6BqUk4IULl8O5I7AANkAFFKQUuQIsM1sBa2AL7IEjcM6/Zna/Q3zendf2cBuQX/k5WWRXd8F5RLW9/yvXpOgLosw7IuUrBuf1Y97K2NAxAfDSGhk=",
+    "archives": [
+      {
+        "name": "scripts.int",
+        "data": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABzY2VuZS1nMS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAAQDAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAVwwAAIsMAAAAAAAAAAAAAAAQAAAAEAAAiwwAAAAAAACuGAAAeJx91iFsWkEcx/GjfUsQCJJVVFQ0OSBNHmkQFU1W8Za+bmxjG9lIVoFoUpZUNFuTkazJ2PYEAoFAIBAIBCQIBAKBQFRUICoqKioqKioqKhAVFU1YuGt5X95rZl4+ufu9u3/eXd5dVAYuszIqv//89jUmRUCIqMyt7v6ISUM5L4SIyaCyzljI2MgklT9++bAVk46yvbr5OSaLyhmVKSm3Wq1WTIo51wYchENwGF6AF+EleBmOwCtwHE7Aa/A6vAFbsA0n4RSchjPwNpyFd+AcvAfvwwdwHj6EC7ADF+ESXIYrcBWuwXW4ATfhNtyBu3AP7sMD+Ag+hofwCXwKn8Hn8AV8CV/B1/ANPIJv4Tv4Hhbz2P9wEA7BYXgBXoSX4GU4Aq/AcTgBr8Hr8AZswTachFNwGs7A23AW3oFz8B68Dx/AefgQLsAOXIRLcBmuwFW4BtfhBtyE23AH7sI9uA8P4CP4GB7CJ/ApfAafwxfwJXwFX8M38Ai+he/ge1gY2P9wEA7BYXgBXoSX4GU4Aq/AcTgBr8Hr8AZswTachFNwGs7A23AW3oFz8B68Dx/AefgQLsAOXIRLcBmuwFW4BtfhBtyE23AH7sI9uA8PDCFMuRkQQgp1obCEENHn6qkuL6bcmnQGVaeDzvF4PI6ql0z5ahIJqUiR70+DM5ESI3OT9z+5U5SnnaY6sKWhmiuq4aV4qHN2Bl8RVV8k4I3UELG8RdTRqU91Pcq8GuX1JBhWwcbT1TafrlZf9J6pzqRbStsXmVORN26kw4LUqqTcarvo3FVPfZJPzkNTvner7SGop/jljmJ7a7bx+fRxGlQDOu6AfV9Qn2GOCv5xgwNfUP9s9cr9dYNHnqApf7slHv+vRH2yh70lDn1B/Zu0DE+JJ/zEhmdDnE5HMWUh8LDOjwv/drZBL+LMCp0h/e4x7dsgprr965HkSG818dDw4h/nougv"
+      },
+      {
+        "name": "images.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "ptcl.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "scenes.int",
+        "data": "S0lGAAEAAABvd25lZC5jc3QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAIwAAABDYXRTY2VuZXwAAACbAAAAeJxFi70KwjAYRc+HHZzcBBch4hypDrp06datS14ghgzB0oD17x36svoGpSTghQuXw7kjsAA2QAUUpBS5AiwzWwFrYAvsgSNwzr9mdr9DfN6d1/ZwG5Bf+TlZZFd3wXlEtb3/K9ek6AuizDsi5SsG5/Vj3srY0DEB8NIaGQ=="
+      }
+    ]
+  },
+  "rows": [
+    {
+      "phase": 0,
+      "label": "actual Scene ctor/load and count sentinels without marker consumption",
+      "frame": 100,
+      "outputs": [1, 3, 4, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "bytes": "AKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "pc": 2405,
+      "sp": 4100,
+      "fp": 4096,
+      "scene": {
+        "pointer": 537126868,
+        "references": 1,
+        "reader": {
+          "loaded": true,
+          "blockCount": 3,
+          "block": 0,
+          "line": 0,
+          "filename": "",
+          "fileValue": 0
+        },
+        "history": 537127472
+      },
+      "cursor": null
+    },
+    {
+      "phase": 1,
+      "label": "ordinary marker/value and CP932 text consumption",
+      "frame": 101,
+      "outputs": [1, 3, 4, 0, 3, 240, 241, 42, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "bytes": "AKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpXNvdXJjZS1hLmtzAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVPbmUApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "pc": 2579,
+      "sp": 4100,
+      "fp": 4096,
+      "scene": {
+        "pointer": 537126868,
+        "references": 1,
+        "reader": {
+          "loaded": true,
+          "blockCount": 3,
+          "block": 0,
+          "line": 0,
+          "filename": "source-a.ks",
+          "fileValue": 42
+        },
+        "history": 537127472
+      },
+      "cursor": null
+    },
+    {
+      "phase": 2,
+      "label": "seen/path ownership and real two-reader cursor construction",
+      "frame": 102,
+      "outputs": [1, 3, 4, 0, 3, 240, 241, 42, 3, 3, 1, 1, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "bytes": "AKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpXNvdXJjZS1hLmtzAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVPbmUApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlb3duZWQApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQIAAAClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "pc": 2759,
+      "sp": 4100,
+      "fp": 4096,
+      "scene": {
+        "pointer": 537126868,
+        "references": 1,
+        "reader": {
+          "loaded": true,
+          "blockCount": 3,
+          "block": 0,
+          "line": 0,
+          "filename": "source-a.ks",
+          "fileValue": 42
+        },
+        "history": 537127472
+      },
+      "cursor": {
+        "pointer": 537127924,
+        "scene": 537126868,
+        "capacity": 2,
+        "lastPath": 0,
+        "rows": [
+          {
+            "path": 0,
+            "block": 1,
+            "lastBlock": 2,
+            "valid": 1,
+            "reader": {
+              "loaded": true,
+              "blockCount": 3,
+              "block": 0,
+              "line": 0,
+              "filename": "source-b.ks",
+              "fileValue": 4294967289
+            }
+          },
+          {
+            "path": 0,
+            "block": 2,
+            "lastBlock": 2,
+            "valid": 1,
+            "reader": {
+              "loaded": true,
+              "blockCount": 3,
+              "block": 0,
+              "line": 0,
+              "filename": "",
+              "fileValue": 0
+            }
+          }
+        ]
+      }
+    },
+    {
+      "phase": 3,
+      "label": "live cursor reads marker-bearing block and rotates normally",
+      "frame": 103,
+      "outputs": [1, 3, 4, 0, 3, 240, 241, 42, 3, 3, 1, 1, 5, 0, 1, 1, 1, 1, 0, 0, 0, 0],
+      "bytes": "AKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpXNvdXJjZS1hLmtzAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVPbmUApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlb3duZWQApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQIAAAAAAAAAAQAAAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVUd28ApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpXZvaWNlLXR3bwClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "pc": 2922,
+      "sp": 4100,
+      "fp": 4096,
+      "scene": {
+        "pointer": 537126868,
+        "references": 1,
+        "reader": {
+          "loaded": true,
+          "blockCount": 3,
+          "block": 0,
+          "line": 0,
+          "filename": "source-a.ks",
+          "fileValue": 42
+        },
+        "history": 537127472
+      },
+      "cursor": {
+        "pointer": 537127924,
+        "scene": 537126868,
+        "capacity": 2,
+        "lastPath": 0,
+        "rows": [
+          {
+            "path": 0,
+            "block": 0,
+            "lastBlock": 2,
+            "valid": 1,
+            "reader": {
+              "loaded": true,
+              "blockCount": 3,
+              "block": 0,
+              "line": 0,
+              "filename": "source-a.ks",
+              "fileValue": 42
+            }
+          },
+          {
+            "path": 0,
+            "block": 1,
+            "lastBlock": 2,
+            "valid": 1,
+            "reader": {
+              "loaded": true,
+              "blockCount": 3,
+              "block": 0,
+              "line": 0,
+              "filename": "source-b.ks",
+              "fileValue": 4294967289
+            }
+          }
+        ]
+      }
+    },
+    {
+      "phase": 4,
+      "label": "post-rotation read, independent direct reader and cursor release",
+      "frame": 104,
+      "outputs": [1, 3, 4, 0, 3, 240, 241, 42, 3, 3, 1, 1, 5, 0, 1, 1, 1, 1, 1, 1, 42, 0],
+      "bytes": "AKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpXNvdXJjZS1hLmtzAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVPbmUApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlb3duZWQApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQIAAAAAAAAAAQAAAAAAAAAAAAAApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVUd28ApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpXZvaWNlLXR3bwClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVPbmUApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlQWxpY2UApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpXNvdXJjZS1hLmtzAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "pc": 3124,
+      "sp": 4100,
+      "fp": 4096,
+      "scene": {
+        "pointer": 537126868,
+        "references": 1,
+        "reader": {
+          "loaded": true,
+          "blockCount": 3,
+          "block": 0,
+          "line": 0,
+          "filename": "source-a.ks",
+          "fileValue": 42
+        },
+        "history": 537127472
+      },
+      "cursor": null
+    },
+    {
+      "phase": 5,
+      "label": "normal independent Scene release and caller wait",
+      "frame": 105,
+      "outputs": [1, 3, 4, 0, 3, 240, 241, 42, 3, 3, 1, 1, 5, 0, 1, 1, 1, 1, 1, 1, 42, 0],
+      "bytes": "AKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpXNvdXJjZS1hLmtzAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVPbmUApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlb3duZWQApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQIAAAAAAAAAAQAAAAAAAAAAAAAApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVUd28ApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpXZvaWNlLXR3bwClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVPbmUApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlQWxpY2UApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpXNvdXJjZS1hLmtzAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU=",
+      "pc": 3158,
+      "sp": 4100,
+      "fp": 4096,
+      "scene": null,
+      "cursor": null
+    }
+  ],
+  "mainCalls": [
+    {
+      "id": 66,
+      "args": [12, 3, 256],
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 209,
+      "args": [512],
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 143,
+      "args": [4, 256, 0],
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 323,
+      "args": [],
+      "control": 1,
+      "outputWritten": true,
+      "value": 537126868
+    },
+    {
+      "id": 325,
+      "args": [537126868, 256],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 326,
+      "args": [537126868, 4294967295, 0],
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 326,
+      "args": [537126868, 0, 4294967295],
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 338,
+      "args": [537126868, 512],
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 608,
+      "args": [537126868],
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 65,
+      "args": [],
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 326,
+      "args": [537126868, 0, 0],
+      "control": 1,
+      "outputWritten": true,
+      "value": 240
+    },
+    {
+      "id": 326,
+      "args": [537126868, 0, 1],
+      "control": 1,
+      "outputWritten": true,
+      "value": 241
+    },
+    {
+      "id": 338,
+      "args": [537126868, 576],
+      "control": 1,
+      "outputWritten": true,
+      "value": 42
+    },
+    {
+      "id": 327,
+      "args": [537126868, 640, 0, 3],
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 608,
+      "args": [537126868],
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 65,
+      "args": [],
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 328,
+      "args": [537126868, 320, 5],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 329,
+      "args": [537126868, 320, 2],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 332,
+      "args": [537126868, 384],
+      "control": 1,
+      "outputWritten": true,
+      "value": 5
+    },
+    {
+      "id": 333,
+      "args": [537126868, 99, 704, 768],
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 379,
+      "args": [537126868, 2],
+      "control": 1,
+      "outputWritten": true,
+      "value": 537127924
+    },
+    {
+      "id": 65,
+      "args": [],
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 384,
+      "args": [537127924, 0, 772, 776],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 382,
+      "args": [537127924, 0, 832, 896],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 383,
+      "args": [537127924, 0, 960, 0],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 381,
+      "args": [537127924, 0],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 65,
+      "args": [],
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 384,
+      "args": [537127924, 0, 780, 784],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 382,
+      "args": [537127924, 0, 1024, 1088],
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 338,
+      "args": [537126868, 1152],
+      "control": 1,
+      "outputWritten": true,
+      "value": 42
+    },
+    {
+      "id": 380,
+      "args": [537127924],
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 330,
+      "args": [537126868],
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 332,
+      "args": [537126868, 320],
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 331,
+      "args": [537126868],
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 65,
+      "args": [],
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 324,
+      "args": [537126868],
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 71,
+      "args": [240],
+      "control": 4,
+      "outputWritten": false
+    }
+  ]
+}

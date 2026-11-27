@@ -790,7 +790,12 @@ const mainEvidence = [
       'Own 2.6.1.23 wrappers 0x47fa30 and 0x47fa80 release intersecting pages at 0x4d1260 or allocate missing configured pages at 0x4d1370',
   },
   {
-    ids: [323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 336, 338, 608],
+    ids: [323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 338, 608],
+    value:
+      'Own true ApplicationRoot/loaded Script/Main Scene owner and mounted CatScene reader now have a normal marker/count/history/cursor bridge. Negative count selectors leave F0/F1 untouched; ordinary type and actual cursor text scans update only their own reader filename/value. Complete caller bytes/results and six independent current cold points preserve live borrowed Scene identity and normal cursor-before-Scene disposal. See tests/fixtures/sdk23-scene-reader-cursor-golden.json; physical raw pointer output and uninitialized cursor fields are separate scopes.',
+  },
+  {
+    ids: [336],
     value:
       'Own 2.6.1.23 scene owner and CP932 reader at 0x480b40–0x481490; authored scene file markers and path history',
   },
@@ -1487,6 +1492,7 @@ export default {
     implicitReaderUsesDirectBehavior: true,
     implicitTextDestinationRequired: true,
     cstFileMarkers: true,
+    historyCursorTypeSideEffects: true,
     directTextNull: 'reject',
     directPathResult: 'success',
   },
