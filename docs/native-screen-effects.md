@@ -30,6 +30,26 @@ transitions draw the live `[0, maximum)` underlay before their captured overlay,
 then draw the foreground. Each pass preserves the original depth-clear order.
 The outer view pause gate retains both backbuffer and presentation.
 
+## Fixed SDK 2.6.1.23 Main 532
+
+This one-word wrapper skips a zero target. A reviewed Base0 or Wipe39 target
+receives raw354 (canonical389), which both the derived Wipe and Base receivers
+leave unhandled. The reply remains unwritten; the wrapper returns control2.
+It changes no Wipe activity, clock, parameters or owned resources and does not
+finish the effect. The Core still routes the actual message and retains its
+ordinary publication fences. Other receiver kinds and raw message namespaces
+remain protected.
+
+The original Base constructor leaves its current-frame word unwritten until an
+ordinary update. The qualified fixture therefore runs the real parent/child
+frame entry first, using authored Script carriers to avoid advancing the start
+call prematurely. Frames100/102 reach the original Base writer and Wipe update;
+the subsequent active call preserves current102, start100 and end104. Current
+World VM tests preserve the same state through two independent cold continuations.
+The earlier uninitialized-clock receipt remains historical and supplies no clock
+value contract. This proof does not cover all Wipe timing/rendering shapes or
+provide the separate raw-pacer input missing from Main442/443.
+
 StageRenderer surfaces own RGBA and captured depth/stencil snapshots. Private
 textures and mask pixels survive a fresh World restore independently of bitmap
 aliases. A pending render/capture rejects checkpoints. The transitional device's

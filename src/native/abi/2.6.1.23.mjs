@@ -183,6 +183,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [532],
+    value:
+      'Own Main532 returns control2 without writing its output. Target0 skips routing; actual Base0 and Wipe39 raw354 both return unhandled1 and leave the reply and task state untouched. A separate true original loaded-VM group initializes the Wipe frame through actual parent100/102 updates and Base41a760 before start: current102/start100/end104 and activity remain unchanged across Main532. Factory/support/carrier/cleanup included27 total GCALLs; original dependency bodies and normal disposal are intact. This is an unhandled action, not a finish operation; other receiver kinds stay guarded.',
+  },
+  {
     ids: [669],
     value:
       'Own Main669 builds the actual zeroed0x290 external Particle load packet: PTCL/image paths, count at260, zero priority at264,32 register words at268, external flag at396 and an owned formatted extra name at400. True original CRT/FileServer/Window/View/Top and Main66 kind16 plus Main143-loaded VM run the wrapper against Base and two normal loaded KCS2 banks. The wrapper writes1 and returns control1 independently of the receiver reply. The receiver owns its packet, replaces the old bank, skips its own texture/graph path in external mode and preserves normal start/stop/query and actual Task/Script destruction. Other receiver shapes and later extra-name consumers remain protected.',
@@ -1640,10 +1645,12 @@ export default {
       screen: {
         unmapped: 'reject',
         raw: [
+          { ...toMessage(389, -35), kinds: [0, 39] },
           { min: 377, max: 388, offset: -35 },
           ...[516, 517, 518, 519, 520, 521, 522].map((id) => toMessage(id, -69)),
         ],
         canonical: [
+          { ...toMessage(354, 35), kinds: [0, 39] },
           { min: 342, max: 353, offset: 35 },
           ...[447, 448, 449, 450, 451, 452, 453].map((id) => toMessage(id, 69)),
         ],
@@ -1840,6 +1847,7 @@ export default {
     screenEffectShadeUsesPaddedCapture: true,
     screenEffectWipeBorrowsMask: true,
     screenEffectWipeInitializerWords: 4,
+    screenEffectUnchangedActionKinds: [0, 39],
     screenEffectBreakUsesPaddedCapture: true,
     screenEffectMosaic: { fadeInitializerWords: 5, retainShortWipe: true },
     screenEffectFloatArguments: {
@@ -1908,6 +1916,20 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        {
+          ids: [532],
+          fields: {
+            review: 'reviewed',
+            resultWritten: false,
+            parameters: [
+              {
+                name: 'task',
+                description: 'Reviewed Base0 or Wipe39 native task ID; zero skips routing',
+                type: { kind: 'object-id', objectKind: 'Base or Wipe' },
+              },
+            ],
+          },
+        },
         { ids: [669], fields: { review: 'reviewed', resultWritten: true } },
         ...[622, 623, 624, 703, 704, 706, 707, 708, 709].map((id) => ({
           ids: [id],

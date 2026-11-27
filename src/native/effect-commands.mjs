@@ -87,6 +87,14 @@ export class NativeEffectCommands {
       rendering = world.screenEffects.rendering,
       send = (message, l = 0, payload) =>
         world.sendNativeEngine(a[0], task.id, message, 0, l, payload ? { payload } : {});
+    if (id === 0x214 && abi?.graphics.screenEffectUnchangedActionKinds) {
+      if (args.length !== 1) throw new Error('Screen effect native532 expects one argument');
+      if (a[0]) {
+        const receiver = world.objects.objects.get(world.resolveTaskID(a[0], task.id));
+        if (receiver && !abi.graphics.screenEffectUnchangedActionKinds.includes(receiver.kind))
+          throw new Error('The unchanged screen-effect action has no reviewed receiver kind');
+      }
+    }
     for (const i of floatArguments ?? []) a[i] = quietFloat32Bits(a[i]);
     if (id === 0x35a) await rendering.prepare(a[0]);
     else if (id === 0x35b) await rendering.capture(a[0], bitsFloat(a[1]), bitsFloat(a[2]));

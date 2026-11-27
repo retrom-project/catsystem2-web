@@ -1,0 +1,307 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "executableSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "originalReceipt": ".local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/graphics-resource-tail-20261127/ORIGINAL-532-NORMAL-FRAME23.json",
+  "originalReceiptSHA256": "9024d99a49462a98662442ea95a9c4feb9916d9624ebb1194fcb6e2ef6e46201",
+  "producerSHA256": "ef44cee0a62bc01bd21a08ea491cf9dff1e20d33b27aab9ba6670550db0b0eb7",
+  "scope": "Real original Base frame argument100/102 is written by original Base41a760 and propagated through actual Script/Wipe updates. Main532 raw354 is unhandled with an untouched reply and unchanged Wipe state. Prior51-GCALL zero/Base shapes are independently retained; its uninitialized active clock is superseded only by this normal-frame receipt. No rawpacer or complete Wipe timing/render claim.",
+  "rows": [
+    {
+      "label": "actual Wipe factory",
+      "id": 66,
+      "args": [39, [19, 44], 256],
+      "resultAddress": 36,
+      "frame": null,
+      "before": null,
+      "after": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 0,
+        "base": 0,
+        "paused": 0
+      }
+    },
+    {
+      "label": "create mask",
+      "id": 112,
+      "args": [2, 2],
+      "resultAddress": 64,
+      "frame": null,
+      "before": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 0,
+        "base": 0,
+        "paused": 0
+      },
+      "after": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 0,
+        "base": 0,
+        "paused": 0
+      }
+    },
+    {
+      "label": "fill mask",
+      "id": 117,
+      "args": [[19, 64], 0, 0, 2, 2, 4286611584],
+      "resultAddress": null,
+      "frame": null,
+      "before": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 0,
+        "base": 0,
+        "paused": 0
+      },
+      "after": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 0,
+        "base": 0,
+        "paused": 0
+      }
+    },
+    {
+      "label": "initialize Wipe",
+      "id": 530,
+      "args": [[19, 36], 4, 0, 10, [19, 64]],
+      "resultAddress": null,
+      "frame": null,
+      "before": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 0,
+        "base": 0,
+        "paused": 0
+      },
+      "after": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 4,
+        "base": 0,
+        "paused": 0
+      }
+    },
+    {
+      "label": "normal parent frame100 before start",
+      "id": null,
+      "args": null,
+      "resultAddress": null,
+      "frame": 100,
+      "before": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 4,
+        "base": 0,
+        "paused": 0
+      },
+      "after": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 100,
+        "previous": 100
+      }
+    },
+    {
+      "label": "Main532 inactive normal frame",
+      "id": 532,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "frame": null,
+      "before": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 100,
+        "previous": 100
+      },
+      "after": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 100,
+        "previous": 100
+      }
+    },
+    {
+      "label": "start after original frame writer",
+      "id": 531,
+      "args": [[19, 36], 1],
+      "resultAddress": null,
+      "frame": null,
+      "before": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 100,
+        "previous": 100
+      },
+      "after": {
+        "pointer": 537106016,
+        "active": 1,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 100,
+        "previous": 100,
+        "start": 100,
+        "end": 104
+      }
+    },
+    {
+      "label": "normal parent frame102 while active",
+      "id": null,
+      "args": null,
+      "resultAddress": null,
+      "frame": 102,
+      "before": {
+        "pointer": 537106016,
+        "active": 1,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 100,
+        "previous": 100,
+        "start": 100,
+        "end": 104
+      },
+      "after": {
+        "pointer": 537106016,
+        "active": 1,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 102,
+        "previous": 102,
+        "start": 100,
+        "end": 104
+      }
+    },
+    {
+      "label": "Main532 active normal frame",
+      "id": 532,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "frame": null,
+      "before": {
+        "pointer": 537106016,
+        "active": 1,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 102,
+        "previous": 102,
+        "start": 100,
+        "end": 104
+      },
+      "after": {
+        "pointer": 537106016,
+        "active": 1,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 102,
+        "previous": 102,
+        "start": 100,
+        "end": 104
+      }
+    },
+    {
+      "label": "stop Wipe",
+      "id": 531,
+      "args": [[19, 36], 0],
+      "resultAddress": null,
+      "frame": null,
+      "before": {
+        "pointer": 537106016,
+        "active": 1,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 102,
+        "previous": 102,
+        "start": 100,
+        "end": 104
+      },
+      "after": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 102,
+        "previous": 102,
+        "start": 100,
+        "end": 104
+      }
+    },
+    {
+      "label": "unregister Wipe",
+      "id": 67,
+      "args": [[19, 36]],
+      "resultAddress": null,
+      "frame": null,
+      "before": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 102,
+        "previous": 102,
+        "start": 100,
+        "end": 104
+      },
+      "after": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 102,
+        "previous": 102,
+        "start": 100,
+        "end": 104
+      }
+    },
+    {
+      "label": "normal parent frame103 retirement",
+      "id": null,
+      "args": null,
+      "resultAddress": null,
+      "frame": 103,
+      "before": {
+        "pointer": 537106016,
+        "active": 0,
+        "duration": 4,
+        "base": 0,
+        "paused": 0,
+        "current": 102,
+        "previous": 102,
+        "start": 100,
+        "end": 104
+      },
+      "after": null
+    },
+    {
+      "label": "release mask",
+      "id": 114,
+      "args": [[19, 64]],
+      "resultAddress": null,
+      "frame": null,
+      "before": null,
+      "after": null
+    }
+  ]
+}

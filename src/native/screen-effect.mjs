@@ -79,8 +79,8 @@ const initializers = new Map([
     [58, 2],
   ]);
 export const NATIVE_SCREEN_EFFECT_KINDS = Object.freeze([...initializers.keys()]);
-export function screenEffectRawMessage(profile, message) {
-  return mapABIMessage(profile, 'screen', 'raw', message);
+export function screenEffectRawMessage(profile, message, kind) {
+  return mapABIMessage(profile, 'screen', 'raw', message, kind);
 }
 function defaultParameters(kind, width, height) {
   const maximum = floatBits(1000000),
