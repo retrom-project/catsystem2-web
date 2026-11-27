@@ -38,6 +38,13 @@ actual position and SimplePlane geometry change in the same Main448 start
 frame. The current loaded callback/Main210 path and independent cold restores
 retain that position without waiting another frame. The source-cache fixture
 above writes VRAM X at byte0 and remains a separate ownership test.
+The independent original consumer emits two triangles at bounds `[7,9,11,13]`
+with the original color and alpha, then returns normally from View render and
+cleanup. Its Present leaf copies the actual source/destination RECT arguments
+and returns zero; this is COM-memory submission evidence, separate from a
+physical GPU or framebuffer result. The earlier observer incorrectly required
+null RECT pointers after capturing the same geometry. That interrupted return
+and cleanup remains an author failure, alongside the separate phase-order red.
 
 Motion checkpoints preserve the original manager's allocated capacity as
 well as its used bytes. The first DWORD is used length. Refreshing a smaller

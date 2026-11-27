@@ -1,14 +1,15 @@
 {
   "profile": "grisaia-jp-engine-2.6.1.23",
   "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
-  "scope": "Declared SUBCOMMAND KCS byte-offset24/28 position writes, real CPLANE typed state and original Root/View COM-memory triangles. Current loaded callback/Main210 and independent checkpoint checks. Original incomplete Present observer result remains explicitly separate until normal return is qualified.",
+  "scope": "Declared SUBCOMMAND MOT byte-offset24/28 position writes, original same-frame CPLANE state and Root/View COM-memory geometry. Normal Present validRECT copy/return0 and normal cleanup are qualified separately from physicalGPU/framebuffer. Current callback/Main210 and independent cold retain the same geometry; this supplement does not claim a changed-value originalMain210 query.",
   "original": {
-    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/ORIGINAL-G3-CONSUMER-DAUGHTER23.json",
-    "sha256": "1dc172f9b0d8e20b97e72c6d40cfb2812d672eb5eaf6fd3dee79a207e3e5d318",
-    "bytes": 52668,
-    "complete": false,
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/ORIGINAL-G3-CONSUMER-PRESENT23.json",
+    "sha256": "c308a8bf2502a6b39690770de3602f070ded3591679cf95b90de469c255e4089",
+    "bytes": 50511,
+    "complete": true,
+    "allClosed": true,
     "geometryObserved": true,
-    "presentCompleted": false
+    "presentCompleted": true
   },
   "inputs": {
     "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+bW90PC9uYW1lPjxpbnQ+bW90aW9uLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5tb3Rpb24tbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5mZXM8L25hbWU+PGludD5mZXMuaW50PC9pbnQ+PGV4dD5mZXM8L2V4dD48ZGlyPmZlcy1sb29zZTwvZGlyPjwvaW50MDM+PC9JTlQ+PC9kb2N1bWVudD4=",
@@ -98,14 +99,14 @@
   ],
   "sourcePins": [
     {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/probe-g3-consumer-present23.mjs",
+      "sha256": "8fa0b193fadbbbb53cc9a636c91b29e3836f2f6b3e399025cdd29a9c89b68c39",
+      "bytes": 6033
+    },
+    {
       "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/g3-consumer-daughter-case.mjs",
       "sha256": "20f86a288d29aa1c3d62612a66325043db1b8a7f6f359e41481e7f8661d64557",
       "bytes": 1181
-    },
-    {
-      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/probe-g3-consumer-daughter23.mjs",
-      "sha256": "fac6800b03c9e071521b9ef6e628fb5c238ef345f2d09608ad964d5ef98799a5",
-      "bytes": 6125
     },
     {
       "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/g3-consumer-case.mjs",
@@ -118,6 +119,21 @@
       "bytes": 6149
     },
     {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/g3-present-memory-observer.mjs",
+      "sha256": "984a9c8abd0fb71b3366c250a3b9b8035ee60bbd786bff54168bebbd983e3068",
+      "bytes": 963
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/check-g3-present-memory-observer.mjs",
+      "sha256": "9ee12d013199f52cf40c01ee0d2499faaab5d0e5d88dd3a10872f616feaa2d30",
+      "bytes": 1414
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/G3-PRESENT-MEMORY-PRECONDITION.json",
+      "sha256": "dcaa4c15a7e245c861b78ce91bdd6c898dbd3f570bb6e010a6b82f32543498d8",
+      "bytes": 727
+    },
+    {
       "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/host-source/bd194cddb1d9b9e97369b2edaf7eef147972b8b82f86445a7ead88a4306f47f3.mjs",
       "sha256": "bd194cddb1d9b9e97369b2edaf7eef147972b8b82f86445a7ead88a4306f47f3",
       "bytes": 16630
@@ -128,49 +144,41 @@
       "bytes": 5248
     },
     {
-      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/STATIC-G3-CONSUMER-INTERPRETER-HEAD.json",
-      "sha256": "dd6d6c049a2d8b943b307f29a8fb653ac68f6b2ca0ef2ab16dd8936bf9f844cb",
-      "bytes": 8668
-    },
-    {
-      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/STATIC-G3-CONSUMER-INTERPRETER-TAIL.json",
-      "sha256": "425aa00b98f5e5e611764f896098db57f8b4ce740a05bb243206ec1c8c8d0b08",
-      "bytes": 3296
-    },
-    {
-      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/STATIC-G3-CONSUMER-OBJECT-UPDATE.json",
-      "sha256": "5bf54e08a836cc316b0f67319bf9575f9d6704de604630a943ae5489e67bf9a8",
-      "bytes": 1475
-    },
-    {
-      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/G3-CONSUMER-CURRENT-AFTER-DECODE.json",
-      "sha256": "b6b02a3997f134deeef0550b9316dfddc71996a2a367e579c4dbbf54ce93b1c5",
-      "bytes": 801
-    },
-    {
-      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/G3-PHASE-BOUNDARY-CURRENT-PROFILE.json",
-      "sha256": "f8312cddccb1452cec1a23c50e43947c57663eaa7e0209444bf2005165c9e71d",
-      "bytes": 1202
-    },
-    {
       "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/ORIGINAL-G3-CONSUMER23.json",
       "sha256": "c6483aa5f1cd2f313ca827f4ba9727680d456e13b8e34b89f7675abd0a2ff2c6",
       "bytes": 38042
     },
     {
-      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/src/fes/player.mjs",
-      "sha256": "8b0b3cd52d594b4cb6acc331678f6bdf4fa402a948131443125bd10ac1879f1b",
-      "bytes": 44462
-    },
-    {
-      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/src/native/fes-coordinator.mjs",
-      "sha256": "73600d6e6ecb7dd38cb22dca130082f81e2ec87ee4f1706c1f4c4c66165c92b3",
-      "bytes": 68300
-    },
-    {
-      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/src/native/abi/2.6.1.23.mjs",
-      "sha256": "04c20e76a6f908c985ed31aede7a39c8f72b8e5c444977106863133c4453aea3",
-      "bytes": 139102
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/ORIGINAL-G3-CONSUMER-DAUGHTER23.json",
+      "sha256": "1dc172f9b0d8e20b97e72c6d40cfb2812d672eb5eaf6fd3dee79a207e3e5d318",
+      "bytes": 52668
     }
-  ]
+  ],
+  "history": [
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/ORIGINAL-G3-CONSUMER-DAUGHTER23.json",
+      "sha256": "1dc172f9b0d8e20b97e72c6d40cfb2812d672eb5eaf6fd3dee79a207e3e5d318",
+      "bytes": 52668,
+      "complete": false,
+      "geometryObserved": true,
+      "presentCompleted": false
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-motion-manager-20261127/ORIGINAL-G3-CONSUMER23.json",
+      "sha256": "c6483aa5f1cd2f313ca827f4ba9727680d456e13b8e34b89f7675abd0a2ff2c6",
+      "bytes": 38042,
+      "complete": false,
+      "classification": "Original position7/9 exposed current before-decode timing difference; no draw phase executed."
+    }
+  ],
+  "present": {
+    "device": 537027904,
+    "source": 2146430544,
+    "destination": 2146430480,
+    "sourceRect": [7, 9, 12, 14],
+    "destinationRect": [7, 9, 12, 14],
+    "dirty": 0,
+    "window": 0,
+    "result": 0
+  }
 }
