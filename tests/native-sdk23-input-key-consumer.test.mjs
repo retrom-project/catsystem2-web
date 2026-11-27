@@ -45,15 +45,13 @@ function compare(w, t, row) {
     input = w.inputFor(t.id),
     current = {
       outputs: Array.from({ length: 12 }, (_, i) => t.machine.load(128 + i * 4)),
-      regions: input
-        .ordered()
-        .map((r) => ({
-          owner: worldNames.get(r.owner),
-          priority: r.priority | 0,
-          bounds: r.bounds,
-          active: Number(r.active),
-          enabled: Number(r.enabled),
-        })),
+      regions: input.ordered().map((r) => ({
+        owner: worldNames.get(r.owner),
+        priority: r.priority | 0,
+        bounds: r.bounds,
+        active: Number(r.active),
+        enabled: Number(r.enabled),
+      })),
       source: input.source,
       waiters: at
         .filter(([name]) => name.startsWith('waiter'))
