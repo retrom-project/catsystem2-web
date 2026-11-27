@@ -12,6 +12,18 @@ Only SDK23 enables this newly qualified cursor marker policy. Physical raw162
 pointer output, extra object layouts and native CSS reconstruction remain
 separate parts of the Scene/history business chain.
 
+SDK23 Main385/386 now also have a true loaded Script bridge through the native
+CSS writer and a newly loaded CSS/Scene owner. Both legacy history lists keep
+their complete 40-byte records and 72-byte numbered-string snapshots, including
+defined bytes following NULs. Main836 returns an independently owned raw copy;
+Main835 copies it into another CSS record and Main834 releases only that raw
+allocation. The normal file writer/reader and all defined records match exactly
+through seven independent current cold points. The original uses a controlled
+in-memory Windows storage port; this qualifies the native CSS format and owner
+lifetime, without extending the physical-disk or platform GAME_SAVE contract.
+Main576's known Script route and missing-record result are separately observed;
+they do not establish an optional task-state deserializer.
+
 Main323 creates an independent owner containing a CST reader and a history
 owner; Main324 destroys both and releases the enclosing RefBuffer. Main219
 instead replaces the reader/history fields of its real Script callback owner.
