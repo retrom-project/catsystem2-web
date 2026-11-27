@@ -1970,6 +1970,10 @@ export class NativeGraphicTask {
       !new DataView(inputGraph.kx2.buffer).getInt32(MOTION_ABI.display, true)
     )
       return;
+    // The ordinary native manager's complete frame window is [0, 1000000).
+    // Trail samples share that submission gate with their primary model.
+    const priority = motionVector(inputGraph.kx2, MOTION_ABI.base)[2];
+    if (!(priority >= 0 && priority < 1000000)) return;
     if (inputGraph.movie) {
       const frame = inputGraph.movie.handle
         ? await this.world.planeMovies.frame(inputGraph.movie)

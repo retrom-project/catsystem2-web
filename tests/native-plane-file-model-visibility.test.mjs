@@ -90,6 +90,21 @@ for (const profile of [
         await restored.message([0, 48, 0, 1]);
         assert.equal(restored.state.shown, false);
         assert.equal(await count(restored), 0);
+        await restored.message([0, 47, 0, 1]);
+        for (const [priority, visible] of [
+          [-1, false],
+          [0, true],
+          [999999, true],
+          [1000000, false],
+          [NaN, false],
+        ]) {
+          new DataView(restored.graph.kx2.buffer).setFloat32(20, priority, true);
+          assert.equal(
+            (await count(restored)) > 0,
+            visible,
+            'native complete manager priority window',
+          );
+        }
       } finally {
         if (fresh) await close(fresh);
         await close(w);
