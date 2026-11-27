@@ -184,3 +184,14 @@ a native dynamic capture of that private-use character. An additional eight
 normal original calls per build cover IBM duplicate characters (encoded EE/ED),
 minimum signed integer grouping and both separator escapes. S1 totals remain
 40 target calls per build; no other build's character policy changes.
+
+SDK23's fixed `9f3a5ad0…` bridge also runs the real loaded Script/Main wrappers
+through the qualified CRT, FileServer and controller Root. The G1 fixture in
+`sdk23-string-data.test.mjs` compares raw/formatted copy and append, byte/character
+length and truncation, both comparison orders, finite float formatting, token
+limits, CP932 boundary search, defined self-append, and later consumers of the
+written bytes. It checks complete destination spans, both NUL bytes and canaries,
+then resumes an independently serialized World at each intermediate phase.
+This supplements the existing broader formatter vectors with the actual SDK23
+VM/caller context; it does not qualify arbitrary printf conversions or locale
+behavior. All 24 target calls matched without a production change.

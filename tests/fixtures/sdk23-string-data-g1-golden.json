@@ -1,0 +1,434 @@
+{
+  "group": "g1",
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "script": "strings-g1",
+  "marker": 592957441,
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-string-data-20261128/ORIGINAL-G1.json",
+    "sha256": "4bec788129527853017c831a1db2e45a041a45160c67b53a63217e45ebd283bf"
+  },
+  "qualification": "Intact original loaded Script/Main with qualified CRT/FileServer/controller Root. Normal finite mapped strings; no private redirects, renderer or GPU. Wider formatter syntax/value domain is not newly qualified.",
+  "budget": {
+    "target": 24,
+    "support": 0,
+    "bootstrapGCALL": 3,
+    "carrier65": 2,
+    "finalWait71": 1,
+    "allGCALL": 30,
+    "businessScriptFrames": 3
+  },
+  "outputWords": 24,
+  "inputs": {
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+    "program": "S0NTAAIAAAAAAAAANAAAAEAMAAB0DAAAAAAAAAAAAAAAEAAAABAAAHQMAAAAAAAAgBgAAHicZdYhTJtBFMDxg5atgm3d1m0IBMnRW5N220fSEMhIVrImIBAIkpFAEwrNAkkFCRUIREVFRQWiAoFoFpogEAgEAlFRgUBUVCAQCAQCgUAgEMv3jnJ/qGl+ee/d9913d7m+qO5p/dFRXa/X60YXlVIdl+AyXIG34Sq8A+/CNXgP3ocP4EP4CD6GT+AG3IRP4TO4Bbfhc/gCfgg4q6BzEA7B/XAYjsAD8CA8BA/DMTgBe3ASHoMn4BSchqfhGXgWnoPn4UV4Cc7Bq3AeXocL8Ca8BRfhElyGK/A2XIV34F24Bu/B+/ABfAgfwcfwCdyAm/ApfAa34DZ8Dl/Al/AVfA3fwLfwHXwPP8CqD+cfDsH9cBiOwAPwIDwED8MxOAF7cBIegyfgFJyGp+EZeBaeg+fhRXgJzsGrcB5ehwvwJrwFF+ESXIYr8DZchXfgXbgG78H78AF8CB/Bx/AJ3ICb8Cl8BrfgNnwOX8CX8BV8Dd/At/AdfA8/wOoVzj8cgvvhMByBB+BBeAgehmNwAvbgJDwGT8ApOC2uzkwuG616fCullNFBcdRL5oxOiRemxj2j02Iv8y1q9LR4Y2Fq3OgZ8aiXUUbPileyBWV0Ufx7ck4Z3RAnFv246rXvTRSMTomza3lldFoc3ViYMrooHh/1MkaXxIlCds3osjgv86yIJ5d9N+zY7yN/jVYBN+egOJnxa0IB972pgPveNOJLiOfEr8Wlx3jtl9FlceWfvFecXV7Jde6Wx2day83pr21cv1FK6ZAkbcNl/4pTknzrkrYDsyOLknznkmUk7ciwS1aeknH93g8HJWzbNVv9wYVt52b3qCHJj+5RO09jOpOIuORu18hPLlnrSn52Sb/7i+tJP6DsG2T5ghL+4upsZ2j3oleSAy5pW0XbCNjjYw9URAqNXxiWQttH2n/cYlfhV1dom0y7TTG3QscI/3DhE6yn58KNp+qonMa4HnFzbnZ9eF/n99n+2pbVXvL+MX52MmwPa2/QVPDFmWo9JZ9tflu5LcSn2VbXXmZcw96Xa2j74At57FRn/M//d9TohA==",
+    "archives": [
+      {
+        "name": "startup.xml",
+        "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg=="
+      },
+      {
+        "name": "scripts.int",
+        "data": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABzdHJpbmdzLWcxLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAEwDAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAQAwAAHQMAAAAAAAAAAAAAAAQAAAAEAAAdAwAAAAAAACAGAAAeJxl1iFMm0EUwPGDlq2Cbd3WbQgEydFbk3bbR9IQyEhWsiYgEAiSkUATCs0CSQUJFQhERUVFBaICgWgWmiAQCAQCUVGBQFRUIBAIBAKBQCAQy/eOcn+oaX5579333Xd3ub6o7mn90VFdr9frRheVUh2X4DJcgbfhKrwD78I1eA/ehw/gQ/gIPoZP4AbchE/hM7gFt+Fz+AJ+CDiroHMQDsH9cBiOwAPwIDwED8MxOAF7cBIegyfgFJyGp+EZeBaeg+fhRXgJzsGrcB5ehwvwJrwFF+ESXIYr8DZchXfgXbgG78H78AF8CB/Bx/AJ3ICb8Cl8BrfgNnwOX8CX8BV8Dd/At/AdfA8/wKoP5x8Owf1wGI7AA/AgPAQPwzE4AXtwEh6DJ+AUnIan4Rl4Fp6D5+FFeAnOwatwHl6HC/AmvAUX4RJchivwNlyFd+BduAbvwfvwAXwIH8HH8AncgJvwKXwGt+A2fA5fwJfwFXwN38C38B18Dz/A6hXOPxyC++EwHIEH4EF4CB6GY3AC9uAkPAZPwCk4La7OTC4brXp8K6WU0UFx1EvmjE6JF6bGPaPTYi/zLWr0tHhjYWrc6BnxqJdRRs+KV7IFZXRR/HtyThndECcW/bjqte9NFIxOibNreWV0WhzdWJgyuigeH/UyRpfEiUJ2zeiyOC/zrIgnl3037NjvI3+NVgE356A4mfFrQgH3vamA+9404kuI58SvxaXHeO2X0WVx5Z+8V5xdXsl17pbHZ1rLzemvbVy/UUrpkCRtw2X/ilOSfOuStgOzI4uSfOeSZSTtyLBLVp6Scf3eDwclbNs1W/3BhW3nZveoIcmP7lE7T2M6k4i45G7XyE8uWetKfnZJv/uL60k/oOwbZPmCEv7i6mxnaPeiV5IDLmlbRdsI2ONjD1RECo1fGJZC20faf9xiV+FXV2ibTLtNMbdCxwj/cOETrKfnwo2n6qicxrgecXNudn14X+f32f7altVe8v4xfnYybA9rb9BU8MWZaj0ln21+W7ktxKfZVtdeZlzD3pdraPvgC3nsVGf8z/931OiE"
+      },
+      {
+        "name": "images.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "ptcl.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "scenes.int",
+        "data": "S0lGAAAAAAA="
+      }
+    ]
+  },
+  "rows": [
+    {
+      "phase": 0,
+      "label": "normal raw and formatted writes followed by independent length and comparison consumers",
+      "outputs": [
+        1024, 1088, 1024, 1024, 14, 7, 4294967264, 4294967245, 0, 0, 2779096485, 2779096485,
+        2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+        2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+      ],
+      "spans": [
+        {
+          "at": 828,
+          "bytes": [
+            0, 0, 0, 0, 148, 76, 65, 98, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 148, 76, 65, 98, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ]
+        },
+        {
+          "at": 1020,
+          "bytes": [
+            165, 165, 165, 165, 148, 76, 65, 98, 99, 97, 116, 48, 48, 48, 55, 45, 140, 162, 0, 0,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 48, 48, 48, 55,
+            45, 140, 162, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 97, 98, 99, 100, 0, 0,
+            0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 1,
+      "label": "CP932 character boundary versus byte boundary and raw/formatted token consumers",
+      "outputs": [
+        1024, 1088, 1024, 1024, 14, 7, 4294967264, 4294967245, 0, 0, 3, 3, 2, 2, 1, 3, 6, 2,
+        2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+      ],
+      "spans": [
+        {
+          "at": 828,
+          "bytes": [
+            0, 0, 0, 0, 148, 76, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 148, 76, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ]
+        },
+        {
+          "at": 1020,
+          "bytes": [
+            165, 165, 165, 165, 148, 76, 65, 98, 99, 97, 116, 48, 48, 48, 55, 45, 140, 162, 0, 0,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 48, 48, 48, 55,
+            45, 140, 162, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 148, 76, 0, 0, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 140, 162, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 97, 98, 99, 100, 0, 0, 0, 0, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 2,
+      "label": "defined alias append, finite float formatting, and output bytes consumed by later natives",
+      "outputs": [
+        1024, 1088, 1024, 1024, 14, 7, 4294967264, 4294967245, 0, 0, 3, 3, 2, 2, 1, 3, 6, 2, 1344,
+        1408, 1472, 7, 0, 0
+      ],
+      "spans": [
+        {
+          "at": 828,
+          "bytes": [
+            0, 0, 0, 0, 148, 76, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 148, 76, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ]
+        },
+        {
+          "at": 1020,
+          "bytes": [
+            165, 165, 165, 165, 148, 76, 65, 98, 99, 97, 116, 48, 48, 48, 55, 45, 140, 162, 0, 0,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 48, 48, 48, 55,
+            45, 140, 162, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 148, 76, 0, 0, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 140, 162, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 97, 98, 99, 100, 97, 98, 99, 100,
+            97, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 49, 46, 51, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 48, 48, 48,
+            55, 45, 140, 162, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    }
+  ],
+  "nativeCalls": [
+    {
+      "id": 66,
+      "phase": -1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 209,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 143,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 13,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1024
+    },
+    {
+      "id": 14,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1088
+    },
+    {
+      "id": 15,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1024
+    },
+    {
+      "id": 16,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1024
+    },
+    {
+      "id": 17,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 14
+    },
+    {
+      "id": 18,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 7
+    },
+    {
+      "id": 19,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4294967264
+    },
+    {
+      "id": 20,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4294967245
+    },
+    {
+      "id": 21,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 22,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 65,
+      "phase": 0,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 23,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 24,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 38,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 2
+    },
+    {
+      "id": 39,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 2
+    },
+    {
+      "id": 40,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 47,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 48,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 6
+    },
+    {
+      "id": 49,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 2
+    },
+    {
+      "id": 65,
+      "phase": 1,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 15,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1344
+    },
+    {
+      "id": 14,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1408
+    },
+    {
+      "id": 13,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1472
+    },
+    {
+      "id": 17,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 7
+    },
+    {
+      "id": 40,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 38,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 71,
+      "phase": 2,
+      "control": 4,
+      "outputWritten": false
+    }
+  ],
+  "coldAt": [0, 1]
+}
