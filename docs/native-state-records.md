@@ -19,3 +19,18 @@ the qualified CRT, FileServer and ApplicationRoot. Its Windows OS file port is
 controlled memory storage. These data-owner results do not establish physical
 disk or platform GAME_SAVE acceptance, arbitrary stack capacity limits, or
 defined values for uninitialized CSS capacity tails.
+
+## CG registration and resources
+
+Main419–425 and458/459 construct a CG registration owner, load a normally
+mounted CGL resource and register named groups or individual references. The
+SDK23 fixture uses two sections with64-byte variant records. Actual contains
+queries consume group registrations and the engine's `L_` filename alias rule.
+These APIs maintain registration state; they do not render CG images.
+
+The normal CSS writer snapshots the registration before its source is cleared
+and released. A new file reader and new CG owner restore it, answer queries,
+load the authored list again and register another section. The container can be
+disposed before these consumers run. Three independent cold continuations and
+an original-file input case preserve the same behavior. The existing gallery
+table tests cover a separate API and do not stand in for this manager chain.

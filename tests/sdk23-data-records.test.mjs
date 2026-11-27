@@ -8,7 +8,7 @@ import { NativeGlobalFile } from '../src/native/persistence.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 
 const bytes = (value) => new Uint8Array(Buffer.from(value, 'base64'));
-for (const group of ['g1']) {
+for (const group of ['g1', 'g2']) {
   const golden = JSON.parse(
     await readFile(new URL(`./fixtures/sdk23-data-records-${group}-golden.json`, import.meta.url)),
   );
