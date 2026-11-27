@@ -174,3 +174,13 @@ The original full text remains unchanged. Real KCS callers and six fresh World
 continuations per build cover these results without altering native GAME_SAVE.
 Large scratch keys, foreign owners and resource extremes remain unverified.
 The retained first-attempt release-observer failure does not qualify lifecycle.
+
+SDK63's Main40 and formatted Main48 use the same broad byte-pair classifier as
+its raw character count: lead bytes 81–FE and trail bytes 40–FE. SDK67 keeps its
+standard range. The complete own classifier bodies establish this difference;
+four separately labeled live Script VM results, each repeated after independent
+cold restoration, use valid CP932 F040 without claiming
+a native dynamic capture of that private-use character. An additional eight
+normal original calls per build cover IBM duplicate characters (encoded EE/ED),
+minimum signed integer grouping and both separator escapes. S1 totals remain
+40 target calls per build; no other build's character policy changes.

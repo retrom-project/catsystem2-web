@@ -533,7 +533,7 @@ export function nativeStandard(id, args, m, services = {}) {
       const text = services.profile && nativeABI(services.profile).text;
       if (text?.doubleByteUnmappedSourceIsFalse && !nativeDataMapped(m, args[0])) return value(0);
       a = cstring(m, args[0]);
-      return value(Number(doubleByte(a, 0)));
+      return value(Number(nativeDataPair(a, 0, text?.doubleBytePairs)));
     }
     case 0x29:
     case 0x2b: {
@@ -695,10 +695,11 @@ export function nativeStandard(id, args, m, services = {}) {
       requireArguments(1);
       a = id === 0x30 ? formatBytes(services, m, args[0]) : cstring(m, args[0]);
       if (a === undefined) return undefined;
-      const policy =
-        id === 0x2f && services.profile
-          ? nativeABI(services.profile).text.characterLengthPairs
-          : undefined;
+      const policy = services.profile
+        ? nativeABI(services.profile).text[
+            id === 0x2f ? 'characterLengthPairs' : 'formattedCharacterLengthPairs'
+          ]
+        : undefined;
       let count = 0;
       for (let at = 0; at < a.length; count++) at += nativeDataPair(a, at, policy) ? 2 : 1;
       return value(count);

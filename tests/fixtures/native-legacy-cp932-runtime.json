@@ -2071,6 +2071,203 @@
               "normalReleaseObserved": true
             }
           ]
+        },
+        "S1Boundary": {
+          "report": ".local/phase11/sdk63-67-cp932-runtime-20261127/ORIGINAL-S1-BOUNDARY-63.json",
+          "reportSHA256": "d93f551ba026d21e44b1070115848aa099e055b11dd6633a7677adcc919adf06",
+          "sourceSHA256": {
+            "probe-s1-boundary.mjs": "7329fcd08ae0567cf7f347166de25961abef89c3dc4887f4656ba59fe8fea22d",
+            "normal-cases-s1-boundary.mjs": "79328ef69733995f921bf7a9f68949cacc8d5df6df9ddd3767a9aa40ad1606cc",
+            "resource63-journal-host.mjs": "a10e15cd62f31137a6216fbd49c793e67a7ce926dafd3c97950110baa3cd41e0"
+          },
+          "textSHA256": "89320bbab145f475216fceb5c1d8f0e4181c9f73f61f087ed6d26caf1e12789a",
+          "counts": {
+            "targetGCALLs": 8,
+            "dependencyGCALLs": 3,
+            "allGCALLs": 11,
+            "newBusinessDirect": 0,
+            "allExternalDirect": 52,
+            "GCALLFrameDirectOverlap": 11,
+            "setupAndCleanupDirect": 41
+          },
+          "handlers": {
+            "37": 4917680,
+            "39": 4918240,
+            "40": 4918480,
+            "48": 4919408
+          },
+          "currentCold": 0,
+          "cases": [
+            {
+              "id": 40,
+              "args": [512],
+              "text": "\u9ad9",
+              "ordinal": 0,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 40,
+              "args": [512],
+              "text": "\ufa11",
+              "ordinal": 1,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 48,
+              "args": [512],
+              "text": "\u9ad9",
+              "ordinal": 2,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 48,
+              "args": [512],
+              "text": "\ufa11\u732b",
+              "ordinal": 3,
+              "control": 1,
+              "result": 2,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 37,
+              "args": [1024, 2147483648, 0],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    45, 46, 44, 47, 44, 41, 44, 44, 40, 45, 44, 42, 44, 40, 0, 0, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 4,
+              "control": 2,
+              "result": null,
+              "changed": [
+                [1024, 45],
+                [1025, 46],
+                [1026, 44],
+                [1027, 47],
+                [1028, 44],
+                [1029, 41],
+                [1030, 44],
+                [1031, 44],
+                [1032, 40],
+                [1033, 45],
+                [1034, 44],
+                [1035, 42],
+                [1036, 44],
+                [1037, 40],
+                [1038, 0],
+                [1039, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 37,
+              "args": [1024, 2147483648, 1],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    45, 46, 44, 47, 44, 41, 44, 44, 40, 45, 44, 42, 44, 40, 0, 0, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 5,
+              "control": 2,
+              "result": null,
+              "changed": [
+                [1024, 45],
+                [1025, 46],
+                [1026, 44],
+                [1027, 47],
+                [1028, 44],
+                [1029, 41],
+                [1030, 44],
+                [1031, 44],
+                [1032, 40],
+                [1033, 45],
+                [1034, 44],
+                [1035, 42],
+                [1036, 44],
+                [1037, 40],
+                [1038, 0],
+                [1039, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 39,
+              "args": [1024, 512, 768, 16],
+              "text": "a\tb",
+              "other": "\\t",
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    97, 9, 98, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 6,
+              "control": 1,
+              "result": 3,
+              "changed": [
+                [1024, 97],
+                [1025, 9],
+                [1026, 98],
+                [1027, 0],
+                [1028, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 39,
+              "args": [1024, 512, 768, 16],
+              "text": "a\tb",
+              "other": "\\\t",
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    97, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 7,
+              "control": 1,
+              "result": 1,
+              "changed": [
+                [1024, 97],
+                [1025, 0],
+                [1026, 0]
+              ],
+              "state": []
+            }
+          ],
+          "qualification": "Remaining eight S1 target calls; original encoded IBM duplicate characters are CP932 EE/ED bytes, not F0 private-use bytes. Broad classifier ranges are separately static-derived, not falsely marked as dynamic private-use observations."
         }
       }
     },
@@ -4144,6 +4341,203 @@
               "normalReleaseObserved": true
             }
           ]
+        },
+        "S1Boundary": {
+          "report": ".local/phase11/sdk63-67-cp932-runtime-20261127/ORIGINAL-S1-BOUNDARY-67.json",
+          "reportSHA256": "75004aa3fecdc101c2b3d4d103e17ffd39b22526a4a5d8e07eaea87bb7a6c8ac",
+          "sourceSHA256": {
+            "probe-s1-boundary.mjs": "7329fcd08ae0567cf7f347166de25961abef89c3dc4887f4656ba59fe8fea22d",
+            "normal-cases-s1-boundary.mjs": "79328ef69733995f921bf7a9f68949cacc8d5df6df9ddd3767a9aa40ad1606cc",
+            "resource67-journal-host.mjs": "7d10ba34a7e488caa1e3e338bc3ac918b9a6f912438f3087a5b04ca6f6e66c40"
+          },
+          "textSHA256": "caaee45e75276342c603bf7518d54c7306b52498a1a04aca8cfef596c34c01d6",
+          "counts": {
+            "targetGCALLs": 8,
+            "dependencyGCALLs": 3,
+            "allGCALLs": 11,
+            "newBusinessDirect": 0,
+            "allExternalDirect": 55,
+            "GCALLFrameDirectOverlap": 11,
+            "setupAndCleanupDirect": 44
+          },
+          "handlers": {
+            "37": 4918240,
+            "39": 4918800,
+            "40": 4919040,
+            "48": 4919968
+          },
+          "currentCold": 0,
+          "cases": [
+            {
+              "id": 40,
+              "args": [512],
+              "text": "\u9ad9",
+              "ordinal": 0,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 40,
+              "args": [512],
+              "text": "\ufa11",
+              "ordinal": 1,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 48,
+              "args": [512],
+              "text": "\u9ad9",
+              "ordinal": 2,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 48,
+              "args": [512],
+              "text": "\ufa11\u732b",
+              "ordinal": 3,
+              "control": 1,
+              "result": 2,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 37,
+              "args": [1024, 2147483648, 0],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    45, 46, 44, 47, 44, 41, 44, 44, 40, 45, 44, 42, 44, 40, 0, 0, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 4,
+              "control": 2,
+              "result": null,
+              "changed": [
+                [1024, 45],
+                [1025, 46],
+                [1026, 44],
+                [1027, 47],
+                [1028, 44],
+                [1029, 41],
+                [1030, 44],
+                [1031, 44],
+                [1032, 40],
+                [1033, 45],
+                [1034, 44],
+                [1035, 42],
+                [1036, 44],
+                [1037, 40],
+                [1038, 0],
+                [1039, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 37,
+              "args": [1024, 2147483648, 1],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    45, 46, 44, 47, 44, 41, 44, 44, 40, 45, 44, 42, 44, 40, 0, 0, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 5,
+              "control": 2,
+              "result": null,
+              "changed": [
+                [1024, 45],
+                [1025, 46],
+                [1026, 44],
+                [1027, 47],
+                [1028, 44],
+                [1029, 41],
+                [1030, 44],
+                [1031, 44],
+                [1032, 40],
+                [1033, 45],
+                [1034, 44],
+                [1035, 42],
+                [1036, 44],
+                [1037, 40],
+                [1038, 0],
+                [1039, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 39,
+              "args": [1024, 512, 768, 16],
+              "text": "a\tb",
+              "other": "\\t",
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    97, 9, 98, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 6,
+              "control": 1,
+              "result": 3,
+              "changed": [
+                [1024, 97],
+                [1025, 9],
+                [1026, 98],
+                [1027, 0],
+                [1028, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 39,
+              "args": [1024, 512, 768, 16],
+              "text": "a\tb",
+              "other": "\\\t",
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    97, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 7,
+              "control": 1,
+              "result": 1,
+              "changed": [
+                [1024, 97],
+                [1025, 0],
+                [1026, 0]
+              ],
+              "state": []
+            }
+          ],
+          "qualification": "Remaining eight S1 target calls; original encoded IBM duplicate characters are CP932 EE/ED bytes, not F0 private-use bytes. Broad classifier ranges are separately static-derived, not falsely marked as dynamic private-use observations."
         }
       }
     }

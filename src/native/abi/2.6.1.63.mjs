@@ -159,6 +159,8 @@ export default {
     freeTypeCharacterEncoding: 'cp932',
     freeTypeVersion: '2.4.8',
     characterLengthPairs: 'wide',
+    doubleBytePairs: 'wide',
+    formattedCharacterLengthPairs: 'wide',
     clipboardUsesCP932: true,
     listEntryLiveCopy: true,
     listJoinLiveCopy: true,
@@ -1355,7 +1357,7 @@ export default {
         {
           ids: cp932ScalarOperations,
           value:
-            'Own SDK63 complete GCALLs at 0x4b04c0–0x4b1070 format short CP932 operands, compare signed bytes or ASCII-folded bytes, parse finite decimal and D-exponent prefixes, group signed integers, reserve two terminating bytes for bounded token output and classify CP932 pairs. Thirty-two normal calls retain exact control/result, all guest writes and caller stack with real CRT/Settings/FileServer/typed Script/Main143 VM; whole .text is unchanged. Eight independent current cold continuations reuse those outputs. See native-legacy-cp932-runtime fixture S1. Scratch overflow, nonfinite spellings and overlapping outputs are not established by this group.',
+            'Own SDK63 complete GCALLs at 0x4b04c0–0x4b1070 format short CP932 operands, compare signed bytes or ASCII-folded bytes, parse finite decimal and D-exponent prefixes, group signed integers, reserve two terminating bytes for bounded token output and classify CP932 pairs. Thirty-two normal calls retain exact control/result, all guest writes and caller stack with real CRT/Settings/FileServer/typed Script/Main143 VM; whole .text is unchanged. Eight independent current cold continuations reuse those outputs. See native-legacy-cp932-runtime fixture S1. Own Main40 and Main48 both call 0x50b320, whose complete byte tests accept lead81..FE and trail40..FE; SDK67 instead calls its standard-range 0x50c460. Four separately labeled static-derived current VM results cover F040 without claiming a native dynamic private-use capture. The eight additional original S1 calls cover CP932 IBM duplicate encodings, minimum signed grouping and the two separator escapes. Scratch overflow, nonfinite spellings and overlapping outputs are not established by this group.',
         },
         {
           ids: [467],

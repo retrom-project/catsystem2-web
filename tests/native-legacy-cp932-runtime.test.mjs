@@ -13,6 +13,7 @@ const golden = JSON.parse(
 for (const [version, profile] of Object.entries(golden.profiles)) {
   for (const [group, fixture] of Object.entries(profile.groups)) {
     const calls = fixture.cases,
+      coldLimit = fixture.currentCold ?? 8,
       names = [...new Set(calls.filter((r) => r.save).map((r) => r.save))],
       handleAt = (name) => 2304 + 4 * names.indexOf(name),
       marker = 0x763a1e59,
@@ -97,7 +98,7 @@ for (const [version, profile] of Object.entries(golden.profiles)) {
         let cold = 0;
         for (let index = 0; index < calls.length; index++) {
           await step(world, task, calls[index]);
-          if (index % 4 === 0 && index + 1 < calls.length && cold < 8) {
+          if (index % 4 === 0 && index + 1 < calls.length && cold < coldLimit) {
             const fresh = await make(false);
             try {
               await fresh.restore(
@@ -112,10 +113,55 @@ for (const [version, profile] of Object.entries(golden.profiles)) {
             }
           }
         }
-        assert.equal(cold, Math.min(8, Math.ceil((calls.length - 1) / 4)));
+        assert.equal(cold, Math.min(coldLimit, Math.ceil((calls.length - 1) / 4)));
       } finally {
         await close(world);
       }
     });
   }
+}
+
+// These four VM results are derived from each own complete classifier body,
+// not captured native rows: SDK63 0x50b320 accepts 81..FE / 40..FE;
+// SDK67 0x50c460 accepts 81..9F or E0..EF / 40..7E or 80..FC.
+for (const [profile, expected] of [
+  ['rebellions-jp-engine-2.6.1.63', [1, 2]],
+  ['bokutomo-engine-2.6.1.67', [0, 3]],
+]) {
+  test(profile + ' own static CP932 range through a real Script VM', async () => {
+    const text = '\ue000猫',
+      bytes = encodeCP932(text);
+    assert.deepEqual([...bytes], [0xf0, 0x40, 0x94, 0x4c]);
+    const files = {
+        'range.kcs': kcsProgram([
+          [37, 512],
+          [43, 40, 4],
+          [38, 64],
+          [37, 512],
+          [43, 48, 4],
+          [38, 68],
+          [59],
+        ]),
+      },
+      world = await dataWorld(profile, files);
+    try {
+      const task = await world.spawnScript('range.kcs', { initialExecute: false });
+      task.machine.writeStringBytes(bytes, 512);
+      const saved = await serializeCheckpoint(world.snapshot());
+      await world.runtime.scheduler.execute(task);
+      assert.deepEqual([task.machine.load(64), task.machine.load(68)], expected);
+      const fresh = await dataWorld(profile, files, { initialize: false });
+      try {
+        await fresh.restore(await deserializeCheckpoint(saved));
+        const restored = fresh.runtime.scheduler.tasks.get(task.id);
+        assert.deepEqual([...restored.machine.bytes(512, bytes.length)], [...bytes]);
+        await fresh.runtime.scheduler.execute(restored);
+        assert.deepEqual([restored.machine.load(64), restored.machine.load(68)], expected);
+      } finally {
+        await fresh.close({ flushFiles: false });
+      }
+    } finally {
+      await world.close({ flushFiles: false });
+    }
+  });
 }
