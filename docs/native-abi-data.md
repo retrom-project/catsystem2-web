@@ -20,7 +20,7 @@ selected or enabled by proximity to another version number.
 | Engine   | Main slots | Recovered | Reserved noop | Constant zero | Unknown | Generic / particle v1 / v2 |
 | -------- | ---------- | --------- | ------------- | ------------- | ------- | -------------------------- |
 | 2.6.1.23 | 869        | 710       | 57            | 17            | 85      | 45 / 44 / 51               |
-| 2.6.1.63 | 938        | 684       | 80            | 19            | 155     | 45 / 44 / 51               |
+| 2.6.1.63 | 938        | 690       | 80            | 19            | 149     | 45 / 44 / 51               |
 | 2.6.1.67 | 938        | 742       | 80            | 19            | 97      | 45 / 44 / 51               |
 | 2.6.1.74 | 1009       | 859       | 82            | 19            | 49      | 45 / 44 / 51               |
 | 2.6.1.76 | 1055       | 922       | 58            | 17            | 58      | 45 / 44 / 51               |
@@ -2446,3 +2446,27 @@ zero. The five own originals establish these distinct failure branches; small
 controlled real-GCALL cases cover retry and cold ownership without huge files. The input tables are legal authored native-format fixtures;
 scoped original-resource inventories did not find corresponding game data tables.
 These checks establish VM and native-format behavior, not a new product route.
+
+## 2.6.1.63 owned history cursors
+
+Main379–384 now use this build's own complete GCALL evidence, rather than
+inheriting another executable's admission. Original CRT, Settings, FileServer,
+Window and WindowDevice initialization precede Main66/Main143 and the actual
+Script VM. The original executable body remains unchanged. The small authored
+resources exercise plain and packed CSTs through the mounted scene reader;
+they are parser fixtures, not a shipped story or renderer test.
+
+Thirty Cursor calls and ten setup/Scene calls cover empty history with capacity
+zero, capacities one and three, CP932 text and commands, skipped blocks, both
+rotation directions, independent readers, and release while the source Scene
+remains alive. The World/KCS regression compares all thirty Cursor calls and
+seven Scene calls, including complete output spans, result/control words and
+logical reader state. Eight independent checkpoint restores retain the borrowed
+Scene reference; a separate native CSS/GAME_SAVE round trip reconstructs a new
+cursor from the restored path. Sparse JS reader storage is unchanged.
+
+The caller in this original protocol has local memory and no shared binding.
+Shared-bound callers, nonempty zero capacity, resource exhaustion, foreign
+pointers and unproven frame shapes remain outside this acceptance. The ordinary
+empty row preserves output bytes. This group does not establish Gallery tables
+or complete SDK acceptance.

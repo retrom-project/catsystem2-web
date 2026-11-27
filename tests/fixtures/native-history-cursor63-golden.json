@@ -1,0 +1,1243 @@
+{
+  "profile": "rebellions-jp-engine-2.6.1.63",
+  "original": {
+    "path": ".local/phase11/sdk63-history-gallery-plan-20261127/ORIGINAL-CURSOR63-NORMAL.json",
+    "sha256": "7ae917143e401a937dadf3d2e66be4afdebbbf41ea338e7d91cc16a1072910d1",
+    "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+    "textSha256": "89320bbab145f475216fceb5c1d8f0e4181c9f73f61f087ed6d26caf1e12789a",
+    "targetCalls": 30,
+    "dependencyCalls": 10,
+    "resources": [
+      {
+        "name": "scripts.int",
+        "bytes": 158,
+        "sha256": "9442059383f82373349dda4ad41b31d6221a3d9a51d68c2c0b13e4dfe84c96e1",
+        "provenance": "small legal authored original-format fixture"
+      },
+      {
+        "name": "scene.int",
+        "bytes": 594,
+        "sha256": "561ae06241418192d5488aa8cfda158c8ccdbc82b564f2884089f6601342f894",
+        "provenance": "small legal authored original-format fixture"
+      },
+      {
+        "name": "tables.int",
+        "bytes": 96,
+        "sha256": "c5372105602356172e97857ba5084fdbb6eb148d2193ddc7a739f994b65ccf9a",
+        "provenance": "small legal authored original-format fixture"
+      }
+    ]
+  },
+  "cases": [
+    {
+      "label": "empty Scene",
+      "id": 323,
+      "args": [],
+      "result": "owned:empty",
+      "control": 1,
+      "outputs": [],
+      "state": [],
+      "save": "empty",
+      "dependency": true,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "empty zero capacity",
+      "id": 379,
+      "args": ["empty", 0],
+      "result": "owned:zero",
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "zero",
+          "capacity": 0,
+          "lastPath": -1,
+          "rows": []
+        }
+      ],
+      "save": "zero",
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close zero capacity",
+      "id": 380,
+      "args": ["zero"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "empty one capacity",
+      "id": 379,
+      "args": ["empty", 1],
+      "result": "owned:emptyOne",
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "emptyOne",
+          "capacity": 1,
+          "lastPath": -1,
+          "rows": [
+            {
+              "path": -1,
+              "block": -1,
+              "lastBlock": -1,
+              "readerPresent": true,
+              "valid": 0
+            }
+          ]
+        }
+      ],
+      "save": "emptyOne",
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "empty text",
+      "id": 382,
+      "args": ["emptyOne", 0, 256, 384],
+      "result": 0,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 384,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "emptyOne",
+          "capacity": 1,
+          "lastPath": -1,
+          "rows": [
+            {
+              "path": -1,
+              "block": -1,
+              "lastBlock": -1,
+              "readerPresent": true,
+              "valid": 0
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "empty command",
+      "id": 383,
+      "args": ["emptyOne", 0, 512, 0],
+      "result": 0,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 512,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "emptyOne",
+          "capacity": 1,
+          "lastPath": -1,
+          "rows": [
+            {
+              "path": -1,
+              "block": -1,
+              "lastBlock": -1,
+              "readerPresent": true,
+              "valid": 0
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "empty position",
+      "id": 384,
+      "args": ["emptyOne", 0, 768, 772],
+      "result": 0,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 768,
+          "bytes": [165, 165, 165, 165, 165, 165, 165, 165]
+        }
+      ],
+      "state": [
+        {
+          "name": "emptyOne",
+          "capacity": 1,
+          "lastPath": -1,
+          "rows": [
+            {
+              "path": -1,
+              "block": -1,
+              "lastBlock": -1,
+              "readerPresent": true,
+              "valid": 0
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close empty one",
+      "id": 380,
+      "args": ["emptyOne"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close empty Scene",
+      "id": 324,
+      "args": ["empty"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [],
+      "dependency": true,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "populated Scene",
+      "id": 323,
+      "args": [],
+      "result": "owned:scene",
+      "control": 1,
+      "outputs": [],
+      "state": [],
+      "save": "scene",
+      "dependency": true,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "path a",
+      "id": 329,
+      "args": ["scene", 64, 3],
+      "result": 1,
+      "control": 1,
+      "outputs": [],
+      "state": [],
+      "text": "a",
+      "dependency": true,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "path b",
+      "id": 329,
+      "args": ["scene", 64, 2],
+      "result": 1,
+      "control": 1,
+      "outputs": [],
+      "state": [],
+      "text": "b",
+      "dependency": true,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "path CP932",
+      "id": 329,
+      "args": ["scene", 64, 1],
+      "result": 1,
+      "control": 1,
+      "outputs": [],
+      "state": [],
+      "text": "日本",
+      "dependency": true,
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "one capacity",
+      "id": 379,
+      "args": ["scene", 1],
+      "result": "owned:one",
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "one",
+          "capacity": 1,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "save": "one",
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "one text",
+      "id": 382,
+      "args": ["one", 0, 256, 384],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            147, 250, 150, 123, 130, 204, 149, 182, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 384,
+          "bytes": [
+            150, 188, 145, 79, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "one",
+          "capacity": 1,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "one command",
+      "id": 383,
+      "args": ["one", 0, 512, 0],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 512,
+          "bytes": [
+            144, 186, 32, 111, 110, 99, 101, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "one",
+          "capacity": 1,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "one position",
+      "id": 384,
+      "args": ["one", 0, 768, 772],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 768,
+          "bytes": [2, 0, 0, 0, 0, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "one",
+          "capacity": 1,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "one backward",
+      "id": 381,
+      "args": ["one", 0],
+      "result": 1,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "one",
+          "capacity": 1,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "one prior text",
+      "id": 382,
+      "args": ["one", 0, 256, 384],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            149, 202, 150, 150, 148, 246, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 384,
+          "bytes": [
+            150, 188, 66, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "one",
+          "capacity": 1,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "one prior position",
+      "id": 384,
+      "args": ["one", 0, 768, 772],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 768,
+          "bytes": [1, 0, 0, 0, 2, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "one",
+          "capacity": 1,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "one forward",
+      "id": 381,
+      "args": ["one", 1],
+      "result": 1,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "one",
+          "capacity": 1,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "one returned text",
+      "id": 382,
+      "args": ["one", 0, 256, 384],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            147, 250, 150, 123, 130, 204, 149, 182, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 384,
+          "bytes": [
+            150, 188, 145, 79, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "one",
+          "capacity": 1,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close one",
+      "id": 380,
+      "args": ["one"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "three capacity",
+      "id": 379,
+      "args": ["scene", 3],
+      "result": "owned:three",
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "three",
+          "capacity": 3,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 1,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "save": "three",
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "three text0",
+      "id": 382,
+      "args": ["three", 0, 256, 384],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            149, 202, 150, 150, 148, 246, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 384,
+          "bytes": [
+            150, 188, 66, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "three",
+          "capacity": 3,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 1,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "three text1",
+      "id": 382,
+      "args": ["three", 1, 256, 384],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            147, 250, 150, 123, 130, 204, 149, 182, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 384,
+          "bytes": [
+            150, 188, 145, 79, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "three",
+          "capacity": 3,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 1,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "three position2",
+      "id": 384,
+      "args": ["three", 2, 768, 772],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 768,
+          "bytes": [2, 0, 0, 0, 1, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "three",
+          "capacity": 3,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 1,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "three command0",
+      "id": 383,
+      "args": ["three", 0, 512, 0],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 512,
+          "bytes": [
+            118, 111, 105, 99, 101, 45, 98, 50, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "three",
+          "capacity": 3,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 1,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "three backward",
+      "id": 381,
+      "args": ["three", 0],
+      "result": 1,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "three",
+          "capacity": 3,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 0,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "three moved text",
+      "id": 382,
+      "args": ["three", 0, 256, 384],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            149, 202, 144, 230, 147, 170, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 384,
+          "bytes": [
+            0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "three",
+          "capacity": 3,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 0,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "three forward",
+      "id": 381,
+      "args": ["three", 1],
+      "result": 1,
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "three",
+          "capacity": 3,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 1,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "three returned position",
+      "id": 384,
+      "args": ["three", 0, 768, 772],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 768,
+          "bytes": [1, 0, 0, 0, 2, 0, 0, 0]
+        }
+      ],
+      "state": [
+        {
+          "name": "three",
+          "capacity": 3,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 1,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "independent one",
+      "id": 379,
+      "args": ["scene", 1],
+      "result": "owned:independent",
+      "control": 1,
+      "outputs": [],
+      "state": [
+        {
+          "name": "three",
+          "capacity": 3,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 1,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        },
+        {
+          "name": "independent",
+          "capacity": 1,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "save": "independent",
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "independent text",
+      "id": 382,
+      "args": ["independent", 0, 256, 384],
+      "result": 1,
+      "control": 1,
+      "outputs": [
+        {
+          "at": 256,
+          "bytes": [
+            147, 250, 150, 123, 130, 204, 149, 182, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 384,
+          "bytes": [
+            150, 188, 145, 79, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "state": [
+        {
+          "name": "three",
+          "capacity": 3,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 1,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        },
+        {
+          "name": "independent",
+          "capacity": 1,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close independent",
+      "id": 380,
+      "args": ["independent"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [
+        {
+          "name": "three",
+          "capacity": 3,
+          "lastPath": 2,
+          "rows": [
+            {
+              "path": 1,
+              "block": 2,
+              "lastBlock": 2,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 0,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            },
+            {
+              "path": 2,
+              "block": 1,
+              "lastBlock": 1,
+              "readerPresent": true,
+              "valid": 1
+            }
+          ]
+        }
+      ],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close three",
+      "id": 380,
+      "args": ["three"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [],
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "label": "close populated Scene",
+      "id": 324,
+      "args": ["scene"],
+      "result": null,
+      "control": 2,
+      "outputs": [],
+      "state": [],
+      "dependency": true,
+      "unexpectedMemoryWrites": []
+    }
+  ]
+}
