@@ -365,3 +365,19 @@ no fallback GDI glyph provider and records no GPU drawing commands. Physical
 presentation, arbitrary glyph rectangles/fonts and the Application key-binding
 publisher remain separate qualification gaps. Neither another SDK nor an
 unreviewed receiver is enabled by the SDK63 atlas policy.
+
+A final font bridge passes identical masks and metrics from the pinned Noto Sans
+JP/FreeType2.4.8 input through each build's original CreateFont/GetGlyphOutline
+path and the JS compositor. Three ordinary glyphs exercise gray64 antialiasing,
+CP932, two-line placement, actual Root reveal, force/clear, borrowing and normal
+retirement. The bounded original results establish font/layout/composition under
+that explicit provider; sharing its masks does not independently prove Windows
+font appearance.
+
+Both builds use the existing bottom-up legacy glyph policy for non-atlas glyphs
+as well as bitmap output. The missing policy previously inverted the borrowed
+GDI raster. A separate mode0 original group checks complete configured View
+texture pages against JS after normal bitmap output, including the output row
+adapter. This is COM-memory copy evidence, not physical GPU presentation. Two
+fresh cold continuations per build preserve the GDI raster and subsequent
+updates. The shared raster implementation and other SDK policies are unchanged.

@@ -186,6 +186,7 @@ export default {
     legacyClearPublishes: true,
     legacyGraphRegistration: true,
     legacyGlyphAtlas: true,
+    legacyGlyphBottomUp: true,
     legacyGlyphKeepsTransparentRgb: true,
     configurationLayout: {
       fontBytes: 64,
@@ -1376,7 +1377,7 @@ export default {
         {
           ids: stringPlaneStateOperations,
           value:
-            'Own kind8 factory and its unchanged constructor create a1904-byte StringPlane under the real Script/Root. Complete Main143 VM calls qualify copied1128-byte configuration, bounded40-byte CP932 cells, scalar fields, mode1 deferred parsing, marks, vertical positioning, hidden/empty force and restart, idle reply and borrowed bitmap owner. Reconfiguration releases the old owner and normal Root retirement frees both tasks and their bitmaps. Valid Main134/135 operands reach this typed receiver and have no effect through its base default; they are not whole-slot stubs for arbitrary recipients. Nonempty glyph/output consumers remain a separate following group. No arbitrary pointer, fake owner, physical font/GPU or key-consumer claim.',
+            'Own kind8 factory and its unchanged constructor create a1904-byte StringPlane under the real Script/Root. Complete Main143 VM calls qualify copied1128-byte configuration, bounded40-byte CP932 cells, scalar fields, mode1 deferred parsing, marks, vertical positioning, hidden/empty force and restart, idle reply and borrowed bitmap owner. Reconfiguration releases the old owner and normal Root retirement frees both tasks and their bitmaps. Valid Main134/135 operands reach this typed receiver and have no effect through its base default; they are not whole-slot stubs for arbitrary recipients. Nonempty glyph/output consumers remain a separate following group. A separate own GDI bridge now consumes three non-atlas glyphs and two-line layout through original CreateFont/GetGlyphOutline/font/raster bodies with the same pinned NotoSansJP/FT2.4.8 virtual host masks/metrics as JS. Both borrowed bitmap RGBA and all configured COM-memory View pages prove the bottom-up glyph/output row policy; force/clear/Root, retirement and two independent GDI cold continuations are included. Shared host glyphs do not prove Windows font appearance or physical GPU. No arbitrary pointer, fake owner or key-consumer claim.',
         },
         {
           ids: planeButtonOperations,
