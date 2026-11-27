@@ -1,5 +1,17 @@
 # Native motion manager checkpoints
 
+The fixed SDK23 build has a loaded Script/Main315–317/387–388 CSS bridge.
+Its real CRT/FileServer writer saves both a nonempty checkpoint and an empty
+refresh retaining the original allocation. A separate file owner restores the
+MOT registers, copied extra bytes, delay and start frame into a new manager;
+the actual MOT VM then runs and publishes its working bank. The current test
+checks the complete caller frame, normal releases and eight independent cold
+points. Fresh filename padding remains outside numeric qualification; copying
+an allocation preserves its opaque tail without making those bytes initialized.
+The native producer uses a controlled Windows OS memory-file port with detached
+writes and capacity accounting. It establishes the original CSS format and
+virtual file lifecycle, separate from physical disk and product GAME_SAVE.
+
 Motion checkpoints preserve the original manager's allocated capacity as
 well as its used bytes. The first DWORD is used length. Refreshing a smaller
 manager reuses the allocation: filename padding, bytes beyond used length and
