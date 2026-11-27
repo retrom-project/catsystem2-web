@@ -1,0 +1,5935 @@
+{
+  "profile": "bokutomo-engine-2.6.1.67",
+  "executableSha256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+  "wholeTextSha256": "caaee45e75276342c603bf7518d54c7306b52498a1a04aca8cfef596c34c01d6",
+  "original": {
+    "path": ".local/phase11/sdk63-67-base-collector-20261127/ORIGINAL-C1-67.json",
+    "sha256": "a4a5a5dd7e28a13211d338136f83156f5392b9c3a24af37d2222840c1ab1f1df"
+  },
+  "scope": "C1 freshalpha opaque-copy/opacity,affine/mask/hidden/clipped normalcallers. FulloutputexplicitlyfilledthroughborrowedMain261+Main117; rawunclassifiedheaderscaptureonly.",
+  "counts": {
+    "targetGCALLs": 24,
+    "dependencyGCALLs": 46,
+    "currentFullFrames": 67,
+    "directBridgeInvocations": 119,
+    "internalCold": 2,
+    "directBridgeIncludesGCALLs": true
+  },
+  "resources": {
+    "fresh-alpha.bmp": "Qk1OAAAAAAAAADYAAAAoAAAAAwAAAAIAAAABACAAAAAAABgAAAAAAAAAAAAAAAAAAAAAAAAAtYtl/8edf0DfrZf/f0kf/5VhO4CncVMA",
+    "fresh-opaque.kcf": "S0NGAAMAAgAMAAQAS0NMWgEAAAAYAAAAAAAAAAAAAAAcAAAAHwAAAAAAAB9Jf/82XIr/TW+V/zBWhv9HaZH/Xnyc/w=="
+  },
+  "cases": [
+    {
+      "id": 66,
+      "args": [15, "caller", 128],
+      "text": "C1 fresh-alpha Draw67",
+      "textAt": 128,
+      "save": "draw",
+      "kind": "task",
+      "dependency": true,
+      "ordinal": 0,
+      "control": 1,
+      "result": "owned:draw",
+      "borrowed": null,
+      "state": {
+        "renderer": null,
+        "offset": null,
+        "enabled": 1,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 256,
+      "args": ["draw", 8, 6],
+      "dependency": true,
+      "ordinal": 1,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": null,
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": null,
+        "enabled": 1,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 260,
+      "args": ["draw", 0, 0],
+      "dependency": true,
+      "ordinal": 2,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": null,
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 1,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 262,
+      "args": ["draw", 0],
+      "dependency": true,
+      "ordinal": 3,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": null,
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 341,
+      "args": ["draw"],
+      "dependency": true,
+      "ordinal": 4,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": null,
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 261,
+      "args": ["draw"],
+      "save": "surface",
+      "kind": "bitmap",
+      "dependency": true,
+      "ordinal": 5,
+      "control": 1,
+      "result": "borrowed:surface",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": null,
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 117,
+      "args": ["surface", 0, 0, 8, 6, 1074798640],
+      "dependency": true,
+      "ordinal": 6,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32,
+              16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16,
+              64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64,
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32,
+              16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16,
+              64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64,
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-opaque.kcf",
+      "save": "owner0",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 7,
+      "control": 1,
+      "result": "owned:owner0",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32,
+              16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16,
+              64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64,
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32,
+              16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16,
+              64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64,
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner0",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 48, 86, 134, 255, 71, 105,
+                145, 255, 94, 124, 156, 255
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner0",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        255,
+        1,
+        0
+      ],
+      "ownerGroup": "owner0",
+      "ordinal": 8,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32,
+              16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16,
+              64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64,
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32,
+              16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16,
+              64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64,
+              48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48, 32, 16, 64, 48,
+              32, 16, 64
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner0",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 48, 86, 134, 255, 71, 105, 145,
+              255, 94, 124, 156, 255
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner0",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 48, 86, 134, 255, 71, 105,
+                145, 255, 94, 124, 156, 255
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 9,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 86, 134, 255, 71, 105, 145,
+              255, 94, 124, 156, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner0",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 48, 86, 134, 255, 71, 105, 145,
+              255, 94, 124, 156, 255
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 1,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner0",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 48, 86, 134, 255, 71, 105,
+                145, 255, 94, 124, 156, 255
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 1,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 711,
+      "args": ["owner0"],
+      "close": "owner0",
+      "dependency": true,
+      "ordinal": 10,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 86, 134, 255, 71, 105, 145,
+              255, 94, 124, 156, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner0",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 48, 86, 134, 255, 71, 105, 145,
+              255, 94, 124, 156, 255
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 1,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 11,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 86, 134, 255, 71, 105, 145,
+              255, 94, 124, 156, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-opaque.kcf",
+      "save": "owner1",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 12,
+      "control": 1,
+      "result": "owned:owner1",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 86, 134, 255, 71, 105, 145,
+              255, 94, 124, 156, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner1",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 48, 86, 134, 255, 71, 105,
+                145, 255, 94, 124, 156, 255
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner1",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        129,
+        1,
+        0
+      ],
+      "ownerGroup": "owner1",
+      "ordinal": 13,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 86, 134, 255, 71, 105, 145,
+              255, 94, 124, 156, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner1",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 48, 86, 134, 255, 71, 105, 145,
+              255, 94, 124, 156, 255
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner1",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 48, 86, 134, 255, 71, 105,
+                145, 255, 94, 124, 156, 255
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 14,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 31, 73, 127, 0, 31, 73, 127, 129, 54, 92, 138, 129, 77, 111, 149, 129, 77,
+              111, 149, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 86, 134, 0, 48, 86, 134, 129, 71,
+              105, 145, 129, 94, 124, 156, 129, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner1",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 48, 86, 134, 255, 71, 105, 145,
+              255, 94, 124, 156, 255
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 1,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner1",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 48, 86, 134, 255, 71, 105,
+                145, 255, 94, 124, 156, 255
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 1,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 711,
+      "args": ["owner1"],
+      "close": "owner1",
+      "dependency": true,
+      "ordinal": 15,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 31, 73, 127, 0, 31, 73, 127, 129, 54, 92, 138, 129, 77, 111, 149, 129, 77,
+              111, 149, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 86, 134, 0, 48, 86, 134, 129, 71,
+              105, 145, 129, 94, 124, 156, 129, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner1",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              31, 73, 127, 255, 54, 92, 138, 255, 77, 111, 149, 255, 48, 86, 134, 255, 71, 105, 145,
+              255, 94, 124, 156, 255
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 1,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 16,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 31, 73, 127, 0, 31, 73, 127, 129, 54, 92, 138, 129, 77, 111, 149, 129, 77,
+              111, 149, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 86, 134, 0, 48, 86, 134, 129, 71,
+              105, 145, 129, 94, 124, 156, 129, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner2",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 17,
+      "control": 1,
+      "result": "owned:owner2",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 31, 73, 127, 0, 31, 73, 127, 129, 54, 92, 138, 129, 77, 111, 149, 129, 77,
+              111, 149, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 86, 134, 0, 48, 86, 134, 129, 71,
+              105, 145, 129, 94, 124, 156, 129, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner2",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner2",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        200,
+        1,
+        1
+      ],
+      "ownerGroup": "owner2",
+      "ordinal": 18,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 31, 73, 127, 0, 31, 73, 127, 129, 54, 92, 138, 129, 77, 111, 149, 129, 77,
+              111, 149, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 48, 86, 134, 0, 48, 86, 134, 129, 71,
+              105, 145, 129, 94, 124, 156, 129, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner2",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner2",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": []
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 19,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 181, 139, 101, 200, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 181, 139, 101,
+              200, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner2",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner2",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 711,
+      "args": ["owner2"],
+      "close": "owner2",
+      "dependency": true,
+      "ordinal": 20,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 181, 139, 101, 200, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 181, 139, 101,
+              200, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner2",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 21,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 181, 139, 101, 200, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 181, 139, 101,
+              200, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner3",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 22,
+      "control": 1,
+      "result": "owned:owner3",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 181, 139, 101, 200, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 181, 139, 101,
+              200, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner3",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner3",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        1097859072,
+        1065353216,
+        1065353216,
+        129,
+        1,
+        1
+      ],
+      "ownerGroup": "owner3",
+      "ordinal": 23,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 181, 139, 101, 200, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 200, 181, 139, 101,
+              200, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner3",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner3",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 24,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 181, 139, 101, 129, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 181, 139, 101,
+              129, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner3",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner3",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 711,
+      "args": ["owner3"],
+      "close": "owner3",
+      "dependency": true,
+      "ordinal": 25,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 181, 139, 101, 129, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 181, 139, 101,
+              129, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner3",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 26,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 181, 139, 101, 129, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 181, 139, 101,
+              129, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner4",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 27,
+      "control": 1,
+      "result": "owned:owner4",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 181, 139, 101, 129, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 181, 139, 101,
+              129, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner4",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner4",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1061158912,
+        1061158912,
+        255,
+        1,
+        1
+      ],
+      "ownerGroup": "owner4",
+      "ordinal": 28,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 181, 139, 101, 129, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 129, 181, 139, 101,
+              129, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner4",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner4",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 29,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 181, 139, 101, 255, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 181, 139, 101,
+              255, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner4",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner4",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 711,
+      "args": ["owner4"],
+      "close": "owner4",
+      "dependency": true,
+      "ordinal": 30,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 181, 139, 101, 255, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 181, 139, 101,
+              255, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner4",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 31,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 181, 139, 101, 255, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 181, 139, 101,
+              255, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner5",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 32,
+      "control": 1,
+      "result": "owned:owner5",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 181, 139, 101, 255, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 181, 139, 101,
+              255, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner5",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 728,
+      "args": ["owner5", 1],
+      "dependency": true,
+      "ordinal": 33,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 181, 139, 101, 255, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 181, 139, 101,
+              255, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner5",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 1,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner5",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        200,
+        1,
+        0
+      ],
+      "ownerGroup": "owner5",
+      "ordinal": 34,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 181, 139, 101, 255, 0, 0, 0, 0, 77, 111, 149,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 181, 139, 101, 255, 181, 139, 101,
+              255, 0, 0, 0, 0, 94, 124, 156, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner5",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 1,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner5",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 1,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 35,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner5",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 1,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner5",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 2,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 1,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 711,
+      "args": ["owner5"],
+      "close": "owner5",
+      "dependency": true,
+      "ordinal": 36,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner5",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 1,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 37,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner6",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 38,
+      "control": 1,
+      "result": "owned:owner6",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner6",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 728,
+      "args": ["owner6", 4],
+      "dependency": true,
+      "ordinal": 39,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner6",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 4,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner6",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        255,
+        1,
+        0
+      ],
+      "ownerGroup": "owner6",
+      "ordinal": 40,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner6",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 4,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner6",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 4,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 41,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner6",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 4,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner6",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 2,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 4,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 711,
+      "args": ["owner6"],
+      "close": "owner6",
+      "dependency": true,
+      "ordinal": 42,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner6",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 2,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 4,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 43,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner7",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 44,
+      "control": 1,
+      "result": "owned:owner7",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner7",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 728,
+      "args": ["owner7", 1],
+      "dependency": true,
+      "ordinal": 45,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner7",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 1,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner7",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        200,
+        1,
+        1
+      ],
+      "ownerGroup": "owner7",
+      "ordinal": 46,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner7",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 1,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner7",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 1,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 47,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner7",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 1,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner7",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 1,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 711,
+      "args": ["owner7"],
+      "close": "owner7",
+      "dependency": true,
+      "ordinal": 48,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner7",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 1,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 49,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner8",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 50,
+      "control": 1,
+      "result": "owned:owner8",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner8",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner8",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        255,
+        0,
+        0
+      ],
+      "ownerGroup": "owner8",
+      "ordinal": 51,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner8",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner8",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 52,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner8",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner8",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 711,
+      "args": ["owner8"],
+      "close": "owner8",
+      "dependency": true,
+      "ordinal": 53,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner8",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 54,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner9",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 55,
+      "control": 1,
+      "result": "owned:owner9",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner9",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner9",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        0,
+        1065353216,
+        1065353216,
+        255,
+        1,
+        0
+      ],
+      "ownerGroup": "owner9",
+      "ordinal": 56,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner9",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner9",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 339,
+      "args": ["draw", 7, 6, 4, 8, 6],
+      "ordinal": 57,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner9",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner9",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 58,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner9",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner9",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 711,
+      "args": ["owner9"],
+      "close": "owner9",
+      "dependency": true,
+      "ordinal": 59,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner9",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 60,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 710,
+      "args": [64],
+      "text": "fresh-alpha.bmp",
+      "save": "owner10",
+      "kind": "image-owner",
+      "dependency": true,
+      "ordinal": 61,
+      "control": 1,
+      "result": "owned:owner10",
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": null,
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner10",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 731,
+      "args": [
+        "draw",
+        7,
+        "owner10",
+        1065353216,
+        1065353216,
+        0,
+        0,
+        1097859072,
+        1065353216,
+        1065353216,
+        129,
+        1,
+        1
+      ],
+      "ownerGroup": "owner10",
+      "ordinal": 62,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner10",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner10",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 339,
+      "args": ["draw", 7, 6, 4, 8, 6],
+      "ordinal": 63,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner10",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner10",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 340,
+      "args": ["draw"],
+      "ordinal": 64,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 1,
+        "retainedOwner": {
+          "name": "owner10",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": [
+          {
+            "kind": "image-owner",
+            "name": "owner10",
+            "bitmap": {
+              "empty": false,
+              "width": 3,
+              "height": 2,
+              "pitch": 12,
+              "bpp": 4,
+              "physicalPixels": [
+                181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149,
+                97, 59, 128, 167, 113, 83, 0
+              ],
+              "pixelsQualified": true,
+              "clip": [0, 0, 3, 2],
+              "metadata": {
+                "canvasWidth": 3,
+                "canvasHeight": 2,
+                "offsetX": 0,
+                "offsetY": 0,
+                "alphaHint": 0,
+                "baseX": 0,
+                "baseY": 0,
+                "mask": 0,
+                "blendType": 0
+              },
+              "wrapperReferences": 1,
+              "bitmapReferences": 1
+            }
+          }
+        ]
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 711,
+      "args": ["owner10"],
+      "close": "owner10",
+      "dependency": true,
+      "ordinal": 65,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 1,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": {
+          "name": "owner10",
+          "bitmap": {
+            "empty": false,
+            "width": 3,
+            "height": 2,
+            "pitch": 12,
+            "bpp": 4,
+            "physicalPixels": [
+              181, 139, 101, 255, 199, 157, 127, 64, 223, 173, 151, 255, 127, 73, 31, 255, 149, 97,
+              59, 128, 167, 113, 83, 0
+            ],
+            "pixelsQualified": true,
+            "clip": [0, 0, 3, 2],
+            "metadata": {
+              "canvasWidth": 3,
+              "canvasHeight": 2,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    },
+    {
+      "id": 258,
+      "args": ["draw", 7],
+      "dependency": true,
+      "ordinal": 66,
+      "control": 2,
+      "result": null,
+      "borrowed": null,
+      "state": {
+        "renderer": {
+          "itemCount": 0,
+          "bitmap": {
+            "empty": false,
+            "width": 8,
+            "height": 6,
+            "pitch": 32,
+            "bpp": 4,
+            "physicalPixels": [
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 77, 111, 149, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 94, 124, 156,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            ],
+            "pixelsQualified": false,
+            "clip": [0, 0, 8, 6],
+            "metadata": {
+              "canvasWidth": 0,
+              "canvasHeight": 0,
+              "offsetX": 0,
+              "offsetY": 0,
+              "alphaHint": 0,
+              "baseX": 0,
+              "baseY": 0,
+              "mask": 0,
+              "blendType": 0
+            },
+            "wrapperReferences": 1,
+            "bitmapReferences": 1
+          }
+        },
+        "offset": [0, 0],
+        "enabled": 0,
+        "pending": 0,
+        "scriptBitmapCount": 0,
+        "scriptImageOwnerCount": 0,
+        "retainedOwner": null,
+        "live": []
+      },
+      "unexpectedMemoryWrites": [],
+      "outputQualification": "Capture-only: original host had not yet executed startup affine sine table; metadata/owner/control still recorded."
+    }
+  ],
+  "coldAfter": [8, 14]
+}

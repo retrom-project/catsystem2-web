@@ -697,3 +697,26 @@ than interpreting masks or correcting the file offset. Other CORE/bitfield
 layouts, arbitrary padding-memory consumers, PSD color/depth variants,
 animated raster sources, resource extremes and hardware presentation remain
 open. These shape extensions introduce no new SDK slots or build admission.
+
+## SDK63/67 alpha cache timing
+
+Fresh four-byte BMP/KCF owners begin with an unknown alpha cache. A visible,
+nonempty scalar raster queries that cache for normal opacity and mask1/4 paths.
+Affine dispatch, hidden entries and nonintersecting clips retain the unknown
+cache. The scalar mask query occurs at the existing source pixel-consumption
+boundary; borrowing, source commits, flushes and other build policies retain
+their order. Nonzero blend-type inputs with an initially unknown cache still
+need a proved ordinary producer.
+
+The two own PE groups execute39 target and80 dependency GCALLs per build,
+including six Script bootstrap calls. The113 recorded case frames and eight
+independent internal cold continuations per build compare initialized state,
+controls, ownership and qualified pixels. The supplementary affine group calls
+the exact startup fixed-point sine-table initializer once per host. Earlier
+affine output, and later output depending on it, remain unqualified captures
+because that first host omitted this prerequisite. Its independent metadata
+and ownership observations are retained. Correctly initialized affine pixels
+match the existing shared math implementation without a formula change.
+
+The groups use Main340 forced software raster; they do not establish actual
+Base traversal, collector cadence, capture, Stage or physical GPU behavior.

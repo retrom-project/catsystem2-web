@@ -57,7 +57,6 @@ async function cacheRasterAlpha(bitmap, state, item, area) {
     item.mode ||
     !item.visible ||
     !item.alpha ||
-    state.mask ||
     state.blendType
   )
     return;
