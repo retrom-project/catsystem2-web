@@ -58,6 +58,14 @@ before writing; the score query clears its outputs before reading the possibly
 aliased player argument. Direct low-level authoring calls retain their explicit
 argument contract and do not reuse a machine's previous GCALL frame.
 
+The existing six-frame output-address corpus per build also covers an output
+overwriting the VM word that held its own address. Main494 retains all five
+resolved targets for both clearing and score writes; Main502 retains its target
+for clearing and payment writes. Main496's four targets and Main482's three
+targets are resolved before any output. Current JS replay compares every local
+byte, register continuation, context/RNG state and fresh cold restoration for
+these cases. The original captures are reused without new native execution.
+
 A context handle is opaque. Two native captures intentionally consume its
 physical address from the current argv0 as a numeric payment, then expose that
 number through the payment query. Those captures are separate from the 119

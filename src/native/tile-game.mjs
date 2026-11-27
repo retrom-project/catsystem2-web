@@ -213,11 +213,10 @@ export class NativeTileGame {
       case 0x1ed:
         return result(first(26, [argument(1)]));
       case 0x1ee: {
-        Array.from({ length: 5 }, (_, index) => argument(index + 2)).forEach((address) =>
-          store(address, 0),
-        );
+        const targets = Array.from({ length: 5 }, (_, index) => argument(index + 2));
+        targets.forEach((address) => store(address, 0));
         const words = query(16, [argument(1)]);
-        if (words) words.slice(0, 5).forEach((word, index) => store(argument(2 + index), word));
+        if (words) words.slice(0, 5).forEach((word, index) => store(targets[index], word));
         return result();
       }
       case 0x1ef:
@@ -252,10 +251,11 @@ export class NativeTileGame {
         context.pendingEvent = context.lastEvent;
         return result();
       case 0x1f6: {
-        write(argument(1), [0, 0, 0, 0]);
+        const target = argument(1);
+        write(target, [0, 0, 0, 0]);
         const words = query(19);
         if (!words?.length) return result(0);
-        write(argument(1), words);
+        write(target, words);
         return result(1);
       }
       case 0x1f7: {
