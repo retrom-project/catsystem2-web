@@ -96,9 +96,9 @@ export class LegacyTextState {
   }
   append(bytes, characterPairs) {
     if (!this.configured) return 0;
-    const units = nativeTextUnits(bytes, false, characterPairs),
-      start = this.rows.length;
+    const units = nativeTextUnits(bytes, false, characterPairs);
     let at = 0,
+      success = false,
       inRuby = false,
       reading = false,
       ruby = [],
@@ -116,10 +116,12 @@ export class LegacyTextState {
       if (code > 255) {
         if (reading) ruby.push(code);
         else if (!this.glyph(code)) break;
+        else success = true;
         continue;
       }
       if (!this.w(197)) {
         if (!this.glyph(code)) break;
+        success = true;
         continue;
       }
       if (code === 91) {
@@ -169,10 +171,10 @@ export class LegacyTextState {
       }
       if (reading) ruby.push(code);
       // Escaped ASCII continues parsing controls even when the glyph is clipped.
-      else this.glyph(code);
+      else if (this.glyph(code)) success = true;
     }
     this.vertical(this.w(196));
-    return Number(this.rows.length !== start);
+    return Number(success);
   }
   ruby(start, end, codes) {
     while (start < this.rows.length && !this.rows[start][0]) start++;

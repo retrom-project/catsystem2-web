@@ -97,6 +97,11 @@ the escape-field/grammar context agree in all five fingerprinted builds. DBC
 and escape-disabled branches still stop on glyph failure. This is shared parser
 behaviour, independent of the modern wrapper registration.
 
+Append reports successful ordinary glyph additions separately from cell and style
+changes. Escaped newline/backslash and ruby control work can change cells without
+requesting immediate raster or publication. Pending unpainted cells and the old
+bitmap survive a checkpoint until a later normal raster consumes them.
+
 ## Metrics, fonts and pixels
 
 The exact comparison policy is in
