@@ -1,5 +1,22 @@
 # Persistent bitmaps and native operations
 
+Pending retained output still takes an independent snapshot before its asynchronous
+output. For ordinary fixed native RGBA storage between 1 and 64 MiB, a synchronous
+exact scan may represent zero top/bottom rows implicitly and copy the remaining
+complete row band. It uses this representation only when the band occupies at
+most half the full bitmap. Small, dense, shared, resizable or replaced typed-array
+ports keep the full-copy path. Transparent RGB counts as nonzero data.
+
+This is temporary per-output storage, with no reuse across calls or change to
+public loan state. The native copy fills every omitted destination row with zero;
+it still publishes the full pending footprint and preserves revisions, dirty
+flags, clipping and flip direction. Unknown output/blit providers receive the
+ordinary complete mutable frame before invocation. If a live copy callback or
+then port appears, the snapshot is materialized before that port consumes it.
+Materialization releases the compact band; its temporary allocation peak is
+bounded by the full image plus a band of at most 32 MiB. No snapshot schema or GPU
+cache behavior changes.
+
 SDK 2.6.1.23 base and alpha commands (`370`, `371`, `374`, `377`, `378`)
 use the same typed bitmap model. Their own original Main112 constructor,
 Script automatic list and loader-bound VM establish the live-owner contract:
