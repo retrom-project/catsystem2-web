@@ -5,12 +5,14 @@ const FIRST = 0x58000000,
   CURRENT = 0xfffffffe,
   QUERY_ACCESS = 0x92000840,
   SYNCHRONIZE = 0x100000,
+  SET_INFORMATION = 0x0420,
   SUSPEND_RESUME = 0x0002,
   FULL_ACCESS = 0x1fffff,
   PAGE = 4096,
   WAIT_TIMEOUT = 0x102,
   WAIT_FAILED = 0xffffffff,
   STILL_ACTIVE = 259;
+const PRIORITIES = new Set([-15, -2, -1, 0, 1, 2, 15]);
 
 export class NativeWindowsThreadHandles {
   constructor(kernel) {
@@ -21,6 +23,7 @@ export class NativeWindowsThreadHandles {
     this.live = 0;
     this.next = FIRST;
     this.nextID = 2;
+    this.mainPriority = 0;
     const def = (name, count, fn) => kernel.register('KERNEL32.dll', name, { count, fn });
     def('GetCurrentThread', 0, () => CURRENT);
     def('OpenThread', 3, ([access, inherit, id]) => {
@@ -31,6 +34,20 @@ export class NativeWindowsThreadHandles {
       return this.lookup(handle, QUERY_ACCESS)?.id ?? 0;
     });
     def('CreateThread', 6, (args) => this.create(args));
+    def('SetThreadPriority', 2, ([handle, value]) => {
+      const opened = this.lookup(handle, SET_INFORMATION);
+      if (!opened) return 0;
+      const priority = value | 0;
+      if (!PRIORITIES.has(priority)) return this.error(87);
+      if (opened.id === 1) this.mainPriority = priority;
+      else {
+        const thread = this.threads.get(opened.id);
+        if (!thread?.context)
+          throw new Error('Virtual thread priority requires a live execution context');
+        thread.priority = priority;
+      }
+      return 1;
+    });
     def('ResumeThread', 1, ([handle]) => {
       const opened = this.lookup(handle, SUSPEND_RESUME);
       if (!opened) return WAIT_FAILED;
@@ -115,6 +132,7 @@ export class NativeWindowsThreadHandles {
         parameter,
         context,
         suspended: Boolean(flags & 4),
+        priority: 0,
         exitCode: null,
         wait: null,
       });
@@ -167,7 +185,10 @@ export class NativeWindowsThreadHandles {
     this.running = true;
     let progressed = false;
     try {
-      for (const thread of [...this.threads.values()]) {
+      // Each guest runs until its next cooperative wait or completion. Higher
+      // priorities enter that dispatch round first; equal priorities retain the
+      // existing creation order. This does not emulate Windows preemption.
+      for (const thread of [...this.threads.values()].sort((a, b) => b.priority - a.priority)) {
         if (!thread.context || thread.suspended) continue;
         const { wait } = thread,
           revision = this.kernel.events.revision;
@@ -244,6 +265,7 @@ export class NativeWindowsThreadHandles {
     return structuredClone({
       next: this.next,
       nextID: this.nextID,
+      mainPriority: this.mainPriority,
       handles: [...this.handles],
       threads: [...this.threads].map(([id, thread]) => [
         id,
@@ -259,7 +281,7 @@ export class NativeWindowsThreadHandles {
       ]),
     });
   }
-  restore({ next, nextID, handles, threads: saved }) {
+  restore({ next, nextID, mainPriority, handles, threads: saved }) {
     const entries = new Map(structuredClone(handles));
     const threads = new Map(structuredClone(saved));
     const word = (value) => Number.isInteger(value) && value >= 0 && value <= 0xffffffff;
@@ -270,6 +292,7 @@ export class NativeWindowsThreadHandles {
       !Number.isInteger(nextID) ||
       nextID < 2 ||
       nextID > 0x100000000 ||
+      !PRIORITIES.has(mainPriority) ||
       threads.size !== saved.length ||
       entries.size !== handles.length ||
       [...entries].some(
@@ -297,6 +320,7 @@ export class NativeWindowsThreadHandles {
         !word(thread.address) ||
         !word(thread.parameter) ||
         typeof thread.suspended !== 'boolean' ||
+        !PRIORITIES.has(thread.priority) ||
         (thread.exitCode !== null && !word(thread.exitCode)) ||
         Boolean(thread.context) !== (thread.exitCode === null)
       )
@@ -337,6 +361,7 @@ export class NativeWindowsThreadHandles {
     }
     this.next = next;
     this.nextID = nextID;
+    this.mainPriority = mainPriority;
     this.handles = entries;
     this.threads = threads;
     this.live = live;

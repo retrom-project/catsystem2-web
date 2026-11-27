@@ -21,11 +21,30 @@ thread boundary; host I/O does not itself add a logical game frame.
 Aging decrements remaining lifetimes, releases entries whose resulting sign bit
 is set, decrements
 the sorting ages of survivors, and decrements progress with 32-bit wrapping.
+SDK23 also performs this change once per explicit aging call. Its wrapper and
+callee do not sample a timer; the age counter is not elapsed milliseconds.
 An `INT_MIN` lifetime therefore becomes `INT_MAX` and survives that operation.
 Clearing releases entries and sets progress to `INT_MAX`. When preloading is
 disabled at construction, these operations preserve the empty list and its
 initial zero progress; completion queries succeed and ordinary reads still
 use the VFS.
+
+SDK23's loaded Script fixture covers the five calls with preloading disabled,
+followed by actual mounted-file selection and independent current cold owners.
+The enabled native-worker comparison remains unqualified: the original moves
+an initialized critical section into its tree node, while the virtual kernel
+preserves initialization by address. The Win32 contract forbids moving or
+copying that opaque object. The host does not infer a new lock from copied
+zero bytes or bypass the initialization guard. See
+[InitializeCriticalSection](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-initializecriticalsection).
+
+The comparison host supports normal virtual thread priorities with real handle
+rights, saved priority state and priority ordering at cooperative dispatch
+rounds. Equal priorities retain their existing order. This affects actual
+guest execution; it does not emulate Windows preemption, priority boosts,
+background resource scheduling or hardware throughput. Invalid handles and
+unsupported priority values fail without changing a thread's priority. See
+[SetThreadPriority](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-setthreadpriority).
 
 The World owns a view of the mounted game's reader. Its KCS, FES and native
 file consumers can reuse cached bytes without replacing the underlying game
