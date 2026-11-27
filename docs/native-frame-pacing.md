@@ -60,3 +60,18 @@ zero step. Snapshots retain this knownness and the actual u32 value with the
 Script owner. Mode0 remains active, normal completion deactivates after its
 current increment, and reenabled mode0 can keep a completed VM active. Neither
 the field nor this source policy registers Main442/443 by itself.
+
+The Core browser entry captures the mapped timer word synchronously when its
+existing rAF callback returns. Queued input and asynchronous work cannot move
+that return into a later bucket. `step(count, wait, timer)` consumes one owned
+observation for this profile even when `count` is zero or greater than one;
+other profiles retain the existing count loop. The normal renderer presents
+each callback, then completes any dispatched packet. Component entry tests use
+ordinary Core construction and standard in-memory host leaves; they establish
+order and ownership, not physical GPU pixels.
+
+Standalone checkpoint actions run after presentation, preserving their FIFO
+position relative to input actions. Replacing a World invalidates the previous
+World's callback; a restored World gets a fresh wait. The Runtime adapter stops
+and awaits an inflight update and presentation before host suspension. Its
+GAME_SAVE transport remains separate from the internal instant checkpoint.

@@ -4,7 +4,7 @@ import test from 'node:test';
 import { CatSystem2 } from '../src/engine.mjs';
 import { GameFiles, BlobFile } from '../src/files.mjs';
 import { encodeCP932 } from '../src/kcs/strings.mjs';
-import { nativeABIBehavior } from '../src/native/abi/index.mjs';
+import { nativeABI, nativeABIBehavior } from '../src/native/abi/index.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { NativeRuntime, UnsupportedKCSNative } from '../src/native/runtime.mjs';
 import { parseNativeXML } from '../src/native/xml.mjs';
@@ -205,7 +205,7 @@ test('2.6.1.23 protects full name tables, owner types and over-budget allocation
       'append-past-end.kcs': kcsProgram([...native(291, owner, 560, 71, 72), [59]]),
       'wrong-owner.kcs': kcsProgram([...native(290, owner), [59]]),
       'oversize.kcs': kcsProgram([...native(289, 1677722, 1, 1), [59]]),
-      'raw-free.kcs': kcsProgram([...native(834, owner), [59]]),
+      'unreviewed.kcs': kcsProgram([...native(837), [59]]),
     };
   const world = await dataWorld(profile, files);
   t.after(() => world.close({ flushFiles: false }));
@@ -217,12 +217,13 @@ test('2.6.1.23 protects full name tables, owner types and over-budget allocation
     expected = rows.slice();
   assert.equal(rows.length, 40);
 
+  assert.equal(nativeABI(profile).tables.main.entries[837].status, 'unknown');
   const wrong = world.runtime.handles.add('other', new Uint8Array(40));
   for (const [file, handleWord, pattern] of [
     ['append-past-end.kcs', handle, /end of its allocation/],
     ['wrong-owner.kcs', wrong, /expected name-pairs/],
     ['oversize.kcs', 0, /name pair allocation exceeds/],
-    ['raw-free.kcs', handle, UnsupportedKCSNative],
+    ['unreviewed.kcs', 0, UnsupportedKCSNative],
   ]) {
     const rejected = await world.spawnScript(file),
       size = world.runtime.handles.records.size;

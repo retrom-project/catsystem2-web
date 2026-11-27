@@ -14,6 +14,9 @@ let engine,
   accumulator = 0,
   statusTime = 0;
 let meterWorld, restorePresent, presentedFrame, frameSample;
+let frameRequest = null,
+  loopWork = Promise.resolve(),
+  loopOwner = {};
 
 function resetFrameRate() {
   if (!frameSample) return;
@@ -81,15 +84,18 @@ const fail = (error) => {
   )}`;
   console.error(error);
 };
-const enqueue = (action) =>
+const enqueue = (action, { settled = false } = {}) =>
   new Promise((resolve, reject) =>
-    actions.push(async () => {
-      try {
-        resolve(await action());
-      } catch (e) {
-        fail(e);
-        reject(e);
-      }
+    actions.push({
+      settled,
+      async run() {
+        try {
+          resolve(await action());
+        } catch (e) {
+          fail(e);
+          reject(e);
+        }
+      },
     }),
   );
 function updateLanguageControls(current = engine) {
@@ -148,11 +154,11 @@ function updateStatus(state) {
   $('diagnostics').textContent = JSON.stringify({ ...state, vm: engine.vmEvidence }, null, 2);
 }
 async function launch(getGame) {
+  const previous = engine;
+  running = false;
   stopObservingWorld();
-  if (running) {
-    running = false;
-    await engine?.dispose();
-  }
+  await loopWork;
+  await previous?.dispose();
   $('error').hidden = true;
   $('language-controls').hidden = true;
   $('start').disabled = true;
@@ -167,6 +173,7 @@ async function launch(getGame) {
       canvas,
       audioContext,
       video: $('movie'),
+      frameSource: { now: () => performance.now() },
       onState: updateStatus,
       onClosed: () => {
         running = false;
@@ -195,7 +202,7 @@ async function launch(getGame) {
     lastTime = performance.now();
     accumulator = 0;
     canvas.focus({ preventScroll: true });
-    requestAnimationFrame(loop);
+    scheduleLoop();
   } catch (e) {
     fail(e);
     $('language-controls').hidden = true;
@@ -213,15 +220,28 @@ function resetClockForWorld(world) {
   accumulator = 0;
 }
 function stopObservingWorld() {
+  loopOwner = {};
+  if (frameRequest !== null) cancelAnimationFrame(frameRequest);
+  frameRequest = null;
   resetClockForWorld(undefined);
   monitorPresentation(undefined);
 }
-async function loop(now) {
-  if (!running) return;
+function scheduleLoop() {
+  const returnedWait = { engine, lease: engine.beginFrameWait(), owner: loopOwner };
+  frameRequest = requestAnimationFrame((now) => {
+    frameRequest = null;
+    loopWork = loop(now, returnedWait);
+  });
+}
+async function loop(now, returnedWait) {
+  if (!running || returnedWait.owner !== loopOwner) return;
+  let current;
   try {
-    while (actions.length) await actions.shift()();
+    const timer = returnedWait.lease ? returnedWait.engine.frameWaitTime(returnedWait.lease) : null;
+    while (actions.length && !(engine.world?.framePacer && actions[0].settled))
+      await actions.shift().run();
     gamepad();
-    const current = engine;
+    current = engine;
     // The RAF that awaited a restore predates the restored World's playback.
     resetClockForWorld(current.world);
     if (lastTime !== undefined && now > lastTime) {
@@ -230,15 +250,24 @@ async function loop(now) {
     }
     const count = Math.min(6, Math.floor(accumulator));
     accumulator -= count;
-    if (count) await engine.step(count);
+    if (returnedWait?.engine === engine && returnedWait.lease)
+      await current.step(count, returnedWait.lease, timer);
+    else if (count && returnedWait.engine === current) await current.step(count);
+    if (!running || current !== engine || returnedWait.owner !== loopOwner) return;
     const world = current.world;
     resetClockForWorld(world);
     if (running) monitorPresentation(world);
     presentedFrame = undefined;
-    await engine.render();
+    await current.render();
     if (running && engine === current && current.world === world) {
       lastTime ??= performance.now();
       countPresentedFrame();
+    }
+    while (actions.length && current.world?.framePacer && actions[0].settled)
+      await actions.shift().run();
+    if (current.world !== world) {
+      resetClockForWorld(current.world);
+      if (running && current === engine) await current.render();
     }
   } catch (e) {
     running = false;
@@ -246,7 +275,7 @@ async function loop(now) {
     $('system-settings').disabled = true;
     fail(e);
   }
-  if (running) requestAnimationFrame(loop);
+  if (running && current === engine && returnedWait.owner === loopOwner) scheduleLoop();
 }
 $('start').onclick = () => launch(() => GameFiles.fromHTTP('/game.json'));
 $('open').onclick = () => $('folder').click();
@@ -306,30 +335,39 @@ for (const id of ['fullscreen', 'exit-fullscreen']) {
 }
 document.addEventListener('fullscreenchange', () => engine?.nativeWindowStateChanged());
 $('export').onclick = () =>
-  enqueue(async () => {
-    const data = await engine.snapshot(),
-      url = URL.createObjectURL(
-        new Blob([await serializeCheckpoint(data, engine.checkpointLimit)], {
-          type: 'application/octet-stream',
-        }),
-      );
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'catsystem2-save.cs2save';
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }).catch(() => {});
+  enqueue(
+    async () => {
+      const data = await engine.snapshot(),
+        url = URL.createObjectURL(
+          new Blob([await serializeCheckpoint(data, engine.checkpointLimit)], {
+            type: 'application/octet-stream',
+          }),
+        );
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'catsystem2-save.cs2save';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    },
+    { settled: true },
+  ).catch(() => {});
 $('import').onclick = () => $('save-file').click();
 $('save-file').onchange = () =>
-  enqueue(async () => {
-    resetFrameRate();
-    const file = $('save-file').files[0];
-    if (!file || file.size > engine.checkpointLimit)
-      throw new Error('Save file exceeds checkpoint limit');
-    await engine.restore(
-      await deserializeCheckpoint(new Uint8Array(await file.arrayBuffer()), engine.checkpointLimit),
-    );
-  }).catch(() => {});
+  enqueue(
+    async () => {
+      resetFrameRate();
+      const file = $('save-file').files[0];
+      if (!file || file.size > engine.checkpointLimit)
+        throw new Error('Save file exceeds checkpoint limit');
+      await engine.restore(
+        await deserializeCheckpoint(
+          new Uint8Array(await file.arrayBuffer()),
+          engine.checkpointLimit,
+        ),
+      );
+    },
+    { settled: true },
+  ).catch(() => {});
 const point = (event) => {
   const r = canvas.getBoundingClientRect();
   return [
@@ -422,7 +460,8 @@ window.addEventListener('blur', () => {
 });
 document.addEventListener('visibilitychange', resetFrameRate);
 window.addEventListener('pagehide', () => {
+  const current = engine;
   running = false;
   stopObservingWorld();
-  engine?.dispose().catch(() => {});
+  loopWork.then(() => current?.dispose()).catch(() => {});
 });

@@ -65,6 +65,7 @@ export async function prepareBrowserModules({ signal, prepareSceneWorkers = fals
 export class CatSystem2 {
   #storageNamespace;
   #importedGameSaveRevision = null;
+  #hostFrameWait = null;
 
   constructor({
     game,
@@ -79,6 +80,7 @@ export class CatSystem2 {
     prepareSceneWorkers = true,
     sceneWorkers = null,
     transitionalExe = null,
+    frameSource = null,
     onState = () => {},
     onClosed = () => {},
   }) {
@@ -97,6 +99,7 @@ export class CatSystem2 {
       prepareSceneWorkers,
       sceneWorkers,
       transitionalExe,
+      frameSource,
       steam,
       globals: {},
       strings: {},
@@ -258,6 +261,7 @@ export class CatSystem2 {
       game,
       images: this.images,
       host: this.host,
+      frameSource: this.frameSource,
       profile: this.nativeProfile,
       startupDocument: startup,
       nativeModule,
@@ -539,7 +543,56 @@ export class CatSystem2 {
     if (this.world) return this.world.input.dragging;
     return this.pointerPlayers().some((p) => p.dragging);
   }
-  async step(count = 1) {
+  beginFrameWait() {
+    if (this.#hostFrameWait?.world !== this.world) this.#hostFrameWait = null;
+    if (this.#hostFrameWait) throw new Error('A browser frame wait is already active');
+    const world = this.world,
+      wait = world?.beginHostFrameWait();
+    if (!wait) return null;
+    const lease = Object.freeze({});
+    this.#hostFrameWait = { world, wait, lease };
+    return lease;
+  }
+  suspendFramePacing() {
+    this.world?.suspendHostFrames();
+    this.#hostFrameWait = null;
+  }
+  frameWaitTime(frameWait) {
+    const pending = this.#hostFrameWait;
+    if (!pending || pending.lease !== frameWait)
+      throw new Error('Native timer sampling requires its actual browser wait');
+    return pending.world === this.world ? pending.world.clock.tickCount() : null;
+  }
+  async step(count = 1, frameWait = null, frameTimer = null) {
+    if (this.#hostFrameWait && this.#hostFrameWait.world !== this.world) {
+      this.#hostFrameWait = null;
+      return;
+    }
+    if (this.world?.framePacer) {
+      const pending = this.#hostFrameWait,
+        world = this.world;
+      if (!pending || pending.lease !== frameWait)
+        throw new Error('Native browser update requires its actual frame wait');
+      if (!Number.isInteger(frameTimer) || frameTimer < 0 || frameTimer > 0xffffffff)
+        throw new Error('Native browser update requires its wait-return timer sample');
+      this.#hostFrameWait = null;
+      const updated = await world.resumeHostFrameWait(
+        pending.wait,
+        () => this.inputBindings.sample(),
+        frameTimer,
+      );
+      if (!updated) return;
+      this.nativeStorage?.pruneToolbarQuickSave();
+      if (world.quitRequested) {
+        this.mode = 'closed';
+        await this.dispose();
+        this.onClosed();
+        return;
+      }
+      this.frame = world.frame;
+      this.audio.setFrame(this.frame);
+      return;
+    }
     for (let i = 0; i < count && !this.disposed; i++) {
       if (this.world) {
         this.inputBindings.sample();
@@ -644,6 +697,7 @@ export class CatSystem2 {
           this.world.particles.drawItems(),
         );
       this.renderer.present();
+      this.world.completeHostFrame();
       this.onState(this.status());
       return;
     }

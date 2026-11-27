@@ -994,11 +994,12 @@ export class NativeWorld {
     this.framePacer.resume(this.clock.tickCount());
     return this.framePacer.beginWait();
   }
-  async resumeHostFrameWait(wait) {
+  async resumeHostFrameWait(wait, beforeUpdate, tickCount = this.clock.tickCount()) {
     if (!this.framePacer) throw new Error('Native host frame source is unavailable');
-    const packet = this.framePacer.observe(wait, this.clock.tickCount());
+    const packet = this.framePacer.observe(wait, tickCount);
     if (!packet) return false;
     this.#framePacket = packet;
+    beforeUpdate?.();
     await this.tick(packet);
     return true;
   }
@@ -1140,6 +1141,8 @@ export class NativeWorld {
     if (!Number.isSafeInteger(state.frame) || state.frame < 0)
       throw new Error('Invalid native world checkpoint frame');
     this.clock.restore(state.clock);
+    if (this.frameSource && !state.framePacer)
+      throw new Error('Native pacing checkpoint is missing its frame source state');
     if (state.framePacer) {
       if (!this.frameSource)
         throw new Error('Native pacing checkpoint requires its actual host frame source');
