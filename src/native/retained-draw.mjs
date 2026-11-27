@@ -246,8 +246,11 @@ export class NativeRetainedDraw {
   async syncOwnerModel(ownerHandle) {
     const owner = this.world.imageOwners.get(ownerHandle),
       revision = owner.rebuild ?? 0,
+      pixelRevision = owner.revision ?? 0,
+      pixelsChanged = pixelRevision !== (owner.retainedChildrenPixelRevision ?? 0),
       layers = owner.layers ?? [];
-    if (owner.retainedChildren && owner.retainedChildrenRevision === revision) return;
+    if (owner.retainedChildren && owner.retainedChildrenRevision === revision && !pixelsChanged)
+      return;
     if (owner.layerSources?.length === layers.length) {
       for (const [i, layer] of layers.entries()) {
         const child = this.sources.get(owner.layerSources[i]),
@@ -266,13 +269,14 @@ export class NativeRetainedDraw {
       for (const child of previous) await this.sources.release(child);
     }
     owner.retainedChildrenRevision = revision;
+    owner.retainedChildrenPixelRevision = pixelRevision;
     for (const record of this.world.runtime.handles.records.values())
       if (
         record.type === 'render-source' &&
         record.value.retainedOwner &&
         record.value.ownerHandle === ownerHandle
       ) {
-        record.value.groupDirty = false;
+        record.value.groupDirty = pixelsChanged;
         record.value.ownerRevision = revision;
         record.value.revision++;
       }
@@ -523,7 +527,8 @@ export class NativeRetainedDraw {
         offsetY: state.offsetY,
       };
     }
-    changed = changed || bitmap !== source.sourceBitmap || bitmapRevision !== source.bitmapRevision;
+    // A pixel generation is not the native source/entry dirty notification.
+    changed = changed || bitmap !== source.sourceBitmap;
     source.sourceBitmap = bitmap;
     source.bitmapRevision = bitmapRevision;
     if (changed) source.revision++;
@@ -634,6 +639,7 @@ export class NativeRetainedDraw {
   }
   async pull(draw, record) {
     const source = this.sources.get(record.source);
+    if (source.retainedOwner) this.world.imageOwners.get(source.ownerHandle).info[9] = 0;
     await this.composite(source);
     const bitmap = this.sources.bitmap(record.source);
     if (!bitmap && record.kind === 3 && nativeABI(this.world.profile).graphics.retainedEmptySources)
@@ -676,8 +682,6 @@ export class NativeRetainedDraw {
       const bitmap = this.world.graphics.images.get(item.image);
       bitmap.commitCanvas();
       if (item.imageRevision !== bitmap.state.revision) {
-        draw.mark(item, true);
-        draw.mark(item);
         item.imageRevision = bitmap.state.revision;
       }
     }

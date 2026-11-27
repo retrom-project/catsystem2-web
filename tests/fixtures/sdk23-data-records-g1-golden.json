@@ -1,0 +1,474 @@
+{
+  "group": "g1",
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "script": "records-g1",
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-data-records-20261128/ORIGINAL-G1.json",
+    "sha256": "c6b531a2ae6fd57057189ba72fc22efa07c4a7128edc13204e9487a62345e4b0"
+  },
+  "qualification": "Intact original loaded Script/Main factories and real CRT/FileServer/ApplicationRoot; controlled memory OS FS, no renderer/GPU or physical disk/platform save claim.",
+  "budget": {
+    "target": 19,
+    "support": 10,
+    "bootstrapGCALL": 3,
+    "carrier65": 3,
+    "finalWait71": 1,
+    "allGCALL": 36,
+    "businessScriptFrames": 4
+  },
+  "outputWords": 17,
+  "liveFiles": [[[64, "source"]], [[68, "clone"]], [[64, "reader"]], []],
+  "liveStacks": [
+    [
+      [72, "source", true],
+      [76, "copy", true]
+    ],
+    [[76, "copy", true]],
+    [[76, "rebuilt", true]],
+    []
+  ],
+  "inputs": {
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+    "program": "S0NTAAIAAAAAAAAANAAAALAFAADkBQAAAAAAAAAAAAAAEAAAABAAAOQFAAAAAAAAYAsAAHicbdM9S8NQFAbgk7ZCwQ4VHRwcisdehPgFOgg6RAjYwaFDBQfBaqs4CNYPUMGhQ5UKDg4dOnTo0ICgg4ODg4N/wNFF/A26+LGISE5M8vbapTyc9+TenNzbNBs7z5zm3fXCtmIyiNK8WxwtKI6Jt0tHY4rj4sLeHilOiO3JwR7Flrh6sLGo2Ba/PV6dKc6KrYlUUnFO7DiOo/gbTJHQMXAcnAAnwX3gfvAAOAUeAg+DR8AT4CnwNHgWbIFtcAa8AM6Cc+Al8DI4Dy6CN8Fb4BJ4H3wIPgaXwRVwFXwOvgDXwHVwA9wEt8CX4nEiMvmViDhGRIotcstx+Y1IuBIlkoLijJRj8mvo4YJb7vVa3Atp8moYliHM6mEFQvc6mrwWhlUJw8VNLvqhVza5EA1e/1wKc+48BI/k/Y6/leRWtm1zIaE3fTd8A+993t0Fk9JYg8YENKb0xnrQaPKpEbyhrW1k8pMRzON1n4TdD1D+9E+pbUDbe035ph8UzNMIQnjQ7/vSzrttbu8PFZcnf8Jxmv/mzndubMFntiLaUV9CmNfD685neqOPrH0Of72yfqa3EDb18K7zZvdQDm8Nv3S5hXl/y5lfoiT7nw==",
+    "archives": [
+      {
+        "name": "startup.xml",
+        "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg=="
+      },
+      {
+        "name": "scripts.int",
+        "data": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAAByZWNvcmRzLWcxLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAPwBAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAsAUAAOQFAAAAAAAAAAAAAAAQAAAAEAAA5AUAAAAAAABgCwAAeJxt0z1Lw1AUBuCTtkLBDhUdHByKx16E+AU6CDpECNjBoUMFB8FqqzgI1g9QwaFDlQoODh06dOjQgKCDg4ODg3/A0UX8Dbr4sYhITkzy9tqlPJz35N6c3Ns0GzvPnObd9cK2YjKI0rxbHC0ojom3S0djiuPiwt4eKU6I7cnBHsWWuHqwsajYFr89Xp0pzoqtiVRScU7sOI6j+BtMkdAxcBycACfBfeB+8AA4BR4CD4NHwBPgKfA0eBZsgW1wBrwAzoJz4CXwMjgPLoI3wVvgEngffAg+BpfBFXAVfA6+ANfAdXAD3AS3wJficSIy+ZWIOEZEii1yy3H5jUi4EiWSguKMlGPya+jhglvu9VrcC2nyahiWIczqYQVC9zqavBaGVQnDxU0u+qFXNrkQDV7/XApz7jwEj+T9jr+V5Fa2bXMhoTd9N3wD733e3QWT0liDxgQ0pvTGetBo8qkRvKGtbWTykxHM43WfhN0PUP70T6ltQNt7TfmmHxTM0whCeNDv+9LOu21u7w8Vlyd/wnGa/+bOd25swWe2ItpRX0KY18Przmd6o4+sfQ5/vbJ+prcQNvXwrvNm91AObw2/dLmFeX/LmV+iJPuf"
+      },
+      {
+        "name": "images.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "ptcl.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "scenes.int",
+        "data": "S0lGAAAAAAA="
+      }
+    ]
+  },
+  "rows": [
+    {
+      "phase": 0,
+      "label": "fully written fixed-record storage, pop and independent full-capacity copy",
+      "outputs": [1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "spans": [
+        {
+          "at": 508,
+          "bytes": [
+            165, 165, 165, 165, 239, 205, 171, 137, 64, 48, 32, 16, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "source",
+          "pointer": 537126736,
+          "owner": 537127040,
+          "capacity": 524288,
+          "used": 0,
+          "tag": 47,
+          "payload": ""
+        }
+      ],
+      "stacks": [
+        {
+          "name": "source",
+          "pointer": 537127056,
+          "recordSize": 8,
+          "count": 1,
+          "increment": 2,
+          "capacity": 2,
+          "data": [68, 51, 34, 17, 136, 119, 102, 85, 239, 205, 171, 137, 64, 48, 32, 16]
+        },
+        {
+          "name": "copy",
+          "pointer": 537127120,
+          "recordSize": 8,
+          "count": 1,
+          "increment": 2,
+          "capacity": 2,
+          "data": [68, 51, 34, 17, 136, 119, 102, 85, 239, 205, 171, 137, 64, 48, 32, 16]
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "label": "source stack disposal, copied LIFO consumption, CSS copy/remove/clear and source file disposal",
+      "outputs": [1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      "spans": [
+        {
+          "at": 508,
+          "bytes": [
+            165, 165, 165, 165, 239, 205, 171, 137, 64, 48, 32, 16, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 68, 51, 34, 17, 136, 119, 102, 85, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "clone",
+          "pointer": 537127056,
+          "owner": 537127072,
+          "capacity": 524288,
+          "used": 32,
+          "tag": 47,
+          "payload": "CwAAAAgAAADvzauJQDAgEAwAAAAIAAAARDMiEYh3ZlU="
+        }
+      ],
+      "stacks": [
+        {
+          "name": "copy",
+          "pointer": 537127120,
+          "recordSize": 8,
+          "count": 0,
+          "increment": 2,
+          "capacity": 2,
+          "data": [68, 51, 34, 17, 136, 119, 102, 85, 239, 205, 171, 137, 64, 48, 32, 16]
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "label": "cloned CSS survives both sources, real writer/new reader reconstructs stack from VM byte outputs",
+      "outputs": [1, 1, 1, 1, 1, 1, 1, 1, 8, 8, 1, 1, 2, 0, 0, 0, 1],
+      "spans": [
+        {
+          "at": 508,
+          "bytes": [
+            165, 165, 165, 165, 239, 205, 171, 137, 64, 48, 32, 16, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 68, 51, 34, 17, 136, 119, 102, 85, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 239, 205,
+            171, 137, 64, 48, 32, 16, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 68, 51, 34, 17, 136, 119,
+            102, 85, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "reader",
+          "pointer": 537126736,
+          "owner": 537127040,
+          "capacity": 524288,
+          "used": 32,
+          "tag": 47,
+          "payload": "CwAAAAgAAADvzauJQDAgEAwAAAAIAAAARDMiEYh3ZlU="
+        }
+      ],
+      "stacks": [
+        {
+          "name": "rebuilt",
+          "pointer": 537127120,
+          "recordSize": 8,
+          "count": 2,
+          "increment": 2,
+          "capacity": 2,
+          "data": [239, 205, 171, 137, 64, 48, 32, 16, 68, 51, 34, 17, 136, 119, 102, 85]
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "label": "file disposal precedes final meaningful LIFO output and stack disposal",
+      "outputs": [1, 1, 1, 1, 1, 1, 1, 1, 8, 8, 1, 1, 2, 1, 1, 0, 1],
+      "spans": [
+        {
+          "at": 508,
+          "bytes": [
+            165, 165, 165, 165, 239, 205, 171, 137, 64, 48, 32, 16, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 68, 51, 34, 17, 136, 119, 102, 85, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 239, 205,
+            171, 137, 64, 48, 32, 16, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 68, 51, 34, 17, 136, 119,
+            102, 85, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 68, 51, 34, 17, 136, 119, 102, 85, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 239, 205, 171, 137, 64, 48, 32, 16, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    }
+  ],
+  "savedFiles": [
+    {
+      "name": "record-copy.css",
+      "data": "Q1NTACEAAAAgAAAALwAAAHja42ZgYOAA4vdnV3c6GCgI8ED5LsZKgh3laaEAW24GHA=="
+    }
+  ],
+  "nativeCalls": [
+    {
+      "id": 66,
+      "phase": -1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 209,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 143,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 238,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537126736
+    },
+    {
+      "id": 863,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537127056
+    },
+    {
+      "id": 863,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537127120
+    },
+    {
+      "id": 865,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 865,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 866,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 868,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 867,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 65,
+      "phase": 0,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 864,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 866,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 244,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 244,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 390,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537127056
+    },
+    {
+      "id": 469,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 389,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 246,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 65,
+      "phase": 1,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 245,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 246,
+      "phase": 2,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 247,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537126736
+    },
+    {
+      "id": 254,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 8
+    },
+    {
+      "id": 254,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 8
+    },
+    {
+      "id": 865,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 865,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 867,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 2
+    },
+    {
+      "id": 65,
+      "phase": 2,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 246,
+      "phase": 3,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 866,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 866,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 867,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 864,
+      "phase": 3,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 71,
+      "phase": 3,
+      "control": 4,
+      "outputWritten": false
+    }
+  ],
+  "coldAt": [0, 1, 2, 3]
+}

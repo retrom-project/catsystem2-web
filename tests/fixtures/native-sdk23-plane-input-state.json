@@ -1,0 +1,693 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-plane-input-20261128/ORIGINAL-G1-D3.json",
+    "sha256": "318f5cb187ab162f894d0257af5fe1cc52f395d7a6d726110d44d1ef6b8f3b8b",
+    "bytes": 64642
+  },
+  "plan": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-plane-input-20261128/G1-D3-SEALED-PLAN.json",
+    "sha256": "d28c8f396da45d2243523b038d41da836c44b58545ff32ea754ff0684c925d25",
+    "bytes": 5745
+  },
+  "producer": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-plane-input-20261128/probe-g1-d3-original.mjs",
+    "sha256": "ac14b3b035852d29a1ba624c2e376a12014b3c0e1565184eb3195a30cf69f134",
+    "bytes": 7004
+  },
+  "inputSource": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-plane-input-20261128/g1-safe-case.mjs",
+    "sha256": "b5219c90c92a2aaa8543a1fb51c58553257b820b43e206c1fe67ef36f027f663",
+    "bytes": 2909
+  },
+  "startupXML": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>32</width><height>24</height><v_width>32</v_width><v_height>24</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp32y>0</bpp32y><bpp16y>1</bpp16y><bpp>32</bpp></TEXTURE><INT><int00><name>kcs</name><int>scripts.int</int><ext>kcs</ext><dir>scripts-loose</dir></int00><int01><name>image</name><int>images.int</int><ext>hg3</ext><dir>images-loose</dir></int01><int02><name>ptcl</name><int>ptcl.int</int><ext>kcs</ext><dir>ptcl-loose</dir></int02><int03><name>scene</name><int>scenes.int</int><ext>cst</ext><dir>scenes-loose</dir></int03></INT><KEYCUSTOMIZE><key00><name>Primary</name><mouse1>1</mouse1><rep_mouse1>0</rep_mouse1></key00></KEYCUSTOMIZE></document>",
+  "program": "S0NTAAIAAAAAAAAANAAAADgGAABsBgAAAAAAAAAAAAAAEAAAABAAAGwGAAAAAAAAcAwAAHiclZOtTgNBEMfnjgIViJIiEBXAcBeSrYAgEWxLE06UgEDwFWj5Lh8V0Ac4UYFAIBAIBIKnQFUgeBzeANjZLju7LU0wk3/+95vZ2dm5CIP9N4xw7aRVjxECgAg36jcnMWZIN1sAMWZJa0aSXjlvXMVYIX0MikkYk5Iu129/6rRJAzF3jOmQThrNVozvjPkgHZCG0PoZprOhZcaYzjFmgvmTzC8wf4rpWabnmC6GAAIrANAtUAT1MVQxr7Uam8CyQsYIkQzRWvpIhewRViX1kaTnoI6PVNkRALJElyxFKOenvgSuKzBHSKWLACEdGWFaky5S7SKpNDGVXhVzULpMtaSeqY4CNxU44Ryna738DZqKuZLALWVnvXzHlpS+rYwM3T/9pR277RZh3UopcMcdi5N5x+xdY/fh7skoma2I8vqxAvtkumX9wjhOcZqSzlVSgXU4Q/aBf/sF3T6tX808ufkYUE7dzRF4aDt8YPQQQDqYfrQ0LYLAU7+fkOwz3/Y6cYZiXlfZewOIYACRsBoNe3jCEv+wL1xb4KW971MPfeXT15Z+tjT9iQKb/iyP7LIk/QyzFUMURykOU8xTXPR3o6fll39d8LXfpAWu+G0yo+oaPBs/yVg135a+AfUQkf0=",
+  "budget": {
+    "allGCALL": 56,
+    "scriptFrameDirect": 7
+  },
+  "rows": [
+    {
+      "phase": 0,
+      "label": "true typed parent/child Plane and Base, own priority/inherit/stop",
+      "frame": 100,
+      "outputs": [1091567616, 1082130432, 1094713344, 1094713344, 0, 0, 0, 0, 0, 0],
+      "regions": [],
+      "actors": [
+        {
+          "name": "parent",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        },
+        {
+          "name": "child",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        },
+        {
+          "name": "base",
+          "kind": 6,
+          "receiver": -1
+        },
+        {
+          "name": "hint",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "label": "Base explicit geometry and Plane actual graph/button records",
+      "frame": 101,
+      "outputs": [1091567616, 1082130432, 1094713344, 1094713344, 1, 2147483651, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "bounds": [1, 2, 9, 8],
+          "priority": 17,
+          "mask": 7,
+          "active": 0,
+          "enabled": 1,
+          "hover": 1,
+          "dragEnabled": 1
+        },
+        {
+          "owner": "child",
+          "bounds": [2, 4, 10, 10],
+          "priority": 12,
+          "mask": 7,
+          "active": 0,
+          "enabled": 1,
+          "hover": 1,
+          "dragEnabled": 1
+        }
+      ],
+      "actors": [
+        {
+          "name": "parent",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        },
+        {
+          "name": "child",
+          "kind": 2,
+          "receiver": "caller",
+          "phase": 1,
+          "blocked": false,
+          "buttonEnabled": true,
+          "button": [1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1],
+          "imageIndex": "hint",
+          "attribute": 2
+        },
+        {
+          "name": "base",
+          "kind": 6,
+          "receiver": "caller"
+        },
+        {
+          "name": "hint",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "label": "normal parent hide propagates to registered child without a hint cycle",
+      "frame": 102,
+      "outputs": [1091567616, 1082130432, 1094713344, 1094713344, 1, 2147483651, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "bounds": [1, 2, 9, 8],
+          "priority": 17,
+          "mask": 7,
+          "active": 0,
+          "enabled": 1,
+          "hover": 1,
+          "dragEnabled": 1
+        },
+        {
+          "owner": "child",
+          "bounds": [2, 4, 10, 10],
+          "priority": 12,
+          "mask": 7,
+          "active": 0,
+          "enabled": 0,
+          "hover": 1,
+          "dragEnabled": 1
+        }
+      ],
+      "actors": [
+        {
+          "name": "parent",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        },
+        {
+          "name": "child",
+          "kind": 2,
+          "receiver": "caller",
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": true,
+          "button": [1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1],
+          "imageIndex": "hint",
+          "attribute": 2
+        },
+        {
+          "name": "base",
+          "kind": 6,
+          "receiver": "caller"
+        },
+        {
+          "name": "hint",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "label": "normal parent reshow propagates through the same child",
+      "frame": 103,
+      "outputs": [1091567616, 1082130432, 1094713344, 1094713344, 1, 2147483651, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "bounds": [1, 2, 9, 8],
+          "priority": 17,
+          "mask": 7,
+          "active": 0,
+          "enabled": 1,
+          "hover": 1,
+          "dragEnabled": 1
+        },
+        {
+          "owner": "child",
+          "bounds": [2, 4, 10, 10],
+          "priority": 12,
+          "mask": 7,
+          "active": 0,
+          "enabled": 1,
+          "hover": 1,
+          "dragEnabled": 1
+        }
+      ],
+      "actors": [
+        {
+          "name": "parent",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        },
+        {
+          "name": "child",
+          "kind": 2,
+          "receiver": "caller",
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": true,
+          "button": [1, 0, 0, 1, 1, 0, 1, 0, 1, 1, 1, 1],
+          "imageIndex": "hint",
+          "attribute": 2
+        },
+        {
+          "name": "base",
+          "kind": 6,
+          "receiver": "caller"
+        },
+        {
+          "name": "hint",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "label": "enable/active/return/callback metadata, actual clear and rebind",
+      "frame": 104,
+      "outputs": [1091567616, 1082130432, 1094713344, 1094713344, 1, 2147483651, 1, 0, 0, 1],
+      "regions": [
+        {
+          "owner": "base",
+          "bounds": [2, 3, 9, 8],
+          "priority": 19,
+          "mask": 7,
+          "active": 1,
+          "enabled": 1,
+          "hover": 1,
+          "dragEnabled": 1
+        }
+      ],
+      "actors": [
+        {
+          "name": "parent",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        },
+        {
+          "name": "child",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": true,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": "hint",
+          "attribute": 2
+        },
+        {
+          "name": "base",
+          "kind": 6,
+          "receiver": "caller"
+        },
+        {
+          "name": "hint",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "label": "normal parent subtree and independent Base close requests",
+      "frame": 105,
+      "outputs": [1091567616, 1082130432, 1094713344, 1094713344, 1, 2147483651, 1, 0, 0, 1],
+      "regions": [],
+      "actors": [
+        {
+          "name": "parent",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        },
+        {
+          "name": "child",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": true,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": "hint",
+          "attribute": 2
+        },
+        {
+          "name": "base",
+          "kind": 6,
+          "receiver": "caller"
+        },
+        {
+          "name": "hint",
+          "kind": 2,
+          "receiver": -1,
+          "phase": 0,
+          "blocked": false,
+          "buttonEnabled": false,
+          "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "imageIndex": -1,
+          "attribute": 1
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "label": "normal subsequent child-before-parent retirement and wait",
+      "frame": 106,
+      "outputs": [1091567616, 1082130432, 1094713344, 1094713344, 1, 2147483651, 1, 0, 0, 1],
+      "regions": [],
+      "actors": []
+    }
+  ],
+  "callsByPhase": [
+    [
+      {
+        "id": 68,
+        "outputWritten": true,
+        "control": 1,
+        "value": 4
+      },
+      {
+        "id": 66,
+        "outputWritten": true,
+        "control": 1,
+        "value": 5
+      },
+      {
+        "id": 66,
+        "outputWritten": true,
+        "control": 1,
+        "value": 6
+      },
+      {
+        "id": 66,
+        "outputWritten": true,
+        "control": 1,
+        "value": 7
+      },
+      {
+        "id": 66,
+        "outputWritten": true,
+        "control": 1,
+        "value": 8
+      },
+      {
+        "id": 79,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 79,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 79,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 84,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 84,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 88,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 88,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 89,
+        "outputWritten": true,
+        "control": 1,
+        "value": 1091567616
+      },
+      {
+        "id": 89,
+        "outputWritten": true,
+        "control": 1,
+        "value": 1082130432
+      },
+      {
+        "id": 90,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 89,
+        "outputWritten": true,
+        "control": 1,
+        "value": 1094713344
+      },
+      {
+        "id": 91,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 89,
+        "outputWritten": true,
+        "control": 1,
+        "value": 1094713344
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 104,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 95,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 96,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 97,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 98,
+        "outputWritten": true,
+        "control": 1,
+        "value": 1
+      },
+      {
+        "id": 97,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 98,
+        "outputWritten": true,
+        "control": 1,
+        "value": 2147483651
+      },
+      {
+        "id": 102,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 103,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 97,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 92,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 92,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 105,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 105,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 106,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 107,
+        "outputWritten": true,
+        "control": 1,
+        "value": 1
+      },
+      {
+        "id": 108,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 109,
+        "outputWritten": true,
+        "control": 1,
+        "value": 0
+      },
+      {
+        "id": 110,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 99,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 99,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 104,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 107,
+        "outputWritten": true,
+        "control": 1,
+        "value": 0
+      },
+      {
+        "id": 106,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 107,
+        "outputWritten": true,
+        "control": 1,
+        "value": 1
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 67,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 67,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 67,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 71,
+        "outputWritten": false,
+        "control": 4
+      }
+    ]
+  ],
+  "coldAfter": [0, 1, 2, 3, 4, 5],
+  "qualification": "Original typed loaded KCS/CRT/Settings/FileServer/ApplicationRoot; no input edges or Application binding publication. Independent sibling hint; ancestral hint visibility cycle is excluded."
+}

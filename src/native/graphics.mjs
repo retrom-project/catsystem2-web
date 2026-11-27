@@ -73,6 +73,7 @@ const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) 
 const UNVERIFIED_REGISTRATION = 'unverified';
 const hasRegistration = (graph) =>
   graph && (typeof graph.registrationEnabled === 'boolean' || graph.registrationEnabled === null);
+const hiddenMeshRegistration = (graph) => graph.mesh && graph.registrationEnabled === false;
 function nativeTexturePageOptions(graphics) {
   const settle = () => {
     const text = graphics.world.text;
@@ -485,7 +486,10 @@ export class NativeGraphics {
       matrix: Array.from({ length: 16 }, (_, i) =>
         view.getFloat32(MOTION_ABI.matrix + i * 4, true),
       ),
-      display: graph.style?.shown !== false && view.getInt32(MOTION_ABI.display, true) !== 0,
+      display:
+        graph.style?.shown !== false &&
+        !hiddenMeshRegistration(graph) &&
+        view.getInt32(MOTION_ABI.display, true) !== 0,
       registrationWord: graph.registrationWord,
     };
   }
@@ -748,6 +752,8 @@ export class NativeGraphicTask {
     this.planeGraphInputEnablesButton = Boolean(abi?.planeGraphInputEnablesButton);
     this.planeInputRequiresRootReply = Boolean(abi?.planeInputRequiresRootReply);
     this.planeClearInputClearsButtonRows = Boolean(abi?.planeClearInputClearsButtonRows);
+    this.planeVisibilityUpdatesInput =
+      record.kind === 2 && Boolean(abi?.planeVisibilityUpdatesInput);
     this.planeEmptyGraphRequiresMode1 = Boolean(abi?.planeEmptyGraphRequiresMode1);
     this.planeAlphaRequiresGraph = Boolean(abi?.planeAlphaRequiresGraph);
     this.planeUsesLegacyTexturedKX2 = Boolean(abi?.planeUsesLegacyTexturedKX2);
@@ -912,7 +918,7 @@ export class NativeGraphicTask {
       blendMode: this.state.blendMode,
       nativeGraph: this.graph,
       nativeTaskWorldID: this.record.id,
-      visible: plane.visible && this.state.shown,
+      visible: plane.visible && this.state.shown && !hiddenMeshRegistration(this.graph),
     });
     if (this.graph.colors?.length === 1) plane.color = this.graph.colors[0];
   }
@@ -1269,13 +1275,16 @@ export class NativeGraphicTask {
       case 80:
         this.trail.pushSample(bytes(l, 128));
         return 0;
-      case 47:
+      case 47: {
+        let inputDisplay;
         this.state.renderPaused = !l;
         this.state.shown = Boolean(l);
-        if (hasRegistration(this.graph)) {
-          const parent = this.state.inheritPosition
-            ? this.graphics.get(this.record.parent)?.graph
-            : null;
+        const registered = hasRegistration(this.graph),
+          parent =
+            this.state.inheritPosition && (registered || this.planeVisibilityUpdatesInput)
+              ? this.graphics.get(this.record.parent)?.graph
+              : null;
+        if (registered) {
           if (!this.state.inheritPosition) this.setRegistrationEnabled(this.state.shown, l >>> 0);
           else if (parent) {
             // A known miss retains the old word. A parent with unverified
@@ -1289,9 +1298,23 @@ export class NativeGraphicTask {
               );
           }
         }
-        this.setInputDisplay();
+        if (
+          this.planeVisibilityUpdatesInput &&
+          this.state.buttonEnabled &&
+          this.state.receiver !== -1 &&
+          hasRegistration(parent)
+        )
+          inputDisplay = this.state.shown
+            ? nativeEngineWord(parent.registrationWord, 'Native parent renderer display')
+            : 0;
+        if (!this.planeVisibilityUpdatesInput) this.setInputDisplay();
         this.sync();
+        if (this.planeVisibilityUpdatesInput) {
+          await this.updateVisibleInput(l, inputDisplay, context);
+          await this.broadcast(48, w, l, context);
+        }
         return 0;
+      }
       case 48:
         this.state.renderPaused = !l;
         if (hasRegistration(this.graph))
@@ -1306,7 +1329,9 @@ export class NativeGraphicTask {
             true,
           );
         this.sync();
-        this.setInputDisplay();
+        if (this.planeVisibilityUpdatesInput)
+          await this.updateVisibleInput(l, this.state.shown ? l >>> 0 : 0, context);
+        else this.setInputDisplay();
         await this.broadcast(48, w, l, context);
         return 0;
       case 49:
@@ -1506,6 +1531,12 @@ export class NativeGraphicTask {
         return 0;
       }
       case 77:
+        if (this.planeVisibilityUpdatesInput) {
+          const target = this.world.resolveTaskID(l, this.record.id);
+          for (let owner = this.record; owner; owner = this.world.objects.objects.get(owner.parent))
+            if (owner.id === target && owner.kind === 2)
+              throw new Error('Native Plane hint cannot form an ancestor visibility cycle');
+        }
         this.state.imageIndex = l | 0;
         if (
           this.world.profile &&
@@ -1533,6 +1564,7 @@ export class NativeGraphicTask {
           bounds = nativeMeshBounds(mesh),
           candidate = {
             type: 3,
+            registrationEnabled: false,
             mesh,
             bounds,
             width: bounds.maximum[0] - bounds.minimum[0],
@@ -1544,6 +1576,8 @@ export class NativeGraphicTask {
         // releasing the old model. Main83 explicitly removes the old key.
         if (policy?.rejectOccupiedModel && this.graph) return undefined;
         if (policy?.rejectOccupiedModel) this.unload();
+        // Only the new model registration starts hidden. The Plane's own
+        // visibility survives loading and still gates later child notifications.
         this.makeGraph(candidate);
         this.state.rect = rect;
         this.state.drawType = drawType;
@@ -1828,6 +1862,25 @@ export class NativeGraphicTask {
       ...context,
     });
   }
+  async updateVisibleInput(display, inputDisplay, context) {
+    const input = this.input;
+    // Direct visibility without inheritance has no Input message. Inherited
+    // raw43 supplies the parent's renderer word; child raw44 supplies its own
+    // incoming word. Neither is replaced by the direct raw43 argument.
+    if (this.state.buttonEnabled && this.state.receiver !== -1 && inputDisplay !== undefined) {
+      if (!input?.message) throw new Error('Native Plane visibility requires its Input owner');
+      const flags = { flags: context.flags ?? 0 };
+      await input.message(134, this.record.id, inputDisplay, flags);
+      if (!inputDisplay) await input.message(132, this.record.id, 0, flags);
+    }
+    const region = input?.get(this.record.id);
+    if (this.state.phase !== 3) {
+      if (region?.active && this.state.button?.[3]) await this.selectButton(1);
+      else if (this.state.button?.[0]) await this.selectButton(0);
+    }
+    if (!display && this.state.imageIndex !== -1)
+      await this.world.sendNativeEngine(this.state.imageIndex, this.record.id, 47, 0, 0);
+  }
   setInputDisplay() {
     const region = this.input?.get(this.record.id);
     if (!region) return;
@@ -1902,6 +1955,7 @@ export class NativeGraphicTask {
     if (
       !inputGraph ||
       !state.shown ||
+      hiddenMeshRegistration(inputGraph) ||
       inputGraph.renderEnabled === false ||
       !new DataView(inputGraph.kx2.buffer).getInt32(MOTION_ABI.display, true)
     )

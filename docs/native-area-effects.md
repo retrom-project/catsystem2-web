@@ -53,6 +53,51 @@ parameters and advances the phase with per-tick truncation and one
 frequency subtraction. Original raw outputs and the three fixed KCS
 call sites are checked separately from product route smoke tests.
 
+### SDK 2.6.1.63 / 2.6.1.67 matrix and live Raster controls
+
+The two builds copy the initialized 64-byte Main 199 input into private storage
+before sending raw 250 / 251. The reviewed Top, Script and Raster receivers leave
+this message unhandled and its reply unwritten; the operation does not transform
+those objects. Other matrix receivers remain guarded. Main 201 queries the kind
+before testing its selector. A written Raster or Hydro kind and selector zero
+send raw 252 / 253 or 261 / 262 respectively. A live Raster reads only the last
+three parameter words, keeping its graph, axis, activity and phase. Hydro ignores
+the packet. A nonzero selector stops after the query.
+
+A Top receiver can leave the kind reply unwritten. The native wrapper then retains
+its actual caller address and takes no effect branch. This capture does not give
+the JS opaque task identity a numerical native address; the current query guard
+remains. The native derived-receiver observation and the complete Base query reply
+are separate evidence boundaries.
+
+Both builds use the original x87 precision and default Raster period/speed. The
+paired normal factory/VM group binds a real color Plane, starts, changes, stops
+and retires the Raster through the actual Root logic walk, with eight independent
+current cold continuations per build. Main 67 sends the deletion message through
+the same receiver path in JS: Hydro's empty logic leaves the pending task alive
+until its owner is released. Explicit host destruction keeps its separate forced
+cleanup behavior: it can upgrade that existing native request once without
+resending the deletion packet. Repeated host destruction is a no-op, and the
+upgraded request survives current cold restoration before normal collection.
+No physical GPU or independent Raster vertex output is claimed.
+
+Main 202 is separately paired for typed Wipe1/Fade owners and the Raster early
+return. Its five-word packet replaces only source/destination at words 1 and 4,
+borrowing the original wrappers without adding references. Work identity,
+activity, clock, mask and other parameters remain unchanged. Main 199's private
+matrix is also ignored by those CPU receivers. Reinitialization releases the
+previous work; effect retirement releases the current work before the Script's
+bitmap owners are freed.
+
+The two builds initialize the reviewed Wipe1/Fade work surfaces with zeroed
+pixels. Ordinary Root draw populates them and the original View copies the
+computed bytes into its actual configured COM-memory textures. Small partial-alpha
+RGBA source/destination/mask inputs, live replacement, stop/finalize and eight
+independent cold continuations per build compare complete defined pixels. This
+covers CPU composition and texture storage, without a physical GPU, other format,
+nonzero-origin or broader mask-layout claim. Existing SDK23 and modern behavior
+is retained.
+
 ### SDK 2.6.1.23 finish, matrix copy and source replacement
 
 Main 198, 199 and 202 use the shared controls with this build's typed message

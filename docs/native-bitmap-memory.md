@@ -749,3 +749,85 @@ attachment is absent. Its zero DIB bytes are capture-only. This qualifies
 Base/Draw cadence and software composition, not configured View output,
 physical GPU, Stage or capture pixels. Configured owner validation follows
 as a separate resource prerequisite.
+
+## SDK63 and SDK67 bitmap composite and tone
+
+The fingerprinted builds qualify Main120/121 through their own four-word
+wrappers, actual bitmap factories and parsed Script VMs. Composite takes
+initialized twelve-byte bitmap-handle/signed-XY records and an input RECT. It
+clears the clipped rectangle before applying the selected physical pixel kernels.
+The bounded group covers RGB24 copy, skipped zero/RGBA layers, empty and partial
+rectangles and separate source/destination owners. Tone uses integer percentage
+tables for the three color bytes of a four-byte bitmap; alpha is unchanged.
+Neutral100/100/100 returns before owner access, and RGB24 is an original no-op.
+These are finite normal forms, not proof of arbitrary overlap, formats or modes.
+
+A kind15 Draw created by Main66/Main256 consumes the same actual bitmap data
+through Main257 and software Main340. Source pixel writes alone leave that
+entry's cached Draw output intact; only an explicit entry invalidation or
+rebind selects a redraw. The first implementation used a 63/67-only flag;
+that distinction is withdrawn. Own SDK23 and modern74/76 cached-Draw consumers
+and bitmap fill/tone writers also separate pixel storage from entry dirty
+regions. The shared implementation now preserves that separation, for both
+direct bitmap entries and retained bitmap sources. Bitmap generations still
+invalidate pixel/texture caches, while explicit entry updates, source identity,
+ANM output and owner rebuilds invalidate Draw composition. P2 loans, output,
+flush and native file layouts are unchanged.
+
+The older differential oracle included bitmap revision in its binding signature
+and rebound the native entry when pixels changed. Those observations cannot
+independently prove that a native bare write notifies Draw. The 63/67 normal
+GCALL/Root evidence remains valid; the other builds' comparison is static,
+with current real-GCALL/Root/cold controls rather than new original execution.
+
+Main118 makes an independent copy. Draw keeps shared data after its creator
+bitmap is released, while replacement/removal releases the former data at the
+normal lifetime boundary. Eight independent current cold continuations per
+build compare initialized bitmap/Draw pixels, metadata, ownership and caller
+control/output writes. No physical GPU, display capture, uninitialized output,
+alias input or native file-layout change is inferred from this group.
+
+A separate normal enabled Root/Base/Draw group confirms that cached-source rule
+outside the disabled Main340 callback: original Root logic/draw reaches the
+actual derived receiver and software rasterizer, source tone alone preserves
+cached output, and an explicit entry position change redraws the new pixels.
+The group adds one target/eighteen total GCALLs and five stop/Root direct calls
+per build, with two additional current cold continuations.
+
+## SDK63 and SDK67 bitmap resize aliases
+
+Own Main122/705 are the same three-word wrapper and return control2 without a
+result write. The original owner computes f32 ratios from canvas dimensions,
+rounds bitmap geometry and metadata, and replaces pixel storage only when the
+selected kernel succeeds. The normal group uses real Main118 copies and
+Main460 resources with positive canvas dimensions. It compares small 4BPP
+up/down/same-size and cell-averaged output, 3BPP scaling rejection and same-size
+copy, offsets/base/clip, unchanged caller memory and the actual retained Draw
+source/cache after resize, rebind, creator release and normal retirement.
+
+Both builds reuse the existing cell-resize implementation. An unqualified zero
+canvas is diagnosed at the resize consumer before any mutation; its native
+behavior is not inferred from JavaScript numeric conversion. Other layouts,
+large coordinates, overlap and physical GPU output remain outside this group.
+Eight independent current cold continuations per build preserve initialized
+pixels, source-data sharing, metadata and the next actual GCALL.
+
+## SDK67 image warmup and owner copy
+
+Main681 uses its own formatted mounted image path and original warm loader,
+then destroys and frees the returned bitmap holder. Duplicate finite HG3 names
+and a normal missing file leave no Script-owned temporary image. Main735 is a
+ten-word ImageOwner operation: its source and destination use actual Main710 or
+Main733 owners, independent from bitmap wrapper handles. The group compares
+clipped and resampled RGB/RGBA physical pixels, metadata and unchanged caller
+memory, then follows Main731/Main340, creator release, replacement and final
+retained owner removal. Eight independent current cold continuations follow
+these same owners and the next real script command.
+
+The retained bounds consumer also consumes ImageOwner pending state before
+preparing the composed source. The shared pull path now clears that owned
+metadata at the consumer, while bitmap changes retain the previously proved
+Draw cache rule. Exact ten-word copy inputs and real source bitmaps remain
+required. Empty source, VRAM-only target, arbitrary overlap and physical GPU
+output are not qualified. Main682 remains protected: its own wrapper writes a
+separate View field and has no demonstrated ImageOwner contract.

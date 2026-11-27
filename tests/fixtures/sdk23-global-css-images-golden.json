@@ -1,0 +1,630 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "qualification": "Real native typed loaded VM/Main241/251 and FileServer controlled OS Map. HG3 ordinal decode expands24 before241; direct244 HG2-24 entry independently proves251 conversion. Physical BGRA bottom-up bytes are normalized using the already-qualified bitmap layout. No GPU presentation.",
+  "cases": [
+    {
+      "name": "stored-hg2",
+      "script": "global-g2",
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-global-css-20261128/ORIGINAL-G2.json",
+        "sha256": "57d7dc111097bb2571f78be4b2515cc05afec614b3050fa24e1f97385ed3944e"
+      },
+      "budget": {
+        "target": 10,
+        "support": 13,
+        "bootstrapGCALL": 3,
+        "carrier65": 3,
+        "finalWait71": 1,
+        "allGCALL": 30,
+        "businessScriptFrames": 4,
+        "unchangedHost": "Qualified truehost45 complete journal, no new host capability"
+      },
+      "inputs": {
+        "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+        "resource": "SEctMwwAAAAAAwAAnAAAAAAAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAYAAAAAQAAAAEAAAAGAAAABQAAAAAAAAD+////AwAAAGltZzAwMDAAAAAAAEwAAAAAAAAAAwAAAB4AAAAcAAAAFgAAAA4AAAB4nGMTcQ0UcQ1Udw18XjnveeW8q5XzVsEAAKD/Dfp4nGPkcDA8YC30oY9lj/QHbgAe5gTcAAAAAAcAAABzdGRpbmZvADgAAAAoAAAABAAAAAMAAAAgAAAAAQAAAAEAAAAGAAAABQAAAAEAAAD+////AwAAAGltZzAwMDAAAAAAAFoAAAAAAAAAAwAAACoAAAApAAAAGAAAABAAAAB4nGMTEbkiAsLqIiIi6urP1UFYVF1dXUvrlRYIZ2lpaTU4ODQAANH9CwR4nGPkcFBm0Jc4wM32wcmLaQ8TABmoA8E=",
+        "archives": [
+          {
+            "name": "startup.xml",
+            "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg=="
+          },
+          {
+            "name": "scripts.int",
+            "data": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABnbG9iYWwtZzIua2NzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAKwBAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAHgQAAFIEAAAAAAAAAAAAAAAQAAAAEAAAUgQAAAAAAAA8CAAAeJx1k79Kw1AUxk9iKh06FOrQQbBwvBfhainoIOgQIWCGDEHyAlFqFVqFFvcODg4ODg4Ortn6DG6+hc8gOPgHFJR7rrk9ueJy+fGd7/zhCxHoHzyiwMHw/FAieAAC8+HGscSAeJyP+hLrxJPuyUBig3gTACQ2iU1vWPaeSoyIR/mgLzEm7h5NJhITYqDelLgoikLiF2Pw5xwwrjNuMG4yXmLcZrzMuMN4lfEa43XGPcZbjLcZ7zIOGUeMY2IBAAqfAQADiiEEisTT8sizcqTlVgRlXgKn1DnTlgZZYmbx6L10LYm1KDwrh4uW2blCHFPxBWzPFbN0iBPXck3CnhbADinvNC8twgXz+t63wgttb9uB/9sXa0HVbk4cg70/cQVzbUghvmq5Tnfe2KLCN+v+9b0734ClovBzPiR18qgUM7bhYz7w1g3IvaGVss/292320mklAmPXv4bCB8+uv6NiZm5zi/fuEakbW+YI+FTTwn4p7PwAa7+ZNA=="
+          },
+          {
+            "name": "images.int",
+            "data": "S0lGAAEAAABnbG9iYWwtZnJhbWVzLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAFIBAABIRy0zDAAAAAADAACcAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAAAwAAABgAAAABAAAAAQAAAAYAAAAFAAAAAAAAAP7///8DAAAAaW1nMDAwMAAAAAAATAAAAAAAAAADAAAAHgAAABwAAAAWAAAADgAAAHicYxNxDRRxDVR3DXxeOe955byrlfNWwQAAoP8N+nicY+RwMDxgLfShj2WP9AduAB7mBNwAAAAABwAAAHN0ZGluZm8AOAAAACgAAAAEAAAAAwAAACAAAAABAAAAAQAAAAYAAAAFAAAAAQAAAP7///8DAAAAaW1nMDAwMAAAAAAAWgAAAAAAAAADAAAAKgAAACkAAAAYAAAAEAAAAHicYxMRuSICwuoiIiLq6s/VQVhUXV1dS+uVFghnaWlpNTg4NAAA0f0LBHicY+RwUGbQlzjAzfbByYtpDxMAGagDwQ=="
+          },
+          {
+            "name": "ptcl.int",
+            "data": "S0lGAAAAAAA="
+          },
+          {
+            "name": "scenes.int",
+            "data": "S0lGAAAAAAA="
+          }
+        ]
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "real RGB24/RGBA32 decode and normal HG2 entries",
+          "outputs": [0, 7, 1, 1, 0, 0, 0, 0],
+          "span": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ],
+          "bitmaps": [
+            {
+              "name": "source24",
+              "pointer": 537138304,
+              "owner": 537663632,
+              "header": [
+                6458624, 4, 3, 537139220, 48, 16, 4, 6, 5, 1, 1, 1, 4294967294, 3, 0, 0, 4, 3, 0, 0,
+                1, 0
+              ],
+              "shape": [4, 3, 4],
+              "metadata": {
+                "canvasWidth": 6,
+                "canvasHeight": 5,
+                "offsetX": 1,
+                "offsetY": 1,
+                "baseX": -2,
+                "baseY": 3
+              },
+              "physical": "k4N7/5qOiP+hmZX/qKSi/3dXR/9+YlT/hW1h/4x4bv9bKxP/YjYg/2lBLf9wTDr/",
+              "rgba": "Eytb/yA2Yv8tQWn/Okxw/0dXd/9UYn7/YW2F/254jP97g5P/iI6a/5WZof+ipKj/"
+            },
+            {
+              "name": "source32",
+              "pointer": 537668112,
+              "owner": 537668688,
+              "header": [
+                6458624, 4, 3, 537673460, 48, 16, 4, 6, 5, 1, 1, 2, 4294967294, 3, 0, 0, 4, 3, 0, 0,
+                1, 0
+              ],
+              "shape": [4, 3, 4],
+              "metadata": {
+                "canvasWidth": 6,
+                "canvasHeight": 5,
+                "offsetX": 1,
+                "offsetY": 1,
+                "baseX": -2,
+                "baseY": 3
+              },
+              "physical": "k4N7/5qOiP+hmZX/qKSi/3dXR/9+YlQAhW1hgIx4bv9bKxP/YjYg/2lBLf9wTDr/",
+              "rgba": "Eytb/yA2Yv8tQWn/Okxw/0dXd/9UYn4AYW2FgG54jP97g5P/iI6a/5WZof+ipKj/"
+            }
+          ]
+        },
+        {
+          "phase": 1,
+          "label": "source mutation and release, CSS write/new reader, typed HG2 image reconstruction",
+          "outputs": [0, 7, 1, 1, 1, 37, 0, 0],
+          "span": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ],
+          "bitmaps": [
+            {
+              "name": "reader24",
+              "pointer": 537127216,
+              "owner": 537662608,
+              "header": [
+                6458360, 4, 3, 537127556, 48, 16, 4, 4, 3, 0, 0, 1, 0, 0, 0, 0, 4, 3, 0, 0, 1, 0
+              ],
+              "shape": [4, 3, 4],
+              "metadata": {
+                "canvasWidth": 4,
+                "canvasHeight": 3,
+                "offsetX": 0,
+                "offsetY": 0,
+                "baseX": 0,
+                "baseY": 0
+              },
+              "physical": "k4N7/5qOiP+hmZX/qKSi/3dXR/9+YlT/hW1h/4x4bv9bKxP/YjYg/2lBLf9wTDr/",
+              "rgba": "Eytb/yA2Yv8tQWn/Okxw/0dXd/9UYn7/YW2F/254jP97g5P/iI6a/5WZof+ipKj/"
+            },
+            {
+              "name": "reader32",
+              "pointer": 537667376,
+              "owner": 537667952,
+              "header": [
+                6458360, 4, 3, 537681124, 48, 16, 4, 4, 3, 0, 0, 2, 0, 0, 0, 0, 4, 3, 0, 0, 1, 0
+              ],
+              "shape": [4, 3, 4],
+              "metadata": {
+                "canvasWidth": 4,
+                "canvasHeight": 3,
+                "offsetX": 0,
+                "offsetY": 0,
+                "baseX": 0,
+                "baseY": 0
+              },
+              "physical": "k4N7/5qOiP+hmZX/qKSi/3dXR/8AAAAAhW1hgIx4bv9bKxP/YjYg/2lBLf9wTDr/",
+              "rgba": "Eytb/yA2Yv8tQWn/Okxw/0dXd/8AAAAAYW2FgG54jP97g5P/iI6a/5WZof+ipKj/"
+            }
+          ]
+        },
+        {
+          "phase": 2,
+          "label": "container disposal, independent decoded bitmap mutation and actual alpha-bound consumers",
+          "outputs": [0, 7, 1, 1, 1, 37, 1, 1],
+          "span": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ],
+          "bitmaps": [
+            {
+              "name": "reader24",
+              "pointer": 537127216,
+              "owner": 537662608,
+              "header": [
+                6458360, 4, 3, 537127556, 48, 16, 4, 4, 3, 0, 0, 1, 0, 0, 0, 0, 4, 3, 0, 0, 1, 0
+              ],
+              "shape": [4, 3, 4],
+              "metadata": {
+                "canvasWidth": 4,
+                "canvasHeight": 3,
+                "offsetX": 0,
+                "offsetY": 0,
+                "baseX": 0,
+                "baseY": 0
+              },
+              "physical": "k4N7/5qOiP+hmZX/qKSi/3dXR/8QMFCAhW1h/4x4bv9bKxP/YjYg/2lBLf9wTDr/",
+              "rgba": "Eytb/yA2Yv8tQWn/Okxw/0dXd/9QMBCAYW2F/254jP97g5P/iI6a/5WZof+ipKj/"
+            },
+            {
+              "name": "reader32",
+              "pointer": 537667376,
+              "owner": 537667952,
+              "header": [
+                6458360, 4, 3, 537681124, 48, 16, 4, 4, 3, 0, 0, 2, 0, 0, 0, 0, 4, 3, 0, 0, 1, 0
+              ],
+              "shape": [4, 3, 4],
+              "metadata": {
+                "canvasWidth": 4,
+                "canvasHeight": 3,
+                "offsetX": 0,
+                "offsetY": 0,
+                "baseX": 0,
+                "baseY": 0
+              },
+              "physical": "k4N7/5qOiP+hmZX/qKSi/3dXR/8AAAAAhW1hgIx4bv9bKxP/YjYg/2lBLf9wTDr/",
+              "rgba": "Eytb/yA2Yv8tQWn/Okxw/0dXd/8AAAAAYW2FgG54jP97g5P/iI6a/5WZof+ipKj/"
+            }
+          ]
+        },
+        {
+          "phase": 3,
+          "label": "normal explicit bitmap disposal",
+          "outputs": [0, 7, 1, 1, 1, 37, 1, 1],
+          "span": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ],
+          "bitmaps": []
+        }
+      ],
+      "savedFiles": [
+        {
+          "name": "global-image.css",
+          "data": "Q1NTANQAAABSAQAAJQAAAHjak2dgYFgAxB7uukY8QFoViFmAmBmIFRgQQB2IzYBYEYhlgFgDKg5TiwtU3EoWbmRiZnbjFC1VcJblClsXtdVLxCPb0VFjwnzWJf+ZMhn+L+edBlT2pCCg7MIvBdULZ29UBkQtkPf5Za1Sn2B9iIch/wXHMpBbFhHhTiMg1gRiCSAWwONORizuTNyvpJRU7+oS6+LicvfRzl27jhWXBpaWlup2h0dFua3fsmnLli3frK+YMzDcyuQ+AXFy2oXpFgfOfjt4sjuTX5hBcgXzQQAlFkX5"
+        }
+      ],
+      "nativeCalls": [
+        {
+          "id": 66,
+          "phase": -1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 4
+        },
+        {
+          "id": 209,
+          "phase": -1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 143,
+          "phase": -1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 238,
+          "phase": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 537126896
+        },
+        {
+          "id": 365,
+          "phase": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 537127568
+        },
+        {
+          "id": 428,
+          "phase": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 537138304
+        },
+        {
+          "id": 428,
+          "phase": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 537668112
+        },
+        {
+          "id": 366,
+          "phase": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 241,
+          "phase": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "id": 241,
+          "phase": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "id": 65,
+          "phase": 0,
+          "control": 4,
+          "outputWritten": false
+        },
+        {
+          "id": 117,
+          "phase": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 117,
+          "phase": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 114,
+          "phase": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 114,
+          "phase": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 245,
+          "phase": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "id": 246,
+          "phase": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 247,
+          "phase": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 537126896
+        },
+        {
+          "id": 251,
+          "phase": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 537127216
+        },
+        {
+          "id": 251,
+          "phase": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 537667376
+        },
+        {
+          "id": 248,
+          "phase": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 37
+        },
+        {
+          "id": 65,
+          "phase": 1,
+          "control": 4,
+          "outputWritten": false
+        },
+        {
+          "id": 246,
+          "phase": 2,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 117,
+          "phase": 2,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 446,
+          "phase": 2,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "id": 446,
+          "phase": 2,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "id": 65,
+          "phase": 2,
+          "control": 4,
+          "outputWritten": false
+        },
+        {
+          "id": 114,
+          "phase": 3,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 114,
+          "phase": 3,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 71,
+          "phase": 3,
+          "control": 4,
+          "outputWritten": false
+        }
+      ]
+    },
+    {
+      "name": "rgb24-entry",
+      "script": "global-g2-rgb24",
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-global-css-20261128/ORIGINAL-G2-RGB24.json",
+        "sha256": "30e7939da5801d0de931ad717495190493d4cb8e86ad774e1c67cf53b0068e60"
+      },
+      "budget": {
+        "target": 4,
+        "support": 2,
+        "bootstrapGCALL": 3,
+        "carrier65": 2,
+        "finalWait71": 1,
+        "allGCALL": 12,
+        "businessScriptFrames": 3,
+        "unchangedHost": "Qualified truehost45 complete journal, no new host capability"
+      },
+      "inputs": {
+        "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+        "resource": "SEctMgwAAAAlAAAABAAAAAMAAAAYAAAAAAAAAAAAAAAZAAAAGwAAABYAAAAOAAAAKAAAAAAAAAAEAAAAAwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHicYwsFg6TQUIm2RIm2xLbEVTAAAIc+C/B4nGPkcDA8YC30oZFhj/QHbgAehATL",
+        "archives": [
+          {
+            "name": "startup.xml",
+            "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg=="
+          },
+          {
+            "name": "scripts.int",
+            "data": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABnbG9iYWwtZzItcmdiMjQua2NzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAJgBAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAZAMAAJgDAAAAAAAAAAAAAAAQAAAAEAAAmAMAAAAAAADIBgAAeJx10jFLQlEUB/BjPklQ4oESL5Iwju9gPIVHOAhJGAg6NDyooKHBsKEhQqLAoUFQEKdodwl6X8FPYFNLH6CxORqkpYZ6f1MPQsvhx3n/e+7l3Wtz+OCJba5V89vCZBDZHCciYQO24ShswHE4DJuwBSdhgi3lFLwGp+F1OAOvwll4Bc7BWdhVcwrqDEV1hpLKlJUryjXlfWVP+RBuDRox4WM40nl8ET6Bvf6wIlyH+8PRUPgMHh25JHw+mdPbjQlfwB+tQUO4Cb813ZLwNVzPjx+EW/D96d1Y+BZevqQN4TbcNZ5//38X9n3fF/4OzU1LcxvKUeW4sqmcVLaUU8pp5YxyVjmn7CoXlIvKJeWyckW5Bm8RkcPvRPR31WUishOovInaQw2eqsPjIGgi2F4IOvwVfIxOLhqNvaBBs5zDn9N97ISHhaF/qul6bYdvgri1OGoy+2o2il8jQaM6bez8AHgMi7E="
+          },
+          {
+            "name": "images.int",
+            "data": "S0lGAAAAAAA="
+          },
+          {
+            "name": "ptcl.int",
+            "data": "S0lGAAAAAAA="
+          },
+          {
+            "name": "scenes.int",
+            "data": "S0lGAAAAAAA="
+          }
+        ]
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "normal byte entry containing actual HG2 RGB24, typed Main251 conversion",
+          "outputs": [1, 0, 0, 0, 0, 0, 0, 0],
+          "span": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ],
+          "bitmaps": [
+            {
+              "name": "reader24",
+              "pointer": 537127088,
+              "owner": 537663136,
+              "header": [
+                6458360, 4, 3, 537138100, 48, 16, 4, 4, 3, 0, 0, 1, 0, 0, 0, 0, 4, 3, 0, 0, 1, 0
+              ],
+              "shape": [4, 3, 4],
+              "metadata": {
+                "canvasWidth": 4,
+                "canvasHeight": 3,
+                "offsetX": 0,
+                "offsetY": 0,
+                "baseX": 0,
+                "baseY": 0
+              },
+              "physical": "mYlp/6KWdP+ro3//tLCK/3VVPf9+Ykj/h29T/5B8Xv9RIRH/Wi4c/2M7J/9sSDL/",
+              "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9IYn7/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+            }
+          ]
+        },
+        {
+          "phase": 1,
+          "label": "container released, decoded image remains an independent mutable bitmap",
+          "outputs": [1, 0, 0, 0, 0, 0, 0, 0],
+          "span": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ],
+          "bitmaps": [
+            {
+              "name": "reader24",
+              "pointer": 537127088,
+              "owner": 537663136,
+              "header": [
+                6458360, 4, 3, 537138100, 48, 16, 4, 4, 3, 0, 0, 1, 0, 0, 0, 0, 4, 3, 0, 0, 1, 0
+              ],
+              "shape": [4, 3, 4],
+              "metadata": {
+                "canvasWidth": 4,
+                "canvasHeight": 3,
+                "offsetX": 0,
+                "offsetY": 0,
+                "baseX": 0,
+                "baseY": 0
+              },
+              "physical": "mYlp/6KWdP+ro3//tLCK/3VVPf8QMFCAh29T/5B8Xv9RIRH/Wi4c/2M7J/9sSDL/",
+              "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9QMBCAU2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+            }
+          ]
+        },
+        {
+          "phase": 2,
+          "label": "normal bitmap release",
+          "outputs": [1, 0, 0, 0, 0, 0, 0, 0],
+          "span": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ],
+          "bitmaps": []
+        }
+      ],
+      "savedFiles": [],
+      "nativeCalls": [
+        {
+          "id": 66,
+          "phase": -1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 4
+        },
+        {
+          "id": 209,
+          "phase": -1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 143,
+          "phase": -1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 238,
+          "phase": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 537126768
+        },
+        {
+          "id": 244,
+          "phase": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        },
+        {
+          "id": 251,
+          "phase": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 537127088
+        },
+        {
+          "id": 65,
+          "phase": 0,
+          "control": 4,
+          "outputWritten": false
+        },
+        {
+          "id": 246,
+          "phase": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 117,
+          "phase": 1,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 65,
+          "phase": 1,
+          "control": 4,
+          "outputWritten": false
+        },
+        {
+          "id": 114,
+          "phase": 2,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "id": 71,
+          "phase": 2,
+          "control": 4,
+          "outputWritten": false
+        }
+      ]
+    }
+  ]
+}

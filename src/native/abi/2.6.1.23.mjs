@@ -790,7 +790,12 @@ const mainEvidence = [
       'Own 2.6.1.23 wrappers 0x47fa30 and 0x47fa80 release intersecting pages at 0x4d1260 or allocate missing configured pages at 0x4d1370',
   },
   {
-    ids: [323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 336, 338, 608],
+    ids: [323, 324, 325, 326, 327, 328, 329, 330, 331, 332, 333, 338, 608],
+    value:
+      'Own true ApplicationRoot/loaded Script/Main Scene owner and mounted CatScene reader now have a normal marker/count/history/cursor bridge. Negative count selectors leave F0/F1 untouched; ordinary type and actual cursor text scans update only their own reader filename/value. Complete caller bytes/results and six independent current cold points preserve live borrowed Scene identity and normal cursor-before-Scene disposal. See tests/fixtures/sdk23-scene-reader-cursor-golden.json; physical raw pointer output and uninitialized cursor fields are separate scopes.',
+  },
+  {
+    ids: [336],
     value:
       'Own 2.6.1.23 scene owner and CP932 reader at 0x480b40–0x481490; authored scene file markers and path history',
   },
@@ -802,7 +807,7 @@ const mainEvidence = [
   {
     ids: crossTaskSceneOperations,
     value:
-      'Own 2.6.1.23 wrappers 0x485a30/0x485bf0 route raw 162 through the original task tree to Script 0x45377b, then expand retained strings or copy both compact history lists independently of the source interpreter.',
+      'Own 2.6.1.23 wrappers 0x485a30/0x485bf0 route raw 162 through the original task tree to Script 0x45377b, then expand retained strings or copy both compact history lists independently of the source interpreter. A true ApplicationRoot/loaded child Script now bridges live expansion/copy through the real receiver; current raw162 returns stable borrowed NativeHandles identities with the Scene as sole owner. No C++ pointer arithmetic or byte-layout contract is enabled. See tests/fixtures/sdk23-scene-cross-owner-golden.json.',
   },
   {
     ids: explicitHistoryStringOperations,
@@ -812,7 +817,7 @@ const mainEvidence = [
   {
     ids: taskSceneCSSOperations,
     value:
-      'Own 2.6.1.23 wrappers 0x483c10/0x484680 take four words, query raw 162 through the real Script tree and save/load one compact history side through the original in-memory CSS owner while preserving the other side.',
+      'Own 2.6.1.23 wrappers 0x483c10/0x484680 take four words, query raw 162 through the real Script tree and save/load one compact history side through the original in-memory CSS owner while preserving the other side. The true loaded child Script bridge now includes Scene replacement, import into its current owner and independent consumption after normal source retirement.',
   },
   {
     ids: [322],
@@ -827,7 +832,7 @@ const mainEvidence = [
   {
     ids: [385, 386],
     value:
-      'Own 2.6.1.23 four-word CSS scene history wrappers and 0x5a39e0 headerless 40-byte records',
+      'Own 2.6.1.23 four-word CSS scene history wrappers and 0x5a39e0 headerless 40-byte records. True loaded Script/native CSS writer-reader and fresh Scene owners preserve complete authored name/string padding, raw buffer ownership and exact CSS file bytes; tests/fixtures/sdk23-scene-css-owner-golden.json records the controlled OS-memory storage qualification.',
   },
   {
     ids: [255],
@@ -1487,6 +1492,8 @@ export default {
     implicitReaderUsesDirectBehavior: true,
     implicitTextDestinationRequired: true,
     cstFileMarkers: true,
+    historyCursorTypeSideEffects: true,
+    borrowedSceneReferences: { rawMessage: 162 },
     directTextNull: 'reject',
     directPathResult: 'success',
   },
@@ -1821,6 +1828,8 @@ export default {
     planeInheritanceUsesRenderer: true,
     planeResetReleasesTrackedInput: true,
     planeUsesLegacyButtonStates: true,
+    planeClearInputClearsButtonRows: true,
+    planeVisibilityUpdatesInput: true,
     planeImageSelectorHidesTarget: true,
     planeTrailUsesScalarWords: true,
     planeUsesLegacyColoredKX2: true,
@@ -1858,6 +1867,7 @@ export default {
     },
   },
   input: {
+    mouseReleaseUpdatesSampled: true,
     activeQueryUsesRawWord: true,
     bitmapMaskNativeRows: true,
     cursorWarpNativeBounds: true,
@@ -1869,6 +1879,7 @@ export default {
     kindQueryRejectsRetiringOwner: true,
   },
   gallery: { listVariantWidth: 64, legacyTableReads: true },
+  displayLog: { blockRecordWords: 6 },
   startup: {
     loosePath: 'config/startup.xml',
     resourceCheck: 'after-preferences',

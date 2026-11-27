@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 // Browser devices feed the four binding slots of each native logical key.
 // KEYCUSTOMIZE/KEY owns the actual bindings; names and menu labels do not.
+import { nativeABI } from './abi/index.mjs';
 import { createNativeTouchState, pollNativeTouch } from './input-touch.mjs';
 
 const categories = ['keyboard', 'mouse', 'joypad', 'touch'];
@@ -216,7 +217,15 @@ export class NativeInputBindings {
         if (down) {
           this.sampled[at] |= source;
           this.live[at] |= source;
-        } else this.live[at] &= ~source;
+        } else {
+          this.live[at] &= ~source;
+          if (
+            category === 'mouse' &&
+            this.configuration.profile &&
+            nativeABI(this.configuration.profile).input?.mouseReleaseUpdatesSampled
+          )
+            this.sampled[at] &= ~source;
+        }
         this.repeat[index] = row[`rep_${selected}`][slot] >>> 0;
       }
     }

@@ -1,0 +1,817 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-plane-input-20261128/ORIGINAL-G2.json",
+    "sha256": "3913dc507de10fa205d9235a018fb06cd53f1d4e93b0443db5b975e4daff53f4",
+    "bytes": 73414
+  },
+  "plan": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-plane-input-20261128/G2-SEALED-PLAN.json",
+    "sha256": "7ad8f9a3e1bf68faa4ac92a97995825f01a5c4e9d5950a422b0cd7703088c951",
+    "bytes": 4869
+  },
+  "producer": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-plane-input-20261128/probe-g2-original.mjs",
+    "sha256": "f6320c48b1b12940e5bc9000241b06def1b4d1cd5151cb04c6f711061a00c956",
+    "bytes": 8068
+  },
+  "port": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-plane-input-20261128/input-port.mjs",
+    "sha256": "5048f715d2088bbd3c7761fc89b353decbb8be0369836c146ee2e702268f1194",
+    "bytes": 849
+  },
+  "staticMouse": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-plane-input-20261128/STATIC-416b50.json",
+    "sha256": "410611a6e8dde985aeec458edd1c4a06d9f9834146c8b4dccab59370b967cc73",
+    "bytes": 5273
+  },
+  "startupXML": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>32</width><height>24</height><v_width>32</v_width><v_height>24</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp32y>0</bpp32y><bpp16y>1</bpp16y><bpp>32</bpp></TEXTURE><INT><int00><name>kcs</name><int>scripts.int</int><ext>kcs</ext><dir>scripts-loose</dir></int00><int01><name>image</name><int>images.int</int><ext>hg3</ext><dir>images-loose</dir></int01><int02><name>ptcl</name><int>ptcl.int</int><ext>kcs</ext><dir>ptcl-loose</dir></int02><int03><name>scene</name><int>scenes.int</int><ext>cst</ext><dir>scenes-loose</dir></int03></INT><KEYCUSTOMIZE><key00><name>Primary</name><mouse1>1</mouse1><rep_mouse1>0</rep_mouse1></key00></KEYCUSTOMIZE></document>",
+  "program": "S0NTAAIAAAAAAAAANAAAANYEAAAKBQAAAAAAAAAAAAAAEAAAABAAAAoFAAAAAAAArAkAAHicnZGxSgNBEIYnZ5BDUihpLSLDbbMKRkubTQwoJKCdVkqQAw9jkBiRdClSpBC0SGFhYeFTWKWw8FF8C3VmXW+yOSPaDMM/38w/OxthcPSMEdbj3r5CyAFE2Gq2Y4V5zgEAFIac1+NeVaHhvHkZg8Ka0w8U9q2edD97B5x3ytQ7FMxYMC+W2SDmlfOkfXGlEALKu2vXTYV5zpNu3FEYBuk+hQBAYw0AvoRVoGJAsWhzeorGKiEFRgzL8wIxPlJjuSCQvo/sTiFjH2lw0YLwvbTGW4dExcasol0UwFQolioRmvXSu8Y9QhYnEOo8JDkU8grLx6lsn5UTcUHEJY5lbjqlpuV0Fr9CY9ubNS3LhVq+sydrrLiPs4TGMxLyfL2+kM9TefBr4zC78WaycWqGWy/JXM/4LndCFi6jGS4my8VteuJmuG0CEUMRixw3/W/64T/+cfj77Ps9CJvGX21mOz5mOz6JE29PnkcIcjS+zZGw42pbH0gQdNQ=",
+  "receiverProgram": "S0NTAAIAAAAAAAAANAAAAFUDAACJAwAAAAAAAAAAAAAAEAAAABAAAIkDAAAAAAAAqgYAAHicXdAtk0FxAIXxc+9lWay39drM/NcKgpEJmu4L2KxvN7ouKrquiLpudF029wRz5tRnfunpBwD4DTMA/bAGMAxzACEDYBBKzJGQvZMRcyzk7GTBnAi5O/lnzghBZGTHnBXSc3Ji/hAyc3Jjzgn5cxJFac7rFyc/JJ/6xcmcpKBfnKxIivrFyZakpF9iI0eSL/3i5EpS1i9OniQV/eKkG6e5ql+cTElq+sXJkqSuX5xsSL71i5MDSUO/JEYuJE394uRB0tIvTspJmtv6xcmYpPMmkxf+60q9",
+  "rows": [
+    {
+      "phase": 0,
+      "label": "loaded independent callbacks and normal typed Base/Plane registration",
+      "outputs": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "priority": 17,
+          "bounds": [1, 1, 11, 11],
+          "active": 0,
+          "enabled": 1
+        },
+        {
+          "owner": "plane",
+          "priority": 0,
+          "bounds": [0, 0, 12, 10],
+          "active": 0,
+          "enabled": 1
+        }
+      ],
+      "source": 0,
+      "waiters": [
+        {
+          "name": "waiter1",
+          "ready": false
+        },
+        {
+          "name": "waiter2",
+          "ready": false
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "label": "normal Root warm frame initializes callback VMs",
+      "outputs": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "priority": 17,
+          "bounds": [1, 1, 11, 11],
+          "active": 1,
+          "enabled": 1
+        },
+        {
+          "owner": "plane",
+          "priority": 0,
+          "bounds": [0, 0, 12, 10],
+          "active": 0,
+          "enabled": 1
+        }
+      ],
+      "source": 0,
+      "waiters": [
+        {
+          "name": "waiter1",
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        {
+          "name": "waiter2",
+          "ready": true,
+          "count": 0,
+          "packets": []
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "label": "actual mouse down reaches higher-priority Base and independent waiter",
+      "outputs": [1, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "priority": 17,
+          "bounds": [1, 1, 11, 11],
+          "active": 1,
+          "enabled": 1
+        },
+        {
+          "owner": "plane",
+          "priority": 0,
+          "bounds": [0, 0, 12, 10],
+          "active": 0,
+          "enabled": 1
+        }
+      ],
+      "source": 2,
+      "waiters": [
+        {
+          "name": "waiter1",
+          "ready": true,
+          "count": 1,
+          "packets": [["base", 4294901763, "base", 0]]
+        },
+        {
+          "name": "waiter2",
+          "ready": true,
+          "count": 0,
+          "packets": []
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "label": "mouse up changes live state before sampled settlement",
+      "outputs": [1, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "priority": 17,
+          "bounds": [1, 1, 11, 11],
+          "active": 1,
+          "enabled": 1
+        },
+        {
+          "owner": "plane",
+          "priority": 0,
+          "bounds": [0, 0, 12, 10],
+          "active": 0,
+          "enabled": 1
+        }
+      ],
+      "source": 2,
+      "waiters": [
+        {
+          "name": "waiter1",
+          "ready": true,
+          "count": 2,
+          "packets": [
+            ["base", 4294901763, "base", 0],
+            ["base", 4294901764, "base", 0]
+          ]
+        },
+        {
+          "name": "waiter2",
+          "ready": true,
+          "count": 0,
+          "packets": []
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "label": "normal settled up callback then disable higher-priority Base",
+      "outputs": [1, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "priority": 17,
+          "bounds": [1, 1, 11, 11],
+          "active": 0,
+          "enabled": 0
+        },
+        {
+          "owner": "plane",
+          "priority": 0,
+          "bounds": [0, 0, 12, 10],
+          "active": 0,
+          "enabled": 1
+        }
+      ],
+      "source": 2,
+      "waiters": [
+        {
+          "name": "waiter1",
+          "ready": true,
+          "count": 2,
+          "packets": [
+            ["base", 4294901763, "base", 0],
+            ["base", 4294901764, "base", 0]
+          ]
+        },
+        {
+          "name": "waiter2",
+          "ready": true,
+          "count": 0,
+          "packets": []
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "label": "next actual down reaches enabled Plane",
+      "outputs": [1, 0, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "priority": 17,
+          "bounds": [1, 1, 11, 11],
+          "active": 0,
+          "enabled": 0
+        },
+        {
+          "owner": "plane",
+          "priority": 0,
+          "bounds": [0, 0, 12, 10],
+          "active": 1,
+          "enabled": 1
+        }
+      ],
+      "source": 2,
+      "waiters": [
+        {
+          "name": "waiter1",
+          "ready": true,
+          "count": 4,
+          "packets": [
+            ["base", 4294901763, "base", 0],
+            ["base", 4294901764, "base", 0],
+            ["plane", 4294901765, "plane", 1],
+            ["plane", 4294901763, "plane", 0]
+          ]
+        },
+        {
+          "name": "waiter2",
+          "ready": true,
+          "count": 0,
+          "packets": []
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "label": "Plane mouse up leaves the sampled value until end of frame",
+      "outputs": [1, 0, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "priority": 17,
+          "bounds": [1, 1, 11, 11],
+          "active": 0,
+          "enabled": 0
+        },
+        {
+          "owner": "plane",
+          "priority": 0,
+          "bounds": [0, 0, 12, 10],
+          "active": 1,
+          "enabled": 1
+        }
+      ],
+      "source": 2,
+      "waiters": [
+        {
+          "name": "waiter1",
+          "ready": true,
+          "count": 5,
+          "packets": [
+            ["base", 4294901763, "base", 0],
+            ["base", 4294901764, "base", 0],
+            ["plane", 4294901765, "plane", 1],
+            ["plane", 4294901763, "plane", 0],
+            ["plane", 4294901764, "plane", 0]
+          ]
+        },
+        {
+          "name": "waiter2",
+          "ready": true,
+          "count": 0,
+          "packets": []
+        }
+      ]
+    },
+    {
+      "phase": 7,
+      "label": "Plane up callback then explicit Base unregister and replacement",
+      "outputs": [1, 0, 1, 2, 1, 2, 0, 0, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "priority": 19,
+          "bounds": [2, 2, 10, 10],
+          "active": 0,
+          "enabled": 1
+        },
+        {
+          "owner": "plane",
+          "priority": 0,
+          "bounds": [0, 0, 12, 10],
+          "active": 0,
+          "enabled": 0
+        }
+      ],
+      "source": 2,
+      "waiters": [
+        {
+          "name": "waiter1",
+          "ready": true,
+          "count": 5,
+          "packets": [
+            ["base", 4294901763, "base", 0],
+            ["base", 4294901764, "base", 0],
+            ["plane", 4294901765, "plane", 1],
+            ["plane", 4294901763, "plane", 0],
+            ["plane", 4294901764, "plane", 0]
+          ]
+        },
+        {
+          "name": "waiter2",
+          "ready": true,
+          "count": 0,
+          "packets": []
+        }
+      ]
+    },
+    {
+      "phase": 8,
+      "label": "rebound Base consumes down before callback replacement",
+      "outputs": [1, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "priority": 19,
+          "bounds": [2, 2, 10, 10],
+          "active": 1,
+          "enabled": 1
+        },
+        {
+          "owner": "plane",
+          "priority": 0,
+          "bounds": [0, 0, 12, 10],
+          "active": 0,
+          "enabled": 0
+        }
+      ],
+      "source": 2,
+      "waiters": [
+        {
+          "name": "waiter1",
+          "ready": true,
+          "count": 7,
+          "packets": [
+            ["base", 4294901763, "base", 0],
+            ["base", 4294901764, "base", 0],
+            ["plane", 4294901765, "plane", 1],
+            ["plane", 4294901763, "plane", 0],
+            ["plane", 4294901764, "plane", 0],
+            ["base", 4294901765, "base", 1],
+            ["base", 4294901763, "base", 0]
+          ]
+        },
+        {
+          "name": "waiter2",
+          "ready": true,
+          "count": 0,
+          "packets": []
+        }
+      ]
+    },
+    {
+      "phase": 9,
+      "label": "last live mouse up precedes its sampled edge",
+      "outputs": [1, 0, 1, 2, 1, 2, 1, 2, 0, 0, 0, 0],
+      "regions": [
+        {
+          "owner": "base",
+          "priority": 19,
+          "bounds": [2, 2, 10, 10],
+          "active": 1,
+          "enabled": 1
+        },
+        {
+          "owner": "plane",
+          "priority": 0,
+          "bounds": [0, 0, 12, 10],
+          "active": 0,
+          "enabled": 0
+        }
+      ],
+      "source": 2,
+      "waiters": [
+        {
+          "name": "waiter1",
+          "ready": true,
+          "count": 7,
+          "packets": [
+            ["base", 4294901763, "base", 0],
+            ["base", 4294901764, "base", 0],
+            ["plane", 4294901765, "plane", 1],
+            ["plane", 4294901763, "plane", 0],
+            ["plane", 4294901764, "plane", 0],
+            ["base", 4294901765, "base", 1],
+            ["base", 4294901763, "base", 0]
+          ]
+        },
+        {
+          "name": "waiter2",
+          "ready": true,
+          "count": 1,
+          "packets": [["base", 4294901764, "base", 0]]
+        }
+      ]
+    },
+    {
+      "phase": 10,
+      "label": "settled up follows live callback and normal sources retire",
+      "outputs": [1, 0, 1, 2, 1, 2, 1, 2, 1, 2, 0, 0],
+      "regions": [],
+      "source": 2,
+      "waiters": [
+        {
+          "name": "waiter1",
+          "ready": true,
+          "count": 7,
+          "packets": [
+            ["base", 4294901763, "base", 0],
+            ["base", 4294901764, "base", 0],
+            ["plane", 4294901765, "plane", 1],
+            ["plane", 4294901763, "plane", 0],
+            ["plane", 4294901764, "plane", 0],
+            ["base", 4294901765, "base", 1],
+            ["base", 4294901763, "base", 0]
+          ]
+        },
+        {
+          "name": "waiter2",
+          "ready": true,
+          "count": 1,
+          "packets": [["base", 4294901764, "base", 0]]
+        }
+      ]
+    },
+    {
+      "phase": 11,
+      "label": "later Root frame observes retired source routes and no Input regions",
+      "outputs": [1, 0, 1, 2, 1, 2, 1, 2, 1, 2, 0, 0],
+      "regions": [],
+      "source": 2,
+      "waiters": [
+        {
+          "name": "waiter1",
+          "ready": true,
+          "count": 7,
+          "packets": [
+            ["base", 4294901763, "base", 0],
+            ["base", 4294901764, "base", 0],
+            ["plane", 4294901765, "plane", 1],
+            ["plane", 4294901763, "plane", 0],
+            ["plane", 4294901764, "plane", 0],
+            ["base", 4294901765, "base", 1],
+            ["base", 4294901763, "base", 0]
+          ]
+        },
+        {
+          "name": "waiter2",
+          "ready": true,
+          "count": 1,
+          "packets": [["base", 4294901764, "base", 0]]
+        }
+      ]
+    }
+  ],
+  "phases": [
+    {
+      "label": "loaded independent callbacks and normal typed Base/Plane registration"
+    },
+    {
+      "label": "normal Root warm frame initializes callback VMs"
+    },
+    {
+      "label": "actual mouse down reaches higher-priority Base and independent waiter",
+      "edge": true
+    },
+    {
+      "label": "mouse up changes live state before sampled settlement",
+      "edge": false
+    },
+    {
+      "label": "normal settled up callback then disable higher-priority Base"
+    },
+    {
+      "label": "next actual down reaches enabled Plane",
+      "edge": true
+    },
+    {
+      "label": "Plane mouse up leaves the sampled value until end of frame",
+      "edge": false
+    },
+    {
+      "label": "Plane up callback then explicit Base unregister and replacement"
+    },
+    {
+      "label": "rebound Base consumes down before callback replacement",
+      "edge": true
+    },
+    {
+      "label": "last live mouse up precedes its sampled edge",
+      "edge": false
+    },
+    {
+      "label": "settled up follows live callback and normal sources retire"
+    },
+    {
+      "label": "later Root frame observes retired source routes and no Input regions"
+    }
+  ],
+  "callsByPhase": [
+    [
+      {
+        "id": 68,
+        "outputWritten": true,
+        "control": 1,
+        "value": 4
+      },
+      {
+        "id": 66,
+        "outputWritten": true,
+        "control": 1,
+        "value": 5
+      },
+      {
+        "id": 66,
+        "outputWritten": true,
+        "control": 1,
+        "value": 6
+      },
+      {
+        "id": 66,
+        "outputWritten": true,
+        "control": 1,
+        "value": 7
+      },
+      {
+        "id": 66,
+        "outputWritten": true,
+        "control": 1,
+        "value": 8
+      },
+      {
+        "id": 143,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 143,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 79,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 88,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 95,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 104,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 110,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 110,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 108,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 108,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 107,
+        "outputWritten": true,
+        "control": 1,
+        "value": 1
+      },
+      {
+        "id": 109,
+        "outputWritten": true,
+        "control": 1,
+        "value": 0
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 107,
+        "outputWritten": true,
+        "control": 1,
+        "value": 1
+      },
+      {
+        "id": 109,
+        "outputWritten": true,
+        "control": 1,
+        "value": 2
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 105,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 107,
+        "outputWritten": true,
+        "control": 1,
+        "value": 1
+      },
+      {
+        "id": 109,
+        "outputWritten": true,
+        "control": 1,
+        "value": 2
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 105,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 99,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 104,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 110,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 108,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 107,
+        "outputWritten": true,
+        "control": 1,
+        "value": 1
+      },
+      {
+        "id": 109,
+        "outputWritten": true,
+        "control": 1,
+        "value": 2
+      },
+      {
+        "id": 110,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 108,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 107,
+        "outputWritten": true,
+        "control": 1,
+        "value": 1
+      },
+      {
+        "id": 109,
+        "outputWritten": true,
+        "control": 1,
+        "value": 2
+      },
+      {
+        "id": 67,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 67,
+        "outputWritten": false,
+        "control": 2
+      },
+      {
+        "id": 65,
+        "outputWritten": false,
+        "control": 4
+      }
+    ],
+    [
+      {
+        "id": 71,
+        "outputWritten": false,
+        "control": 4
+      }
+    ]
+  ],
+  "coldAfter": [1, 2, 3, 4, 5, 7, 8, 9],
+  "actual": {
+    "targetGCALL": 35,
+    "allGCALL": 82,
+    "bodyGCALL": 80,
+    "cleanupGCALL": 2,
+    "businessDirect": 19,
+    "oldHostSteps": 45,
+    "normalDeviceSetterStep": 1
+  },
+  "qualification": "ConservativeB real4166c0 API input, original same Device/WndProc/Input/typedScript; no App aggregate or binding state supplied. Window OS memory port only. Full Application WinMain publisher is static/pending; no GPU/HID/physical Windows claim."
+}

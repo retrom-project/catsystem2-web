@@ -9,7 +9,12 @@ import { kcsProgram } from '../helpers.mjs';
 export async function modernParticleMessageWorld(
   profile,
   files = {},
-  { initialize = true, sceneLanguages = [], startup } = {},
+  {
+    initialize = true,
+    sceneLanguages = [],
+    startup,
+    storage = { read: async () => null, write: async () => true },
+  } = {},
 ) {
   const game = new GameFiles(
     new Map(
@@ -30,7 +35,7 @@ export async function modernParticleMessageWorld(
       configuration: new NativeConfiguration({ profile, startup }),
       sceneLanguages,
       motionLibrary: new MotionLibrary(game, { profile, random }),
-      storage: { read: async () => null, write: async () => true },
+      storage,
       prepareSceneWorkers: false,
     });
   world.ensureNativeEngine = () => {

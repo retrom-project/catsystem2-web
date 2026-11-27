@@ -1,5 +1,23 @@
 # Native Plane and Input commands
 
+## Modern parent inheritance
+
+The exact 2.6.1.74 and ee6 2.6.1.76 builds have paired normal Script/GCALL
+coverage for Main89–91 with actual Main66 parent/child Plane constructors, live
+Main79 models and real parent update/draw traversal. Inherited base and position
+come from the live parent; stopping inheritance keeps the last inherited pose.
+A later parent update no longer moves the child until inheritance is enabled
+again. Priority/output words, copied offsets, native lifetime and eight
+independent current cold continuations per build are checked.
+
+Only the measured kind-2, finite-offset/model context and the wrappers' original
+zero-target early returns are admitted. Foreign receiver namespaces, absent
+model getter outputs and non-finite inheritance offsets remain protected. The
+original evidence uses the existing Win32/COM-memory renderer consumer host:
+74 has its actual View1; 76 has the qualified View0 plus actual View3D1 consumer
+attachment. This does not claim the complete 76 M2 View1 initializer or physical
+GPU presentation.
+
 ## Fixed SDK 2.6.1.23 divided model
 
 Main 467 takes a reviewed kind2 Plane, a VM pointer and a positive record count.
@@ -196,3 +214,13 @@ instead stopped by its own raw156/157 dispatcher message, with both enabled and
 VM mode observed. This corrects the earlier P2 receipt wording without changing
 Main69 behavior or its original logs. COM-memory attachment and virtual Win32
 leaves do not establish View presentation, physical HID or GPU output.
+
+### Modern divided mesh registration
+
+The fixed 2.6.1.74 and 2.6.1.76 builds now admit Main467 for a live kind2 Plane in its initialized mode1 manager. The normal three-word call copies each 64-byte input record into an independent 80-byte model record. Both builds release and rebuild an occupied divided model. Only the new model registration starts hidden; the Plane’s own display word survives loading and replacement. Main92 or a later child-visibility notification can enable the model, with that notification still gated by the preserved Plane word. Model registration, Plane own visibility and MOT display remain separate. Main83 unload followed by a new load and normal task retirement preserve the uploaded texture pages.
+
+The original Script/Top/Plane chain allocates two configured 8×8 pages with Main542, uploads colour and alpha through Main115, and submits the projected mesh through the real View3D frame consumer. Current real VM tests compare caller writes, copied records, all projected vertices within one float ULP, exact texture bytes/alpha, replacement identity, retirement, and two independent cold continuations per build. The 76 memory host uses its actual View0 plus View3D1 consumer, rather than initializing the unrelated M2 subsystem. This establishes the finite positive-count/finite-vertex/allocated-page contract, without a physical GPU claim. Foreign receivers, missing managers, nonfinite/truncated records and unallocated pages remain guarded.
+
+Three earlier probe failures are retained as tool precondition errors: the first omitted View3D consumption, and the following two expected a rebuilt model to draw without showing it again. They do not establish a product failure. Raw plans, complete successful original captures and exact accounting are retained in ignored `sdk-modern-plane-mesh-20261128`; the executable and fixture identities remain separate for the two builds.
+
+The shared mesh display gate is also consumed by Stage visibility and attachment display queries. A fresh current checkpoint preserves the hidden model and the Plane’s prior own display; a subsequent parent/child notification re-enables only owners that were shown. Unload/recreate resets the model registration again without changing the owner, and rejected occupied-key registrations keep the existing model and display. The Wave42 independent red and original report remain retained separately.

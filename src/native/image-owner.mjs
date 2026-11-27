@@ -91,6 +91,12 @@ export class NativeImageOwners {
   }
   async apply(id, args, machine, task) {
     if (!NATIVE_IMAGE_OWNER_IDS.includes(id)) return undefined;
+    if (
+      id === 0x2df &&
+      nativeABI(this.world.profile).graphics.imageOwnerCopyRequiresBitmap &&
+      args.length !== 10
+    )
+      throw new TypeError('Native image-owner copy expects ten argument words');
     const argument = (index) => nativeDataArgument(args, machine, index),
       value = (word) => nativeReply(1, word),
       done = () => nativeReply(2),

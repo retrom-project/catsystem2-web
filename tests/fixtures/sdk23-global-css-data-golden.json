@@ -1,0 +1,788 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-global-css-20261128/ORIGINAL-G1.json",
+    "sha256": "cac5431a0aa304170cc28d386f5a952f3cea8f03943060298d387723eac295ab"
+  },
+  "qualification": "Intact original bodies, real CRT/FileServer/ApplicationRoot/loaded typed Script; OS Map writes/read only. Process-pointer word0 in nested raw records and eight unwritten string tail bytes are not portable values.",
+  "budget": {
+    "target": 34,
+    "support": 19,
+    "bootstrapGCALL": 3,
+    "carrier65": 3,
+    "finalWait71": 1,
+    "allGCALL": 60,
+    "businessScriptFrames": 4,
+    "unchangedHost": "Qualified truehost45 complete journal, including shared setup factory/registration; no extra claim from reused initialization"
+  },
+  "inputs": {
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+    "archives": [
+      {
+        "name": "startup.xml",
+        "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg=="
+      },
+      {
+        "name": "scripts.int",
+        "data": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABnbG9iYWwtZzEua2NzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAF0DAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAALgwAAGIMAAAAAAAAAAAAAAAQAAAAEAAAYgwAAAAAAABcGAAAeJyN1j9IG2EYx/FXPTGtaYlWwcGC9DWH5dIi1EGow9mmNEMGBws2ddDWf4OooKCDQwoODg4OGRwcpCg4ODg4ODhksCDFQVoHBwcHBwcp0tpWiv3DPWdyX1+1dTk+/O7hvXuf55K7qC5oea+jurd/8LWtVYFSUd3Z/2DQ1pZ4oPvhG1uHxMPDStk6LPbr3Vz9iK3j4tFBrz6B+qS4rOjVH1urQs+q5H65rS3xh+KXytYhcSbZrGztiqfePVG2Touf9nUO2Dor7u3uUrZeFy8sLCzY+gg+hk/gU1gVBbbgEByGI3AFXAVXwzVwLVwHx+B6uAFuhJtgF47DCTgJt8CtcBvcDnfAXXAf3A8PwSPwGDwOp+EJeBKegqfhDDwDz8Jz8Dy8CC/By/AKvAqvwVl4Hd6AN+EteBvegXfhPXgfPoAP4SP4GD6BT2Fl4fmHQ3AYjsAVcBVcDdfAtXAdHIPr4Qa4EW6CXTgOJ+Ak3AK3wm1wO9wBd8F9cD88BI/AY/A4nIYn4El4Cp6GM/AMPAvPwfPwIrwEL8Mr8Cq8Zinl6LhSSivl/anHlPwZP9NvHf3Ziy2JXYnvKq8acVziQjnGH90rc/Qn72RIgiI5To72vDgXW3K8IUsF8R1/qUo5lsrRe6c4+tgricjV0lLoouSKwgkUhsUx3GiRXPrIK6+Q8kmJS+ToyloVBcYu0kZ8tvgtWeprbhe2nsLJ2/l9OfqLVxKWkul8iaNPglZmUI14RoLm3ICiOpVKpXLvW98W7L9v/X12Gy0+20qPGfsD6TVjvx/Zyzf+z/bPXij0X80hucTvoHDuijn5hT+DwnnEH4PmLOJRQrwk8U0zXkaHv+diDsvRp8Ekk3IyiafSf/+XmptYyReeG9wqFve+vhz9LVh8zZjq2eOAu0oawdkaP4ILJKQuYV43m49zzfe/KyLmfa+jkM2PmM3fQIx2bkpcZsZbEpeb8Tau5v9qfgXt2MED531FOLqyIH9yF89u1jy5h2WvMUL/FXlhhPtYxTVndWDOKvHfWbnXnNXhxVldfoNH/+reMbtnGQ06ufSW9W6xFzzPBY//AnBiZmM="
+      },
+      {
+        "name": "images.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "ptcl.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "scenes.int",
+        "data": "S0lGAAAAAAA="
+      }
+    ]
+  },
+  "rows": [
+    {
+      "phase": 0,
+      "label": "two original containers and finite caller-bank/string/byte/nested entries",
+      "outputs": [
+        1, 1, 1, 1, 1, 2166572391, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0
+      ],
+      "spans": [
+        {
+          "at": 768,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 800,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 832,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 896,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 960,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1024,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1088,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1152,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "containers": [
+        {
+          "name": "parent",
+          "pointer": 537126736,
+          "owner": 537127040,
+          "data": 537143748,
+          "capacity": 524288,
+          "used": 118,
+          "tag": 2166572391,
+          "payload": "CwAAAAsAAAARA1v/AAcpEsoFWQwAAAAMAAAARDMiEYh3ZlUJAAAADQAAABwAAAACAAAAAwAAAIyiQgAHAAAAlExBAPPwIrwEL8MrDgAAACMAAADUKQwgAAAIABMAAAAdAAAAFQAAAAsAAAARA1v/AAcpEsoFWQ=="
+        },
+        {
+          "name": "child",
+          "pointer": 537127056,
+          "owner": 537127360,
+          "data": 537668052,
+          "capacity": 524288,
+          "used": 19,
+          "tag": 29,
+          "payload": "FQAAAAsAAAARA1v/AAcpEsoFWQ=="
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "label": "source changes, duplicate first-match, caller-relative span, child release and original CSS write",
+      "outputs": [
+        1, 1, 1, 1, 1, 2166572391, 29, 1, 8, 1, 287454020, 1432778632, 9, 11, 29, 1, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+      ],
+      "spans": [
+        {
+          "at": 768,
+          "bytes": [
+            165, 165, 165, 165, 17, 3, 91, 255, 0, 7, 41, 18, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 800,
+          "bytes": [
+            165, 165, 165, 165, 17, 3, 91, 255, 0, 7, 41, 18, 202, 5, 89, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 832,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 896,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 960,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1024,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1088,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1152,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "containers": [
+        {
+          "name": "parent",
+          "pointer": 537126736,
+          "owner": 537127040,
+          "data": 537143748,
+          "capacity": 524288,
+          "used": 137,
+          "tag": 2166572391,
+          "payload": "CwAAAAsAAAARA1v/AAcpEsoFWQwAAAAMAAAARDMiEYh3ZlUJAAAADQAAABwAAAACAAAAAwAAAIyiQgAHAAAAlExBAPPwIrwEL8MrDgAAACMAAADUKQwgAAAIABMAAAAdAAAAFQAAAAsAAAARA1v/AAcpEsoFWQsAAAALAAAAWlpaWlpaWlpaWlo="
+        },
+        {
+          "name": "nested",
+          "pointer": 537127056,
+          "owner": 537127360,
+          "data": 537668052,
+          "capacity": 524288,
+          "used": 19,
+          "tag": 29,
+          "payload": "FQAAAAsAAAARA1v/AAcpEsoFWQ=="
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "label": "normal source disposal then independent file reader, real number/string/nested consumers",
+      "outputs": [
+        1, 1, 1, 1, 1, 2166572391, 29, 1, 8, 1, 287454020, 1432778632, 9, 11, 29, 1, 2166572391, 11,
+        1, 287454020, 1432778632, 9, 1, 1, 1, 11, 1, 0, 0, 0, 0
+      ],
+      "spans": [
+        {
+          "at": 768,
+          "bytes": [
+            165, 165, 165, 165, 17, 3, 91, 255, 0, 7, 41, 18, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 800,
+          "bytes": [
+            165, 165, 165, 165, 17, 3, 91, 255, 0, 7, 41, 18, 202, 5, 89, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 832,
+          "bytes": [
+            165, 165, 165, 165, 17, 3, 91, 255, 0, 7, 41, 18, 202, 5, 89, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 896,
+          "bytes": [
+            165, 165, 165, 165, 148, 76, 65, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 960,
+          "bytes": [
+            165, 165, 165, 165, 140, 162, 66, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1024,
+          "bytes": [
+            165, 165, 165, 165, 17, 3, 91, 255, 0, 7, 41, 18, 202, 5, 89, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1088,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1152,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "containers": [
+        {
+          "name": "reader",
+          "pointer": 537126736,
+          "owner": 537127040,
+          "data": 537142436,
+          "capacity": 524288,
+          "used": 137,
+          "tag": 2166572391,
+          "payload": "CwAAAAsAAAARA1v/AAcpEsoFWQwAAAAMAAAARDMiEYh3ZlUJAAAADQAAABwAAAACAAAAAwAAAIyiQgAHAAAAlExBAPPwIrwEL8MrDgAAACMAAADUKQwgAAAIABMAAAAdAAAAFQAAAAsAAAARA1v/AAcpEsoFWQsAAAALAAAAWlpaWlpaWlpaWlo="
+        },
+        {
+          "name": "nested",
+          "pointer": 537127152,
+          "owner": 537127456,
+          "data": 537666740,
+          "capacity": 524288,
+          "used": 19,
+          "tag": 29,
+          "payload": "FQAAAAsAAAARA1v/AAcpEsoFWQ=="
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "label": "second normal file and fresh read owner after both prior owners release",
+      "outputs": [
+        1, 1, 1, 1, 1, 2166572391, 29, 1, 8, 1, 287454020, 1432778632, 9, 11, 29, 1, 2166572391, 11,
+        1, 287454020, 1432778632, 9, 1, 1, 1, 11, 1, 2166572391, 11, 1, 1
+      ],
+      "spans": [
+        {
+          "at": 768,
+          "bytes": [
+            165, 165, 165, 165, 17, 3, 91, 255, 0, 7, 41, 18, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 800,
+          "bytes": [
+            165, 165, 165, 165, 17, 3, 91, 255, 0, 7, 41, 18, 202, 5, 89, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 832,
+          "bytes": [
+            165, 165, 165, 165, 17, 3, 91, 255, 0, 7, 41, 18, 202, 5, 89, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 896,
+          "bytes": [
+            165, 165, 165, 165, 148, 76, 65, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 960,
+          "bytes": [
+            165, 165, 165, 165, 140, 162, 66, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1024,
+          "bytes": [
+            165, 165, 165, 165, 17, 3, 91, 255, 0, 7, 41, 18, 202, 5, 89, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1088,
+          "bytes": [
+            165, 165, 165, 165, 17, 3, 91, 255, 0, 7, 41, 18, 202, 5, 89, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1152,
+          "bytes": [
+            165, 165, 165, 165, 148, 76, 65, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "containers": []
+    }
+  ],
+  "savedFiles": [
+    {
+      "name": "global-one.css",
+      "data": "Q1NTAGEAAACJAAAAZ0UjgXja42ZgYOAGYkHm6P8M7JpCp1gjeYBcEHYxVhLsKE8L5QSyeYFYBoiZgJgZiHsWOTGwA+kpPo4Mnz8o7WHRP6zNB+QrA/EVTR4FBgYOBmEgWxaIRTGt4IYKRSEAAA4jFJo="
+    },
+    {
+      "name": "global-two.css",
+      "data": "Q1NTAGEAAACJAAAAZ0UjgXja42ZgYOAGYkHm6P8M7JpCp1gjeYBcEHYxVhLsKE8L5QSyeYFYBoiZgJgZiHsWOTGwA+kpPo4Mnz8o7WHRP6zNB+QrA/EVTR4FBgYOBmEgWxaIRTGt4IYKRSEAAA4jFJo="
+    }
+  ],
+  "nativeCalls": [
+    {
+      "id": 66,
+      "phase": -1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 209,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 143,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 68,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 238,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537126736
+    },
+    {
+      "id": 238,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537127056
+    },
+    {
+      "id": 211,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 211,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 211,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 244,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 244,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 240,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 276,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 276,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 243,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 242,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 248,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 2166572391
+    },
+    {
+      "id": 248,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 29
+    },
+    {
+      "id": 65,
+      "phase": 0,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 211,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 211,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 211,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 276,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 244,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 254,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 8
+    },
+    {
+      "id": 250,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 210,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 287454020
+    },
+    {
+      "id": 210,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1432778632
+    },
+    {
+      "id": 210,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 9
+    },
+    {
+      "id": 246,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 252,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537127056
+    },
+    {
+      "id": 254,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 11
+    },
+    {
+      "id": 248,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 29
+    },
+    {
+      "id": 245,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 65,
+      "phase": 1,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 246,
+      "phase": 2,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 246,
+      "phase": 2,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 247,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537126736
+    },
+    {
+      "id": 248,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 2166572391
+    },
+    {
+      "id": 254,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 11
+    },
+    {
+      "id": 250,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 210,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 287454020
+    },
+    {
+      "id": 210,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1432778632
+    },
+    {
+      "id": 210,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 9
+    },
+    {
+      "id": 253,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 277,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 277,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 252,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537127152
+    },
+    {
+      "id": 254,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 11
+    },
+    {
+      "id": 245,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 65,
+      "phase": 2,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 246,
+      "phase": 3,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 246,
+      "phase": 3,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 247,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537126736
+    },
+    {
+      "id": 248,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 2166572391
+    },
+    {
+      "id": 254,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 11
+    },
+    {
+      "id": 253,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 277,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 246,
+      "phase": 3,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 71,
+      "phase": 3,
+      "control": 4,
+      "outputWritten": false
+    }
+  ]
+}

@@ -195,11 +195,21 @@ async function rawScenePointerQuery(t, profile, raw) {
   assert.equal(record.scriptEnabled, 1);
   await world.runtime.native('main', 219, [], target.machine, target);
   m.bytes(256, 12).fill(0xa5);
-  await assert.rejects(
-    world.sendNativeEngine(targetID, caller.id, raw, 256, 260),
-    /Physical CST reader\/history pointers require explicit original-engine ownership/,
-  );
-  assert.deepEqual(m.bytes(256, 12), new Uint8Array(12).fill(0xa5));
+  if (profile === 'grisaia-jp-engine-2.6.1.23') {
+    assert.equal(
+      await world.sendNativeEngine(targetID, caller.id, raw, 256, 260),
+      NATIVE_UNWRITTEN_WORD,
+    );
+    const pair = [m.load(256), m.load(260)];
+    assert.equal(world.runtime.sceneDataFromPointers(...pair), world.runtime.sceneData(target));
+    assert.deepEqual(m.bytes(264, 4), new Uint8Array(4).fill(0xa5));
+  } else {
+    await assert.rejects(
+      world.sendNativeEngine(targetID, caller.id, raw, 256, 260),
+      /Physical CST reader\/history pointers require explicit original-engine ownership/,
+    );
+    assert.deepEqual(m.bytes(256, 12), new Uint8Array(12).fill(0xa5));
+  }
   assert.equal(target.machine.executionMode, 1);
   assert.equal(record.scriptEnabled, 1);
   const fes = await world.objects.create({ kind: 34, parent: world.root }),

@@ -6,13 +6,15 @@ export class NativeHandles {
     this.next = 1;
     this.records = new Map();
     this.codecs = new Map();
+    this.releasing = new Set();
     this.registerType('xml', nativeXMLHandleCodec);
   }
   registerType(type, codec) {
     if (
       this.codecs.has(type) ||
       typeof codec?.snapshot !== 'function' ||
-      typeof codec?.restore !== 'function'
+      typeof codec?.restore !== 'function' ||
+      (codec.release !== undefined && typeof codec.release !== 'function')
     )
       throw new Error(`Invalid or duplicate native resource codec ${type}`);
     this.codecs.set(type, codec);
@@ -33,9 +35,39 @@ export class NativeHandles {
     return record.value;
   }
   release(handle, type) {
-    const value = this.get(handle, type);
-    this.records.delete(handle >>> 0);
-    return value;
+    handle >>>= 0;
+    const value = this.get(handle, type),
+      records = this.records,
+      record = records.get(handle),
+      cleanup = this.codecs.get(type)?.release;
+    if (!cleanup) {
+      records.delete(handle);
+      return value;
+    }
+    if (this.releasing.has(record)) throw new Error('Reentrant native resource release');
+    this.releasing.add(record);
+    try {
+      const dependents = cleanup(value, handle) ?? [],
+        plan = [[handle, record]],
+        ids = new Set([handle]);
+      if (!Array.isArray(dependents)) throw new Error('Invalid native resource cleanup plan');
+      for (const dependent of dependents) {
+        if (ids.has(dependent.handle)) throw new Error('Duplicate native resource cleanup');
+        const entry = records.get(dependent.handle);
+        if (!entry || entry.type !== dependent.type || entry.value !== dependent.value)
+          throw new Error('Native resource cleanup lost its borrowed identity');
+        ids.add(dependent.handle);
+        plan.push([dependent.handle, entry]);
+      }
+      if (this.records !== records || plan.some(([id, entry]) => records.get(id) !== entry))
+        throw new Error('Native resource owner changed during cleanup');
+      // Validation and hooks finish before any record is removed. A failed or
+      // reentrant hook cannot publish a half-retired borrowed pair.
+      for (const [id] of plan) records.delete(id);
+      return value;
+    } finally {
+      this.releasing.delete(record);
+    }
   }
   snapshot() {
     return {

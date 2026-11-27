@@ -199,7 +199,14 @@ export class NativeObjects {
   }
   async destroy(id, sender = 0xffffffff, context = {}) {
     const record = this.objects.get(id);
-    if (!record || record.destroyRequested) return false;
+    if (!record) return false;
+    if (record.destroyRequested) {
+      // Native deletion can remain pending in a task that skips Base logic.
+      if (record.hostDestroyRequested || record.implementation?.runsBaseLogic !== false)
+        return false;
+      record.hostDestroyRequested = true;
+      return true;
+    }
     if (this.notify) await this.notify(id, sender, 3, 0, 0, context);
     else
       await record.implementation?.message(

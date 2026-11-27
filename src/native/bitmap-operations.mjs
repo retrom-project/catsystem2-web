@@ -38,6 +38,12 @@ export class NativeBitmapOperations {
     const spec = byID.get(id);
     if (!spec || (id === 0x402 && !nativeABI(this.world.profile).capabilities.bitmapColorQuery))
       return undefined;
+    if (
+      (id === 0x7a || id === 0x2c1) &&
+      nativeABI(this.world.profile).graphics.bitmapResizeRequiresCanvas &&
+      args.length !== spec.words
+    )
+      throw new TypeError('Native bitmap resize expects three argument words');
     const a = (i) => nativeDataArgument(args, machine, i),
       first = a(0) >>> 0;
     if (
@@ -97,6 +103,11 @@ export class NativeBitmapOperations {
       return byID.get(id).control === 1 ? value(id === 0x179 ? NATIVE_RESULT_SENTINEL : 0) : done();
     const resize = id === 0x7a || id === 0x2c1;
     if (resize && nativeABI(this.world.profile).graphics.bitmapResizeUsesLegacyCells) {
+      if (
+        nativeABI(this.world.profile).graphics.bitmapResizeRequiresCanvas &&
+        (!(s.canvasWidth > 0) || !(s.canvasHeight > 0))
+      )
+        throw new Error('Native bitmap resize requires a qualified positive canvas');
       await bitmap.resize(a(1) >>> 0, a(2) >>> 0, { legacyCells: true });
       return done();
     }

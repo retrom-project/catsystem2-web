@@ -1,0 +1,353 @@
+{
+  "group": "g2",
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "script": "records-g2",
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-data-records-20261128/ORIGINAL-G2.json",
+    "sha256": "2e7bfcc76cdd0372e343316b283a255a593770bf8e3afd7f49680e56f15c56eb"
+  },
+  "qualification": "Intact original loaded Script/Main factories and real CRT/FileServer/ApplicationRoot; controlled memory OS FS, no renderer/GPU or physical disk/platform save claim.",
+  "budget": {
+    "target": 21,
+    "support": 5,
+    "bootstrapGCALL": 3,
+    "carrier65": 3,
+    "finalWait71": 1,
+    "allGCALL": 33,
+    "businessScriptFrames": 4,
+    "extraNormalHostMount": 1
+  },
+  "outputWords": 11,
+  "liveFiles": [[[64, "file"]], [], [], []],
+  "liveStacks": [],
+  "inputs": {
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48aW50MDQ+PG5hbWU+Y29uZmlnPC9uYW1lPjxpbnQ+Y29uZmlnLmludDwvaW50PjxleHQ+Y2dsPC9leHQ+PGRpcj5jb25maWctbG9vc2U8L2Rpcj48L2ludDA0PjwvSU5UPjwvZG9jdW1lbnQ+",
+    "program": "S0NTAAIAAAAAAAAANAAAADkEAABtBAAAAAAAAAAAAAAAEAAAABAAAG0EAAAAAAAAcggAAHicfZG9SgNREIUnm4gp7IJPMOw0WUOiWNmsIGqxoIWFhRBCXGIgUdm1sNwiRQoLCwsLC8GsP2+RwkL0DcRnsFNbuWc3ybAxNpePOWfu/NlsBe9sc9htdIQpR2Rzp9JsCRcSJiLhInizHYTCLvgM8Q2w36jWhCOws+xUhXsJ14ynDz7tNNrCQ/Axcp/B7W7LEybLcP3c5BbAlNS1Uk9d2AWfO1VTF9xsLQXCEdhvngTCPfBhpRkK98Eh/rkAd08CX3gIdlacmvCzqvUC3jk78oUpbzhAvACO4zgWdhVvKN5W7CneVbyneF/xAXiViMr8SURcQFkXgbscUdrfNhHZJby4U5lfjVjUYbwuxDcjLigxQvhhlCMcKXGYFXv6W8uI99lqrpXJ6aPldUpbtksufIvjnDI/jroSvlDhOJfOPbOfS+UeTNxJhQidfNHYfTUWy/w92qluLU35+Wff3tQIHixPkxGu/yqT+P4Y4UaJU7u7VeLUdZPwfCLmM9dNq2U/HGSP4WU3PaPNR+WebJo/5kxgazTl2i+qmZNf",
+    "archives": [
+      {
+        "name": "startup.xml",
+        "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48aW50MDQ+PG5hbWU+Y29uZmlnPC9uYW1lPjxpbnQ+Y29uZmlnLmludDwvaW50PjxleHQ+Y2dsPC9leHQ+PGRpcj5jb25maWctbG9vc2U8L2Rpcj48L2ludDA0PjwvSU5UPjwvZG9jdW1lbnQ+"
+      },
+      {
+        "name": "scripts.int",
+        "data": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAAByZWNvcmRzLWcyLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAM4BAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAOQQAAG0EAAAAAAAAAAAAAAAQAAAAEAAAbQQAAAAAAAByCAAAeJx9kb1KA1EQhSebiCnsgk8w7DRZQ6JY2awgarGghYWFEEJcYiBR2bWw3CJFCgsLCwsLwaw/b5HCQvQNxGewU1u5ZzfJsDE2l485Z+782WwF72xz2G10hClHZHOn0mwJFxImIuEieLMdhMIu+AzxDbDfqNaEI7Cz7FSFewnXjKcPPu002sJD8DFyn8HtbssTJstw/dzkFsCU1LVST13YBZ87VVMX3GwtBcIR2G+eBMI98GGlGQr3wSH+uQB3TwJfeAh2Vpya8LOq9QLeOTvyhSlvOEC8AI7jOBZ2FW8o3lbsKd5VvKd4X/EBeJWIyvxJRFxAWReBuxxR2t82EdklvLhTmV+NWNRhvC7ENyMuKDFC+GGUIxwpcZgVe/pby4j32Wqulcnpo+V1Slu2Sy58i+OcMj+OuhK+UOE4l849s59L5R5M3EmFCJ180dh9NRbL/D3aqW4tTfn5Z9/e1AgeLE+TEa7/KpP4/hjhRolTu7tV4tR1k/B8IuYz102rZT8cZI/hZTc9o81H5Z5smj/mTGBrNOXaL6qZk18="
+      },
+      {
+        "name": "config.int",
+        "data": "S0lGAAEAAABzbWFsbC5jZ2wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAGgBAADUAAAAAAAAAAEAAAAAAAAARmlyc3QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAABlYTAxLDIsMCwxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcGxhaW4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAAAQAAAAAAAABPdGhlcgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAG1vcmUsMywxAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      },
+      {
+        "name": "images.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "ptcl.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "scenes.int",
+        "data": "S0lGAAAAAAA="
+      }
+    ]
+  },
+  "rows": [
+    {
+      "phase": 0,
+      "label": "actual CG manager and mounted64-byte CGL group registration plus normal alias",
+      "outputs": [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+      "spans": [
+        {
+          "at": 832,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [
+        {
+          "name": "file",
+          "pointer": 537137072,
+          "owner": 537137376,
+          "capacity": 524288,
+          "used": 0,
+          "tag": 53,
+          "payload": ""
+        }
+      ],
+      "stacks": []
+    },
+    {
+      "phase": 1,
+      "label": "CSS snapshot independent of source clear/release and original file write",
+      "outputs": [1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0],
+      "spans": [
+        {
+          "at": 832,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 2,
+      "label": "new reader and new CG owner consume registration after both old owners release",
+      "outputs": [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
+      "spans": [
+        {
+          "at": 832,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 3,
+      "label": "rebuilt registry clear and normal release",
+      "outputs": [1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0],
+      "spans": [
+        {
+          "at": 832,
+          "bytes": [
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    }
+  ],
+  "savedFiles": [
+    {
+      "name": "cg-record.css",
+      "data": "Q1NTAEIAAABIAQAANQAAAHjaE2VgYHBgZGAAIobURAPDeCMGsgHIDAMobQgV+w8EIH5mbrpPfEW8AQMFAMksSo2Cm1WQk5iZx8BAsVkAxOYaDA=="
+    }
+  ],
+  "nativeCalls": [
+    {
+      "id": 66,
+      "phase": -1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 209,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 143,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 238,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537137072
+    },
+    {
+      "id": 419,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537137392
+    },
+    {
+      "id": 458,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 459,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 423,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 423,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 422,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 423,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 65,
+      "phase": 0,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 424,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 421,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 423,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 420,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 245,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 246,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 65,
+      "phase": 1,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 247,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537137072
+    },
+    {
+      "id": 419,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 537137392
+    },
+    {
+      "id": 425,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 246,
+      "phase": 2,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 423,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 423,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 458,
+      "phase": 2,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 459,
+      "phase": 2,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 423,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 65,
+      "phase": 2,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 421,
+      "phase": 3,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 423,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 0
+    },
+    {
+      "id": 420,
+      "phase": 3,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 71,
+      "phase": 3,
+      "control": 4,
+      "outputWritten": false
+    }
+  ],
+  "coldAt": [0, 1, 2]
+}

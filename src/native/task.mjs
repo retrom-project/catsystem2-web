@@ -70,8 +70,7 @@ export function nativeTask(id, args, machine, task, services) {
     case 0x43:
       check(1);
       if (!objects?.release) return undefined;
-      if (world && objects.objects.get(resolve(args[0]))?.implementation?.pointer)
-        return then(world.sendNativeEngine(args[0], task.id, 3), voidResult);
+      if (world) return then(world.sendNativeEngine(args[0], task.id, 3), voidResult);
       return then(
         objects.destroy
           ? objects.destroy(resolve(args[0]), task.id)

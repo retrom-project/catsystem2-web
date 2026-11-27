@@ -1,0 +1,3809 @@
+{
+  "scope": "Own exact modern inheritance vectors, original CPU/COM-memory host, not physical GPU/product",
+  "profiles": {
+    "74": {
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "PE": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+      "original": {
+        "path": ".local/phase11/sdk-modern-plane-mesh-20261128/ORIGINAL-INHERIT-74.json",
+        "sha256": "26c5b8723407655e07cfbcab33b0533ea4861f5485639149b6ff9d9bf15eb748"
+      },
+      "startupXML": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp>32</bpp></TEXTURE><APP><imgcache>0</imgcache></APP><ETC><cache>0</cache></ETC></document>",
+      "cases": [
+        {
+          "id": 66,
+          "args": [1, "caller", 128],
+          "dependency": true,
+          "save": "top",
+          "text": "P1 actual Top",
+          "ordinal": 0,
+          "control": 1,
+          "result": "owned:top",
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              }
+            ],
+            "planeWords": []
+          },
+          "packets": []
+        },
+        {
+          "id": 66,
+          "args": [2, "top", 128],
+          "dependency": true,
+          "save": "parent",
+          "text": "P1 actual parent Plane",
+          "ordinal": 1,
+          "control": 1,
+          "result": "owned:parent",
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "top",
+              "words": [3, 2, 5, 537243328, 0, 2146430920]
+            }
+          ]
+        },
+        {
+          "id": 66,
+          "args": [2, "parent", 128],
+          "dependency": true,
+          "save": "child",
+          "text": "P1 actual child Plane",
+          "ordinal": 2,
+          "control": 1,
+          "result": "owned:child",
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 2, 6, 537244432, 0, 2146430920]
+            }
+          ]
+        },
+        {
+          "id": 79,
+          "args": ["parent", 1094713344, 1092616192, 4280299584],
+          "dependency": true,
+          "ordinal": 3,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 40, 0, 2146430872, 0, 2146430868]
+            }
+          ]
+        },
+        {
+          "id": 79,
+          "args": ["child", 1086324736, 1082130432, 4283457648],
+          "dependency": true,
+          "ordinal": 4,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 40, 0, 2146430872, 0, 2146430868]
+            }
+          ]
+        },
+        {
+          "id": 84,
+          "args": ["parent", 1092616192, 1101004800, 1106247680, 0],
+          "dependency": true,
+          "ordinal": 5,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 49, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "child",
+              "words": [5, 50, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 88,
+          "args": ["parent", 1084227584],
+          "dependency": true,
+          "ordinal": 6,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 59, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "parent",
+              "words": [3, 47, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "child",
+              "words": [5, 48, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 84,
+          "args": ["child", 1073741824, 1082130432, 1086324736, 0],
+          "dependency": true,
+          "ordinal": 7,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 49, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 88,
+          "args": ["child", 1088421888],
+          "dependency": true,
+          "ordinal": 8,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 59, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "child",
+              "words": [3, 47, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["parent"],
+          "ordinal": 9,
+          "control": 1,
+          "result": 1084227584,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 59, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 10,
+          "control": 1,
+          "result": 1088421888,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 59, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 90,
+          "args": ["child", 1065353216, 3221225472, 1077936128],
+          "ordinal": 11,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 51, 0, 2146430892, 0, 2146430888]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 60, 0, 2146429320, 0, 2146429304]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 59, 0, 2146429308, 0, 2146429304]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 12,
+          "control": 1,
+          "result": 1090519040,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 59, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 87,
+          "args": ["child", 1024, 1028, 1032, 0],
+          "dependency": true,
+          "outputs": [
+            {
+              "at": 1024,
+              "bytes": [0, 0, 32, 65, 0, 0, 160, 65, 0, 0, 240, 65]
+            }
+          ],
+          "ordinal": 13,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [1024, 0],
+            [1025, 0],
+            [1026, 32],
+            [1027, 65],
+            [1028, 0],
+            [1029, 0],
+            [1030, 160],
+            [1031, 65],
+            [1032, 0],
+            [1033, 0],
+            [1034, 240],
+            [1035, 65]
+          ],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 60, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "operation": "frame",
+          "frame": 1,
+          "ordinal": 14,
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 87,
+          "args": ["child", 1024, 1028, 1032, 0],
+          "dependency": true,
+          "outputs": [
+            {
+              "at": 1024,
+              "bytes": [0, 0, 32, 65, 0, 0, 160, 65, 0, 0, 240, 65]
+            }
+          ],
+          "ordinal": 15,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [1024, 0],
+            [1025, 0],
+            [1026, 32],
+            [1027, 65],
+            [1028, 0],
+            [1029, 0],
+            [1030, 160],
+            [1031, 65],
+            [1032, 0],
+            [1033, 0],
+            [1034, 240],
+            [1035, 65]
+          ],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 60, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 16,
+          "control": 1,
+          "result": 1090519040,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 59, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 84,
+          "args": ["parent", 1097859072, 1103626240, 1108082688, 0],
+          "dependency": true,
+          "ordinal": 17,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 49, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "child",
+              "words": [5, 50, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 60, 0, 2146428116, 0, 2146428100]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 59, 0, 2146428104, 0, 2146428100]
+            }
+          ]
+        },
+        {
+          "id": 88,
+          "args": ["parent", 1091567616],
+          "dependency": true,
+          "ordinal": 18,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 59, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "parent",
+              "words": [3, 47, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "child",
+              "words": [5, 48, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 60, 0, 2146428116, 0, 2146428100]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 59, 0, 2146428104, 0, 2146428100]
+            }
+          ]
+        },
+        {
+          "operation": "frame",
+          "frame": 2,
+          "ordinal": 19,
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 87,
+          "args": ["child", 1024, 1028, 1032, 0],
+          "dependency": true,
+          "outputs": [
+            {
+              "at": 1024,
+              "bytes": [0, 0, 112, 65, 0, 0, 200, 65, 0, 0, 12, 66]
+            }
+          ],
+          "ordinal": 20,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [1024, 0],
+            [1025, 0],
+            [1026, 112],
+            [1027, 65],
+            [1028, 0],
+            [1029, 0],
+            [1030, 200],
+            [1031, 65],
+            [1032, 0],
+            [1033, 0],
+            [1034, 12],
+            [1035, 66]
+          ],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 60, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 21,
+          "control": 1,
+          "result": 1094713344,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 59, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 91,
+          "args": ["child"],
+          "ordinal": 22,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 52, 0, 0, 0, 2146430920]
+            }
+          ]
+        },
+        {
+          "id": 87,
+          "args": ["child", 1024, 1028, 1032, 0],
+          "dependency": true,
+          "outputs": [
+            {
+              "at": 1024,
+              "bytes": [0, 0, 112, 65, 0, 0, 200, 65, 0, 0, 12, 66]
+            }
+          ],
+          "ordinal": 23,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [1024, 0],
+            [1025, 0],
+            [1026, 112],
+            [1027, 65],
+            [1028, 0],
+            [1029, 0],
+            [1030, 200],
+            [1031, 65],
+            [1032, 0],
+            [1033, 0],
+            [1034, 12],
+            [1035, 66]
+          ],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 60, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 24,
+          "control": 1,
+          "result": 1094713344,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 59, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 84,
+          "args": ["parent", 1099956224, 1105199104, 1108869120, 0],
+          "dependency": true,
+          "ordinal": 25,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 49, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "child",
+              "words": [5, 50, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "operation": "frame",
+          "frame": 3,
+          "ordinal": 26,
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 87,
+          "args": ["child", 1024, 1028, 1032, 0],
+          "dependency": true,
+          "outputs": [
+            {
+              "at": 1024,
+              "bytes": [0, 0, 112, 65, 0, 0, 200, 65, 0, 0, 12, 66]
+            }
+          ],
+          "ordinal": 27,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [1024, 0],
+            [1025, 0],
+            [1026, 112],
+            [1027, 65],
+            [1028, 0],
+            [1029, 0],
+            [1030, 200],
+            [1031, 65],
+            [1032, 0],
+            [1033, 0],
+            [1034, 12],
+            [1035, 66]
+          ],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 60, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 28,
+          "control": 1,
+          "result": 1094713344,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 59, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 90,
+          "args": ["child", 0, 0, 0],
+          "ordinal": 29,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 51, 0, 2146430892, 0, 2146430888]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 60, 0, 2146429320, 0, 2146429304]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 59, 0, 2146429308, 0, 2146429304]
+            }
+          ]
+        },
+        {
+          "operation": "frame",
+          "frame": 4,
+          "ordinal": 30,
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 87,
+          "args": ["child", 1024, 1028, 1032, 0],
+          "dependency": true,
+          "outputs": [
+            {
+              "at": 1024,
+              "bytes": [0, 0, 144, 65, 0, 0, 224, 65, 0, 0, 24, 66]
+            }
+          ],
+          "ordinal": 31,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [1024, 0],
+            [1025, 0],
+            [1026, 144],
+            [1027, 65],
+            [1028, 0],
+            [1029, 0],
+            [1030, 224],
+            [1031, 65],
+            [1032, 0],
+            [1033, 0],
+            [1034, 24],
+            [1035, 66]
+          ],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 60, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 32,
+          "control": 1,
+          "result": 1091567616,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 59, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 91,
+          "args": ["child"],
+          "ordinal": 33,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 52, 0, 0, 0, 2146430920]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 34,
+          "control": 1,
+          "result": 1091567616,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 59, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": [0],
+          "ordinal": 35,
+          "control": 1,
+          "result": 0,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 90,
+          "args": [0, 1065353216, 1073741824, 1077936128],
+          "ordinal": 36,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 91,
+          "args": [0],
+          "ordinal": 37,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 67,
+          "args": ["child"],
+          "dependency": true,
+          "ordinal": 38,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 3, 0, 0, 0, 2146430916]
+            }
+          ]
+        },
+        {
+          "id": 67,
+          "args": ["parent"],
+          "dependency": true,
+          "ordinal": 39,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 3, 0, 0, 0, 2146430916]
+            }
+          ]
+        },
+        {
+          "operation": "frame",
+          "frame": 5,
+          "ordinal": 40,
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": false
+              },
+              {
+                "name": "child",
+                "alive": false
+              }
+            ],
+            "planeWords": []
+          },
+          "packets": []
+        },
+        {
+          "id": 67,
+          "args": ["top"],
+          "dependency": true,
+          "ordinal": 41,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": false
+              },
+              {
+                "name": "child",
+                "alive": false
+              }
+            ],
+            "planeWords": []
+          },
+          "packets": [
+            {
+              "recipient": "top",
+              "words": [3, 3, 0, 0, 0, 2146430916]
+            }
+          ]
+        }
+      ],
+      "coldAfter": [5, 11, 14, 18, 22, 29, 37, 39]
+    },
+    "76": {
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "PE": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0",
+      "original": {
+        "path": ".local/phase11/sdk-modern-plane-mesh-20261128/ORIGINAL-INHERIT-76.json",
+        "sha256": "c260502df8f32d0d4c1b6d11296279385f3e9c7adfd29dc7542cf927e18a24cc"
+      },
+      "startupXML": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp>32</bpp></TEXTURE><APP><imgcache>0</imgcache></APP><ETC><cache>0</cache></ETC></document>",
+      "cases": [
+        {
+          "id": 66,
+          "args": [1, "caller", 128],
+          "dependency": true,
+          "save": "top",
+          "text": "P1 actual Top",
+          "ordinal": 0,
+          "control": 1,
+          "result": "owned:top",
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              }
+            ],
+            "planeWords": []
+          },
+          "packets": []
+        },
+        {
+          "id": 66,
+          "args": [2, "top", 128],
+          "dependency": true,
+          "save": "parent",
+          "text": "P1 actual parent Plane",
+          "ordinal": 1,
+          "control": 1,
+          "result": "owned:parent",
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "top",
+              "words": [3, 2, 5, 537330176, 0, 2146430920]
+            }
+          ]
+        },
+        {
+          "id": 66,
+          "args": [2, "parent", 128],
+          "dependency": true,
+          "save": "child",
+          "text": "P1 actual child Plane",
+          "ordinal": 2,
+          "control": 1,
+          "result": "owned:child",
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 2, 6, 537331008, 0, 2146430920]
+            }
+          ]
+        },
+        {
+          "id": 79,
+          "args": ["parent", 1094713344, 1092616192, 4280299584],
+          "dependency": true,
+          "ordinal": 3,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 42, 0, 2146430872, 0, 2146430868]
+            }
+          ]
+        },
+        {
+          "id": 79,
+          "args": ["child", 1086324736, 1082130432, 4283457648],
+          "dependency": true,
+          "ordinal": 4,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 42, 0, 2146430872, 0, 2146430868]
+            }
+          ]
+        },
+        {
+          "id": 84,
+          "args": ["parent", 1092616192, 1101004800, 1106247680, 0],
+          "dependency": true,
+          "ordinal": 5,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 51, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "child",
+              "words": [5, 52, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 88,
+          "args": ["parent", 1084227584],
+          "dependency": true,
+          "ordinal": 6,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 61, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "parent",
+              "words": [3, 49, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "child",
+              "words": [5, 50, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 84,
+          "args": ["child", 1073741824, 1082130432, 1086324736, 0],
+          "dependency": true,
+          "ordinal": 7,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 51, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 88,
+          "args": ["child", 1088421888],
+          "dependency": true,
+          "ordinal": 8,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 61, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "child",
+              "words": [3, 49, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["parent"],
+          "ordinal": 9,
+          "control": 1,
+          "result": 1084227584,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 61, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 10,
+          "control": 1,
+          "result": 1088421888,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 61, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 90,
+          "args": ["child", 1065353216, 3221225472, 1077936128],
+          "ordinal": 11,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 53, 0, 2146430892, 0, 2146430888]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 62, 0, 2146426248, 0, 2146426232]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 61, 0, 2146426236, 0, 2146426232]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 12,
+          "control": 1,
+          "result": 1090519040,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 61, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 87,
+          "args": ["child", 1024, 1028, 1032, 0],
+          "dependency": true,
+          "outputs": [
+            {
+              "at": 1024,
+              "bytes": [0, 0, 32, 65, 0, 0, 160, 65, 0, 0, 240, 65]
+            }
+          ],
+          "ordinal": 13,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [1024, 0],
+            [1025, 0],
+            [1026, 32],
+            [1027, 65],
+            [1028, 0],
+            [1029, 0],
+            [1030, 160],
+            [1031, 65],
+            [1032, 0],
+            [1033, 0],
+            [1034, 240],
+            [1035, 65]
+          ],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 62, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "operation": "frame",
+          "frame": 1,
+          "ordinal": 14,
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 87,
+          "args": ["child", 1024, 1028, 1032, 0],
+          "dependency": true,
+          "outputs": [
+            {
+              "at": 1024,
+              "bytes": [0, 0, 32, 65, 0, 0, 160, 65, 0, 0, 240, 65]
+            }
+          ],
+          "ordinal": 15,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [1024, 0],
+            [1025, 0],
+            [1026, 32],
+            [1027, 65],
+            [1028, 0],
+            [1029, 0],
+            [1030, 160],
+            [1031, 65],
+            [1032, 0],
+            [1033, 0],
+            [1034, 240],
+            [1035, 65]
+          ],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 62, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 16,
+          "control": 1,
+          "result": 1090519040,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 61, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 84,
+          "args": ["parent", 1097859072, 1103626240, 1108082688, 0],
+          "dependency": true,
+          "ordinal": 17,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 51, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "child",
+              "words": [5, 52, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 62, 0, 2146421972, 0, 2146421956]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 61, 0, 2146421960, 0, 2146421956]
+            }
+          ]
+        },
+        {
+          "id": 88,
+          "args": ["parent", 1091567616],
+          "dependency": true,
+          "ordinal": 18,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 61, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "parent",
+              "words": [3, 49, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "child",
+              "words": [5, 50, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 62, 0, 2146421972, 0, 2146421956]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 61, 0, 2146421960, 0, 2146421956]
+            }
+          ]
+        },
+        {
+          "operation": "frame",
+          "frame": 2,
+          "ordinal": 19,
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 87,
+          "args": ["child", 1024, 1028, 1032, 0],
+          "dependency": true,
+          "outputs": [
+            {
+              "at": 1024,
+              "bytes": [0, 0, 112, 65, 0, 0, 200, 65, 0, 0, 12, 66]
+            }
+          ],
+          "ordinal": 20,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [1024, 0],
+            [1025, 0],
+            [1026, 112],
+            [1027, 65],
+            [1028, 0],
+            [1029, 0],
+            [1030, 200],
+            [1031, 65],
+            [1032, 0],
+            [1033, 0],
+            [1034, 12],
+            [1035, 66]
+          ],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 62, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 21,
+          "control": 1,
+          "result": 1094713344,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 61, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 91,
+          "args": ["child"],
+          "ordinal": 22,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 54, 0, 0, 0, 2146430920]
+            }
+          ]
+        },
+        {
+          "id": 87,
+          "args": ["child", 1024, 1028, 1032, 0],
+          "dependency": true,
+          "outputs": [
+            {
+              "at": 1024,
+              "bytes": [0, 0, 112, 65, 0, 0, 200, 65, 0, 0, 12, 66]
+            }
+          ],
+          "ordinal": 23,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [1024, 0],
+            [1025, 0],
+            [1026, 112],
+            [1027, 65],
+            [1028, 0],
+            [1029, 0],
+            [1030, 200],
+            [1031, 65],
+            [1032, 0],
+            [1033, 0],
+            [1034, 12],
+            [1035, 66]
+          ],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 62, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 24,
+          "control": 1,
+          "result": 1094713344,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 61, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 84,
+          "args": ["parent", 1099956224, 1105199104, 1108869120, 0],
+          "dependency": true,
+          "ordinal": 25,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 51, 0, 2146430892, 1, 2146430888]
+            },
+            {
+              "recipient": "child",
+              "words": [5, 52, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "operation": "frame",
+          "frame": 3,
+          "ordinal": 26,
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 87,
+          "args": ["child", 1024, 1028, 1032, 0],
+          "dependency": true,
+          "outputs": [
+            {
+              "at": 1024,
+              "bytes": [0, 0, 112, 65, 0, 0, 200, 65, 0, 0, 12, 66]
+            }
+          ],
+          "ordinal": 27,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [1024, 0],
+            [1025, 0],
+            [1026, 112],
+            [1027, 65],
+            [1028, 0],
+            [1029, 0],
+            [1030, 200],
+            [1031, 65],
+            [1032, 0],
+            [1033, 0],
+            [1034, 12],
+            [1035, 66]
+          ],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 62, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 28,
+          "control": 1,
+          "result": 1094713344,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [1065353216, 3221225472, 1077936128]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 61, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 90,
+          "args": ["child", 0, 0, 0],
+          "ordinal": 29,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 53, 0, 2146430892, 0, 2146430888]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 62, 0, 2146426248, 0, 2146426232]
+            },
+            {
+              "recipient": "parent",
+              "words": [6, 61, 0, 2146426236, 0, 2146426232]
+            }
+          ]
+        },
+        {
+          "operation": "frame",
+          "frame": 4,
+          "ordinal": 30,
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 87,
+          "args": ["child", 1024, 1028, 1032, 0],
+          "dependency": true,
+          "outputs": [
+            {
+              "at": 1024,
+              "bytes": [0, 0, 144, 65, 0, 0, 224, 65, 0, 0, 24, 66]
+            }
+          ],
+          "ordinal": 31,
+          "control": 2,
+          "result": null,
+          "changed": [
+            [1024, 0],
+            [1025, 0],
+            [1026, 144],
+            [1027, 65],
+            [1028, 0],
+            [1029, 0],
+            [1030, 224],
+            [1031, 65],
+            [1032, 0],
+            [1033, 0],
+            [1034, 24],
+            [1035, 66]
+          ],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 62, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 32,
+          "control": 1,
+          "result": 1091567616,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 1,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 61, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 91,
+          "args": ["child"],
+          "ordinal": 33,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 54, 0, 0, 0, 2146430920]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": ["child"],
+          "ordinal": 34,
+          "control": 1,
+          "result": 1091567616,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 61, 0, 2146430892, 1, 2146430888]
+            }
+          ]
+        },
+        {
+          "id": 89,
+          "args": [0],
+          "ordinal": 35,
+          "control": 1,
+          "result": 0,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 90,
+          "args": [0, 1065353216, 1073741824, 1077936128],
+          "ordinal": 36,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 91,
+          "args": [0],
+          "ordinal": 37,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": []
+        },
+        {
+          "id": 67,
+          "args": ["child"],
+          "dependency": true,
+          "ordinal": 38,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "child",
+              "words": [3, 3, 0, 0, 0, 2146430916]
+            }
+          ]
+        },
+        {
+          "id": 67,
+          "args": ["parent"],
+          "dependency": true,
+          "ordinal": 39,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": true
+              },
+              {
+                "name": "child",
+                "alive": true
+              }
+            ],
+            "planeWords": [
+              {
+                "name": "parent",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              },
+              {
+                "name": "child",
+                "inherit": 0,
+                "offset": [0, 0, 0]
+              }
+            ]
+          },
+          "packets": [
+            {
+              "recipient": "parent",
+              "words": [3, 3, 0, 0, 0, 2146430916]
+            }
+          ]
+        },
+        {
+          "operation": "frame",
+          "frame": 5,
+          "ordinal": 40,
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": false
+              },
+              {
+                "name": "child",
+                "alive": false
+              }
+            ],
+            "planeWords": []
+          },
+          "packets": []
+        },
+        {
+          "id": 67,
+          "args": ["top"],
+          "dependency": true,
+          "ordinal": 41,
+          "control": 2,
+          "result": null,
+          "outputs": [],
+          "changed": [],
+          "state": {
+            "liveTypes": [
+              {
+                "name": "top",
+                "alive": true
+              },
+              {
+                "name": "parent",
+                "alive": false
+              },
+              {
+                "name": "child",
+                "alive": false
+              }
+            ],
+            "planeWords": []
+          },
+          "packets": [
+            {
+              "recipient": "top",
+              "words": [3, 3, 0, 0, 0, 2146430916]
+            }
+          ]
+        }
+      ],
+      "coldAfter": [5, 11, 14, 18, 22, 29, 37, 39]
+    }
+  }
+}
