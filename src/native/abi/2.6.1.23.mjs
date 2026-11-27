@@ -1107,34 +1107,19 @@ const auxiliaryLoggerEvidence = {
 const particleInterpreterEvidence = [
   auxiliaryLoggerEvidence,
   {
+    ids: [22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 37, 38, 39],
+    value:
+      'Own true ApplicationRoot and loaded v2 kind16 bank execute finite quad rotation/translation/scale, mapped attachment-to-position, raw quad copies, UV diagonals, distance, inverse bounds and visibility. Complete words and real Root/View DrawPrimitive triangles/atlas match across restart and cold. Both tables point to these exact bodies; v1 reuse is an explicit same-body/context bridge, not a new native v1 geometry capture. See tests/fixtures/sdk23-particle-lifecycle-golden.json; undefined owner and arithmetic domains remain guarded.',
+  },
+  {
     ids: [1, 2, 3, 4, 5, 9, 10, 14, 19, 20, 21, 32, 35, 36, 40, 41, 42],
     value:
       'Own loaded Main66 kind16/Main271 sized4x4 HG3 and KCS header-selected v1/v2 VM tables each execute seventeen finite calls for both particles through the original dispatcher. Full arguments, control1/2/4 and written outputs match; exit in the first particle still permits the second invocation. Native idle copies current into before after the loop; register replacement, stop and normal child retirement are observed. Six independent current cold points per table recreate the existing device port. See tests/fixtures/sdk23-particle-tables-golden.json; this does not generalize all operands, physical GPU output or unwritten constructor domains.',
   },
   {
-    ids: [29],
-    value:
-      'Own 2.6.1.23 PTCL tables point to 0x48C9D0. The two diagonal float32 words write the eight UV coordinates of the selected quad, with x87 PC24 division.',
-  },
-  {
-    ids: [37],
-    value:
-      'Own 2.6.1.23 PTCL tables point to 0x48CC80. The six float32 words enter the x87 distance helper at 0x4CA540 and produce one result word.',
-  },
-  {
     ids: [18],
     value:
       'Own 2.6.1.23 Particle v1 and v2 slot 18 alias Main 61 at 0x48C590. The initialized SSE2 CRT writes one float32 result word.',
-  },
-  {
-    ids: [38],
-    value:
-      'Own 2.6.1.23 PTCL v1 and v2 point to 0x48CCD0. The scalar PC24 inverse projection uses viewport, priority and near and writes four ordered float words.',
-  },
-  {
-    ids: [27, 28, 30, 31, 39],
-    value:
-      'Own 2.6.1.23 particle tables share these frame, viewport, quad, register and control bodies',
   },
   {
     ids: [6, 7, 8, 11, 12, 13, 15, 16, 17],
@@ -1145,11 +1130,6 @@ const particleInterpreterEvidence = [
     ids: [33, 34],
     value:
       'Own 2.6.1.23 Particle 0x48cbb0/0x48cbd0 share the integer and real MT19937 streams with MOT 0x595af0/0x595ad0',
-  },
-  {
-    ids: [22, 23, 24, 25, 26],
-    value:
-      'Own 2.6.1.23 Particle 0x48c620–0x48c8b2 share four x87 vertex rotations, translation and scale in both tables',
   },
   {
     ids: [43],
@@ -1498,6 +1478,11 @@ export default {
     scriptVersionFallback: 'particle-v1',
     frameScale: 'x87-uint32',
     beforeFrameUpdatedByIdle: true,
+    scriptUsesTaskFrameRate: true,
+    scriptStartPreservesState: true,
+    drawPortEnabledByIdle: true,
+    drawPortRequiresStart: true,
+    drawPortPersistsAfterExit: true,
     quadUsesX87: true,
     textureCoordinatesUseX87: true,
     distanceUsesX87: true,
@@ -3211,29 +3196,33 @@ export default {
         {
           ids: [44, 45],
           value:
-            'Own 2.6.1.23 PTCL v2 0x48C0B0 and 0x48C0E0 copy every owned 112-byte quad between the active and backup spans. Initial allocation seeds the backup with the active span.',
+            'Own 2.6.1.23 PTCL v2 0x48C0B0 and 0x48C0E0 copy every owned 112-byte quad between the active and backup spans. Initial allocation seeds the backup with the active span. The true loaded v2 VM now proves full-bank backup/reset around an intervening ordinary quad mutation and normal restart/cold.',
         },
         {
           ids: [46],
           value:
-            'Own 2.6.1.23 PTCL v2 0x48C110 returns the complete retained attachment DWORD without querying a renderer or model.',
+            'Own 2.6.1.23 PTCL v2 0x48C110 returns the complete retained attachment DWORD without querying a renderer or model. The true loaded v2 VM captures this return after Main427 attaches a real registered kind2 graph.',
         },
         {
           ids: [47],
           value:
-            'Own 2.6.1.23 PTCL v2 0x48C130 returns the renderer registration DWORD or initialized zero. Main 92 and Plane raw 43/44 preserve the old DWORD for requests on the same side of zero.',
+            'Own 2.6.1.23 PTCL v2 0x48C130 returns the renderer registration DWORD or initialized zero. Main 92 and Plane raw 43/44 preserve the old DWORD for requests on the same side of zero. The true v2 VM reads the actual registered graph in the quad lifecycle fixture.',
         },
         {
           ids: [48],
           value:
-            'Own 2.6.1.23 PTCL v2 0x48C180 writes the selected live model base X/Y. The renderer gates produce zero for a disabled device or empty attachment. A stale active model leaves undefined scratch words.',
+            'Own 2.6.1.23 PTCL v2 0x48C180 writes the selected live model base X/Y. The renderer gates produce zero for a disabled device or empty attachment. A stale active model leaves undefined scratch words. The true loaded v2 VM consumes the live model base X/Y in quad translation; stale shapes are not promoted.',
         },
         {
           ids: [49],
           value:
-            'Own 2.6.1.23 PTCL v2 0x48C1F0 writes three coordinates from the selected model. The native renderer gates produce zero for a disabled device or absent attachment.',
+            'Own 2.6.1.23 PTCL v2 0x48C1F0 writes three coordinates from the selected model. The native renderer gates produce zero for a disabled device or absent attachment. The true loaded v2 VM consumes live coordinates in SetPos and real projected quad output.',
         },
-        { ids: [50], value: 'Own 2.6.1.23 Particle v2 blend mode stores 1–5 or zero' },
+        {
+          ids: [50],
+          value:
+            'Own 2.6.1.23 Particle v2 blend mode stores 1–5 or zero; the loaded v2 fixture sets mode2 before actual DrawPrimitive and current cold continuation',
+        },
       ]),
       signatures: [
         ...particleInterpreterSignatures,

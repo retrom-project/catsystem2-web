@@ -234,9 +234,13 @@ export class ParticleScriptInstance {
       throw error;
     }
   }
-  start() {
+  start({ preserveState = false } = {}) {
     if (this.closed) throw new Error('Particle instance is released');
     this.active = true;
+    if (preserveState) {
+      this.hasFrame = false;
+      return;
+    }
     this.frame = 0;
     this.before = 0xffffffff;
     this.hasFrame = false;

@@ -9,7 +9,7 @@ import { kcsProgram } from '../helpers.mjs';
 export async function modernParticleMessageWorld(
   profile,
   files = {},
-  { initialize = true, sceneLanguages = [] } = {},
+  { initialize = true, sceneLanguages = [], startup } = {},
 ) {
   const game = new GameFiles(
     new Map(
@@ -27,7 +27,7 @@ export async function modernParticleMessageWorld(
       random,
       images: {},
       host: {},
-      configuration: new NativeConfiguration({ profile }),
+      configuration: new NativeConfiguration({ profile, startup }),
       sceneLanguages,
       motionLibrary: new MotionLibrary(game, { profile, random }),
       storage: { read: async () => null, write: async () => true },

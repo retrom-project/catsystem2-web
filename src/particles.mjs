@@ -12,8 +12,12 @@ import { NativeBufferMemory } from './native/buffer-memory.mjs';
 const normalize = (name) => name.replaceAll('\\', '/').toLowerCase();
 const white = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) };
 const sceneBankCount = 8;
-const drawEligible = (bank) =>
-  bank.started && bank.instance?.active && bank.alpha !== 0 && bank.nativeDrawEnabled !== false;
+const drawEligible = (bank, drawPortPersistsAfterExit) =>
+  bank.started &&
+  (bank.instance?.active || (drawPortPersistsAfterExit && bank.family === 'script')) &&
+  bank.alpha !== 0 &&
+  bank.nativeDrawBound !== false &&
+  bank.nativeDrawEnabled !== false;
 const bankRegisters = (bank) =>
   Object.defineProperty(bank, 'registers', {
     get() {
@@ -57,6 +61,11 @@ export class Particles {
     this.profile = profile;
     this.nativeRefBuffers = profile && nativeABI(profile).particle?.refBuffersFollowNativeHeap;
     this.drawPortEnabledByIdle = profile && nativeABI(profile).particle?.drawPortEnabledByIdle;
+    this.drawPortRequiresStart = profile && nativeABI(profile).particle?.drawPortRequiresStart;
+    this.drawPortPersistsAfterExit =
+      profile && nativeABI(profile).particle?.drawPortPersistsAfterExit;
+    this.scriptStartPreservesState =
+      profile && nativeABI(profile).particle?.scriptStartPreservesState;
     this.refBufferMemory = this.nativeRefBuffers
       ? (refBufferMemory ?? new NativeBufferMemory())
       : null;
@@ -339,6 +348,8 @@ export class Particles {
           : this.scriptBytes(bank.program));
     if (this.atlas && this.drawPortEnabledByIdle && bank.family === 'script')
       bank.nativeDrawEnabled = false;
+    if (this.atlas && this.drawPortRequiresStart && bank.family === 'script')
+      bank.nativeDrawBound = false;
     if (bank.family === 'plugin') {
       await this.preloadData();
       const runtime = await this.pluginRuntime();
@@ -390,7 +401,11 @@ export class Particles {
     const bank = this.require(key);
     if (!bank.loaded) throw new Error(`Particle bank ${key} has no loaded executable`);
     bank.instance.attachPlane = this.refreshAttachment(bank);
-    bank.instance.start();
+    bank.instance.start({
+      preserveState:
+        bank.family === 'script' && Boolean(this.atlas) && this.scriptStartPreservesState,
+    });
+    if (bank.nativeDrawBound !== undefined) bank.nativeDrawBound = true;
     bank.started = true;
     bank.clockStart = null;
     bank.clockLast = null;
@@ -610,13 +625,13 @@ export class Particles {
   }
   async drawBank(key, gpu) {
     const bank = this.require(key);
-    if (!drawEligible(bank)) return;
+    if (!drawEligible(bank, this.drawPortPersistsAfterExit)) return;
     const batch = await this.drawBatch(bank);
     gpu.drawGeometry(batch.geometry, batch.image, batch.options);
   }
   drawItems() {
     return [...this.banks.values()]
-      .filter((bank) => drawEligible(bank) && !bank.externalDraw)
+      .filter((bank) => drawEligible(bank, this.drawPortPersistsAfterExit) && !bank.externalDraw)
       .map((bank) => ({
         type: 'particle',
         priority: bank.priority,
@@ -624,7 +639,7 @@ export class Particles {
         nativeRenderOrder: bank.nativeRenderOrder,
         drawGPU: async (gpu) => this.drawBank(bank.key, gpu),
         draw: async (context) => {
-          if (!drawEligible(bank)) return;
+          if (!drawEligible(bank, this.drawPortPersistsAfterExit)) return;
           this.gpu ||= new ParticlesGL(this.stage.width, this.stage.height);
           const batch = await this.drawBatch(bank),
             canvas = this.gpu.render(batch.geometry, batch.image, context.canvas, batch.options);
@@ -648,6 +663,7 @@ export class Particles {
         order: bank.order,
         nativeRenderOrder: bank.nativeRenderOrder,
         nativeDrawEnabled: bank.nativeDrawEnabled,
+        nativeDrawBound: bank.nativeDrawBound,
         family: bank.family,
         program: bank.program,
         texture: bank.texture,
@@ -684,6 +700,14 @@ export class Particles {
       )
     )
       throw new Error('Particle checkpoint requires its native graph-port enable state');
+    if (
+      this.atlas &&
+      this.drawPortRequiresStart &&
+      state.banks.some(
+        (bank) => bank.family === 'script' && typeof bank.nativeDrawBound !== 'boolean',
+      )
+    )
+      throw new Error('Particle checkpoint requires its native graph callback binding');
   }
   async restore(state) {
     this.validateNativeDrawPortState(state);

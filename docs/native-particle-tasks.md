@@ -1,5 +1,34 @@
 # Native Particle tasks
 
+The fixed SDK23 native graph port separates script activity, the renderer's
+enabled flag and its callback binding. Load creates a disabled model. Start
+binds the callback and restarts relative time without resetting the quad,
+backup, visibility or vector buffers, or immediately changing retained frame
+words. The first subsequent idle enables the model. Script `exit` stops updates
+while the already enabled model continues drawing; explicit stop disables it.
+An active load replaces the model and retains script activity, but requires
+another start to bind the new model's callback. The current checkpoint stores
+that binding independently of the idle enable flag. These policies apply only
+to the qualified SDK23 build; other profiles retain their existing defaults.
+
+The loaded interpreter inherits its actual task FPS. A normal application
+initializer argument of 30 gives `GetFps=30` and `CalcFrame(123)=61`. The original
+host argument and matching SCREEN setting are recorded separately; the test
+helper does not establish that its caller reads that setting for the argument.
+The runtime follows the existing configured task clock and changes no pacer
+or ordinary Frame semantics.
+
+The lifecycle fixture covers real v2 quad transforms, whole-bank backup/reset,
+mapped graph attachment consumed in geometry, UV coordinates, visibility,
+alpha, stop/restart and an active rebind to v1. It compares complete projected
+triangles and asymmetric HG3 atlas RGBA through normal Root/View submission.
+A separate v1 exit/draw case completes normally. Eight independent v2 cold
+points and one v1 cold point preserve these states. Present uses the qualified
+COM memory port, so this is not physical GPU sampling evidence. The original
+first Present observer identity error and the later incorrect expectation of
+draw immediately after rebind remain sealed; the latter run completed all
+native stages and normal cleanup before its author assertion failed.
+
 The fixed SDK23 build has an independently loaded Particle v1/v2 table bridge.
 Actual Main66 kind16 owners load an asymmetric 4×4 HG3 atlas through Main271,
 then execute seventeen finite native calls for each of two particles through
