@@ -1484,8 +1484,8 @@ export default {
       slots: {
         unknown: [
           81, 82, 199, 201, 202, 208, 279, 280, 281, 282, 283, 287, 288, 346, 398, 399, 433, 441,
-          442, 443, 457, 532, 588, 600, 601, 628, 669, 681, 682, 688, 690, 691, 692, 735, 837, 838,
-          839, 840, 841, 842, 843, 879, 880, 881,
+          442, 443, 457, 532, 588, 600, 601, 628, 669, 682, 688, 690, 691, 692, 837, 838, 839, 840,
+          841, 842, 843, 879, 880, 881,
         ],
         recovered: [
           1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
@@ -1519,24 +1519,29 @@ export default {
           604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621,
           622, 623, 624, 625, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 645,
           646, 647, 648, 649, 650, 651, 653, 654, 655, 657, 658, 659, 662, 663, 664, 665, 666, 667,
-          668, 674, 675, 676, 677, 678, 679, 680, 683, 684, 685, 689, 693, 694, 695, 696, 697, 698,
-          699, 700, 701, 702, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715, 716,
-          717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727, 728, 729, 730, 731, 732, 733, 734,
-          736, 737, 738, 739, 740, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753,
-          754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771,
-          772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789,
-          790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807,
-          808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825,
-          826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 844, 845, 846, 847, 848, 849, 850,
-          851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868,
-          869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 882, 883, 884, 885, 886, 887, 888, 889,
-          890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 934, 935,
-          936, 937,
+          668, 674, 675, 676, 677, 678, 679, 680, 681, 683, 684, 685, 689, 693, 694, 695, 696, 697,
+          698, 699, 700, 701, 702, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715,
+          716, 717, 718, 719, 720, 721, 722, 723, 724, 725, 726, 727, 728, 729, 730, 731, 732, 733,
+          734, 735, 736, 737, 738, 739, 740, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751,
+          752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769,
+          770, 771, 772, 773, 774, 775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787,
+          788, 789, 790, 791, 792, 793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805,
+          806, 807, 808, 809, 810, 811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823,
+          824, 825, 826, 827, 828, 829, 830, 831, 832, 833, 834, 835, 836, 844, 845, 846, 847, 848,
+          849, 850, 851, 852, 853, 854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866,
+          867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 882, 883, 884, 885, 886, 887,
+          888, 889, 890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905,
+          934, 935, 936, 937,
         ],
         reserved: mainReserved,
         'constant-zero': mainConstantZero,
       },
       evidence: [
+        {
+          ids: [681, 735],
+          value:
+            'Own67 Main681 formats the normal mounted image name, calls its original warm loader and actually destroys/frees each returned bitmap holder; duplicate valid HG3 names and an ordinary missing file preserve control2/no result and no Script-owned image. Own Main735 takes ten words, resolves typed64B Main710/733 ImageOwners through own bitmap getter, crops source/destination and dispatches same-size or resampled physical copy. Initialized independent RGB/RGBA owners cover clipping, same-size conversion, bounded scaling and the wrapper-defined zero-destination return. Actual kind15/Main731/Main340 retained consumers preserve cached pixels until explicit rebind, retain the creator-released owner and free it on replacement/removal. Eight current cold continuations preserve live resource/owner/pixel/metadata state. No VRAM-only target, empty source, alias/extreme or GPU output is inferred; Main682 is a separate unqualified View field operation.',
+        },
         {
           ids: [122, 705],
           value:
@@ -2744,6 +2749,37 @@ export default {
         },
       ],
       signatures: [
+        {
+          ids: [681],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[681].signature.parameters.map((parameter) => ({
+              ...parameter,
+              type: {
+                kind: 'pointer',
+                addressSpace: 'vm',
+                direction: 'in',
+                target: { kind: 'format-string', encoding: 'CP932' },
+              },
+            })),
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        },
+        {
+          ids: [735],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[735].signature.parameters.map((parameter, index) =>
+              [0, 5].includes(index)
+                ? {
+                    ...parameter,
+                    type: { kind: 'handle', handleKind: 'image-owner', ownership: 'borrowed' },
+                  }
+                : parameter,
+            ),
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        },
         ...[122, 705].map((id) => ({
           ids: [id],
           fields: {

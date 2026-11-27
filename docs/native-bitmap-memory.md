@@ -800,3 +800,23 @@ behavior is not inferred from JavaScript numeric conversion. Other layouts,
 large coordinates, overlap and physical GPU output remain outside this group.
 Eight independent current cold continuations per build preserve initialized
 pixels, source-data sharing, metadata and the next actual GCALL.
+
+## SDK67 image warmup and owner copy
+
+Main681 uses its own formatted mounted image path and original warm loader,
+then destroys and frees the returned bitmap holder. Duplicate finite HG3 names
+and a normal missing file leave no Script-owned temporary image. Main735 is a
+ten-word ImageOwner operation: its source and destination use actual Main710 or
+Main733 owners, independent from bitmap wrapper handles. The group compares
+clipped and resampled RGB/RGBA physical pixels, metadata and unchanged caller
+memory, then follows Main731/Main340, creator release, replacement and final
+retained owner removal. Eight independent current cold continuations follow
+these same owners and the next real script command.
+
+The retained bounds consumer also consumes ImageOwner pending state before
+preparing the composed source. The shared pull path now clears that owned
+metadata at the consumer, while bitmap changes retain the previously proved
+Draw cache rule. Exact ten-word copy inputs and real source bitmaps remain
+required. Empty source, VRAM-only target, arbitrary overlap and physical GPU
+output are not qualified. Main682 remains protected: its own wrapper writes a
+separate View field and has no demonstrated ImageOwner contract.

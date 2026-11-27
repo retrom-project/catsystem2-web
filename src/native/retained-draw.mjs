@@ -634,6 +634,7 @@ export class NativeRetainedDraw {
   }
   async pull(draw, record) {
     const source = this.sources.get(record.source);
+    if (source.retainedOwner) this.world.imageOwners.get(source.ownerHandle).info[9] = 0;
     await this.composite(source);
     const bitmap = this.sources.bitmap(record.source);
     if (!bitmap && record.kind === 3 && nativeABI(this.world.profile).graphics.retainedEmptySources)
