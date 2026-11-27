@@ -69,3 +69,18 @@ complete VM outputs and canaries through normal release, plus five independent
 serialized World continuations. It qualifies the authored finite table and
 replacement forms; it does not add arbitrary parser, locale or format support.
 All 18 target calls matched without a production or ABI change.
+
+N2 adds the matching normal SDK23 allocator/loaded-VM context bridge for
+Main289–293. Two real three-row allocations receive copied filenames and word
+pairs with a spare empty row. A folded-name lookup and reverse lookup select an
+actual Scene file and block; source strings are overwritten, the first pair
+owner is released, and the second selects a different Scene. Both pair owners
+then retire before the independently parsed Scene is consumed again. Complete
+live allocation bytes and VM destination/canary spans match the original,
+including five independent current cold continuations.
+
+The existing broader legacy-name-pairs evidence retains its scoped heap/CRT
+qualification. Its out-of-allocation witnesses are not repeated or promoted by
+this normal bridge. Main290 uses the typed name-pairs owner; the separate
+833/834 raw-allocation domain keeps its existing ownership guards. The new
+11-target/32-GCALL sequence requires no production, layout or ABI change.
