@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { modernParticleMessageWorld } from './fixtures/modern-particle-message-world.mjs';
 import { kcsProgram, kif } from './helpers.mjs';
 import { KCSMachine } from '../src/kcs/vm.mjs';
+import { readKCS } from '../src/kcs.mjs';
 import { parseXML } from '../src/xml.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 
@@ -119,3 +120,60 @@ for (const coldAt of [null, ...golden.coldAt])
       KCSMachine.prototype.receiveMessage = oldReceive;
     }
   });
+
+test('SDK23 Main69 treats the literal stop tag as copied user data', async () => {
+  const decoder = new KCSMachine(await readKCS(bytes(golden.inputs.producer)), {}),
+    instructions = [];
+  let changed = 0;
+  for (let pc = 0; pc < decoder.script.codeSize; ) {
+    const i = decoder.instruction(pc);
+    pc += i.size;
+    instructions.push([
+      i.op,
+      ...i.args.map((a) => {
+        if (i.op === 37 && a.mode === 0x23 && a.value === 0x11) {
+          changed++;
+          return [a.mode, 0x706f7473];
+        }
+        return [a.mode, a.value];
+      }),
+    ]);
+  }
+  assert.equal(changed, 1, 'only the first opaque user tag changes');
+  const world = await modernParticleMessageWorld(
+    golden.profile,
+    {
+      'startup.xml': bytes(golden.inputs.startup),
+      'scripts.int': kif([
+        ['main.kcs', kcsProgram([[37, 240], [43, 71, 4], [59]])],
+        ['message-owner.kcs', kcsProgram(instructions)],
+        ['message-child.kcs', bytes(golden.inputs.consumer)],
+      ]),
+      'images.int': kif([]),
+      'ptcl.int': kif([]),
+      'scenes.int': kif([]),
+    },
+    { startup: parseXML(new TextDecoder().decode(bytes(golden.inputs.startup))) },
+  );
+  try {
+    const parent = await world.objects.create({
+      kind: 12,
+      parent: world.root,
+      name: 'unloaded parent',
+    });
+    const caller = await world.spawnScript('message-owner', { parent });
+    await world.runtime.native('main', 209, [512], caller.machine, caller);
+    await world.objects.update(world.root, 500);
+    await world.objects.update(world.root, 501);
+    const childID = world.resolveTaskID(caller.machine.load(72), caller.id),
+      record = world.objects.objects.get(childID),
+      child = world.runtime.scheduler.tasks.get(childID);
+    assert(child);
+    assert.equal(child.machine.load(100), 0x706f7473);
+    assert.equal(caller.machine.load(128), 1);
+    assert.equal(Boolean(record.destroyRequested), false);
+    assert.equal(child.machine.waiting.kind, 'message');
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});

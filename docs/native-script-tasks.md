@@ -17,6 +17,14 @@ allocation-reuse gap remain capture-only; the latter has separate actual
 factory/load/message-copy observations. This scope does not prove physical
 remote-memory access, full Application input publication, or GPU output.
 
+SDK23 directed Main570/571/572 self-targets are separately classified as ignored
+Script notifications. Only the null571 word is qualified by this group; it does
+not establish nonzero external-word ownership or a special receiver. Likewise,
+Main653 is the Plane selector envelope, while Main654/655 reach explicit empty
+simple-Plane branches. Their control2/no-output observations are not successful
+message delivery to a Script callback. Main69 transports four opaque words;
+the four-byte user tag `stop` is separate from the real native destroy message3.
+
 `src/native/script-task.mjs` owns the Script task, its KCS loader, message queue,
 debug queries and automatic resource lifetime. `src/kcs/debug.mjs` implements
 the compiler's symbol records. `src/native/scene-memory.mjs` maps the existing
