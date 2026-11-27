@@ -1,5 +1,23 @@
 # Native Plane and Input commands
 
+## Modern parent inheritance
+
+The exact 2.6.1.74 and ee6 2.6.1.76 builds have paired normal Script/GCALL
+coverage for Main89–91 with actual Main66 parent/child Plane constructors, live
+Main79 models and real parent update/draw traversal. Inherited base and position
+come from the live parent; stopping inheritance keeps the last inherited pose.
+A later parent update no longer moves the child until inheritance is enabled
+again. Priority/output words, copied offsets, native lifetime and eight
+independent current cold continuations per build are checked.
+
+Only the measured kind-2, finite-offset/model context and the wrappers' original
+zero-target early returns are admitted. Foreign receiver namespaces, absent
+model getter outputs and non-finite inheritance offsets remain protected. The
+original evidence uses the existing Win32/COM-memory renderer consumer host:
+74 has its actual View1; 76 has the qualified View0 plus actual View3D1 consumer
+attachment. This does not claim the complete 76 M2 View1 initializer or physical
+GPU presentation.
+
 ## Fixed SDK 2.6.1.23 divided model
 
 Main 467 takes a reviewed kind2 Plane, a VM pointer and a positive record count.
