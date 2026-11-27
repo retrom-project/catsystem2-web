@@ -1,5 +1,25 @@
 # Native Particle tasks
 
+The fixed SDK23 build has an independently loaded Particle v1/v2 table bridge.
+Actual Main66 kind16 owners load an asymmetric 4×4 HG3 atlas through Main271,
+then execute seventeen finite native calls for each of two particles through
+the original VM and its header-selected table. Arguments, written results and
+control 1/2/4 replies agree, including completion of the second particle after
+the first executes `exit`. Normal register replacement copies all 32 words;
+stop, retirement and six independent current cold points per table preserve
+the initialized buffers and current owner. The device port is re-created as a
+host capability before restoring a World; it is not serialized task state.
+
+SDK23 idle copies its current relative frame into the retained previous-frame
+field after the particle loop. Its explicit profile policy performs that copy
+even without the modern RefBuffer backend. The interpreter still observes
+`0xffffffff` during the first invocation. The current unstarted `hasFrame=false`
+state uses an interpreter sentinel; it is not a numeric comparison to the
+original task's pre-update raw zero. Standalone `update()` and other profiles'
+completion policies keep their existing behavior. This normal initialized
+bridge does not establish physical GPU output, allocation-failure behavior or
+every operand domain for the two tables.
+
 ## Fixed SDK 2.6.1.23 external script loader
 
 Main 669 is a distinct six-word wrapper for the actual kind16 Particle receiver.

@@ -1107,6 +1107,11 @@ const auxiliaryLoggerEvidence = {
 const particleInterpreterEvidence = [
   auxiliaryLoggerEvidence,
   {
+    ids: [1, 2, 3, 4, 5, 9, 10, 14, 19, 20, 21, 32, 35, 36, 40, 41, 42],
+    value:
+      'Own loaded Main66 kind16/Main271 sized4x4 HG3 and KCS header-selected v1/v2 VM tables each execute seventeen finite calls for both particles through the original dispatcher. Full arguments, control1/2/4 and written outputs match; exit in the first particle still permits the second invocation. Native idle copies current into before after the loop; register replacement, stop and normal child retirement are observed. Six independent current cold points per table recreate the existing device port. See tests/fixtures/sdk23-particle-tables-golden.json; this does not generalize all operands, physical GPU output or unwritten constructor domains.',
+  },
+  {
     ids: [29],
     value:
       'Own 2.6.1.23 PTCL tables point to 0x48C9D0. The two diagonal float32 words write the eight UV coordinates of the selected quad, with x87 PC24 division.',
@@ -1127,18 +1132,14 @@ const particleInterpreterEvidence = [
       'Own 2.6.1.23 PTCL v1 and v2 point to 0x48CCD0. The scalar PC24 inverse projection uses viewport, priority and near and writes four ordered float words.',
   },
   {
-    ids: [1, 2, 4, 5, 27, 28, 30, 31, 32, 35, 36, 39, 40],
+    ids: [27, 28, 30, 31, 39],
     value:
       'Own 2.6.1.23 particle tables share these frame, viewport, quad, register and control bodies',
   },
   {
-    ids: [3],
-    value: 'Own 2.6.1.23 Particle 0x48c3b0 truncates to an integer64 and clamps the low DWORD',
-  },
-  {
-    ids: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20, 21, 41, 42],
+    ids: [6, 7, 8, 11, 12, 13, 15, 16, 17],
     value:
-      'Own 2.6.1.23 scalar bodies match their MOT peers; 19/20/41/42 also share the Main pointers',
+      'Own 2.6.1.23 remaining trigonometric, ceil/floor, remainder and square-root bodies match their MOT peers',
   },
   {
     ids: [33, 34],
@@ -1496,6 +1497,7 @@ export default {
     debugUsesNativeLogger: true,
     scriptVersionFallback: 'particle-v1',
     frameScale: 'x87-uint32',
+    beforeFrameUpdatedByIdle: true,
     quadUsesX87: true,
     textureCoordinatesUseX87: true,
     distanceUsesX87: true,

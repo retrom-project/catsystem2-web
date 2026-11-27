@@ -137,6 +137,7 @@ export class ParticleScriptInstance {
     this.math = abi?.math;
     this.interpreterMath = this.math?.interpreterUsesNativeScalarMath ? this.math : null;
     this.frameScale = abi?.particle?.frameScale;
+    this.beforeFrameUpdatedByIdle = abi?.particle?.beforeFrameUpdatedByIdle;
     this.debugUsesNativeLogger = abi?.particle?.debugUsesNativeLogger;
     this.stateArgumentsReadFrame = abi?.particle?.stateArgumentsReadFrame;
     this.stateCopiesRawWords = abi?.particle?.stateCopiesRawWords;
@@ -301,6 +302,7 @@ export class ParticleScriptInstance {
     return readPTCLQuad(this.quads, index * 112);
   }
   finishNativeTaskFrame() {
+    if (this.beforeFrameUpdatedByIdle) this.before = this.frame;
     if (!this.refBuffers || !this.nativeTaskBuffers) return;
     this.before = this.frame;
     if (this.externalDraw || this.refBuffers.get('depthPairs') === null) return;
