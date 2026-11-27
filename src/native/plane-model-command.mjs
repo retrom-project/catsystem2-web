@@ -43,6 +43,11 @@ export class NativePlaneModelCommands {
       throw new Error('Native KX2 requires a target and filename format');
     const target = nativeDataArgument(args, machine, 0);
     if (!target && id !== 0x18f) return nativeReply(2);
+    if (id === 0x18e || id === 0x18f) {
+      const owner = world.resolveTaskID(target, task.id);
+      if (owner === null || world.objects.objects.get(owner)?.kind !== 2)
+        throw new Error('Native Plane trail requires a reviewed Plane receiver');
+    }
     const a = Array.from({ length: modelCommands.get(id) }, (_, i) =>
       nativeDataArgument(args, machine, i),
     );
