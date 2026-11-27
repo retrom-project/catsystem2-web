@@ -143,5 +143,5 @@ All four getter destinations may alias: the original copies voice, message,
 effect, then window in that order. The loaded VM test checks that final result,
 full bounded spans and surrounding canaries. Four independent C2 cold points
 restore the owned configuration and resume subsequent consumers after the old
-World closes. Together C1/C2 use 18 original target calls, 59 total GCALLs and
+World closes. Together C1/C2 use 20 original target calls, 59 total GCALLs and
 eight real Script frames; the reused true-host journal is recorded separately.
