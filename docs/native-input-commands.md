@@ -162,3 +162,21 @@ frame dispatch, factory retirement/collection, image ownership and independent
 cold restore. Main688 and the unproved serializer and physical pointer shapes
 remain protected. These Input results do not close the separate rapid-dialogue
 performance target.
+
+SDK23 Plane/Base metadata is also checked through a loaded typed Script under
+its actual ApplicationRoot. Main89–91 preserve model priority/inheritance;
+Main95–99 and 102–110 preserve button rows, explicit Base rectangles, raw
+active/source words and callback identities. A parent visibility message sends
+raw44 to its children, updates the registered Plane's enable word and recomputes
+its button phase from the actual Input active word. Main99 clears twelve button
+words while preserving button-enable state. These two policies are explicit to
+this build; the other SDK policies retain their independently verified behavior.
+Six fresh Worlds resume the same loaded VM across visibility, clear/rebind and
+child-before-parent retirement. The normal hint in this proof is an independent
+sibling; it does not qualify cyclic ancestor hint graphs.
+
+This metadata fixture does not deliver a key or qualify application binding
+publication. The SDK23 application publisher is statically identified, but it
+belongs to the complete WinMain aggregate rather than the smaller Root/View
+controller. A real Device row-setter port is a distinct qualification boundary;
+passing a normal record to that API cannot be described as executing WinMain.

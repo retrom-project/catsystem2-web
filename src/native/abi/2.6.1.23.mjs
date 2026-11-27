@@ -1828,6 +1828,8 @@ export default {
     planeInheritanceUsesRenderer: true,
     planeResetReleasesTrackedInput: true,
     planeUsesLegacyButtonStates: true,
+    planeClearInputClearsButtonRows: true,
+    planeVisibilityUpdatesInput: true,
     planeImageSelectorHidesTarget: true,
     planeTrailUsesScalarWords: true,
     planeUsesLegacyColoredKX2: true,

@@ -748,6 +748,8 @@ export class NativeGraphicTask {
     this.planeGraphInputEnablesButton = Boolean(abi?.planeGraphInputEnablesButton);
     this.planeInputRequiresRootReply = Boolean(abi?.planeInputRequiresRootReply);
     this.planeClearInputClearsButtonRows = Boolean(abi?.planeClearInputClearsButtonRows);
+    this.planeVisibilityUpdatesInput =
+      record.kind === 2 && Boolean(abi?.planeVisibilityUpdatesInput);
     this.planeEmptyGraphRequiresMode1 = Boolean(abi?.planeEmptyGraphRequiresMode1);
     this.planeAlphaRequiresGraph = Boolean(abi?.planeAlphaRequiresGraph);
     this.planeUsesLegacyTexturedKX2 = Boolean(abi?.planeUsesLegacyTexturedKX2);
@@ -1291,6 +1293,10 @@ export class NativeGraphicTask {
         }
         this.setInputDisplay();
         this.sync();
+        if (this.planeVisibilityUpdatesInput) {
+          await this.updateVisibleInput(l);
+          await this.broadcast(48, w, l, context);
+        }
         return 0;
       case 48:
         this.state.renderPaused = !l;
@@ -1307,6 +1313,7 @@ export class NativeGraphicTask {
           );
         this.sync();
         this.setInputDisplay();
+        if (this.planeVisibilityUpdatesInput) await this.updateVisibleInput(l);
         await this.broadcast(48, w, l, context);
         return 0;
       case 49:
@@ -1827,6 +1834,20 @@ export class NativeGraphicTask {
     return this.world.sendNativeEngine(this.state.receiver, this.record.id, message, w, l, {
       ...context,
     });
+  }
+  async updateVisibleInput(display) {
+    const region = this.input?.get(this.record.id);
+    if (this.state.buttonEnabled && region) {
+      region.enabled = this.state.shown && Boolean(display);
+      if (!region.enabled) region.active = 0;
+      this.input.changed = true;
+    }
+    if (this.state.phase !== 3) {
+      if (region?.active && this.state.button?.[3]) await this.selectButton(1);
+      else if (this.state.button?.[0]) await this.selectButton(0);
+    }
+    if (!display && this.state.imageIndex !== -1)
+      await this.world.sendNativeEngine(this.state.imageIndex, this.record.id, 47, 0, 0);
   }
   setInputDisplay() {
     const region = this.input?.get(this.record.id);
