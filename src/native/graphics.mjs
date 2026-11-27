@@ -73,6 +73,7 @@ const WHITE = { width: 1, height: 1, rgba: new Uint8Array([255, 255, 255, 255]) 
 const UNVERIFIED_REGISTRATION = 'unverified';
 const hasRegistration = (graph) =>
   graph && (typeof graph.registrationEnabled === 'boolean' || graph.registrationEnabled === null);
+const hiddenMeshRegistration = (graph) => graph.mesh && graph.registrationEnabled === false;
 function nativeTexturePageOptions(graphics) {
   const settle = () => {
     const text = graphics.world.text;
@@ -485,7 +486,10 @@ export class NativeGraphics {
       matrix: Array.from({ length: 16 }, (_, i) =>
         view.getFloat32(MOTION_ABI.matrix + i * 4, true),
       ),
-      display: graph.style?.shown !== false && view.getInt32(MOTION_ABI.display, true) !== 0,
+      display:
+        graph.style?.shown !== false &&
+        !hiddenMeshRegistration(graph) &&
+        view.getInt32(MOTION_ABI.display, true) !== 0,
       registrationWord: graph.registrationWord,
     };
   }
@@ -914,7 +918,7 @@ export class NativeGraphicTask {
       blendMode: this.state.blendMode,
       nativeGraph: this.graph,
       nativeTaskWorldID: this.record.id,
-      visible: plane.visible && this.state.shown,
+      visible: plane.visible && this.state.shown && !hiddenMeshRegistration(this.graph),
     });
     if (this.graph.colors?.length === 1) plane.color = this.graph.colors[0];
   }
@@ -1560,6 +1564,7 @@ export class NativeGraphicTask {
           bounds = nativeMeshBounds(mesh),
           candidate = {
             type: 3,
+            registrationEnabled: false,
             mesh,
             bounds,
             width: bounds.maximum[0] - bounds.minimum[0],
@@ -1571,9 +1576,8 @@ export class NativeGraphicTask {
         // releasing the old model. Main83 explicitly removes the old key.
         if (policy?.rejectOccupiedModel && this.graph) return undefined;
         if (policy?.rejectOccupiedModel) this.unload();
-        // A newly registered divided model starts hidden, including a
-        // replacement of a previously shown model. Main92 shows it again.
-        this.state.shown = false;
+        // Only the new model registration starts hidden. The Plane's own
+        // visibility survives loading and still gates later child notifications.
         this.makeGraph(candidate);
         this.state.rect = rect;
         this.state.drawType = drawType;
@@ -1951,6 +1955,7 @@ export class NativeGraphicTask {
     if (
       !inputGraph ||
       !state.shown ||
+      hiddenMeshRegistration(inputGraph) ||
       inputGraph.renderEnabled === false ||
       !new DataView(inputGraph.kx2.buffer).getInt32(MOTION_ABI.display, true)
     )
