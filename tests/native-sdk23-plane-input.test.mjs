@@ -152,3 +152,30 @@ test('SDK23 rejects an unqualified ancestor hint cycle before changing the retai
     await w.close({ flushFiles: false });
   }
 });
+
+test('SDK23 static raw43/44 gate keeps raw83-only registration distinct from raw67 button enable', async () => {
+  const w = await make();
+  try {
+    const t = await w.spawnScript('input-g1', { initialExecute: false });
+    await w.runtime.native('main', 209, [512], t.machine, t);
+    await step(w, t, 0);
+    const childID = t.machine.load(68),
+      child = w.graphics.get(w.resolveTaskID(childID, t.id));
+    const call = (id, args) => w.runtime.native('main', id, args, t.machine, t);
+    await call(95, [childID, 0x21]);
+    const region = w.inputFor(t.id).get(child.record.id);
+    assert.equal(child.state.buttonEnabled, false);
+    await call(92, [childID, 0]);
+    assert.equal(
+      Number(region.enabled),
+      1,
+      'raw83 registers but does not set the raw67 button gate',
+    );
+    await call(96, [childID, 0x31, 512]);
+    assert.equal(child.state.buttonEnabled, true);
+    await call(92, [childID, 0]);
+    assert.equal(Number(region.enabled), 0);
+  } finally {
+    await w.close({ flushFiles: false });
+  }
+});

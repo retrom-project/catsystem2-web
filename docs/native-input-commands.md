@@ -168,7 +168,8 @@ its actual ApplicationRoot. Main89–91 preserve model priority/inheritance;
 Main95–99 and 102–110 preserve button rows, explicit Base rectangles, raw
 active/source words and callback identities. A parent visibility message sends
 raw44 to its children, updates the registered Plane's enable word and recomputes
-its button phase from the actual Input active word. Main99 clears twelve button
+its button phase from the actual Input active word. The Input enable message is
+gated by raw67 button-enable state: raw83-only registration does not set it. Main99 clears twelve button
 words while preserving button-enable state. These two policies are explicit to
 this build; the other SDK policies retain their independently verified behavior.
 Six fresh Worlds resume the same loaded VM across visibility, clear/rebind and

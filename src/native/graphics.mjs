@@ -1856,6 +1856,9 @@ export class NativeGraphicTask {
       await this.world.sendNativeEngine(this.state.imageIndex, this.record.id, 47, 0, 0);
   }
   setInputDisplay() {
+    // SDK23 raw43/44 only sends Input enable messages after raw67 enabled
+    // its button state. A Base-style raw83 registration does not set that flag.
+    if (this.planeVisibilityUpdatesInput && !this.state.buttonEnabled) return;
     const region = this.input?.get(this.record.id);
     if (!region) return;
     const parent = this.graphics.get(this.record.parent),
