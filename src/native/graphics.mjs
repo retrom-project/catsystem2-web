@@ -924,7 +924,6 @@ export class NativeGraphicTask {
     if (this.graph.colors?.length === 1) plane.color = this.graph.colors[0];
   }
   unload() {
-    this.trail?.close();
     this.graph = null;
     // Model release does not overwrite the separate Plane metadata words.
     this.sync();
@@ -1275,7 +1274,9 @@ export class NativeGraphicTask {
         return 0;
       }
       case 79:
-        this.trail.configure(w ? Array.from({ length: 13 }, (_, i) => load(l + i * 4)) : null);
+        await this.trail.configure(
+          w ? Array.from({ length: 13 }, (_, i) => load(l + i * 4)) : null,
+        );
         return 0;
       case 80:
         this.trail.pushSample(bytes(l, 128));
@@ -2111,6 +2112,7 @@ export class NativeGraphicTask {
   }
   closeGraph() {
     this.input?.unregister(this.record.id);
+    this.trail?.close();
     this.unload();
     this.graphics.tasks.delete(this.record.id);
   }

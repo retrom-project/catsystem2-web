@@ -1200,7 +1200,6 @@ export default {
     planeUsesLegacyColoredKX2: true,
     planeKx3UsesLegacyReceiver: true,
     planeTrailUsesScalarWords: true,
-    planeTrailUsesShapeWords: true,
     planeTrailMatrixMultiplySSE: true,
     planeModelPathClearsOnMissingCategory: true,
     planeEmptyGraphRequiresMode1: true,

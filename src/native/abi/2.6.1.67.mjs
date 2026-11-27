@@ -1419,7 +1419,6 @@ export default {
     planeMovieLegacy: true,
     tilePlaneRequiresEmptyOwner: true,
     planeTrailUsesScalarWords: true,
-    planeTrailUsesShapeWords: true,
     planeTrailMatrixMultiplySSE: true,
     planeUsesLegacyTexturedKX2: true,
     planeUsesLegacyColoredKX2: true,
