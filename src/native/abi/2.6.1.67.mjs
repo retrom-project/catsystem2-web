@@ -1472,7 +1472,6 @@ export default {
     bitmapBlitUsesSourceSize: true,
     screenCaptureOpaque: true,
     sameSizeBitmapCopyClips: true,
-    savedImageExpandsRGB24: true,
   },
   startup: {
     resourceCheck: 'before-defaults',

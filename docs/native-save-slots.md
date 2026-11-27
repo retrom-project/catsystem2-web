@@ -81,3 +81,19 @@ Comparisons exclude the ignored process pointer in nested raw headers and the
 string serializer's eight unwritten trailing bytes. The original lookup scans
 allocated capacity; this corpus uses present records and does not establish
 defined results for absent IDs in an uninitialized tail.
+
+Main241 stores an HG2 image entry; Main251 decodes it into a separate,
+Script-owned bitmap. A normal four-stage case covers authored asymmetric
+RGB24/RGBA32 resources, source mutation/disposal, a CSS writer and fresh reader,
+container disposal, subsequent bitmap mutation and explicit release. The ordinal
+loader already expands RGB24 before Main241. A separate raw-byte HG2 RGB24 entry
+therefore exercises Main251's own conversion: the resulting bitmap has four-byte
+pixels with opaque alpha. This conversion is shared across the five supported
+builds; the SDK23 execution and the other builds' wrapper/conversion-body evidence
+are separate qualifications. No version capability flag is needed.
+
+[sdk23-global-css-images.test.mjs](../tests/sdk23-global-css-images.test.mjs)
+checks all image pixels and defined geometry, six independent cold continuations
+and the other four builds' current VM bridge. Compressed HG2 representations can
+differ while decoding identically. These cases do not establish arbitrary image
+formats, GPU presentation or additional CSS task-tree layouts.

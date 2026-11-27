@@ -1275,7 +1275,6 @@ export default {
     bitmapBlitUsesSourceSize: true,
     screenCaptureOpaque: true,
     sameSizeBitmapCopyClips: true,
-    savedImageExpandsRGB24: true,
     resizeRGB24: true,
     screenEffectBlurUsesSSE: true,
     screenEffectRectangleUsesLogicalCapture: true,
