@@ -14,25 +14,29 @@ import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mj
 const golden = JSON.parse(
   await readFile(new URL('./fixtures/native-sdk67-plane-trail.json', import.meta.url)),
 );
-const code = kcsProgram(
-  golden.cases
-    .filter((r) => r.id)
-    .flatMap((r) => [
-      ...r.args.map((a) => [37, typeof a === 'string' ? [0x13, a === 'caller' ? 2300 : 2304] : a]),
-      [43, r.id, r.args.length * 4],
-      ...(r.control === 1 ? [[38, 2304]] : []),
-      [37, 3968],
-      [43, 71, 4],
-      [38, 2360],
-    ])
-    .concat([[59]]),
-);
-async function make(init = true) {
+const code = (rows) =>
+  kcsProgram(
+    rows
+      .filter((r) => r.id)
+      .flatMap((r) => [
+        ...r.args.map((a) => [
+          37,
+          typeof a === 'string' ? [0x13, a === 'caller' ? 2300 : 2304] : a,
+        ]),
+        [43, r.id, r.args.length * 4],
+        ...(r.control === 1 ? [[38, 2304]] : []),
+        [37, 3968],
+        [43, 71, 4],
+        [38, 2360],
+      ])
+      .concat([[59]]),
+  );
+async function make(init = true, rows = golden.cases) {
   const xml = parseNativeXML(encodeCP932(golden.startupXML)),
     w = await dataWorld(
       golden.profile,
       {
-        'trail.kcs': code,
+        'trail.kcs': code(rows),
         ...Object.fromEntries(
           Object.entries(golden.resources).map(([n, b]) => ['models.int/' + n, Uint8Array.from(b)]),
         ),
@@ -109,7 +113,7 @@ async function step(w, t, row) {
   } else {
     if (row.sample !== undefined)
       for (const [at, values] of [
-        [1024, [1, 2, 0]],
+        [1024, [1, 2, row.sampleBaseZ ?? 0]],
         [1040, [10 + row.sample, 9, 0]],
         [1056, [0.5, 1, 1]],
         [1080, Array.from({ length: 16 }, (_, i) => (i % 5 === 0 ? 1 : 0))],
@@ -217,6 +221,23 @@ test('SDK67 configure-before-show samples registration display and cold clones p
     assert.equal(restored.state.trail.graphs[0].registrationWord, 1);
     await restored.message([0, 79, 0, 0]);
     assert.equal(restored.state.trail, null);
+  } finally {
+    if (fresh) await close(fresh);
+    await close(w);
+  }
+});
+
+test('SDK67 positive shape producer feeds finite strip consumers before and after independent cold', async () => {
+  const rows = golden.positive.cases,
+    w = await make(true, rows);
+  let fresh;
+  try {
+    const t = await caller(w);
+    for (let i = 0; i <= golden.positive.coldAfter; i++) await step(w, t, rows[i]);
+    fresh = await make(false, rows);
+    await fresh.restore(await deserializeCheckpoint(await serializeCheckpoint(w.snapshot())));
+    for (const row of rows.slice(golden.positive.coldAfter + 1))
+      await step(fresh, fresh.runtime.scheduler.tasks.get(t.id), row);
   } finally {
     if (fresh) await close(fresh);
     await close(w);
