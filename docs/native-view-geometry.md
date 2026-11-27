@@ -44,7 +44,27 @@ The own-build View queries and three distances are replayed by
 continuations per build. The new host attaches its own logical device before
 restore: device endpoints are not checkpoint data. These query/store and
 COM-memory observations do not prove GPU pixels, Stage presentation, other
-distance shapes or occupied mesh replacement.
+distance shapes or GPU presentation. The configured mesh lifecycle is qualified
+separately in `native-legacy-owned-collector.test.mjs`.
+
+In SDK63 and SDK67, Main467 packs the mapped 64-byte XYZ/UV columns into
+80-byte records for native Plane message80 (shared semantic message83).
+The own registration code first constructs a candidate, then discards it if
+the key already exists. Main83 explicitly unloads that model; the next Main467
+can register a replacement. Normal Base deletion releases the model and its
+private source buffers. The wrapper leaves each color DWORD unwritten; the
+reviewed model consumer selects uniform white independently of those bytes.
+Finite vertex records and an actual mode1 Plane are required. Missing,
+out-of-grid and untextured-page sampling remain protected at drawing, while
+unreviewed receiver and record shapes are protected before registration.
+
+The configured replay uses real Top/Draw/Plane factories, Root logic and draw
+phases, and the original View's COM submissions. It compares initialized texture
+bytes, vertices, software raster state and eight cold continuations per build.
+SDK67 Main115 is admitted here for copies from an owned bitmap to VRAM;
+other destination handles still require their own qualification. COM memory
+and successful virtual Present are distinct from physical GPU pixels or Stage
+presentation; those scopes remain open.
 
 During migration, the injected `syncViewGeometry` capability in
 [`oracle/transitional-exe.mjs`](../oracle/transitional-exe.mjs) projects JS state

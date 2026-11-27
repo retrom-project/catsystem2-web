@@ -93,7 +93,7 @@ for (const version of ['63', '67']) {
             if (before[i] !== m.memory[i]) changed.push([i, m.memory[i]]);
           assert.equal(reply.control, row.control, 'original GCALL control');
           if (!row.save)
-            assert.equal(Object.hasOwn(reply, 'result'), false, 'no result publication');
+            assert.equal(Object.hasOwn(reply, 'value'), false, 'no result publication');
           assert.deepEqual(changed, row.changed, 'exact original output writes');
           return reply;
         };

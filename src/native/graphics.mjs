@@ -1904,11 +1904,18 @@ export class NativeGraphicTask {
     }
     if (inputGraph.mesh || inputGraph.vram) {
       this.graphics.initializeTextures();
+      const pages = nativeTexturePageStorage(this.graphics.texturePages);
+      if (
+        inputGraph.mesh &&
+        nativeABI(this.world.profile).graphics.dividedMesh?.requiresTexturePages &&
+        inputGraph.mesh.some(({ textureID }) => textureID < 0 || !pages.pages.has(textureID))
+      )
+        throw new Error('Divided mesh draw requires reviewed allocated texture pages');
       const triangles = nativeTexturedGeometry(
         inputGraph,
         state,
         this.graphics.projection(),
-        nativeTexturePageStorage(this.graphics.texturePages).layout,
+        pages.layout,
         (graph, vertices, triangle) => this.graphics.effectVertices(graph, vertices, triangle),
       );
       const options = {

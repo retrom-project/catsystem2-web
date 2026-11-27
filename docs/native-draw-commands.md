@@ -1,5 +1,20 @@
 # Retained drawing commands
 
+SDK63/67 keep the native raster gate separate from output enablement and pixel
+dirty state. Actual factory-created Top/Draw children are checked through Base
+logic/draw traversal: a zero raster gate skips source update and raster work;
+an enabled gate can update the software bitmap while output is disabled.
+
+For these two builds, a nonzero pending-output word copies the whole initialized
+bitmap into the View, even when only part of it was rasterized. Limiting that
+copy to the dirty region would preserve stale texture pixels outside the region.
+The pending word is consumed after output; it and the independent raster gate
+survive current checkpoints. Other builds keep their existing output policy.
+The own-build collector tests compare software pixels, COM texture bytes and
+vertices across replacement and deletion, with eight cold continuations per
+build. Their virtual COM Present acknowledges memory operations only; it does
+not establish physical GPU, Stage or capture behavior.
+
 Main 2C3 and 2C4 pass a JS retained-source handle to Draw. The
 arguments are the target task, entry index, opaque handle, two position words,
 two base words, rotation, two scale words, alpha, visibility and transform

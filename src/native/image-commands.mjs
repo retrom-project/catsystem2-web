@@ -123,6 +123,8 @@ export class NativeImageCommands {
     }
     if (id === 0x73 || id === 0x74) {
       if (!a(5) || (id === 0x74 && !h)) return done();
+      if (id === 0x73 && h && nativeABI(this.world.profile).graphics.bitmapCopyToVRAMOnly)
+        throw new Error('Bitmap copy destination requires its reviewed VRAM owner');
       await bitmapTransfer(
         this.world,
         h ? images.get(h) : null,

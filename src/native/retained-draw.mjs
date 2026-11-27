@@ -921,7 +921,12 @@ export class NativeRetainedDraw {
             frame: async () => frame,
           },
           draw.state.offset,
-          forceOutput || (!areas.length && draw.state.pending) ? null : area,
+          forceOutput ||
+            (draw.state.pending &&
+              (!areas.length ||
+                nativeABI(this.world.profile).graphics.drawPendingCopiesWholeBitmap))
+            ? null
+            : area,
           {
             flipY: true,
             retained: tracksTexture
