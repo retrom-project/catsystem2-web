@@ -1360,7 +1360,6 @@ export default {
     bitmapResizeUsesLegacyCells: true,
     bitmapResizeRequiresCanvas: true,
     bitmapCompositeUsesLegacyRows: true,
-    drawBitmapChangesInvalidateItems: false,
     bitmapToneSkipsNeutralOwner: true,
     bitmapAlphaQueryRequiresOwner: true,
     renderSourcesDeferProgram: true,

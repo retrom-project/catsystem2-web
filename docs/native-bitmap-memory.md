@@ -765,9 +765,20 @@ These are finite normal forms, not proof of arbitrary overlap, formats or modes.
 A kind15 Draw created by Main66/Main256 consumes the same actual bitmap data
 through Main257 and software Main340. Source pixel writes alone leave that
 entry's cached Draw output intact; only an explicit entry invalidation or
-rebind selects a redraw. Both builds therefore disable the shared automatic
-bitmap-revision-to-Draw-dirty step. Pixel access, revision updates, explicit
-areas/force, P2 loans and other builds retain their existing behavior.
+rebind selects a redraw. The first implementation used a 63/67-only flag;
+that distinction is withdrawn. Own SDK23 and modern74/76 cached-Draw consumers
+and bitmap fill/tone writers also separate pixel storage from entry dirty
+regions. The shared implementation now preserves that separation, for both
+direct bitmap entries and retained bitmap sources. Bitmap generations still
+invalidate pixel/texture caches, while explicit entry updates, source identity,
+ANM output and owner rebuilds invalidate Draw composition. P2 loans, output,
+flush and native file layouts are unchanged.
+
+The older differential oracle included bitmap revision in its binding signature
+and rebound the native entry when pixels changed. Those observations cannot
+independently prove that a native bare write notifies Draw. The 63/67 normal
+GCALL/Root evidence remains valid; the other builds' comparison is static,
+with current real-GCALL/Root/cold controls rather than new original execution.
 
 Main118 makes an independent copy. Draw keeps shared data after its creator
 bitmap is released, while replacement/removal releases the former data at the
