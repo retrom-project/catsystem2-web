@@ -88,7 +88,18 @@ export async function replayModernTile(t, build) {
         row.random.wordsSha256,
         row.label + ' full RNG bank',
       );
-      if (['start-four-players', 'cache-event', 'poll-2', 'release-first'].includes(row.label)) {
+      if (
+        [
+          'start-four-players',
+          'cache-event',
+          'poll-2',
+          'release-first',
+          'cache-winning-choices',
+          'cache-winning-event',
+          'decode-nonempty-result-0',
+          'explicit-valid-payment',
+        ].includes(row.label)
+      ) {
         const state = await deserializeCheckpoint(await serializeCheckpoint(world.snapshot()));
         const model = world.tileGame.snapshot();
         await world.close({ flushFiles: false });

@@ -42,6 +42,15 @@ recorded as those states, not as nonempty scoring or gameplay evidence. Each
 it is not a polymorphic Task with a kind or message receiver. Tile Plane commands
 and their graphical resources have a separate interface and verification scope.
 
+Modern positive-cache checks deal a normal four-player hand, select an authored
+winning arrangement using the actual last-drawn tile, and move existing tiles
+through public reference-swap and sort commands. They preserve the complete
+inventory and do not inject model or hand fields. Each build's 113 full GCALLs
+cover nonempty choice decoding, cached event replay, self-drawn settlement,
+score/result decoding and an explicit payment. Independent cold checkpoints
+resume those nonempty caches. These finite inputs do not cover every ability,
+deal policy, pointer alias or command-state combination.
+
 SDK 2.6.1.23, 2.6.1.63 and 2.6.1.67 emit a pre-action ability notification only when the automatic
 activation helper activates an ability. An already pending explicit human
 ability does not insert that notification into the ordinary discard sequence.
