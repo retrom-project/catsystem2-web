@@ -1,5 +1,32 @@
 # Native FES task protocol
 
+SDK23 Main449/450/451/647 now have normal factory-loaded Script/FES and
+retained-Draw consumers. The caller establishes Main260 output coordinates and
+writes the complete borrowed Draw bitmap before wake can force-copy it. ALT and
+missing-label replies, the `_SAVEOBJ_` value, delayed Root decoding, replacement
+attachment and native retirement are distinct from physical GPU presentation.
+Earlier local runs missing the Draw-output initialization remain unqualified;
+their successful native returns do not establish initialized pixels or offsets.
+
+The SDK23 sleep receiver masks its retained resources and redraws on wake; it
+does not invoke `_FES_SLEEP_` or `_FES_WAKE_`. Its own raw313→425900 body and a
+loaded source with both handlers prove that private0 remains0. The Web path
+previously fired the wake handler and wrote222. SDK63 retains its existing mask
+policy. SDK67 and ee6-76 explicitly call these labels in44b160/62e1b0 and keep
+that behavior. Independently, the23/63/67 sleep receivers return0 while ee6-76
+returns1, with no reply-scratch store. Main647 consumes that transport status and
+still returns control2 with no VM value. Current checkpoints cover both axes;
+the extra63 contrast uses a normal owned Main71 carrier because Main65 remains
+protected on that build.
+
+Main649/650 operate on the currently selected private bank. The SDK23 ordinary
+positive uses a real FES `execkcs` child, whose normal loader registers an
+inherited Script context. Its2048 initialized bytes are copied to an owned CSS
+record, changed, restored, consumed by later VM reads, and released before the
+child and FES retire. Missing records return0. This does not qualify an absent
+private context or raw address access. Four independent current checkpoints
+cover live CSS, restored words, child retirement and final owner cleanup.
+
 `createNativeFESTask` owns one FES interpreter, its private variable context,
 string-bank reference, retained surface, display state and image-data cache.
 KCS calls use task messages through the World's Top-scoped router. They do not

@@ -653,7 +653,7 @@ export function createNativeFESTask(world, record) {
           this.sleepValue = lParam;
           await world.graphics.setFESSleep(record, this.player, lParam, context);
         }
-        context.nativeUnhandled = true;
+        context.nativeUnhandled = nativeABI(world.profile).fes.sleepMessageUnhandled !== false;
         return NATIVE_UNWRITTEN_WORD;
       }
       if (message === 343 || message === 344) {

@@ -1162,6 +1162,7 @@ export default {
     mxcsr: null,
   },
   fes: {
+    sleepMessageUnhandled: false,
     motionUpdateAfterDecode: true,
     nativeQueueYieldStopsNotification: true,
     emptyExecReturnsZero: true,

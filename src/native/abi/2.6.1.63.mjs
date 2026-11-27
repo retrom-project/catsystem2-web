@@ -1002,6 +1002,7 @@ export default {
     variableBankOffset: 1800,
     buttonDrawNoop: true,
     legacySleepMask: true,
+    sleepMessageUnhandled: false,
     // Own DEFINE and dynamic factory indexes. The internal object codes use
     // the shared representation, which has an additional CHTABLE3 member.
     definitionTypes: [

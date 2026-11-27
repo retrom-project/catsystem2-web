@@ -744,7 +744,8 @@ const mainEvidence = [
   },
   {
     ids: [450, 451],
-    value: 'Own 2.6.1.23 FES raw 306 addresses a label; raw 307 retains the save-object DWORD',
+    value:
+      'Own 2.6.1.23 FES raw306 addresses a label; raw307 retains the save-object DWORD. True loaded FES/Script consumers prove ALT and missing-label replies, later ordinary Root decode and the actual _SAVEOBJ_ expression returning9 after Main451. The real retained Draw has an explicit output offset and fully initialized borrowed bitmap before wake force-copy. Current VM and independent cold preserve replies, rebind and normal retirement; this is CPU/COM-memory qualification, not GPU output.',
   },
   {
     ids: [630],
@@ -754,7 +755,7 @@ const mainEvidence = [
   {
     ids: [645, 646, 647],
     value:
-      'Own 2.6.1.23 raw FES 311–313 select the private 512-word bank or change the sleeping state',
+      'Own 2.6.1.23 raw FES311–313 select the private512-word bank or change sleep. Raw313 at0x422a2e calls0x425900 and masks resources without named _FES_SLEEP_/_FES_WAKE_ callbacks. Two explicit handlers leave private0 unchanged in29 full GCALLs/3 Root Frames; the previous Web branch wrote222. Own23/63/67 sleep receivers return0, unlike ee6-76 raw342 returning1; all leave reply scratch unwritten. Main647 still returns control2 without a VM word. Current VM/cold retain the independent callback/control differences;645/646 retain their accepted bank evidence.',
   },
   {
     ids: [207, 294, 295, 296, 586],
@@ -859,7 +860,7 @@ const mainEvidence = [
   {
     ids: [315, 316, 317, 387, 388],
     value:
-      'Own 2.6.1.23 motion save wrappers 0x482690–0x4827a0, 0x4841d0 and 0x484ab0, serializer 0x596780 and reload 0x597ba0',
+      'Own 2.6.1.23 motion save wrappers0x482690–0x4827a0/0x4841d0/0x484ab0 and serializer0x596780/reload0x597ba0. Reuse the accepted true-host G3-CSS group: loaded MOT capture, empty refresh retaining capacity, original CSS writer/reader, new manager and later MOT update, detached checkpoint, missing record and release;24 target/35 all GCALLs and8 current cold. These are MOT checkpoint owners, not physical task-memory access.',
   },
   {
     ids: [143],
@@ -889,7 +890,7 @@ const mainEvidence = [
   {
     ids: [21, 45, 278, 540],
     value:
-      'Own 2.6.1.23 narrow compare 0x48ac50, live replace 0x48b610, own-bank expansion 0x483040 and raw space token offset 0x47a0c0',
+      'Own 2.6.1.23 narrow compare0x48ac50, live replace0x48b610, own-bank expansion0x483040 and raw-space token offset0x47a0c0. Main278 also has a true factory-loaded VM/full Root bridge: CP932 $str3 expands into the initialized caller span and agrees through independent current cold; other entries retain their existing evidence.',
   },
   {
     ids: [434, 435, 436, 437, 438],
@@ -899,7 +900,7 @@ const mainEvidence = [
   {
     ids: [570, 571, 572],
     value:
-      'Own 2.6.1.23 directed task notifications 0x482eb0/0x482ee0/0x482f40 send raw 400/403/402; 403 copies one host word or zero',
+      'Own 2.6.1.23 directed task notifications0x482eb0/0x482ee0/0x482f40 send raw400/403/402;403 copies one host word or zero. A real loaded Script self-target receives570/571-null/572, returns control2 without a VM output and continues unchanged. Its receiver0x452f60 ignores them. This is an ignored-recipient shape, not a working special consumer; nonzero571 ownership and other recipients remain open.',
   },
   {
     ids: [243, 253],
@@ -928,7 +929,7 @@ const mainEvidence = [
   {
     ids: [649, 650],
     value:
-      'Own 2.6.1.23 wrappers 0x4842e0 and 0x484e70 use raw FES 314 and 315 for the selected 512-word CSS bank',
+      'Own 2.6.1.23 wrappers0x4842e0/0x484e70 use raw FES314/315 for the selected512-word bank. A real FES execkcs creates the inherited parsed Script and registers its context;45 full GCALLs/7 Root Frames prove649 writes the complete initialized2048B CSS record,650 restores changed words to that context and returns1, an absent record returns0, and later global consumption, CSS release, child self-retirement and FES collection succeed. Current VM and4 independent cold agree. An absent private context or arbitrary physical pointer is not qualified.',
   },
   {
     ids: [285, 286],
@@ -1037,7 +1038,7 @@ const mainEvidence = [
   {
     ids: [218, 653, 654, 655],
     value:
-      'Own 2.6.1.23 rectangle wrapper 0x486200 intersects a guest RECT; Plane wrappers 0x47fac0–0x47fc1f send raw 79–81 to 0x46a940',
+      'Own 2.6.1.23 rectangle wrapper0x486200 intersects a guest RECT; Plane wrappers0x47fac0–0x47fc1f send raw79–81 to0x46a940. True loaded VM/full Root now bridges normal kind2/selector17 and bounded CP932 strings through current cold. Raw80/81 are explicit empty simple-Plane branches, separate from the raw79 selector writer and unproved file-model/GPU consumers. Main218 retains its independent evidence.',
   },
   {
     ids: [852],
@@ -1706,6 +1707,8 @@ export default {
     mxcsr: null,
   },
   fes: {
+    legacySleepMask: true,
+    sleepMessageUnhandled: false,
     motionUpdateAfterDecode: true,
     nativeQueueYieldStopsNotification: true,
     emptyExecReturnsZero: true,
