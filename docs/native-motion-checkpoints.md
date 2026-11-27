@@ -69,8 +69,23 @@ write individual fields, build a matrix, or copy opaque bytes without first
 reading them; only an actual read of unknown bytes is diagnosed. Fully known
 banks use a null mask. Internal checkpoints preserve masks for the manager and
 any MOT VM region receiving an opaque copy, including after independent cold
-restore. Earlier builds keep their existing initialization policy until their
-own constructor chain is reviewed.
+restore. Other earlier builds keep their existing initialization policy until
+their own constructor chain is reviewed.
+
+The own 2.6.1.23 constructor and loaded Script/MOT chain now establish the same
+unwritten working-bank and record object/frame domains. Its Main309 returns the
+stored active DWORD, while group and manager busy queries remain boolean. The
+current snapshot preserves these masks through deferred execution and finish;
+an original unwritten domain is never promoted to a numeric initial value.
+The [SDK23 manager fixture](../tests/fixtures/sdk23-motion-manager-golden.json)
+uses the real CRT, ApplicationRoot, mounted KCS resources and typed Script VM to
+cover bank copies, formatted loads, copied registers/extra data, finite speed
+and frame inputs, skip/finish, replacement and explicit manager deletion.
+Current replay includes independent cold restores before and after these
+transitions. Direct authored MotionInstance construction keeps its explicit
+initial state. Source-cache invalidation and attached object lifetimes require
+their separate ownership qualification; this bank/record fixture does not
+establish every Main295 side effect or all filename shapes.
 
 The modern knowledge fixture links actual Main294/303/304/307/295 calls through
 the original file-server registration, mounted loose reader, KCS/zlib parser

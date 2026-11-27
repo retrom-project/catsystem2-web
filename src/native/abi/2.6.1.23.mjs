@@ -1474,6 +1474,9 @@ export default {
   },
   motion: {
     managerLifetime: 'explicit-delete',
+    activeQueryUsesRawWord: true,
+    workingStartsUninitialized: true,
+    recordStartsUninitialized: true,
     addUsesFormat: true,
     nativeFilenameQuery: true,
     elapsedUsesX87: true,
