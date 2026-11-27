@@ -52,10 +52,50 @@ export class UnsupportedKCSNative extends Error {
   }
 }
 
+// These synchronous primitive families consume only the fields captured below.
+// Keep each invocation independent: guest memory or a service getter can enter
+// another native, replace services, or change the caller's selected bank.
+const primitiveIDs = new Set([
+  ...NATIVE_BANK_IDS,
+  0x2d,
+  0x207,
+  ...Array.from({ length: 4 }, (_, i) => 0x203 + i),
+]);
+const ownServiceDescriptor = Object.getOwnPropertyDescriptor;
+function primitiveService(current, key) {
+  const field = ownServiceDescriptor(current, key);
+  if (!field?.enumerable) return undefined;
+  return 'value' in field
+    ? field.value
+    : field.get
+      ? Reflect.apply(field.get, current, [])
+      : undefined;
+}
+function nativePrimitive(runtime, id, args, machine, task, current) {
+  if (id === 0x2d || id === 0x207)
+    return nativeStandard(id, args, machine, { profile: runtime.profile });
+  if (NATIVE_BANK_IDS.includes(id)) {
+    const variableExpressionContext = primitiveService(current, 'variableExpressionContext'),
+      variables = runtime.variableBank(task, id === 0xd1),
+      allowVariableInitialization = task.context.allowVariableInitialization !== false;
+    return nativeBank(id, args, machine, {
+      profile: runtime.profile,
+      variables,
+      allowVariableInitialization,
+      variableExpressionContext,
+    });
+  }
+  return nativeDictionary(id, args, machine, {
+    profile: runtime.profile,
+    handles: primitiveService(current, 'handles'),
+  });
+}
+
 // One runtime owns an ABI profile, handle space, task graph and shared memory.
 // A recovered declaration is not an implementation. Every dispatch must return
 // an explicit control reply or report an unsupported call with its guest state.
 export class NativeRuntime {
+  #primitiveServices;
   constructor({ profile, read, services = {}, shared, budget }) {
     const abi = nativeABI(profile);
     this.profile = profile;
@@ -83,6 +123,7 @@ export class NativeRuntime {
           ? (address, machine) => encodeCP932(services.format(address, machine))
           : formatNativeAt),
     };
+    this.#primitiveServices = this.services;
     this.imageDataBuffers = new NativeDataBuffers({
       memory: new NativeBufferMemory({
         resolveReference: (ref, reader) =>
@@ -273,13 +314,16 @@ export class NativeRuntime {
       );
     const key = `${table}:${id}`;
     this.calls.set(key, (this.calls.get(key) || 0) + 1);
-    let reply;
+    const primitive = table === 'main' && primitiveIDs.has(id);
+    let reply, currentServices;
     if (entry.status === 'reserved') reply = nativeReply(2);
     else if (entry.status === 'constant-zero') reply = nativeReply(1, 0);
     else if (this.handlers.has(key)) reply = this.handlers.get(key)(args, machine, task, scheduler);
+    else if (primitive && (currentServices = this.services) === this.#primitiveServices)
+      reply = nativePrimitive(this, id, args, machine, task, currentServices);
     else if (table === 'main') {
       const services = {
-        ...this.services,
+        ...(primitive ? currentServices : this.services),
         profile: this.profile,
         owner: task.id,
         contextName: task.context.contextName ?? '',
