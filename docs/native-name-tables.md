@@ -51,3 +51,21 @@ control 2 without a result. The browser guards lookups that would cross the
 allocated rows and formatted names that would overrun the 32-byte field.
 Original physical allocation and byte probes and ordinary World GCALLs
 cover the author-visible behavior and cold handle ownership.
+
+## SDK23 loaded resource consumer bridge
+
+For fixed SDK23 `9f3a5ad0…`, `sdk23-name-resources.test.mjs` N1 uses the
+qualified CRT/FileServer/controller Root and a normal Settings FES category.
+Two real Main633 owners parse a finite two-row CP932 table. Primary-name, numeric,
+field and filename-rule outputs feed later GCALL arguments; the substituted
+filename loads an actual Scene whose two text blocks are consumed after the first
+table and then both tables are destroyed. Source/query strings are overwritten
+without changing the parsed owner. SDK23 does not enable fifth-column aliases;
+its normal alias miss is distinct from canonical-name success.
+
+The original constructor frees its temporary resource buffer after building its
+owned 100-byte rows (numeric ID and three 32-byte fields). The bridge checks the
+complete VM outputs and canaries through normal release, plus five independent
+serialized World continuations. It qualifies the authored finite table and
+replacement forms; it does not add arbitrary parser, locale or format support.
+All 18 target calls matched without a production or ABI change.
