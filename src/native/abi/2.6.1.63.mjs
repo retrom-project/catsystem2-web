@@ -1173,6 +1173,13 @@ export default {
     imageOwnerBlendLocalCoordinates: true,
     imageCompositePreservesRGB24: true,
     imageCompositeFormats: ['HG2', 'HG3'],
+    imageCompositePlainFormats: ['HG2', 'HG3', 'BMP'],
+    imageCompositeBmpHeader: 40,
+    imageCompositeBmpCompression: 0,
+    bitmapOrdinalRejectedFormats: ['BMP'],
+    ninePieceEmptyFormats: ['BMP'],
+    unsupportedRasterFormatsAreGuarded: true,
+    formattedBitmapDefersAlphaQuery: true,
     ninePieceTransparentEdges: true,
     formattedBitmapPhysical: true,
     emptyImageSizeWritesZero: true,
@@ -1305,7 +1312,7 @@ export default {
         {
           ids: renderSourceOperations,
           value:
-            'Own SDK63 true resource/allocator/View/Script GCALLs compare72-byte arrays withtag1 bitmap andtag2 actual196-byte source constructor5222b0, nine-word metadata and two valid ordinal frames. The initialized Draw retains that source through caller array release, normal transform updates, explicit ANM load/missing ANM no-change, signed layer and bitmap/encoded packet binding, software output and actual Script retirement. Twenty-one target and twenty-three dependency calls preserve tags/untouched name words, control/result, source refs and every selected bitmap pixel. Follow-up G6 qualifies two-frame HG2 inputs with CP932 names and preserves the actual ImageOwner holder when encoded replacement rebuilds its retained source frames. Rasterization keeps cached source state; the normal derived draw has a separate update call. Raw addresses/unselected source words remain capture-only; other formats, enabled cadence, Base active filtering and capacity/alias shapes remain separately qualified.',
+            'Own SDK63 true resource/allocator/View/Script GCALLs compare72-byte arrays withtag1 bitmap andtag2 actual196-byte source constructor5222b0, nine-word metadata and two valid ordinal frames. The initialized Draw retains that source through caller array release, normal transform updates, explicit ANM load/missing ANM no-change, signed layer and bitmap/encoded packet binding, software output and actual Script retirement. Twenty-one target and twenty-three dependency calls preserve tags/untouched name words, control/result, source refs and every selected bitmap pixel. Follow-up G6 qualifies two-frame HG2 inputs with CP932 names and preserves the actual ImageOwner holder when encoded replacement rebuilds its retained source frames. Rasterization keeps cached source state; the normal derived draw has a separate update call. Raw addresses/unselected source words remain capture-only; other formats, enabled cadence, Base active filtering and capacity/alias shapes remain separately qualified. Own R1 canonical BMP24/32 without ANM produces a static tag1 bitmap through complete Main703/704 and exact normal ownership; the animated frame format set remains independently guarded.',
         },
         {
           ids: drawResourceOperations,
@@ -1320,7 +1327,7 @@ export default {
         {
           ids: encodedImageOperations,
           value:
-            'Own 2.6.1.63 normal Main375/428/430/431/460/648 calls run through the real CRT, mounted image FileServer, original software View and Main66/Main143 Script VM. Complete calls compare HG2/HG3 header and container words, distinct frame ordinals/IDs, RGB24 promotion, nine-piece pixels, CP932 filenames, missing-file untouched outputs, explicit encoded-buffer release and Script-owned decoded bitmaps. Main460 keeps an explicitly owned result outside the Script list and preserves primary RGB24; valid selectors compose named HG3 layers. Four supplemental Main430 calls use the actual constructor-loaded archive ANM table, separately from the earlier absent-table negative rows. Twenty-eight target and twenty-seven dependency calls include the six transformed-attribute follow-up calls; other formats, shared caller frames, empty/smaller nine-piece shapes and resource extremes remain outside this group.',
+            'Own 2.6.1.63 normal Main375/428/430/431/460/648 calls run through the real CRT, mounted image FileServer, original software View and Main66/Main143 Script VM. Complete calls compare HG2/HG3 header and container words, distinct frame ordinals/IDs, RGB24 promotion, nine-piece pixels, CP932 filenames, missing-file untouched outputs, explicit encoded-buffer release and Script-owned decoded bitmaps. Main460 keeps an explicitly owned result outside the Script list and preserves primary RGB24; valid selectors compose named HG3 layers. Four supplemental Main430 calls use the actual constructor-loaded archive ANM table, separately from the earlier absent-table negative rows. Twenty-eight target and twenty-seven dependency calls include the six transformed-attribute follow-up calls; other formats, shared caller frames, empty/smaller nine-piece shapes and resource extremes remain outside this group. Own R1 normal BMP24/32 calls distinguish zero metadata/ordinal results from a real null-storage nine-piece owner, successful plain primary bitmap and full untouched output bytes. This does not admit palette/bitfield, selector or animated raster forms.',
         },
         {
           ids: bitmapPixelOperations,
@@ -1813,7 +1820,7 @@ export default {
         {
           ids: [111, 115, 118],
           value:
-            '2.6.1.63 own scoped bitmap producer reads a space-delimited image list and numeric frame selectors, places overlays in physical bitmap coordinates and promotes RGB24. Main115 copies clipped source pixels and Main118 owns a deep bitmap clone.',
+            '2.6.1.63 own scoped bitmap producer reads a space-delimited image list and numeric frame selectors, places overlays in physical bitmap coordinates and promotes RGB24. Main115 copies clipped source pixels and Main118 owns a deep bitmap clone. Additional own R1 complete calls on canonical BMP24/32 preserve the decoder alphaHint0; Main111 does not eagerly consume the separate alpha query. Existing HG full-frame regressions remain matched.',
         },
         {
           ids: [937],

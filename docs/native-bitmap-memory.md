@@ -549,3 +549,35 @@ animation cadence, Stage/capture pixels or physical GPU behavior. Current-only
 controls cover normal collector update-before-raster, Main342 and graphics
 preparation, without counting those controls as additional original coverage.
 Other formats, foreign/shared layouts and resource extremes remain open.
+
+## SDK63/67 canonical BMP paths
+
+Each own build executes sixteen target and fifteen dependency GCALLs for
+canonical three-by-two, forty-byte BI_RGB BMP24/BMP32 resources. The actual
+CRT/Settings/FileServer/software View and typed owning Script are reused.
+All actual direct bridge setup/target/cleanup calls are separately journalled
+(77 for63,80 for67); those totals include the31 GCALL dispatches and do not
+represent extra independent business cases.
+
+The complete calls distinguish defined results: Main375/Main431 metadata and
+Main428 ordinal lookup return zero without touching the mapped output bytes;
+Main648 creates a real null-storage bitmap wrapper; plain Main460 and formatted
+Main111 produce independent initialized bitmaps; Main703/704 create and release
+a static tag1 bitmap. Selected pixels, metadata, references, automatic owner
+counts, controls and untouched memory match28 current frames and eight fresh
+internal checkpoint continuations per build. Selector BMP and animated raster
+forms are not inferred from this plain/static path.
+
+Own Main111 preserves the decoder's initially unknown alpha hint instead of
+performing a separate alpha query. An eager JS query changed that0 to1 after
+BMP24 load; the original red is retained. The own63/67 policy now defers that
+query, and existing HG bitmap/encoded regressions remain unchanged. No new
+persistent field, reader or format generation is introduced.
+
+Both build policies allow only the evidenced plain BMP header/compression
+shape; palette, bitfield and other depth/header forms still need their own
+proof. An identified `UnsupportedNativeImageFormat` retains its existing
+diagnostic and propagates as a guard for these builds, rather than becoming a
+fabricated zero result. Native-defined zero/empty outcomes above stay functional
+failure paths. Other SDK policies and ordinary decode-failure behavior retain
+their existing contracts.

@@ -1353,6 +1353,13 @@ export default {
     imageOwnerCopyRequiresBitmap: true,
     imageCompositePreservesRGB24: true,
     imageCompositeFormats: ['HG2', 'HG3'],
+    imageCompositePlainFormats: ['HG2', 'HG3', 'BMP'],
+    imageCompositeBmpHeader: 40,
+    imageCompositeBmpCompression: 0,
+    bitmapOrdinalRejectedFormats: ['BMP'],
+    ninePieceEmptyFormats: ['BMP'],
+    unsupportedRasterFormatsAreGuarded: true,
+    formattedBitmapDefersAlphaQuery: true,
     ninePieceTransparentEdges: true,
     planeMovieLegacy: true,
     formattedBitmapPhysical: true,
@@ -1476,7 +1483,7 @@ export default {
         {
           ids: renderSourceOperations,
           value:
-            'Own SDK67 complete GCALLs create72-byte source arrays with tag1 bitmap or tag2 actual196-byte constructor523b80. Twenty-one target and twenty-three dependency calls compare41 normal frames, nine-word metadata, two valid ordinal bitmaps, original reference counts and all selected software pixels. Actual Draw retains the source after caller-array release and consumes explicit ANM, missing-ANM empty packet, signed layer and bitmap/encoded replacement through raw269/271/282 exactly once. Own constructor leaves the program slot empty until explicit load; program+72 and refs+188 are observed after actual consumers. Parent update frees the retained source with the Draw. Eight independent current checkpoints continue real KCS calls. The G6 own group additionally qualifies two-frame HG2 with CP932 image/ANM names and original ImageOwner-preserving encoded rebind. Main340 raster keeps cached source state, while the own normal derived callback486800 calls update520aa0 before raster51ff40; the one disabled direct callback does not establish full Base/collector filtering or enabled cadence. Other formats, foreign/shared layouts, resource extremes and GPU output remain separate scopes.',
+            'Own SDK67 complete GCALLs create72-byte source arrays with tag1 bitmap or tag2 actual196-byte constructor523b80. Twenty-one target and twenty-three dependency calls compare41 normal frames, nine-word metadata, two valid ordinal bitmaps, original reference counts and all selected software pixels. Actual Draw retains the source after caller-array release and consumes explicit ANM, missing-ANM empty packet, signed layer and bitmap/encoded replacement through raw269/271/282 exactly once. Own constructor leaves the program slot empty until explicit load; program+72 and refs+188 are observed after actual consumers. Parent update frees the retained source with the Draw. Eight independent current checkpoints continue real KCS calls. The G6 own group additionally qualifies two-frame HG2 with CP932 image/ANM names and original ImageOwner-preserving encoded rebind. Main340 raster keeps cached source state, while the own normal derived callback486800 calls update520aa0 before raster51ff40; the one disabled direct callback does not establish full Base/collector filtering or enabled cadence. Other formats, foreign/shared layouts, resource extremes and GPU output remain separate scopes. Own R1 canonical BMP24/32 without ANM produces a static tag1 bitmap through complete Main703/704 and exact normal ownership; the animated frame format set remains independently guarded.',
         },
         {
           ids: drawResourceOperations,
@@ -1491,7 +1498,7 @@ export default {
         {
           ids: encodedImageOperations,
           value:
-            'Own SDK67 true CRT/Settings/FileServer/software View and Main143-owning Script VM execute twenty-four target and twenty-four dependency GCALLs. Forty-five frames compare original HG3 and HG2 v20 parser outputs, 20-byte encoded owners, selected ordinals, nine-piece transparent RGB expansion, preserved RGB24 composition, clipped selector layers, CP932 paths, missing-file untouched outputs and exact release/control/result effects. The actual View constructor loads anmtable.csv from images.int; direct and basename lookup preserve exact stored-key case. Eight independent current checkpoints continue these calls. Unproved formats, shared layouts, capacities and hardware rendering remain separate scopes.',
+            'Own SDK67 true CRT/Settings/FileServer/software View and Main143-owning Script VM execute twenty-four target and twenty-four dependency GCALLs. Forty-five frames compare original HG3 and HG2 v20 parser outputs, 20-byte encoded owners, selected ordinals, nine-piece transparent RGB expansion, preserved RGB24 composition, clipped selector layers, CP932 paths, missing-file untouched outputs and exact release/control/result effects. The actual View constructor loads anmtable.csv from images.int; direct and basename lookup preserve exact stored-key case. Eight independent current checkpoints continue these calls. Unproved formats, shared layouts, capacities and hardware rendering remain separate scopes. Own R1 normal BMP24/32 calls distinguish zero metadata/ordinal results from a real null-storage nine-piece owner, successful plain primary bitmap and full untouched output bytes. This does not admit palette/bitfield, selector or animated raster forms.',
         },
         {
           ids: bitmapPixelOperations,
@@ -1867,7 +1874,7 @@ export default {
         {
           ids: [111],
           value:
-            'Own 2.6.1.67 bitmap wrapper 0x4a8810 formats one CP932 string, iterates image-category tokens with the frame selector at 0x50da90, clips and blits later layers in the physical bitmap coordinate system, and releases each later source. It expands 24-bit primary images, records ownership on the calling Script and writes the bitmap or zero under control 1.',
+            'Own 2.6.1.67 bitmap wrapper 0x4a8810 formats one CP932 string, iterates image-category tokens with the frame selector at 0x50da90, clips and blits later layers in the physical bitmap coordinate system, and releases each later source. It expands 24-bit primary images, records ownership on the calling Script and writes the bitmap or zero under control 1. Additional own R1 complete calls on canonical BMP24/32 preserve the decoder alphaHint0; Main111 does not eagerly consume the separate alpha query. Existing HG full-frame regressions remain matched.',
         },
         {
           ids: [568, 858, 859],

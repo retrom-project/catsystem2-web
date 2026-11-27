@@ -6,6 +6,7 @@ import { nativeABI } from './abi/index.mjs';
 import { nativeImagePathParts } from './image-file.mjs';
 import { readNativeResource, nativeCategoryFilename } from './resource-file.mjs';
 import { ImageStore, HG3 } from '../formats/hg3.mjs';
+import { UnsupportedNativeImageFormat } from '../formats/raster.mjs';
 import { SceneImagePreparation } from './scene-image-preparation.mjs';
 import { parseNativeInteger } from './standard.mjs';
 import { blendPackedRow, packedBitmapWords, copyBitmapRow } from './raster-kernel.mjs';
@@ -941,6 +942,11 @@ export class NativeImages {
         await image.decode(frame);
       } catch (error) {
         this.world.host?.nativeDiagnostic?.({ type: 'image-invalid', file, error: error.message });
+        if (
+          error instanceof UnsupportedNativeImageFormat &&
+          nativeABI(this.world.profile).graphics.unsupportedRasterFormatsAreGuarded
+        )
+          throw error;
         return 0;
       }
       const source = frame.rgba,

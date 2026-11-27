@@ -42,7 +42,8 @@ export class NativeBitmapFactories {
         if (loaded) {
           const bitmap = images.get(loaded);
           if (bitmap.state.bpp === 3) bitmap.state.bpp = 4;
-          await bitmap.hasAlpha();
+          if (!nativeABI(this.world.profile).graphics.formattedBitmapDefersAlphaQuery)
+            await bitmap.hasAlpha();
         }
         return value(loaded);
       }
