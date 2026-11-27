@@ -1,0 +1,2900 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "scope": "Actual primary Main155 PCM decoder/buffer owner and Main157/158/159/160 static-control notification plus602/603 tree/604 group load. COM-memory and bounded matching AudioMixer PCM port; no physical output/alternate backend/queued-stream extension.",
+  "sources": [
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/retrom-host-sound-families/SOUND-EVIDENCE-STATUS.json",
+      "sha256": "1d8355f9f32946af9a197f86480a9a8efc0e339de9eb9e13a1a61c7f92e943f1",
+      "bytes": 3982
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/retrom-host-sound-families/MAIN155-PRIMARY-CLOSURE-291840B.json",
+      "sha256": "48cbe7ae1f951efff8f5199526e1c75077c9099547faa3c26e063350e8462ead",
+      "bytes": 5700
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/retrom-host-sound-families/STATIC-PLAYBACK-CLOSURE-149C81D.json",
+      "sha256": "ec1e800adea2d01655263c768d38a6fef95ce6eba2a8bbe930c0377600e07008",
+      "bytes": 5230
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/retrom-host-sound-families/GROUP-CLOSURE-FBF7544.json",
+      "sha256": "e971b003c3a70611ecb606fe7fc560c0828b64912bb8059003405c11b9f56b68",
+      "bytes": 5135
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/retrom-host-sound-families/GROUP-LOAD-CLOSURE-8934E1B.json",
+      "sha256": "20b6733232ef18b3a62a7616c0873deba7598329e9e0d284e80ce4eb7a6ab0be",
+      "bytes": 5017
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/retrom-host-sound-families/23/ORIGINAL-STATIC-PLAYBACK-23.json",
+      "sha256": "23cab655f1d00a49a862c0f595f565a3415757ce4605c71a25f6b7c0ac22fa68",
+      "bytes": 62752
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/retrom-host-sound-families/23/ORIGINAL-GROUP-LOAD-23.json",
+      "sha256": "a6d5ee3e3718f5e9f029eb62dc0b87d0b4b647549ebede0c2122e6f5c7983957",
+      "bytes": 94288
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/retrom-host-sound-families/23/ORIGINAL-SOUND-GROUPS-23.json",
+      "sha256": "bd8acc250b60a7edb22dab984c64a8d46b151f7b986a21f4c2daa5221e86e1ab",
+      "bytes": 7042
+    }
+  ],
+  "groups": {
+    "static": {
+      "originalReceiptSha256": "23cab655f1d00a49a862c0f595f565a3415757ce4605c71a25f6b7c0ac22fa68",
+      "fixtureSha256": "8a4a4641f27d05a7766055dc7180e4021261deb8d9730f0b7d663c9a833ff976",
+      "backendInputs": {
+        "manager": 536884480,
+        "manager104": 0,
+        "manager108": 536884736,
+        "nativeDeviceFlags": 16,
+        "configuration3D": 1,
+        "primaryBankClasses": [536957504, 536958224]
+      },
+      "resourceCleanup": {
+        "openFiles": 0,
+        "COMObjects": 0,
+        "activeBankDecoders": 0
+      },
+      "rows": [
+        {
+          "id": 155,
+          "args": [0, 0, 288, 1],
+          "name": "actual Main155 type 1",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 0,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 155,
+          "args": [1, 0, 288, 2],
+          "name": "actual Main155 type 2",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 157,
+          "args": [1, 3],
+          "name": "play actual static three passes",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 1,
+              "remainingLoops": 3,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 160,
+          "args": [1],
+          "name": "playing after start",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 1,
+              "remainingLoops": 3,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "completion after start",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 1,
+              "remainingLoops": 3,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "completion notification 1",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 1,
+              "remainingLoops": 2,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ],
+          "beforeActions": [
+            {
+              "kind": "static-completion-notification",
+              "bank": 1
+            }
+          ]
+        },
+        {
+          "id": 160,
+          "args": [1],
+          "name": "playing completion notification 1",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 1,
+              "remainingLoops": 2,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "completion notification 2",
+          "result": 2,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 2,
+              "active": 1,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ],
+          "beforeActions": [
+            {
+              "kind": "static-completion-notification",
+              "bank": 1
+            }
+          ]
+        },
+        {
+          "id": 160,
+          "args": [1],
+          "name": "playing completion notification 2",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 2,
+              "active": 1,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "completion notification 3",
+          "result": 3,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 3,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ],
+          "beforeActions": [
+            {
+              "kind": "static-completion-notification",
+              "bank": 1
+            }
+          ]
+        },
+        {
+          "id": 160,
+          "args": [1],
+          "name": "playing completion notification 3",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 3,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 157,
+          "args": [1, 2],
+          "name": "play static again",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 1,
+              "remainingLoops": 2,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "completion after replay",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 1,
+              "remainingLoops": 2,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "completion after one repeat",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 1,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ],
+          "beforeActions": [
+            {
+              "kind": "static-completion-notification",
+              "bank": 1
+            }
+          ]
+        },
+        {
+          "id": 160,
+          "args": [1],
+          "name": "playing completion after one repeat",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 1,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 158,
+          "args": [1],
+          "name": "pause actual static",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "completion after pause",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 160,
+          "args": [1],
+          "name": "playing after pause",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 157,
+          "args": [1, 2],
+          "name": "resume actual static",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 1,
+              "remainingLoops": 2,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "completion after resume",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 1,
+              "remainingLoops": 2,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 159,
+          "args": [1],
+          "name": "stop actual static",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 2,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "completion after stop",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 2,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 160,
+          "args": [1],
+          "name": "playing after stop",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 2,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 157,
+          "args": [1, 1],
+          "name": "play once before release",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 1,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "single completion before release",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ],
+          "beforeActions": [
+            {
+              "kind": "static-completion-notification",
+              "bank": 1
+            }
+          ]
+        },
+        {
+          "id": 160,
+          "args": [1],
+          "name": "playing single completion before release",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 156,
+          "args": [1],
+          "name": "release completed static",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 0,
+              "completion": 1,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "completion after completed release",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 0,
+              "completion": 1,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 155,
+          "args": [1, 0, 288, 1],
+          "name": "reload completed bank as stream",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "retained completion after stream reload",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 157,
+          "args": [1, 1],
+          "name": "play reloaded stream",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 1,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "completion reset by stream play",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 1,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 156,
+          "args": [1],
+          "name": "release reloaded stream",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 0,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 155,
+          "args": [1, 0, 288, 2],
+          "name": "load static for unbounded repeat",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 1,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 157,
+          "args": [1, 0],
+          "name": "play static repeat zero",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 1,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "unbounded completion one",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 1,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ],
+          "beforeActions": [
+            {
+              "kind": "static-completion-notification",
+              "bank": 1
+            }
+          ]
+        },
+        {
+          "id": 160,
+          "args": [1],
+          "name": "playing unbounded completion one",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 1,
+              "active": 1,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "unbounded completion two",
+          "result": 2,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 2,
+              "active": 1,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ],
+          "beforeActions": [
+            {
+              "kind": "static-completion-notification",
+              "bank": 1
+            }
+          ]
+        },
+        {
+          "id": 160,
+          "args": [1],
+          "name": "playing unbounded completion two",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 2,
+              "active": 1,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 159,
+          "args": [1],
+          "name": "stop unbounded static",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "completion after unbounded stop",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 156,
+          "args": [1],
+          "name": "release unbounded static",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 0,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 156,
+          "args": [0],
+          "name": "release stream without playing",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 0,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 0,
+              "completion": 0,
+              "active": 0,
+              "remainingLoops": 0,
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        }
+      ]
+    },
+    "group": {
+      "originalReceiptSha256": "a6d5ee3e3718f5e9f029eb62dc0b87d0b4b647549ebede0c2122e6f5c7983957",
+      "fixtureSha256": "8a4a4641f27d05a7766055dc7180e4021261deb8d9730f0b7d663c9a833ff976",
+      "backendInputs": {
+        "initialFrame": 1,
+        "initialControlVolumeWord": 1120403456,
+        "manager": 536884480,
+        "manager104": 0,
+        "manager108": 536884736,
+        "nativeDeviceFlags": 16,
+        "configuration3D": 1,
+        "primaryBankClasses": [536957504, 536958224]
+      },
+      "resourceCleanup": {
+        "openFiles": 0,
+        "COMObjects": 0,
+        "activeBankDecoders": 0
+      },
+      "rows": [
+        {
+          "id": 602,
+          "args": [7, 0, 0, 2, 50],
+          "name": "register group0",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 602,
+          "args": [8, 1, 2, 4, 73],
+          "name": "register group1",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 604,
+          "args": [7, 0, 288, 1, 1],
+          "name": "ID group0 first stream",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 604,
+          "args": [7, 0, 288, 1, 1],
+          "name": "ID group0 second stream",
+          "result": 1,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 604,
+          "args": [7, 0, 288, 1, 1],
+          "name": "ID group0 exhausted",
+          "result": 4294967295,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 604,
+          "args": [8, 0, 288, 1, 2],
+          "name": "ID group1 static",
+          "result": 2,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [0, 0, 0],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 604,
+          "args": [1, 0, 288, 0, 2],
+          "name": "type selector one",
+          "result": 3,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 604,
+          "args": [0, 0, 288, 0, 1],
+          "name": "type selector zero",
+          "result": 4294967295,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 604,
+          "args": [77, 0, 288, 1, 1],
+          "name": "missing group ID",
+          "result": 4294967295,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 569,
+          "args": [0],
+          "name": "group decoder query",
+          "result": 64000,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [0],
+          "name": "group completion query",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 569,
+          "args": [1],
+          "name": "group decoder query",
+          "result": 64000,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [1],
+          "name": "group completion query",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 569,
+          "args": [2],
+          "name": "group decoder query",
+          "result": 64000,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [2],
+          "name": "group completion query",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 569,
+          "args": [3],
+          "name": "group decoder query",
+          "result": 64000,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 587,
+          "args": [3],
+          "name": "group completion query",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 156,
+          "args": [0],
+          "name": "request allocated group release",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [
+                1120403456, 0, 1120403456, 0, 0, 0, 0, 1092616192, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0
+              ],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 604,
+          "args": [7, 0, 288, 1, 1],
+          "name": "reuse releasing group bank",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [
+                1120403456, 0, 1120403456, 0, 0, 0, 0, 1092616192, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0
+              ],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 156,
+          "args": [0],
+          "name": "request allocated group release for real frame",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [
+                1120403456, 0, 1120403456, 0, 0, 0, 0, 1092616192, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0
+              ],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 569,
+          "args": [0],
+          "name": "group after native frame11",
+          "result": 64000,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ],
+          "beforeActions": [
+            {
+              "kind": "sound-frame",
+              "frame": 11
+            }
+          ]
+        },
+        {
+          "id": 569,
+          "args": [0],
+          "name": "group after native frame12",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 0,
+              "completion": 0,
+              "control": [1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ],
+          "beforeActions": [
+            {
+              "kind": "sound-frame",
+              "frame": 12
+            }
+          ]
+        },
+        {
+          "id": 604,
+          "args": [7, 0, 288, 1, 1],
+          "name": "refill free group bank",
+          "result": 0,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 157,
+          "args": [1, 1],
+          "name": "play group member before finish selection",
+          "result": null,
+          "control": 2,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ]
+        },
+        {
+          "id": 604,
+          "args": [7, 0, 288, 1, 1],
+          "name": "full group with finishing member",
+          "result": 4294967295,
+          "control": 1,
+          "banks": [
+            {
+              "bank": 0,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 1,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 2,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            },
+            {
+              "bank": 3,
+              "loaded": 1,
+              "completion": 0,
+              "control": [1120403456, 0, 1120403456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              "maximum": 1120403456,
+              "minimum": 1120403456,
+              "position": [3007036718, 0, 3212836864],
+              "velocity": [0, 0, 0],
+              "doppler": 1065353216
+            }
+          ],
+          "beforeActions": [
+            {
+              "kind": "sound-message",
+              "raw": 197,
+              "bank": 1
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
