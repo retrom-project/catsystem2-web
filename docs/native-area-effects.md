@@ -76,7 +76,10 @@ and retires the Raster through the actual Root logic walk, with eight independen
 current cold continuations per build. Main 67 sends the deletion message through
 the same receiver path in JS: Hydro's empty logic leaves the pending task alive
 until its owner is released. Explicit host destruction keeps its separate forced
-cleanup behavior. No physical GPU or independent Raster vertex output is claimed.
+cleanup behavior: it can upgrade that existing native request once without
+resending the deletion packet. Repeated host destruction is a no-op, and the
+upgraded request survives current cold restoration before normal collection.
+No physical GPU or independent Raster vertex output is claimed.
 
 Main 202 is separately paired for typed Wipe1/Fade owners and the Raster early
 return. Its five-word packet replaces only source/destination at words 1 and 4,
