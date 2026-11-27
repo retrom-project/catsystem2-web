@@ -256,7 +256,7 @@ not change committed bytes. This is the qualified memory-file port, not a
 claim about a physical Windows filesystem.
 
 Main 393 posts message `0x464` with the enable word in `lParam`. The Window
-handler then changes menu item 119 and publishes the host callback. It does
+handler then changes return-to-title menu item 119 and publishes the host callback. It does
 not change the menu during the Script call. This queued behavior is shared
 by the five proved wrapper contexts. SDK23 Main 9 likewise posts `WM_CLOSE`
 for a true argument and `0x433` for false; the existing Window handler owns

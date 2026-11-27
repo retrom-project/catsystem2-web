@@ -588,3 +588,25 @@ suspended. The frame tests cover straight alpha on the Texture Renderer,
 compositing on the actual canvas and the Game registration failure for
 both loaders.
 [Web Audio API](https://www.w3.org/TR/2021/REC-webaudio-20210617/)
+
+The SDK23 host-media fixture uses the ordinary World and loaded KCS caller,
+not a method-only request loop. Settings/FileServer category `movie` selects
+an authored, previously qualified 32×24 WebM. Main 265 creates a real browser
+decoder; Main 266/269 play and query it, Main 788 changes its actual DOM
+rectangle, and Main 417 supplies the gain consumed by the media element.
+Two decoded red/blue frames have increasing media times. After the filename
+source is overwritten, a checkpoint closes the old decoder and opens a fresh
+one at its real saved position before visible playback resumes. Main 267,
+270, and subsequent play/completion/close calls pass through the same Script;
+a new owner is then opened and explicitly closed. A later formatter consumes
+the actual stopped/completed/closed result words.
+
+These observations qualify that browser decoder and finite caller/lifetime
+shape. The old original DirectShow method/state comparisons retain their
+explicit supplied allocation, formatting, task-routing, decoder and COM
+boundaries. Bounded SDK23 wrapper/field/callee analysis is kept separate from
+that dynamic evidence; neither the old Plane-movie receipt nor this WebM
+fixture establishes an end-to-end SDK23 Windows DirectShow open/worker/pixel
+comparison, physical sound output, or support for every movie codec. Movies
+in this group close explicitly before their Script retires; unclosed raw
+movie-pointer lifetime is not inferred from the caller association.

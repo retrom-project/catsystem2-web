@@ -134,3 +134,30 @@ for (const profile of [
       await world.close({ flushFiles: false });
     }
   });
+
+test('SDK23 direct-close VM request survives cold before normal Window shutdown', async () => {
+  const { dataWorld } = await import('./fixtures/data-world.mjs');
+  const { kcsProgram } = await import('./helpers.mjs');
+  const files = {
+    'direct-close.kcs': kcsProgram([[37, 0], [43, 9, 4], [37, 240], [43, 71, 4], [59]]),
+  };
+  const actions = [];
+  let world = await dataWorld(golden.profile, files);
+  try {
+    await world.spawnScript('direct-close.kcs', { initialExecute: true });
+    assert.deepEqual(world.windowMessages, [{ message: 0x433, wParam: 0, lParam: 0 }]);
+    assert.equal(world.quitRequested, undefined);
+    const saved = await deserializeCheckpoint(await serializeCheckpoint(world.snapshot()));
+    await world.close({ flushFiles: false });
+    world = await dataWorld(golden.profile, files, { initialize: false });
+    await world.restore(saved);
+    world.host.nativeWindowAction = async ({ type }) => actions.push(type);
+    await world.processWindowMessages();
+    assert.deepEqual(actions, ['hide', 'close']);
+    assert.equal(world.quitRequested, true);
+    assert.equal(world.windowMessages.length, 0);
+    assert.throws(() => world.snapshot(), /closing/);
+  } finally {
+    await world.close({ flushFiles: false });
+  }
+});
