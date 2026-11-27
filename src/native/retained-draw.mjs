@@ -3,8 +3,7 @@
 import { nativeABI } from './abi/index.mjs';
 import { truncateFloat32 } from '../ppi/numeric.mjs';
 import { bitsFloat, floatBits } from '../kcs.mjs';
-import { NativeBitmap, snapshotBitmapCopyRows, bitmapCopySnapshotSource } from './image.mjs';
-import { outputBitmapCopySnapshot } from './graphics.mjs';
+import { NativeBitmap } from './image.mjs';
 import { RetainedAnimation } from './retained-animation.mjs';
 import { rasterizeRetainedBitmap, flipBitmapRows } from './raster-kernel.mjs';
 
@@ -768,17 +767,11 @@ export class NativeRetainedDraw {
         area.every(Number.isInteger) &&
         bitmapPixels instanceof Uint8ClampedArray &&
         bitmapPixels.buffer instanceof ArrayBuffer,
-      copySnapshot =
-        !hasArea && !forceOutput && plainBacking && draw.state.enabled && draw.state.pending
-          ? snapshotBitmapCopyRows(bitmapPixels, renderer.width, renderer.height)
-          : null,
-      rows = copySnapshot
-        ? null
-        : band
-          ? new Uint8ClampedArray((area[3] - area[1]) * rowBytes)
-          : reuse
-            ? bitmapPixels.slice(start, start + (area[3] - area[1]) * rowBytes)
-            : new Uint8ClampedArray(replaceRows ? bitmapPixels.length : bitmapPixels),
+      rows = band
+        ? new Uint8ClampedArray((area[3] - area[1]) * rowBytes)
+        : reuse
+          ? bitmapPixels.slice(start, start + (area[3] - area[1]) * rowBytes)
+          : new Uint8ClampedArray(replaceRows ? bitmapPixels.length : bitmapPixels),
       clearSources =
         replaceRows && renderer.clearColor === 0 && draw.state.pending && items.length <= 32
           ? readyRasterSources(graphics, bitmap, bitmapPixels, items)
@@ -919,51 +912,28 @@ export class NativeRetainedDraw {
           : { ...bitmap.state, rgba: pixels };
         const tracksTexture =
           forceSources || (prior && reuse && !forceOutput && remembered.texturePublication);
-        if (copySnapshot) {
-          // As with a normal method call, read the output port before evaluating
-          // its source, offset, region and options. Unknown getters keep that order.
-          const output = graphics.output;
-          texturePublication = await outputBitmapCopySnapshot(
-            graphics,
-            output,
-            bitmapCopySnapshotSource(frame, copySnapshot),
-            draw.state.offset,
-            forceOutput ||
-              (draw.state.pending &&
-                (!areas.length ||
-                  nativeABI(this.world.profile).graphics.drawPendingCopiesWholeBitmap))
-              ? null
-              : area,
-            {
-              flipY: true,
-              retained: tracksTexture
-                ? { previous: prior ? remembered.texturePublication : null, changed: band }
-                : null,
-            },
-          );
-        } else
-          texturePublication = await graphics.output(
-            {
-              state: frame,
-              width: frame.width,
-              height: frame.height,
-              pixels: async () => pixels,
-              frame: async () => frame,
-            },
-            draw.state.offset,
-            forceOutput ||
-              (draw.state.pending &&
-                (!areas.length ||
-                  nativeABI(this.world.profile).graphics.drawPendingCopiesWholeBitmap))
-              ? null
-              : area,
-            {
-              flipY: true,
-              retained: tracksTexture
-                ? { previous: prior ? remembered.texturePublication : null, changed: band }
-                : null,
-            },
-          );
+        texturePublication = await graphics.output(
+          {
+            state: frame,
+            width: frame.width,
+            height: frame.height,
+            pixels: async () => pixels,
+            frame: async () => frame,
+          },
+          draw.state.offset,
+          forceOutput ||
+            (draw.state.pending &&
+              (!areas.length ||
+                nativeABI(this.world.profile).graphics.drawPendingCopiesWholeBitmap))
+            ? null
+            : area,
+          {
+            flipY: true,
+            retained: tracksTexture
+              ? { previous: prior ? remembered.texturePublication : null, changed: band }
+              : null,
+          },
+        );
       }
     } finally {
       if (publication) publication.publishing = false;

@@ -133,228 +133,6 @@ export function nativePublicationPixels(bytes) {
     bitmapBlendWords(bytes) !== null
   );
 }
-const bitmapCopySources = new WeakMap(),
-  CopyPixels = Uint8ClampedArray,
-  CopyWords = Uint32Array,
-  copyArrayBufferPrototype = ArrayBuffer.prototype,
-  copyArrayBufferLength = Object.getOwnPropertyDescriptor(ArrayBuffer.prototype, 'byteLength').get,
-  copyGetOwn = Object.getOwnPropertyDescriptor,
-  copyGetPrototype = Object.getPrototypeOf,
-  copyHasOwn = Object.hasOwn,
-  copyApply = Reflect.apply,
-  copyIsView = ArrayBuffer.isView,
-  copyArrayBuffer = ArrayBuffer,
-  copyObject = Object,
-  copyReflect = Reflect,
-  copyObjectPrototype = Object.prototype,
-  copyPixelFields = [...ordinaryTypedProperties],
-  copyPixelFill = typedArray.fill,
-  copyPixelSet = typedArray.set,
-  copyPixelOffset = Object.getOwnPropertyDescriptor(typedArray, 'byteOffset').get,
-  copyPixelLength = Object.getOwnPropertyDescriptor(typedArray, 'length').get,
-  copyPixelSubarray = Object.getOwnPropertyDescriptor(typedArray, 'subarray'),
-  copyTypedConstructor = Object.getPrototypeOf(CopyPixels),
-  copySpecies = Symbol.species,
-  copySpeciesGetter = Object.getOwnPropertyDescriptor(
-    Object.getPrototypeOf(CopyPixels),
-    Symbol.species,
-  ).get,
-  copyInteger = Number.isInteger,
-  copyFloor = Math.floor,
-  copyCeil = Math.ceil,
-  copySourceGet = WeakMap.prototype.get,
-  copySourceSet = WeakMap.prototype.set,
-  copyBitmapHas = WeakSet.prototype.has,
-  MIN_COPY_SNAPSHOT = 1024 * 1024,
-  MAX_COPY_SNAPSHOT = 64 * 1024 * 1024;
-
-function bitmapCopySubarrayNative() {
-  const subarray = copyGetOwn(typedArray, 'subarray');
-  return (
-    !copyHasOwn(CopyPixels.prototype, 'subarray') &&
-    subarray?.value === copyPixelSubarray.value &&
-    subarray?.get === copyPixelSubarray.get &&
-    copyGetOwn(CopyPixels.prototype, 'constructor')?.value === CopyPixels &&
-    !copyHasOwn(CopyPixels, copySpecies) &&
-    copyGetPrototype(CopyPixels) === copyTypedConstructor &&
-    copyGetOwn(copyTypedConstructor, copySpecies)?.get === copySpeciesGetter
-  );
-}
-
-function bitmapCopyWords(bytes) {
-  if (
-    !copyIsView(bytes) ||
-    copyGetPrototype(bytes) !== CopyPixels.prototype ||
-    copyGetPrototype(CopyPixels.prototype) !== typedArray ||
-    copyGetPrototype(typedArray) !== copyObjectPrototype ||
-    copyGetOwn(copyObject, 'getOwnPropertyDescriptor')?.value !== copyGetOwn ||
-    copyGetOwn(copyObject, 'getPrototypeOf')?.value !== copyGetPrototype ||
-    copyGetOwn(copyObject, 'hasOwn')?.value !== copyHasOwn ||
-    copyGetOwn(copyReflect, 'apply')?.value !== copyApply ||
-    copyGetOwn(globalThis, 'Uint8ClampedArray')?.value !== CopyPixels ||
-    copyGetOwn(globalThis, 'Uint32Array')?.value !== CopyWords ||
-    copyGetOwn(globalThis, 'ArrayBuffer')?.value !== copyArrayBuffer
-  )
-    return null;
-  for (let i = 0; i < copyPixelFields.length; i++) {
-    const key = copyPixelFields[i][0],
-      original = copyPixelFields[i][1],
-      current = copyGetOwn(typedArray, key);
-    if (
-      copyHasOwn(bytes, key) ||
-      copyHasOwn(CopyPixels.prototype, key) ||
-      current?.get !== original.get ||
-      current?.value !== original.value
-    )
-      return null;
-  }
-  const buffer = copyApply(bitmapBuffer, bytes, []),
-    offset = copyApply(copyPixelOffset, bytes, []),
-    length = copyApply(copyPixelLength, bytes, []);
-  try {
-    copyApply(copyArrayBufferLength, buffer, []);
-  } catch {
-    return null;
-  }
-  if (
-    copyGetPrototype(buffer) !== copyArrayBufferPrototype ||
-    offset % 4 ||
-    length % 4 ||
-    !length ||
-    (resizableBuffer && copyApply(resizableBuffer, buffer, []))
-  )
-    return null;
-  return new CopyWords(buffer, offset, length / 4);
-}
-
-// This is one independent output snapshot, not a cache of the live bitmap.
-// Dense inputs inspect their two edges and keep the ordinary full copy.
-export function snapshotBitmapCopyRows(pixels, width, height) {
-  if (!copyIsView(pixels)) return null;
-  let length;
-  try {
-    length = copyApply(copyPixelLength, pixels, []);
-  } catch {
-    return null;
-  }
-  if (
-    !copyInteger(width) ||
-    !copyInteger(height) ||
-    width <= 0 ||
-    height <= 0 ||
-    length !== width * height * 4 ||
-    length < MIN_COPY_SNAPSHOT ||
-    length > MAX_COPY_SNAPSHOT
-  )
-    return null;
-  const words = bitmapCopyWords(pixels);
-  if (!words) return null;
-  let first = 0,
-    end = words.length;
-  // Unroll only the exact zero test, preserving every bit including transparent RGB.
-  while (
-    first + 8 <= end &&
-    !(
-      words[first] |
-      words[first + 1] |
-      words[first + 2] |
-      words[first + 3] |
-      words[first + 4] |
-      words[first + 5] |
-      words[first + 6] |
-      words[first + 7]
-    )
-  )
-    first += 8;
-  while (first < end && words[first] === 0) first++;
-  if (first !== end) {
-    while (
-      end - 8 >= first &&
-      !(
-        words[end - 1] |
-        words[end - 2] |
-        words[end - 3] |
-        words[end - 4] |
-        words[end - 5] |
-        words[end - 6] |
-        words[end - 7] |
-        words[end - 8]
-      )
-    )
-      end -= 8;
-    while (end > first && words[end - 1] === 0) end--;
-  }
-  const firstRow = first === words.length ? 0 : copyFloor(first / width),
-    endRow = first === words.length ? 0 : copyCeil(end / width),
-    byteLength = (endRow - firstRow) * width * 4;
-  if (byteLength * 2 > length) return null;
-  return {
-    width,
-    height,
-    firstRow,
-    endRow,
-    pixels: new CopyPixels(
-      new CopyPixels(pixels.buffer, pixels.byteOffset + firstRow * width * 4, byteLength),
-    ),
-  };
-}
-function materializeBitmapCopy(record) {
-  if (!record.full) {
-    const snapshot = record.snapshot,
-      full = new CopyPixels(snapshot.width * snapshot.height * 4);
-    copyApply(copyPixelSet, full, [snapshot.pixels, snapshot.firstRow * snapshot.width * 4]);
-    record.full = full;
-    record.state.rgba = full;
-    record.snapshot = null;
-  }
-  return record.full;
-}
-export function bitmapCopySnapshotSource(state, snapshot) {
-  const record = { state, snapshot, full: null },
-    source = {
-      state,
-      width: state.width,
-      height: state.height,
-      pixels: async () => materializeBitmapCopy(record),
-      frame: async () => {
-        materializeBitmapCopy(record);
-        return state;
-      },
-    };
-  copyApply(copySourceSet, bitmapCopySources, [source, record]);
-  return source;
-}
-export function materializeBitmapCopySource(source) {
-  const record = copyApply(copySourceGet, bitmapCopySources, [source]);
-  if (record) materializeBitmapCopy(record);
-}
-export function prepareBitmapCopySource(source, destination, blit) {
-  if (
-    copyApply(copySourceGet, bitmapCopySources, [source]) &&
-    (blit !== bitmapBlitMethod ||
-      !copyApply(copyBitmapHas, ownedBitmaps, [destination]) ||
-      copyGetPrototype(destination) !== NativeBitmap.prototype ||
-      copyHasOwn(destination, 'pixels') ||
-      copyHasOwn(destination, 'changed') ||
-      copyHasOwn(destination, 'state') ||
-      copyGetOwn(NativeBitmap.prototype, 'pixels')?.value !== bitmapPixelsMethod ||
-      copyGetOwn(NativeBitmap.prototype, 'changed')?.value !== bitmapChangedMethod ||
-      copyGetOwn(NativeBitmap.prototype, 'state')?.get !== bitmapStateGetter)
-  )
-    materializeBitmapCopySource(source);
-}
-async function bitmapCopyInput(record) {
-  // A custom then port must see the same complete typed array as before.
-  if (
-    copyGetPrototype(CopyPixels.prototype) !== typedArray ||
-    copyGetPrototype(typedArray) !== copyObjectPrototype ||
-    copyHasOwn(CopyPixels.prototype, 'then') ||
-    copyHasOwn(typedArray, 'then') ||
-    copyHasOwn(copyObjectPrototype, 'then')
-  )
-    return materializeBitmapCopy(record);
-  return record.snapshot;
-}
 const size = (width, height, empty = false) => {
   if (
     !Number.isSafeInteger(width) ||
@@ -730,31 +508,14 @@ export class NativeBitmap {
       rows = Math.min(sr[3] - sr[1], dr[3] - dr[1]);
     if (!count || !rows) return false;
     const dest = await (textPublication
-      ? nativeBitmapPixels(this, { textPublication })
-      : nativeBitmapPixels(this));
-    const copyRecord =
-      copy && !textPublication && copyApply(copySourceGet, bitmapCopySources, [source]);
-    let snapshot = copyRecord?.snapshot,
-      input = snapshot
-        ? await bitmapCopyInput(copyRecord)
-        : await (textPublication
-            ? nativeBitmapPixels(source, { textPublication })
-            : nativeBitmapPixels(source));
-    snapshot = copyRecord?.snapshot;
-    if (
-      snapshot &&
-      (snapshot.width !== source.width ||
-        snapshot.height !== source.height ||
-        !bitmapCopyWords(dest))
-    ) {
-      materializeBitmapCopySource(source);
-      input = copyRecord.full;
-      snapshot = null;
-    }
-    let data = source === this ? new Uint8ClampedArray(input) : input;
-    let bulkCopy =
+        ? nativeBitmapPixels(this, { textPublication })
+        : nativeBitmapPixels(this)),
+      input = await (textPublication
+        ? nativeBitmapPixels(source, { textPublication })
+        : nativeBitmapPixels(source));
+    const data = source === this ? new Uint8ClampedArray(input) : input;
+    const bulkCopy =
       copy &&
-      !snapshot &&
       (data.buffer !== dest.buffer ||
         data.byteOffset + data.byteLength <= dest.byteOffset ||
         dest.byteOffset + dest.byteLength <= data.byteOffset);
@@ -762,35 +523,6 @@ export class NativeBitmap {
       const sourceY = flipY ? source.height - 1 - (sr[1] + y) : sr[1] + y;
       const start = (sourceY * source.width + sr[0]) * 4,
         output = ((dr[1] + y) * this.width + dr[0]) * 4;
-      if (snapshot) {
-        // Keep the original live set lookup after the live geometry reads.
-        // A callback may change either port even within this synchronous loop.
-        const set = dest.set;
-        if (
-          set !== copyPixelSet ||
-          !bitmapCopySubarrayNative() ||
-          copyApply(copyPixelLength, dest, []) < output + count * 4
-        ) {
-          data = materializeBitmapCopy(copyRecord);
-          snapshot = null;
-          bulkCopy = true;
-          copyApply(set, dest, [data.subarray(start, start + count * 4), output]);
-          continue;
-        }
-        if (sourceY < snapshot.firstRow || sourceY >= snapshot.endRow)
-          copyApply(copyPixelFill, dest, [0, output, output + count * 4]);
-        else
-          copyApply(copyPixelSet, dest, [
-            new CopyPixels(
-              copyApply(bitmapBuffer, snapshot.pixels, []),
-              copyApply(copyPixelOffset, snapshot.pixels, []) +
-                ((sourceY - snapshot.firstRow) * source.width + sr[0]) * 4,
-              count * 4,
-            ),
-            output,
-          ]);
-        continue;
-      }
       if (bulkCopy) {
         copyBitmapRow(dest, output, data, start, count * 4);
         continue;
@@ -1076,9 +808,7 @@ export function resampleBitmap(
 
 const bitmapStateGetter = Object.getOwnPropertyDescriptor(NativeBitmap.prototype, 'state').get,
   bitmapPixelsMethod = NativeBitmap.prototype.pixels,
-  bitmapFrameMethod = NativeBitmap.prototype.frame,
-  bitmapBlitMethod = NativeBitmap.prototype.blit,
-  bitmapChangedMethod = NativeBitmap.prototype.changed;
+  bitmapFrameMethod = NativeBitmap.prototype.frame;
 export class NativeImages {
   constructor(world) {
     this.world = world;

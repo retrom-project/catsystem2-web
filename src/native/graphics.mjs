@@ -22,8 +22,6 @@ import {
   nativeBitmapState,
   nativeBitmapStorageOwned,
   nativePixelsWereBorrowed,
-  materializeBitmapCopySource,
-  prepareBitmapCopySource,
 } from './image.mjs';
 import { NativeHandles } from './handles.mjs';
 import { copyBitmapRow } from './raster-kernel.mjs';
@@ -297,22 +295,17 @@ export class NativeGraphics {
       vram = textPublication
         ? await this.ensureVRAM(...dimensions, { textPublication })
         : await this.ensureVRAM(...dimensions);
-    const blit = vram.blit;
-    prepareBitmapCopySource(bitmap, vram, blit);
-    await bitmapCopyApply(blit, vram, [
-      bitmap,
-      {
-        dx: x + area[0],
-        dy: y + area[1],
-        sx: area[0],
-        sy: area[1],
-        width: area[2] - area[0],
-        height: area[3] - area[1],
-        copy: true,
-        flipY,
-        ...(textPublication ? { textPublication, revisionSteps } : {}),
-      },
-    ]);
+    await vram.blit(bitmap, {
+      dx: x + area[0],
+      dy: y + area[1],
+      sx: area[0],
+      sy: area[1],
+      width: area[2] - area[0],
+      height: area[3] - area[1],
+      copy: true,
+      flipY,
+      ...(textPublication ? { textPublication, revisionSteps } : {}),
+    });
     this.initializeTextures();
     if (upload && this.view.active) {
       const translated = ([left, top, right, bottom]) => [x + left, y + top, x + right, y + bottom],
@@ -579,13 +572,7 @@ export class NativeGraphics {
 }
 
 const nativeBitmapOutput = NativeGraphics.prototype.output,
-  nativeEnsureVRAM = NativeGraphics.prototype.ensureVRAM,
-  bitmapCopyApply = Reflect.apply;
-
-export function outputBitmapCopySnapshot(graphics, output, bitmap, offset, region, options) {
-  if (output !== nativeBitmapOutput) materializeBitmapCopySource(bitmap);
-  return bitmapCopyApply(output, graphics, [bitmap, offset, region, options]);
-}
+  nativeEnsureVRAM = NativeGraphics.prototype.ensureVRAM;
 const publicationConsumers = [
   [NativeGraphics.prototype, ['output', 'ensureVRAM', 'initializeTextures']],
   [NativeImages.prototype, ['get', 'create', 'release', 'nativeMemory']],
