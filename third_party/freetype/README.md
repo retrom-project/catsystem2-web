@@ -20,18 +20,3 @@ ships both JS modules, their FTL notices, corresponding source bundles and
 `freetype-manifest.json` under `vendor/`. The source bundles contain the full
 upstream release, this wrapper and the reproducible build script. No game font
 is redistributed. Font resources remain supplied by the mounted game.
-
-The wrapper retains at most 128 owned hinted outlines and 2 MiB of estimated
-logical outline/entry content. Only TrueType and the pinned 2.7.1 Adobe CFF
-driver can reuse them; legacy CFF, other drivers, bitmaps, transforms and
-incompatible size/charmap state use the ordinary load/render path. Rendering
-stays at the glyph call, returned bitmap lifetimes remain per face, and close
-releases all retained data. The six production exports do not change.
-Cached entries retain the original slot's 26.6 advance separately from
-`FT_Glyph`'s narrower 16.16 value, preserving large advances and quantization.
-
-Use `--outline-cache disabled --output /a/separate/directory` with the same
-builder to prepare a performance control. The manifest and source bundles
-identify frozen wrapper/builder inputs and the selected option. Private test
-probes are prepared by `scripts/prepare-native-freetype-tests.py`; their two
-additional test exports are never packaged in the production backend.

@@ -47,19 +47,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--emsdk', type=Path, required=True)
     parser.add_argument('--output', type=Path, default=ROOT / '.local/vendor/freetype')
-    parser.add_argument('--outline-cache', choices=['enabled', 'disabled'], default='enabled',
-                        help='Disable only for a matched backend performance control')
     args = parser.parse_args()
     out = args.output.resolve()
     out.mkdir(parents=True, exist_ok=True)
-    # Freeze both releases and source bundles to the same build inputs.
-    frozen = out / '.source/catsystem2-web'
-    wrapper = frozen / 'third_party/freetype/native-font.c'
-    builder = frozen / 'scripts/prepare-native-freetype.py'
-    wrapper.parent.mkdir(parents=True, exist_ok=True)
-    builder.parent.mkdir(parents=True, exist_ok=True)
-    wrapper.write_bytes((ROOT / 'third_party/freetype/native-font.c').read_bytes())
-    builder.write_bytes(Path(__file__).read_bytes())
     environment = run(['bash', '-c', 'source "$1/emsdk_env.sh" >/dev/null 2>&1 && env -0',
                        '_', args.emsdk.resolve()], capture_output=True).stdout
     for entry in environment.split(b'\0'):
@@ -69,6 +59,7 @@ def main():
     compiler = run(['emcc', '--version'], capture_output=True, text=True).stdout.splitlines()[0]
     if '3.1.74' not in compiler:
         raise ValueError('Expected pinned Emscripten 3.1.74')
+    wrapper = ROOT / 'third_party/freetype/native-font.c'
     artifacts = []
     for version, definition in SOURCES.items():
         archive = out / ('freetype-' + version + '.tar.gz')
@@ -83,9 +74,7 @@ def main():
             zipped.extractall(source_root, filter='data')
         source = source_root / ('freetype-' + version)
         target = out / definition['output']
-        run(['emcc', '-O3', '-DFT2_BUILD_LIBRARY',
-             '-DCS2_FONT_OUTLINE_CACHE=' + ('1' if args.outline_cache == 'enabled' else '0'),
-             '-I', source / 'include', wrapper,
+        run(['emcc', '-O3', '-DFT2_BUILD_LIBRARY', '-I', source / 'include', wrapper,
              *[source / 'src' / (name + '.c') for name in MODULES],
              '-sWASM=0', '-sMODULARIZE=1', '-sEXPORT_ES6=1', '-sSINGLE_FILE=1',
              '-sENVIRONMENT=web,node', '-sALLOW_MEMORY_GROWTH=1', '-sSTACK_SIZE=1048576',
@@ -100,7 +89,7 @@ def main():
                     paths = [(p, 'freetype-' + version + '/' + str(p.relative_to(source)))
                              for p in sorted(source.rglob('*')) if p.is_file()]
                     paths += [(wrapper, 'catsystem2-web/third_party/freetype/native-font.c'),
-                              (builder, 'catsystem2-web/scripts/prepare-native-freetype.py')]
+                              (Path(__file__), 'catsystem2-web/scripts/prepare-native-freetype.py')]
                     for path, name in paths:
                         info = bundled.gettarinfo(str(path), name)
                         info.uid = info.gid = info.mtime = 0
@@ -111,8 +100,7 @@ def main():
         print(target, flush=True)
     manifest = {
         'inputs': {'sources': SOURCES, 'emscripten': '3.1.74',
-                   'outlineCache': args.outline_cache,
-                   'wrapperSHA256': digest(wrapper), 'prepareScriptSHA256': digest(builder)},
+                   'wrapperSHA256': digest(wrapper), 'prepareScriptSHA256': digest(Path(__file__))},
         'license': 'FTL',
         'artifacts': {name: {'sha256': digest(out / name), 'bytes': (out / name).stat().st_size}
                       for name in artifacts},
