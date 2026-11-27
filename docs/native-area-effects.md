@@ -53,6 +53,31 @@ parameters and advances the phase with per-tick truncation and one
 frequency subtraction. Original raw outputs and the three fixed KCS
 call sites are checked separately from product route smoke tests.
 
+### SDK 2.6.1.63 / 2.6.1.67 matrix and live Raster controls
+
+The two builds copy the initialized 64-byte Main 199 input into private storage
+before sending raw 250 / 251. The reviewed Top, Script and Raster receivers leave
+this message unhandled and its reply unwritten; the operation does not transform
+those objects. Other matrix receivers remain guarded. Main 201 queries the kind
+before testing its selector. A written Raster or Hydro kind and selector zero
+send raw 252 / 253 or 261 / 262 respectively. A live Raster reads only the last
+three parameter words, keeping its graph, axis, activity and phase. Hydro ignores
+the packet. A nonzero selector stops after the query.
+
+A Top receiver can leave the kind reply unwritten. The native wrapper then retains
+its actual caller address and takes no effect branch. This capture does not give
+the JS opaque task identity a numerical native address; the current query guard
+remains. The native derived-receiver observation and the complete Base query reply
+are separate evidence boundaries.
+
+Both builds use the original x87 precision and default Raster period/speed. The
+paired normal factory/VM group binds a real color Plane, starts, changes, stops
+and retires the Raster through the actual Root logic walk, with eight independent
+current cold continuations per build. Main 67 sends the deletion message through
+the same receiver path in JS: Hydro's empty logic leaves the pending task alive
+until its owner is released. Explicit host destruction keeps its separate forced
+cleanup behavior. No physical GPU or independent Raster vertex output is claimed.
+
 ### SDK 2.6.1.23 finish, matrix copy and source replacement
 
 Main 198, 199 and 202 use the shared controls with this build's typed message
