@@ -443,3 +443,23 @@ successful pixel allocation through the original zero routine. Main377's null
 owner would leave the result unwritten and remains diagnosed. Other formats,
 shared/aliased layouts, retained Draw and physical hardware output keep their
 separate qualification boundaries.
+
+## SDK 2.6.1.67 encoded image and file calls
+
+The own .67 software View constructor loads `anmtable.csv` from the actual
+image archive before the first query. Its forty-five complete call frames
+cover six encoded/file entries using twenty-four target and twenty-four
+dependency GCALLs: file metadata, owned twenty-byte encoded descriptors,
+HG3 ordinals and HG2 v20's first-frame lookup, nine-piece RGBA expansion,
+RGB24-preserving composition, selector layers, CP932 names and missing-file
+output preservation. Direct ANM lookup and basename table fallback produce
+1/1/0/0 for the four independently recorded names, retaining stored-key case.
+
+The selected pixel, metadata, owner and control states match the shared
+implementation with explicit .67 policies. Eight independent current
+checkpoints continue with the next real KCS call, including the loaded table
+and retained encoded/bitmap resources. The first current fixture returned a
+Node Buffer rather than the resource interface's Uint8Array; that author
+failure is preserved separately. These calls do not qualify other formats,
+shared or alias layouts, empty/smaller nine-piece destinations, resource
+extremes or hardware presentation.
