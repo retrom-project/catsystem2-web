@@ -1225,6 +1225,18 @@ export class FESInstance {
       }
       case 'getconf': {
         if (args.length < 2) break;
+        if (fesBehavior?.configurationOperandOrder === 'value-extras-key') {
+          const index = p(0),
+            ex1 = p(2),
+            ex2 = p(3),
+            key = this.text(args[1]),
+            value = host.config?.(key, ex1, ex2, { instance: this });
+          if (value !== undefined) {
+            if (typeof value === 'string') this.player.strings[index] = value;
+            else this.setGlobal(index, value);
+          }
+          break;
+        }
         const value = host.config?.(this.text(args[1]), p(2), p(3), { instance: this });
         if (value !== undefined) {
           if (typeof value === 'string') this.player.strings[p(0)] = value;
@@ -1233,6 +1245,19 @@ export class FESInstance {
         break;
       }
       case 'setconf':
+        if (args.length >= 2 && fesBehavior?.configurationOperandOrder === 'value-extras-key') {
+          const value = p(0),
+            ex1 = p(2),
+            ex2 = p(3),
+            key = this.text(args[1]);
+          this.player.enqueue(
+            host.setConfig?.(key, value, ex1, ex2, {
+              strings: this.player.strings,
+              instance: this,
+            }),
+          );
+          break;
+        }
         if (args.length >= 2)
           this.player.enqueue(
             host.setConfig?.(this.text(args[1]), p(0), p(2), p(3), {

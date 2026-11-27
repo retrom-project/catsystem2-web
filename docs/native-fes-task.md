@@ -33,6 +33,27 @@ disposal owns both objects. Test hosts must preserve this ownership and close
 borrowing FES instances before their supplier Script. A supplier-first native
 destruction boundary is not a successful lifecycle result.
 
+The pinned 2.6.1.23 configuration message (raw18, internal19) visits the saved
+resource FIFO. It has no preceding live-image callback phase or
+`MES_CHANGECONFIG` notification. STRING and both NVSTRING configurations take
+current Settings defaults only where their per-field default flags remain set.
+Explicit font, weight and shadow overrides survive; fixed width follows the
+proportional/fixed Settings pair. The callback marks configuration pending and
+leaves the message output and current private-bank selection untouched. Normal
+subsequent notifications consume that pending state. Parser layout records in
+JavaScript are projections; the text driver's pending state is the update
+authority, rather than a second copy of an original native allocation.
+
+This build evaluates `getconf destination key extra1 extra2` and
+`setconf value key extra1 extra2` in value/destination, extras, then key order.
+The getter captures its destination before invoking the configuration service.
+Unknown keys preserve the destination. Numeric font fields, manual overrides,
+normal continuation, independent checkpoint cold and FES-first retirement have
+loaded parser/VM evidence. String-bank FONT/RUBY values and Sound callbacks have
+separate ownership/dependency requirements and are not established by this group.
+The original 30-type definition catalog contains neither FILELIST nor STRTABLE;
+their absent constructor paths do not acquire modern encoding behavior.
+
 CGL-backed `loadlist` and `loadlist2` keep the original selected filename bytes.
 The parser records each variant CString offset and length into the same owned
 `CGGallery.listBytes` resource already retained for its explicit original

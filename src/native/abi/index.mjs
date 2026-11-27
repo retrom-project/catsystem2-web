@@ -322,8 +322,18 @@ function validateBehavior(abi) {
       ['fes.configurationMessage.liveObjects', bool],
       ['fes.configurationMessage.notification', oneOf(null, 'MES_CHANGECONFIG')],
       ['fes.configurationMessage.filenameComparison', oneOf(null, 'c-locale-ascii')],
-      ['fes.fileList.patternEncoding', oneOf('cp932', 'cp932-as-utf16le')],
-      ['fes.fileList.keyEncoding', oneOf('cp932', 'utf16le')],
+      [
+        'fes.fileList.patternEncoding',
+        Array.isArray(abi.fes.definitionTypes) && !abi.fes.definitionTypes.includes('FILELIST')
+          ? oneOf(null)
+          : oneOf('cp932', 'cp932-as-utf16le'),
+      ],
+      [
+        'fes.fileList.keyEncoding',
+        Array.isArray(abi.fes.definitionTypes) && !abi.fes.definitionTypes.includes('FILELIST')
+          ? oneOf(null)
+          : oneOf('cp932', 'utf16le'),
+      ],
       ['fes.macroLiterals.string', oneOf('raw', 'unescape-quote')],
       ['fes.macroLiterals.character', oneOf('raw', 'wrap-raw')],
       ['graphics.drawEnablePendingPolicy', oneOf(null, 'value', 'rising-edge')],
@@ -358,6 +368,11 @@ function validateBehavior(abi) {
     abi.floatingPoint?.rounding !== 'nearest'
   )
     throw new Error(`Invalid ABI behavior data ${abi.id}`);
+  if (
+    Object.hasOwn(abi.fes, 'configurationOperandOrder') &&
+    abi.fes.configurationOperandOrder !== 'value-extras-key'
+  )
+    throw new Error(`Invalid ABI FES configuration operand order ${abi.id}`);
   if (
     Object.hasOwn(abi.startup, 'loosePath') &&
     (typeof abi.startup.loosePath !== 'string' ||

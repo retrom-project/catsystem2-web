@@ -1,0 +1,727 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "executableSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "scope": "SDK23 loaded FES parser getconf/setconf numeric fields -> actual Settings -> raw18 saved STRING/NVSTRING configuration callbacks -> normal AFTER event and FES-first cleanup. Manual font/weight/shadow masks, changed fixed defaults, absent MES_CHANGECONFIG notification, unknown key epilogues and actual outputs are separate forms. No Sound object/media/physical glyph or pixel-render proof; FONT/RUBY string-bank getter/setter ownership not promoted.",
+  "provenance": [
+    {
+      "path": ".local/phase11/sdk23-fes-live-20261127/ORIGINAL-FES-CONFIG23.json",
+      "sha256": "c6c43866eacfdbbf2bd79408852546b71a5e358a3f443809087a93efb9a455d0"
+    },
+    {
+      "path": ".local/phase11/sdk23-fes-live-20261127/G2-SEALED-PLAN.json",
+      "sha256": "a302d5b63fc9b215e07e6510e501ef08a9670bed79538e55f377fb6ad82735c4"
+    }
+  ],
+  "accounting": {
+    "target": 6,
+    "factory": 1,
+    "support": 4,
+    "cleanup": 1,
+    "carrier": 10,
+    "bootstrap": 3,
+    "totalGCALL": 25,
+    "frameDirect": 10,
+    "collectorDirect": 3,
+    "newCtorFrameCollectorDirect": 13,
+    "rawMessageDirect": 2,
+    "parsedConfigurationCommands": 28,
+    "normalLayoutCommands": 3,
+    "hostSetup": "Qualified D1 controller/Root host, exact native setup/cleanup journal retained separately. Source imports and three archive mounts unchanged."
+  },
+  "instructions": [
+    [37, 591611463],
+    [37, 1718513507],
+    [38, 256],
+    [37, 1177380713],
+    [38, 260],
+    [37, 21317],
+    [38, 264],
+    [37, 1718513507],
+    [38, 320],
+    [37, 1814914921],
+    [38, 324],
+    [37, 6649449],
+    [38, 328],
+    [37, 1431191885],
+    [38, 352],
+    [37, 19521],
+    [38, 356],
+    [37, 1312901187],
+    [38, 384],
+    [37, 17735],
+    [38, 388],
+    [37, 1312901187],
+    [38, 416],
+    [37, 3294535],
+    [38, 420],
+    [37, 1163150913],
+    [38, 448],
+    [37, 82],
+    [38, 452],
+    [37, 0],
+    [38, 480],
+    [37, 2714411390],
+    [38, 96],
+    [37, 2714411390],
+    [38, 100],
+    [43, 76, 0],
+    [38, 44],
+    [43, 65, 0],
+    [37, 34],
+    [37, [19, 44]],
+    [37, 256],
+    [43, 66, 12],
+    [38, 32],
+    [37, [19, 32]],
+    [37, 320],
+    [43, 447, 8],
+    [37, [19, 32]],
+    [43, 448, 4],
+    [37, 23],
+    [37, 2714411390],
+    [43, 211, 8],
+    [43, 65, 0],
+    [37, [19, 32]],
+    [37, 352],
+    [37, 480],
+    [37, 0],
+    [43, 630, 16],
+    [43, 65, 0],
+    [37, [19, 32]],
+    [37, 384],
+    [37, 480],
+    [37, 0],
+    [43, 630, 16],
+    [43, 65, 0],
+    [43, 65, 0],
+    [37, [19, 32]],
+    [37, 448],
+    [37, 480],
+    [37, 0],
+    [43, 630, 16],
+    [37, [19, 32]],
+    [43, 667, 4],
+    [38, 96],
+    [37, [19, 32]],
+    [37, 2],
+    [43, 646, 8],
+    [38, 100],
+    [43, 65, 0],
+    [37, [19, 32]],
+    [37, 416],
+    [37, 480],
+    [37, 0],
+    [43, 630, 16],
+    [43, 65, 0],
+    [43, 65, 0],
+    [37, [19, 32]],
+    [43, 67, 4],
+    [43, 65, 0],
+    [43, 65, 0],
+    [59]
+  ],
+  "source": "#DEFINE\r\nSTRING text[2]\r\nNVSTRING nv\r\n#OBJECT SIZE\r\ntext 32,16\r\nnv 32,16\r\n#START\r\nnext WAIT\r\n#WAIT\r\n#MANUAL\r\ntext[1] layout font ManualFace\r\ntext[1] layout weight 333\r\ntext[1] layout shadow 4 5\r\nbreak\r\n#CHANGE\r\nsetconf 1 fontweight 0 0\r\nsetconf 1 fontprop 0 0\r\nsetconf 9 fontfix 0 0\r\nsetconf 12 fshadow 0 0\r\nsetconf 13 fshadow 1 0\r\nsetconf 45 NotAField 0 0\r\ngetconf 16 fontweight 0 0\r\ngetconf 17 fontprop 0 0\r\ngetconf 18 fontfix 0 0\r\ngetconf 19 fshadow 0 0\r\ngetconf 20 fshadow 1 0\r\ngetconf 21 fshadow 2 0\r\ngetconf 22 fshadow 3 0\r\ngetconf 23 NotAField 0 0\r\nbreak\r\n#CHANGE2\r\nsetconf 0 fontweight 0 0\r\nsetconf 0 fontprop 0 0\r\nsetconf 17 fontfix 0 0\r\nsetconf 2 fshadow 0 0\r\nsetconf 3 fshadow 1 0\r\nsetconf 45 NotAField 0 0\r\ngetconf 16 fontweight 0 0\r\ngetconf 17 fontprop 0 0\r\ngetconf 18 fontfix 0 0\r\ngetconf 19 fshadow 0 0\r\ngetconf 20 fshadow 1 0\r\ngetconf 21 fshadow 2 0\r\ngetconf 22 fshadow 3 0\r\ngetconf 23 NotAField 0 0\r\nbreak\r\n#AFTER\r\n\\3=\\3+1\r\nresult 77\r\nbreak\r\n#MES_CHANGECONFIG\r\n\\2=99\r\nbreak\r\n",
+  "rows": [
+    {
+      "label": "authored parent query",
+      "frame": 200,
+      "drive": "script",
+      "outputs": [2714411390, 2714411390],
+      "vm": {
+        "pc": 238,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "settings": null,
+      "queriedGlobalWords": [0, 0, 0, 0, 0, 0, 0, 0],
+      "configurationMessage": false,
+      "objects": []
+    },
+    {
+      "label": "loaded STRING and NVSTRING source",
+      "frame": 201,
+      "drive": "parent",
+      "outputs": [2714411390, 2714411390],
+      "vm": {
+        "pc": 347,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "settings": null,
+      "queriedGlobalWords": [0, 0, 0, 0, 0, 0, 0, 2714411390],
+      "configurationMessage": false,
+      "objects": []
+    },
+    {
+      "label": "manual STRING overrides",
+      "frame": 202,
+      "drive": "script",
+      "outputs": [2714411390, 2714411390],
+      "vm": {
+        "pc": 393,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "settings": null,
+      "queriedGlobalWords": [0, 0, 0, 0, 0, 0, 0, 2714411390],
+      "configurationMessage": false,
+      "objects": [
+        {
+          "type": 20,
+          "name": "text",
+          "index": 0,
+          "dirty": 0,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 400,
+              "rightdown": 1,
+              "around": 1,
+              "fixed": 1
+            }
+          ]
+        },
+        {
+          "type": 20,
+          "name": "text",
+          "index": 1,
+          "dirty": 0,
+          "defaults": [1, 0, 0, 0],
+          "configs": [
+            {
+              "face": [77, 97, 110, 117, 97, 108, 70, 97, 99, 101, 0],
+              "weight": 333,
+              "rightdown": 4,
+              "around": 5,
+              "fixed": 1
+            }
+          ]
+        },
+        {
+          "type": 28,
+          "name": "nv",
+          "index": 0,
+          "dirty": 0,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 400,
+              "rightdown": 1,
+              "around": 1,
+              "fixed": 1
+            },
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 400,
+              "rightdown": 1,
+              "around": 1,
+              "fixed": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "parser changes Settings without configuration message",
+      "frame": 203,
+      "drive": "script",
+      "outputs": [2714411390, 2714411390],
+      "vm": {
+        "pc": 439,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "settings": {
+        "weight": 1,
+        "proportional": 1,
+        "fixed": 9,
+        "around": 12,
+        "rightdown": 13,
+        "dirty": 1
+      },
+      "queriedGlobalWords": [1, 1, 9, 12, 13, 1, 1, 2714411390],
+      "configurationMessage": false,
+      "objects": [
+        {
+          "type": 20,
+          "name": "text",
+          "index": 0,
+          "dirty": 0,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 400,
+              "rightdown": 1,
+              "around": 1,
+              "fixed": 1
+            }
+          ]
+        },
+        {
+          "type": 20,
+          "name": "text",
+          "index": 1,
+          "dirty": 0,
+          "defaults": [1, 0, 0, 0],
+          "configs": [
+            {
+              "face": [77, 97, 110, 117, 97, 108, 70, 97, 99, 101, 0],
+              "weight": 333,
+              "rightdown": 4,
+              "around": 5,
+              "fixed": 1
+            }
+          ]
+        },
+        {
+          "type": 28,
+          "name": "nv",
+          "index": 0,
+          "dirty": 0,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 400,
+              "rightdown": 1,
+              "around": 1,
+              "fixed": 1
+            },
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 400,
+              "rightdown": 1,
+              "around": 1,
+              "fixed": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "first raw18 saved-resource callbacks",
+      "frame": 204,
+      "drive": "script",
+      "outputs": [2714411390, 2714411390],
+      "vm": {
+        "pc": 450,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "settings": {
+        "weight": 1,
+        "proportional": 1,
+        "fixed": 9,
+        "around": 12,
+        "rightdown": 13,
+        "dirty": 1
+      },
+      "queriedGlobalWords": [1, 1, 9, 12, 13, 1, 1, 2714411390],
+      "configurationMessage": true,
+      "objects": [
+        {
+          "type": 20,
+          "name": "text",
+          "index": 0,
+          "dirty": 1,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 700,
+              "rightdown": 13,
+              "around": 12,
+              "fixed": 9
+            }
+          ]
+        },
+        {
+          "type": 20,
+          "name": "text",
+          "index": 1,
+          "dirty": 1,
+          "defaults": [1, 0, 0, 0],
+          "configs": [
+            {
+              "face": [77, 97, 110, 117, 97, 108, 70, 97, 99, 101, 0],
+              "weight": 333,
+              "rightdown": 4,
+              "around": 5,
+              "fixed": 9
+            }
+          ]
+        },
+        {
+          "type": 28,
+          "name": "nv",
+          "index": 0,
+          "dirty": 1,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 700,
+              "rightdown": 13,
+              "around": 12,
+              "fixed": 9
+            },
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 700,
+              "rightdown": 13,
+              "around": 12,
+              "fixed": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "normal continuation; notification label absent",
+      "frame": 205,
+      "drive": "script",
+      "outputs": [77, 0],
+      "vm": {
+        "pc": 548,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "settings": {
+        "weight": 1,
+        "proportional": 1,
+        "fixed": 9,
+        "around": 12,
+        "rightdown": 13,
+        "dirty": 1
+      },
+      "queriedGlobalWords": [1, 1, 9, 12, 13, 1, 1, 2714411390],
+      "configurationMessage": false,
+      "objects": [
+        {
+          "type": 20,
+          "name": "text",
+          "index": 0,
+          "dirty": 0,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 700,
+              "rightdown": 13,
+              "around": 12,
+              "fixed": 9
+            }
+          ]
+        },
+        {
+          "type": 20,
+          "name": "text",
+          "index": 1,
+          "dirty": 0,
+          "defaults": [1, 0, 0, 0],
+          "configs": [
+            {
+              "face": [77, 97, 110, 117, 97, 108, 70, 97, 99, 101, 0],
+              "weight": 333,
+              "rightdown": 4,
+              "around": 5,
+              "fixed": 9
+            }
+          ]
+        },
+        {
+          "type": 28,
+          "name": "nv",
+          "index": 0,
+          "dirty": 0,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 700,
+              "rightdown": 13,
+              "around": 12,
+              "fixed": 9
+            },
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 700,
+              "rightdown": 13,
+              "around": 12,
+              "fixed": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "parser changes defaults a second time",
+      "frame": 206,
+      "drive": "script",
+      "outputs": [77, 0],
+      "vm": {
+        "pc": 594,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "settings": {
+        "weight": 0,
+        "proportional": 0,
+        "fixed": 17,
+        "around": 2,
+        "rightdown": 3,
+        "dirty": 1
+      },
+      "queriedGlobalWords": [0, 0, 17, 2, 3, 0, 0, 2714411390],
+      "configurationMessage": false,
+      "objects": [
+        {
+          "type": 20,
+          "name": "text",
+          "index": 0,
+          "dirty": 0,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 700,
+              "rightdown": 13,
+              "around": 12,
+              "fixed": 9
+            }
+          ]
+        },
+        {
+          "type": 20,
+          "name": "text",
+          "index": 1,
+          "dirty": 0,
+          "defaults": [1, 0, 0, 0],
+          "configs": [
+            {
+              "face": [77, 97, 110, 117, 97, 108, 70, 97, 99, 101, 0],
+              "weight": 333,
+              "rightdown": 4,
+              "around": 5,
+              "fixed": 9
+            }
+          ]
+        },
+        {
+          "type": 28,
+          "name": "nv",
+          "index": 0,
+          "dirty": 0,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 700,
+              "rightdown": 13,
+              "around": 12,
+              "fixed": 9
+            },
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 700,
+              "rightdown": 13,
+              "around": 12,
+              "fixed": 9
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "second raw18 saved-resource callbacks",
+      "frame": 207,
+      "drive": "script",
+      "outputs": [77, 0],
+      "vm": {
+        "pc": 605,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "settings": {
+        "weight": 0,
+        "proportional": 0,
+        "fixed": 17,
+        "around": 2,
+        "rightdown": 3,
+        "dirty": 1
+      },
+      "queriedGlobalWords": [0, 0, 17, 2, 3, 0, 0, 2714411390],
+      "configurationMessage": true,
+      "objects": [
+        {
+          "type": 20,
+          "name": "text",
+          "index": 0,
+          "dirty": 1,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 400,
+              "rightdown": 3,
+              "around": 2,
+              "fixed": 1
+            }
+          ]
+        },
+        {
+          "type": 20,
+          "name": "text",
+          "index": 1,
+          "dirty": 1,
+          "defaults": [1, 0, 0, 0],
+          "configs": [
+            {
+              "face": [77, 97, 110, 117, 97, 108, 70, 97, 99, 101, 0],
+              "weight": 333,
+              "rightdown": 4,
+              "around": 5,
+              "fixed": 1
+            }
+          ]
+        },
+        {
+          "type": 28,
+          "name": "nv",
+          "index": 0,
+          "dirty": 1,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 400,
+              "rightdown": 3,
+              "around": 2,
+              "fixed": 1
+            },
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 400,
+              "rightdown": 3,
+              "around": 2,
+              "fixed": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "normal FES close request",
+      "frame": 208,
+      "drive": "script",
+      "outputs": [77, 0],
+      "vm": {
+        "pc": 633,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "settings": {
+        "weight": 0,
+        "proportional": 0,
+        "fixed": 17,
+        "around": 2,
+        "rightdown": 3,
+        "dirty": 1
+      },
+      "queriedGlobalWords": [0, 0, 17, 2, 3, 0, 0, 2714411390],
+      "configurationMessage": false,
+      "objects": [
+        {
+          "type": 20,
+          "name": "text",
+          "index": 0,
+          "dirty": 1,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 400,
+              "rightdown": 3,
+              "around": 2,
+              "fixed": 1
+            }
+          ]
+        },
+        {
+          "type": 20,
+          "name": "text",
+          "index": 1,
+          "dirty": 1,
+          "defaults": [1, 0, 0, 0],
+          "configs": [
+            {
+              "face": [77, 97, 110, 117, 97, 108, 70, 97, 99, 101, 0],
+              "weight": 333,
+              "rightdown": 4,
+              "around": 5,
+              "fixed": 1
+            }
+          ]
+        },
+        {
+          "type": 28,
+          "name": "nv",
+          "index": 0,
+          "dirty": 1,
+          "defaults": [1, 1, 1, 1],
+          "configs": [
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 400,
+              "rightdown": 3,
+              "around": 2,
+              "fixed": 1
+            },
+            {
+              "face": [130, 108, 130, 114, 32, 131, 83, 131, 86, 131, 98, 131, 78, 0],
+              "weight": 400,
+              "rightdown": 3,
+              "around": 2,
+              "fixed": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "parent retires FES before supplier",
+      "frame": 209,
+      "drive": "parent",
+      "outputs": [77, 0],
+      "vm": {
+        "pc": 644,
+        "sp": 4100,
+        "fp": 4096,
+        "floor": 4096
+      },
+      "settings": {
+        "weight": 0,
+        "proportional": 0,
+        "fixed": 17,
+        "around": 2,
+        "rightdown": 3,
+        "dirty": 1
+      },
+      "queriedGlobalWords": [0, 0, 17, 2, 3, 0, 0, 2714411390],
+      "configurationMessage": false,
+      "objects": []
+    }
+  ]
+}
