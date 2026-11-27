@@ -877,6 +877,16 @@ export class FESCoordinator {
   async initializeResources() {
     await this.resources.appendPending(this.collection);
   }
+  transferResourcesTo(next) {
+    if (next.resources.entries.length || next.resources.nextEntryID !== 1)
+      throw new Error('FES task resources require a fresh receiving Core');
+    next.resources.entries = this.resources.entries;
+    next.resources.nextEntryID = this.resources.nextEntryID;
+    this.resources.entries = [];
+    this.resources.nextEntryID = 1;
+    next.ownedTaskIDs = this.ownedTaskIDs;
+    this.ownedTaskIDs = new Set();
+  }
   async sync({ restoring = false, resourcesOnly = false, executorEntry } = {}) {
     if (restoring) {
       for (const entry of this.resources.entries)
@@ -912,7 +922,10 @@ export class FESCoordinator {
   }
   async allocateEntry(entry, object) {
     const type = object.nativeType;
-    if (type === 6) entry.initialHandle = object.handle;
+    if (type === 6) {
+      entry.initialHandle = object.handle;
+      entry.initialCore = this.instance.player.nativeCoreGeneration ?? null;
+    }
     if (imageEntryTypes.has(type)) {
       await this.images.allocateEntry(this.instance, object, entry);
       if (type === 6) {
@@ -1070,10 +1083,19 @@ export class FESCoordinator {
     else if (type === 23) this.particles.cleanupEntry(entry);
     else if (type === 25 && entry.lastOwnerSource)
       await this.removeDifOutput(entry.lastOwnerSource);
+    await this.instance.player.nativeReleaseInitial?.(entry);
     // Explicit zeroed raw23 guard and missing mosaic/LOG cleanup branches.
   }
   validateEntry(entry, object) {
     if (entry.savedType === 6) validateFESButtonInitialHandle(entry);
+    if (
+      entry.savedType === 6 &&
+      this.instance.player.nativeCoreGeneration !== undefined &&
+      (!Number.isSafeInteger(entry.initialCore) ||
+        entry.initialCore < 1 ||
+        entry.initialCore > this.instance.player.nativeCoreGeneration)
+    )
+      throw new Error('FES BUTTON resource has no valid initial Core identity');
     if (entry.savedType === 36) this.effekseer.validateEntry(this.instance, object, entry);
     if (entry.savedType === 23) this.particles.validateEntry(this.instance, object, entry);
     if (imageEntryTypes.has(entry.savedType))
@@ -1468,7 +1490,7 @@ export class FESCoordinator {
     }
     // Every native FES base owns a manager, including an empty object for
     // which the JS motion target has not yet been needed.
-    this.world.motionLibrary.managerDestroyed();
+    if (!this.reclaimingMetadata) this.world.motionLibrary.managerDestroyed();
   }
   serializeObject(object) {
     const result = clone({ ...object });
@@ -1529,7 +1551,8 @@ export class FESCoordinator {
     for (const [handle, saved] of state.motions)
       await this.motions.restore(this.collection.graph.get(handle), saved);
   }
-  async close() {
+  async close({ metadataOnly = false } = {}) {
+    this.reclaimingMetadata = metadataOnly;
     await this.platform.close();
     this.pendingRecords.length = 0;
     await this.collection.close();
@@ -1540,11 +1563,12 @@ export class FESCoordinator {
       this.targetFor(this.top, false)?.clear();
       this.collection.graph.release(this.top);
       this.top = null;
-      this.world.motionLibrary.managerDestroyed();
+      if (!metadataOnly) this.world.motionLibrary.managerDestroyed();
     }
     this.targets.clear();
     for (const id of this.ownedTaskIDs)
-      if (this.world.objects.objects.has(id)) await this.world.objects.release(id);
+      if (this.world.objects.objects.get(id)?.parent === this.instance.runtimeID)
+        await this.world.objects.release(id);
     this.ownedTaskIDs.clear();
   }
 }

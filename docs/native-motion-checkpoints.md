@@ -302,14 +302,39 @@ but FES decoding remains disabled until Main448. Its disabled gate also survives
 an independent cold restore. Captures taken before that normal clock producer
 remain diagnostic records and do not establish numeric clock equivalence.
 
-Repeated Main447 initialization is explicitly outside that equivalence: the old
-receivers overwrite the owning Core pointer and construct new managers while
-the observed cache stays populated; Web currently closes its old interpreter.
-The earlier original reload rows are retained as open evidence and excluded
-from the final paired fixture. Final live-Core retirement has its own normal
-receiver control. The original journal does not establish whether other native
-references can reach the overwritten Core or that normal application shutdown
-reclaims it. A complete Core replacement/retained-consumer ownership group is
-still required; no leaked native allocation or alternative checkpoint layout is
-emulated here. The current fixture uses the World's constructed Root for the
-native kind1 Top prerequisite and does not qualify nested native-ID namespaces.
+The subsequent SDK63/67 Core-replacement protocol closes that earlier gap for
+ordinary CPLANE/MOT and actual parsed Script consumers. A bank-supplying Script
+creates its own FES through Main66, loads/starts it, replaces its Core through
+Main447, invokes Main630 and finally retires the FES before releasing its bank.
+The controller created by the first Core remains live after replacement and
+updates its own Plane through Main94. The new Core's callback returns13/15.
+The task-owned resource FIFO retains the old Plane until the next resource
+visit requests native deletion; the following Root frame collects it. The new
+Plane and controller retire with the FES, and actual manager destruction then
+clears the MOT source cache. Both exact originals record36 wrapper entries and
+seven Root callbacks; a separate63 write trace identifies the actual raw3
+sender and deferred collection. Captured Main77 results in the nested original
+Top's root0 namespace remain excluded from pairing. The observer's permanent
+freed-address tombstones also cannot establish absence after allocator reuse.
+
+Native child-FES/Script slots and the resource FIFO belong to the FES task,
+separately from its replaceable Core. The browser keeps those task resources,
+input and surface bindings across replacement. Superseded interpreter metadata
+is reclaimed without inventing a native manager-destructor/cache event. A FIFO
+BUTTON initial-object borrower retains its particular old Core's semantic
+identity until the last such entry is removed; equal local handles in a new
+Core do not alias it. These bounded owners and pending handoffs are explicit in
+the current internal checkpoint, including their private-bank context and Core
+identity. There is no older-development-snapshot fallback or GAME_SAVE change.
+The BUTTON cross-Core and interrupted-handoff checks are current ownership
+counterexamples derived from the existing initial-pointer consumer; they are
+not additional original dynamic glyph, hit-pixel or GPU evidence.
+
+The original overwritten Core itself is not destructed or freed in the
+observed normal shutdown, although its task children and live resources have
+normal retirement. The browser preserves those observable consumers and cache
+semantics rather than reproducing the unreachable allocation leak. The native
+fixture closes its inner Top before its outer supplying Script; the reused
+Root0 current fixture preserves that provider lifetime explicitly. Full
+Application/Device publication and broader replacement formats, callbacks and
+platform resources remain separate qualification boundaries.

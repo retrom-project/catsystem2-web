@@ -33,6 +33,10 @@ export function createNativeFESTask(world, record) {
   Object.assign(implementation, {
     input,
     player: null,
+    childTasks: { kcsTaskID: null, childTaskID: null },
+    pendingPlayer: null,
+    retainedPlayers: new Map(),
+    nextCoreGeneration: 1,
     runEnabled: false,
     surface: null,
     soundTaskID: null,
@@ -51,12 +55,23 @@ export function createNativeFESTask(world, record) {
     loadImage(name, selector) {
       return imageCacheModel.load(name, selector);
     },
-    configurePlayer() {
-      const player = this.player;
+    configurePlayer(player = this.player) {
       player.motionLibrary = world.motionLibrary;
       player.nativeSources = world.fesSources;
       player.nativeOwner = record.id;
-      player.runtimeFactory = (instance) => new FESCoordinator(world, instance, imageCacheModel);
+      player.runtimeFactory = (instance) => {
+        // Native execkcs/execfes slots belong to the task, not its replaceable
+        // Core. All callers, including send/end/exit-code, use the same slots.
+        for (const key of ['kcsTaskID', 'childTaskID'])
+          Object.defineProperty(instance, key, {
+            enumerable: true,
+            get: () => this.childTasks[key],
+            set: (id) => {
+              this.childTasks[key] = id;
+            },
+          });
+        return new FESCoordinator(world, instance, imageCacheModel);
+      };
       player.nativeSound = world.fesSound;
       player.nativeSoundTaskID = this.soundTaskID;
       player.nativeImages = world.imagesFES;
@@ -64,7 +79,18 @@ export function createNativeFESTask(world, record) {
       player.nativeText = world.text.fes;
       player.nativeLog = world.text.log;
       player.nativeInput = input;
-      this.bindVariableContext();
+      player.nativeInitialObject = (entry) => {
+        const source =
+          entry.initialCore === player.nativeCoreGeneration
+            ? player
+            : this.retainedPlayers.get(entry.initialCore);
+        const instance = source?.root,
+          object = instance?.collection.graph.get(entry.initialHandle);
+        if (!instance) throw new Error('FES initial BUTTON has no live Core owner');
+        return { instance, object };
+      };
+      player.nativeReleaseInitial = (entry) => this.releaseInitialOwner(entry);
+      this.bindVariableContext(player);
     },
     variableContextKey() {
       return (record.context.fesVariableContextKey ??= `fes:${record.id}`);
@@ -78,18 +104,20 @@ export function createNativeFESTask(world, record) {
       bank?.selectContext(this.variableContextKey());
       return bank?.context(this.variableContextKey()) ?? null;
     },
-    bindVariableContext() {
-      const key = this.variableContextKey();
-      this.player.nativeVariableContext = (instance) => {
+    bindVariableContext(player = this.player) {
+      const key = player.nativeVariableContextKey,
+        handle = player.nativeVariableBankHandle,
+        variableBank = () => (handle ? world.runtime.handles.get(handle, 'variable-bank') : null);
+      player.nativeVariableContext = (instance) => {
         instance.nativeVariableContextKey ??= key;
-        const bank = this.variableBank();
+        const bank = variableBank();
         bank?.selectContext(instance.nativeVariableContextKey);
         return bank?.context(instance.nativeVariableContextKey) ?? null;
       };
       if (nativeABI(world.profile).fes.localAccessUsesNativeTypes)
-        this.player.nativeNamedVariable = (instance, name, index) => {
+        player.nativeNamedVariable = (instance, name, index) => {
           const bytes = typeof name === 'string' ? encodeCP932(name) : name,
-            bank = this.variableBank();
+            bank = variableBank();
           if (bytes.length > 32 || !bank?.selectContext(instance.nativeVariableContextKey ?? key))
             return undefined;
           return bank.findName(bytes, index);
@@ -97,8 +125,18 @@ export function createNativeFESTask(world, record) {
     },
     async initialize(variableBank) {
       const runtime = world.runtime;
-      if (this.player) await this.closeInterpreter();
+      if (this.player?.root) {
+        if (this.pendingPlayer) throw new Error('FES task already has a pending Core handoff');
+        this.pendingPlayer = this.player;
+        this.player.nativeCoreReplaced = true;
+        this.player.root.runtime.platform.closed = true;
+      }
       record.context.variableBank = variableBank;
+      if (this.nextCoreGeneration === Number.MAX_SAFE_INTEGER)
+        throw new RangeError('FES Core identity space is exhausted');
+      const generation = this.nextCoreGeneration++;
+      record.context.fesVariableContextKey =
+        generation === 1 ? `fes:${record.id}` : `fes:${record.id}:${generation}`;
       if (!this.stringsInherited) {
         if (record.parent !== null)
           await world.sendEngine(record.parent, record.id, 177, 0, 0, {
@@ -117,6 +155,11 @@ export function createNativeFESTask(world, record) {
         runtime.bankView(record.context.variableBank),
         runtime.bankView(record.context.stringBank, 'string-bank'),
       );
+      Object.assign(this.player, {
+        nativeCoreGeneration: generation,
+        nativeVariableBankHandle: variableBank,
+        nativeVariableContextKey: this.variableContextKey(),
+      });
       this.soundTaskID = nativeEngineWord(
         await world.sendNativeEngine(0, record.id, world.engineMessages.layout.rootStart + 3),
         'FES initialization sound-task query',
@@ -165,6 +208,18 @@ export function createNativeFESTask(world, record) {
         return false;
       }
       await this.player.start(name);
+      if (this.pendingPlayer) {
+        const previous = this.pendingPlayer;
+        previous.root.runtime.transferResourcesTo(this.player.root.runtime);
+        this.pendingPlayer = null;
+        if (
+          this.player.root.runtime.resources.entries.some(
+            (entry) => entry.savedType === 6 && entry.initialCore === previous.nativeCoreGeneration,
+          )
+        )
+          this.retainedPlayers.set(previous.nativeCoreGeneration, previous);
+        else await this.reclaimPlayer(previous);
+      }
       this.player.root.nativeDictionary = this.nativeDictionary;
       this.player.root.runtimeID = record.id;
       this.player.root.variableBank = record.context.variableBank;
@@ -203,9 +258,54 @@ export function createNativeFESTask(world, record) {
       await world.graphics.syncFES(record, this.player, { executorEntry: context.executorEntry });
       await input.sync();
     },
+    async reclaimPlayer(player) {
+      for (const instance of player.instances) await instance.runtime.close({ metadataOnly: true });
+      this.unregisterPlayerContext(player);
+    },
+    unregisterPlayerContext(player) {
+      const handle = player.nativeVariableBankHandle;
+      if (handle && world.runtime.handles.records.has(handle))
+        world.runtime.handles
+          .get(handle, 'variable-bank')
+          .unregisterContext(player.nativeVariableContextKey);
+    },
+    async releaseInitialOwner(removed) {
+      const generation = removed.initialCore,
+        player = this.retainedPlayers.get(generation);
+      if (!player) return;
+      const entries =
+        (this.player?.root ?? this.pendingPlayer?.root)?.runtime.resources.entries ?? [];
+      if (
+        entries.some(
+          (entry) => entry !== removed && entry.savedType === 6 && entry.initialCore === generation,
+        )
+      )
+        return;
+      this.retainedPlayers.delete(generation);
+      await this.reclaimPlayer(player);
+    },
+    snapshotCore(player) {
+      return player
+        ? {
+            generation: player.nativeCoreGeneration,
+            bank: player.nativeVariableBankHandle,
+            key: player.nativeVariableContextKey,
+            surface: player.surface ?? null,
+            drawBinding: player.nativeDraw ?? null,
+            player: player.snapshot(),
+          }
+        : null;
+    },
     snapshot() {
       return {
         player: this.player?.snapshot() ?? null,
+        coreGeneration: this.player?.nativeCoreGeneration ?? null,
+        nextCoreGeneration: this.nextCoreGeneration,
+        pendingCore: this.snapshotCore(this.pendingPlayer),
+        retainedCores: [...this.retainedPlayers.values()].map((player) =>
+          this.snapshotCore(player),
+        ),
+        childTasks: { ...this.childTasks },
         runEnabled: this.runEnabled,
         input: input.snapshot(),
         surface: this.surface,
@@ -220,6 +320,21 @@ export function createNativeFESTask(world, record) {
       };
     },
     async restore(state) {
+      if (
+        !Number.isSafeInteger(state.nextCoreGeneration) ||
+        state.nextCoreGeneration < 1 ||
+        !Array.isArray(state.retainedCores)
+      )
+        throw new Error('Invalid FES Core ownership checkpoint');
+      this.nextCoreGeneration = state.nextCoreGeneration;
+      for (const key of ['kcsTaskID', 'childTaskID']) {
+        const id = state.childTasks?.[key];
+        if (id !== null && (!Number.isSafeInteger(id) || id < 0))
+          throw new Error('Invalid FES task child slot');
+        if (state.player?.root && state.player.root[key] !== id)
+          throw new Error('FES Core and task child slots disagree');
+        this.childTasks[key] = id;
+      }
       if (typeof state.runEnabled !== 'boolean') throw new Error('Invalid FES running gate');
       this.runEnabled = state.runEnabled;
       this.surface = state.surface;
@@ -228,18 +343,100 @@ export function createNativeFESTask(world, record) {
       this.stringsInherited = state.stringsInherited;
       imageCacheModel.entries = new Map(state.imageCache);
       input.restore(state.input);
-      if (!state.player) return;
+      const generations = new Set(),
+        restoreCore = async (saved) => {
+          if (
+            !saved ||
+            !Number.isSafeInteger(saved.generation) ||
+            saved.generation < 1 ||
+            saved.generation >= this.nextCoreGeneration ||
+            generations.has(saved.generation) ||
+            saved.key !==
+              (saved.generation === 1
+                ? `fes:${record.id}`
+                : `fes:${record.id}:${saved.generation}`) ||
+            !Number.isInteger(saved.bank) ||
+            saved.bank < 0
+          )
+            throw new Error('Invalid FES Core ownership record');
+          for (const key of ['kcsTaskID', 'childTaskID'])
+            if (saved.player?.root && saved.player.root[key] !== state.childTasks[key])
+              throw new Error('FES retained Core and task child slots disagree');
+          generations.add(saved.generation);
+          const player = new FESPlayer(
+            world.game,
+            world.images,
+            world.fesHost(record),
+            world.runtime.bankView(saved.bank),
+            world.runtime.bankView(record.context.stringBank, 'string-bank'),
+          );
+          Object.assign(player, {
+            nativeCoreGeneration: saved.generation,
+            nativeVariableBankHandle: saved.bank,
+            nativeVariableContextKey: saved.key,
+            surface: saved.surface ?? this.surface,
+            nativeDraw: saved.drawBinding ?? null,
+          });
+          this.configurePlayer(player);
+          await player.restore(saved.player);
+          return player;
+        };
+      for (const saved of state.retainedCores) {
+        const player = await restoreCore(saved);
+        if (
+          !player.root ||
+          player.root.runtime.resources.entries.length ||
+          player.root.runtime.ownedTaskIDs.size
+        )
+          throw new Error('Retained FES Core must only own borrowed semantic objects');
+        player.root.runtime.platform.closed = true;
+        player.nativeCoreReplaced = true;
+        this.retainedPlayers.set(saved.generation, player);
+      }
+      if (state.pendingCore !== null) {
+        this.pendingPlayer = await restoreCore(state.pendingCore);
+        if (!this.pendingPlayer.root)
+          throw new Error('Pending FES Core requires its resource owner');
+        this.pendingPlayer.root.runtime.platform.closed = true;
+        this.pendingPlayer.nativeCoreReplaced = true;
+      }
+      if (!state.player) {
+        if (state.coreGeneration !== null || this.pendingPlayer || this.retainedPlayers.size)
+          throw new Error('FES task resources require an initialized Core');
+        return;
+      }
+      if (state.coreGeneration !== this.nextCoreGeneration - 1)
+        throw new Error('FES active Core is not the current generation');
       this.validatedVariableBankHandle = this.variableBank() ? record.context.variableBank : 0;
-      const runtime = world.runtime;
-      this.player = new FESPlayer(
-        world.game,
-        world.images,
-        world.fesHost(record),
-        runtime.bankView(record.context.variableBank),
-        runtime.bankView(record.context.stringBank, 'string-bank'),
-      );
-      this.configurePlayer();
-      await this.player.restore(state.player);
+      this.player = await restoreCore({
+        generation: state.coreGeneration,
+        bank: record.context.variableBank ?? 0,
+        key: this.variableContextKey(),
+        player: state.player,
+      });
+      const resources = (this.player.root ?? this.pendingPlayer?.root)?.runtime.resources;
+      for (const entry of resources?.entries ?? [])
+        if (
+          entry.savedType === 6 &&
+          entry.initialHandle !== 0 &&
+          entry.initialCore !==
+            (this.player.root ? this.player : this.pendingPlayer).nativeCoreGeneration &&
+          !this.retainedPlayers.has(entry.initialCore)
+        )
+          throw new Error('FES resource has no initial Core owner');
+      for (const [generation, player] of this.retainedPlayers) {
+        const entries =
+          resources?.entries.filter(
+            (entry) => entry.savedType === 6 && entry.initialCore === generation,
+          ) ?? [];
+        if (!entries.length) throw new Error('Retained FES Core has no live resource borrower');
+        for (const entry of entries) {
+          const object = player.root.collection.graph.get(entry.initialHandle);
+          if (object && object.nativeType !== 6)
+            throw new Error('FES initial borrower has no BUTTON owner');
+          player.root.runtime.images.validateEntry(player.root, object, entry);
+        }
+      }
       this.nativeDictionary =
         this.player.root?.nativeDictionary ||
         (state.nativeDictionary === null
@@ -272,11 +469,20 @@ export function createNativeFESTask(world, record) {
           !world.runtime.handles.records.has(handle);
       if (!releasedDuringDisposal)
         this.variableBank()?.unregisterContext(this.variableContextKey());
-      for (const instance of this.player?.instances || []) {
-        if (instance.kcsTaskID != null) await world.objects.release(instance.kcsTaskID);
+      for (const key of ['kcsTaskID', 'childTaskID']) {
+        const id = this.childTasks[key];
+        if (id != null && world.objects.objects.has(id)) await world.objects.release(id);
+        this.childTasks[key] = null;
       }
       world.host.nativeFESClosed?.(record, world);
       await world.graphics.closeFES(record, this.player);
+      if (this.pendingPlayer) {
+        await world.graphics.closeFES(record, this.pendingPlayer);
+        this.unregisterPlayerContext(this.pendingPlayer);
+        this.pendingPlayer = null;
+      }
+      for (const player of this.retainedPlayers.values()) await this.reclaimPlayer(player);
+      this.retainedPlayers.clear();
       await input.close();
       this.player = null;
     },
