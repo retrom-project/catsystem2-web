@@ -61,6 +61,10 @@ export function createNativeScriptTask(world, record) {
   record.scriptDebugData ??= 0;
   record.scriptDebugHook ??= 0;
   record.scriptMessages ??= [];
+  if (nativeABI(world.profile).framePacing) {
+    record.scriptUpdateAccumulator ??= 0;
+    record.scriptUpdateAccumulatorKnown ??= true;
+  }
   world.runtime.stringBank({ context: record.context });
   Object.assign(implementation, {
     async dataAddress() {
@@ -252,9 +256,15 @@ export function createNativeScriptTask(world, record) {
       }
       return record.id;
     },
-    async tick() {
+    async tick(_frame, context = {}) {
       const task = this.task,
         scheduler = world.runtime.scheduler;
+      if (nativeABI(world.profile).framePacing && record.scriptEnabled) {
+        const rawStep = world.frameStep(context);
+        if (rawStep === undefined) record.scriptUpdateAccumulatorKnown = false;
+        else if (record.scriptUpdateAccumulatorKnown)
+          record.scriptUpdateAccumulator = (record.scriptUpdateAccumulator + rawStep) >>> 0;
+      }
       if (record.scriptEnabled && !task) record.scriptEnabled = 0;
       if (
         !record.scriptEnabled ||

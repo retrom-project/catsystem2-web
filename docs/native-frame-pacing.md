@@ -45,3 +45,18 @@ The focused pacer tests cover delayed publication, carry, both Frame modes,
 different wait sequences with equal timer endpoints, native pause, host
 suspension and an independent serialized cold continuation. They are module
 tests, not complete browser or original-dispatch acceptance.
+
+An explicitly supplied `frameSource.now` selects this driver only for the
+reviewed SDK23 profile. World startup loads its real Script without inventing
+an initial tick. Each completed observed wait owns one task-graph update at
+the supplied absolute Frame. The presentation owner must complete that packet
+after rendering; the checkpoint boundary rejects a pending presentation.
+Other SDKs and Worlds without that source retain their existing driver.
+
+The Script's accumulator is initialized by its constructor and updated after
+Base, before scheduler readiness, execution mode or completion checks. An
+update without a qualified raw word marks the value unknown. This is not a
+zero step. Snapshots retain this knownness and the actual u32 value with the
+Script owner. Mode0 remains active, normal completion deactivates after its
+current increment, and reenabled mode0 can keep a completed VM active. Neither
+the field nor this source policy registers Main442/443 by itself.

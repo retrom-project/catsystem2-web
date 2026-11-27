@@ -1299,6 +1299,7 @@ export default {
   id: 'cs2-2.6.1.23',
   profile: 'grisaia-jp-engine-2.6.1.23',
   engineVersion: '2.6.1.23',
+  framePacing: 'observed-cooperative-wait',
   tileGame: {
     seedFromLocalClock: true,
     preActionNotificationUsesResult: true,

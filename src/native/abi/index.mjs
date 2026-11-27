@@ -20,6 +20,8 @@ export function validateABI(abi) {
   if (!['Shift_JIS', 'UTF-8'].includes(abi.xmlEncoding) || !Number.isInteger(abi.sound?.banks))
     throw new Error(`Invalid ABI services ${abi.id}`);
   validateBehavior(abi);
+  if (abi.framePacing !== undefined && abi.framePacing !== 'observed-cooperative-wait')
+    throw new Error(`Invalid native frame pacing policy ${abi.id}`);
   if (typeof abi.capabilities?.effekseerTask !== 'boolean')
     throw new Error(`Invalid Effekseer task capability ${abi.id}`);
   for (const table of ['main', 'generic', 'particle-v1', 'particle-v2']) {

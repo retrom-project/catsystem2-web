@@ -93,6 +93,7 @@ import { installNativeUnicodeOutput } from './unicode-output.mjs';
 import { encodeCP932 } from '../kcs/strings.mjs';
 import { encodeNativeCP932, decodeNativeCP932 } from './cp932.mjs';
 import { NativeSystemClock } from './clock.mjs';
+import { NativeFramePacer } from './frame-pacer.mjs';
 import { initializeNativeStartupInputs, initializeNativeStartupSound } from './startup-inputs.mjs';
 import { NativeDispatchContext } from './dispatch-context.mjs';
 import { createEffekseerTask } from '../effekseer/task.mjs';
@@ -107,6 +108,8 @@ const MAX_SOUND_PROBE_BYTES = 256 * 1024;
 // task rather than being run until a convenient UI request and discarded.
 export class NativeWorld {
   #soundOpen = null;
+  #framePacket = null;
+  #updatedFramePacket = null;
 
   constructor({
     game,
@@ -130,6 +133,7 @@ export class NativeWorld {
     sceneWorkers = null,
     installM2 = installNativeM2,
     particleRegistry,
+    frameSource = null,
   }) {
     Object.assign(this, {
       game,
@@ -166,8 +170,16 @@ export class NativeWorld {
       }),
     });
     this.stageRenderer = new StageRenderer();
+    this.frameSource = nativeABI(profile).framePacing ? frameSource : null;
+    if (this.frameSource && typeof this.frameSource.now !== 'function')
+      throw new Error('Native frame observations require their actual host timer');
+    this.framePacer = null;
     this.clock = new NativeSystemClock({
-      now: host.nativeTimeGetTime ? () => host.nativeTimeGetTime() : null,
+      now: this.frameSource
+        ? () => this.frameSource.now()
+        : host.nativeTimeGetTime
+          ? () => host.nativeTimeGetTime()
+          : null,
     });
     const readSource = (name) => (game.readNative ? game.readNative(name, 3) : game.read(name)),
       readResource = (name) => this.resourceCache.read(name);
@@ -896,7 +908,13 @@ export class NativeWorld {
     await this.imageFiles.initialize();
     await initializeNativeStartupInputs(this);
     await this.initializeApplicationServices(name);
-    await this.tick();
+    if (this.frameSource)
+      this.framePacer = new NativeFramePacer({
+        rate: this.configuration.screen.fps,
+        noSkip: !!this.configuration.screen.noSkip,
+        tickCount: this.clock.tickCount(),
+      });
+    if (!this.framePacer) await this.tick();
     return this.main;
   }
   async initializeSteamService() {
@@ -971,15 +989,51 @@ export class NativeWorld {
       this.#soundOpen = { frame, owner, range, bytes };
     return bytes;
   }
-  async tick() {
+  beginHostFrameWait() {
+    if (!this.framePacer) return null;
+    this.framePacer.resume(this.clock.tickCount());
+    return this.framePacer.beginWait();
+  }
+  async resumeHostFrameWait(wait) {
+    if (!this.framePacer) throw new Error('Native host frame source is unavailable');
+    const packet = this.framePacer.observe(wait, this.clock.tickCount());
+    if (!packet) return false;
+    this.#framePacket = packet;
+    await this.tick(packet);
+    return true;
+  }
+  completeHostFrame() {
+    if (!this.#framePacket) return;
+    if (this.running || this.frameSettled)
+      throw new Error('Native host frame presentation requires settled task updates');
+    this.framePacer.complete(this.#framePacket);
+    this.#framePacket = null;
+    this.#updatedFramePacket = null;
+  }
+  suspendHostFrames() {
+    this.framePacer?.suspend();
+  }
+  frameStep(context) {
+    return this.running && this.framePacer?.owns(context?.nativeFramePacket)
+      ? context.nativeFramePacket.rawStep
+      : undefined;
+  }
+  async tick(packet = null) {
     if (this.running || this.frameSettled) throw new Error('Native world frame must be serialized');
+    if (this.framePacer && !this.framePacer.owns(packet))
+      throw new Error('Native world frame requires its observed pacing dispatch');
+    if (!this.framePacer && packet)
+      throw new Error('Native world has no owner for this pacing dispatch');
+    if (packet && packet === this.#updatedFramePacket)
+      throw new Error('Native pacing dispatch already updated its task graph');
+    if (packet) this.#updatedFramePacket = packet;
     let settle;
     this.frameSettled = new Promise((resolve) => {
       settle = resolve;
     });
     try {
       return await this.withExecutor(this.effekseer.frameExecutor, (executorEntry) =>
-        this.#tickFrame(executorEntry),
+        this.#tickFrame(executorEntry, packet),
       );
     } finally {
       // frameSettled is the existing checkpoint/close safe point. Publish it
@@ -989,14 +1043,19 @@ export class NativeWorld {
       settle();
     }
   }
-  async #tickFrame(executorEntry) {
+  async #tickFrame(executorEntry, packet) {
     if (this.dispatchContext.executorID(executorEntry) !== EFFEKSEER_FRAME_EXECUTOR)
       throw new Error('Native frame requires its explicit logical executor');
-    const dispatch = { executorEntry };
-    this.clock.advance(this.configuration.screen.fps);
+    const dispatch = {
+      executorEntry,
+      ...(packet ? { nativeFramePacket: packet } : {}),
+    };
+    if (packet) this.clock.sample();
+    else this.clock.advance(this.configuration.screen.fps);
     this.running = true;
     this.runtime.scheduler.running = true;
-    this.frame++;
+    if (packet) this.frame = packet.frameWord;
+    else this.frame++;
     this.runtime.scheduler.frame = this.frame;
     try {
       await this.processWindowMessages(dispatch);
@@ -1017,9 +1076,12 @@ export class NativeWorld {
     if (this.running || this.frameSettled)
       throw new Error('Native world checkpoint requires a settled frame');
     if (this.quitRequested || this.disposalRequested) throw new Error('Native world is closing');
+    if (this.framePacer?.dispatchPending)
+      throw new Error('Native world checkpoint requires its settled pacing presentation');
     const movies = this.movies.snapshot();
     return {
       frame: this.frame,
+      ...(this.framePacer ? { framePacer: this.framePacer.snapshot() } : {}),
       clock: this.clock.snapshot(),
       effekseer: this.effekseer.snapshot(),
       root: this.root,
@@ -1078,6 +1140,11 @@ export class NativeWorld {
     if (!Number.isSafeInteger(state.frame) || state.frame < 0)
       throw new Error('Invalid native world checkpoint frame');
     this.clock.restore(state.clock);
+    if (state.framePacer) {
+      if (!this.frameSource)
+        throw new Error('Native pacing checkpoint requires its actual host frame source');
+      this.framePacer = NativeFramePacer.restore(state.framePacer);
+    }
     this.calculations.matrix.set(state.calculations.matrix);
     this.tileGame.restore(state.tileGame);
     this.configuration.restore(state.configuration);
@@ -1152,6 +1219,9 @@ export class NativeWorld {
     this.dispatchContext.assertSettled();
     this.effekseer.assertSettled();
     this.disposalRequested = true;
+    this.framePacer?.close();
+    this.#framePacket = null;
+    this.#updatedFramePacket = null;
     this.graphics.images.scenePreparation.discard();
     this.sound?.sceneVoicePreparation?.discard();
     this.windowMessages.length = 0;

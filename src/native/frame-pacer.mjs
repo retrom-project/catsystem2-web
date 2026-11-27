@@ -8,6 +8,7 @@ export class NativeFramePacer {
   #wait = null;
   #dispatch = null;
   #suspended = false;
+  #closed = false;
 
   constructor({ rate, noSkip = false, tickCount }) {
     if (!word(rate) || !rate || typeof noSkip !== 'boolean' || !word(tickCount))
@@ -35,7 +36,7 @@ export class NativeFramePacer {
     return (BigInt(tickCount) << 32n) / this.divisor;
   }
   beginWait() {
-    if (this.#wait || this.#dispatch || this.#suspended)
+    if (this.#wait || this.#dispatch || this.#suspended || this.#closed)
       throw new Error('Native pacing requires a single active host wait');
     return (this.#wait = Object.freeze({}));
   }
@@ -80,6 +81,7 @@ export class NativeFramePacer {
     this.#suspended = true;
   }
   resume(tickCount) {
+    if (this.#closed) throw new Error('Native pacing owner is closed');
     if (!word(tickCount)) throw new Error('Native pacing resume requires its timer word');
     if (!this.#suspended) return;
     // Host suspension produces no hidden waits. This does not implement the
@@ -88,6 +90,7 @@ export class NativeFramePacer {
     this.#suspended = false;
   }
   snapshot() {
+    if (this.#closed) throw new Error('Native pacing owner is closed');
     if (this.#dispatch) throw new Error('Native pacing checkpoint requires a settled dispatch');
     // A pending host callback is an external lease, not a completed observation.
     return {
@@ -100,6 +103,11 @@ export class NativeFramePacer {
       pendingStep: this.pendingStep,
       iteration: this.iteration,
     };
+  }
+  close() {
+    this.#wait = null;
+    this.#dispatch = null;
+    this.#closed = true;
   }
   static restore(state) {
     if (

@@ -14,6 +14,7 @@ export async function dataWorld(
     glyphs,
     startup,
     soundConfiguration,
+    frameSource,
   } = {},
 ) {
   const game = memoryGame({
@@ -29,6 +30,7 @@ export async function dataWorld(
       images: {},
       configuration: new NativeConfiguration({ profile, startup }),
       soundConfiguration,
+      frameSource,
       motionLibrary: new MotionLibrary(game, { profile, random }),
       storage,
     });
