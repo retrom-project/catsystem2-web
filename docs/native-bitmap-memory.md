@@ -286,3 +286,22 @@ Normal VM comparisons cover all five RGBA modes, a RGB destination, cptype over
 mask, all selector pixels, explicit/automatic ownership and independent cold
 continuation. Other blend codes and unqualified external VRAM shapes stay
 protected.
+
+## SDK 2.6.1.63 initialized bitmap calls
+
+This build's first resource group uses its actual software View, original CRT,
+Settings, FileServer mounts, allocator and Main66/Main143 Script interpreter.
+No private function is redirected. Thirty-eight target GCALLs and nine
+constructor/query/release dependencies cover Main370/371/374/376/377/378,
+446/468/537/538/558/564/641 on small real Main111/Main112-owned bitmaps.
+Every captured pixel, geometry/cache word, explicit five-word attribute-copy
+output and control/result matches current World KCS callers; eight fresh checkpoints continue through the next
+real call. The original zero-fill path, not fresh heap contents, establishes
+Main112's initial zero pixels. Explicit fills and subsequent transforms remain
+in the compared sequence.
+
+Main446 copies its RECT into private scratch and preserves the VM rectangle.
+Main377's null-owner result is unwritten, so that shape has a precise diagnostic.
+This group covers RGBA32 storage; RGB24/packed formats, shared or aliased frames,
+additional resource factories and retained Draw require their own qualification.
+It adds no native save fields and does not establish hardware or product pixels.
