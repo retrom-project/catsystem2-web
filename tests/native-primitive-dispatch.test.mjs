@@ -132,6 +132,14 @@ test('primitive service getters and reentry capture current expression context a
       get() {
         throw new Error('missing descriptor fields must not invoke inherited getters');
       },
+      set(value) {
+        Object.defineProperty(this, 'value', {
+          value,
+          writable: true,
+          enumerable: true,
+          configurable: true,
+        });
+      },
     });
     descriptorResult = call(0xd5, [128]);
   } finally {
