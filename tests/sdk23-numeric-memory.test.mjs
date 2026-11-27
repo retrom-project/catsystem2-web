@@ -7,7 +7,7 @@ import { parseXML } from '../src/xml.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 
 const bytes = (value) => new Uint8Array(Buffer.from(value, 'base64'));
-for (const group of ['a1']) {
+for (const group of ['a1', 'a2', 'a3']) {
   const golden = JSON.parse(
     await readFile(
       new URL(`./fixtures/sdk23-numeric-memory-${group}-golden.json`, import.meta.url),
@@ -56,3 +56,32 @@ for (const group of ['a1']) {
       }
     });
 }
+
+// A native helper's physical-NULL shortcut is not evidence for an arbitrary
+// nonzero VM address. Both mapped builds retain the VM range guard.
+for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67'])
+  for (const side of ['source', 'destination'])
+    test(`${profile} copy rejects an unknown nonzero ${side} span before writing`, async () => {
+      const { dataWorld } = await import('./fixtures/data-world.mjs');
+      const { kcsProgram } = await import('./helpers.mjs');
+      const program = kcsProgram([
+          [37, 0x23a5a5a5],
+          [37, side === 'destination' ? 0x7fffffff : 512],
+          [37, side === 'source' ? 0x7fffffff : 512],
+          [37, 4],
+          [43, 35, 12],
+          [59],
+        ]),
+        world = await dataWorld(profile, { 'copy-guard.kcs': program });
+      try {
+        const task = await world.spawnScript('copy-guard.kcs', { initialExecute: false }),
+          m = task.machine,
+          floor = m.sp;
+        m.bytes(512, 8).fill(0xa5);
+        await assert.rejects(() => world.runtime.scheduler.execute(task), /memory|address/i);
+        assert.deepEqual([...m.bytes(512, 8)], new Array(8).fill(0xa5));
+        assert.equal(m.load(floor), 0x23a5a5a5);
+      } finally {
+        await world.close({ flushFiles: false });
+      }
+    });

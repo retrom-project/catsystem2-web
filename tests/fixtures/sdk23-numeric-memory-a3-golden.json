@@ -1,0 +1,204 @@
+{
+  "group": "a3",
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "script": "numeric-a3",
+  "marker": 592336131,
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-numeric-memory-20261128/ORIGINAL-A3.json",
+    "sha256": "7e450c20d57a01f60648c136df2197882d534a67877c01b30945504fd686b5c3"
+  },
+  "qualification": "Intact original loaded Script/Main with qualified normal CRT/FileServer/controller Root. Finite scalar/percentage and defined custom helper overlap; no arbitrary FP or pointer-domain admission.",
+  "budget": {
+    "target": 2,
+    "support": 5,
+    "bootstrapGCALL": 3,
+    "carrier65": 1,
+    "finalWait71": 1,
+    "allGCALL": 12,
+    "businessScriptFrames": 2
+  },
+  "outputWords": 4,
+  "inputs": {
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+    "program": "S0NTAAIAAAAAAAAANAAAAJQDAADIAwAAAAAAAAAAAAAAEAAAABAAAMgDAAAAAAAAKAcAAHicXdO/S8NAFAfwF3qVDEGi7eDgoL7kEM7B/kAKOqQaaAcRf1QQteDg4ODgoODQoUOHDh0cHBxc8w/p6p/SQe4d8b51CR9e3r07ku+lXLk84ZSLoig0j4mo9AQ8Bc/E6ctNTzMF1o1mZ6hZiYmINIeB78lcT2tvqDmHnn7gZ84r3qS8FTgER+AYXAevgdfBG+AEvA3eAe+C2+AO+ACcgXNwH3wMPgUPwFfgW/Ad+B78AH4EP4Gfwa/gEXgMnoCn4Bn4DfwO/gB/gufiem11RTNVrRPe2tSsxO1Ws6E5FOdHh13NkXhwcX6mOa7Cvxa7VW5OTESGbbw4kpAu2WfNDjD8bcvhX9nwly0oiaKLvQuejbTh5bLb3QPDXVsg8ptdi5W8TBa3XJjtro77qNn/2e4u/cgBe+Wa/V9rkccV",
+    "archives": [
+      {
+        "name": "startup.xml",
+        "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg=="
+      },
+      {
+        "name": "scripts.int",
+        "data": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABudW1lcmljLWEzLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAHEBAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAlAMAAMgDAAAAAAAAAAAAAAAQAAAAEAAAyAMAAAAAAAAoBwAAeJxd079Lw0AUB/AXepUMQaLt4OCgvuQQzsH+QAo6pBpoBxF/VBC14ODg4OCg4NChQ4cOHRwcHFzzD+nqn9JB7h3xvnUJH17evTuS76VcuTzhlIuiKDSPiaj0BDwFz8Tpy01PMwXWjWZnqFmJiYg0h4HvyVxPa2+oOYeefuBnzivepLwVOARH4BhcB6+B18Eb4AS8Dd4B74Lb4A74AJyBc3AffAw+BQ/AV+Bb8B34HvwAfgQ/gZ/Br+AReAyegKfgGfgN/A7+AH+C5+J6bXVFM1WtE97a1KzE7VazoTkU50eHXc2ReHBxfqY5rsK/FrtVbk5MRIZtvDiSkC7ZZ80OMPxty+Ff2fCXLSiJoou9C56NtOHlstvdA8NdWyDym12LlbxMFrdcmO2ujvuo2f/Z7i79yAF75Zr9X2uRxxU="
+      },
+      {
+        "name": "images.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "ptcl.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "scenes.int",
+        "data": "S0lGAAAAAAA="
+      }
+    ]
+  },
+  "rows": [
+    {
+      "phase": 0,
+      "label": "overlap-dependent second chunk word enters a real variable bank and formatter",
+      "outputs": [555885348, 1024, 2779096485, 2779096485],
+      "spans": [
+        {
+          "at": 1020,
+          "bytes": [
+            165, 165, 165, 165, 53, 53, 53, 56, 56, 53, 51, 52, 56, 0, 0, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1276,
+          "bytes": [
+            165, 165, 165, 165, 20, 19, 18, 17, 20, 19, 18, 17, 36, 35, 34, 33, 36, 35, 34, 33, 68,
+            67, 66, 65, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 1,
+      "label": "exclusive source prefix overwrite preserves later bank/format consumption",
+      "outputs": [555885348, 1024, 555885348, 1152],
+      "spans": [
+        {
+          "at": 1020,
+          "bytes": [
+            165, 165, 165, 165, 53, 53, 53, 56, 56, 53, 51, 52, 56, 0, 0, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 53, 53, 53, 56, 56, 53, 51, 52, 56, 0,
+            0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+            165, 165, 165, 165
+          ]
+        },
+        {
+          "at": 1276,
+          "bytes": [
+            165, 165, 165, 165, 90, 90, 90, 90, 20, 19, 18, 17, 36, 35, 34, 33, 36, 35, 34, 33, 68,
+            67, 66, 65, 165, 165, 165, 165
+          ]
+        }
+      ],
+      "files": [],
+      "stacks": []
+    }
+  ],
+  "copyBranches": [
+    {
+      "phase": 0,
+      "kind": "chunk8",
+      "arguments": [1284, 1280, 16]
+    },
+    {
+      "phase": 0,
+      "kind": "chunk8",
+      "arguments": [1284, 1280, 16]
+    }
+  ],
+  "nativeCalls": [
+    {
+      "id": 66,
+      "phase": -1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 209,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 143,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 35,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 211,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 210,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 555885348
+    },
+    {
+      "id": 14,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1024
+    },
+    {
+      "id": 65,
+      "phase": 0,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 36,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 210,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 555885348
+    },
+    {
+      "id": 14,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1152
+    },
+    {
+      "id": 71,
+      "phase": 1,
+      "control": 4,
+      "outputWritten": false
+    }
+  ],
+  "coldAt": [0]
+}

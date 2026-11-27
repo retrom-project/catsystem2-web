@@ -105,3 +105,10 @@ continuations and source-format overwrite before later consumption.
 This 14-target/30-GCALL bridge does not repeat the large scalar matrices or
 extend the existing special-value, plugin FPCW or arbitrary numeric-domain
 qualification. No arithmetic implementation or ABI registration changed.
+
+The same SDK23 batch covers Main46's finite integer percentage conversion through
+actual expression/variable consumption, alongside Main35/36 byte operations.
+The normal helper inputs and resulting strings are exact in the authored cases;
+this does not extend percent parsing to arbitrary syntax or floating operands.
+See [native-guest-memory.md](native-guest-memory.md) for the copy-order fix and
+the distinct physical-NULL/unknown-VM-address guard boundary.

@@ -1425,6 +1425,7 @@ export default {
     timestampRequiresMappedOutputs: true,
   },
   nameTable: { legacyFieldBytes: 32, fixedPairs: true, pairByteLimit: 64 * 1024 * 1024 },
+  memory: { copyUsesMMX: true },
   math: {
     anglesUseX87: true,
     atan2UsesX87: true,

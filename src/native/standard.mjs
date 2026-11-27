@@ -454,9 +454,11 @@ export function nativeStandard(id, args, m, services = {}) {
     case 0x23: {
       requireArguments(3);
       const [destination, source, size] = args,
-        mmx = services.profile && nativeABI(services.profile).memory?.copyUsesMMX;
-      if (mmx && (!size || !nativeDataMapped(m, destination) || !nativeDataMapped(m, source)))
-        return done();
+        memory = services.profile && nativeABI(services.profile).memory,
+        mmx = memory?.copyUsesMMX;
+      if (mmx && !size) return done();
+      // VM addresses are not raw process pointers. A native physical-NULL
+      // shortcut does not qualify unknown VM spans; validate both below.
       const from = m.bytes(source, size),
         to = m.bytes(destination, size);
       const overlap =
