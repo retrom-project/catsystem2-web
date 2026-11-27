@@ -41,6 +41,35 @@ nor physical GPU/shader sampling or presentation. Nonfinite vertex inputs, nonpo
 receivers, unreviewed existing model classes and inactive/device-less views remain
 protected. This does not enable Main 467 in another SDK.
 
+### Original resource-host qualification
+
+A later bounded SDK23 group supplements the older dependency ports with the
+original CRT, allocator, FileServer, Settings, Window, mode1 View and typed
+Top/Script constructors. Settings records are mounted through the real archive
+API; Main 66/209/143 produces the loaded Script VM. Instruction observers never
+replace private functions, and both the redirect count and PE text comparison are
+checked. The group covers HG3 load/decode, Draw storage, representative Text and
+Fade calls, View near, Plane unload/reload and ordinary Task/Script/platform
+destruction. It does not requalify every old format, font or rendering shape.
+
+Bitmap ownership has three separate roles. The creator's 0x114-byte wrapper
+keeps its own reference count at `+272`. Draw creates a different source wrapper
+and retains the same 0x58-byte bitmap object through that object's `+80` count.
+Main 114 frees the creator wrapper while that bitmap remains live; removing the
+last Draw entry releases the shared bitmap and Draw source wrapper. The renderer
+output has a separate bitmap and owner. JavaScript already models this with
+distinct bitmap handles sharing a data handle, and releases the data after its
+last alias. The Draw entry test checks those identities and release points in
+addition to pixels and cold continuation; no product ownership change is needed.
+
+The accepted native group executed 24 target calls, 19 semantic support calls
+and 43 carrier yields: **86 actual GCALLs**. Carriers were omitted from its
+original 52-call budget, a 34-call overrun recorded with the private receipts.
+Future groups budget factories, support, carriers and cleanup together. Older
+raw receipts remain unchanged and retain their original dependency qualification.
+Unwritten allocation fields are not made defined by observing fresh heap zeros;
+GDI and COM memory leaves still provide no physical GPU or font-rendering proof.
+
 ## SDK 2.6.1.74 Plane and Input commands
 
 The table below describes the fixed SDK executable and its ordinary GCALL

@@ -39,7 +39,7 @@ test('SDK23 complete Draw entry GCALLs preserve controls, layers, borrowed pixel
     m = task.machine,
     floor = m.sp;
   m.store(44, world.nativeTaskID(world.main.id));
-  let drawID;
+  let drawID, sourceDataHandle;
   const compare = async (w, row, label) => {
     const draw = w.objects.objects.get(drawID).implementation,
       renderer = draw.state.renderer;
@@ -60,7 +60,22 @@ test('SDK23 complete Draw entry GCALLs preserve controls, layers, borrowed pixel
     assert.equal(m.sp, floor + 4, label + ' control');
     assert.equal(m.load(floor), marker, label + ' marker');
     if (row.id === 66) drawID = world.resolveTaskID(m.load(32), task.id);
+    if (row.id === 428) sourceDataHandle = world.graphics.images.get(m.load(40)).dataHandle;
     await compare(world, row, label);
+    if (row.id === 257) {
+      const draw = world.objects.objects.get(drawID).implementation,
+        key = (world.nativeTaskID(task.id) | (row.args[1] << 16)) >>> 0,
+        entry = draw.entry(key),
+        retained = world.graphics.images.get(entry.image);
+      assert.notEqual(entry.image, m.load(40), label + ' independent source wrapper');
+      assert.equal(retained.owner, drawID, label + ' source ownership');
+      assert.equal(retained.dataHandle, sourceDataHandle, label + ' shared bitmap storage');
+      assert.notEqual(
+        world.graphics.images.get(draw.state.renderer.bitmap).dataHandle,
+        sourceDataHandle,
+        label + ' independent renderer output',
+      );
+    }
     if (row.id === 462) assert.equal(m.load(row.resultAddress), row.result, label + ' layer');
     if (row.id === 657) {
       const key = (world.nativeTaskID(task.id) | (row.args[1] << 16)) >>> 0,
@@ -83,6 +98,7 @@ test('SDK23 complete Draw entry GCALLs preserve controls, layers, borrowed pixel
     );
     if (row.id === 114) {
       assert.equal(world.runtime.handles.records.has(m.load(40)), false);
+      assert.equal(world.runtime.handles.records.has(sourceDataHandle), true);
       const fresh = await dataWorld(profile, inputs, { initialize: false });
       try {
         await fresh.restore(structuredClone(world.snapshot()));
@@ -99,6 +115,12 @@ test('SDK23 complete Draw entry GCALLs preserve controls, layers, borrowed pixel
         await fresh.close({ flushFiles: false });
       }
     }
+    if (row.id === 258 && row.itemCount === 0)
+      assert.equal(
+        world.runtime.handles.records.has(sourceDataHandle),
+        false,
+        label + ' last source removal releases shared bitmap storage',
+      );
   }
   await world.objects.tick(40);
   assert.equal(world.objects.objects.has(drawID), false);

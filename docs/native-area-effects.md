@@ -97,6 +97,15 @@ same-size RGBA inputs and zero origins. Other formats and geometry combinations
 are outside this short group; existing format and storage-bound checks remain
 in force. Unwritten kind replies and unreviewed receiver shapes remain protected.
 
+The older differential vectors retain their declared private allocator/file-service
+ports. A later normal-host group supplements them with original CRT, archive mount,
+FileServer, Window/View and loaded VM dependencies, representative kind27 live
+replacement/matrix-copy/finish calls and ordinary destruction. It keeps borrowed
+input owners alive until the effect is retired and separates actual object lifetimes
+from allocator address reuse. It does not extend the tested receiver or geometry
+range; see the shared
+[resource-host qualification](native-plane-sdk.md#original-resource-host-qualification).
+
 CPU effects keep physical bitmap row addressing. WipeAlpha's work allocation,
 mask offset, blend rectangle and upload rectangle remain distinct, including
 the natural-end reset of its mask offset. The speed table is sampled on start.

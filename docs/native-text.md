@@ -64,6 +64,14 @@ The original harness runs complete view/Task constructors with deterministic
 GDI and generic D3D9 memory ports; it makes no claim about physical Windows GPU
 or font rendering. These policies do not enable another SDK build.
 
+Those original Text vectors used declared private CRT/allocation and file-service
+ports. A subsequent normal-host group runs representative kind8 construction,
+configuration, Main 134 conversion, Main 391 borrowing and Task/Script destruction
+through the original dependency bodies. It supplements their ownership and file
+qualification without replaying every Text shape or redefining unwritten fields.
+The shared boundary is documented under
+[original resource-host qualification](native-plane-sdk.md#original-resource-host-qualification).
+
 ## Metrics, fonts and pixels
 
 The exact comparison policy is in
