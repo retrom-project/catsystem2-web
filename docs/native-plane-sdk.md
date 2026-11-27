@@ -124,3 +124,21 @@ the fixed SDK. Raw 68 drops Input when the Plane tracks its Graph. Raw 77
 stores and hides the hint by sending raw 47. Raw 78 stores its enable word.
 The original wrapper, Plane and BasePlane were exercised separately with
 sampled renderer and explicit Input recipient boundaries.
+
+## SDK63 and SDK67 parent inheritance
+
+Own Main66 factories create the published Top and both parent/child Plane owners.
+Main79 constructs their separate solid models before Main89 reads the actual
+base Z word with control1. Main90 copies three offsets and immediately inherits
+parent base minus X/Y offsets, base Z plus Z offset, and parent position. Later
+parent position/priority messages propagate while inheritance is enabled.
+Main91 stops inheritance and retains the last pose. Both setters return control2
+without writing a result. Explicit target zero follows each original early return.
+
+The two own PE protocols each cover 16 target GCALLs, 26 bootstrap/dependency
+GCALLs, five actual Top logic/draw pairs and normal child/model retirement.
+The current KCS/World replay includes eight independent cold continuations per
+build. Missing models, unresolved output words, non-finite inherited coordinates
+and unreviewed receiver kinds remain protected at consumption. The configured
+View and COM-memory host qualify ownership and messages, without physical GPU
+or presentation claims. Other builds keep their existing policies.

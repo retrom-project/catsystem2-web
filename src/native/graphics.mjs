@@ -2114,6 +2114,11 @@ export async function nativeGraphics(id, args, machine, task, world) {
     id !== 0x351
   )
     return [0x59, 0x62].includes(id) ? value(0) : done();
+  if (id >= 89 && id <= 91 && abi?.graphics.planeInheritanceReceiverKinds) {
+    const target = world.objects.objects.get(world.resolveTaskID(args[0], task.id));
+    if (!abi.graphics.planeInheritanceReceiverKinds.includes(target?.kind))
+      throw new Error('Plane inheritance requires a reviewed Plane receiver');
+  }
   const packet = (words) => new NativeGraphicsPacket(words),
     send = (message, w = 0, l = 0, payload = null, flags = 0) =>
       world.sendNativeEngine(args[0], task.id, message, w, l, {
