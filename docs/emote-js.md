@@ -57,24 +57,37 @@ Preparation accepts at most 8 MiB packed and 72 MiB expanded bytes, adding 8 MiB
 container headroom to the former 64 MiB expansion policy. The optional atlas
 keeps its original 64 MiB combined expanded/decoded budget. An expanded PSB over
 64 MiB skips atlas parsing and conversion. The stream still checks actual output
-against the declared size and expansion cap. One completed expanded-only job
-retains at most `P + E = 80 MiB`; transient owned arrays are conservatively
-`3P + E + J <= 168 MiB`, with `J <= E` pending output chunks. Native decompressor
-buffers, parser metadata and garbage awaiting collection are additional, so
-these are array ownership bounds rather than an RSS limit. Worker replies
-transfer their expanded backing; they do not clone it at the bridge. No live
+against the declared size and expansion cap. One completed job retains at most
+`P + E + A <= 80 MiB`. Inflation uses at most `3P + E + J <= 168 MiB`, with
+`J <= E` pending output chunks. Receipt snapshots use at most
+`3P + 2(E + A) <= 168 MiB`: above 64 MiB, `A = 0`; otherwise `E + A <= 64 MiB`.
+The worker reply and the independent receipt are both included during copying.
+Only the independent receipt remains reachable through preparation afterward.
+Native decompressor buffers, external factory references, parser metadata and
+garbage awaiting collection are additional, so these are reachable array
+ownership bounds rather than an RSS limit. The worker transfers its backing
+when supported, then the receipt copies expanded/atlas bytes before publishing
+them. That extra copy, CPU and GC belong to natural WAIT and whole-frame cost.
+No live
 document, public PSB/raw view or decoded atlas is reused as preparation input.
 Existing live resources and the ordinary consumer read are separate from these
 preparation-owned bounds; they remain part of whole-Core memory measurement.
 
-Prepared model replies require the ordinary scene-worker pool/lease brands and
-the original native Worker constructor, methods, event-data getter and return
-channel. Current port/lease identity is checked again at send and receipt;
+Prepared model replies require private scene-worker factory/pool/lease brands
+and the initial constructor, methods, event-data getter and return channel.
+These identities prove channel affiliation, not native implementation. There is
+no `Function.toString` native test. An initial replacement factory cannot retain
+or mutate the independent receipt, even if it retains its original reply.
+Current port/lease identity is checked again at send and receipt;
 replacement or foreign ports cancel/release the lease and leave ordinary decode
-in charge. Nonshared, fixed, complete reply buffers are required. Other worker
+in charge. Nonshared, fixed, complete intrinsic typed-array buffers and plain
+data metadata are required; opaque/shared/resizable shapes fall back. No external
+buffer is detached by the receipt. Other worker
 consumers keep their ordinary service interface. Node's isolated transport
 component tests exercise the job state machine separately from this admission;
-fake worker/pool rejection tests do not establish a native browser hit.
+fake worker/pool and receipt tests do not establish a native browser hit.
+Actual native identity and default-pool admission remain browser qualification
+checks, separate from this output-ownership proof.
 
 The second emotedriver build has a different SDK version and three additional
 exports; matching model data remains unavailable. The interface evidence and

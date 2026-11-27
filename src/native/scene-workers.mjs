@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
+import { EMOTE_PREPARATION_LIMITS } from '../emote/document.mjs';
+
 const entryPoints = Object.freeze({
   model: new URL('../emote/psz-worker.mjs', import.meta.url),
   image: new URL('./hg3-prepare-worker.mjs', import.meta.url),
@@ -7,8 +9,8 @@ const modelEntryPoint = entryPoints.model.href;
 const apply = Reflect.apply,
   descriptor = Object.getOwnPropertyDescriptor,
   prototypeOf = Object.getPrototypeOf,
+  create = Object.create,
   objectPrototype = Object.prototype,
-  functionText = Function.prototype.toString,
   WorkerType = descriptor(globalThis, 'Worker')?.value,
   workerPrototype = WorkerType?.prototype,
   workerParent = workerPrototype && prototypeOf(workerPrototype),
@@ -33,6 +35,15 @@ const apply = Reflect.apply,
   addListener = EventTarget.prototype.addEventListener,
   removeListener = EventTarget.prototype.removeEventListener,
   preventDefault = Event.prototype.preventDefault,
+  Bytes = Uint8Array,
+  bytesPrototype = Bytes.prototype,
+  typedPrototype = prototypeOf(bytesPrototype),
+  byteLength = descriptor(typedPrototype, 'byteLength').get,
+  byteOffset = descriptor(typedPrototype, 'byteOffset').get,
+  byteBuffer = descriptor(typedPrototype, 'buffer').get,
+  copyBytes = Bytes.prototype.set,
+  bufferLength = descriptor(ArrayBuffer.prototype, 'byteLength').get,
+  bufferResizable = descriptor(ArrayBuffer.prototype, 'resizable')?.get,
   ChannelPromise = Promise,
   workerPortNames = [
     'constructor',
@@ -48,20 +59,21 @@ const apply = Reflect.apply,
   poolBrands = new WeakMap(),
   leaseBrands = new WeakMap();
 
-const nativeFunction = (value) =>
-  typeof value === 'function' && /\{\s*\[native code\]\s*\}/.test(apply(functionText, value, []));
-const nativeWorkerPorts =
-  nativeFunction(WorkerType) &&
+// These identities establish affiliation with this module's initial factory,
+// not native implementation or ownership of anything that factory returns.
+const initialWorkerPorts =
+  typeof WorkerType === 'function' &&
   workerPorts.constructor?.value === WorkerType &&
-  nativeFunction(workerPorts.postMessage?.value) &&
-  nativeFunction(workerPorts.terminate?.value) &&
-  nativeFunction(messageData) &&
+  typeof workerPorts.postMessage?.value === 'function' &&
+  typeof workerPorts.terminate?.value === 'function' &&
+  typeof messageData === 'function' &&
   ['onmessage', 'onerror', 'onmessageerror'].every(
-    (key) => nativeFunction(workerPorts[key]?.get) && nativeFunction(workerPorts[key]?.set),
+    (key) =>
+      typeof workerPorts[key]?.get === 'function' && typeof workerPorts[key]?.set === 'function',
   );
 function workerPortsCurrent(worker) {
   if (
-    !nativeWorkerPorts ||
+    !initialWorkerPorts ||
     descriptor(globalThis, 'Worker')?.value !== WorkerType ||
     descriptor(WorkerType, 'prototype')?.value !== workerPrototype ||
     descriptor(globalThis, 'MessageEvent')?.value !== MessageType ||
@@ -96,11 +108,106 @@ function leaseFieldsCurrent(lease, held) {
 
 const leaseCurrent = (lease, held) => leaseFieldsCurrent(lease, held) && held.current();
 
+function fullByteStorage(bytes) {
+  try {
+    if (
+      descriptor(globalThis, 'Uint8Array')?.value !== Bytes ||
+      prototypeOf(bytes) !== bytesPrototype
+    )
+      return null;
+    const length = apply(byteLength, bytes, []),
+      buffer = apply(byteBuffer, bytes, []);
+    if (
+      apply(byteOffset, bytes, []) !== 0 ||
+      apply(bufferLength, buffer, []) !== length ||
+      (bufferResizable && apply(bufferResizable, buffer, []))
+    )
+      return null;
+    return { length, buffer };
+  } catch {
+    // Typed-array and ArrayBuffer brand checks reject proxies/shared storage.
+    return null;
+  }
+}
+
+function ownValue(object, key) {
+  if (!object || prototypeOf(object) !== objectPrototype) return undefined;
+  return descriptor(object, key)?.value;
+}
+
+function modelRequestLength(data) {
+  const length = ownValue(data, 'length'),
+    storage = fullByteStorage(ownValue(data, 'bytes'));
+  return Number.isSafeInteger(length) &&
+    length >= 0 &&
+    length <= EMOTE_PREPARATION_LIMITS.expandedBytes &&
+    storage &&
+    storage.length <= EMOTE_PREPARATION_LIMITS.packedBytes
+    ? length
+    : null;
+}
+
+function snapshotModelReply(data, length) {
+  if (length === null) return null;
+  const expanded = ownValue(data, 'expanded'),
+    storage = fullByteStorage(expanded);
+  if (!storage || storage.length !== length) return null;
+  const sourceAtlas = ownValue(data, 'atlas');
+  let atlas = null,
+    rgba;
+  if (sourceAtlas != null && length <= EMOTE_PREPARATION_LIMITS.atlasWorkingBytes) {
+    const texture = ownValue(sourceAtlas, 'texture'),
+      width = ownValue(texture, 'width'),
+      height = ownValue(texture, 'height'),
+      pixels = ownValue(texture, 'rgba'),
+      pixelStorage = fullByteStorage(pixels),
+      name = ownValue(sourceAtlas, 'name'),
+      resource = ownValue(sourceAtlas, 'resource'),
+      storedWidth = ownValue(sourceAtlas, 'storedWidth'),
+      storedHeight = ownValue(sourceAtlas, 'storedHeight');
+    if (
+      typeof name !== 'string' ||
+      !Number.isSafeInteger(resource) ||
+      resource < 0 ||
+      !Number.isSafeInteger(width) ||
+      width < 1 ||
+      !Number.isSafeInteger(height) ||
+      height < 1 ||
+      !Number.isSafeInteger(storedWidth) ||
+      storedWidth < width ||
+      !Number.isSafeInteger(storedHeight) ||
+      storedHeight < height ||
+      !pixelStorage ||
+      pixelStorage.buffer === storage.buffer ||
+      pixelStorage.length !== width * height * 4 ||
+      length + pixelStorage.length > EMOTE_PREPARATION_LIMITS.atlasWorkingBytes
+    )
+      return null;
+    rgba = pixels;
+    atlas = { name, resource, storedWidth, storedHeight, texture: { width, height, rgba: null } };
+  }
+  // Only these fresh arrays cross the receipt boundary. The old reply, buffers
+  // and metadata remain local to this synchronous copy, even for an initial
+  // replacement factory that keeps its reply alive and mutates it later.
+  const ownedExpanded = new Bytes(length);
+  apply(copyBytes, ownedExpanded, [expanded]);
+  if (atlas) {
+    const ownedPixels = new Bytes(atlas.texture.width * atlas.texture.height * 4);
+    apply(copyBytes, ownedPixels, [rgba]);
+    atlas.texture.rgba = ownedPixels;
+  }
+  const received = create(null);
+  received.expanded = ownedExpanded;
+  received.atlas = atlas;
+  return received;
+}
+
 function exchange(worker, data, transfer, signal, channel) {
   if (channel) apply(signalThrow, signal, []);
   else signal.throwIfAborted();
   const Completion = channel ? ChannelPromise : Promise;
   return new Completion((resolve, reject) => {
+    const length = channel?.snapshot && data !== 'ready' ? modelRequestLength(data) : null;
     let settled = false;
     const finish = (complete, value) => {
       if (settled) return;
@@ -122,7 +229,23 @@ function exchange(worker, data, transfer, signal, channel) {
         return;
       }
       try {
-        finish(resolve, channel ? apply(messageData, event, []) : event.data);
+        if (!channel) finish(resolve, event.data);
+        else {
+          const reply = apply(messageData, event, []),
+            owned = !channel.snapshot
+              ? reply
+              : data === 'ready'
+                ? reply === 'ready'
+                  ? reply
+                  : null
+                : snapshotModelReply(reply, length);
+          // Initial factory accessors may reenter during receipt. Do not hand
+          // their result to a canceled or replaced lease, even after copying.
+          if (!channel.current()) {
+            channel.stop();
+            finish(resolve, null);
+          } else finish(resolve, owned);
+        }
       } catch (error) {
         finish(reject, error);
       }
@@ -161,11 +284,11 @@ class SceneWorker {
   #lease = null;
   #sending = false;
   #owned;
-  #nativeChannel;
+  #initialChannel;
 
   constructor(kind, requireOwned = false) {
     const ownedModel = kind === 'model' && workerPortsCurrent();
-    this.#nativeChannel = ownedModel;
+    this.#initialChannel = ownedModel;
     if (requireOwned && !ownedModel) throw new Error('Scene worker channel was replaced');
     this.#worker = ownedModel
       ? new WorkerType(modelEntryPoint, { type: 'module' })
@@ -178,7 +301,7 @@ class SceneWorker {
   owned() {
     return this.#owned && this.enabled && workerPortsCurrent(this.#worker);
   }
-  async send(data, transfer, signal) {
+  async send(data, transfer, signal, snapshot = false) {
     if (this.#sending) throw new Error('A scene preparation worker request is already active');
     this.#sending = true;
     const stopped = apply(controllerSignal, this.#stopped, []);
@@ -190,6 +313,7 @@ class SceneWorker {
         signal ? apply(signalAny, AbortSignal, [[signal, stopped]]) : stopped,
         this.#owned
           ? {
+              snapshot,
               current: () =>
                 this.enabled &&
                 workerPortsCurrent(this.#worker) &&
@@ -225,8 +349,12 @@ class SceneWorker {
     apply(weakSet, leaseBrands, [
       lease,
       {
-        native: this.#nativeChannel,
+        initial: this.#initialChannel,
         send: lease.send,
+        receive: (data, transfer, signal) => {
+          if (this.#lease !== lease) throw new Error('Scene preparation worker was released');
+          return this.send(data, transfer, signal, true);
+        },
         release: lease.release,
         current: () =>
           this.#owned && this.#lease === lease && this.enabled && workerPortsCurrent(this.#worker),
@@ -238,7 +366,7 @@ class SceneWorker {
   close() {
     if (!this.enabled) return;
     apply(controllerAbort, this.#stopped, []);
-    if (this.#nativeChannel) apply(workerPorts.terminate.value, this.#worker, []);
+    if (this.#initialChannel) apply(workerPorts.terminate.value, this.#worker, []);
     else this.#worker.terminate();
   }
 }
@@ -376,7 +504,7 @@ export function acquireOwnedSceneWorker(world, kind) {
 
 export function ownedSceneWorkerLease(lease) {
   const held = lease && apply(weakGet, leaseBrands, [lease]);
-  if (!held?.native) return null;
+  if (!held?.initial) return null;
   if (!leaseCurrent(lease, held)) {
     held?.stop();
     if (held) apply(held.release, lease, []);
@@ -390,7 +518,7 @@ export function ownedSceneWorkerLease(lease) {
         held.stop();
         return null;
       }
-      return apply(held.send, lease, [data, transfer, signal]);
+      return held.receive(data, transfer, signal);
     },
     release() {
       if (released) return;
