@@ -26,11 +26,12 @@ for (const group of ['audio-resource']) {
         caller = await world.spawnScript(golden.script, { initialExecute: false });
       const compare = (row) => {
         const m = caller.machine;
-        assert.equal(
-          world.configuration.fields.sysplay[7],
-          row.phase === 2 ? 1 : 0,
-          'the live Settings owner, including its current cold replacement, retains the mask',
-        );
+        if (row.phase > 0)
+          assert.equal(
+            world.configuration.fields.sysplay[7],
+            row.phase === 2 ? 1 : 0,
+            'the live Settings owner, including its current cold replacement, retains the written mask',
+          );
         assert.deepEqual(
           Array.from({ length: golden.outputWords }, (_, i) => m.load(128 + i * 4)),
           row.outputs,

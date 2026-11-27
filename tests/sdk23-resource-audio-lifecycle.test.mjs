@@ -100,6 +100,15 @@ function compare(world, row, group) {
       channel = world.sound.channel(expected.bank);
     assert.equal(Number(device.loaded), expected.loaded, row.name);
     assert.equal(channel?.completionCount ?? device.completionCount, expected.completion, row.name);
+    if (row.id === 157 && row.args[0] === expected.bank && device.sourceMode === 'static') {
+      const buffer = channel?.source?.buffer;
+      assert.equal(
+        buffer?.numberOfChannels,
+        1,
+        'play binds the decoded PCM to a real mixer source',
+      );
+      assert.equal(buffer.getChannelData(0)[0], (23 - 128) / 128);
+    }
     for (const key of ['maximumDistance', 'minimumDistance', 'dopplerFactor']) {
       const name = {
         maximumDistance: 'maximum',
