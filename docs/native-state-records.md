@@ -34,3 +34,26 @@ load the authored list again and register another section. The container can be
 disposed before these consumers run. Three independent cold continuations and
 an original-file input case preserve the same behavior. The existing gallery
 table tests cover a separate API and do not stand in for this manager chain.
+
+## Scene history and display logs
+
+SDK23 Main696–700/785/850/851 run through actual Scene text and history.
+Main327 supplies speaker and text bytes to Main698; Main699 reconstructs only
+the saved history prefix. The fixture consumes speaker names before and after
+block-limit pruning, saves the nonempty log, disposes the original Scene/log/file
+owners and continues appending through a new log owner. Three independent cold
+continuations and an original-file reader case cover the same consumers.
+
+The SDK23 original format has six DWORDs per display-log block, matching63/67.
+The modern builds retain their seven-word layout. The existing shared encoder
+and reader now receive the SDK23 layout declaration; no file-version marker or
+alternate reader was added. Native entry bytes, four section offsets, rows,
+speakers and cursor bases match. The regression's former seven-word output is
+retained as evidence of the corrected format mismatch.
+
+This proves the data and CSS chain. It does not claim a rendered backlog UI,
+arbitrary line-breaking configurations or extra FES viewport classes. The most
+recent accepted SDK23 native product-save payload was inspected without writes:
+its two slot files have no optional display-log entry48. That bounded check does
+not establish compatibility for other pre-fix development saves containing
+nonempty seven-word logs.

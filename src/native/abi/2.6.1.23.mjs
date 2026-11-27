@@ -1879,6 +1879,7 @@ export default {
     kindQueryRejectsRetiringOwner: true,
   },
   gallery: { listVariantWidth: 64, legacyTableReads: true },
+  displayLog: { blockRecordWords: 6 },
   startup: {
     loosePath: 'config/startup.xml',
     resourceCheck: 'after-preferences',
