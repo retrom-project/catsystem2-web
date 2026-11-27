@@ -1174,11 +1174,17 @@ export default {
     imageCompositePreservesRGB24: true,
     imageCompositeFormats: ['HG2', 'HG3'],
     imageCompositePlainFormats: ['HG2', 'HG3', 'BMP'],
-    imageCompositeBmpHeader: 40,
-    imageCompositeBmpCompression: 0,
+    imageCompositeBmpHeaders: [40],
+    imageCompositeBmpCompressions: [0, 3],
     bitmapOrdinalRejectedFormats: ['BMP'],
     ninePieceEmptyFormats: ['BMP'],
     unsupportedRasterFormatsAreGuarded: true,
+    nativeBmp: {
+      selectorBits: [24, 32],
+      nativeHeaders: [12, 40],
+      reviewedHeaders: [40],
+      reviewedCompressions: { 24: [0], 32: [0, 3] },
+    },
     formattedBitmapDefersAlphaQuery: true,
     ninePieceTransparentEdges: true,
     formattedBitmapPhysical: true,
@@ -1327,7 +1333,7 @@ export default {
         {
           ids: encodedImageOperations,
           value:
-            'Own 2.6.1.63 normal Main375/428/430/431/460/648 calls run through the real CRT, mounted image FileServer, original software View and Main66/Main143 Script VM. Complete calls compare HG2/HG3 header and container words, distinct frame ordinals/IDs, RGB24 promotion, nine-piece pixels, CP932 filenames, missing-file untouched outputs, explicit encoded-buffer release and Script-owned decoded bitmaps. Main460 keeps an explicitly owned result outside the Script list and preserves primary RGB24; valid selectors compose named HG3 layers. Four supplemental Main430 calls use the actual constructor-loaded archive ANM table, separately from the earlier absent-table negative rows. Twenty-eight target and twenty-seven dependency calls include the six transformed-attribute follow-up calls; other formats, shared caller frames, empty/smaller nine-piece shapes and resource extremes remain outside this group. Own R1 normal BMP24/32 calls distinguish zero metadata/ordinal results from a real null-storage nine-piece owner, successful plain primary bitmap and full untouched output bytes. This does not admit palette/bitfield, selector or animated raster forms.',
+            'Own 2.6.1.63 normal Main375/428/430/431/460/648 calls run through the real CRT, mounted image FileServer, original software View and Main66/Main143 Script VM. Complete calls compare HG2/HG3 header and container words, distinct frame ordinals/IDs, RGB24 promotion, nine-piece pixels, CP932 filenames, missing-file untouched outputs, explicit encoded-buffer release and Script-owned decoded bitmaps. Main460 keeps an explicitly owned result outside the Script list and preserves primary RGB24; valid selectors compose named HG3 layers. Four supplemental Main430 calls use the actual constructor-loaded archive ANM table, separately from the earlier absent-table negative rows. Twenty-eight target and twenty-seven dependency calls include the six transformed-attribute follow-up calls; other formats, shared caller frames, empty/smaller nine-piece shapes and resource extremes remain outside this group. Own R1 normal BMP24/32 calls distinguish zero metadata/ordinal results from a real null-storage nine-piece owner, successful plain primary bitmap and full untouched output bytes. This does not admit palette/bitfield, selector or animated raster forms. R2 own complete calls add valid palette1/4/8,RGB16,V4 and selected CORE defined rejections, with accepted32-bit BITFIELDS interpreted from fixed byte54 rather than masks/bfOffBits. Ordinal zero and null-storage nine-piece are separate native format paths; unproved accepted CORE/compression shapes stay guarded.',
         },
         {
           ids: bitmapPixelOperations,

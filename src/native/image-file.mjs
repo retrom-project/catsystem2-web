@@ -11,6 +11,22 @@ const MAX_MOUNTED_ANIMATION_BYTES = 32 * 1024;
 export const NATIVE_IMAGE_FILE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x1ae, words: 1, control: 1 }),
 ]);
+export function nativeBmpDisposition(info, policy) {
+  if (!policy || info?.format !== 'BMP') return 'unrestricted';
+  if (![info.header, info.selectorBits, info.compression].every(Number.isInteger))
+    return 'guarded';
+  if (
+    !policy.selectorBits.includes(info.selectorBits) ||
+    !policy.nativeHeaders.includes(info.header)
+  )
+    return 'rejected';
+  if (
+    !policy.reviewedHeaders.includes(info.header) ||
+    !policy.reviewedCompressions[info.selectorBits].includes(info.compression)
+  )
+    return 'guarded';
+  return 'reviewed';
+}
 export function nativeImagePathParts(name) {
   const slash = Math.max(name.lastIndexOf('/'), name.lastIndexOf('\\')),
     dot = name.lastIndexOf('.');

@@ -4,7 +4,16 @@ import { PNG } from './png.mjs';
 import { PSD } from './psd.mjs';
 import { decodeNativeJPEG } from './jpeg.mjs';
 
-export class UnsupportedNativeImageFormat extends Error {}
+const rasterHeaders = new WeakMap();
+export function rasterImageHeader(image) {
+  return rasterHeaders.get(image) ?? null;
+}
+export class UnsupportedNativeImageFormat extends Error {
+  constructor(message, details = null) {
+    super(message);
+    this.details = details;
+  }
+}
 const checkSize = (width, height) => {
   if (
     !Number.isSafeInteger(width) ||
@@ -69,14 +78,21 @@ export class RasterImage {
       width = this.png.width;
       height = this.png.height;
     } else if (this.format === 'bmp') {
-      const header = b.u32(14);
+      const header = b.u32(14),
+        info = Object.freeze({
+          format: 'BMP',
+          header,
+          selectorBits: b.bytes.length >= 30 ? b.u16(28) : null,
+          compression: header === 12 ? 0 : b.bytes.length >= 34 ? b.u32(30) : null,
+        });
+      rasterHeaders.set(this, info);
       if (![12, 40].includes(header))
-        throw new UnsupportedNativeImageFormat(`Native BMP header ${header}`);
+        throw new UnsupportedNativeImageFormat(`Native BMP header ${header}`, info);
       width = header === 12 ? b.u16(18) : b.i32(18);
       height = header === 12 ? b.u16(20) : b.i32(22);
       this.pixelSize = (header === 12 ? b.u16(24) : b.u16(28)) / 8;
       if (![3, 4].includes(this.pixelSize))
-        throw new UnsupportedNativeImageFormat('Native BMP pixel depth');
+        throw new UnsupportedNativeImageFormat('Native BMP pixel depth', info);
     } else if (this.format === 'kcf') {
       width = b.u16(4);
       height = b.u16(6);

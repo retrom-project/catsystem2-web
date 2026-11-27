@@ -581,3 +581,33 @@ diagnostic and propagates as a guard for these builds, rather than becoming a
 fabricated zero result. Native-defined zero/empty outcomes above stay functional
 failure paths. Other SDK policies and ordinary decode-failure behavior retain
 their existing contracts.
+
+## SDK63/67 BMP selector and bitfield boundaries
+
+Each exact build executes forty target and thirty-seven dependency GCALLs
+for seven complete valid small BMP files. Both original groups compare the
+same seventy-four frames and independently retain every setup/target/cleanup
+direct bridge invocation (123/126, including the77 GCALLs). Eight fresh
+internal cold continuations per build preserve the current VM and resource
+state without rerunning those original groups.
+
+The own format selector recognizes only24/32 at its fixed bit-count position.
+Palette1/4/8 and RGB16 inputs return zero for primary/formatted loading. V4 is
+recognized by depth but rejected by the decoder header check. The selected
+CORE file is rejected at the selector; this does not establish every CORE
+file, because its pixels or gap can occupy that selector position. Metadata
+and ordinal results remain zero with untouched outputs, while nine-piece
+loading still creates its real null-storage owner.
+
+A valid32-bit BI_BITFIELDS file is accepted. The original decoder copies from
+byte54 without interpreting masks or the file's pixel offset; current pixels
+therefore preserve the same mask bytes rather than correcting the image.
+Only the proved header/compression paths are enabled. Accepted but unreviewed
+CORE and compression forms remain guarded until their own bounded chain.
+
+The shared decoder publishes immutable header metadata through a private
+instance map. Native callers use that metadata to distinguish a proved native
+rejection from an unproved capability; neither requires another file read,
+mutable bitmap field or new checkpoint layout. The existing SDK23 composite
+header/compression values are only changed to equivalent singleton lists;
+its format and ownership policy is unchanged.

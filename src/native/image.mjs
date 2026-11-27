@@ -3,10 +3,10 @@ import { originalView } from './original-adapter.mjs';
 import { encodeSparseBytes, decodeSparseBytes } from './sparse-bytes.mjs';
 import { NativeBitmapFactories } from './bitmap-factory.mjs';
 import { nativeABI } from './abi/index.mjs';
-import { nativeImagePathParts } from './image-file.mjs';
+import { nativeImagePathParts, nativeBmpDisposition } from './image-file.mjs';
 import { readNativeResource, nativeCategoryFilename } from './resource-file.mjs';
 import { ImageStore, HG3 } from '../formats/hg3.mjs';
-import { UnsupportedNativeImageFormat } from '../formats/raster.mjs';
+import { UnsupportedNativeImageFormat, rasterImageHeader } from '../formats/raster.mjs';
 import { SceneImagePreparation } from './scene-image-preparation.mjs';
 import { parseNativeInteger } from './standard.mjs';
 import { blendPackedRow, packedBitmapWords, copyBitmapRow } from './raster-kernel.mjs';
@@ -936,12 +936,22 @@ export class NativeImages {
       let image, frame;
       try {
         image = await this.images.load(file);
+        const bmpInfo = rasterImageHeader(image),
+          bmp = nativeBmpDisposition(bmpInfo, nativeABI(this.world.profile).graphics.nativeBmp);
+        if (bmp === 'rejected' || bmp === 'guarded')
+          throw new UnsupportedNativeImageFormat('Native BMP layout is ' + bmp, bmpInfo);
         frame = image.frame(id);
         if (!frame) return 0;
         this.scenePreparation.apply(image, frame);
         await image.decode(frame);
       } catch (error) {
         this.world.host?.nativeDiagnostic?.({ type: 'image-invalid', file, error: error.message });
+        if (
+          error instanceof UnsupportedNativeImageFormat &&
+          nativeBmpDisposition(error.details, nativeABI(this.world.profile).graphics.nativeBmp) ===
+            'rejected'
+        )
+          return 0;
         if (
           error instanceof UnsupportedNativeImageFormat &&
           nativeABI(this.world.profile).graphics.unsupportedRasterFormatsAreGuarded

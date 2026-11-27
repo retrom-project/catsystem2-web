@@ -1354,11 +1354,17 @@ export default {
     imageCompositePreservesRGB24: true,
     imageCompositeFormats: ['HG2', 'HG3'],
     imageCompositePlainFormats: ['HG2', 'HG3', 'BMP'],
-    imageCompositeBmpHeader: 40,
-    imageCompositeBmpCompression: 0,
+    imageCompositeBmpHeaders: [40],
+    imageCompositeBmpCompressions: [0, 3],
     bitmapOrdinalRejectedFormats: ['BMP'],
     ninePieceEmptyFormats: ['BMP'],
     unsupportedRasterFormatsAreGuarded: true,
+    nativeBmp: {
+      selectorBits: [24, 32],
+      nativeHeaders: [12, 40],
+      reviewedHeaders: [40],
+      reviewedCompressions: { 24: [0], 32: [0, 3] },
+    },
     formattedBitmapDefersAlphaQuery: true,
     ninePieceTransparentEdges: true,
     planeMovieLegacy: true,
@@ -1498,7 +1504,7 @@ export default {
         {
           ids: encodedImageOperations,
           value:
-            'Own SDK67 true CRT/Settings/FileServer/software View and Main143-owning Script VM execute twenty-four target and twenty-four dependency GCALLs. Forty-five frames compare original HG3 and HG2 v20 parser outputs, 20-byte encoded owners, selected ordinals, nine-piece transparent RGB expansion, preserved RGB24 composition, clipped selector layers, CP932 paths, missing-file untouched outputs and exact release/control/result effects. The actual View constructor loads anmtable.csv from images.int; direct and basename lookup preserve exact stored-key case. Eight independent current checkpoints continue these calls. Unproved formats, shared layouts, capacities and hardware rendering remain separate scopes. Own R1 normal BMP24/32 calls distinguish zero metadata/ordinal results from a real null-storage nine-piece owner, successful plain primary bitmap and full untouched output bytes. This does not admit palette/bitfield, selector or animated raster forms.',
+            'Own SDK67 true CRT/Settings/FileServer/software View and Main143-owning Script VM execute twenty-four target and twenty-four dependency GCALLs. Forty-five frames compare original HG3 and HG2 v20 parser outputs, 20-byte encoded owners, selected ordinals, nine-piece transparent RGB expansion, preserved RGB24 composition, clipped selector layers, CP932 paths, missing-file untouched outputs and exact release/control/result effects. The actual View constructor loads anmtable.csv from images.int; direct and basename lookup preserve exact stored-key case. Eight independent current checkpoints continue these calls. Unproved formats, shared layouts, capacities and hardware rendering remain separate scopes. Own R1 normal BMP24/32 calls distinguish zero metadata/ordinal results from a real null-storage nine-piece owner, successful plain primary bitmap and full untouched output bytes. This does not admit palette/bitfield, selector or animated raster forms. R2 own complete calls add valid palette1/4/8,RGB16,V4 and selected CORE defined rejections, with accepted32-bit BITFIELDS interpreted from fixed byte54 rather than masks/bfOffBits. Ordinal zero and null-storage nine-piece are separate native format paths; unproved accepted CORE/compression shapes stay guarded.',
         },
         {
           ids: bitmapPixelOperations,

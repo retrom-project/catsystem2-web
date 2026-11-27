@@ -48,15 +48,15 @@ export class NativeImageComposites {
           }
           if (formats && !formats.includes(format))
             throw new Error('Selector image input has no reviewed format binding');
-          if (format === 'BMP' && graphics.imageCompositeBmpHeader) {
+          if (format === 'BMP' && graphics.imageCompositeBmpHeaders) {
             const header = new DataView(
               image.bytes.buffer,
               image.bytes.byteOffset,
               image.bytes.byteLength,
             );
             if (
-              header.getUint32(14, true) !== graphics.imageCompositeBmpHeader ||
-              header.getUint32(30, true) !== graphics.imageCompositeBmpCompression
+              !graphics.imageCompositeBmpHeaders.includes(header.getUint32(14, true)) ||
+              !graphics.imageCompositeBmpCompressions.includes(header.getUint32(30, true))
             )
               throw new Error('The BMP primary header has no reviewed ABI binding');
           }
