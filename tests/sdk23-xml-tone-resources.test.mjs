@@ -7,7 +7,7 @@ import { parseXML } from '../src/xml.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 
 const bytes = (value) => new Uint8Array(Buffer.from(value, 'base64'));
-for (const group of ['x1']) {
+for (const group of ['x1', 'x2']) {
   const golden = JSON.parse(
     await readFile(new URL(`./fixtures/sdk23-xml-tone-${group}-golden.json`, import.meta.url)),
   );
