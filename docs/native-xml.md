@@ -33,3 +33,27 @@ This change closes native **text** byte ownership/output. Byte aliases in elemen
 names and formatted path lookup are separate existing behavior; their equivalence
 is not established by this text fix. Evidence is complete static producer/string
 bodies plus authored Node/World/fresh tests, with no new original execution.
+
+## SDK23 resource and caller bridge
+
+`tests/sdk23-xml-tone-resources.test.mjs` X1 binds the existing XML behavior to
+the fixed `9f3a5ad0…` native body and a real mounted FileServer context. Main674
+looks up the authored `config` Settings category; that returned index formats a
+filename passed through Main598's finite comma-selector base extraction and
+then Main590. The open wrapper uses stream flags `0x13`, not category number19.
+It closes the source stream and frees its temporary input after constructing
+the parsed document owner.
+
+Two distinct Main590 owners supply finite present integer/text paths and a
+Scene filename. Values reach loaded Script variables, expressions and formatting;
+the filename loads an actual Scene whose text remains consumable after both
+XML owners close normally. The defined absent integer path returns its fallback;
+an absent text path preserves the existing destination. CP932 text and literal
+entity spelling are compared as bytes, with bounded destinations and canaries.
+This does not claim arbitrary XML grammar or locale support.
+
+The current VM tests overwrite returned resource bytes after parsing and resume
+later consumers at four independent cold points, closing the old World first.
+Neither the remaining live owner nor its restored parsed state reopens that
+resource. This document-owner bridge is separate from startup XML configuration
+production and from native GAME_SAVE product persistence.
