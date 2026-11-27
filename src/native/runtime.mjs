@@ -76,10 +76,11 @@ function nativePrimitive(runtime, id, args, machine, task, current) {
     return nativeStandard(id, args, machine, { profile: runtime.profile });
   if (NATIVE_BANK_IDS.includes(id)) {
     const variableExpressionContext = primitiveService(current, 'variableExpressionContext'),
+      profile = runtime.profile,
       variables = runtime.variableBank(task, id === 0xd1),
       allowVariableInitialization = task.context.allowVariableInitialization !== false;
     return nativeBank(id, args, machine, {
-      profile: runtime.profile,
+      profile,
       variables,
       allowVariableInitialization,
       variableExpressionContext,

@@ -156,6 +156,20 @@ test('primitive service getters and reentry capture current expression context a
     () => call(0xd5, [128]),
     (error) => error.details.id === 0xd5 && error.message === 'owned service failure',
   );
+
+  const live = await runtimeFor();
+  live.call(0xd1, [16]);
+  const selectBank = live.runtime.variableBank;
+  live.runtime.variableBank = function (...args) {
+    this.profile = 'replaced-by-bank-selection';
+    return Reflect.apply(selectBank, this, args);
+  };
+  assert.deepEqual(
+    live.call(0x262, []),
+    nativeReply(2),
+    'profile is captured before bank selection callbacks',
+  );
+  assert.equal(live.runtime.profile, 'replaced-by-bank-selection');
 });
 
 test('raw dictionaries use the current handle provider once while guest memory may replace it reentrantly', async () => {
