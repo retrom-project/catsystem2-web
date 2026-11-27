@@ -782,3 +782,21 @@ actual derived receiver and software rasterizer, source tone alone preserves
 cached output, and an explicit entry position change redraws the new pixels.
 The group adds one target/eighteen total GCALLs and five stop/Root direct calls
 per build, with two additional current cold continuations.
+
+## SDK63 and SDK67 bitmap resize aliases
+
+Own Main122/705 are the same three-word wrapper and return control2 without a
+result write. The original owner computes f32 ratios from canvas dimensions,
+rounds bitmap geometry and metadata, and replaces pixel storage only when the
+selected kernel succeeds. The normal group uses real Main118 copies and
+Main460 resources with positive canvas dimensions. It compares small 4BPP
+up/down/same-size and cell-averaged output, 3BPP scaling rejection and same-size
+copy, offsets/base/clip, unchanged caller memory and the actual retained Draw
+source/cache after resize, rebind, creator release and normal retirement.
+
+Both builds reuse the existing cell-resize implementation. An unqualified zero
+canvas is diagnosed at the resize consumer before any mutation; its native
+behavior is not inferred from JavaScript numeric conversion. Other layouts,
+large coordinates, overlap and physical GPU output remain outside this group.
+Eight independent current cold continuations per build preserve initialized
+pixels, source-data sharing, metadata and the next actual GCALL.
