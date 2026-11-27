@@ -115,7 +115,12 @@ for (const golden of corpus.versions) {
       }
     } else {
       const native = w.runtime.native,
-        read = w.game.read;
+        read = w.game.read,
+        releaseMovie = w.planeMovies.release;
+      if (row.args[0] === 'base' && [81, 82, 346].includes(row.id))
+        w.planeMovies.release = () => {
+          throw new Error('BasePlane ignore invoked movie provider');
+        };
       w.game.read = function (...args) {
         if (row.id === 81 || row.id === 82)
           assert.equal(
@@ -150,6 +155,7 @@ for (const golden of corpus.versions) {
       } finally {
         w.runtime.native = native;
         w.game.read = read;
+        w.planeMovies.release = releaseMovie;
       }
     }
     const plane = object(w, t, 'plane')?.implementation;

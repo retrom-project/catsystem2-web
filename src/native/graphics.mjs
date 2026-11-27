@@ -990,13 +990,13 @@ export class NativeGraphicTask {
       (this.state.vramType !== 1 || !this.graphics.device.attachment || this.graph)
     )
       return 0;
+    if (this.record.kind === 6 && !BASE_PLANE_MESSAGES.has(id))
+      return this.base.message(words, context);
     const preservesModel = this.planeUsesLegacyTexturedKX2 && (id === 69 || id === 70);
     if (!preservesModel && [3, 41, 42, 45, 46, 68, 69, 70, 83].includes(id)) {
       await originalView(this.world, 'movieRelease', this);
       await this.world.planeMovies.release(this);
     }
-    if (this.record.kind === 6 && !BASE_PLANE_MESSAGES.has(id))
-      return this.base.message(words, context);
     const load = (address) =>
       context.payload
         ? context.payload.load(address)
