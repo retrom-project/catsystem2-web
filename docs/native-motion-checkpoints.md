@@ -87,6 +87,18 @@ initial state. Source-cache invalidation and attached object lifetimes require
 their separate ownership qualification; this bank/record fixture does not
 establish every Main295 side effect or all filename shapes.
 
+The [SDK23 scalar bridge](../tests/fixtures/sdk23-motion-scalar-bridge-golden.json)
+links the registered scalar, identity and ordered-rotation handlers to an actual
+loaded MOT VM, and Main318/319/320 to its typed Script caller. It compares raw
+result words, the complete caller frame, the produced matrix and a legal
+three-knot spline through independent cold restores. Separate normal four- and
+seven-knot callers cover the general endpoint formula and the unrolled loop. The integer random call
+uses the original process's untouched lazy default seed and compares the full
+post-call stream; it does not infer a seed from game time or reseed the owner.
+These defined finite cases supplement the existing arithmetic/body evidence.
+They do not extend nonfinite, extreme-angle, unmapped-pointer or other-build
+qualification.
+
 The modern knowledge fixture links actual Main294/303/304/307/295 calls through
 the original file-server registration, mounted loose reader, KCS/zlib parser
 and Motion receiver. The mount namespace, extension and loose directory remain
