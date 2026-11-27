@@ -205,3 +205,10 @@ case-sensitive keys from formatted/ordered dictionaries, checks the unsigned
 missing sentinel and Main519's clear-before-read alias behavior, and resumes at
 three independent cold points. The 26 target calls matched without changing the
 existing dictionary, token or checkpoint implementation.
+
+G3 links the same byte strings to argument and expression consumers in two real
+inherited Scripts, followed by source overwrite, owner retirement and cold
+continuation. See `native-arguments.md` for the bank/context proof and the retained
+early-marker observer correction. Across G1–G3, all 36 existing mapped Main
+entries now have a fixed-build normal VM bridge for the documented finite shapes;
+this does not introduce new ABI registrations or widen unsupported string inputs.

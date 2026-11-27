@@ -1,0 +1,720 @@
+{
+  "group": "g3",
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "script": "strings-g3",
+  "marker": 592957443,
+  "originalSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-string-data-20261128/ORIGINAL-G3.json",
+    "sha256": "43dec5908d6a562d789448264e45e6716da5647f4f3df32bcc53702cb58c899d"
+  },
+  "qualification": "Intact original loaded Script/Main with qualified CRT/FileServer/controller Root. Normal finite mapped strings; no private redirects, renderer or GPU. Wider formatter syntax/value domain is not newly qualified.",
+  "budget": {
+    "target": 35,
+    "support": 8,
+    "bootstrapGCALL": 3,
+    "carrier65": 6,
+    "finalWait71": 1,
+    "allGCALL": 60,
+    "businessScriptFrames": 7,
+    "childTargetCalls": 34,
+    "childCarrier65": 6,
+    "childWait71": 1,
+    "childUpdates": "normal derived visits inside the seven real parent Script updates, not extra host calls"
+  },
+  "outputWords": 2,
+  "childOutputWords": 13,
+  "children": [
+    {
+      "slot": 64,
+      "name": "expr-a",
+      "initial": 11,
+      "context": 7
+    },
+    {
+      "slot": 68,
+      "name": "expr-b",
+      "initial": 29,
+      "context": 9
+    }
+  ],
+  "inputs": {
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+    "program": "S0NTAAIAAAAAAAAANAAAAJsBAADPAQAAAAAAAAAAAAAAEAAAABAAAM8BAAAAAAAANgMAAHicfZA9CgIxEIWfunbbeYRn0gQLt7WJGtAbWCvYi5XlFtt7itxHBDsPIzMxu/jbhI/vvWGGGA4uGxruT4ejJXqA4WQLWBbKyfvkd+KD8rhyU8taGRDfKMcYo2WNjhsAjgHAs7jWsJR3lFjWOi6kUmrFa+jbMO1wPOfK67x/nw8ahjb8mHec54O+Y9ruuBRR/KmFnzXDvoprzvK/1HrurdON6vtQ9Crr2QOgUSvV",
+    "archives": [
+      {
+        "name": "startup.xml",
+        "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg=="
+      },
+      {
+        "name": "scripts.int",
+        "data": "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"
+      },
+      {
+        "name": "images.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "ptcl.int",
+        "data": "S0lGAAAAAAA="
+      },
+      {
+        "name": "scenes.int",
+        "data": "S0lGAAAAAAA="
+      }
+    ]
+  },
+  "rows": [
+    {
+      "phase": 0,
+      "label": "real Script factories and mounted loads publish two inherited private contexts",
+      "outputs": [2779096485, 2779096485],
+      "children": [],
+      "spans": [],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 1,
+      "label": "independent inherited Script argument/expression update",
+      "outputs": [2779096485, 2779096485],
+      "children": [
+        {
+          "slot": 64,
+          "outputs": [
+            11, 13, 3, 3, 31, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485
+          ],
+          "spans": [
+            {
+              "at": 252,
+              "bytes": [
+                0, 0, 0, 0, 92, 48, 32, 43, 61, 32, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 36, 50, 61, 49, 57, 44, 36, 50, 43,
+                51, 44, 92, 48, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+              ]
+            },
+            {
+              "at": 1020,
+              "bytes": [
+                165, 165, 165, 165, 19, 0, 0, 0, 22, 0, 0, 0, 13, 0, 0, 0, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 91, 49, 44, 50, 44, 51, 93, 0, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165
+              ]
+            }
+          ]
+        },
+        {
+          "slot": 68,
+          "outputs": [
+            29, 31, 3, 3, 31, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485
+          ],
+          "spans": [
+            {
+              "at": 252,
+              "bytes": [
+                0, 0, 0, 0, 92, 48, 32, 43, 61, 32, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 36, 50, 61, 49, 57, 44, 36, 50, 43,
+                51, 44, 92, 48, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+              ]
+            },
+            {
+              "at": 1020,
+              "bytes": [
+                165, 165, 165, 165, 19, 0, 0, 0, 22, 0, 0, 0, 31, 0, 0, 0, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 91, 49, 44, 50, 44, 51, 93, 0, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165
+              ]
+            }
+          ]
+        }
+      ],
+      "spans": [],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 2,
+      "label": "both loaded callers consume after source overwrite",
+      "outputs": [2779096485, 2779096485],
+      "children": [
+        {
+          "slot": 64,
+          "outputs": [11, 13, 3, 3, 31, 26, 13, 3, 1, 32, 2779096485, 2779096485, 2779096485],
+          "spans": [
+            {
+              "at": 252,
+              "bytes": [
+                0, 0, 0, 0, 92, 48, 32, 43, 61, 32, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 36, 50, 61, 49, 57, 44, 36, 50, 43,
+                51, 44, 92, 48, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+              ]
+            },
+            {
+              "at": 1020,
+              "bytes": [
+                165, 165, 165, 165, 19, 0, 0, 0, 22, 0, 0, 0, 13, 0, 0, 0, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 3, 0, 0, 0, 4, 0,
+                0, 0, 5, 0, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 1, 0, 0, 0, 44, 51, 93, 0, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ]
+            }
+          ]
+        },
+        {
+          "slot": 68,
+          "outputs": [29, 31, 3, 3, 31, 28, 31, 3, 1, 50, 2779096485, 2779096485, 2779096485],
+          "spans": [
+            {
+              "at": 252,
+              "bytes": [
+                0, 0, 0, 0, 92, 48, 32, 43, 61, 32, 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 91, 36, 50, 61, 49, 57, 44, 36, 50, 43,
+                51, 44, 92, 48, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+              ]
+            },
+            {
+              "at": 1020,
+              "bytes": [
+                165, 165, 165, 165, 19, 0, 0, 0, 22, 0, 0, 0, 31, 0, 0, 0, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 3, 0, 0, 0, 4, 0,
+                0, 0, 5, 0, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 1, 0, 0, 0, 44, 51, 93, 0, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ]
+            }
+          ]
+        }
+      ],
+      "spans": [],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 3,
+      "label": "normal first Script retirement leaves the other private context active",
+      "outputs": [2779096485, 2779096485],
+      "children": [
+        {
+          "slot": 68,
+          "outputs": [29, 31, 3, 3, 31, 28, 31, 3, 1, 50, 31, 50, 2779096485],
+          "spans": [
+            {
+              "at": 252,
+              "bytes": [
+                0, 0, 0, 0, 114, 101, 112, 108, 97, 99, 101, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 114, 101, 112, 108, 97, 99, 101,
+                100, 0, 0, 0, 0, 92, 48, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0
+              ]
+            },
+            {
+              "at": 1020,
+              "bytes": [
+                165, 165, 165, 165, 19, 0, 0, 0, 22, 0, 0, 0, 31, 0, 0, 0, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 3, 0, 0, 0, 4, 0,
+                0, 0, 5, 0, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 1, 0, 0, 0, 44, 51, 93, 0, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ]
+            }
+          ]
+        }
+      ],
+      "spans": [],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 4,
+      "label": "surviving Script consumes after the first context is pruned",
+      "outputs": [2779096485, 2779096485],
+      "children": [
+        {
+          "slot": 68,
+          "outputs": [29, 31, 3, 3, 31, 28, 31, 3, 1, 50, 31, 50, 34],
+          "spans": [
+            {
+              "at": 252,
+              "bytes": [
+                0, 0, 0, 0, 114, 101, 112, 108, 97, 99, 101, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 114, 101, 112, 108, 97, 99, 101,
+                100, 0, 0, 0, 0, 92, 48, 93, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0
+              ]
+            },
+            {
+              "at": 1020,
+              "bytes": [
+                165, 165, 165, 165, 19, 0, 0, 0, 22, 0, 0, 0, 31, 0, 0, 0, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 3, 0, 0, 0, 4, 0,
+                0, 0, 5, 0, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 1, 0, 0, 0, 44, 51, 93, 0, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ]
+            }
+          ]
+        }
+      ],
+      "spans": [],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 5,
+      "label": "normal second Script retirement preserves shared global bank",
+      "outputs": [2779096485, 2779096485],
+      "children": [],
+      "spans": [],
+      "files": [],
+      "stacks": []
+    },
+    {
+      "phase": 6,
+      "label": "supplier consumes restored global state after both private owners retire",
+      "outputs": [19, 20],
+      "children": [],
+      "spans": [],
+      "files": [],
+      "stacks": []
+    }
+  ],
+  "nativeCalls": [
+    {
+      "id": 66,
+      "phase": -1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 209,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 143,
+      "phase": -1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 68,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 4
+    },
+    {
+      "id": 66,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 5
+    },
+    {
+      "id": 143,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 66,
+      "phase": 0,
+      "control": 1,
+      "outputWritten": true,
+      "value": 6
+    },
+    {
+      "id": 143,
+      "phase": 0,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 65,
+      "phase": 0,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 659,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 658,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 11
+    },
+    {
+      "id": 213,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 13
+    },
+    {
+      "id": 539,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 540,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 609,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 213,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 31
+    },
+    {
+      "id": 65,
+      "phase": 1,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 659,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 658,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 29
+    },
+    {
+      "id": 213,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 31
+    },
+    {
+      "id": 539,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 540,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 609,
+      "phase": 1,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 213,
+      "phase": 1,
+      "control": 1,
+      "outputWritten": true,
+      "value": 31
+    },
+    {
+      "id": 65,
+      "phase": 1,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 65,
+      "phase": 1,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 610,
+      "phase": 2,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 212,
+      "phase": 2,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 213,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 26
+    },
+    {
+      "id": 658,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 13
+    },
+    {
+      "id": 539,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 539,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 213,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 32
+    },
+    {
+      "id": 65,
+      "phase": 2,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 610,
+      "phase": 2,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 212,
+      "phase": 2,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 213,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 28
+    },
+    {
+      "id": 658,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 31
+    },
+    {
+      "id": 539,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 3
+    },
+    {
+      "id": 539,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 1
+    },
+    {
+      "id": 213,
+      "phase": 2,
+      "control": 1,
+      "outputWritten": true,
+      "value": 50
+    },
+    {
+      "id": 65,
+      "phase": 2,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 65,
+      "phase": 2,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 658,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 13
+    },
+    {
+      "id": 213,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 32
+    },
+    {
+      "id": 65,
+      "phase": 3,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 658,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 31
+    },
+    {
+      "id": 213,
+      "phase": 3,
+      "control": 1,
+      "outputWritten": true,
+      "value": 50
+    },
+    {
+      "id": 65,
+      "phase": 3,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 67,
+      "phase": 3,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 65,
+      "phase": 3,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 659,
+      "phase": 4,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 658,
+      "phase": 4,
+      "control": 1,
+      "outputWritten": true,
+      "value": 34
+    },
+    {
+      "id": 71,
+      "phase": 4,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 65,
+      "phase": 4,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 67,
+      "phase": 5,
+      "control": 2,
+      "outputWritten": false
+    },
+    {
+      "id": 65,
+      "phase": 5,
+      "control": 4,
+      "outputWritten": false
+    },
+    {
+      "id": 210,
+      "phase": 6,
+      "control": 1,
+      "outputWritten": true,
+      "value": 19
+    },
+    {
+      "id": 213,
+      "phase": 6,
+      "control": 1,
+      "outputWritten": true,
+      "value": 20
+    },
+    {
+      "id": 71,
+      "phase": 6,
+      "control": 4,
+      "outputWritten": false
+    }
+  ],
+  "coldAt": [0, 1, 2, 3, 4]
+}

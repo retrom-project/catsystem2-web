@@ -7,7 +7,7 @@ import { parseXML } from '../src/xml.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
 
 const bytes = (value) => new Uint8Array(Buffer.from(value, 'base64'));
-for (const group of ['g1', 'g2']) {
+for (const group of ['g1', 'g2', 'g3']) {
   const golden = JSON.parse(
     await readFile(new URL(`./fixtures/sdk23-string-data-${group}-golden.json`, import.meta.url)),
   );
@@ -28,6 +28,39 @@ for (const group of ['g1', 'g2']) {
           row.outputs,
           row.label,
         );
+        for (const child of row.children ?? []) {
+          const id = world.resolveTaskID(m.load(child.slot), caller.id),
+            task = world.runtime.scheduler.tasks.get(id),
+            bank = world.runtime.variableBank(task, false);
+          assert.equal(world.objects.objects.get(id).parent, caller.id);
+          assert.equal(task.context.variableBank, caller.context.variableBank);
+          assert(bank.context(id), 'actual inherited Script load owns its private context');
+          assert.deepEqual(
+            Array.from({ length: golden.childOutputWords }, (_, i) =>
+              task.machine.load(128 + i * 4),
+            ),
+            child.outputs,
+            row.label,
+          );
+          for (const span of child.spans)
+            assert.deepEqual(
+              [...task.machine.bytes(span.at, span.bytes.length)],
+              span.bytes,
+              row.label,
+            );
+        }
+        if (group === 'g3') {
+          const bank = world.runtime.variableBank(caller, false);
+          assert.equal(bank.contexts.size, [2, 2, 2, 2, 1, 1, 0][row.phase]);
+          if (row.phase === golden.rows.length - 1) {
+            assert.equal(bank.get(2), 19, 'the supplier retains the restored global value');
+            assert.equal(
+              bank.selectedContext,
+              null,
+              'retiring the last private owner clears selection',
+            );
+          }
+        }
         for (const span of row.spans)
           assert.deepEqual([...m.bytes(span.at, span.bytes.length)], span.bytes, row.label);
       };
