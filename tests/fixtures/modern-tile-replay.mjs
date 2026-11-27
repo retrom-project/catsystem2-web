@@ -15,7 +15,7 @@ function contextState(context) {
     ]),
   );
 }
-export async function replayModernTile(t, build) {
+export async function replayModernTile(t, build, { afterRow } = {}) {
   const previousTZ = process.env.TZ;
   process.env.TZ = 'UTC';
   t.mock.method(Date, 'now', () => build.utcMs);
@@ -28,13 +28,11 @@ export async function replayModernTile(t, build) {
     const contexts = new Map();
     for (const row of build.rows) {
       const caller = world.main;
+      const declaredCount = row.declaredCount ?? row.args.length;
       let reply;
       const machine = (caller.machine = new KCSMachine(
         await readKCS(
-          kcsProgram([
-            [43, row.id, row.args.length * 4],
-            ...Array.from({ length: 32 }, () => [59]),
-          ]),
+          kcsProgram([[43, row.id, declaredCount * 4], ...Array.from({ length: 32 }, () => [59])]),
         ),
         {
           native: (id, args, vm) => {
@@ -53,7 +51,7 @@ export async function replayModernTile(t, build) {
       row.args.forEach((arg, i) =>
         machine.store(4100 + i * 4, typeof arg === 'string' ? contexts.get(arg) : arg),
       );
-      machine.sp = 4100 + row.args.length * 4;
+      machine.sp = 4100 + declaredCount * 4;
       caller.status = 'ready';
       caller.io = null;
       caller.waiting = null;
@@ -88,6 +86,7 @@ export async function replayModernTile(t, build) {
         row.random.wordsSha256,
         row.label + ' full RNG bank',
       );
+      if (afterRow) world = (await afterRow(world, contexts, row)) ?? world;
       if (
         [
           'start-four-players',

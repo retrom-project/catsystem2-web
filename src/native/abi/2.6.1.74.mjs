@@ -36,7 +36,7 @@ export default {
   id: 'cs2-2.6.1.74',
   profile: 'sdk-4.01-engine-2.6.1.74',
   engineVersion: '2.6.1.74',
-  tileGame: { seedFromLocalClock: true },
+  tileGame: { seedFromLocalClock: true, argumentsReadFrame: true },
   math: {
     interpreterUsesNativeScalarMath: true,
     scalarArgumentsReadFrame: true,

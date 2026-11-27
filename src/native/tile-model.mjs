@@ -123,6 +123,11 @@ export class NativeTileModel {
   validPlayer(player) {
     return player >= 0 && player < this.get('players');
   }
+  acceptsPayment(count) {
+    return (
+      [20051, 20053, 20055, 20057].includes(this.get('event')) && count === this.get('players')
+    );
+  }
   playerField(input, base) {
     if (!input.length) return Array.from(this.words.subarray(base, base + this.get('players')));
     return this.validPlayer(input[0] | 0) ? [this.words[base + (input[0] | 0)]] : null;
@@ -459,11 +464,7 @@ export class NativeTileModel {
         this.set('next', 20017);
         ok = true;
       }
-    } else if (
-      code === 10009 &&
-      [20051, 20053, 20055, 20057].includes(this.get('event')) &&
-      words.length === this.get('players')
-    ) {
+    } else if (code === 10009 && this.acceptsPayment(words.length)) {
       this.words.set(words, 956);
       ok = true;
     } else if (code === 10015) ok = true;

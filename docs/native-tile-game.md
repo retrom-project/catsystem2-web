@@ -51,6 +51,23 @@ score/result decoding and an explicit payment. Independent cold checkpoints
 resume those nonempty caches. These finite inputs do not cover every ability,
 deal policy, pointer alias or command-state combination.
 
+Modern GCALL wrappers read a fixed number of mapped argument words independently
+of the byte count declared by the instruction. They ignore tail words and keep
+null-context gates ahead of unused argument reads. Output pointers are resolved
+before writing; the score query clears its outputs before reading the possibly
+aliased player argument. Direct low-level authoring calls retain their explicit
+argument contract and do not reuse a machine's previous GCALL frame.
+
+A context handle is opaque. Two native captures intentionally consume its
+physical address from the current argv0 as a numeric payment, then expose that
+number through the payment query. Those captures are separate from the 119
+ordinary frames per build; numeric equivalence has not been established. An
+active payment consumer diagnoses a read of that known context-word location.
+An ordinary numeric amount equal to the JS handle is accepted, as are ignored
+copies and empty input. This is not global pointer provenance or a native-address
+projection. The wrapper's temporary result does not alias VM argv0 and does not
+justify zeroing it. Other stored-handle/address escapes remain unproved.
+
 SDK 2.6.1.23, 2.6.1.63 and 2.6.1.67 emit a pre-action ability notification only when the automatic
 activation helper activates an ability. An already pending explicit human
 ability does not insert that notification into the ordinary discard sequence.
@@ -66,7 +83,7 @@ EXE facade and table locations are retained under `oracle/` for verification.
 
 Every operation except create takes a context as its first word. VM pointers are
 translated by the original interpreter bridge; address zero is valid data. The
-table gives argument counts including the context. Word results keep their raw
+table gives fixed argument widths including the context. Word results keep their raw
 32 bits; functions described as queries are not automatically booleans.
 
 | ID      | Words | Control | Operation                                                     |
