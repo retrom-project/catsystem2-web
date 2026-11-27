@@ -62,3 +62,22 @@ in their own save transport. The standalone browser continues to offer
 `scripts/verify-native-save-slots.mjs` compares the JS implementation against independently executed original handlers, CSS and filesystem helpers. The default bounded sequences cover all eleven commands and exchange/copy/delete failure steps in both ABIs. `CATSYSTEM2_EXTENDED=1` enables the larger sample. File metadata, complete ordered entries, global/string writes and file-operation sequencing are compared after every operation. Tokenization, numeric evaluation and bank access are explicit fixture boundaries.
 
 The existing system-client tests bind a container through `1C3`, execute FES `datasave` and restore variable/string entries through `F7`/`FA`/`FD` in a new World. Public browser acceptance additionally writes CSS and a World checkpoint to IndexedDB, reloads the document, reopens storage and restores both CSS banks and a scene-local checkpoint through normal dispatch. Node cannot cover document replacement or browser transactions. [Differential](../tests/differential/native-save-persistence.test.mjs), [browser acceptance](../tests/browser/public.spec.mjs).
+
+## SDK 2.6.1.23 data containers
+
+The loaded Script regression in [sdk23-global-css-data.test.mjs](../tests/sdk23-global-css-data.test.mjs)
+covers Main238/240/242–248/250/252–254 with two nonempty containers,
+caller variable and CP932 string banks, nested bytes, duplicate IDs and new
+file readers. Entry writes append; reads retain the first matching ID. Changing
+the source memory and releasing the source container leave the saved copies
+intact. Caller-relative output spans preserve their surrounding bytes. Four
+independent cold restores retain live containers and subsequent VM consumption.
+
+The original producer uses intact native bodies and the qualified CRT,
+FileServer, ApplicationRoot and typed Script. Its controlled OS memory-file
+port records copied writes; this proves the CSS writer/reader format and owner
+lifecycle, not physical Windows disk storage or platform GAME_SAVE transport.
+Comparisons exclude the ignored process pointer in nested raw headers and the
+string serializer's eight unwritten trailing bytes. The original lookup scans
+allocated capacity; this corpus uses present records and does not establish
+defined results for absent IDs in an uninitialized tail.
