@@ -142,3 +142,28 @@ build. Missing models, unresolved output words, non-finite inherited coordinates
 and unreviewed receiver kinds remain protected at consumption. The configured
 View and COM-memory host qualify ownership and messages, without physical GPU
 or presentation claims. Other builds keep their existing policies.
+
+## SDK63 and SDK67 button tables and Input lifetime
+
+The normal primary zero-ID Root owns the independently routable Input task.
+Main66 Plane/Hint factories and Main79 models supply real geometry before
+Main96 registers its Input rectangle and copies twelve caller words. State
+selection uses selector1 position, retains Z, ignores disabled rows, narrows the
+selector to sixteen bits and stores the independent blocked high bit. Main98
+returns that phase/high-bit pair. Main102 hides its typed hint, Main103 retains
+the hint attribute, and Main110 stores the callback recipient ID word.
+
+Main99 clears all twelve button words before normal Input unregistration. It
+retains phase, button-enabled state, flags and model; a later Main96 registers
+current bounds and copies a new independent table. Current snapshots own that
+table and require twelve DWORDs plus the initialized enable state. Each build
+has eight independent cold continuations of the actual KCS/World consumer.
+
+The original nested-Top protocol had an Input child with native ID0, so the
+fixed target0 Root query did not write its reply. Its empty Input list and hint
+coordinates are not qualified successful behavior. Registration in that
+unreviewed namespace is guarded at the unresolved reply consumption; ignoring
+or clearing an absent registration does not need that reply. Input record
+word10 was also unwritten by the native registration path and remains outside
+the functional comparison. No physical mouse, View presentation or GPU claim
+is made by this resource protocol.

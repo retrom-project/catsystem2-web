@@ -745,6 +745,8 @@ export class NativeGraphicTask {
     this.planeResetReleasesTrackedInput = Boolean(abi?.planeResetReleasesTrackedInput);
     this.planeUsesLegacyButtonStates = Boolean(abi?.planeUsesLegacyButtonStates);
     this.planeButtonUsesTexturePose = Boolean(abi?.planeButtonUsesTexturePose);
+    this.planeInputRequiresRootReply = Boolean(abi?.planeInputRequiresRootReply);
+    this.planeClearInputClearsButtonRows = Boolean(abi?.planeClearInputClearsButtonRows);
     this.planeEmptyGraphRequiresMode1 = Boolean(abi?.planeEmptyGraphRequiresMode1);
     this.planeAlphaRequiresGraph = Boolean(abi?.planeAlphaRequiresGraph);
     this.planeUsesLegacyTexturedKX2 = Boolean(abi?.planeUsesLegacyTexturedKX2);
@@ -774,6 +776,9 @@ export class NativeGraphicTask {
       phase: 0,
       ...(this.planeUsesLegacyButtonStates || this.planeButtonUsesTexturePose
         ? { frameStep: 1 }
+        : {}),
+      ...(this.planeClearInputClearsButtonRows
+        ? { button: new Array(12).fill(0), buttonEnabled: false }
         : {}),
       renderType: 1,
       drawType: 0,
@@ -1566,6 +1571,7 @@ export class NativeGraphicTask {
         return tracksGraph ? undefined : 1;
       }
       case 90:
+        if (this.planeClearInputClearsButtonRows) this.state.button = new Array(12).fill(0);
         await this.unregisterInput();
         return 0;
       case 94:
@@ -1660,6 +1666,11 @@ export class NativeGraphicTask {
     }
   }
   async registerInputArea(sender, fields, tracksGraph, { bindExtra = 0, dimensions } = {}) {
+    if (
+      this.planeInputRequiresRootReply &&
+      this.world.engineMessages.closestTop(this.record.id)?.nativeID !== 0
+    )
+      throw new Error('Native Plane input registration requires a routable zero-ID Top reply');
     const input = this.input;
     if (!input?.register) throw new Error('Native plane input registration is unavailable');
     const bounds = fields.slice(0, 4).map((value) => value | 0),
@@ -1996,6 +2007,14 @@ export class NativeGraphicTask {
   }
   restore(data) {
     if (
+      this.planeClearInputClearsButtonRows &&
+      (!Array.isArray(data.state.button) ||
+        data.state.button.length !== 12 ||
+        data.state.button.some((n) => !Number.isInteger(n) || n < 0 || n > 0xffffffff) ||
+        typeof data.state.buttonEnabled !== 'boolean')
+    )
+      throw new Error('Invalid ordinary Plane button checkpoint');
+    if (
       (isNativeColoredModel(data.graph) || this.ownsTexturedBounds(data.graph)) &&
       ((this.ownsTexturedBounds(data.graph) && typeof data.graph.sourceBoundsDirty !== 'boolean') ||
         typeof data.graph.boundsDirty !== 'boolean' ||
@@ -2118,6 +2137,11 @@ export async function nativeGraphics(id, args, machine, task, world) {
     const target = world.objects.objects.get(world.resolveTaskID(args[0], task.id));
     if (!abi.graphics.planeInheritanceReceiverKinds.includes(target?.kind))
       throw new Error('Plane inheritance requires a reviewed Plane receiver');
+  }
+  if (abi?.graphics.planeButtonReceiverKinds && [96, 97, 98, 99, 102, 103, 110].includes(id)) {
+    const target = world.objects.objects.get(world.resolveTaskID(args[0], task.id));
+    if (!abi.graphics.planeButtonReceiverKinds.includes(target?.kind))
+      throw new Error('Plane button state requires a reviewed Plane receiver');
   }
   const packet = (words) => new NativeGraphicsPacket(words),
     send = (message, w = 0, l = 0, payload = null, flags = 0) =>
