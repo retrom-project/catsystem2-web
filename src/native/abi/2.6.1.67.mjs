@@ -1331,6 +1331,10 @@ export default {
   graphics: {
     bitmapAlphaQueryRequiresOwner: true,
     renderSourcesDeferProgram: true,
+    drawRasterKeepsSourceState: true,
+    drawEncodedBindingRebuildsFrames: true,
+    renderSourceFrameFormats: ['HG2', 'HG3'],
+    retainedAllImageFrames: true,
     drawMissingAnimationSendsEmpty: true,
     retainedSourcesUseStoredLayer: true,
     renderSources: { stride: 72, bytes: 276 },
@@ -1472,7 +1476,7 @@ export default {
         {
           ids: renderSourceOperations,
           value:
-            'Own SDK67 complete GCALLs create72-byte source arrays with tag1 bitmap or tag2 actual196-byte constructor523b80. Twenty-one target and twenty-three dependency calls compare41 normal frames, nine-word metadata, two valid ordinal bitmaps, original reference counts and all selected software pixels. Actual Draw retains the source after caller-array release and consumes explicit ANM, missing-ANM empty packet, signed layer and bitmap/encoded replacement through raw269/271/282 exactly once. Own constructor leaves the program slot empty until explicit load; program+72 and refs+188 are observed after actual consumers. Parent update frees the retained source with the Draw. Eight independent current checkpoints continue real KCS calls; other formats, foreign/shared layouts, resource extremes and GPU output remain separate scopes.',
+            'Own SDK67 complete GCALLs create72-byte source arrays with tag1 bitmap or tag2 actual196-byte constructor523b80. Twenty-one target and twenty-three dependency calls compare41 normal frames, nine-word metadata, two valid ordinal bitmaps, original reference counts and all selected software pixels. Actual Draw retains the source after caller-array release and consumes explicit ANM, missing-ANM empty packet, signed layer and bitmap/encoded replacement through raw269/271/282 exactly once. Own constructor leaves the program slot empty until explicit load; program+72 and refs+188 are observed after actual consumers. Parent update frees the retained source with the Draw. Eight independent current checkpoints continue real KCS calls. The G6 own group additionally qualifies two-frame HG2 with CP932 image/ANM names and original ImageOwner-preserving encoded rebind. Main340 raster keeps cached source state, while the own normal derived callback486800 calls update520aa0 before raster51ff40; the one disabled direct callback does not establish full Base/collector filtering or enabled cadence. Other formats, foreign/shared layouts, resource extremes and GPU output remain separate scopes.',
         },
         {
           ids: drawResourceOperations,

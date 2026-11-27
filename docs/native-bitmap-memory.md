@@ -523,3 +523,29 @@ metadata, references, guest writes, control/results and final parent-update
 release match current full KCS calls and eight independent cold continuations.
 HG2 and nested owner forms follow in their own group. Other formats, shared
 or foreign resources, capacity extremes and GPU presentation remain open.
+
+## SDK 2.6.1.67 nested ownership and raster consumers
+
+The final own group retains the same sixty-four-byte ImageOwner inside its
+196-byte Draw source while encoded replacement rebuilds that owner's frames.
+Caller release and later entry removal preserve the original ownership order.
+Two-frame HG2 resources and their explicit ANM use CP932 names through the
+actual mounted reader and parser. Twenty-three target and twenty-six
+dependency GCALLs, plus one direct derived callback, compare forty-three
+complete software frames; six independent current cold continuations retain
+the owner, rebind and source state.
+
+Main340's actual raw279 receiver calls raster `51ff40` without advancing the
+source. Own normal derived callback `486800` calls update `520aa0` before that
+raster path. The .67 profile therefore uses the existing cached-source raster
+policy, including Main342 and the graphics preparation caller. The first
+current comparison showing alpha100 instead of the original cached alpha200
+is retained. Normal update stays in its original phase; public loans, output
+ownership, flush and capture callers are unchanged.
+
+The one original callback is invoked directly with Draw output disabled. It
+does not establish the complete original Base/collector filtering, enabled
+animation cadence, Stage/capture pixels or physical GPU behavior. Current-only
+controls cover normal collector update-before-raster, Main342 and graphics
+preparation, without counting those controls as additional original coverage.
+Other formats, foreign/shared layouts and resource extremes remain open.
