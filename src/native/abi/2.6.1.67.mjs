@@ -9,6 +9,8 @@ import {
   NATIVE_TILE_GAME_SIGNATURES,
 } from './semantics.mjs';
 
+const cp932ScalarOperations = [18, 20, 22, 26, 37, 39, 40, 48];
+
 const mainReserved = [
   0, 2, 3, 141, 169, 170, 172, 173, 180, 182, 184, 185, 187, 188, 189, 190, 191, 429, 439, 543, 544,
   545, 546, 547, 548, 550, 552, 553, 556, 559, 560, 561, 562, 563, 573, 574, 578, 579, 581, 626,
@@ -2687,6 +2689,26 @@ export default {
         },
       ],
       signatures: [
+        ...cp932ScalarOperations.map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) =>
+              parameter.type.kind !== 'pointer'
+                ? parameter
+                : {
+                    ...parameter,
+                    type: {
+                      ...parameter.type,
+                      addressSpace: 'vm',
+                      direction: parameter.name === 'destination' ? 'out' : 'in',
+                      target: { ...parameter.type.target, encoding: 'CP932' },
+                    },
+                  },
+            ),
+            resultWritten: id !== 37,
+            review: 'reviewed',
+          },
+        })),
         { ids: [115], fields: { review: 'reviewed', resultWritten: false } },
         { ids: [12], fields: { review: 'reviewed', resultWritten: false } },
         ...renderSourceOperations.map((id) => ({
@@ -3985,8 +4007,7 @@ export default {
         { ids: [349], fields: { resultWritten: true } },
         { ids: [651, 694], fields: { resultWritten: false } },
         { ids: [239, 249], fields: { resultWritten: true } },
-        { ids: [18, 20, 22, 23, 24, 26, 38, 39, 40], fields: { resultWritten: true } },
-        { ids: [37], fields: { resultWritten: false } },
+        { ids: [23, 24, 38], fields: { resultWritten: true } },
         { ids: [113, 118, 241, 251], fields: { resultWritten: true } },
         { ids: [116], fields: { resultWritten: false } },
         { ids: [213, 658], fields: { resultWritten: true } },
@@ -4000,7 +4021,7 @@ export default {
           fields: { resultWritten: true },
         },
         { ids: [519], fields: { resultWritten: true } },
-        { ids: [42, 47, 48, 49], fields: { resultWritten: true } },
+        { ids: [42, 47, 49], fields: { resultWritten: true } },
         { ids: [43, 44, 45], fields: { resultWritten: false } },
         { ids: [882], fields: { resultWritten: false } },
         { ids: [883], fields: { resultWritten: true } },

@@ -1,0 +1,1083 @@
+{
+  "scope": "Each own PE with unchanged whole text, real CRT/resource host/typed Script/Main143 parsed VM. Small disjoint ordinary data spans only. Original journal and private bootstrap qualifications remain in the referenced report; old patched allocator/CRT results do not establish this host.",
+  "profiles": {
+    "63": {
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "originalSHA256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+      "groups": {
+        "S1": {
+          "report": ".local/phase11/sdk63-67-cp932-runtime-20261127/ORIGINAL-S1-63.json",
+          "reportSHA256": "fc4fdffcae8ef657206802347002c68b5feccc81156a8dc926eb6241a71cf55b",
+          "sourceSHA256": {
+            "probe-normal.mjs": "b7c0cefc4f64dd63faac7b2359948e7fa38178f794edc5ddaaedd81614a71eaf",
+            "normal-cases.mjs": "9967049fa8c6fc69e9e518533f78809f19a1bf7ac3b1d7bd78f8050faad4a598",
+            "resource63-journal-host.mjs": "a10e15cd62f31137a6216fbd49c793e67a7ce926dafd3c97950110baa3cd41e0"
+          },
+          "textSHA256": "89320bbab145f475216fceb5c1d8f0e4181c9f73f61f087ed6d26caf1e12789a",
+          "counts": {
+            "targetGCALLs": 32,
+            "dependencyGCALLs": 3,
+            "allGCALLs": 35,
+            "newBusinessDirect": 0,
+            "allExternalDirect": 76,
+            "GCALLFrameDirectOverlap": 35,
+            "setupAndCleanupDirect": 41
+          },
+          "handlers": {
+            "18": 4916416,
+            "20": 4916544,
+            "22": 4916688,
+            "26": 4917072,
+            "37": 4917680,
+            "39": 4918240,
+            "40": 4918480,
+            "48": 4919408
+          },
+          "cases": [
+            {
+              "id": 18,
+              "args": [512],
+              "text": "\u732b%d[G128] 100%%",
+              "ordinal": 0,
+              "control": 1,
+              "result": 10,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 18,
+              "args": [512],
+              "text": "",
+              "ordinal": 1,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 18,
+              "args": [512],
+              "text": "ABC",
+              "ordinal": 2,
+              "control": 1,
+              "result": 3,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 18,
+              "args": [512],
+              "text": "\u9ed2\u732b\u3068Tea",
+              "ordinal": 3,
+              "control": 1,
+              "result": 9,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 20,
+              "args": [512, 768],
+              "text": "\u732b%d[G128]",
+              "other": "\u732b-41",
+              "ordinal": 4,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 20,
+              "args": [512, 768],
+              "text": "a",
+              "other": "b",
+              "ordinal": 5,
+              "control": 1,
+              "result": 4294967295,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 20,
+              "args": [512, 768],
+              "text": "b",
+              "other": "a",
+              "ordinal": 6,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 20,
+              "args": [512, 768],
+              "text": "\u732b",
+              "other": "\u72ac",
+              "ordinal": 7,
+              "control": 1,
+              "result": 8,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 22,
+              "args": [512, 768],
+              "text": "Tea%d[G128]",
+              "other": "tEA-41",
+              "ordinal": 8,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 22,
+              "args": [512, 768],
+              "text": "a",
+              "other": "B",
+              "ordinal": 9,
+              "control": 1,
+              "result": 4294967295,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 22,
+              "args": [512, 768],
+              "text": "\u732bA",
+              "other": "\u732ba",
+              "ordinal": 10,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 22,
+              "args": [512, 768],
+              "text": "Z",
+              "other": "a",
+              "ordinal": 11,
+              "control": 1,
+              "result": 25,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 26,
+              "args": [512],
+              "text": "12.5",
+              "ordinal": 12,
+              "control": 1,
+              "result": 1095237632,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 26,
+              "args": [512],
+              "text": "-0.0",
+              "ordinal": 13,
+              "control": 1,
+              "result": 2147483648,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 26,
+              "args": [512],
+              "text": " \t+1.25D2tail",
+              "ordinal": 14,
+              "control": 1,
+              "result": 1123680256,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 26,
+              "args": [512],
+              "text": "-.125",
+              "ordinal": 15,
+              "control": 1,
+              "result": 3187671040,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 26,
+              "args": [512],
+              "text": "16777217",
+              "ordinal": 16,
+              "control": 1,
+              "result": 1266679808,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 26,
+              "args": [512],
+              "text": "1.23456789",
+              "ordinal": 17,
+              "control": 1,
+              "result": 1067320914,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 37,
+              "args": [1024, 0, 0],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    48, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 18,
+              "control": 2,
+              "result": null,
+              "changed": [
+                [1024, 48],
+                [1025, 0],
+                [1026, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 37,
+              "args": [1024, 1234567, 0],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    49, 44, 50, 51, 52, 44, 53, 54, 55, 0, 0, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 19,
+              "control": 2,
+              "result": null,
+              "changed": [
+                [1024, 49],
+                [1025, 44],
+                [1026, 50],
+                [1027, 51],
+                [1028, 52],
+                [1029, 44],
+                [1030, 53],
+                [1031, 54],
+                [1032, 55],
+                [1033, 0],
+                [1034, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 37,
+              "args": [1024, -1234567, 1],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    45, 49, 44, 50, 51, 52, 44, 53, 54, 55, 0, 0, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 20,
+              "control": 2,
+              "result": null,
+              "changed": [
+                [1024, 45],
+                [1025, 49],
+                [1026, 44],
+                [1027, 50],
+                [1028, 51],
+                [1029, 52],
+                [1030, 44],
+                [1031, 53],
+                [1032, 54],
+                [1033, 55],
+                [1034, 0],
+                [1035, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 37,
+              "args": [1024, 2147483647, 1],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    43, 50, 44, 49, 52, 55, 44, 52, 56, 51, 44, 54, 52, 55, 0, 0, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 21,
+              "control": 2,
+              "result": null,
+              "changed": [
+                [1024, 43],
+                [1025, 50],
+                [1026, 44],
+                [1027, 49],
+                [1028, 52],
+                [1029, 55],
+                [1030, 44],
+                [1031, 52],
+                [1032, 56],
+                [1033, 51],
+                [1034, 44],
+                [1035, 54],
+                [1036, 52],
+                [1037, 55],
+                [1038, 0],
+                [1039, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 39,
+              "args": [1024, 512, 768, 40],
+              "text": "\u732b%d[G128],rest",
+              "other": ",",
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    148, 76, 45, 52, 49, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 22,
+              "control": 1,
+              "result": 5,
+              "changed": [
+                [1024, 148],
+                [1025, 76],
+                [1026, 45],
+                [1027, 52],
+                [1028, 49],
+                [1029, 0],
+                [1030, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 39,
+              "args": [1024, 512, 768, 12],
+              "text": "alpha beta",
+              "other": " ",
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    97, 108, 112, 104, 97, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 23,
+              "control": 1,
+              "result": 5,
+              "changed": [
+                [1024, 97],
+                [1025, 108],
+                [1026, 112],
+                [1027, 104],
+                [1028, 97],
+                [1029, 0],
+                [1030, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 39,
+              "args": [1024, 512, 768, 4],
+              "text": "alpha",
+              "other": "/",
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    97, 108, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 24,
+              "control": 1,
+              "result": 2,
+              "changed": [
+                [1024, 97],
+                [1025, 108],
+                [1026, 0],
+                [1027, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 39,
+              "args": [1024, 512, 768, 2],
+              "text": "abc",
+              "other": "/",
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 25,
+              "control": 1,
+              "result": 0,
+              "changed": [
+                [1024, 0],
+                [1025, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 40,
+              "args": [512],
+              "text": "\u732b",
+              "ordinal": 26,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 40,
+              "args": [512],
+              "text": "A",
+              "ordinal": 27,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 40,
+              "args": [512],
+              "text": "\uff71",
+              "ordinal": 28,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 48,
+              "args": [512],
+              "text": "\u732b%d[G128] 100%%",
+              "ordinal": 29,
+              "control": 1,
+              "result": 9,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 48,
+              "args": [512],
+              "text": "\u9ed2\u732bTea",
+              "ordinal": 30,
+              "control": 1,
+              "result": 5,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 48,
+              "args": [512],
+              "text": "",
+              "ordinal": 31,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            }
+          ]
+        }
+      }
+    },
+    "67": {
+      "profile": "bokutomo-engine-2.6.1.67",
+      "originalSHA256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+      "groups": {
+        "S1": {
+          "report": ".local/phase11/sdk63-67-cp932-runtime-20261127/ORIGINAL-S1-67.json",
+          "reportSHA256": "27647ae50c792e31760cfcbe3e43c07b8b772e45d2dc8c6774b2c8b71dc64de1",
+          "sourceSHA256": {
+            "probe-normal.mjs": "b7c0cefc4f64dd63faac7b2359948e7fa38178f794edc5ddaaedd81614a71eaf",
+            "normal-cases.mjs": "9967049fa8c6fc69e9e518533f78809f19a1bf7ac3b1d7bd78f8050faad4a598",
+            "resource67-journal-host.mjs": "7d10ba34a7e488caa1e3e338bc3ac918b9a6f912438f3087a5b04ca6f6e66c40"
+          },
+          "textSHA256": "caaee45e75276342c603bf7518d54c7306b52498a1a04aca8cfef596c34c01d6",
+          "counts": {
+            "targetGCALLs": 32,
+            "dependencyGCALLs": 3,
+            "allGCALLs": 35,
+            "newBusinessDirect": 0,
+            "allExternalDirect": 79,
+            "GCALLFrameDirectOverlap": 35,
+            "setupAndCleanupDirect": 44
+          },
+          "handlers": {
+            "18": 4916976,
+            "20": 4917104,
+            "22": 4917248,
+            "26": 4917632,
+            "37": 4918240,
+            "39": 4918800,
+            "40": 4919040,
+            "48": 4919968
+          },
+          "cases": [
+            {
+              "id": 18,
+              "args": [512],
+              "text": "\u732b%d[G128] 100%%",
+              "ordinal": 0,
+              "control": 1,
+              "result": 10,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 18,
+              "args": [512],
+              "text": "",
+              "ordinal": 1,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 18,
+              "args": [512],
+              "text": "ABC",
+              "ordinal": 2,
+              "control": 1,
+              "result": 3,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 18,
+              "args": [512],
+              "text": "\u9ed2\u732b\u3068Tea",
+              "ordinal": 3,
+              "control": 1,
+              "result": 9,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 20,
+              "args": [512, 768],
+              "text": "\u732b%d[G128]",
+              "other": "\u732b-41",
+              "ordinal": 4,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 20,
+              "args": [512, 768],
+              "text": "a",
+              "other": "b",
+              "ordinal": 5,
+              "control": 1,
+              "result": 4294967295,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 20,
+              "args": [512, 768],
+              "text": "b",
+              "other": "a",
+              "ordinal": 6,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 20,
+              "args": [512, 768],
+              "text": "\u732b",
+              "other": "\u72ac",
+              "ordinal": 7,
+              "control": 1,
+              "result": 8,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 22,
+              "args": [512, 768],
+              "text": "Tea%d[G128]",
+              "other": "tEA-41",
+              "ordinal": 8,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 22,
+              "args": [512, 768],
+              "text": "a",
+              "other": "B",
+              "ordinal": 9,
+              "control": 1,
+              "result": 4294967295,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 22,
+              "args": [512, 768],
+              "text": "\u732bA",
+              "other": "\u732ba",
+              "ordinal": 10,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 22,
+              "args": [512, 768],
+              "text": "Z",
+              "other": "a",
+              "ordinal": 11,
+              "control": 1,
+              "result": 25,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 26,
+              "args": [512],
+              "text": "12.5",
+              "ordinal": 12,
+              "control": 1,
+              "result": 1095237632,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 26,
+              "args": [512],
+              "text": "-0.0",
+              "ordinal": 13,
+              "control": 1,
+              "result": 2147483648,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 26,
+              "args": [512],
+              "text": " \t+1.25D2tail",
+              "ordinal": 14,
+              "control": 1,
+              "result": 1123680256,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 26,
+              "args": [512],
+              "text": "-.125",
+              "ordinal": 15,
+              "control": 1,
+              "result": 3187671040,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 26,
+              "args": [512],
+              "text": "16777217",
+              "ordinal": 16,
+              "control": 1,
+              "result": 1266679808,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 26,
+              "args": [512],
+              "text": "1.23456789",
+              "ordinal": 17,
+              "control": 1,
+              "result": 1067320914,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 37,
+              "args": [1024, 0, 0],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    48, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 18,
+              "control": 2,
+              "result": null,
+              "changed": [
+                [1024, 48],
+                [1025, 0],
+                [1026, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 37,
+              "args": [1024, 1234567, 0],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    49, 44, 50, 51, 52, 44, 53, 54, 55, 0, 0, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 19,
+              "control": 2,
+              "result": null,
+              "changed": [
+                [1024, 49],
+                [1025, 44],
+                [1026, 50],
+                [1027, 51],
+                [1028, 52],
+                [1029, 44],
+                [1030, 53],
+                [1031, 54],
+                [1032, 55],
+                [1033, 0],
+                [1034, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 37,
+              "args": [1024, -1234567, 1],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    45, 49, 44, 50, 51, 52, 44, 53, 54, 55, 0, 0, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 20,
+              "control": 2,
+              "result": null,
+              "changed": [
+                [1024, 45],
+                [1025, 49],
+                [1026, 44],
+                [1027, 50],
+                [1028, 51],
+                [1029, 52],
+                [1030, 44],
+                [1031, 53],
+                [1032, 54],
+                [1033, 55],
+                [1034, 0],
+                [1035, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 37,
+              "args": [1024, 2147483647, 1],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    43, 50, 44, 49, 52, 55, 44, 52, 56, 51, 44, 54, 52, 55, 0, 0, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 21,
+              "control": 2,
+              "result": null,
+              "changed": [
+                [1024, 43],
+                [1025, 50],
+                [1026, 44],
+                [1027, 49],
+                [1028, 52],
+                [1029, 55],
+                [1030, 44],
+                [1031, 52],
+                [1032, 56],
+                [1033, 51],
+                [1034, 44],
+                [1035, 54],
+                [1036, 52],
+                [1037, 55],
+                [1038, 0],
+                [1039, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 39,
+              "args": [1024, 512, 768, 40],
+              "text": "\u732b%d[G128],rest",
+              "other": ",",
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    148, 76, 45, 52, 49, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 22,
+              "control": 1,
+              "result": 5,
+              "changed": [
+                [1024, 148],
+                [1025, 76],
+                [1026, 45],
+                [1027, 52],
+                [1028, 49],
+                [1029, 0],
+                [1030, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 39,
+              "args": [1024, 512, 768, 12],
+              "text": "alpha beta",
+              "other": " ",
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    97, 108, 112, 104, 97, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 23,
+              "control": 1,
+              "result": 5,
+              "changed": [
+                [1024, 97],
+                [1025, 108],
+                [1026, 112],
+                [1027, 104],
+                [1028, 97],
+                [1029, 0],
+                [1030, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 39,
+              "args": [1024, 512, 768, 4],
+              "text": "alpha",
+              "other": "/",
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    97, 108, 0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 24,
+              "control": 1,
+              "result": 2,
+              "changed": [
+                [1024, 97],
+                [1025, 108],
+                [1026, 0],
+                [1027, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 39,
+              "args": [1024, 512, 768, 2],
+              "text": "abc",
+              "other": "/",
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    0, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 25,
+              "control": 1,
+              "result": 0,
+              "changed": [
+                [1024, 0],
+                [1025, 0]
+              ],
+              "state": []
+            },
+            {
+              "id": 40,
+              "args": [512],
+              "text": "\u732b",
+              "ordinal": 26,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 40,
+              "args": [512],
+              "text": "A",
+              "ordinal": 27,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 40,
+              "args": [512],
+              "text": "\uff71",
+              "ordinal": 28,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 48,
+              "args": [512],
+              "text": "\u732b%d[G128] 100%%",
+              "ordinal": 29,
+              "control": 1,
+              "result": 9,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 48,
+              "args": [512],
+              "text": "\u9ed2\u732bTea",
+              "ordinal": 30,
+              "control": 1,
+              "result": 5,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            },
+            {
+              "id": 48,
+              "args": [512],
+              "text": "",
+              "ordinal": 31,
+              "control": 1,
+              "result": 0,
+              "outputs": [],
+              "changed": [],
+              "state": []
+            }
+          ]
+        }
+      }
+    }
+  }
+}

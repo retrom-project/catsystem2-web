@@ -26,6 +26,16 @@ numeric fields, recursive strings, the three address domains, UTF-8, CP932 and
 invalid bytes. This selector correction adds public JS regressions; it does not
 rerun that native matrix, establish unrestricted CRT behavior, or admit native450.
 
+The SDK63 scalar group now admits Main18/20/22/26/37/39/40/48 after
+32 calls through its own unchanged executable and real CRT, resource owner,
+Script and parsed VM. The same normal cases run independently in SDK67.
+`native-legacy-cp932-runtime` checks exact result/control words, every guest
+write and eight fresh World continuations per build. Inputs include short
+CP932 formatted text, finite decimal and D-exponent prefixes, signed grouping,
+two-byte token termination and character classification. This does not establish
+large scratch output, nonfinite parsing or overlapping destinations. These
+functions own no Task or renderer and introduce no task-message or file layout.
+
 ## Basic string operations
 
 Both pinned engines implement main `0D..18`: raw and formatted copy,
