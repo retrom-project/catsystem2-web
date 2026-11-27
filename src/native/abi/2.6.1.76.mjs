@@ -36,6 +36,7 @@ export default {
   id: 'cs2-2.6.1.76',
   profile: 'nekopara-vol3-engine-2.6.1.76',
   engineVersion: '2.6.1.76',
+  tileGame: { seedFromLocalClock: true },
   math: {
     interpreterUsesNativeScalarMath: true,
     scalarArgumentsReadFrame: true,

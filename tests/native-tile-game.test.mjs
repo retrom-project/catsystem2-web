@@ -12,14 +12,7 @@ for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
 ]) {
   test(`${profile} JS tile contexts share one model and restore independent event caches`, async (t) => {
-    if (
-      [
-        'bokutomo-engine-2.6.1.67',
-        'rebellions-jp-engine-2.6.1.63',
-        'grisaia-jp-engine-2.6.1.23',
-      ].includes(profile)
-    )
-      t.mock.method(Date, 'now', () => new Date(2026, 10, 25, 12, 34, 56).getTime());
+    t.mock.method(Date, 'now', () => new Date(2026, 10, 25, 12, 34, 56).getTime());
     const first = await dataWorld(profile);
     let fresh;
     const invoke = async (world, id, args) =>

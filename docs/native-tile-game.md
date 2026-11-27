@@ -15,13 +15,23 @@ result caches. Starting through one context changes the model queried through
 its peers. Releasing a context only releases that context.
 
 The model's independent MT19937 stream initializes subsequent words with
-`69069 * previous`; its default seed is 4357. SDK 2.6.1.23, 2.6.1.63 and 2.6.1.67 supply the seed
+`69069 * previous`; its standalone model default seed is 4357. All five reviewed builds supply the seed
 from the owning World's initial local clock: year since 1900, month, day, hour,
 minute and second are packed with DWORD shifts of 4, 5, 5, 6 and 6 bits. This
 matches that build's registered C++ time-seed initializer. The main/generic
 streams have a different initializer. A World checkpoint stores this tile stream and shared model once,
 then stores independent context caches through the handle codec. Pending event
 replay and the complete dealt hand resume in a fresh JS World.
+
+The modern 2.6.1.74/76 initialization checks execute each build's registered
+model, auxiliary scratch and time-seed constructors with the original CRT.
+Controlled UTC host input, two real 32-byte contexts, 32 complete GCALL frames
+per build and independent cold restores verify the full random bank, VM bytes,
+controls and context event caches. Their context is a rule owner, not a Task or
+renderer object. Historical 6,082-call reports initialized only the model and
+therefore establish their recorded default-stream scope; they do not prove the
+registered calendar-seed initialization. Remaining modern commands and shapes
+are tracked separately from this initialization group.
 
 SDK 2.6.1.23, 2.6.1.63 and 2.6.1.67 emit a pre-action ability notification only when the automatic
 activation helper activates an ability. An already pending explicit human
