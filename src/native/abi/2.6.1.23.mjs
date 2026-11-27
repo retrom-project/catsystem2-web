@@ -99,6 +99,7 @@ export const engine23CommonHeads = {
 const legacyTaskWordOperations = [126, 127, 128, 129, 131, 132, 138, 139];
 const legacyTextServices = [130, 133, 134, 135, 391, 456, 585, 599];
 const areaAdditionalServices = [198, 199, 202];
+const viewMeshServices = [12, 467];
 const rectangleOperations = [214, 215, 216, 217];
 const mainGeometryOperations = [350, 351, 352, 353, 354, 355, 356, 357];
 const motionGeometryOperations = [27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37];
@@ -181,6 +182,11 @@ function geometrySignatures(table, ids) {
 }
 
 const mainEvidence = [
+  {
+    ids: viewMeshServices,
+    value:
+      'Own SDK23 Main12 selects the actual initialized mode1 manager through kcView+8 and writes its near float at+0xd8, without requesting a repaint. Main467 translates and converts64B VM records to80B native records before kind2 raw78; the original manager owns two copies, rejects an occupied model key, and admits a new model after actual Main83 unload. Real Script GCALLs, finite3D projection, released bitmap-to-VRAM source and actual COM draw submissions were observed; platform Present is a separate memory leaf.',
+  },
   {
     ids: [622, 623, 624, 703, 704, 706, 707, 708, 709],
     value:
@@ -1635,6 +1641,11 @@ export default {
           ...[447, 448, 449, 450, 451, 452, 453].map((id) => toMessage(id, 69)),
         ],
       },
+      planeMesh: {
+        unmapped: 'reject',
+        raw: [{ ...toMessage(83, -5), kinds: [2] }],
+        canonical: [{ ...toMessage(78, 5), kinds: [2] }],
+      },
       area: {
         unmapped: 'reject',
         raw: [
@@ -1755,6 +1766,8 @@ export default {
     macroLiterals: { string: 'unescape-quote', character: 'wrap-raw' },
   },
   graphics: {
+    cameraNearRequiresMode1: true,
+    dividedMesh: { receiverKinds: [2], rejectOccupiedModel: true, unconfiguredPagesOnly: true },
     areaBlankWorkKinds: [27],
     bitmapAlphaQueryRequiresOwner: true,
     imageOwnerAlphaQueryRequiresBitmap: true,
@@ -2358,6 +2371,35 @@ export default {
               : {}),
           },
         })),
+        {
+          ids: [12],
+          fields: { review: 'reviewed', resultWritten: false },
+        },
+        {
+          ids: [467],
+          fields: {
+            review: 'reviewed',
+            resultWritten: false,
+            parameters: NATIVE_SEMANTICS.main[467].signature.parameters.map((parameter, index) =>
+              index === 0
+                ? { ...parameter, type: { kind: 'object-id', objectKind: 'Plane' } }
+                : index === 1
+                  ? {
+                      ...parameter,
+                      type: {
+                        kind: 'pointer',
+                        addressSpace: 'vm',
+                        direction: 'in',
+                        target: {
+                          kind: 'record',
+                          name: '64B texture ID and five columns of three finite f32 values',
+                        },
+                      },
+                    }
+                  : parameter,
+            ),
+          },
+        },
         ...areaAdditionalServices.map((id) => ({
           ids: [id],
           fields: {

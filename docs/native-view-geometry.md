@@ -19,6 +19,20 @@ Screen conversion retains f32 subtraction/multiplication and signed x86 truncati
 with INT_MIN for nonfinite or out-of-range conversion. All five calls return control
 2 without writing the separate native result word.
 
+The fixed SDK 2.6.1.23 Main 12 is admitted for its initialized mode1 view and
+positive finite distance. Its original Script supplies a real kcView through
+`+0x74`; the selector reads kcView `+8` and chooses its separately constructed
+draw manager. The x87 leaf writes that manager's near word at `+0xd8`, rather
+than writing the kcView itself. It does not request a repaint. Actual Plane
+mesh submissions consume the new value when a normal visibility change requests
+the next render. Selection-failure fallback, other view modes and unreviewed
+distance shapes remain protected. Current checkpoint state keeps the same word
+in place; other SDK policies are unchanged.
+
+`tests/native-sdk23-view-mesh.test.mjs` uses actual factory/VM calls and frozen
+native COM vertex submissions at two near distances. It keeps those submission
+observations separate from physical GPU and texture-sampling evidence.
+
 During migration, the injected `syncViewGeometry` capability in
 [`oracle/transitional-exe.mjs`](../oracle/transitional-exe.mjs) projects JS state
 one way into the original renderer records. NativeGraphics setters and renderer

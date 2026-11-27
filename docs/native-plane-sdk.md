@@ -1,4 +1,37 @@
-# SDK 2.6.1.74 Plane and Input commands
+# Native Plane and Input commands
+
+## Fixed SDK 2.6.1.23 divided model
+
+Main 467 takes a reviewed kind2 Plane, a VM pointer and a positive record count.
+Each 64-byte source record contains a texture selector followed by five columns
+of three floats. The wrapper allocates 80 bytes per output record, adds its
+ordinal and interleaves the three vertices. It does not initialize their color
+words. The normal model loader makes two private copies and enables a uniform
+white override before drawing; the ignored color words are not promoted to
+numeric observations.
+
+Raw 78 maps to canonical 83 only for this receiver/build. A fresh model registers
+under the Plane's native ID. Loading again while that key is occupied still
+constructs and decodes the new candidate, then rejects registration and destroys
+the candidate while keeping the old model and its data. Main 83 explicitly
+unloads the old model and allows a later Main 467 to succeed. Destroying the
+Plane removes its model before the parent Script's later task retirement.
+
+The first admitted shapes use finite vertices, texture selector zero and the
+original default unconfigured page grid. Its actual D3D submission has no bound
+texture and uses the shared white fallback. The VM-created bitmap upload and
+source release in the same fixture are distinct observations; they do not prove
+texture sampling. Configured pages, other selectors and receiver kinds remain
+protected while their actual Settings/provider construction chain is reviewed.
+
+`tests/native-sdk23-view-mesh.test.mjs` checks real GCALL stack/control, private
+copy isolation, occupied-key rejection, explicit unload/reload, the actual shared
+renderer geometry and default frame, Plane destruction and three independent
+cold continuations. Original draw packets come from complete mode1 constructors
+and the actual Top/view rendering path into generic COM memory leaves. These
+leaves are not a claim of native hardware pixels or physical presentation.
+
+## SDK 2.6.1.74 Plane and Input commands
 
 The table below describes the fixed SDK executable and its ordinary GCALL
 surface. The raw message IDs are from the original Plane and BasePlane

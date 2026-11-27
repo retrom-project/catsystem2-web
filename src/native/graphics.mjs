@@ -1520,22 +1520,29 @@ export class NativeGraphicTask {
         return 0;
       case 83: {
         const rect = this.state.rect,
-          drawType = this.state.drawType;
-        this.unload();
+          drawType = this.state.drawType,
+          policy = this.world.profile && nativeABI(this.world.profile).graphics.dividedMesh;
+        if (!policy?.rejectOccupiedModel) this.unload();
         const mesh = decodeNativeMesh(bytes(l, (w >>> 0) * 80)),
-          bounds = nativeMeshBounds(mesh);
-        this.makeGraph({
-          type: 3,
-          mesh,
-          bounds,
-          width: bounds.maximum[0] - bounds.minimum[0],
-          height: bounds.maximum[1] - bounds.minimum[1],
-          vram: true,
-        });
+          bounds = nativeMeshBounds(mesh),
+          candidate = {
+            type: 3,
+            mesh,
+            bounds,
+            width: bounds.maximum[0] - bounds.minimum[0],
+            height: bounds.maximum[1] - bounds.minimum[1],
+            vram: true,
+          };
+        // Build the private candidate before registration. SDK23 rejects an
+        // occupied key and discards that candidate without publishing it or
+        // releasing the old model. Main83 explicitly removes the old key.
+        if (policy?.rejectOccupiedModel && this.graph) return undefined;
+        if (policy?.rejectOccupiedModel) this.unload();
+        this.makeGraph(candidate);
         this.state.rect = rect;
         this.state.drawType = drawType;
         this.state.colorOverride = 1;
-        return 0;
+        return policy ? undefined : 0;
       }
       case 84:
         this.state.vramType = l;

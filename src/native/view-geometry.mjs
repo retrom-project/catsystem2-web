@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import { nativeABI } from './abi/index.mjs';
 import { nativeReply } from '../kcs/vm.mjs';
+import { bitsFloat } from '../kcs.mjs';
 import { multiplyX87Integer, roundX87Single } from '../ppi/x87.mjs';
 export const NATIVE_VIEW_GEOMETRY_OPERATIONS = Object.freeze([
   'view.dimensions',
@@ -44,7 +45,16 @@ export function nativeViewGeometry(
   graphics,
   screen,
   fullPositionUsesX87,
+  cameraNearRequiresMode1 = false,
 ) {
+  if (operation === 'view.setCameraNear' && cameraNearRequiresMode1) {
+    if (args.length !== 1) throw new Error('Camera near native expects one argument word');
+    if (!graphics.view.active || !graphics.device.attachment)
+      throw new Error('Camera near native requires its initialized mode1 view manager');
+    const value = bitsFloat(args[0]);
+    if (!Number.isFinite(value) || value <= 0)
+      throw new RangeError('Camera near native requires a reviewed positive finite distance');
+  }
   const words = Array.from(args);
   while (words.length < argumentWords) words.push(machine.nativeArgument(words.length));
   const [x, y] = words,
@@ -95,6 +105,7 @@ export function installNativeViewGeometry(world) {
           world.graphics,
           world.configuration.screen,
           abi.graphics?.fullPositionCoordinatesUseX87,
+          abi.graphics?.cameraNearRequiresMode1,
         ),
       );
 }
