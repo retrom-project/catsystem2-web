@@ -1183,6 +1183,7 @@ export default {
     planeInheritanceReceiverKinds: [2],
     planeButtonReceiverKinds: [2],
     planeButtonUsesTexturePose: true,
+    planeGraphInputEnablesButton: true,
     planeInputRequiresRootReply: true,
     planeClearInputClearsButtonRows: true,
     planeImageSelectorHidesTarget: true,
@@ -1359,7 +1360,7 @@ export default {
         {
           ids: planeButtonOperations,
           value:
-            'Own SDK63 Main66 constructs real Plane owners under the existing true primary Root and its independently routable Input11. Main96 copies twelve words after original geometry registration; Main97 narrows the selector to sixteen bits, reads only enabled rows, preserves selector1 Z and stores the blocked high bit. Main98 publishes phase plus blocked. Main99 clears exactly the twelve button words before unregistering the actual Input record, retaining phase and enable metadata; rebind uses current geometry. Main102 hides its typed hint, Main103 retains the complete hint attribute, and Main110 retains its caller receiver ID. Normal Main69 stops the Script before actual Root traversal and release. The earlier nested-Top raw32 lookup was unwritten: its empty list/hint coordinates are not Input qualification. Unknown receivers, nonzero-Top registration replies and unproved shapes remain guarded; no physical HID/GPU claim.',
+            'Own SDK63 Main66 constructs real Plane owners under the existing true primary Root and its independently routable Input11. Main96 copies twelve words after original geometry registration; Main97 narrows the selector to sixteen bits, reads only enabled rows, preserves selector1 Z and stores the blocked high bit. Main98 publishes phase plus blocked. Main99 clears exactly the twelve button words before unregistering the actual Input record, retaining phase and enable metadata; rebind uses current geometry. Main102 hides its typed hint, Main103 retains the complete hint attribute, and Main110 retains its caller receiver ID. Main69 is a four-word user-message dependency, not an Engine stop; it does not prove the driver stopped. The observed Root traversal retires requested Plane children. The earlier nested-Top raw32 lookup was unwritten: its empty list/hint coordinates are not Input qualification. Unknown receivers, nonzero-Top registration replies and unproved shapes remain guarded; no physical HID/GPU claim.',
         },
         {
           ids: planeInheritanceOperations,
@@ -1628,7 +1629,7 @@ export default {
         {
           ids: [95, 106, 107, 109],
           value:
-            'Own Plane raw85 computes and registers the graph rectangle through Input raw122 only for an unregistered owner. Raw89 sends the active DWORD to Input raw128. Main107 queries raw129, which leaves a missing record unwritten. Raw91 queries Input raw132 and only normalizes source 16 to 2.',
+            'Own P3 Main95 always enables button metadata and updates flags, including an existing disabled registration. The true Root/Input Frame selects the highest-priority enabled and unblocked hover and writes it into an independent Main66/Main143 Script waiter. Clear/rebind, blocked row3, active setters, source0 and normal ownership cleanup are paired. Application Device binding rows were not published by this host: down/up delivery is not a logical key callback or changed-word consumption proof. Own Plane raw85 computes and registers the graph rectangle through Input raw122 only for an unregistered owner. Raw89 sends the active DWORD to Input raw128. Main107 queries raw129, which leaves a missing record unwritten. Raw91 queries Input raw132 and only normalizes source 16 to 2.',
         },
         {
           ids: [80, 83, 86, 87],
@@ -2365,6 +2366,18 @@ export default {
         },
       ],
       signatures: [
+        {
+          ids: [95],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[95].signature.parameters.map((parameter, index) =>
+              index
+                ? parameter
+                : { ...parameter, type: { kind: 'object-id', objectKind: 'Plane' } },
+            ),
+            resultWritten: false,
+            review: 'reviewed',
+          },
+        },
         ...planeButtonOperations.map((id) => ({
           ids: [id],
           fields: {

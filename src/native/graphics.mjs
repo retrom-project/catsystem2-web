@@ -745,6 +745,7 @@ export class NativeGraphicTask {
     this.planeResetReleasesTrackedInput = Boolean(abi?.planeResetReleasesTrackedInput);
     this.planeUsesLegacyButtonStates = Boolean(abi?.planeUsesLegacyButtonStates);
     this.planeButtonUsesTexturePose = Boolean(abi?.planeButtonUsesTexturePose);
+    this.planeGraphInputEnablesButton = Boolean(abi?.planeGraphInputEnablesButton);
     this.planeInputRequiresRootReply = Boolean(abi?.planeInputRequiresRootReply);
     this.planeClearInputClearsButtonRows = Boolean(abi?.planeClearInputClearsButtonRows);
     this.planeEmptyGraphRequiresMode1 = Boolean(abi?.planeEmptyGraphRequiresMode1);
@@ -1558,6 +1559,10 @@ export class NativeGraphicTask {
         if (this.record.kind === 2 && !this.graph?.kx2)
           throw new Error('Native plane input geometry is unreviewed');
         if (this.state.receiver !== -1) {
+          if (this.planeGraphInputEnablesButton) {
+            this.state.buttonEnabled = true;
+            this.state.buttonFlags = l;
+          }
           if (tracksGraph) {
             this.state.inputTracksGraph = true;
             if (this.legacyPlaneRegistration) this.state.bindExtra = l >>> 0;
@@ -1568,6 +1573,10 @@ export class NativeGraphicTask {
           ? this.graphInputFields(l)
           : Array.from({ length: 6 }, (_, i) => load(l + i * 4));
         await this.registerInputArea(sender, fields, tracksGraph, { bindExtra: l });
+        if (this.planeGraphInputEnablesButton) {
+          this.state.buttonEnabled = true;
+          this.state.buttonFlags = l;
+        }
         return tracksGraph ? undefined : 1;
       }
       case 90:

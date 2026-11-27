@@ -167,3 +167,32 @@ or clearing an absent registration does not need that reply. Input record
 word10 was also unwritten by the native registration path and remains outside
 the functional comparison. No physical mouse, View presentation or GPU claim
 is made by this resource protocol.
+
+## SDK63 and SDK67 real Root hover consumers
+
+Main95 sends raw85 to an owned Plane with live graph geometry. It registers only
+an absent Input region, but always enables button metadata and writes the flag
+word. Calling it again on a disabled region preserves that region's identity
+and disabled state while updating the Plane flags. This policy is explicit for
+these two executable builds.
+
+The original primary Root/Input Frame selects the highest-priority enabled
+region. A blocked Plane retains the Input active flag while declining its hover
+notification. Clearing and re-registering a region uses its new priority;
+disabling it clears active. Main106 writes active, Main107 reads that owned word,
+Main108 stores the next reply word, and Main109 returns the observed source0.
+The independent Main66/Main143 Script waiter executes its actual KCS program,
+records the two written hover packets and receives normal retirement. Each build
+has eight independent current-checkpoint continuations of this caller chain.
+
+The native host parses KEYCUSTOMIZE but does not execute the Application's
+logical Device binding-row publisher. Its WndProc down/up delivery therefore
+does not prove logical key callbacks, the key callback's return-word consumption
+or physical input. Those shapes remain open. The Input constructor's word at
+`+4928` is drag threshold2, not source; the proposed default-source change was
+withdrawn before implementation. Main69 sends a four-word user message even
+when its tag has the numeric value of an Engine stop. The original driver was
+instead stopped by its own raw156/157 dispatcher message, with both enabled and
+VM mode observed. This corrects the earlier P2 receipt wording without changing
+Main69 behavior or its original logs. COM-memory attachment and virtual Win32
+leaves do not establish View presentation, physical HID or GPU output.

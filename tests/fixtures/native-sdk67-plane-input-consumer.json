@@ -1,0 +1,5211 @@
+{
+  "profile": "bokutomo-engine-2.6.1.67",
+  "original": {
+    "path": ".local/phase11/sdk63-67-plane-input-20261127/ORIGINAL-P3-V4-67.json",
+    "sha256": "dee5193b564bccffc2f72ec2a6976be78e5a1bc3eab94155150970b4d6144f53",
+    "pe": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+    "text": "caaee45e75276342c603bf7518d54c7306b52498a1a04aca8cfef596c34c01d6"
+  },
+  "scope": "Real Root/Input Frame and independent actual Script waiter for written hover messages, scalar controls, priority/rebind and normal release only. WndProc down/up was delivered but the host never published Application logical key binding rows; no logical key/changed-return consumption claim. Capture-only drag threshold is not source. Unknown Input record word10 excluded; pure COM-memory attachment is not GPU/physical HID proof.",
+  "startupXML": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><ETC><cache>0</cache></ETC><APP><imgcache>0</imgcache></APP><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp32y>0</bpp32y><bpp16y>1</bpp16y><bpp>32</bpp><filter_min>1</filter_min><filter_mag>1</filter_mag></TEXTURE><INT><int00><name>kcs</name><int>scripts.int</int><ext>kcs</ext><dir>scripts-loose</dir></int00><int01><name>scene</name><int>scene.int</int><ext>cst</ext><dir>scene-loose</dir></int01><int02><name>fes</name><int>tables.int</int><ext>tbl</ext><dir>tables-loose</dir></int02><int03><name>image</name><int>images.int</int><ext>hg3</ext><dir>images-loose</dir></int03></INT><KEYCUSTOMIZE><key00><name>MousePrimary</name><mouse1>1</mouse1><rep_mouse1>0</rep_mouse1></key00></KEYCUSTOMIZE></document>",
+  "receiverInstructions": [
+    [37, 512],
+    [43, 209, 4],
+    [37, 0],
+    [38, 64],
+    [37, 128],
+    [43, 71, 4],
+    [39, 29],
+    [19, [19, 132], 4294901763],
+    [39, 92],
+    [37, [19, 136]],
+    [37, 2147483649],
+    [43, 97, 8],
+    [37, 1],
+    [38, 64],
+    [37, 160],
+    [43, 71, 4],
+    [39, 104],
+    [19, [19, 164], 4294901763],
+    [39, 167],
+    [37, [19, 168]],
+    [37, 2147483649],
+    [43, 97, 8],
+    [37, 2],
+    [38, 64],
+    [37, 192],
+    [43, 71, 4],
+    [39, 179],
+    [19, [19, 196], 4294901763],
+    [39, 242],
+    [37, [19, 200]],
+    [37, 2147483649],
+    [43, 97, 8],
+    [37, 3],
+    [38, 64],
+    [37, 224],
+    [43, 71, 4],
+    [39, 254],
+    [19, [19, 228], 4294901763],
+    [39, 317],
+    [37, [19, 232]],
+    [37, 2147483649],
+    [43, 97, 8],
+    [37, 4],
+    [38, 64],
+    [37, 256],
+    [43, 71, 4],
+    [39, 329],
+    [19, [19, 260], 4294901763],
+    [39, 392],
+    [37, [19, 264]],
+    [37, 2147483649],
+    [43, 97, 8],
+    [37, 5],
+    [38, 64],
+    [37, 288],
+    [43, 71, 4],
+    [39, 404],
+    [19, [19, 292], 4294901763],
+    [39, 467],
+    [37, [19, 296]],
+    [37, 2147483649],
+    [43, 97, 8],
+    [37, 6],
+    [38, 64],
+    [37, 320],
+    [43, 71, 4],
+    [39, 479],
+    [19, [19, 324], 4294901763],
+    [39, 542],
+    [37, [19, 328]],
+    [37, 2147483649],
+    [43, 97, 8],
+    [37, 7],
+    [38, 64],
+    [37, 352],
+    [43, 71, 4],
+    [39, 554],
+    [19, [19, 356], 4294901763],
+    [39, 617],
+    [37, [19, 360]],
+    [37, 2147483649],
+    [43, 97, 8],
+    [37, 8],
+    [38, 64],
+    [37, 384],
+    [43, 71, 4],
+    [39, 629],
+    [19, [19, 388], 4294901763],
+    [39, 692],
+    [37, [19, 392]],
+    [37, 2147483649],
+    [43, 97, 8],
+    [37, 9],
+    [38, 64],
+    [37, 416],
+    [43, 71, 4],
+    [39, 704],
+    [19, [19, 420], 4294901763],
+    [39, 767],
+    [37, [19, 424]],
+    [37, 2147483649],
+    [43, 97, 8],
+    [37, 10],
+    [38, 64],
+    [37, 448],
+    [43, 71, 4],
+    [39, 779],
+    [19, [19, 452], 4294901763],
+    [39, 842],
+    [37, [19, 456]],
+    [37, 2147483649],
+    [43, 97, 8],
+    [37, 11],
+    [38, 64],
+    [37, 480],
+    [43, 71, 4],
+    [39, 854],
+    [19, [19, 484], 4294901763],
+    [39, 917],
+    [37, [19, 488]],
+    [37, 2147483649],
+    [43, 97, 8],
+    [37, 12],
+    [38, 64],
+    [59]
+  ],
+  "receiverProgramSHA256": "61218c52498a8e91d4f80b1e13c43e55f911ee7db4f5e345af0917ca91414e54",
+  "coldAfter": [6, 16, 24, 28, 32, 40, 48, 54],
+  "actual": {
+    "target": 18,
+    "allGCALL": 62,
+    "businessDirect": 7,
+    "callbackPackets": {
+      "ready": true,
+      "count": 2,
+      "packets": [
+        {
+          "sender": "planeB",
+          "tag": 4294901765,
+          "owner": "planeB",
+          "value": 1
+        },
+        {
+          "sender": "planeA",
+          "tag": 4294901765,
+          "owner": "planeA",
+          "value": 1
+        }
+      ]
+    },
+    "cleanup": {
+      "models": 0,
+      "retiredActors": [
+        {
+          "name": "planeA",
+          "retired": true
+        },
+        {
+          "name": "planeB",
+          "retired": true
+        },
+        {
+          "name": "waiter",
+          "retired": true
+        }
+      ],
+      "inputRetired": true,
+      "mouseCapture": 0
+    }
+  },
+  "cases": [
+    {
+      "id": 66,
+      "args": [2, "caller", 128],
+      "dependency": true,
+      "save": "planeA",
+      "text": "P3 actual button A",
+      "ordinal": 0,
+      "control": 1,
+      "result": "owned:planeA",
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "driverStop": {
+          "enabled": 1,
+          "mode": 1
+        },
+        "waiter": null,
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 66,
+      "args": [2, "caller", 128],
+      "dependency": true,
+      "save": "planeB",
+      "text": "P3 actual button B",
+      "ordinal": 1,
+      "control": 1,
+      "result": "owned:planeB",
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "driverStop": {
+          "enabled": 1,
+          "mode": 1
+        },
+        "waiter": null,
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 66,
+      "args": [12, "caller", 128],
+      "dependency": true,
+      "save": "waiter",
+      "text": "P3 actual independent Script waiter",
+      "ordinal": 2,
+      "control": 1,
+      "result": "owned:waiter",
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "driverStop": {
+          "enabled": 1,
+          "mode": 1
+        },
+        "waiter": null,
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 143,
+      "args": ["waiter", 128, 0],
+      "dependency": true,
+      "text": "input-receiver",
+      "ordinal": 3,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "driverStop": {
+          "enabled": 1,
+          "mode": 1
+        },
+        "waiter": {
+          "ready": false
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "operation": "stopDriver",
+      "ordinal": 4,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": false
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "operation": "frame",
+      "frame": 1,
+      "warmup": true,
+      "ordinal": 5,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 79,
+      "args": ["planeA", 1101004800, 1101004800, 4280299584],
+      "dependency": true,
+      "ordinal": 6,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 1,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 92,
+      "args": ["planeA", 1],
+      "dependency": true,
+      "ordinal": 7,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 1,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 84,
+      "args": ["planeA", 1103101952, 1103101952, 0, 0],
+      "dependency": true,
+      "ordinal": 8,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 1,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 79,
+      "args": ["planeB", 1101004800, 1101004800, 4280299584],
+      "dependency": true,
+      "ordinal": 9,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 92,
+      "args": ["planeB", 1],
+      "dependency": true,
+      "ordinal": 10,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 84,
+      "args": ["planeB", 1103101952, 1103101952, 0, 0],
+      "dependency": true,
+      "ordinal": 11,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 88,
+      "args": ["planeA", 1084227584],
+      "dependency": true,
+      "ordinal": 12,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 88,
+      "args": ["planeB", 1091567616],
+      "dependency": true,
+      "ordinal": 13,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 95,
+      "args": ["planeA", 33],
+      "ordinal": 14,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 0,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 95,
+      "args": ["planeB", 34],
+      "ordinal": 15,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 96,
+      "args": ["planeA", 0, 512],
+      "dependency": true,
+      "seed": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+      "seedAt": 512,
+      "ordinal": 16,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 110,
+      "args": ["planeA", "waiter"],
+      "dependency": true,
+      "ordinal": 17,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 96,
+      "args": ["planeB", 0, 512],
+      "dependency": true,
+      "seed": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+      "seedAt": 512,
+      "ordinal": 18,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 110,
+      "args": ["planeB", "waiter"],
+      "dependency": true,
+      "ordinal": 19,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 109,
+      "args": ["planeA"],
+      "ordinal": 20,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 108,
+      "args": ["planeB", 1],
+      "ordinal": 21,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 108,
+      "args": ["planeA", 0],
+      "ordinal": 22,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "operation": "window",
+      "message": 513,
+      "w": 1,
+      "x": 33,
+      "y": 32,
+      "ordinal": 23,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 0,
+          "packets": []
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "operation": "frame",
+      "frame": 2,
+      "ordinal": 24,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 98,
+      "args": ["planeA"],
+      "dependency": true,
+      "ordinal": 25,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 98,
+      "args": ["planeB"],
+      "dependency": true,
+      "ordinal": 26,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 107,
+      "args": ["planeA"],
+      "ordinal": 27,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 107,
+      "args": ["planeB"],
+      "ordinal": 28,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 97,
+      "args": ["planeB", 3],
+      "dependency": true,
+      "ordinal": 29,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 3,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 98,
+      "args": ["planeB"],
+      "dependency": true,
+      "ordinal": 30,
+      "control": 1,
+      "result": 3,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 9,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 3,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 99,
+      "args": ["planeB"],
+      "dependency": true,
+      "ordinal": 31,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 3,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 88,
+      "args": ["planeB", 1094713344],
+      "dependency": true,
+      "ordinal": 32,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 3,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "buttonFlags": 0,
+            "bindFlags": 34,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 95,
+      "args": ["planeB", 49],
+      "ordinal": 33,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 3,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 49,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 96,
+      "args": ["planeB", 0, 512],
+      "dependency": true,
+      "seed": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+      "seedAt": 512,
+      "ordinal": 34,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "caller",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 110,
+      "args": ["planeB", "waiter"],
+      "dependency": true,
+      "ordinal": 35,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 97,
+      "args": ["planeB", 2147483649],
+      "dependency": true,
+      "ordinal": 36,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 105,
+      "args": ["planeB", 0],
+      "ordinal": 37,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 0,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 105,
+      "args": ["planeB", 1],
+      "ordinal": 38,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "operation": "cursor",
+      "x": 34,
+      "y": 32,
+      "ordinal": 39,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "operation": "frame",
+      "frame": 3,
+      "ordinal": 40,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 107,
+      "args": ["planeA"],
+      "ordinal": 41,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 107,
+      "args": ["planeB"],
+      "ordinal": 42,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 106,
+      "args": ["planeA", 0],
+      "ordinal": 43,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 107,
+      "args": ["planeA"],
+      "ordinal": 44,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 105,
+      "args": ["planeB", 0],
+      "ordinal": 45,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 0,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 0,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 97,
+      "args": ["planeA", 1],
+      "dependency": true,
+      "ordinal": 46,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 0,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "operation": "window",
+      "message": 514,
+      "w": 0,
+      "x": 33,
+      "y": 32,
+      "ordinal": 47,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 0,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 1,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "operation": "frame",
+      "frame": 4,
+      "ordinal": 48,
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 0,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 2,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            },
+            {
+              "sender": "planeA",
+              "tag": 4294901765,
+              "owner": "planeA",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 98,
+      "args": ["planeA"],
+      "dependency": true,
+      "ordinal": 49,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 0,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 2,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            },
+            {
+              "sender": "planeA",
+              "tag": 4294901765,
+              "owner": "planeA",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 98,
+      "args": ["planeB"],
+      "dependency": true,
+      "ordinal": 50,
+      "control": 1,
+      "result": 2147483649,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 0,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 2,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            },
+            {
+              "sender": "planeA",
+              "tag": 4294901765,
+              "owner": "planeA",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 107,
+      "args": ["planeA"],
+      "ordinal": 51,
+      "control": 1,
+      "result": 1,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 0,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 2,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            },
+            {
+              "sender": "planeA",
+              "tag": 4294901765,
+              "owner": "planeA",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 109,
+      "args": ["planeA"],
+      "ordinal": 52,
+      "control": 1,
+      "result": 0,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 0,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 2,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            },
+            {
+              "sender": "planeA",
+              "tag": 4294901765,
+              "owner": "planeA",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 95,
+      "args": ["planeB", 119],
+      "ordinal": 53,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 0,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          },
+          {
+            "owner": "planeA",
+            "priority": 5,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 1,
+            "enabled": 1,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 2,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            },
+            {
+              "sender": "planeA",
+              "tag": 4294901765,
+              "owner": "planeA",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 119,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 99,
+      "args": ["planeA"],
+      "dependency": true,
+      "ordinal": 54,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [
+          {
+            "owner": "planeB",
+            "priority": 12,
+            "mask": 7,
+            "bounds": [24, 24, 44, 44],
+            "active": 0,
+            "enabled": 0,
+            "hover": 1,
+            "alpha": 0,
+            "dragOffset": [0, 0],
+            "dragEnabled": 1
+          }
+        ],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 2,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            },
+            {
+              "sender": "planeA",
+              "tag": 4294901765,
+              "owner": "planeA",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [1, 24, 24, 1, 24, 24, 1, 24, 24, 1, 24, 24],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": "waiter",
+            "buttonFlags": 119,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 99,
+      "args": ["planeB"],
+      "dependency": true,
+      "ordinal": 55,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 2,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 2,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            },
+            {
+              "sender": "planeA",
+              "tag": 4294901765,
+              "owner": "planeA",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "buttonFlags": 119,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 67,
+      "args": ["planeA"],
+      "dependency": true,
+      "ordinal": 56,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 1,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 2,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            },
+            {
+              "sender": "planeA",
+              "tag": 4294901765,
+              "owner": "planeA",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "buttonFlags": 119,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 67,
+      "args": ["planeB"],
+      "dependency": true,
+      "ordinal": 57,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 2,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            },
+            {
+              "sender": "planeA",
+              "tag": 4294901765,
+              "owner": "planeA",
+              "value": 1
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "buttonFlags": 119,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    },
+    {
+      "id": 67,
+      "args": ["waiter"],
+      "dependency": true,
+      "ordinal": 58,
+      "control": 2,
+      "result": null,
+      "outputs": [],
+      "changed": [],
+      "state": {
+        "liveTypes": [
+          {
+            "name": "planeA",
+            "alive": true
+          },
+          {
+            "name": "planeB",
+            "alive": true
+          },
+          {
+            "name": "waiter",
+            "alive": true
+          }
+        ],
+        "modelCount": 0,
+        "regions": [],
+        "driverStop": {
+          "enabled": 0,
+          "mode": 0
+        },
+        "waiter": {
+          "ready": true,
+          "count": 3,
+          "packets": [
+            {
+              "sender": "planeB",
+              "tag": 4294901765,
+              "owner": "planeB",
+              "value": 1
+            },
+            {
+              "sender": "planeA",
+              "tag": 4294901765,
+              "owner": "planeA",
+              "value": 1
+            },
+            {
+              "sender": "native-id:4294967295",
+              "tag": 4294901766,
+              "owner": 0,
+              "value": 0
+            }
+          ]
+        },
+        "planes": [
+          {
+            "name": "planeA",
+            "phase": 1,
+            "blocked": 0,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "buttonFlags": 0,
+            "bindFlags": 33,
+            "shown": true
+          },
+          {
+            "name": "planeB",
+            "phase": 1,
+            "blocked": 1,
+            "buttonEnabled": 1,
+            "button": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            "imageIndex": -1,
+            "attribute": 1,
+            "receiver": -1,
+            "buttonFlags": 119,
+            "bindFlags": 49,
+            "shown": true
+          }
+        ],
+        "capturedDragThreshold": 2
+      }
+    }
+  ]
+}
