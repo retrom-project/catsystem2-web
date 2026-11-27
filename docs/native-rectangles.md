@@ -55,3 +55,23 @@ Independent JS-versus-original GCALL and public golden cases are in
 logical handle and task state compares exactly. Authored bitmap dimensions are
 projected into original read-only image records on the oracle side. The original
 facade and exhaustive original-only probes remain under `oracle/rectangles.mjs`.
+
+## SDK63 and SDK67 normal typed callers
+
+SDK63 Main214–217 now run after each exact build's real CRT, resource host,
+Script/Main143 VM and existing software View initialization. Each primary group
+uses 22 target and nine dependency/bootstrap GCALLs with independent 16-byte
+signed/empty RECTs. Main216 borrows a real Main112 bitmap's dimensions and
+Main114 releases it; the group adds no rendering or pixel authority. Existing
+748-case Wine results qualify the shared USER32 leaf separately from the new
+original wrapper/translation/control and untouched-byte observations.
+
+The initial SDK63 primary record declares bitmap sizes from constructor input;
+it does not observe their physical fields. A separate one-target witness reads
+those fields and uses an empty destination so Main216 output exposes both actual
+7x5 dimensions. SDK67's primary group includes this direct metadata observation
+and empty-destination form. Eight SDK63 and seven SDK67 fresh current World
+continuations compare all RECT bytes and live bitmap dimensions. Overlap, foreign
+owners and additional layouts are outside this group; the old authored bitmap
+projection evidence is not promoted to true ownership qualification. Native
+GAME_SAVE/CSS and the existing internal owner codecs are unchanged.
