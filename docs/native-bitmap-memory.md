@@ -345,3 +345,30 @@ and RGB24-to-RGB24 results are separately compared, including offset inputs and
 the defined mask no-op for an RGB target. These build policies do not change
 .23 or .67. A null or bitmap-less Main721 would leave the original result
 unwritten and stays diagnosed; no original invalid-pointer probe was run.
+
+The .63 retained Draw entry group uses Main66's actual kind15 constructor,
+its 0x94-byte task and the original software View. Twenty-three target calls
+and forty-one initialization, resource and destruction dependencies compare
+entry insertion/update/show, signed layers, borrowed bitmap results, two output
+resizes, retained caller resources and Main731 ImageOwner packets. Fifty-eight
+current KCS frames and eight independent cold continuations preserve every
+compared output pixel, dirty/pending word, list count, output and return control.
+The actual Script update deletes the retired Draw after Main67. These are
+software resource results, without a hardware or product claim.
+
+The own renderer unions each entry's cached bounds with its new bounds before
+clipping. The build policy preserves this accumulated area across updates and
+cold restore, so hiding a moved entry also clears its original area. It leaves
+the existing mutation and publication barriers in place. The initialized Draw
+retains its bitmap and ImageOwner resources when their caller releases them;
+its own retirement and renderer release dispose of those resources.
+
+The original receiver separately captures raw270/275/268 for the update, show
+and ImageOwner insert wrappers; current full KCS callers deliver their canonical
+messages and the same non-address packet fields. The first pixel group's
+observer captured outer sends, so it is not used as receiver evidence. Main264
+writes a private count scratch but returns control2 without a VM value.
+Renderer-less count/layer operations retain their precondition diagnostics;
+Main657 instead explicitly writes zero when the renderer or entry is absent.
+Foreign owners, capacity extremes, other source/layout shapes and hardware
+output retain their separate qualification boundaries.

@@ -7,6 +7,7 @@ import { bitsFloat, floatBits, nativeReply } from '../kcs.mjs';
 import { affineBitmap, prepareBitmapAffine } from './image-affine.mjs';
 import { NativeGraphicsPacket } from './graphics-task.mjs';
 import { nativeEngineWord } from './engine-message.mjs';
+import { nativeRectangleUnion } from './windows-rectangles.mjs';
 export class NativeDrawTask {
   constructor(graphics, record) {
     this.graphics = graphics;
@@ -474,8 +475,18 @@ export class NativeDrawTask {
     ];
   }
   mark(item, previous = false) {
-    const bounds = previous ? item.dirtyBounds : this.bounds(item);
+    let bounds = previous ? item.dirtyBounds : this.bounds(item);
     if (!bounds) throw new Error('Drawing entry has no previous dirty bounds');
+    if (!previous && nativeABI(this.world.profile).graphics.drawAccumulatesBounds) {
+      bounds = nativeRectangleUnion(item.dirtyBounds ?? [0, 0, 0, 0], bounds);
+      bounds = [
+        Math.max(bounds[0], item.clip[0]),
+        Math.max(bounds[1], item.clip[1]),
+        Math.min(bounds[2], item.clip[2]),
+        Math.min(bounds[3], item.clip[3]),
+      ];
+      if (bounds[0] >= bounds[2] || bounds[1] >= bounds[3]) bounds = [0, 0, 0, 0];
+    }
     item.dirtyBounds = bounds;
     if (!item.visible || !item.image) return;
     this.state.renderer.dirtyRects.push([...bounds]);
@@ -501,6 +512,9 @@ export class NativeDrawTask {
             : this.graphics.images.alias(values.image, this.record.id);
     const item = {
       ...values,
+      ...(nativeABI(this.world.profile).graphics.drawAccumulatesBounds && old
+        ? { dirtyBounds: old.dirtyBounds }
+        : {}),
       key: key >>> 0,
       layer: old?.layer ?? key >>> 16,
       image: alias,
