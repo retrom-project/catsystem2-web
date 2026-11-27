@@ -175,6 +175,101 @@ test('KCS native control codes preserve void/result/yield/retry behavior and arg
   assert.throws(() => nativeReply(1), /must supply/);
 });
 
+test('GCALL snapshots host reply fields before reentry, validation and sentinel callbacks', () => {
+  const events = [],
+    nested = machine([[43, 8, 0], [59]], () => {
+      events.push('nested');
+      return nativeReply(2);
+    }),
+    reply = {
+      get then() {
+        events.push('then');
+        return undefined;
+      },
+      get control() {
+        events.push('control');
+        return 3;
+      },
+      get value() {
+        events.push('value');
+        return 0xcccccccc;
+      },
+      get wait() {
+        events.push('wait');
+        nested.run();
+        return {
+          get kind() {
+            events.push('kind');
+            return 'event';
+          },
+        };
+      },
+    },
+    vm = machine([[43, 7, 0], [59]], () => reply);
+  vm.host.diagnostic = () => {
+    events.push('sentinel');
+    assert.equal(vm.sp, vm.data.length, 'diagnostic precedes the result push');
+    assert.equal(vm.waiting, null);
+    Object.defineProperty(reply, 'value', { value: 17 });
+  };
+  assert.equal(vm.run().status, 'waiting');
+  assert.deepEqual(events, ['then', 'control', 'value', 'wait', 'nested', 'sentinel', 'kind']);
+  assert.equal(vm.pop(), 0xcccccccc, 'replaced reply fields do not change the captured result');
+  assert.deepEqual(vm.waiting, { kind: 'event', native: 7 });
+  vm.waiting.kind = 'changed';
+  assert.equal(reply.wait.kind, 'event', 'wait state is copied rather than retained');
+
+  for (const values of [
+    [6, undefined],
+    [1, undefined],
+    [2, 9],
+  ]) {
+    const reads = [],
+      invalid = machine([[43, 7, 0], [59]], () => ({
+        get control() {
+          reads.push('control');
+          return values[0];
+        },
+        get value() {
+          reads.push('value');
+          return values[1];
+        },
+        get wait() {
+          reads.push('wait');
+          return undefined;
+        },
+      }));
+    assert.throws(() => invalid.run(), /native control|must supply|cannot supply/);
+    assert.deepEqual(reads, ['control', 'value', 'wait']);
+  }
+});
+
+test('GCALL gives retained and reentrant hosts independent fresh argument arrays on retries', () => {
+  const retained = [],
+    nested = machine([[37, 73], [43, 8, 4], [59]], (_id, args) => {
+      retained.push(args);
+      return nativeReply(1, args[0]);
+    }),
+    vm = machine([[37, 11], [37, 22], [43, 7, 8], [59]], (_id, args, current) => {
+      assert.equal(current.nativeArgumentBase, current.data.length);
+      assert.deepEqual(args, [11, 22]);
+      retained.push(args);
+      if (retained.length === 1) {
+        nested.run();
+        args[0] = 99;
+        return nativeReply(5);
+      }
+      return nativeReply(1, -1);
+    });
+  vm.run();
+  assert.deepEqual(retained, [[99, 22], [73]]);
+  assert.deepEqual([...vm.bytes(vm.data.length, 8)], [11, 0, 0, 0, 22, 0, 0, 0]);
+  vm.run();
+  assert.equal(vm.pop(), 0xffffffff);
+  assert.deepEqual(retained, [[99, 22], [73], [11, 22]]);
+  assert.notEqual(retained[0], retained[2]);
+});
+
 test('KCS frame return copies a multiword result and restores floor, fp and caller temporaries', () => {
   const vm = machine([[49, 8], [42, 18, 0], [59], [49, 12], [37, 11], [37, 22], [44, 8, 0]]);
   vm.run();

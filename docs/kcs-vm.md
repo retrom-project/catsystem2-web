@@ -41,6 +41,9 @@ GCALL 的第二个操作数规定实参字节数。回调返回值是控制码�
 宿主返回 `nativeReply(control, value?, wait?)`。未知调用和不正确的结果协议抛出有位置的错误，
 不返回默认 0。浏览器异步 I/O 由 scheduler 在当前逻辑帧内等待并恢复该调用，
 操作只执行一次；这与 guest 主动暂停到下一帧不同。
+GCALL 每次独立分配实参数组并顺序读取当前栈，不复用宿主持有的数组。VM 按原顺序
+一次取得 reply 的 control/value/wait 并校验，直接消费这些局部值；不再创建随后即丢弃的
+第二个标准化 reply 对象。getter、诊断、结果入栈和 wait 复制的次序保持。
 
 `NativeRuntime.register(table, id, handler)` 的内部回调接收
 `(args, machine, task, scheduler)`；installer 通过闭包持有它自己的 World 和服务。
