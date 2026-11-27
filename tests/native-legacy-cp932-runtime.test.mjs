@@ -87,7 +87,7 @@ for (const [version, profile] of Object.entries(golden.profiles)) {
       assert.equal(task.machine.load(task.machine.floor), marker, 'caller stack sentinel');
       assert.equal(task.machine.sp, task.machine.floor + 4, 'GCALL stack restoration');
     }
-    test(`SDK${version} ${group} own ordinary CP932 GCALLs and eight independent current cold continuations`, async () => {
+    test(`SDK${version} ${group} own ordinary CP932 GCALLs and independent current cold continuations`, async () => {
       const world = await make(true);
       try {
         const task = await world.spawnScript('cp932-runtime.kcs', {

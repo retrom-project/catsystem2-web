@@ -147,3 +147,16 @@ and `scripts/verify-native-utf8.mjs`. Out-of-mapping accesses and original undef
 conversion-buffer overflows are not defined text acceptance cases.
 
 Private binaries, native memory and raw reports remain in ignored storage.
+
+## Owned name pairs
+
+SDK63 Main289–293 use the shared name-pair owner after 26 normal GCALLs in
+each exact SDK63/67 executable. Its real reference heap allocates zeroed
+40-byte rows: a 32-byte terminated name and two raw words. Short CP932 format
+expansion precedes insertion; ASCII byte folding returns the first name match,
+and the first matching word pair returns its original name. Misses leave output
+bytes untouched. Duplicate rows, a separate owner and actual normal releases
+are checked through parsed Script VMs, then seven independent current World
+continuations per build. The internal owner codec preserves the row bytes;
+no Task message or native GAME_SAVE format changes. Longer names, full tables,
+allocation overflow and capacity extremes remain protected or unverified.
