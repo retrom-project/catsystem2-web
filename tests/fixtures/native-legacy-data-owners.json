@@ -1,0 +1,1424 @@
+{
+  "profiles": {
+    "63": {
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "groups": {
+        "T1": {
+          "report": ".local/phase11/sdk63-67-data-owners-20261127/ORIGINAL-T1-63.json",
+          "reportSHA256": "e557ef15a4dbf0c38db9cf09b01b0820e3cb00f8d279977d249586f5ddfc4006",
+          "originalSHA256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+          "textSHA256": "89320bbab145f475216fceb5c1d8f0e4181c9f73f61f087ed6d26caf1e12789a",
+          "sources": {
+            "cases.mjs": "c5491a44dd52429125b303af50e786fdc2256ab15cde74135cb78baf7d04321b",
+            "probe-normal.mjs": "2f239520ae9746e781c9768cef27c5f0607d8177943f73271547d7644bd8ff0e"
+          },
+          "counts": {
+            "targetGCALLs": 15,
+            "dependencyGCALLs": 14,
+            "allGCALLs": 29,
+            "newBusinessDirect": 0,
+            "allExternalDirect": 70,
+            "setupCleanupDirect": 41
+          },
+          "handlers": {
+            "27": 4917120,
+            "28": 4917152,
+            "35": 4917568,
+            "36": 4917632,
+            "237": 4908880
+          },
+          "cases": [
+            {
+              "id": 27,
+              "args": [0],
+              "save": "zero",
+              "size": 0,
+              "ordinal": 0,
+              "control": 1,
+              "result": 4294967295,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 27,
+              "args": [16],
+              "save": "a",
+              "size": 16,
+              "ordinal": 1,
+              "control": 1,
+              "result": "owned:a",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["a", 90, 16],
+              "dependency": true,
+              "ordinal": 2,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 36,
+              "args": ["a", 256, 16],
+              "dependency": true,
+              "ordinal": 3,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 27,
+              "args": [64],
+              "save": "b",
+              "size": 64,
+              "ordinal": 4,
+              "control": 1,
+              "result": "owned:b",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "b",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["b", 51, 64],
+              "dependency": true,
+              "ordinal": 5,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "b",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 36,
+              "args": ["b", "a", 16],
+              "dependency": true,
+              "ordinal": 6,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "b",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 28,
+              "args": ["b"],
+              "close": "b",
+              "ordinal": 7,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 27,
+              "args": [64],
+              "save": "rebound",
+              "size": 64,
+              "ordinal": 8,
+              "control": 1,
+              "result": "owned:rebound",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "rebound",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["rebound", 107, 64],
+              "dependency": true,
+              "ordinal": 9,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "rebound",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 36,
+              "args": ["rebound", "a", 16],
+              "dependency": true,
+              "ordinal": 10,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "rebound",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 237,
+              "args": ["rebound"],
+              "close": "rebound",
+              "ordinal": 11,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": [
+                {
+                  "before": 3435973836,
+                  "after": 1,
+                  "control": 2
+                }
+              ]
+            },
+            {
+              "id": 28,
+              "args": ["a"],
+              "close": "a",
+              "ordinal": 12,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 27,
+              "args": [16],
+              "save": "next",
+              "size": 16,
+              "ordinal": 13,
+              "control": 1,
+              "result": "owned:next",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "next",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["next", 156, 16],
+              "dependency": true,
+              "ordinal": 14,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "next",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 237,
+              "args": ["next"],
+              "close": "next",
+              "ordinal": 15,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                }
+              ],
+              "discardedPhysicalScratch": [
+                {
+                  "before": 3435973836,
+                  "after": 1,
+                  "control": 2
+                }
+              ]
+            },
+            {
+              "id": 27,
+              "args": [16],
+              "save": "left",
+              "size": 16,
+              "ordinal": 16,
+              "control": 1,
+              "result": "owned:left",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "left",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 27,
+              "args": [64],
+              "save": "right",
+              "size": 64,
+              "ordinal": 17,
+              "control": 1,
+              "result": "owned:right",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "left",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "right",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["left", 17, 16],
+              "dependency": true,
+              "ordinal": 18,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "left",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "right",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["right", 34, 64],
+              "dependency": true,
+              "ordinal": 19,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "left",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "right",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 36,
+              "args": ["left", "right", 16],
+              "dependency": true,
+              "ordinal": 20,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "left",
+                  "size": 16,
+                  "bytes": [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
+                },
+                {
+                  "name": "right",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 237,
+              "args": ["right"],
+              "close": "right",
+              "ordinal": 21,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "left",
+                  "size": 16,
+                  "bytes": [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
+                }
+              ],
+              "discardedPhysicalScratch": [
+                {
+                  "before": 3435973836,
+                  "after": 1,
+                  "control": 2
+                }
+              ]
+            },
+            {
+              "id": 237,
+              "args": ["left"],
+              "close": "left",
+              "ordinal": 22,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                }
+              ],
+              "discardedPhysicalScratch": [
+                {
+                  "before": 3435973836,
+                  "after": 1,
+                  "control": 2
+                }
+              ]
+            },
+            {
+              "id": 27,
+              "args": [64],
+              "save": "final",
+              "size": 64,
+              "ordinal": 23,
+              "control": 1,
+              "result": "owned:final",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "final",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["final", 51, 64],
+              "dependency": true,
+              "ordinal": 24,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "final",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 28,
+              "args": ["final"],
+              "close": "final",
+              "ordinal": 25,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                }
+              ],
+              "discardedPhysicalScratch": []
+            }
+          ],
+          "zeroNodeReleasedWithVM": true
+        }
+      }
+    },
+    "67": {
+      "profile": "bokutomo-engine-2.6.1.67",
+      "groups": {
+        "T1": {
+          "report": ".local/phase11/sdk63-67-data-owners-20261127/ORIGINAL-T1-67.json",
+          "reportSHA256": "4534ebf1b040614c2ffcac87ee7aad484c01b4dead0024032a63b3b21cce05f8",
+          "originalSHA256": "d1889d60dbe3350b068605f94a49ae8e93eb388ce66e7abc36607eed2eda7010",
+          "textSHA256": "caaee45e75276342c603bf7518d54c7306b52498a1a04aca8cfef596c34c01d6",
+          "sources": {
+            "cases.mjs": "c5491a44dd52429125b303af50e786fdc2256ab15cde74135cb78baf7d04321b",
+            "probe-normal.mjs": "2f239520ae9746e781c9768cef27c5f0607d8177943f73271547d7644bd8ff0e"
+          },
+          "counts": {
+            "targetGCALLs": 15,
+            "dependencyGCALLs": 14,
+            "allGCALLs": 29,
+            "newBusinessDirect": 0,
+            "allExternalDirect": 73,
+            "setupCleanupDirect": 44
+          },
+          "handlers": {
+            "27": 4917680,
+            "28": 4917712,
+            "35": 4918128,
+            "36": 4918192,
+            "237": 4909440
+          },
+          "cases": [
+            {
+              "id": 27,
+              "args": [0],
+              "save": "zero",
+              "size": 0,
+              "ordinal": 0,
+              "control": 1,
+              "result": 4294967295,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 27,
+              "args": [16],
+              "save": "a",
+              "size": 16,
+              "ordinal": 1,
+              "control": 1,
+              "result": "owned:a",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["a", 90, 16],
+              "dependency": true,
+              "ordinal": 2,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 36,
+              "args": ["a", 256, 16],
+              "dependency": true,
+              "ordinal": 3,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 27,
+              "args": [64],
+              "save": "b",
+              "size": 64,
+              "ordinal": 4,
+              "control": 1,
+              "result": "owned:b",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "b",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["b", 51, 64],
+              "dependency": true,
+              "ordinal": 5,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "b",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 36,
+              "args": ["b", "a", 16],
+              "dependency": true,
+              "ordinal": 6,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "b",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 28,
+              "args": ["b"],
+              "close": "b",
+              "ordinal": 7,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 27,
+              "args": [64],
+              "save": "rebound",
+              "size": 64,
+              "ordinal": 8,
+              "control": 1,
+              "result": "owned:rebound",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "rebound",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["rebound", 107, 64],
+              "dependency": true,
+              "ordinal": 9,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "rebound",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 36,
+              "args": ["rebound", "a", 16],
+              "dependency": true,
+              "ordinal": 10,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "rebound",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 237,
+              "args": ["rebound"],
+              "close": "rebound",
+              "ordinal": 11,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "a",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": [
+                {
+                  "before": 3435973836,
+                  "after": 1,
+                  "control": 2
+                }
+              ]
+            },
+            {
+              "id": 28,
+              "args": ["a"],
+              "close": "a",
+              "ordinal": 12,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 27,
+              "args": [16],
+              "save": "next",
+              "size": 16,
+              "ordinal": 13,
+              "control": 1,
+              "result": "owned:next",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "next",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["next", 156, 16],
+              "dependency": true,
+              "ordinal": 14,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "next",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 237,
+              "args": ["next"],
+              "close": "next",
+              "ordinal": 15,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                }
+              ],
+              "discardedPhysicalScratch": [
+                {
+                  "before": 3435973836,
+                  "after": 1,
+                  "control": 2
+                }
+              ]
+            },
+            {
+              "id": 27,
+              "args": [16],
+              "save": "left",
+              "size": 16,
+              "ordinal": 16,
+              "control": 1,
+              "result": "owned:left",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "left",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 27,
+              "args": [64],
+              "save": "right",
+              "size": 64,
+              "ordinal": 17,
+              "control": 1,
+              "result": "owned:right",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "left",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "right",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["left", 17, 16],
+              "dependency": true,
+              "ordinal": 18,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "left",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "right",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["right", 34, 64],
+              "dependency": true,
+              "ordinal": 19,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "left",
+                  "size": 16,
+                  "bytes": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                },
+                {
+                  "name": "right",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 36,
+              "args": ["left", "right", 16],
+              "dependency": true,
+              "ordinal": 20,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "left",
+                  "size": 16,
+                  "bytes": [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
+                },
+                {
+                  "name": "right",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 237,
+              "args": ["right"],
+              "close": "right",
+              "ordinal": 21,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "left",
+                  "size": 16,
+                  "bytes": [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
+                }
+              ],
+              "discardedPhysicalScratch": [
+                {
+                  "before": 3435973836,
+                  "after": 1,
+                  "control": 2
+                }
+              ]
+            },
+            {
+              "id": 237,
+              "args": ["left"],
+              "close": "left",
+              "ordinal": 22,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                }
+              ],
+              "discardedPhysicalScratch": [
+                {
+                  "before": 3435973836,
+                  "after": 1,
+                  "control": 2
+                }
+              ]
+            },
+            {
+              "id": 27,
+              "args": [64],
+              "save": "final",
+              "size": 64,
+              "ordinal": 23,
+              "control": 1,
+              "result": "owned:final",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "final",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 35,
+              "args": ["final", 51, 64],
+              "dependency": true,
+              "ordinal": 24,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                },
+                {
+                  "name": "final",
+                  "size": 64,
+                  "bytes": [
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                  ]
+                }
+              ],
+              "discardedPhysicalScratch": []
+            },
+            {
+              "id": 28,
+              "args": ["final"],
+              "close": "final",
+              "ordinal": 25,
+              "control": 1,
+              "result": 1,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "zero",
+                  "size": 0
+                }
+              ],
+              "discardedPhysicalScratch": []
+            }
+          ],
+          "zeroNodeReleasedWithVM": true
+        }
+      }
+    }
+  }
+}
