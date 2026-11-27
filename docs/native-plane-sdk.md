@@ -214,3 +214,11 @@ instead stopped by its own raw156/157 dispatcher message, with both enabled and
 VM mode observed. This corrects the earlier P2 receipt wording without changing
 Main69 behavior or its original logs. COM-memory attachment and virtual Win32
 leaves do not establish View presentation, physical HID or GPU output.
+
+### Modern divided mesh registration
+
+The fixed 2.6.1.74 and 2.6.1.76 builds now admit Main467 for a live kind2 Plane in its initialized mode1 manager. The normal three-word call copies each 64-byte input record into an independent 80-byte model record. Both builds release and rebuild an occupied divided model; the new record starts hidden, so normal Main92 display is required again after replacement. Main83 unload followed by a new load and normal task retirement preserve the uploaded texture pages.
+
+The original Script/Top/Plane chain allocates two configured 8×8 pages with Main542, uploads colour and alpha through Main115, and submits the projected mesh through the real View3D frame consumer. Current real VM tests compare caller writes, copied records, all projected vertices within one float ULP, exact texture bytes/alpha, replacement identity, retirement, and two independent cold continuations per build. The 76 memory host uses its actual View0 plus View3D1 consumer, rather than initializing the unrelated M2 subsystem. This establishes the finite positive-count/finite-vertex/allocated-page contract, without a physical GPU claim. Foreign receivers, missing managers, nonfinite/truncated records and unallocated pages remain guarded.
+
+Three earlier probe failures are retained as tool precondition errors: the first omitted View3D consumption, and the following two expected a rebuilt model to draw without showing it again. They do not establish a product failure. Raw plans, complete successful original captures and exact accounting are retained in ignored `sdk-modern-plane-mesh-20261128`; the executable and fixture identities remain separate for the two builds.

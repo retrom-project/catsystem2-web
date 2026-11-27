@@ -146,31 +146,15 @@ test('divided meshes sample their own VRAM page and retain data, coordinates and
         }),
       unchanged = capture(),
       args = [nativeTarget, 128, 1],
-      details = {
-        profile: first.profile,
-        table: 'main',
-        id: 0x1d3,
-        task: first.main.id,
-        script: first.main.name,
-        pc: machine.pc,
-        args,
-        source: structuredClone(machine.debug),
-      };
+      guard = /initialized mode1 manager/;
     await assert.rejects(
-      async () =>
-        first.runtime.native('main', 0x1d3, args, machine, first.main, first.runtime.scheduler),
-      (error) => {
-        assert.equal(error.name, 'UnsupportedKCSNative');
-        assert.equal(
-          error.message,
-          `Unsupported ${details.profile}/main native 0x1d3 in ${details.script} at 0x${details.pc.toString(16)}`,
-        );
-        assert.deepEqual(error.details, details);
-        return true;
-      },
+      () => first.runtime.native('main', 0x1d3, args, machine, first.main, first.runtime.scheduler),
+      guard,
     );
+    unchanged.calls.push(['main:467', 1]);
     assert.deepEqual(capture(), unchanged);
-    // Host mesh setup uses the admitted engine message, without recovering VM467.
+    // This world has no mode1 attachment. Its host engine-message path is
+    // independent of the now reviewed VM467 manager qualification.
     const packed = packNativeMesh(machine.bytes(128, 64), 1),
       view = new DataView(packed.buffer, packed.byteOffset, packed.byteLength);
     await first.sendEngine(id, first.main.id, 83, 1, 0, {
@@ -179,6 +163,7 @@ test('divided meshes sample their own VRAM page and retain data, coordinates and
         bytes: (at, size) => packed.subarray(at, at + size),
       },
     });
+    await first.runtime.native('main', 92, [nativeTarget, 1], machine, first.main);
     await first.runtime.native('main', 0x1d2, [nativeTarget, 128], machine, first.main);
     await first.graphics.fill(2, 0, 2, 2, 0xff804020);
     const collect = async (current) => {

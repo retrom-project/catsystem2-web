@@ -1571,6 +1571,9 @@ export class NativeGraphicTask {
         // releasing the old model. Main83 explicitly removes the old key.
         if (policy?.rejectOccupiedModel && this.graph) return undefined;
         if (policy?.rejectOccupiedModel) this.unload();
+        // A newly registered divided model starts hidden, including a
+        // replacement of a previously shown model. Main92 shows it again.
+        this.state.shown = false;
         this.makeGraph(candidate);
         this.state.rect = rect;
         this.state.drawType = drawType;
