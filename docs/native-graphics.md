@@ -1,26 +1,5 @@
 # Native graphics and VRAM pages
 
-## Native texture read qualification
-
-Every native texture read checks the current renderer, device, collection ports
-and complete captured WebGL member set. One synchronous check can read the
-current receiver and prototype descriptors in bulk. Its receiver probe is the
-canonical realm's captured `drawingBufferWidth` WebIDL getter, not a getter
-supplied by a frame or provider. Web IDL requires the getter's receiver to
-implement its interface; see the [attribute getter algorithm](https://webidl.spec.whatwg.org/#dfn-attribute-getter)
-and [WebGL drawing-buffer attributes](https://registry.khronos.org/webgl/specs/latest/1.0/#5.14.1).
-
-Only the captured ordinary WebGL interface prototype directly inheriting from
-the realm's Object prototype uses this path; extra ancestors remain unqualified
-for bulk inspection. Unknown receivers, changed prototype chains and replaced Object, Reflect or
-Array ports retain the original per-member check. Snapshot dictionaries are
-read only through own keys, including when a captured member is missing.
-The live descriptor snapshot ends with the current call: it never carries
-qualification across a page, GL operation, callback, `await`, frame or restore.
-No pixel, geometry or texture-key copy is introduced. Public storage loans,
-each owner's settlement before a managed read, metadata-hit ordering and
-rebuild/close fences retain their existing ownership rules.
-
 ## Renderer-owned surfaces
 
 `StageRenderer.surfaces` owns packed texture and surface bytes in JS, including
