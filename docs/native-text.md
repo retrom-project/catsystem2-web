@@ -72,6 +72,31 @@ qualification without replaying every Text shape or redefining unwritten fields.
 The shared boundary is documented under
 [original resource-host qualification](native-plane-sdk.md#original-resource-host-qualification).
 
+## Modern task-8 StringPlane
+
+The exact 2.6.1.74 and 2.6.1.76 builds admit the normal Main 123–139,
+391, 456, 585 and 599 chain through an actual Script caller and kind-8
+constructor. Configuration copies 1128 bytes; append consumes the normal
+two-word task/format-pointer packet. Colour and five-size messages affect later
+40-byte cells, including a clipped append that still consumes subsequent style
+controls. The native receiver numbers differ between these builds; the shared
+messages retain the same owner and payload contract.
+
+The image-font path copies a private atlas before the source bitmap is changed
+or released. The paired vectors check full produced RGBA, borrowed bitmap
+identity through reconfiguration, normal task retirement and eight independent
+cold continuations per build. Deterministic atlas inputs avoid inferring GDI
+fallback quality or enabling unmeasured font, extended-initializer or receiver
+shapes. Main 134/135 wrappers execute their conversion/send work even though the
+measured receivers ignore those messages. Missing-owner no-ops and foreign-owner,
+argument-count and unrelated-slot guards retain their existing contracts.
+
+Task 8's escape-enabled ordinary ASCII branch continues past a clipped glyph
+so later controls remain visible to the parser. Corresponding append bodies and
+the escape-field/grammar context agree in all five fingerprinted builds. DBC
+and escape-disabled branches still stop on glyph failure. This is shared parser
+behaviour, independent of the modern wrapper registration.
+
 ## Metrics, fonts and pixels
 
 The exact comparison policy is in

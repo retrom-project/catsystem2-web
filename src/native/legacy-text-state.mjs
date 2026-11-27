@@ -168,7 +168,8 @@ export class LegacyTextState {
         continue;
       }
       if (reading) ruby.push(code);
-      else if (!this.glyph(code)) break;
+      // Escaped ASCII continues parsing controls even when the glyph is clipped.
+      else this.glyph(code);
     }
     this.vertical(this.w(196));
     return Number(this.rows.length !== start);
