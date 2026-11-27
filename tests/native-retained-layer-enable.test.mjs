@@ -70,7 +70,7 @@ async function owner(world) {
     ],
   };
   await world.imageOwners.rebuild(record);
-  return world.runtime.handles.add('image-owner', record);
+  return world.imageOwners.addRecord(record);
 }
 function fields(source) {
   return [0, 0, source, 0, ...[1, 2, 0, 0, 0, 1, 1].map(floatBits), 255, 1, 0, 0];
@@ -102,10 +102,10 @@ for (const profile of profiles)
         key = (world.nativeTaskID(world.main.id) | (7 << 16)) >>> 0;
       await world.retainedDraw.bind(draw, key, fields(source));
       const root = world.renderSources.get(source),
-        child = world.renderSources.get(root.children[0]),
+        child = world.renderSources.get(world.retainedDraw.children(root)[0]),
         before = root.revision;
       assert.equal(root.refs, 2);
-      assert.equal(child.refs, 1);
+      assert.equal(child.refs, root.retainedOwner ? 2 : 1);
       assert.equal(root.groupDirty, false);
       assert.equal(child.selected, 0);
       await world.imageOwners.release(input);
@@ -146,7 +146,7 @@ for (const profile of profiles)
       await fresh.restore(structuredClone(world.snapshot()));
       const restoredDraw = fresh.graphics.drawTasks.get(surface),
         restoredRoot = fresh.renderSources.get(source),
-        restoredChild = fresh.renderSources.get(restoredRoot.children[0]);
+        restoredChild = fresh.renderSources.get(fresh.retainedDraw.children(restoredRoot)[0]);
       assert.equal(restoredRoot.refs, 2);
       assert.equal(restoredChild.selected, 2);
       assert.equal(restoredChild.animation.baseFrame, child.animation.baseFrame);
@@ -171,7 +171,7 @@ for (const profile of profiles)
         [world, draw],
         [fresh, restoredDraw],
       ]) {
-        const ids = [source, ...w.renderSources.get(source).children];
+        const ids = [source, ...w.retainedDraw.children(w.renderSources.get(source))];
         await d.remove(key);
         assert.equal(w.renderSources.get(source).refs, 1);
         await w.renderSources.release(source);

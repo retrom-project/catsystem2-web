@@ -477,6 +477,12 @@ export class NativeRetainedDraw {
   }
   advance(handle, frame) {
     const source = this.sources.get(handle);
+    if (
+      nativeABI(this.world.profile).graphics.retainedSourceUpdateGate &&
+      frame !== undefined &&
+      !source.enabled
+    )
+      return false;
     let changed = Boolean(source.dirty);
     source.dirty = false;
     if (frame !== undefined && source.enabled && source.animation) {

@@ -720,3 +720,32 @@ match the existing shared math implementation without a formula change.
 
 The groups use Main340 forced software raster; they do not establish actual
 Base traversal, collector cadence, capture, Stage or physical GPU behavior.
+
+## SDK63/67 Base traversal and raster gate
+
+The ordinary Root logic/draw walk reaches both typed Draw siblings through
+the real Script parent chain. Draw output disabled by Main262 still performs
+source update and software raster. A separate native gate controls those
+operations; Main534 writes this raw word, while enabling output and explicit
+render requests enable it. The JS model preserves this word independently
+of the transient pixel-dirty cache. The retained source has its own update
+enable word: a disabled source does not refresh its composite merely because
+bitmap pixels changed. The already sealed disabled-derived G6 calls retain
+that negative control alongside the full Root chain. The current internal checkpoint carries
+and validates it for these two builds. Other SDK policies and native GAME_SAVE
+files retain their existing behavior.
+
+Seven Root logic/draw pairs per build verify initial disabled output, enable,
+entry hide/show, replacement while disabled and sibling destruction. Main67
+requests deletion; the following logic walk releases the child and the draw
+walk omits it. Nine target and17 dependency GCALLs accompany15 direct business
+route/frame calls per successful build group. Eight independent current cold
+continuations per build repeat state, initialized software pixels, traversal
+and release. Earlier author failures and their additional calls remain in
+the local evidence journal.
+
+The real mode0 View receives the renderer argument, but its presentation
+attachment is absent. Its zero DIB bytes are capture-only. This qualifies
+Base/Draw cadence and software composition, not configured View output,
+physical GPU, Stage or capture pixels. Configured owner validation follows
+as a separate resource prerequisite.

@@ -25,6 +25,8 @@ export class NativeDrawTask {
       dirty: true,
       registrations: [],
     };
+    if (nativeABI(this.world.profile).graphics.drawNativeRasterGate)
+      this.state.nativeRasterGate = 1;
   }
   retained() {
     return this.world.retainedDraw;
@@ -171,7 +173,11 @@ export class NativeDrawTask {
         this.state.pending =
           policy === 'value' ? value : Number(this.state.enabled === 0 && value !== 0);
         this.state.enabled = value;
-        if (value) this.state.dirty = true;
+        if (value) {
+          this.state.dirty = true;
+          if (nativeABI(this.world.profile).graphics.drawNativeRasterGate)
+            this.state.nativeRasterGate = 1;
+        }
         return 0;
       }
       case 288:
@@ -209,6 +215,8 @@ export class NativeDrawTask {
       }
       case 290:
       case 310:
+        if (nativeABI(this.world.profile).graphics.drawNativeRasterGate)
+          this.state.nativeRasterGate = 1;
         this.state.dirty = true;
         await this.render(
           message === 310 ? Array.from({ length: 4 }, (_, i) => load(l + i * 4) | 0) : null,
@@ -228,6 +236,8 @@ export class NativeDrawTask {
         return 0;
       }
       case 292:
+        if (nativeABI(this.world.profile).graphics.drawNativeRasterGate)
+          this.state.nativeRasterGate = 1;
         this.state.dirty = true;
         if (this.state.renderer)
           await this.render([0, 0, this.state.renderer.width, this.state.renderer.height], true);
@@ -331,6 +341,8 @@ export class NativeDrawTask {
       case 306:
         return 0; // Explicit original drawing-task empty branches.
       case 304:
+        if (nativeABI(this.world.profile).graphics.drawNativeRasterGate)
+          this.state.nativeRasterGate = l >>> 0;
         this.state.dirty = nativeABI(this.world.profile).graphics.drawDirtyUsesRawWord
           ? l >>> 0
           : Boolean(l);
@@ -641,10 +653,23 @@ export class NativeDrawTask {
     if (!region) renderer.dirtyRects = [];
   }
   restore(state) {
+    if (
+      nativeABI(this.world.profile).graphics.drawNativeRasterGate &&
+      (!Number.isInteger(state.nativeRasterGate) ||
+        state.nativeRasterGate < 0 ||
+        state.nativeRasterGate > 0xffffffff)
+    )
+      throw new Error('Native Draw restore requires its owned raster gate word');
     this.state = structuredClone(state);
   }
   async drawTick(frame) {
-    if (!this.state.renderer || !this.state.enabled) return;
+    if (
+      !this.state.renderer ||
+      (nativeABI(this.world.profile).graphics.drawNativeRasterGate
+        ? !this.state.nativeRasterGate
+        : !this.state.enabled)
+    )
+      return;
     await this.retained()?.update(this, frame);
     await this.render();
   }

@@ -1180,6 +1180,8 @@ export default {
     ninePieceEmptyFormats: ['BMP', 'PSD', 'KCF'],
     unsupportedRasterFormatsAreGuarded: true,
     retainedRasterCachesAlphaHint: true,
+    drawNativeRasterGate: true,
+    retainedSourceUpdateGate: true,
     drawEncodedEmptySources: true,
     encodedEmptyFrameFormats: ['BMP', 'PSD', 'KCF'],
     nativeKcf: { pixelSizes: [3, 4], modes: [0, 1, 2, 3, 4] },
