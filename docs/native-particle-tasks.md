@@ -39,6 +39,22 @@ stop, retirement and six independent current cold points per table preserve
 the initialized buffers and current owner. The device port is re-created as a
 host capability before restoring a World; it is not serialized task state.
 
+Together with the subsequent finite scalar and v1 geometry bridges, all 44 v1
+and 51 v2 entries now have a bounded functional receipt. The 93 non-logger
+entries have actual loaded-table arguments, return controls and written-result
+captures in this batch. The two logger entries reuse their separate original
+formatter/CRT/VM evidence; their receivers read no task fields. The 22 exact
+Main-body groups covering 44 aliases retain their original body proofs, with
+the per-table caller bridges checked independently. Registered status alone
+is not the acceptance criterion.
+
+This covers normal count2 banks, sized HG3 atlases, finite operands and live
+mapped owners. It does not establish arbitrary image formats, every count or
+float domain, missing/uninitialized atlas fields, stale attachment models,
+plug-in/PPI loading or later external extra-name consumers. Those shapes keep
+their existing guards or separately qualified behavior. No native GAME_SAVE
+word or platform save layout changes in this group.
+
 SDK23 idle copies its current relative frame into the retained previous-frame
 field after the particle loop. Its explicit profile policy performs that copy
 even without the modern RefBuffer backend. The interpreter still observes

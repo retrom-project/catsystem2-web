@@ -1109,7 +1109,7 @@ const particleInterpreterEvidence = [
   {
     ids: [22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 37, 38, 39],
     value:
-      'Own true ApplicationRoot and loaded v2 kind16 bank execute finite quad rotation/translation/scale, mapped attachment-to-position, raw quad copies, UV diagonals, distance, inverse bounds and visibility. Complete words and real Root/View DrawPrimitive triangles/atlas match across restart and cold. Both tables point to these exact bodies; v1 reuse is an explicit same-body/context bridge, not a new native v1 geometry capture. See tests/fixtures/sdk23-particle-lifecycle-golden.json; undefined owner and arithmetic domains remain guarded.',
+      'Own true ApplicationRoot and loaded v2 kind16 bank execute finite quad rotation/translation/scale, mapped attachment-to-position, raw quad copies, UV diagonals, distance, inverse bounds and visibility. Complete words and real Root/View DrawPrimitive triangles/atlas match across restart and cold. A follow-up loaded v1 bridge independently captures its finite geometry arguments, control codes and written words. Shared exact bodies are reused; only the recorded v2 transforms and separate v1 exit case have actual DrawPrimitive captures. See tests/fixtures/sdk23-particle-lifecycle-golden.json; undefined owner and arithmetic domains remain guarded.',
   },
   {
     ids: [1, 2, 3, 4, 5, 9, 10, 14, 19, 20, 21, 32, 35, 36, 40, 41, 42],
@@ -1117,23 +1117,9 @@ const particleInterpreterEvidence = [
       'Own loaded Main66 kind16/Main271 sized4x4 HG3 and KCS header-selected v1/v2 VM tables each execute seventeen finite calls for both particles through the original dispatcher. Full arguments, control1/2/4 and written outputs match; exit in the first particle still permits the second invocation. Native idle copies current into before after the loop; register replacement, stop and normal child retirement are observed. Six independent current cold points per table recreate the existing device port. See tests/fixtures/sdk23-particle-tables-golden.json; this does not generalize all operands, physical GPU output or unwritten constructor domains.',
   },
   {
-    ids: [18],
+    ids: [6, 7, 8, 11, 12, 13, 15, 16, 17, 18, 33, 34, 43],
     value:
-      'Own 2.6.1.23 Particle v1 and v2 slot 18 alias Main 61 at 0x48C590. The initialized SSE2 CRT writes one float32 result word.',
-  },
-  {
-    ids: [6, 7, 8, 11, 12, 13, 15, 16, 17],
-    value:
-      'Own 2.6.1.23 remaining trigonometric, ceil/floor, remainder and square-root bodies match their MOT peers',
-  },
-  {
-    ids: [33, 34],
-    value:
-      'Own 2.6.1.23 Particle 0x48cbb0/0x48cbd0 share the integer and real MT19937 streams with MOT 0x595af0/0x595ad0',
-  },
-  {
-    ids: [43],
-    value: 'Own 2.6.1.23 Particle 0x48cfc0 shares the x87 triangle wave body with MOT 0x595490',
+      'Own loaded v1 and v2 VM tables each execute thirteen remaining finite scalar/random calls with complete arguments, result control/store and normal exit/retirement. The exact Main/body and existing x87/SSE/MT evidence is reused rather than rerun; these are new typed-table caller bridges. Both first-particle execution and the second-particle GetNow branch after exit are captured. See tests/fixtures/sdk23-particle-lifecycle-golden.json; this is not all float or seed domains.',
   },
 ];
 const particleInterpreterSignatures = [

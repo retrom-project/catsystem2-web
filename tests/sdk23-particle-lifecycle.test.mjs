@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { parseXML } from '../src/xml.mjs';
 import { deserializeCheckpoint, serializeCheckpoint } from '../src/checkpoint.mjs';
 import { modernParticleMessageWorld } from './fixtures/modern-particle-message-world.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
 const golden = JSON.parse(
     await readFile(new URL('./fixtures/sdk23-particle-lifecycle-golden.json', import.meta.url)),
   ),
@@ -134,6 +135,7 @@ for (const build of golden.builds) {
             world = await open(build, false);
             await world.restore(snapshot);
             caller = world.runtime.scheduler.tasks.get(id);
+            assert.deepEqual(world.particles.host.random.snapshot(), snapshot.particles.random);
             await compare(world, caller, build, row);
             observe();
           }
@@ -146,3 +148,38 @@ for (const build of golden.builds) {
       }
     });
 }
+
+test('SDK23 all 95 declared Particle entries retain a bounded original caller receipt', async () => {
+  const tables = JSON.parse(
+      await readFile(new URL('./fixtures/sdk23-particle-tables-golden.json', import.meta.url)),
+    ),
+    logger = JSON.parse(
+      await readFile(new URL('./fixtures/native-legacy-aux-logger-golden.json', import.meta.url)),
+    ).builds.find((build) => build.version === '23'),
+    abi = nativeABI(golden.profile);
+  assert.equal(logger.executableSha256, golden.originalSHA256);
+  for (const version of [1, 2]) {
+    const table = `particle-v${version}`,
+      declared = abi.tables[table].entries,
+      calls = [
+        ...tables.versions.find((build) => build.version === version).particleCalls,
+        ...golden.builds.flatMap((build) =>
+          build.particleCalls.filter((row) => row.table === table),
+        ),
+      ];
+    assert(logger.cases.some((row) => row.table === table && row.control === 2));
+    const covered = new Set([0]);
+    for (const row of calls) {
+      const entry = declared[row.id];
+      assert.equal(entry.status, 'recovered');
+      assert.equal(row.args.length, entry.signature.argumentWords);
+      assert(entry.signature.controlCodes.includes(row.control));
+      covered.add(row.id);
+    }
+    assert.equal(covered.size, version === 1 ? 44 : 51);
+    assert.deepEqual(
+      [...covered].sort((a, b) => a - b),
+      declared.map((entry) => entry.id),
+    );
+  }
+});

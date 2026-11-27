@@ -3034,6 +3034,1009 @@
         "allGCALL": 17,
         "businessDirect": 6
       }
+    },
+    {
+      "label": "v1-finite-body-bridge",
+      "source": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-ptcl-lifecycle-20261127/ORIGINAL-P3-V1.json",
+        "sha256": "84586a434d6c4e87cd557eede9d0c8723715230938c360019996a61a455870d0",
+        "bytes": 95097,
+        "rawComplete": true,
+        "qualification": "Remaining exact-body bridges now have their own real loaded table/typed receiver/VM argument/control/output capture. Original scalar/range/physical backend evidence is reused; finite inputs do not establish all arithmetic domains."
+      },
+      "inputs": {
+        "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PGZwcz4zMDwvZnBzPjx3aWR0aD4zMjwvd2lkdGg+PGhlaWdodD4yNDwvaGVpZ2h0Pjx2X3dpZHRoPjMyPC92X3dpZHRoPjx2X2hlaWdodD4yNDwvdl9oZWlnaHQ+PC9TQ1JFRU4+PFRFWFRVUkU+PHNpemU+PHg+ODwveD48eT44PC95Pjwvc2l6ZT48dnQ+PHg+MjwveD48eT4xPC95PjwvdnQ+PGFyZWEwMD48c3g+MDwvc3g+PHN5PjA8L3N5PjxkeD4yPC9keD48ZHk+MTwvZHk+PC9hcmVhMDA+PGJwcDMyeT4wPC9icHAzMnk+PGJwcDE2eT4xPC9icHAxNnk+PGJwcD4zMjwvYnBwPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPnB0Y2w8L25hbWU+PGludD5wdGNsLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5wdGNsLWxvb3NlPC9kaXI+PC9pbnQwMj48L0lOVD48L2RvY3VtZW50Pg==",
+        "mainProgram": "S0NTAAIAAAAAAAAANAAAAAcDAAA7AwAAAAAAAAAAAAAAEAAAABAAADsDAAAAAAAADgYAAHicbdKvTgNBEAbwKTmBaEL5IxCIJh/90qQ0aQBBAuEGKKECUYFAIGgDAZICTakgBIFAIJEIBAKBRKI4DO/RRyA8Abm9GUDUbH7Z+XZn73ZL+Lz6Rgln571TQnIiJbQ6xT4RZW53DonR4GK7d0Lkgw+ODoUoBHcXqn1C/+XrwSIiRCPLzFdbxE1wv9O6IG6Dq+00c2f5QUJIlPkjISLzU0KMmm8SIm/WhCiYJSGmPPNOTEd/Z5jx+VWi6PMxMev7xETZMzEx531joubniYlF8yAmlnwfJVbMBSXUXFSibq4p0fBeSmybm0o0zftK7Ji7Suz6eZTYM98psW++V+LA/KDEsZ9ZiY75RYmu+VWJvvlNiUv/LiWuI5EK6iJiP6wmabGQjpOZ06dRwXoayYdIORTDaHef3e5IFtfHzVK4ywrGciKYDouefhdVwuNBFLjmnb024TXieXhi3BNDlrz8m96QIV3wFSa2vLb8A7rHYE4=",
+        "particleProgram": "S0NTAAIAAAABAAAANAAAAOACAAAUAwAAAAAAAAAAAAAAEAAAABAAABQDAAAAAAAAwAUAAHicbZE9TsNwDMVNhaBSiwgfoqV8Y1KQfIRKiYcODB0YGBgYOjAwMDAy9igcgRvAyMDAwIgEAwPHQH6J45R2sf76vWc/xxE+ISImIurzAxGlG1bP+KtBlBrPhZfMsgiLUuDlwMMSTzLhZuDzmrsVeFRhq4+5cNvEJsSLUjS8Ej2Xjp+FVwNflfhJMVCFkxh1XYqJCq9Fz9jj0aMqvB49N0QkfBRHuQU4DnDnm6ivKdF+X4gN69n3yAIgMhPecndgO1tnFr9kwt057jy2t5xtsyTTObBoXtiFe9MW4YPabqQYNakG7pjYhviK+ob6DnE3RM8p3uOqf6+W9m/4bBVOzd7F+T4oPvET72/UH9Rf2Ptm3wRYqE059UMJH/rPGgz+AMYWQs8=",
+        "reboundProgram": "S0NTAAIAAAABAAAANAAAAOACAAAUAwAAAAAAAAAAAAAAEAAAABAAABQDAAAAAAAAwAUAAHicbZE9TsNwDMVNhaBSiwgfoqV8Y1KQfIRKiYcODB0YGBgYOjAwMDAy9igcgRvAyMDAwIgEAwPHQH6J45R2sf76vWc/xxE+ISImIurzAxGlG1bP+KtBlBrPhZfMsgiLUuDlwMMSTzLhZuDzmrsVeFRhq4+5cNvEJsSLUjS8Ej2Xjp+FVwNflfhJMVCFkxh1XYqJCq9Fz9jj0aMqvB49N0QkfBRHuQU4DnDnm6ivKdF+X4gN69n3yAIgMhPecndgO1tnFr9kwt057jy2t5xtsyTTObBoXtiFe9MW4YPabqQYNakG7pjYhviK+ob6DnE3RM8p3uOqf6+W9m/4bBVOzd7F+T4oPvET72/UH9Rf2Ptm3wRYqE059UMJH/rPGgz+AMYWQs8=",
+        "archives": [
+          {
+            "name": "scripts.int",
+            "bytes": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABwMi1tYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAKMBAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAABwMAADsDAAAAAAAAAAAAAAAQAAAAEAAAOwMAAAAAAAAOBgAAeJxt0q9OA0EQBvApOYFoQvkjEIgmH/3SpDRpAEEC4QYooQJRgUAgaAMBkgJNqSAEgUAgkQgEAoFEojgM79FHIDwBub0ZQNRsftn5dmfvdkv4vPpGCWfnvVNCciIltDrFPhFlbncOidHgYrt3QuSDD44OhSgEdxeqfUL/5evBIiJEI8vMV1vETXC/07ogboOr7TRzZ/lBQkiU+SMhIvNTQoyabxIib9aEKJglIaY8805MR39nmPH5VaLo8zEx6/vERNkzMTHnfWOi5ueJiUXzICaWfB8lVswFJdRcVKJurinR8F5KbJubSjTN+0rsmLtK7Pp5lNgz3ymxb75X4sD8oMSxn1mJjvlFia75VYm++U2JS/8uJa4jkQrqImI/rCZpsZCOk5nTp1HBehrJh0g5FMNod5/d7kgW18fNUrjLCsZyIpgOi55+F1XC40EUuOadvTbhNeJ5eGLcE0OWvPyb3pAhXfAVJra8tvwDusdgTg=="
+          },
+          {
+            "name": "images.int",
+            "bytes": "S0lGAAEAAABwMi1hdGxhcy1iLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAKMAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARwAAAAAAAAAEAAAAIwAAAEAAAAAMAAAABAAAAHicE2poaGBBAlItLS2mSEB169atkkggMjIy0hgJAACaCQ0deJxrZBBgAAACKACS"
+          },
+          {
+            "name": "ptcl.int",
+            "bytes": "S0lGAAEAAABwMy10YWJsZS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAFgBAABLQ1MAAgAAAAEAAAA0AAAA4AIAABQDAAAAAAAAAAAAAAAQAAAAEAAAFAMAAAAAAADABQAAeJxtkT1Ow3AMxU2FoFKLCB+ipXxjUpB8hEqJhw4MHRgYGBg6MDAwMDL2KByBG8DIwMDAiAQDA8dAfonjlHax/vq9Zz/HET4hIiYi6vMDEaUbVs/4q0GUGs+Fl8yyCItS4OXAwxJPMuFm4POauxV4VGGrj7lw28QmxItSNLwSPZeOn4VXA1+V+EkxUIWTGHVdiokKr0XP2OPRoyq8Hj03RCR8FEe5BTgOcOebqK8p0X5fiA3r2ffIAiAyE95yd2A7W2cWv2TC3TnuPLa3nG2zJNM5sGhe2IV70xbhg9pupBg1qQbumNiG+Ir6hvoOcTdEzyne46p/r5b2b/hsFU7N3sX5Pig+8RPvb9Qf1F/Y+2bfBFioTTn1Qwkf+s8aDP4AxhZCzw=="
+          }
+        ]
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "typed initialized table bridge bank",
+          "frame": 700,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128656,
+            "vm": 537130000,
+            "scriptOwner": 537127344,
+            "nativeTable": 7565792,
+            "receiver": 537128656,
+            "active": 1,
+            "current": 0,
+            "before": 0,
+            "origin": 0,
+            "now": 0,
+            "fps": 30,
+            "textureOwner": 537117328,
+            "bitmapOwner": 537128208,
+            "count": 2,
+            "scriptVersion": 65536,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537152260,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537152500,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537152740,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537128580,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152788,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537152836,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537117508,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ]
+          }
+        },
+        {
+          "phase": 1,
+          "label": "first particle finite bridge and second normal GetNow after exit",
+          "frame": 701,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128656,
+            "vm": 537130000,
+            "scriptOwner": 537127344,
+            "nativeTable": 7565792,
+            "receiver": 537128656,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537117328,
+            "bitmapOwner": 537128208,
+            "count": 2,
+            "scriptVersion": 65536,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537152260,
+                "reference": 1,
+                "bytes": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537152500,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537152740,
+                "reference": 1,
+                "bytes": "AABAQAAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537128580,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152788,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537152836,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537117508,
+                "reference": 1,
+                "bytes": "AQAAAAAAAAA="
+              }
+            ],
+            "results": {
+              "64": 1056274244,
+              "68": 1063299392,
+              "72": 1048755245,
+              "76": 1055744824,
+              "80": 1052955067,
+              "84": 1073741824,
+              "88": 3221225472,
+              "92": 1069547520,
+              "96": 1069547520,
+              "100": 1090519040,
+              "104": 2867219139,
+              "108": 1059776075,
+              "112": 0,
+              "120": 1,
+              "200": 1077936128,
+              "204": 1082130432,
+              "208": 0,
+              "212": 1084227584,
+              "220": 1015223296,
+              "224": 1011130368,
+              "228": 1107287867,
+              "232": 1103095660
+            }
+          }
+        },
+        {
+          "phase": 2,
+          "label": "explicit stop/query and normal retirement",
+          "frame": 702,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128656,
+            "vm": 537130000,
+            "scriptOwner": 537127344,
+            "nativeTable": 7565792,
+            "receiver": 537128656,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537117328,
+            "bitmapOwner": 537128208,
+            "count": 2,
+            "scriptVersion": 65536,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537152260,
+                "reference": 1,
+                "bytes": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AABAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAEA/2pdFQM30SkDCpAE/AACAP/////8AAEA/AABAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537152500,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537152740,
+                "reference": 1,
+                "bytes": "AABAQAAAgEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537128580,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152788,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537152836,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537117508,
+                "reference": 1,
+                "bytes": "AQAAAAAAAAA="
+              }
+            ],
+            "results": {
+              "64": 1056274244,
+              "68": 1063299392,
+              "72": 1048755245,
+              "76": 1055744824,
+              "80": 1052955067,
+              "84": 1073741824,
+              "88": 3221225472,
+              "92": 1069547520,
+              "96": 1069547520,
+              "100": 1090519040,
+              "104": 2867219139,
+              "108": 1059776075,
+              "112": 0,
+              "120": 1,
+              "200": 1077936128,
+              "204": 1082130432,
+              "208": 0,
+              "212": 1084227584,
+              "220": 1015223296,
+              "224": 1011130368,
+              "228": 1107287867,
+              "232": 1103095660
+            }
+          }
+        },
+        {
+          "phase": 3,
+          "label": "normal parent prune and caller wait",
+          "frame": 703,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": false
+          }
+        }
+      ],
+      "particleCalls": [
+        {
+          "table": "particle-v1",
+          "id": 36,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v1",
+          "id": 6,
+          "args": [1056964608],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1056274244
+        },
+        {
+          "table": "particle-v1",
+          "id": 7,
+          "args": [1056964608],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1063299392
+        },
+        {
+          "table": "particle-v1",
+          "id": 8,
+          "args": [1048576000],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1048755245
+        },
+        {
+          "table": "particle-v1",
+          "id": 11,
+          "args": [1056964608],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1055744824
+        },
+        {
+          "table": "particle-v1",
+          "id": 12,
+          "args": [1056964608, 1067450368],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1052955067
+        },
+        {
+          "table": "particle-v1",
+          "id": 13,
+          "args": [1067450368],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1073741824
+        },
+        {
+          "table": "particle-v1",
+          "id": 15,
+          "args": [3214934016],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 3221225472
+        },
+        {
+          "table": "particle-v1",
+          "id": 16,
+          "args": [1085276160, 1073741824],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1069547520
+        },
+        {
+          "table": "particle-v1",
+          "id": 17,
+          "args": [1074790400],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1069547520
+        },
+        {
+          "table": "particle-v1",
+          "id": 18,
+          "args": [1073741824, 1077936128],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1090519040
+        },
+        {
+          "table": "particle-v1",
+          "id": 33,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 2867219139
+        },
+        {
+          "table": "particle-v1",
+          "id": 34,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1059776075
+        },
+        {
+          "table": "particle-v1",
+          "id": 43,
+          "args": [1084227584, 1067450368],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v1",
+          "id": 30,
+          "args": [512],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v1",
+          "id": 22,
+          "args": [512, 1040187392],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAqwB+QHdV/74AAIA//////wAAAAAAAIA/AACAQKsAfkB3Vf++AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v1",
+          "id": 23,
+          "args": [512, 1048576000],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAKUKeEAAAAAAd1d9PwAAgD//////AACAPwAAAACzrvw9qwB+QGll974AAIA//////wAAAAAAAIA/G/B/QKsAfkDCpAE/AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v1",
+          "id": 24,
+          "args": [512, 1052770304],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAPnNZkCfs7W/d1d9PwAAgD//////AACAPwAAAAB3w8g/i3VpQGll974AAIA//////wAAAAAAAIA/2pelQLybDkDCpAE/AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v1",
+          "id": 25,
+          "args": [512, 1065353216, 1073741824, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AACAPwAAAEAAAAAAAACAP/////8AAAAAAAAAAPxmk0DCmBQ/d1d9PwAAgD//////AACAPwAAAAC8YSRAxrq0QGll974AAIA//////wAAAAAAAIA/2pfFQN5Nh0DCpAE/AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v1",
+          "id": 26,
+          "args": [512, 1056964608, 1061158912, 1065353216],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "quadOutput": "AAAAPwAAwD8AAAAAAACAP/////8AAAAAAAAAAPxmE0Aj5d4+d1d9PwAAgD//////AACAPwAAAAC8YaQ/FIyHQGll974AAIA//////wAAAAAAAIA/2pdFQM30SkDCpAE/AACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "table": "particle-v1",
+          "id": 31,
+          "args": [512],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v1",
+          "id": 27,
+          "args": [1077936128, 1082130432, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v1",
+          "id": 28,
+          "args": [200, 204, 208],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "outputWords": [1077936128, 1082130432, 0]
+        },
+        {
+          "table": "particle-v1",
+          "id": 29,
+          "args": [1056964608, 0, 1080033280, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v1",
+          "id": 37,
+          "args": [1077936128, 1082130432, 0, 0, 0, 0],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1084227584
+        },
+        {
+          "table": "particle-v1",
+          "id": 38,
+          "args": [1065353216, 220, 224, 228, 232],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false,
+          "outputWords": [1015223296, 1011130368, 1107287867, 1103095660]
+        },
+        {
+          "table": "particle-v1",
+          "id": 39,
+          "args": [1, 0],
+          "particle": 0,
+          "control": 2,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v1",
+          "id": 32,
+          "args": [],
+          "particle": 0,
+          "control": 4,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v1",
+          "id": 36,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        }
+      ],
+      "particleDraws": [],
+      "presents": [],
+      "actualCount": {
+        "allGCALL": 44,
+        "businessDirect": 4
+      }
+    },
+    {
+      "label": "v2-finite-body-bridge",
+      "source": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-ptcl-lifecycle-20261127/ORIGINAL-P3-V2.json",
+        "sha256": "efc92c1eb822edb82e500f72deda4c6990c93afcdcd44339acd70e31ae702855",
+        "bytes": 87238,
+        "rawComplete": true,
+        "qualification": "Remaining exact-body bridges now have their own real loaded table/typed receiver/VM argument/control/output capture. Original scalar/range/physical backend evidence is reused; finite inputs do not establish all arithmetic domains."
+      },
+      "inputs": {
+        "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PGZwcz4zMDwvZnBzPjx3aWR0aD4zMjwvd2lkdGg+PGhlaWdodD4yNDwvaGVpZ2h0Pjx2X3dpZHRoPjMyPC92X3dpZHRoPjx2X2hlaWdodD4yNDwvdl9oZWlnaHQ+PC9TQ1JFRU4+PFRFWFRVUkU+PHNpemU+PHg+ODwveD48eT44PC95Pjwvc2l6ZT48dnQ+PHg+MjwveD48eT4xPC95PjwvdnQ+PGFyZWEwMD48c3g+MDwvc3g+PHN5PjA8L3N5PjxkeD4yPC9keD48ZHk+MTwvZHk+PC9hcmVhMDA+PGJwcDMyeT4wPC9icHAzMnk+PGJwcDE2eT4xPC9icHAxNnk+PGJwcD4zMjwvYnBwPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPnB0Y2w8L25hbWU+PGludD5wdGNsLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5wdGNsLWxvb3NlPC9kaXI+PC9pbnQwMj48L0lOVD48L2RvY3VtZW50Pg==",
+        "mainProgram": "S0NTAAIAAAAAAAAANAAAAAcDAAA7AwAAAAAAAAAAAAAAEAAAABAAADsDAAAAAAAADgYAAHicbdKvTgNBEAbwKTmBaEL5IxCIJh/90qQ0aQBBAuEGKKECUYFAIGgDAZICTakgBIFAIJEIBAKBRKI4DO/RRyA8Abm9GUDUbH7Z+XZn73ZL+Lz6Rgln571TQnIiJbQ6xT4RZW53DonR4GK7d0Lkgw+ODoUoBHcXqn1C/+XrwSIiRCPLzFdbxE1wv9O6IG6Dq+00c2f5QUJIlPkjISLzU0KMmm8SIm/WhCiYJSGmPPNOTEd/Z5jx+VWi6PMxMev7xETZMzEx531joubniYlF8yAmlnwfJVbMBSXUXFSibq4p0fBeSmybm0o0zftK7Ji7Suz6eZTYM98psW++V+LA/KDEsZ9ZiY75RYmu+VWJvvlNiUv/LiWuI5EK6iJiP6wmabGQjpOZ06dRwXoayYdIORTDaHef3e5IFtfHzVK4ywrGciKYDouefhdVwuNBFLjmnb024TXieXhi3BNDlrz8m96QIV3wFSa2vLb8A7rHYE4=",
+        "particleProgram": "S0NTAAIAAAACAAAANAAAAGEBAACVAQAAAAAAAAAAAAAAEAAAABAAAJUBAAAAAAAAwgIAAHicTZAxDkFREEWvRPgJ4mMDGF8ks4SfMIVCoVAoFIpfKBQKpdJSLMEObE1m8p6rmeLcc+dNnsoCgADAUh4AqonPlTQtoHK+Uem40g7FQNwl3ib8XKsUxLs/u0e8/2Gfr41K38MiwkMKHQ/YOWb8URkSnxJ+Wyw0lZKrziksTWXETpOfj46ZypidCwCVGT/lGmBOcMuXWD5TWb+HPc12XX8BcCEf1w==",
+        "reboundProgram": "S0NTAAIAAAACAAAANAAAAGEBAACVAQAAAAAAAAAAAAAAEAAAABAAAJUBAAAAAAAAwgIAAHicTZAxDkFREEWvRPgJ4mMDGF8ks4SfMIVCoVAoFIpfKBQKpdJSLMEObE1m8p6rmeLcc+dNnsoCgADAUh4AqonPlTQtoHK+Uem40g7FQNwl3ib8XKsUxLs/u0e8/2Gfr41K38MiwkMKHQ/YOWb8URkSnxJ+Wyw0lZKrziksTWXETpOfj46ZypidCwCVGT/lGmBOcMuXWD5TWb+HPc12XX8BcCEf1w==",
+        "archives": [
+          {
+            "name": "scripts.int",
+            "bytes": "S0lGAAIAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABwMi1tYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAKMBAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAABwMAADsDAAAAAAAAAAAAAAAQAAAAEAAAOwMAAAAAAAAOBgAAeJxt0q9OA0EQBvApOYFoQvkjEIgmH/3SpDRpAEEC4QYooQJRgUAgaAMBkgJNqSAEgUAgkQgEAoFEojgM79FHIDwBub0ZQNRsftn5dmfvdkv4vPpGCWfnvVNCciIltDrFPhFlbncOidHgYrt3QuSDD44OhSgEdxeqfUL/5evBIiJEI8vMV1vETXC/07ogboOr7TRzZ/lBQkiU+SMhIvNTQoyabxIib9aEKJglIaY8805MR39nmPH5VaLo8zEx6/vERNkzMTHnfWOi5ueJiUXzICaWfB8lVswFJdRcVKJurinR8F5KbJubSjTN+0rsmLtK7Pp5lNgz3ymxb75X4sD8oMSxn1mJjvlFia75VYm++U2JS/8uJa4jkQrqImI/rCZpsZCOk5nTp1HBehrJh0g5FMNod5/d7kgW18fNUrjLCsZyIpgOi55+F1XC40EUuOadvTbhNeJ5eGLcE0OWvPyb3pAhXfAVJra8tvwDusdgTg=="
+          },
+          {
+            "name": "images.int",
+            "bytes": "S0lGAAEAAABwMi1hdGxhcy1iLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAKMAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARwAAAAAAAAAEAAAAIwAAAEAAAAAMAAAABAAAAHicE2poaGBBAlItLS2mSEB169atkkggMjIy0hgJAACaCQ0deJxrZBBgAAACKACS"
+          },
+          {
+            "name": "ptcl.int",
+            "bytes": "S0lGAAEAAABwMy10YWJsZS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAANkAAABLQ1MAAgAAAAIAAAA0AAAAYQEAAJUBAAAAAAAAAAAAAAAQAAAAEAAAlQEAAAAAAADCAgAAeJxNkDEOQVEQRa9E+AniYwMYXySzhJ8whUKhUCgUil8oFAql0lIswQ5sTWbynquZ4txz502eygKAAMBSHgCqic+VNC2gcr5R6bjSDsVA3CXeJvxcqxTEuz+7R7z/YZ+vjUrfwyLCQwodD9g5ZvxRGRKfEn5bLDSVkqvOKSxNZcROk5+PjpnKmJ0LAJUZP+UaYE5wy5dYPlNZv4c9zXZdfwFwIR/X"
+          }
+        ]
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "typed initialized table bridge bank",
+          "frame": 700,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128656,
+            "vm": 537130000,
+            "scriptOwner": 537127344,
+            "nativeTable": 7565976,
+            "receiver": 537128656,
+            "active": 1,
+            "current": 0,
+            "before": 0,
+            "origin": 0,
+            "now": 0,
+            "fps": 30,
+            "textureOwner": 537117328,
+            "bitmapOwner": 537128208,
+            "count": 2,
+            "scriptVersion": 131072,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537151492,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537151732,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537151972,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537128580,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152020,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537152068,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537117508,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ]
+          }
+        },
+        {
+          "phase": 1,
+          "label": "first particle finite bridge and second normal GetNow after exit",
+          "frame": 701,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128656,
+            "vm": 537130000,
+            "scriptOwner": 537127344,
+            "nativeTable": 7565976,
+            "receiver": 537128656,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537117328,
+            "bitmapOwner": 537128208,
+            "count": 2,
+            "scriptVersion": 131072,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537151492,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537151732,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537151972,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537128580,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152020,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537152068,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537117508,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ],
+            "results": {
+              "64": 1056274244,
+              "68": 1063299392,
+              "72": 1048755245,
+              "76": 1055744824,
+              "80": 1052955067,
+              "84": 1073741824,
+              "88": 3221225472,
+              "92": 1069547520,
+              "96": 1069547520,
+              "100": 1090519040,
+              "104": 2867219139,
+              "108": 1059776075,
+              "112": 0,
+              "120": 1
+            }
+          }
+        },
+        {
+          "phase": 2,
+          "label": "explicit stop/query and normal retirement",
+          "frame": 702,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": true,
+            "pointer": 537128656,
+            "vm": 537130000,
+            "scriptOwner": 537127344,
+            "nativeTable": 7565976,
+            "receiver": 537128656,
+            "active": 0,
+            "current": 0,
+            "before": 0,
+            "origin": 701,
+            "now": 2,
+            "fps": 30,
+            "textureOwner": 537117328,
+            "bitmapOwner": 537128208,
+            "count": 2,
+            "scriptVersion": 131072,
+            "alpha": 256,
+            "attachment": 4294967295,
+            "dimensions": [4, 4],
+            "buffers": [
+              {
+                "at": 784,
+                "pointer": 537151492,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 788,
+                "pointer": 537151732,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPwAAAAAAAAAAAAAAAAAAgD//////AAAAAAAAAAAAAIBAAAAAAAAAAAAAAIA//////wAAgD8AAAAAAAAAAAAAgEAAAAAAAACAP/////8AAAAAAACAPwAAgEAAAIBAAAAAAAAAgD//////AACAPwAAgD8="
+              },
+              {
+                "at": 792,
+                "pointer": 537151972,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 796,
+                "pointer": 537128580,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 800,
+                "pointer": 537152020,
+                "reference": 1,
+                "bytes": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+              },
+              {
+                "at": 804,
+                "pointer": 537152068,
+                "reference": 1,
+                "bytes": "AACAPwAAgD8AAIA/AAAAAAAAgD8AAIA/AACAPwAAAAA="
+              },
+              {
+                "at": 808,
+                "pointer": 537117508,
+                "reference": 1,
+                "bytes": "AQAAAAEAAAA="
+              }
+            ],
+            "results": {
+              "64": 1056274244,
+              "68": 1063299392,
+              "72": 1048755245,
+              "76": 1055744824,
+              "80": 1052955067,
+              "84": 1073741824,
+              "88": 3221225472,
+              "92": 1069547520,
+              "96": 1069547520,
+              "100": 1090519040,
+              "104": 2867219139,
+              "108": 1059776075,
+              "112": 0,
+              "120": 1
+            }
+          }
+        },
+        {
+          "phase": 3,
+          "label": "normal parent prune and caller wait",
+          "frame": 703,
+          "caller": [1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          "particle": {
+            "alive": false
+          }
+        }
+      ],
+      "particleCalls": [
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 6,
+          "args": [1056964608],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1056274244
+        },
+        {
+          "table": "particle-v2",
+          "id": 7,
+          "args": [1056964608],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1063299392
+        },
+        {
+          "table": "particle-v2",
+          "id": 8,
+          "args": [1048576000],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1048755245
+        },
+        {
+          "table": "particle-v2",
+          "id": 11,
+          "args": [1056964608],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1055744824
+        },
+        {
+          "table": "particle-v2",
+          "id": 12,
+          "args": [1056964608, 1067450368],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1052955067
+        },
+        {
+          "table": "particle-v2",
+          "id": 13,
+          "args": [1067450368],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1073741824
+        },
+        {
+          "table": "particle-v2",
+          "id": 15,
+          "args": [3214934016],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 3221225472
+        },
+        {
+          "table": "particle-v2",
+          "id": 16,
+          "args": [1085276160, 1073741824],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1069547520
+        },
+        {
+          "table": "particle-v2",
+          "id": 17,
+          "args": [1074790400],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1069547520
+        },
+        {
+          "table": "particle-v2",
+          "id": 18,
+          "args": [1073741824, 1077936128],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1090519040
+        },
+        {
+          "table": "particle-v2",
+          "id": 33,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 2867219139
+        },
+        {
+          "table": "particle-v2",
+          "id": 34,
+          "args": [],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1059776075
+        },
+        {
+          "table": "particle-v2",
+          "id": 43,
+          "args": [1084227584, 1067450368],
+          "particle": 0,
+          "control": 1,
+          "outputWritten": true,
+          "value": 0
+        },
+        {
+          "table": "particle-v2",
+          "id": 32,
+          "args": [],
+          "particle": 0,
+          "control": 4,
+          "outputWritten": false
+        },
+        {
+          "table": "particle-v2",
+          "id": 36,
+          "args": [],
+          "particle": 1,
+          "control": 1,
+          "outputWritten": true,
+          "value": 1
+        }
+      ],
+      "particleDraws": [],
+      "presents": [],
+      "actualCount": {
+        "allGCALL": 31,
+        "businessDirect": 4
+      }
     }
   ]
 }
