@@ -21,7 +21,6 @@ import { kcsProgram, translation } from './helpers.mjs';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { NativeResources } from '../src/native/resources.mjs';
 import { parseXML } from '../src/xml.mjs';
-import { componentChild, runPreparedComponents } from './fixtures/prepared-worker-component.mjs';
 
 function cst(blocks, packed = true) {
   const lines = blocks.flat(),
@@ -468,10 +467,6 @@ for (const [version, profile] of [
 }
 
 test('restored scene hints prepare one explicit M2 resource from the same mounted scene', async (t) => {
-  if (!componentChild) {
-    await runPreparedComponents(import.meta.url, 'restored scene hints', t);
-    return;
-  }
   const workerBefore = globalThis.Worker;
   let pending = Promise.withResolvers();
   let terminated = 0;
@@ -542,16 +537,6 @@ test('restored scene hints prepare one explicit M2 resource from the same mounte
     },
   };
   const preparation = new M2ScenePreparation(owner);
-  const consume = (model) => {
-    const record = { document: null };
-    preparation.beginDocument(model, record);
-    owner.documents.set(model, record);
-    try {
-      return preparation.take(model, packed, record);
-    } finally {
-      owner.documents.delete(model);
-    }
-  };
   owner.world.prepareSceneWorkers = false;
   preparation.resume();
   preparation.hint(scene, 'active', 0);
@@ -581,10 +566,9 @@ test('restored scene hints prepare one explicit M2 resource from the same mounte
     ['active', 'scene'],
     ['model', 'm2psb'],
   ]);
-  assert.equal(consume('another-model'), null);
-  const prepared = consume('model');
-  assert.deepEqual(prepared.packed, packed);
-  assert.notEqual(prepared.packed.buffer, packed.buffer);
+  assert.equal(preparation.take('another-model'), null);
+  const prepared = preparation.take('model');
+  assert.equal(prepared.packed, packed);
   assert.equal(prepared.expanded.length, 8 * 1024 * 1024);
   assert.equal(preparation.take('model'), null);
 
@@ -631,7 +615,7 @@ test('restored scene hints prepare one explicit M2 resource from the same mounte
     ['active', 'scene'],
     ['model', 'm2psb'],
   ]);
-  assert.deepEqual(consume('model')?.packed, packed);
+  assert.equal(preparation.take('model')?.packed, packed);
   assert.equal(terminated, 5);
   onSceneRead = null;
 
