@@ -1,0 +1,945 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "fixedPE": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk23-task-message-context-20261128/ORIGINAL-TM1.json",
+    "sha256": "2cd0d049502fcfd2fc9089337cf5716010cc33b57b802709c69000ec021be9c6",
+    "complete": true,
+    "allClosed": true,
+    "actual": {
+      "allGCALL": 50,
+      "targetGCALL": 39,
+      "normalRootCallbacks": 9,
+      "existingHostSetupCalls": 35
+    }
+  },
+  "inputs": {
+    "producer": "S0NTAAIAAAAAAAAANAAAAKIDAADWAwAAAAAAAAAAAAAAEAAAABAAANYDAAAAAAAARAcAAHicrZG/SgNBEMZn9QIWV1xy/mnVYbc5LMR0NlHvNEVaYy0aT0GrFKZMYXGBgClShJAifd5AxAcQfAOfRWTmXG9cz87m48fst7Mz32pUwRkaDABAIwCAwYbgWHCT+eXp49VgX/CD4EzwUPBI8FjwRPBM8Jz5rtPtGgRFfJ52Ng16zBfXN7cGV5gveTZfFf6G9e8YjIW/KfwtBRDxdmLpCFtFId/cJw2/EuE7h2Txi0DCPJb8UcVdHq3FHlZZ473tqsbs/uo0woQsAXfpiye2WJdYl7mXMHLOYT7XLqvHWnGNGRcO7C52ihprvUbaa5PluLgzFMaQNUHSQeoYR+XNV1nbddJpz7kz/hUU/AyqpOEaa5qQLgbOhpNvY4RHVPacJv/0cetgw9L4PHW2mgnjBtiwNL4tnGnnZRv+Nfh7hQon9mz/E02OeoY=",
+    "consumer": "S0NTAAIAAAAAAAAANAAAAFMBAACHAQAAAAAAAAAAAAAAEAAAABAAAIcBAAAAAAAApgIAAHicVc8hDgIxEIXht4QDbFKJnHQI2XAHBAkIBIIEBAKBQHCpalyvUI3rOUjFihUryA6iD/dlxOR/XmbtWVRaAF4AQGVD3pL35AP5SD6RL+Qr+Ua+kx/kpzmEEFSKOcYYVXpzSimpDOacc1YZAXRWSyM6y/xbUuy8m85zAEv5AFi4aYI0ANbelRrp+hrphhrpRops8H79wlb27QtWhi/1",
+    "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+cHRjbDwvbmFtZT48aW50PnB0Y2wuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnB0Y2wtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lcy5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmVzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg=="
+  },
+  "coldAt": [0, 1, 2, 3, 4, 5, 6, 7],
+  "frames": [
+    {
+      "frame": 0,
+      "label": "create a real child and synchronously load its parsed waiter",
+      "parent": {
+        "owner": 537085232,
+        "nativeID": 4,
+        "parent": 537065232,
+        "vm": 537114944,
+        "pc": 350,
+        "pending": 0,
+        "waitingAddress": 0,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908289
+          },
+          {
+            "at": 64,
+            "bits": 4
+          },
+          {
+            "at": 68,
+            "bits": 3
+          },
+          {
+            "at": 72,
+            "bits": 5
+          },
+          {
+            "at": 128,
+            "bits": 3405691582
+          },
+          {
+            "at": 132,
+            "bits": 3405691582
+          },
+          {
+            "at": 136,
+            "bits": 3405691582
+          },
+          {
+            "at": 140,
+            "bits": 3405691582
+          },
+          {
+            "at": 144,
+            "bits": 3405691582
+          },
+          {
+            "at": 148,
+            "bits": 3405691582
+          },
+          {
+            "at": 152,
+            "bits": 3405691582
+          },
+          {
+            "at": 156,
+            "bits": 3405691582
+          },
+          {
+            "at": 160,
+            "bits": 3405691582
+          }
+        ]
+      },
+      "child": {
+        "owner": 537126944,
+        "nativeID": 5,
+        "parent": 537085232,
+        "vm": 537139104,
+        "pc": 255,
+        "pending": 1,
+        "waitingAddress": 537152388,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908290
+          },
+          {
+            "at": 64,
+            "bits": 5
+          },
+          {
+            "at": 68,
+            "bits": 4
+          },
+          {
+            "at": 80,
+            "bits": 0
+          },
+          {
+            "at": 96,
+            "bits": 0
+          },
+          {
+            "at": 100,
+            "bits": 0
+          },
+          {
+            "at": 104,
+            "bits": 0
+          },
+          {
+            "at": 108,
+            "bits": 0
+          },
+          {
+            "at": 240,
+            "bits": 2711724449
+          },
+          {
+            "at": 244,
+            "bits": 2998055602
+          },
+          {
+            "at": 248,
+            "bits": 3284386755
+          },
+          {
+            "at": 252,
+            "bits": 3570717908
+          }
+        ]
+      },
+      "childCaptureOnly": false
+    },
+    {
+      "frame": 1,
+      "label": "direct recipient, active self and unloaded parent have separate results",
+      "parent": {
+        "owner": 537085232,
+        "nativeID": 4,
+        "parent": 537065232,
+        "vm": 537114944,
+        "pc": 484,
+        "pending": 0,
+        "waitingAddress": 0,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908289
+          },
+          {
+            "at": 64,
+            "bits": 4
+          },
+          {
+            "at": 68,
+            "bits": 3
+          },
+          {
+            "at": 72,
+            "bits": 5
+          },
+          {
+            "at": 128,
+            "bits": 1
+          },
+          {
+            "at": 132,
+            "bits": 0
+          },
+          {
+            "at": 136,
+            "bits": 1
+          },
+          {
+            "at": 140,
+            "bits": 3405691582
+          },
+          {
+            "at": 144,
+            "bits": 3405691582
+          },
+          {
+            "at": 148,
+            "bits": 3405691582
+          },
+          {
+            "at": 152,
+            "bits": 3405691582
+          },
+          {
+            "at": 156,
+            "bits": 3405691582
+          },
+          {
+            "at": 160,
+            "bits": 3405691582
+          }
+        ]
+      },
+      "child": {
+        "owner": 537126944,
+        "nativeID": 5,
+        "parent": 537085232,
+        "vm": 537139104,
+        "pc": 255,
+        "pending": 1,
+        "waitingAddress": 537152388,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908290
+          },
+          {
+            "at": 64,
+            "bits": 5
+          },
+          {
+            "at": 68,
+            "bits": 4
+          },
+          {
+            "at": 80,
+            "bits": 0
+          },
+          {
+            "at": 96,
+            "bits": 4
+          },
+          {
+            "at": 100,
+            "bits": 17
+          },
+          {
+            "at": 104,
+            "bits": 287454020
+          },
+          {
+            "at": 108,
+            "bits": 1432778632
+          },
+          {
+            "at": 240,
+            "bits": 4
+          },
+          {
+            "at": 244,
+            "bits": 2882338817
+          },
+          {
+            "at": 248,
+            "bits": 287454020
+          },
+          {
+            "at": 252,
+            "bits": 1432778632
+          }
+        ]
+      },
+      "childCaptureOnly": false
+    },
+    {
+      "frame": 2,
+      "label": "two queued values are copied before the next child update",
+      "parent": {
+        "owner": 537085232,
+        "nativeID": 4,
+        "parent": 537065232,
+        "vm": 537114944,
+        "pc": 577,
+        "pending": 0,
+        "waitingAddress": 0,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908289
+          },
+          {
+            "at": 64,
+            "bits": 4
+          },
+          {
+            "at": 68,
+            "bits": 3
+          },
+          {
+            "at": 72,
+            "bits": 5
+          },
+          {
+            "at": 128,
+            "bits": 1
+          },
+          {
+            "at": 132,
+            "bits": 0
+          },
+          {
+            "at": 136,
+            "bits": 1
+          },
+          {
+            "at": 140,
+            "bits": 1
+          },
+          {
+            "at": 144,
+            "bits": 1
+          },
+          {
+            "at": 148,
+            "bits": 3405691582
+          },
+          {
+            "at": 152,
+            "bits": 3405691582
+          },
+          {
+            "at": 156,
+            "bits": 3405691582
+          },
+          {
+            "at": 160,
+            "bits": 3405691582
+          }
+        ]
+      },
+      "child": {
+        "owner": 537126944,
+        "nativeID": 5,
+        "parent": 537085232,
+        "vm": 537139104,
+        "pc": 255,
+        "pending": 1,
+        "waitingAddress": 537152388,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908290
+          },
+          {
+            "at": 64,
+            "bits": 5
+          },
+          {
+            "at": 68,
+            "bits": 4
+          },
+          {
+            "at": 80,
+            "bits": 0
+          },
+          {
+            "at": 96,
+            "bits": 4
+          },
+          {
+            "at": 100,
+            "bits": 17
+          },
+          {
+            "at": 104,
+            "bits": 287454020
+          },
+          {
+            "at": 108,
+            "bits": 1432778632
+          },
+          {
+            "at": 240,
+            "bits": 4
+          },
+          {
+            "at": 244,
+            "bits": 2882338817
+          },
+          {
+            "at": 248,
+            "bits": 287454020
+          },
+          {
+            "at": 252,
+            "bits": 1432778632
+          }
+        ]
+      },
+      "childCaptureOnly": false
+    },
+    {
+      "frame": 3,
+      "label": "queued value survives a normal same-owner Script reload",
+      "parent": {
+        "owner": 537085232,
+        "nativeID": 4,
+        "parent": 537065232,
+        "vm": 537114944,
+        "pc": 658,
+        "pending": 0,
+        "waitingAddress": 0,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908289
+          },
+          {
+            "at": 64,
+            "bits": 4
+          },
+          {
+            "at": 68,
+            "bits": 3
+          },
+          {
+            "at": 72,
+            "bits": 5
+          },
+          {
+            "at": 128,
+            "bits": 1
+          },
+          {
+            "at": 132,
+            "bits": 0
+          },
+          {
+            "at": 136,
+            "bits": 1
+          },
+          {
+            "at": 140,
+            "bits": 1
+          },
+          {
+            "at": 144,
+            "bits": 1
+          },
+          {
+            "at": 148,
+            "bits": 1
+          },
+          {
+            "at": 152,
+            "bits": 3405691582
+          },
+          {
+            "at": 156,
+            "bits": 3405691582
+          },
+          {
+            "at": 160,
+            "bits": 3405691582
+          }
+        ]
+      },
+      "child": null,
+      "childCaptureOnly": true
+    },
+    {
+      "frame": 4,
+      "label": "reloaded waiter consumes pending packet, then direct delivery and native retirement",
+      "parent": {
+        "owner": 537085232,
+        "nativeID": 4,
+        "parent": 537065232,
+        "vm": 537114944,
+        "pc": 727,
+        "pending": 0,
+        "waitingAddress": 0,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908289
+          },
+          {
+            "at": 64,
+            "bits": 4
+          },
+          {
+            "at": 68,
+            "bits": 3
+          },
+          {
+            "at": 72,
+            "bits": 5
+          },
+          {
+            "at": 128,
+            "bits": 1
+          },
+          {
+            "at": 132,
+            "bits": 0
+          },
+          {
+            "at": 136,
+            "bits": 1
+          },
+          {
+            "at": 140,
+            "bits": 1
+          },
+          {
+            "at": 144,
+            "bits": 1
+          },
+          {
+            "at": 148,
+            "bits": 1
+          },
+          {
+            "at": 152,
+            "bits": 1
+          },
+          {
+            "at": 156,
+            "bits": 3405691582
+          },
+          {
+            "at": 160,
+            "bits": 3405691582
+          }
+        ]
+      },
+      "child": {
+        "owner": 537126944,
+        "nativeID": 5,
+        "parent": 537085232,
+        "vm": 537138784,
+        "pc": 255,
+        "pending": 1,
+        "waitingAddress": 537152180,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908290
+          },
+          {
+            "at": 64,
+            "bits": 5
+          },
+          {
+            "at": 68,
+            "bits": 4
+          },
+          {
+            "at": 80,
+            "bits": 0
+          },
+          {
+            "at": 96,
+            "bits": 4294967295
+          },
+          {
+            "at": 100,
+            "bits": 4294901766
+          },
+          {
+            "at": 104,
+            "bits": 0
+          },
+          {
+            "at": 108,
+            "bits": 0
+          },
+          {
+            "at": 240,
+            "bits": 4294967295
+          },
+          {
+            "at": 244,
+            "bits": 2882338817
+          },
+          {
+            "at": 248,
+            "bits": 0
+          },
+          {
+            "at": 252,
+            "bits": 0
+          }
+        ]
+      },
+      "childCaptureOnly": false
+    },
+    {
+      "frame": 5,
+      "label": "fresh factory after normal retirement creates a new loaded waiter",
+      "parent": {
+        "owner": 537085232,
+        "nativeID": 4,
+        "parent": 537065232,
+        "vm": 537114944,
+        "pc": 791,
+        "pending": 0,
+        "waitingAddress": 0,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908289
+          },
+          {
+            "at": 64,
+            "bits": 4
+          },
+          {
+            "at": 68,
+            "bits": 3
+          },
+          {
+            "at": 72,
+            "bits": 6
+          },
+          {
+            "at": 128,
+            "bits": 1
+          },
+          {
+            "at": 132,
+            "bits": 0
+          },
+          {
+            "at": 136,
+            "bits": 1
+          },
+          {
+            "at": 140,
+            "bits": 1
+          },
+          {
+            "at": 144,
+            "bits": 1
+          },
+          {
+            "at": 148,
+            "bits": 1
+          },
+          {
+            "at": 152,
+            "bits": 1
+          },
+          {
+            "at": 156,
+            "bits": 3405691582
+          },
+          {
+            "at": 160,
+            "bits": 3405691582
+          }
+        ]
+      },
+      "child": null,
+      "childCaptureOnly": true
+    },
+    {
+      "frame": 6,
+      "label": "direct delivery precedes a queued packet without mutating its owned copy",
+      "parent": {
+        "owner": 537085232,
+        "nativeID": 4,
+        "parent": 537065232,
+        "vm": 537114944,
+        "pc": 884,
+        "pending": 0,
+        "waitingAddress": 0,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908289
+          },
+          {
+            "at": 64,
+            "bits": 4
+          },
+          {
+            "at": 68,
+            "bits": 3
+          },
+          {
+            "at": 72,
+            "bits": 6
+          },
+          {
+            "at": 128,
+            "bits": 1
+          },
+          {
+            "at": 132,
+            "bits": 0
+          },
+          {
+            "at": 136,
+            "bits": 1
+          },
+          {
+            "at": 140,
+            "bits": 1
+          },
+          {
+            "at": 144,
+            "bits": 1
+          },
+          {
+            "at": 148,
+            "bits": 1
+          },
+          {
+            "at": 152,
+            "bits": 1
+          },
+          {
+            "at": 156,
+            "bits": 1
+          },
+          {
+            "at": 160,
+            "bits": 1
+          }
+        ]
+      },
+      "child": null,
+      "childCaptureOnly": true
+    },
+    {
+      "frame": 7,
+      "label": "queued consumer and a second normal retirement",
+      "parent": {
+        "owner": 537085232,
+        "nativeID": 4,
+        "parent": 537065232,
+        "vm": 537114944,
+        "pc": 912,
+        "pending": 0,
+        "waitingAddress": 0,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908289
+          },
+          {
+            "at": 64,
+            "bits": 4
+          },
+          {
+            "at": 68,
+            "bits": 3
+          },
+          {
+            "at": 72,
+            "bits": 6
+          },
+          {
+            "at": 128,
+            "bits": 1
+          },
+          {
+            "at": 132,
+            "bits": 0
+          },
+          {
+            "at": 136,
+            "bits": 1
+          },
+          {
+            "at": 140,
+            "bits": 1
+          },
+          {
+            "at": 144,
+            "bits": 1
+          },
+          {
+            "at": 148,
+            "bits": 1
+          },
+          {
+            "at": 152,
+            "bits": 1
+          },
+          {
+            "at": 156,
+            "bits": 1
+          },
+          {
+            "at": 160,
+            "bits": 1
+          }
+        ]
+      },
+      "child": null,
+      "childCaptureOnly": true
+    },
+    {
+      "frame": 8,
+      "label": "final Root collection and idle caller leaves initialized packet unchanged",
+      "parent": {
+        "owner": 537085232,
+        "nativeID": 4,
+        "parent": 537065232,
+        "vm": 537114944,
+        "pc": 929,
+        "pending": 1,
+        "waitingAddress": 537131088,
+        "values": [
+          {
+            "at": 16,
+            "bits": 592908289
+          },
+          {
+            "at": 64,
+            "bits": 4
+          },
+          {
+            "at": 68,
+            "bits": 3
+          },
+          {
+            "at": 72,
+            "bits": 6
+          },
+          {
+            "at": 128,
+            "bits": 1
+          },
+          {
+            "at": 132,
+            "bits": 0
+          },
+          {
+            "at": 136,
+            "bits": 1
+          },
+          {
+            "at": 140,
+            "bits": 1
+          },
+          {
+            "at": 144,
+            "bits": 1
+          },
+          {
+            "at": 148,
+            "bits": 1
+          },
+          {
+            "at": 152,
+            "bits": 1
+          },
+          {
+            "at": 156,
+            "bits": 1
+          },
+          {
+            "at": 160,
+            "bits": 1
+          }
+        ]
+      },
+      "child": null,
+      "childCaptureOnly": true
+    }
+  ],
+  "deliveries": [
+    {
+      "frame": 1,
+      "pending": 1,
+      "incoming": [4, 17, 287454020, 1432778632],
+      "result": 1
+    },
+    {
+      "frame": 1,
+      "pending": 0,
+      "incoming": [4, 33, 2, 3],
+      "result": 0
+    },
+    {
+      "frame": 3,
+      "pending": 1,
+      "incoming": [4, 18, 4660, 22136],
+      "result": 1
+    },
+    {
+      "frame": 3,
+      "pending": 1,
+      "incoming": [4, 19, 9029, 26505],
+      "result": 1
+    },
+    {
+      "frame": 4,
+      "pending": 0,
+      "incoming": [4, 20, 13398, 30874],
+      "result": 0
+    },
+    {
+      "frame": 4,
+      "pending": 1,
+      "incoming": [4, 21, 17767, 35243],
+      "result": 1
+    },
+    {
+      "frame": 4,
+      "pending": 1,
+      "incoming": [4294967295, 4294901766, 0, 0],
+      "result": 1
+    },
+    {
+      "frame": 6,
+      "pending": 1,
+      "incoming": [4, 23, 26505, 43981],
+      "result": 1
+    },
+    {
+      "frame": 7,
+      "pending": 1,
+      "incoming": [4, 22, 22136, 39612],
+      "result": 1
+    },
+    {
+      "frame": 7,
+      "pending": 1,
+      "incoming": [4294967295, 4294901766, 0, 0],
+      "result": 1
+    }
+  ],
+  "limitations": [
+    "The child observer misses the recreated task when its allocated pointer reuses a previously freed address. Its actual Main66/Main143 and message-copy callbacks remain observed; no absent-child assertion is inferred.",
+    "Reload row with PC0 has no source-initialized data; its raw zeros are capture-only.",
+    "The authored modulo-by-one cell at80 remains zero; it is not a callback counter. Message-copy callbacks establish ordering.",
+    "Normal full Root update, parsed VM, pure COM-memory setup; no GPU/physical OS/HID or fullApp Input publisher proof."
+  ]
+}

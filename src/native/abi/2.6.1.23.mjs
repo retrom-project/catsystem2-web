@@ -675,9 +675,9 @@ const mainEvidence = [
   },
   {
     ids: [
-      1, 5, 8, 9, 13, 14, 36, 66, 67, 68, 71, 79, 88, 92, 100, 104, 105, 117, 209, 210, 211, 238,
-      240, 244, 245, 246, 247, 250, 254, 256, 260, 262, 276, 277, 359, 360, 393, 400, 447, 448, 449,
-      452, 465, 469, 582, 583, 584, 590, 591, 592, 593, 789, 848, 849,
+      1, 5, 8, 9, 13, 14, 36, 66, 67, 68, 79, 88, 92, 100, 104, 105, 117, 209, 210, 211, 238, 240,
+      244, 245, 246, 247, 250, 254, 256, 260, 262, 276, 277, 359, 360, 393, 400, 447, 448, 449, 452,
+      465, 469, 582, 583, 584, 590, 591, 592, 593, 789, 848, 849,
     ],
     value: 'Own 2.6.1.23 startup KCS calls, task receivers, compact Settings and close CSS removal',
   },
@@ -687,12 +687,9 @@ const mainEvidence = [
       'Own 2.6.1.23 Main 0x48a2e0 sends raw Plane 88 with a 32-bit result and returns control 2',
   },
   {
-    ids: [69],
-    value: 'Own 2.6.1.23 Main 69 at 0x48a510 sends a synchronous packet through raw Script 159',
-  },
-  {
-    ids: [70],
-    value: 'Own 2.6.1.23 Main 70 at 0x48a5a0 sends four deferred packet words to raw Script 160',
+    ids: [69, 70, 71],
+    value:
+      'Own 2.6.1.23 Main69/70 wrappers at 0x48a510/0x48a5a0 route four copied words through Script raw159/160. True CRT/FileServer/ApplicationRoot and factory-loaded producer/recipient VMs execute50 full GCALLs in9 ordinary Root Frames, including direct delivery, tag copyback, active-self0, unloaded-parent1, deferred FIFO order, same-owner reload, new factory and native retirement. Main71 control4 only arms a writable16B wait; idle resumes with0 and does not write a packet. Actual copy/resume helper0x50c830 and queue helper0x453bd0 remain original. Current VM replay and8 independent current checkpoints agree. Reload PC0 bytes and a recreated-child observer gap are capture-only; no physical address copy, fullApp input or GPU proof.',
   },
   {
     ids: [72, 73],

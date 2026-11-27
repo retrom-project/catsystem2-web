@@ -1,5 +1,22 @@
 # Script tasks and debugging
 
+SDK23's separate fixed-PE message bridge is covered by
+`tests/sdk23-task-message-context.test.mjs`. Its own Main69/70 wrappers send
+raw159/160 to the Script receiver; the Web receiver uses canonical172/173.
+The normal true-host group executes50 full GCALLs in9 complete Root updates.
+Its actual parsed recipient receives16 copied bytes, can change the tag word
+before synchronous return, and consumes queued packets in order at its later
+update. An active self has no armed wait and returns0; an unloaded parent
+Script returns1 without delivery. A wait's idle return0 leaves its destination
+unchanged. A queue retained over reload can be dropped by the first update
+before the replacement VM has armed a wait; retention does not promise delivery.
+
+Eight independent current checkpoints cover the pending queue, reload and
+retirement boundaries. Original PC0 bytes and the recreated-child observer's
+allocation-reuse gap remain capture-only; the latter has separate actual
+factory/load/message-copy observations. This scope does not prove physical
+remote-memory access, full Application input publication, or GPU output.
+
 `src/native/script-task.mjs` owns the Script task, its KCS loader, message queue,
 debug queries and automatic resource lifetime. `src/kcs/debug.mjs` implements
 the compiler's symbol records. `src/native/scene-memory.mjs` maps the existing
