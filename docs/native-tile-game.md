@@ -33,6 +33,15 @@ therefore establish their recorded default-stream scope; they do not prove the
 registered calendar-seed initialization. Remaining modern commands and shapes
 are tracked separately from this initialization group.
 
+The modern wrapper corpus separately executes all 44 entries through each
+build's constructed Actor/VM after those three initializers. It compares every
+local byte, context cache and random-bank hash in a bounded four-player setup.
+Empty action/result caches and commands rejected by the current rule state are
+recorded as those states, not as nonempty scoring or gameplay evidence. Each
+32-byte context is a plain owner whose first word points to the global model;
+it is not a polymorphic Task with a kind or message receiver. Tile Plane commands
+and their graphical resources have a separate interface and verification scope.
+
 SDK 2.6.1.23, 2.6.1.63 and 2.6.1.67 emit a pre-action ability notification only when the automatic
 activation helper activates an ability. An already pending explicit human
 ability does not insert that notification into the ordinary discard sequence.
