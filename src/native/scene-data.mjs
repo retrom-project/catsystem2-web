@@ -120,11 +120,11 @@ export class NativeSceneReader {
   loadTranslations(bytes, behavior) {
     this.translations = null;
     if (!bytes) return false;
-    const translations = readTranslation(bytes);
-    if (behavior?.translationUnknownPrefixes === 'ignore')
-      this.translations = Object.fromEntries(
-        Object.entries(translations).filter(([name]) => this.languages.includes(name)),
-      );
+    const translations = readTranslation(
+      bytes,
+      behavior?.translationUnknownPrefixes === 'ignore' ? this.languages : undefined,
+    );
+    if (behavior?.translationUnknownPrefixes === 'ignore') this.translations = translations;
     else {
       if (Object.keys(translations).some((name) => !this.languages.includes(name))) return false;
       this.translations = translations;

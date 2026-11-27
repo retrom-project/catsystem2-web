@@ -29,7 +29,7 @@ export async function readScene(bytes) {
   };
 }
 
-export function readTranslation(bytes) {
+export function readTranslation(bytes, prefixes) {
   const b = new Binary(bytes, 'CSTL');
   if (!b.magic('CSTL')) throw new Error('Expected CSTL');
   let at = 8;
@@ -49,12 +49,27 @@ export function readTranslation(bytes) {
     at += length;
     return s;
   }
+  function skipString() {
+    const length = integer();
+    b.requireRange(at, length);
+    at += length;
+  }
   const count = boundedCount(integer(), 256, 'CSTL languages'),
     languages = Array.from({ length: count }, string);
   const messages = boundedCount(integer(), 1000000, 'CSTL messages'),
-    result = Object.fromEntries(languages.map((lang) => [lang, []]));
+    selected = prefixes === undefined ? null : new Set(prefixes),
+    result = Object.fromEntries(
+      languages.filter((lang) => !selected || selected.has(lang)).map((lang) => [lang, []]),
+    );
   for (let i = 0; i < messages; i++)
-    for (const lang of languages) result[lang].push({ speaker: string(), text: string() });
+    for (const lang of languages)
+      if (!selected || selected.has(lang)) result[lang].push({ speaker: string(), text: string() });
+      else {
+        // UTF-8 decoding here uses replacement, not fatal validation. Discarded
+        // locales still validate every length/range and the complete container.
+        skipString();
+        skipString();
+      }
   if (at !== bytes.length) throw new Error('CSTL trailing data');
   return result;
 }

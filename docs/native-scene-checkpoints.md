@@ -191,6 +191,15 @@ model defaults. The localized fixture passes the same own-proved language list
 to the ordinary World constructor and replays 41 complete native Main frames,
 with five independent cold restores including extra-language and empty tables.
 
+The CSTL parser can construct only a caller's registered prefixes. The `.76`
+reader uses this during loading instead of decoding all locales and discarding
+unregistered tables afterward. An empty registration still reads the sidecar
+and validates every length, range and trailing byte; it constructs no message
+strings or rows. UTF-8 retains the original nonfatal replacement behavior.
+The default parser and strict readers still construct the complete table.
+This changes no resource-read sequence, reader identity, cursor refresh rule or
+checkpoint shape and introduces no parsed-file cache.
+
 Language prefixes are literal native map keys. An additional own nine-frame
 control registers `__proto__` through the real XML reader and retrieves its CSTL
 text through direct and Script wrappers. Unregistered `toString` and
