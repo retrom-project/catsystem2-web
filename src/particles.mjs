@@ -665,6 +665,7 @@ export class Particles {
         fade: structuredClone(bank.fade),
         autoRelease: bank.autoRelease,
         externalDraw: bank.externalDraw,
+        ...(bank.extraName === undefined ? {} : { extraName: bank.extraName }),
         screenMatrix: bank.screenMatrix,
         screenShift: bank.screenShift,
         loaded: bank.loaded,

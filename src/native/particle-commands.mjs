@@ -15,6 +15,7 @@ export const NATIVE_PARTICLE_COMMANDS = Object.freeze(
     [0x113, 2, 319],
     [0x1aa, 2, 320],
     [0x1ab, 2, 321],
+    [0x29d, 6, 314],
     [0x2b5, 6, 314],
   ].map(([id, words, message]) => Object.freeze({ id, words, message })),
 );
@@ -31,7 +32,11 @@ export class NativeParticleCommands {
     const spec = commands.get(id);
     if (!spec) return undefined;
     const world = this.world,
+      abi = nativeABI(world.profile),
+      external = id === 0x29d,
       messageOffset = nativeParticleMessageOffset(world.profile);
+    if (external && !abi.particle?.externalScriptLoad)
+      throw new Error('The external Particle loader has no reviewed ABI binding');
     if (
       messageOffset &&
       !nativeABI(world.profile).particle?.taskMessagesUseRawTransport &&
@@ -45,7 +50,7 @@ export class NativeParticleCommands {
     if (spec.message === 314) {
       // Loaders translate both names and all registers before routing, including
       // a missing target. The names occupy independent 128-byte packet fields.
-      for (const index of [1, 2, 5]) machine.bytes(a[index], index === 5 ? 128 : 1);
+      for (const index of [1, 2, 5]) machine.bytes(a[index], index === 5 && !external ? 128 : 1);
       const packet = new NativeGraphicsPacket(new Array(0x290 / 4).fill(0));
       packet.store(0, Number(id === 0x2b5));
       for (const [index, at, category] of [
@@ -63,9 +68,25 @@ export class NativeParticleCommands {
         packet.bytes(at, file.length).set(file);
       }
       packet.store(260, a[3]);
-      packet.store(264, a[4]);
-      packet.bytes(268, 128).set(machine.bytes(a[5], 128));
-      if (nativeABI(world.profile).particle?.loadQuietsFloatWords)
+      packet.store(264, external ? 0 : a[4]);
+      packet.bytes(268, 128).set(machine.bytes(a[external ? 4 : 5], 128));
+      if (external) {
+        // This wrapper copies each group's first DWORD directly and the next
+        // seven register words through x87. The scalar count stays at +260.
+        for (let word = 0; word < 32; word++)
+          if (word % 8) {
+            const at = 268 + word * 4;
+            packet.store(at, quietFloat32Bits(packet.load(at)));
+          }
+        const name = nativeDataFormat(args, machine, world.runtime.services, 5);
+        if (name.length >= 256)
+          throw new RangeError('The external Particle name exceeds its reviewed packet span');
+        packet.bytes(400, name.length).set(name);
+        packet.store(396, 1);
+        const receiver = world.objects.objects.get(world.resolveTaskID(a[0], task.id));
+        if (receiver && !abi.particle.externalScriptLoadKinds.includes(receiver.kind))
+          throw new Error('The external Particle receiver kind has no reviewed ABI binding');
+      } else if (abi.particle?.loadQuietsFloatWords)
         for (let at = 264; at < 396; at += 4) packet.store(at, quietFloat32Bits(packet.load(at)));
       context.payload = packet;
     } else if (id === 0x113) {

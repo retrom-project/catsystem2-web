@@ -203,8 +203,8 @@ export class NativeParticleTask {
         const memory = this.source(sender, context),
           bytes = memory.bytes(l, 0x290),
           view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength),
-          string = (at) => {
-            const part = bytes.subarray(at, at + 128),
+          string = (at, length = 128) => {
+            const part = bytes.subarray(at, at + length),
               end = part.indexOf(0);
             return new TextDecoder('shift_jis')
               .decode(end < 0 ? part : part.subarray(0, end))
@@ -226,6 +226,10 @@ export class NativeParticleTask {
           priority: view.getFloat32(264, true),
           registers: registers(bytes.subarray(268, 396)),
           externalDraw: view.getUint32(396, true) !== 0,
+          ...(nativeABI(this.world.profile).particle?.externalScriptLoad &&
+          view.getUint32(396, true)
+            ? { extraName: string(400, 256) }
+            : {}),
         });
         return unwritten;
       }

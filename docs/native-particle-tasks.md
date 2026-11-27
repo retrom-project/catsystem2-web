@@ -1,5 +1,28 @@
 # Native Particle tasks
 
+## Fixed SDK 2.6.1.23 external script loader
+
+Main 669 is a distinct six-word wrapper for the actual kind16 Particle receiver.
+It formats the PTCL and image names, copies the count to packet `+260`, leaves
+priority `+264` zero and copies the 32 register words from argument4 to `+268`.
+Each eight-word copy uses a direct DWORD for its first word and x87 for the other
+seven. Argument5 is a formatted, owned extra name at `+400`; `+396` enables
+external drawing. The wrapper writes one and returns control1 even when the
+reviewed Base receiver leaves its reply unwritten.
+
+The actual Particle receiver copies the complete 0x290-byte packet before loading
+its script. External mode skips its own texture and graph allocations. The true
+original CRT/FileServer/Window/View/Script chain covers two ordinary KCS2 loads,
+register replacement, idle/start/stop queries and ordinary destruction. Current
+World VM tests also check the copied metadata, two independent cold continuations
+and final bank release. The extra name is retained in the current checkpoint as
+packet metadata; later consumers of that name have not been admitted. Other SDKs
+and receiver kinds retain their guards. Names without a terminator within the
+owned 256-byte span remain protected. This group makes no native drawing or
+physical GPU claim.
+
+## Modern receiver messages
+
 The measured 2.6.1.74 and 2.6.1.76 receivers share eight operations. `sendEngine`
 uses the semantic number below; `sendNativeEngine` uses the build's raw number.
 The FES Particle driver sends semantic numbers, while Main wrappers send raw

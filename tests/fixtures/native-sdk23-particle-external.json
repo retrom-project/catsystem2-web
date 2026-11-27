@@ -1,0 +1,174 @@
+{
+  "profile": "grisaia-jp-engine-2.6.1.23",
+  "executableSHA256": "9f3a5ad0ed22074420685f1e2a3bc92436d68289c7bac854d5f7d7331dc3ef67",
+  "originalReceipt": ".local/phase11/retrom-grisaia23-full-route/sdk-fingerprint-audit/graphics-resource-tail-20261127/ORIGINAL-532-669-TRUE23.json",
+  "originalReceiptSHA256": "afab88a8ecf1f5b8f4951255bdb3caf6abac9995e5c57c395f80446668112a31",
+  "producerSHA256": "a98b6c04dc16b29168a4e86d88c6e8ba6b9192ef31462e64dd48a7bc98b1b843",
+  "scope": "Only Main669 original Base/kind16 packets, true loaded KCS2 receiver, count/priority/register/extraName ownership, start/stop/query and actual destruction. The shared original51-GCALL raw keeps its Wipe active clock precondition issue separate; it is not used as Particle evidence.",
+  "programBase64": "S0NTAAIAAAACAAAANAAAAAEAAAA1AAAAAAAAAAAAAAAAEAAAABAAADUAAAAAAAAAAgAAAHicswYAADwAPA==",
+  "initialRegisters": [
+    3225419776, 3224371200, 3223322624, 3222274048, 3221225472, 3219128320, 3217031168, 3214934016,
+    3212836864, 3208642560, 3204448256, 3196059648, 0, 1048576000, 1056964608, 1061158912,
+    1065353216, 1067450368, 1069547520, 1071644672, 1073741824, 1074790400, 1075838976, 1076887552,
+    1077936128, 1078984704, 1080033280, 1081081856, 1082130432, 1082654720, 1083179008, 1083703296
+  ],
+  "rows": [
+    {
+      "label": "create Base0",
+      "id": 66,
+      "args": [0, [19, 44], 256],
+      "resultAddress": 32,
+      "before": [],
+      "result": null,
+      "packet": null,
+      "active": null
+    },
+    {
+      "label": "create Particle16",
+      "id": 66,
+      "args": [16, [19, 44], 256],
+      "resultAddress": 40,
+      "before": [],
+      "result": null,
+      "packet": null,
+      "active": 0
+    },
+    {
+      "label": "Main669 Base receives formatted packet",
+      "id": 669,
+      "args": [[19, 32], 320, 384, 2, 1024, 448],
+      "resultAddress": 192,
+      "before": [],
+      "result": 1,
+      "packet": {
+        "script": "ptcl.int/probe.kcs",
+        "image": "images.int/resource-image.hg3",
+        "count": 2,
+        "priority": 0,
+        "registers": [
+          3225419776, 3224371200, 3223322624, 3222274048, 3221225472, 3219128320, 3217031168,
+          3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0, 1048576000, 1056964608,
+          1061158912, 1065353216, 1067450368, 1069547520, 1071644672, 1073741824, 1074790400,
+          1075838976, 1076887552, 1077936128, 1078984704, 1080033280, 1081081856, 1082130432,
+          1082654720, 1083179008, 1083703296
+        ],
+        "externalFlag": 1,
+        "extraName": "external-source"
+      },
+      "active": 0
+    },
+    {
+      "label": "Main669 external Particle load",
+      "id": 669,
+      "args": [[19, 40], 320, 384, 2, 1024, 448],
+      "resultAddress": 192,
+      "before": [],
+      "result": 1,
+      "packet": {
+        "script": "ptcl.int/probe.kcs",
+        "image": "images.int/resource-image.hg3",
+        "count": 2,
+        "priority": 0,
+        "registers": [
+          3225419776, 3224371200, 3223322624, 3222274048, 3221225472, 3219128320, 3217031168,
+          3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0, 1048576000, 1056964608,
+          1061158912, 1065353216, 1067450368, 1069547520, 1071644672, 1073741824, 1074790400,
+          1075838976, 1076887552, 1077936128, 1078984704, 1080033280, 1081081856, 1082130432,
+          1082654720, 1083179008, 1083703296
+        ],
+        "externalFlag": 1,
+        "extraName": "external-source"
+      },
+      "active": 0
+    },
+    {
+      "label": "query loaded idle Particle",
+      "id": 274,
+      "args": [[19, 40]],
+      "resultAddress": 196,
+      "before": [],
+      "result": 0,
+      "packet": null,
+      "active": 0
+    },
+    {
+      "label": "start Particle",
+      "id": 272,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "before": [],
+      "result": null,
+      "packet": null,
+      "active": 1
+    },
+    {
+      "label": "query started Particle",
+      "id": 274,
+      "args": [[19, 40]],
+      "resultAddress": 196,
+      "before": [],
+      "result": 1,
+      "packet": null,
+      "active": 1
+    },
+    {
+      "label": "stop Particle",
+      "id": 273,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "before": [],
+      "result": null,
+      "packet": null,
+      "active": 0
+    },
+    {
+      "label": "Main669 replace external Particle",
+      "id": 669,
+      "args": [[19, 40], 320, 384, 2, 1024, 448],
+      "resultAddress": 192,
+      "before": [
+        [37, 1088946176],
+        [38, 1024],
+        [37, 846491237],
+        [38, 448]
+      ],
+      "result": 1,
+      "packet": {
+        "script": "ptcl.int/probe.kcs",
+        "image": "images.int/resource-image.hg3",
+        "count": 2,
+        "priority": 0,
+        "registers": [
+          1088946176, 3224371200, 3223322624, 3222274048, 3221225472, 3219128320, 3217031168,
+          3214934016, 3212836864, 3208642560, 3204448256, 3196059648, 0, 1048576000, 1056964608,
+          1061158912, 1065353216, 1067450368, 1069547520, 1071644672, 1073741824, 1074790400,
+          1075838976, 1076887552, 1077936128, 1078984704, 1080033280, 1081081856, 1082130432,
+          1082654720, 1083179008, 1083703296
+        ],
+        "externalFlag": 1,
+        "extraName": "ent2rnal-source"
+      },
+      "active": 0
+    },
+    {
+      "label": "unregister Base",
+      "id": 67,
+      "args": [[19, 32]],
+      "resultAddress": null,
+      "before": [],
+      "result": null,
+      "packet": null,
+      "active": 0
+    },
+    {
+      "label": "unregister Particle",
+      "id": 67,
+      "args": [[19, 40]],
+      "resultAddress": null,
+      "before": [],
+      "result": null,
+      "packet": null,
+      "active": 0
+    }
+  ]
+}

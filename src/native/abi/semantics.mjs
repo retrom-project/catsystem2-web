@@ -23294,6 +23294,69 @@ export const NATIVE_SEMANTICS = freeze({
         review: 'declared',
       },
     },
+    669: {
+      name: 'particle.loadExternalScript',
+      family: 'particle',
+      signature: {
+        argumentWords: 6,
+        controlCodes: [1],
+        parameters: [
+          {
+            name: 'task',
+            description: 'Particle or reviewed Base task ID',
+            type: { kind: 'object-id', objectKind: 'Particle' },
+          },
+          {
+            name: 'program',
+            description: 'CP932 formatted PTCL resource name',
+            type: {
+              kind: 'pointer',
+              addressSpace: 'vm',
+              direction: 'in',
+              target: { kind: 'format-string', encoding: 'CP932' },
+            },
+          },
+          {
+            name: 'texture',
+            description: 'CP932 formatted image resource name',
+            type: {
+              kind: 'pointer',
+              addressSpace: 'vm',
+              direction: 'in',
+              target: { kind: 'format-string', encoding: 'CP932' },
+            },
+          },
+          {
+            name: 'count',
+            description: 'Unsigned particle count',
+            type: { kind: 'integer', bits: 32, signed: false },
+          },
+          {
+            name: 'registers32',
+            description: 'VM pointer to32 copied register words',
+            type: {
+              kind: 'pointer',
+              addressSpace: 'vm',
+              direction: 'in',
+              target: { kind: 'record', name: '32 floating-point register words' },
+            },
+          },
+          {
+            name: 'extraName',
+            description: 'Owned CP932 formatted external packet name',
+            type: {
+              kind: 'pointer',
+              addressSpace: 'vm',
+              direction: 'in',
+              target: { kind: 'format-string', encoding: 'CP932' },
+            },
+          },
+        ],
+        result: { description: 'Wrapper constant1', kind: 'integer', bits: 32, signed: false },
+        resultWritten: true,
+        review: 'declared',
+      },
+    },
     674: {
       name: 'resources.categoryIndex',
       family: 'resources',

@@ -183,6 +183,11 @@ function geometrySignatures(table, ids) {
 
 const mainEvidence = [
   {
+    ids: [669],
+    value:
+      'Own Main669 builds the actual zeroed0x290 external Particle load packet: PTCL/image paths, count at260, zero priority at264,32 register words at268, external flag at396 and an owned formatted extra name at400. True original CRT/FileServer/Window/View/Top and Main66 kind16 plus Main143-loaded VM run the wrapper against Base and two normal loaded KCS2 banks. The wrapper writes1 and returns control1 independently of the receiver reply. The receiver owns its packet, replaces the old bank, skips its own texture/graph path in external mode and preserves normal start/stop/query and actual Task/Script destruction. Other receiver shapes and later extra-name consumers remain protected.',
+  },
+  {
     ids: viewMeshServices,
     value:
       'Own SDK23 Main12 selects the actual initialized mode1 manager through kcView+8 and writes its near float at+0xd8, without requesting a repaint. Main467 translates and converts64B VM records to80B native records before kind2 raw78; the original manager owns two copies, rejects an occupied model key, and admits a new model after actual Main83 unload. Real Script GCALLs, finite3D projection, released bitmap-to-VRAM source and actual COM draw submissions were observed; platform Present is a separate memory leaf.',
@@ -1471,6 +1476,8 @@ export default {
     registerWordsUseX87: true,
   },
   particle: {
+    externalScriptLoad: true,
+    externalScriptLoadKinds: [0, 16],
     debugUsesNativeLogger: true,
     scriptVersionFallback: 'particle-v1',
     frameScale: 'x87-uint32',
@@ -1901,6 +1908,7 @@ export default {
       ],
       observedArgumentWords: [...mainObservedWidths, { ids: mainUnobservedIds, value: [] }],
       signatures: [
+        { ids: [669], fields: { review: 'reviewed', resultWritten: true } },
         ...[622, 623, 624, 703, 704, 706, 707, 708, 709].map((id) => ({
           ids: [id],
           fields: {
