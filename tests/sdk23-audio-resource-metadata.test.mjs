@@ -16,10 +16,7 @@ for (const group of ['audio-resource']) {
       const open = (initialize) =>
         modernParticleMessageWorld(
           golden.profile,
-          {
-            ...Object.fromEntries(golden.inputs.archives.map((r) => [r.name, bytes(r.data)])),
-            'startup.xml': bytes(golden.inputs.startup),
-          },
+          Object.fromEntries(golden.inputs.archives.map((r) => [r.name, bytes(r.data)])),
           { initialize, startup: parseXML(new TextDecoder().decode(bytes(golden.inputs.startup))) },
         );
       let world = await open(true),
