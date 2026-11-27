@@ -565,12 +565,11 @@ export function nativeStandard(id, args, m, services = {}) {
       if (text?.spaceGroupUnmappedSourceIsEmpty && !nativeDataMapped(m, args[1])) return value(0);
       const source = cstring(m, args[1]),
         scratch = new Uint8Array(source.length * 2 + 8),
+        scratchView = new DataView(scratch.buffer),
         memory = {
-          load: (at) => new DataView(scratch.buffer).getUint8(at),
           store: (at, word, size) => {
-            const view = new DataView(scratch.buffer);
-            if (size === 1) view.setUint8(at, word);
-            else view.setUint16(at, word, true);
+            if (size === 1) scratchView.setUint8(at, word);
+            else scratchView.setUint16(at, word, true);
           },
           bytes: (at, size) => scratch.subarray(at, at + size),
         };
@@ -582,7 +581,9 @@ export function nativeStandard(id, args, m, services = {}) {
         at++;
         index++;
       }
-      const token = cstring(memory, at);
+      // split writes its final double NUL within this private scratch. Keep
+      // the selected token's independent, exact-sized buffer for guest writes.
+      const token = scratch.slice(at, scratch.indexOf(0, at));
       if (token.length) write(m, args[0], token);
       return value(Number(Boolean(token.length)));
     }
