@@ -15,8 +15,8 @@ for (const version of ['63', '67']) {
         new URL('./fixtures/native-sdk' + version + '-area-matrix-live.json', import.meta.url),
       ),
     ),
-    // The source-replacement wrapper is exercised with its CPU owners in A2.
-    rows = golden.cases.filter((r) => r.id !== 202 && !(r.id === 201 && r.args[0] === 'top')),
+    // The Top kind query preserves an opaque native caller address; it stays guarded.
+    rows = golden.cases.filter((r) => !(r.id === 201 && r.args[0] === 'top')),
     names = ['caller', ...rows.filter((r) => r.save).map((r) => r.save)],
     slot = (n) => 2048 + 4 * names.indexOf(n),
     code = kcsProgram(

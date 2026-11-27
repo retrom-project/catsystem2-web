@@ -78,6 +78,23 @@ the same receiver path in JS: Hydro's empty logic leaves the pending task alive
 until its owner is released. Explicit host destruction keeps its separate forced
 cleanup behavior. No physical GPU or independent Raster vertex output is claimed.
 
+Main 202 is separately paired for typed Wipe1/Fade owners and the Raster early
+return. Its five-word packet replaces only source/destination at words 1 and 4,
+borrowing the original wrappers without adding references. Work identity,
+activity, clock, mask and other parameters remain unchanged. Main 199's private
+matrix is also ignored by those CPU receivers. Reinitialization releases the
+previous work; effect retirement releases the current work before the Script's
+bitmap owners are freed.
+
+The two builds initialize the reviewed Wipe1/Fade work surfaces with zeroed
+pixels. Ordinary Root draw populates them and the original View copies the
+computed bytes into its actual configured COM-memory textures. Small partial-alpha
+RGBA source/destination/mask inputs, live replacement, stop/finalize and eight
+independent cold continuations per build compare complete defined pixels. This
+covers CPU composition and texture storage, without a physical GPU, other format,
+nonzero-origin or broader mask-layout claim. Existing SDK23 and modern behavior
+is retained.
+
 ### SDK 2.6.1.23 finish, matrix copy and source replacement
 
 Main 198, 199 and 202 use the shared controls with this build's typed message
