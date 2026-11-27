@@ -14,6 +14,15 @@ They do not prove physical output, the isolated manager's gain initialization,
 alternate global backends, or additional stream continuation shapes. The
 native bank's load type and the manager's backend selection remain separate.
 
+The SDK23 resource metadata fixture starts with the original Settings
+`VOICE`, `SOUNDGROUP` and `INT` producer. A loaded Script queries finite gain,
+play, master and row fields, then formats a selected system-voice index into a
+filename that the actual FileServer opens. The empty mask returns minus one;
+the single enabled choice consumes the integer RNG but always selects that
+entry. This does not characterize an arbitrary random stream or every
+multi-entry distribution. Current checkpoints retain the mutable mask and
+Script outputs in a fresh owner after the guest source strings change.
+
 `NativeSound.now()` reads the World's shared system clock and truncates it to
 the DWORD returned by `timeGetTime`. It supplies PLV start times and sample
 indices. `AudioContext.currentTime` supplies media timing elsewhere; it cannot
