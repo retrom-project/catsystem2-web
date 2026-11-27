@@ -12,6 +12,22 @@ The native producer uses a controlled Windows OS memory-file port with detached
 writes and capacity accounting. It establishes the original CSS format and
 virtual file lifecycle, separate from physical disk and product GAME_SAVE.
 
+SDK23 also uses the existing `manager-delete` source-cache policy. Actual
+loaded Script/FES callers attach a declared MOT to a CPLANE, stop it, delete
+that object and retire the FES normally. Two independent managers share cached
+source until a manager destructor clears the list. Existing actors keep their
+original code; a subsequent same-name load observes changed storage bytes.
+Six independent current cold points preserve both identities and the named
+cache. The normal source-file directory is created through the OS API and
+registered by the original FileServer; it is not a private mount-field patch.
+The producer's final coordinate expectation was corrected without changing its
+capture: its MOT writes KX2 VRAM X at byte 0, while `getpos` reads unchanged
+position X at byte 24. Original and current callers both read zero. This case
+qualifies that ordinary read and source lifecycle, without claiming a changed
+position-output result. The earlier missing-directory case remains separate
+evidence of absent resources. MOT managers are independent resource handles;
+this does not introduce a MOT task-message endpoint.
+
 Motion checkpoints preserve the original manager's allocated capacity as
 well as its used bytes. The first DWORD is used length. Refreshing a smaller
 manager reuses the allocation: filename padding, bytes beyond used length and
