@@ -150,6 +150,8 @@ export class NativeTextParser {
   }
   rasterFont(r) {
     const font = this.font(r);
+    if (!font.backend && nativeABI(this.profile).text.gdiFixedGlyphHalfCell)
+      font.fixedCellWidth = r[1] > 255 ? r[7] : (r[7] + 1) >>> 1;
     if (!font.backend && r[20] > 0) {
       const units = this.scanner?.contexts?.[r[20] - 1];
       if (units?.length) {
@@ -194,7 +196,7 @@ export class NativeTextParser {
     const metric = this.glyphs.measure(font, measuredCharacter);
     const measured = metric?.width;
     return Number.isFinite(measured)
-      ? fixed
+      ? fixed && !(nativeABI(this.profile).text.gdiSBCSUsesMeasuredWidth && !double)
         ? Math.max(measured, (r[7] + 1) >>> 1)
         : measured
       : double

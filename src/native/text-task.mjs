@@ -842,6 +842,12 @@ export async function nativeText(id, args, machine, task, world) {
     if (args.length !== expected)
       throw new Error(`Text native ${id} expects ${expected} arguments`);
   }
+  if (id === 616 && abi?.text.remainingTaskKinds) {
+    const target = world.resolveTaskID(args[0], task.id),
+      record = world.objects.objects.get(target);
+    if (!record || !abi.text.remainingTaskKinds.includes(record.kind))
+      throw new Error('Native text remaining requires a reviewed STRING task');
+  }
   const send = (operation, w = 0, l = 0, payload = null) =>
     world.sendNativeEngine
       ? world.sendNativeEngine(

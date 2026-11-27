@@ -97,6 +97,7 @@ export const engine23CommonHeads = {
 };
 
 const legacyTaskWordOperations = [126, 127, 128, 129, 131, 132, 138, 139];
+const legacyTextServices = [130, 133, 134, 135, 391, 456, 585, 599];
 const rectangleOperations = [214, 215, 216, 217];
 const mainGeometryOperations = [350, 351, 352, 353, 354, 355, 356, 357];
 const motionGeometryOperations = [27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37];
@@ -367,6 +368,16 @@ const mainEvidence = [
     ids: legacyTaskWordOperations,
     value:
       'Own 2.6.1.23 wrappers 0x487d80–0x488110 send raw 98–101, 103–105 and 111 to the kind 8 receiver at 0x41bc80. State, rows and the optional query owner were compared.',
+  },
+  {
+    ids: legacyTextServices,
+    value:
+      'Own 2.6.1.23 Main wrappers and kind 8 receiver 0x41bc80: actual Script GCALLs cover mark-limited drawing, restart budget, CP932 temporary conversion, ignored raw 107/108, borrowed bitmap query, indentation, current/default color and five font sizes. Complete mode 1 view constructors establish visible drawing; mode 0 early returns are recorded separately.',
+  },
+  {
+    ids: [616],
+    value:
+      'Own 2.6.1.23 Main 616 and kind 48 raw 412 read the actual configured STRING writer: pending source returns signed -1 without parsing, page-limited drawing leaves one character, normal task updates preserve the page limit, and finish/clear give 0/-1. Real VM comparison, bitmap ownership and destruction were checked after complete mode 1 constructors.',
   },
   {
     ids: [136, 137],
@@ -1278,6 +1289,12 @@ export default {
     legacyConfigurationBytes: 1128,
     legacyClearPublishes: true,
     legacyTaskWordOperations,
+    legacyTextServices,
+    legacyGraphRegistration: true,
+    legacyGlyphBottomUp: true,
+    remainingTaskKinds: [48],
+    gdiSBCSUsesMeasuredWidth: true,
+    gdiFixedGlyphHalfCell: true,
     legacyGlyphAtlas: true,
     legacyInitializerBitmapBpp: 4,
     settingsCharacterBytes: 1,
@@ -2289,6 +2306,44 @@ export default {
             resultWritten: id === 129,
           },
         })),
+        ...legacyTextServices.map((id) => ({
+          ids: [id],
+          fields: {
+            review: 'reviewed',
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter, index) =>
+              index === 0
+                ? { ...parameter, type: { kind: 'object-id', objectKind: 'legacy-text' } }
+                : id === 134 && index === 2
+                  ? {
+                      ...parameter,
+                      type: {
+                        kind: 'pointer',
+                        addressSpace: 'vm',
+                        direction: 'in',
+                        target: { kind: 'character', bits: 8, encoding: 'CP932' },
+                      },
+                    }
+                  : parameter,
+            ),
+            resultWritten: id === 391,
+            ...(id === 391
+              ? { result: { kind: 'handle', handleKind: 'bitmap', ownership: 'borrowed' } }
+              : {}),
+          },
+        })),
+        {
+          ids: [616],
+          fields: {
+            review: 'reviewed',
+            parameters: [
+              {
+                ...NATIVE_SEMANTICS.main[616].signature.parameters[0],
+                type: { kind: 'object-id', objectKind: 'STRING' },
+              },
+            ],
+            resultWritten: true,
+          },
+        },
         ...[136, 137].map((id) => ({
           ids: [id],
           fields: {

@@ -79,6 +79,9 @@ export class NativeLegacyTextRuntime {
     this.clearPublishes = text?.legacyClearPublishes;
     this.characterPairs = text?.characterLengthPairs;
     this.wordOperations = text?.legacyTaskWordOperations ?? [];
+    this.services = text?.legacyTextServices ?? [];
+    this.graphRegistration = text?.legacyGraphRegistration;
+    this.glyphBottomUp = text?.legacyGlyphBottomUp;
     this.initializerBitmapBpp = text?.legacyInitializerBitmapBpp;
     this.initializerSlots = text?.legacyInitializerSlots ?? [0x7b];
     this.glyphAtlas = text?.legacyGlyphAtlas;
@@ -95,7 +98,11 @@ export class NativeLegacyTextRuntime {
     const checkedInitializer =
         this.initializerBitmapBpp !== undefined && this.initializerSlots.includes(id),
       checkedGlyph = this.glyphAtlas && (id === 0x88 || id === 0x89),
-      checkedOwner = checkedInitializer || checkedGlyph || this.wordOperations.includes(id);
+      checkedOwner =
+        checkedInitializer ||
+        checkedGlyph ||
+        this.wordOperations.includes(id) ||
+        this.services.includes(id);
     let absentOwner = false;
     if (checkedOwner) {
       const signature = nativeABI(this.world.profile).tables.main.entries[id].signature;
@@ -109,7 +116,8 @@ export class NativeLegacyTextRuntime {
       absentOwner = !record || (args[0] === 0 && record.kind === 1);
       if (absentOwner) {
         if (id === 0x81) throw new Error('Legacy text query has no initialized 32-bit output word');
-        if (!checkedInitializer && id !== 0x7c) return nativeReply(2);
+        if (!checkedInitializer && id !== 0x7c && !this.services.includes(id))
+          return nativeReply(2);
       } else if (record.kind !== 8) throw new Error('Native legacy text requires a kind 8 task');
     }
     const arg = (i) => nativeDataArgument(args, machine, i),
@@ -286,6 +294,7 @@ export class NativeLegacyTextTask {
     this.bitmap = this.world.graphics.images.create(this.text.w(179), this.text.w(180));
     this.plane.makeGraph({
       type: 1,
+      ...(this.owner.graphRegistration ? { registrationEnabled: false } : {}),
       width: this.text.w(179),
       height: this.text.w(180),
       vram: true,
@@ -339,7 +348,13 @@ export class NativeLegacyTextTask {
         legacyImageAtlas: this.owner.glyphAtlas,
         legacyKeepsTransparentRgb: this.owner.glyphKeepsTransparentRgb,
       });
-      compositeTextGlyph(pixels, shape, r[2], r[3], this.owner.glyphAtlas && Boolean(image));
+      compositeTextGlyph(
+        pixels,
+        shape,
+        r[2],
+        r[3],
+        this.owner.glyphBottomUp || (this.owner.glyphAtlas && Boolean(image)),
+      );
       r[9] = 1;
     }
     bitmap.state.rgba = pixels.rgba;
@@ -347,14 +362,19 @@ export class NativeLegacyTextTask {
   }
   async output() {
     if (!this.bitmap || !this.text.w(182)) return;
-    await this.world.graphics.output(this.world.graphics.images.get(this.bitmap), [
-      this.text.w(177),
-      this.text.w(178),
-    ]);
+    await this.world.graphics.output(
+      this.world.graphics.images.get(this.bitmap),
+      [this.text.w(177), this.text.w(178)],
+      null,
+      { flipY: Boolean(this.owner.glyphBottomUp) },
+    );
   }
   async restart() {
     const t = this.text;
-    if (!this.state.shown) {
+    if (this.owner.graphRegistration && !this.graph) return;
+    const shown = this.owner.graphRegistration ? this.graph.registrationEnabled : this.state.shown;
+    if (typeof shown !== 'boolean') throw new Error('Unreviewed legacy text graph registration');
+    if (!shown) {
       t.w(463, 0);
       return;
     }
@@ -409,7 +429,17 @@ export class NativeLegacyTextTask {
       case 108:
         return Number(t.w(463) === 0);
       case 109: {
-        if (!this.bitmap || !this.state.shown) return 0;
+        if (
+          this.owner.graphRegistration &&
+          this.graph &&
+          typeof this.graph.registrationEnabled !== 'boolean'
+        )
+          throw new Error('Unreviewed legacy text graph registration');
+        if (
+          !this.bitmap ||
+          !(this.owner.graphRegistration ? this.graph?.registrationEnabled : this.state.shown)
+        )
+          return 0;
         let i = t.w(461) >>> 0;
         for (; i < t.rows.length; i++) {
           if (t.rows[i][0] !== 65535) await this.raster(i + 1);

@@ -126,12 +126,20 @@ export function rasterTextGlyph(
     cached = identity && cache.entries.get(glyph);
   if (identity && sameRaster(cached, identity))
     return { ...cached.shape, rgba: cached.shape.rgba.slice(), rect: [...cached.shape.rect] };
-  const fixed = !ft && font.fixed && r[6] > glyph.advanceX,
+  // The explicit cell belongs to the GDI policy. FT raster identity and
+  // centering never consume it, so its existing cache dependencies stay exact.
+  const explicitCellWidth = !ft ? font.fixedCellWidth : undefined,
+    fixedCellWidth = explicitCellWidth ?? r[6],
+    fixed = !ft && font.fixed && fixedCellWidth > glyph.advanceX,
     x = image
       ? 1
       : ft
         ? Math.max(0, glyph.originX + 1)
-        : (fixed ? (r[6] - glyph.width) >>> 1 : glyph.originX) + 1,
+        : (fixed
+            ? explicitCellWidth === undefined
+              ? (fixedCellWidth - glyph.width) >>> 1
+              : ((fixedCellWidth - glyph.advanceX) >> 1) + glyph.originX
+            : glyph.originX) + 1,
     y = image
       ? 1
       : ft

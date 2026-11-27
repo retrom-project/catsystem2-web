@@ -27,6 +27,43 @@ The modules separate the recovered contracts:
   deferred updates, group selection, definitions, cropped SIZE2/POS2 references
   and cached `isdraw`, `linecnt`, `endpos` and inline-ID queries.
 
+## SDK 2.6.1.23 Text services
+
+The fingerprinted 2.6.1.23 build admits Main 130, 133, 134, 135, 391, 456,
+585, 599 and 616 through actual Script GCALLs and typed Text/STRING receivers.
+Task 8 uses its 1128-byte configuration and independent 40-byte cells. Its
+force/restart operations consult the registered graph's visibility, separately
+from the Base task's display word. Creation leaves registration disabled;
+the ordinary output-enabled show message enables it. Mark budgets, indentation,
+five font sizes and both current/default color words survive checkpoints.
+
+Main 134 still converts CP932 into a temporary terminated 16-bit packet before
+sending it, including signed single-byte characters. The reviewed receiver
+ignores this message and Main 135's scalar message. Those receiver branches
+do not make the wrappers constant-result stubs. Main 391 initializes its own
+local output to zero and returns control 1 even after routing is removed. A
+configured receiver returns its existing bitmap without retaining or aliasing
+it; destruction releases that bitmap during the actual Task update.
+
+Main 616 reads a configured kind-48 STRING writer. Pending source returns signed
+`-1` without parsing or consuming it. A parsed page limit can leave a positive
+character count after normal Task updates; finish-all returns zero, while clear
+makes the next query pending again. A VM comparison consumes the pending word
+before normal draw/update and further queries. Missing writers, other receiver
+kinds and unreviewed argument shapes remain protected instead of producing a
+default count.
+
+For this build, GDI single-byte layout keeps the measured advance. Fixed glyph
+centering independently uses the full/half font cell, the glyph's actual advance
+and its origin. Legacy Text's borrowed bitmap uses logical image rows, while
+its output adapter restores physical upload order. STRING's final writer bitmap
+already uses upload order; its private glyph atlas is a different resource.
+The compact original vectors compare defined words, cells, complete RGBA,
+output rows, VM stack/control results, ownership and independent cold execution.
+The original harness runs complete view/Task constructors with deterministic
+GDI and generic D3D9 memory ports; it makes no claim about physical Windows GPU
+or font rendering. These policies do not enable another SDK build.
+
 ## Metrics, fonts and pixels
 
 The exact comparison policy is in
