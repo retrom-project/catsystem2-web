@@ -102,6 +102,7 @@ export class NativeFramePacer {
       waitCount: this.waitCount,
       pendingStep: this.pendingStep,
       iteration: this.iteration,
+      suspended: this.#suspended,
     };
   }
   close() {
@@ -115,6 +116,7 @@ export class NativeFramePacer {
       !['timerAnchor', 'elapsedFrame', 'frameWord', 'pendingStep', 'iteration'].every((key) =>
         word(state[key]),
       ) ||
+      typeof state.suspended !== 'boolean' ||
       typeof state.waitCount !== 'bigint' ||
       state.waitCount < 0n ||
       state.waitCount > mask64
@@ -127,6 +129,7 @@ export class NativeFramePacer {
     });
     for (const key of ['elapsedFrame', 'frameWord', 'waitCount', 'pendingStep', 'iteration'])
       pacer[key] = state[key];
+    pacer.#suspended = state.suspended;
     return pacer;
   }
 }

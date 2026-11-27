@@ -32,7 +32,10 @@ an external lease and is not serialized. Cold restoration retains the saved
 timer phase, counter and delayed step; the shared system clock must map actual
 new-host timer samples onto the saved clock origin. It must not calculate wait
 counts from that timer delta. Explicit host suspension cancels a pending lease
-and reanchors on resume without inventing background returns. Native pause
+and reanchors on resume without inventing background returns. The checkpoint
+retains that suspension state: a cold resume also reanchors instead of counting
+time spent without a wait. An unsuspended cold retains its saved bucket phase.
+Native pause
 continues to observe waits while holding ordinary Frame.
 
 Browser rAF and Windows `Sleep(1)` are different cooperative-wait leaves. Their

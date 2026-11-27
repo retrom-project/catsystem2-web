@@ -192,3 +192,27 @@ test('closing a World releases its pending host wait without a synthetic dispatc
   await assert.rejects(world.resumeHostFrameWait(wait), /actual wait return/);
   assert.equal(world.objects.objects.size, 0);
 });
+
+test('a host-suspended cold continuation excludes time spent without an observed wait', async () => {
+  let timer = 0,
+    otherTimer = 5000;
+  const first = await make(() => timer),
+    second = await make(() => otherTimer, false);
+  try {
+    timer = 17;
+    await dispatch(first);
+    first.suspendHostFrames();
+    timer = 1000;
+    const state = await deserializeCheckpoint(await serializeCheckpoint(first.snapshot()));
+    await second.restore(state);
+    const wait = second.beginHostFrameWait();
+    otherTimer = 5017;
+    assert.equal(await second.resumeHostFrameWait(wait), true);
+    second.completeHostFrame();
+    assert.equal(second.frame, 2);
+    assert.equal(second.objects.objects.get(second.main.id).scriptUpdateAccumulator, 1);
+  } finally {
+    await second.close();
+    await first.close();
+  }
+});
