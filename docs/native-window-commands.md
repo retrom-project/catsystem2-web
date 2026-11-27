@@ -244,3 +244,20 @@ World drops pending window messages and prevents later keyboard callbacks;
 a fresh owner remains independent. This covers the registered Game's language
 rows, not SDK accelerators, the resource base rows, other profiles or complete
 platform startup. Unknown VM slots retain their explicit admission guards.
+
+SDK 2.6.1.23 host-output callers are covered by
+`tests/fixtures/sdk23-host-output-golden.json`: a loaded Script formats two
+finite diagnostic lines, writes three lines through the original CRT stream,
+and reads the resulting bytes through a new file handle before closing it.
+The filename is a raw string; only the line is formatted. Appending resumes
+one byte before the old end, including for an empty line. The test preserves
+that cursor behavior and checks that source overwrites and a fresh World do
+not change committed bytes. This is the qualified memory-file port, not a
+claim about a physical Windows filesystem.
+
+Main 393 posts message `0x464` with the enable word in `lParam`. The Window
+handler then changes return-to-title menu item 119 and publishes the host callback. It does
+not change the menu during the Script call. This queued behavior is shared
+by the five proved wrapper contexts. SDK23 Main 9 likewise posts `WM_CLOSE`
+for a true argument and `0x433` for false; the existing Window handler owns
+confirmation and shutdown. The current checkpoint retains pending requests.

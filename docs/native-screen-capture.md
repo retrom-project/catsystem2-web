@@ -24,3 +24,22 @@ against each original executable: SDK 11,323 comparisons/3,087 calls, Game
 orientation, BMP contents, signed filenames, menu capture and fresh World
 continuation. Original D3D/GDI capture evidence remains in the test-only oracle;
 normal capture calls no original view or graph traversal.
+
+The SDK23 host-media group also exercises the ordinary JS path through a loaded
+KCS Script. A normal colored Plane produces an asymmetric 32×24 Stage frame;
+Main 113 returns a Script-owned bitmap, Main 119 consumes its dimensions, and
+Main 114 releases it. A fresh World restores that detached bitmap before the
+normal Stage presentation writes a 3,126-byte BMP selected by Main 441. The
+writer's real completion advances the value later read by Main 566; Main 565
+then observes disabling. Every BMP pixel and the screenshot's vertical row
+orientation are checked against the actual Stage readback. This is a software
+WebGL/SwiftShader fixture, independent of Retrom thumbnails or PFB screenshots.
+
+The same build's normal x86 Script reaches its real mode-1 readback call, but
+the existing memory-only Direct3D port stops at `GetRenderTargetData` because
+its dirty target requires the shared GPU. That stopped original run provides
+no completed bitmap or native pixel comparison. Its original bytes and
+cleanup record remain alongside the successful browser evidence. The capture
+wrapper, View clipping/copy body, and recording queries are traced separately;
+this group does not promote physical desktop capture, AVI export, arbitrary
+viewports, or a complete original GPU readback qualification.
