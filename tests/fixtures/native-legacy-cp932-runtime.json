@@ -1632,6 +1632,445 @@
               "normalReleaseObserved": true
             }
           ]
+        },
+        "S3": {
+          "report": ".local/phase11/sdk63-67-cp932-runtime-20261127/ORIGINAL-S3-FINAL-63.json",
+          "reportSHA256": "0e3a6772e9f25ca5fac30154543be8dfd5c1105360b578b3836f13c71221ff5d",
+          "sourceSHA256": {
+            "probe-s3-final.mjs": "1bbef17e0fc3f19ce1fe36fa83aa485b1a711030192d5c3c33b5457a4208f5d3",
+            "normal-cases-s3-final.mjs": "94af7149baf3ad48f9147ecd4c58eccd629d4ca9ad761dfacc06ba9bbf5a4d29",
+            "normal-cases.mjs": "9967049fa8c6fc69e9e518533f78809f19a1bf7ac3b1d7bd78f8050faad4a598",
+            "resource63-journal-host.mjs": "a10e15cd62f31137a6216fbd49c793e67a7ce926dafd3c97950110baa3cd41e0"
+          },
+          "textSHA256": "89320bbab145f475216fceb5c1d8f0e4181c9f73f61f087ed6d26caf1e12789a",
+          "counts": {
+            "targetGCALLs": 19,
+            "dependencyGCALLs": 7,
+            "allGCALLs": 26,
+            "newBusinessDirect": 0,
+            "allExternalDirect": 67,
+            "GCALLFrameDirectOverlap": 26,
+            "setupAndCleanupDirect": 41
+          },
+          "handlers": {
+            "675": 4847680,
+            "676": 4907296,
+            "677": 4895376,
+            "678": 4895120,
+            "679": 4894816,
+            "680": 4894576
+          },
+          "cases": [
+            {
+              "id": 675,
+              "args": [],
+              "save": "map",
+              "dependency": true,
+              "ordinal": 0,
+              "control": 1,
+              "result": "owned:map",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["map", 512, 21],
+              "text": "z",
+              "ordinal": 1,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["map", 512, 21],
+              "text": "A",
+              "ordinal": 2,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["map", 512, 2147483648],
+              "text": "\u732b%d[G128] 100%%",
+              "ordinal": 3,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["map", 512, 21],
+              "text": "a",
+              "ordinal": 4,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["map", 512, 2143363909],
+              "text": "\u9ed2\u732b",
+              "ordinal": 5,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["map", 512, 32],
+              "text": "z",
+              "ordinal": 6,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["map", 512, 0],
+              "text": "A",
+              "ordinal": 7,
+              "control": 1,
+              "result": 21,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["map", 512, 0],
+              "text": "\u732b-41 100%%",
+              "ordinal": 8,
+              "control": 1,
+              "result": 2147483648,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["map", 512, 2271560481],
+              "text": "missing",
+              "ordinal": 9,
+              "control": 1,
+              "result": 2271560481,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["map", 512, 0],
+              "text": "\u9ed2\u732b",
+              "ordinal": 10,
+              "control": 1,
+              "result": 2143363909,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["map", 512, 0],
+              "text": "z",
+              "ordinal": 11,
+              "control": 1,
+              "result": 32,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 680,
+              "args": ["map", 21, 1024],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    65, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 12,
+              "control": 1,
+              "result": 1,
+              "changed": [
+                [1024, 65],
+                [1025, 0]
+              ],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 678,
+              "args": ["map", 512],
+              "text": "A",
+              "ordinal": 13,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 680,
+              "args": ["map", 21, 1024],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    97, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 14,
+              "control": 1,
+              "result": 1,
+              "changed": [
+                [1024, 97],
+                [1025, 0]
+              ],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 680,
+              "args": ["map", 2147483648, 1024],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    148, 76, 45, 52, 49, 32, 49, 48, 48, 37, 0, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 15,
+              "control": 1,
+              "result": 1,
+              "changed": [
+                [1024, 148],
+                [1025, 76],
+                [1026, 45],
+                [1027, 52],
+                [1028, 49],
+                [1029, 32],
+                [1030, 49],
+                [1031, 48],
+                [1032, 48],
+                [1033, 37],
+                [1034, 0]
+              ],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 680,
+              "args": ["map", 287454020, 1024],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 16,
+              "control": 1,
+              "result": 0,
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 675,
+              "args": [],
+              "save": "other",
+              "dependency": true,
+              "ordinal": 17,
+              "control": 1,
+              "result": "owned:other",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                },
+                {
+                  "name": "other"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["other", 512, 8],
+              "text": "A",
+              "ordinal": 18,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                },
+                {
+                  "name": "other"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["other", 512, 0],
+              "text": "A",
+              "ordinal": 19,
+              "control": 1,
+              "result": 8,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                },
+                {
+                  "name": "other"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["map", 512, 99],
+              "text": "A",
+              "ordinal": 20,
+              "control": 1,
+              "result": 99,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                },
+                {
+                  "name": "other"
+                }
+              ]
+            },
+            {
+              "id": 676,
+              "args": ["other"],
+              "close": "other",
+              "dependency": true,
+              "ordinal": 21,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ],
+              "normalReleaseObserved": true
+            },
+            {
+              "id": 676,
+              "args": ["map"],
+              "close": "map",
+              "dependency": true,
+              "ordinal": 22,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [],
+              "normalReleaseObserved": true
+            }
+          ]
         }
       }
     },
@@ -3258,6 +3697,445 @@
               "args": ["pairs"],
               "close": "pairs",
               "ordinal": 25,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [],
+              "normalReleaseObserved": true
+            }
+          ]
+        },
+        "S3": {
+          "report": ".local/phase11/sdk63-67-cp932-runtime-20261127/ORIGINAL-S3-FINAL-67.json",
+          "reportSHA256": "f09b10e6429d9a155e1eec99b4e800f4046a482eb05c9ac161c15755cb514b86",
+          "sourceSHA256": {
+            "probe-s3-final.mjs": "1bbef17e0fc3f19ce1fe36fa83aa485b1a711030192d5c3c33b5457a4208f5d3",
+            "normal-cases-s3-final.mjs": "94af7149baf3ad48f9147ecd4c58eccd629d4ca9ad761dfacc06ba9bbf5a4d29",
+            "normal-cases.mjs": "9967049fa8c6fc69e9e518533f78809f19a1bf7ac3b1d7bd78f8050faad4a598",
+            "resource67-journal-host.mjs": "7d10ba34a7e488caa1e3e338bc3ac918b9a6f912438f3087a5b04ca6f6e66c40"
+          },
+          "textSHA256": "caaee45e75276342c603bf7518d54c7306b52498a1a04aca8cfef596c34c01d6",
+          "counts": {
+            "targetGCALLs": 19,
+            "dependencyGCALLs": 7,
+            "allGCALLs": 26,
+            "newBusinessDirect": 0,
+            "allExternalDirect": 70,
+            "GCALLFrameDirectOverlap": 26,
+            "setupAndCleanupDirect": 44
+          },
+          "handlers": {
+            "675": 4907728,
+            "676": 4907856,
+            "677": 4895808,
+            "678": 4895552,
+            "679": 4895248,
+            "680": 4895008
+          },
+          "cases": [
+            {
+              "id": 675,
+              "args": [],
+              "save": "map",
+              "dependency": true,
+              "ordinal": 0,
+              "control": 1,
+              "result": "owned:map",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["map", 512, 21],
+              "text": "z",
+              "ordinal": 1,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["map", 512, 21],
+              "text": "A",
+              "ordinal": 2,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["map", 512, 2147483648],
+              "text": "\u732b%d[G128] 100%%",
+              "ordinal": 3,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["map", 512, 21],
+              "text": "a",
+              "ordinal": 4,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["map", 512, 2143363909],
+              "text": "\u9ed2\u732b",
+              "ordinal": 5,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["map", 512, 32],
+              "text": "z",
+              "ordinal": 6,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["map", 512, 0],
+              "text": "A",
+              "ordinal": 7,
+              "control": 1,
+              "result": 21,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["map", 512, 0],
+              "text": "\u732b-41 100%%",
+              "ordinal": 8,
+              "control": 1,
+              "result": 2147483648,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["map", 512, 2271560481],
+              "text": "missing",
+              "ordinal": 9,
+              "control": 1,
+              "result": 2271560481,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["map", 512, 0],
+              "text": "\u9ed2\u732b",
+              "ordinal": 10,
+              "control": 1,
+              "result": 2143363909,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["map", 512, 0],
+              "text": "z",
+              "ordinal": 11,
+              "control": 1,
+              "result": 32,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 680,
+              "args": ["map", 21, 1024],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    65, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 12,
+              "control": 1,
+              "result": 1,
+              "changed": [
+                [1024, 65],
+                [1025, 0]
+              ],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 678,
+              "args": ["map", 512],
+              "text": "A",
+              "ordinal": 13,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 680,
+              "args": ["map", 21, 1024],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    97, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 14,
+              "control": 1,
+              "result": 1,
+              "changed": [
+                [1024, 97],
+                [1025, 0]
+              ],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 680,
+              "args": ["map", 2147483648, 1024],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    148, 76, 45, 52, 49, 32, 49, 48, 48, 37, 0, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 15,
+              "control": 1,
+              "result": 1,
+              "changed": [
+                [1024, 148],
+                [1025, 76],
+                [1026, 45],
+                [1027, 52],
+                [1028, 49],
+                [1029, 32],
+                [1030, 49],
+                [1031, 48],
+                [1032, 48],
+                [1033, 37],
+                [1034, 0]
+              ],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 680,
+              "args": ["map", 287454020, 1024],
+              "outputs": [
+                {
+                  "at": 1024,
+                  "bytes": [
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                    165, 165, 165, 165, 165, 165, 165, 165
+                  ]
+                }
+              ],
+              "ordinal": 16,
+              "control": 1,
+              "result": 0,
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ]
+            },
+            {
+              "id": 675,
+              "args": [],
+              "save": "other",
+              "dependency": true,
+              "ordinal": 17,
+              "control": 1,
+              "result": "owned:other",
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                },
+                {
+                  "name": "other"
+                }
+              ]
+            },
+            {
+              "id": 677,
+              "args": ["other", 512, 8],
+              "text": "A",
+              "ordinal": 18,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                },
+                {
+                  "name": "other"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["other", 512, 0],
+              "text": "A",
+              "ordinal": 19,
+              "control": 1,
+              "result": 8,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                },
+                {
+                  "name": "other"
+                }
+              ]
+            },
+            {
+              "id": 679,
+              "args": ["map", 512, 99],
+              "text": "A",
+              "ordinal": 20,
+              "control": 1,
+              "result": 99,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                },
+                {
+                  "name": "other"
+                }
+              ]
+            },
+            {
+              "id": 676,
+              "args": ["other"],
+              "close": "other",
+              "dependency": true,
+              "ordinal": 21,
+              "control": 2,
+              "result": null,
+              "outputs": [],
+              "changed": [],
+              "state": [
+                {
+                  "name": "map"
+                }
+              ],
+              "normalReleaseObserved": true
+            },
+            {
+              "id": 676,
+              "args": ["map"],
+              "close": "map",
+              "dependency": true,
+              "ordinal": 22,
               "control": 2,
               "result": null,
               "outputs": [],

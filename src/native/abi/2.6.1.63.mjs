@@ -10,6 +10,7 @@ import {
   NATIVE_TILE_GAME_SIGNATURES,
 } from './semantics.mjs';
 
+const formattedDictionaryOperations = [677, 678, 679, 680];
 const namePairOperations = [289, 290, 291, 292, 293];
 const cp932ScalarOperations = [18, 20, 22, 26, 37, 39, 40, 48];
 
@@ -1289,8 +1290,8 @@ export default {
           27, 28, 31, 34, 65, 89, 90, 91, 96, 97, 98, 99, 102, 103, 110, 120, 121, 122, 126, 127,
           128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 199, 202, 208, 214, 215, 216,
           217, 237, 255, 279, 280, 281, 282, 283, 287, 288, 305, 306, 309, 312, 391, 441, 442, 443,
-          456, 457, 532, 570, 585, 588, 599, 600, 601, 628, 658, 659, 669, 677, 678, 679, 680, 682,
-          688, 690, 691, 692, 705, 837, 838, 839, 840, 841, 842, 843,
+          456, 457, 532, 570, 585, 588, 599, 600, 601, 628, 658, 659, 669, 682, 688, 690, 691, 692,
+          705, 837, 838, 839, 840, 841, 842, 843,
         ],
 
         reserved: mainReserved,
@@ -1325,21 +1326,27 @@ export default {
           606, 607, 608, 609, 610, 611, 612, 613, 614, 615, 616, 617, 618, 619, 620, 621, 622, 623,
           624, 625, 629, 630, 631, 632, 633, 634, 635, 636, 637, 638, 639, 640, 641, 645, 646, 647,
           648, 649, 650, 651, 653, 654, 655, 657, 662, 663, 664, 665, 666, 667, 668, 674, 675, 676,
-          681, 683, 684, 685, 689, 693, 694, 695, 696, 697, 698, 699, 700, 701, 702, 703, 704, 706,
-          707, 708, 709, 710, 711, 712, 713, 714, 715, 716, 717, 718, 719, 720, 721, 722, 723, 724,
-          725, 726, 727, 728, 729, 730, 731, 732, 733, 734, 735, 736, 737, 738, 739, 740, 741, 742,
-          743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760,
-          761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774, 775, 776, 777, 778,
-          779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795, 796,
-          797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812, 813, 814,
-          815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828, 829, 830, 831, 832,
-          833, 834, 835, 836, 844, 845, 846, 847, 848, 849, 850, 851, 852, 853, 854, 855, 856, 857,
-          858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875,
-          876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889, 890, 891, 892, 893,
-          894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 934, 935, 936, 937,
+          677, 678, 679, 680, 681, 683, 684, 685, 689, 693, 694, 695, 696, 697, 698, 699, 700, 701,
+          702, 703, 704, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715, 716, 717, 718, 719, 720,
+          721, 722, 723, 724, 725, 726, 727, 728, 729, 730, 731, 732, 733, 734, 735, 736, 737, 738,
+          739, 740, 741, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752, 753, 754, 755, 756,
+          757, 758, 759, 760, 761, 762, 763, 764, 765, 766, 767, 768, 769, 770, 771, 772, 773, 774,
+          775, 776, 777, 778, 779, 780, 781, 782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792,
+          793, 794, 795, 796, 797, 798, 799, 800, 801, 802, 803, 804, 805, 806, 807, 808, 809, 810,
+          811, 812, 813, 814, 815, 816, 817, 818, 819, 820, 821, 822, 823, 824, 825, 826, 827, 828,
+          829, 830, 831, 832, 833, 834, 835, 836, 844, 845, 846, 847, 848, 849, 850, 851, 852, 853,
+          854, 855, 856, 857, 858, 859, 860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871,
+          872, 873, 874, 875, 876, 877, 878, 879, 880, 881, 882, 883, 884, 885, 886, 887, 888, 889,
+          890, 891, 892, 893, 894, 895, 896, 897, 898, 899, 900, 901, 902, 903, 904, 905, 934, 935,
+          936, 937,
         ],
       },
       evidence: [
+        {
+          ids: formattedDictionaryOperations,
+          value:
+            'Own SDK63 Main677–680 at 0x4ab290/0x4ab190/0x4ab060/0x4aaf70 format short CP932 keys through the original global scratch and share the live dictionary returned by Main675. Set replaces the raw DWORD, remove uses the exact byte key, a miss reads the supplied fallback, and value lookup copies the first byte-ordered key with one NUL while a miss preserves output. Nineteen target plus seven dependency/bootstrap GCALLs complete two owners and both normal CRT releases through a true CRT/Settings/FileServer/typed Script/Main143 VM with unchanged whole text. The same own67 group is independent. All VM writes/results/control and six independent current cold continuations per build match fixture S3. An earlier class-release observer mismatch is preserved as an author failure; it is not an original SDK failure or full-lifecycle proof. Large keys, allocation extremes and foreign owners are outside this group.',
+        },
         {
           ids: namePairOperations,
           value:
@@ -2324,6 +2331,33 @@ export default {
         },
       ],
       signatures: [
+        ...formattedDictionaryOperations.map((id) => ({
+          ids: [id],
+          fields: {
+            parameters: NATIVE_SEMANTICS.main[id].signature.parameters.map((parameter) => {
+              if (parameter.type.kind === 'handle')
+                return {
+                  ...parameter,
+                  type: { kind: 'handle', handleKind: 'dictionary', ownership: 'borrowed' },
+                };
+              if (parameter.type.kind !== 'pointer') return parameter;
+              return {
+                ...parameter,
+                type: {
+                  kind: 'pointer',
+                  addressSpace: 'vm',
+                  direction: id === 680 ? 'out' : 'in',
+                  target:
+                    id === 680
+                      ? { kind: 'character', bits: 8, encoding: 'CP932' }
+                      : { kind: 'format-string', encoding: 'CP932' },
+                },
+              };
+            }),
+            resultWritten: id === 679 || id === 680,
+            review: 'reviewed',
+          },
+        })),
         {
           ids: [289],
           fields: {

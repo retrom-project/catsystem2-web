@@ -160,3 +160,17 @@ are checked through parsed Script VMs, then seven independent current World
 continuations per build. The internal owner codec preserves the row bytes;
 no Task message or native GAME_SAVE format changes. Longer names, full tables,
 allocation overflow and capacity extremes remain protected or unverified.
+
+## Formatted ordered dictionaries
+
+SDK63 Main677–680 share the existing Main675/676 dictionary owner after an
+independent own-build group: 19 target calls and seven dependency/bootstrap
+calls, repeated in SDK67's own executable. Keys retain CP932 byte identity and
+byte ordering; insertion replaces a raw DWORD, removal uses the formatted key,
+and lookup preserves a caller fallback. The first matching value returns its
+byte-ordered key, including the NUL; a miss preserves the output span. Two live
+owners and their actual CRT destruction are separate from RefBuffer release.
+The original full text remains unchanged. Real KCS callers and six fresh World
+continuations per build cover these results without altering native GAME_SAVE.
+Large scratch keys, foreign owners and resource extremes remain unverified.
+The retained first-attempt release-observer failure does not qualify lifecycle.
