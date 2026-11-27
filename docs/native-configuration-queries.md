@@ -113,3 +113,20 @@ the first out-of-range index and the neighboring block boundaries through KCS.
 
 Run `node --test tests/native-configuration-query.test.mjs` and, with private images,
 `node --test tests/differential/native-configuration-query.test.mjs`.
+
+## SDK23 startup metadata and normal owner bridge
+
+`sdk23-configuration-metadata.test.mjs` C1 starts from the actual fixed
+`9f3a5ad0…` Settings constructor and XML reader. Authored `GAME/flag/max`,
+local/global range rows and `GAME/log/static` produce the live words queried by
+Main789/790/852. Read-only instruction/write observations identify the original
+initializer and XML writers; no target field or private body is patched. The
+words feed real loaded Script variables, expressions and formatting, including
+ordered aliased range outputs and the defined index-8 no-write sentinel.
+
+Main465 reads the actual author word initialized to zero by this normal
+constructor. This qualifies that query state. The still-unadmitted Main628 also
+posts window message `0x466`; neither arbitrary author-mode changes nor the
+window-side behavior are enabled by this bridge. Teardown debug-fill writes in
+the observation are cleanup events, not new metadata producers. Four independent
+current cold points retain the owned state and resume later real VM consumers.
