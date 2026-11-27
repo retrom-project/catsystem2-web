@@ -36,6 +36,42 @@ paths. With `CATSYSTEM2_EMOTE_DLL`, the existing DLL host also opens both
 authored container versions and compares every uploaded texture byte with the
 JS canonical pixels. The fixture encoder's default PSB3 output is unchanged.
 
+The native scene preparation path retains one job for a verified mounted scene.
+Literal model declarations remain hints, including a resident model only after
+a numeric, empty-program MPL hint in the same block. The hint does not execute
+or suppress commands: the old model still releases normally and a fresh document
+owns independent bytes. The consumer still performs its original resource read,
+with its original await, provider callbacks and errors. Only an exact comparison
+of those actual bytes against the independent packed snapshot can reuse an
+expansion; a mismatch decodes that same read result without reading again.
+A weak record/map witness and the scene body, history entry and mounted backing
+must still match at consumption. An unfinished,
+canceled, replaced or out-of-budget job falls back immediately to ordinary
+loading, without waiting for its worker.
+
+Preparation accepts at most 8 MiB packed and 72 MiB expanded bytes, adding 8 MiB
+container headroom to the former 64 MiB expansion policy. The optional atlas
+keeps its original 64 MiB combined expanded/decoded budget. An expanded PSB over
+64 MiB skips atlas parsing and conversion. The stream still checks actual output
+against the declared size and expansion cap. One completed expanded-only job
+retains at most `P + E = 80 MiB`; transient owned arrays are conservatively
+`3P + E + J <= 168 MiB`, with `J <= E` pending output chunks. Native decompressor
+buffers, parser metadata and garbage awaiting collection are additional, so
+these are array ownership bounds rather than an RSS limit. Worker replies
+transfer their expanded backing; they do not clone it at the bridge. No live
+document, public PSB/raw view or decoded atlas is reused as preparation input.
+Existing live resources and the ordinary consumer read are separate from these
+preparation-owned bounds; they remain part of whole-Core memory measurement.
+
+Prepared model replies require the ordinary scene-worker pool/lease brands and
+the original native Worker constructor, methods, event-data getter and return
+channel. Current port/lease identity is checked again at send and receipt;
+replacement or foreign ports cancel/release the lease and leave ordinary decode
+in charge. Nonshared, fixed, complete reply buffers are required. Other worker
+consumers keep their ordinary service interface. Node's isolated transport
+component tests exercise the job state machine separately from this admission;
+fake worker/pool rejection tests do not establish a native browser hit.
+
 The second emotedriver build has a different SDK version and three additional
 exports; matching model data remains unavailable. The interface evidence and
 the boundary on unverified reuse are in

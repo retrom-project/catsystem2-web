@@ -76,21 +76,26 @@ export class M2Owner {
     if (!this.documents.has(model)) {
       const record = { document: null };
       record.promise = (async () => {
-        const prepared = this.scenePreparation.take(model);
-        if (prepared) {
-          const document = await EmoteDocument.open(prepared.packed, {
-            name: model,
-            expandedPSB: prepared.expanded,
-            preparedAtlas: prepared.atlas,
-          });
-          if (prepared.atlas) this.scenePreparation.keepAtlas(document, prepared.scene);
-          return (record.document = document);
+        this.scenePreparation.beginDocument(model, record);
+        try {
+          const game = this.world.game,
+            bytes = game.requireCategory
+              ? await game.requireCategory(model, 'm2psb')
+              : await game.require(model),
+            prepared = this.scenePreparation.take(model, bytes, record);
+          if (prepared) {
+            const document = await EmoteDocument.open(bytes, {
+              name: model,
+              expandedPSB: prepared.expanded,
+              preparedAtlas: prepared.atlas,
+            });
+            if (prepared.atlas) this.scenePreparation.keepAtlas(document, prepared.scene);
+            return (record.document = document);
+          }
+          return (record.document = await EmoteDocument.open(bytes, { name: model }));
+        } finally {
+          this.scenePreparation.endDocument(model, record);
         }
-        const game = this.world.game,
-          bytes = game.requireCategory
-            ? await game.requireCategory(model, 'm2psb')
-            : await game.require(model);
-        return (record.document = await EmoteDocument.open(bytes, { name: model }));
       })();
       this.documents.set(model, record);
     }

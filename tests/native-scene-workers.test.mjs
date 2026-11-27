@@ -5,6 +5,9 @@ import {
   acquireSceneWorker,
   canPrepareSceneWorker,
   prepareSceneWorkerPool,
+  acquireOwnedSceneWorker,
+  canPrepareOwnedSceneWorker,
+  ownedSceneWorkerLease,
 } from '../src/native/scene-workers.mjs';
 
 function fakeWorkers(t, { holdReady = false, failImage = false } = {}) {
@@ -105,4 +108,42 @@ test('a worker that cannot initialize leaves its decoder on the ordinary path', 
     spawned.map(({ terminated }) => terminated),
     [1, 1],
   );
+});
+
+test('owned preparation rejects Node fake channels, borrowed replies and replaced lease fields', async (t) => {
+  const spawned = fakeWorkers(t),
+    borrowed = Uint8Array.of(17),
+    unknown = {};
+  let callbacks = 0;
+  for (const key of ['enabled', 'acquire'])
+    Object.defineProperty(unknown, key, {
+      get() {
+        callbacks++;
+        return () => ({ send: () => ({ expanded: borrowed }) });
+      },
+    });
+  const world = { prepareSceneWorkers: true, sceneWorkers: unknown };
+  assert.equal(canPrepareOwnedSceneWorker(world, 'model'), false);
+  assert.equal(acquireOwnedSceneWorker(world, 'model'), null);
+  await Promise.resolve();
+  borrowed[0] = 173;
+  assert.equal(callbacks, 0);
+  assert.equal(spawned.length, 0);
+
+  const pool = await prepareSceneWorkerPool(),
+    lease = acquireSceneWorker({ sceneWorkers: pool }, 'model');
+  try {
+    Object.defineProperty(lease, 'send', {
+      get() {
+        callbacks++;
+        throw new Error('Replaced lease port');
+      },
+    });
+    assert.equal(ownedSceneWorkerLease(lease), null);
+    assert.equal(callbacks, 0);
+    assert.equal(canPrepareOwnedSceneWorker({ sceneWorkers: pool }, 'model'), false);
+  } finally {
+    pool.close();
+  }
+  assert(spawned.every(({ terminated }) => terminated === 1));
 });

@@ -2,6 +2,14 @@
 import { PSB, readPSB } from '../formats/psb.mjs';
 import { boundedCount } from '../binary.mjs';
 
+// A prepared PSB may contain one 64 MiB resource plus container metadata.
+// The optional atlas retains its original, separate working-set limit.
+export const EMOTE_PREPARATION_LIMITS = Object.freeze({
+  packedBytes: 8 * 1024 * 1024,
+  expandedBytes: 72 * 1024 * 1024,
+  atlasWorkingBytes: 64 * 1024 * 1024,
+});
+
 function dimensions(width, height) {
   if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height) || width < 1 || height < 1)
     throw new Error('E-mote texture dimensions must be positive integers');
