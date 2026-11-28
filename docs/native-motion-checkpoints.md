@@ -379,3 +379,29 @@ No runtime policy, start/clock behavior, checkpoint schema or ABI registration
 changes are required. FES same-frame MOT consumers retain their accepted scope;
 this explicit-manager group does not qualify full Application startup,
 unstarted-FES retirement, physical memory, GPU or larger resource domains.
+
+The SDK `.63` [typed CSS golden](../tests/fixtures/native-sdk63-mot-typed-css.json)
+pairs Main314/315/316/317/387/388 with two active records and real parsed
+writer/reader Scripts. The snapshot envelope stores its manager association and owns its data
+and capacity. Refresh requires that manager to remain live. Native CSS entries copy the entire allocated capacity; refreshing
+after group removal changes the used prefix while retaining the larger
+allocation. Filename copying initializes only bytes through NUL. Tests compare
+all known fields and preserve that opaque padding in actual native CSS readers.
+
+The original capture and source manager are released before the CRT CSS write.
+An independent file/manager restores both records and runs their actual MOT VMs,
+including copied registers, extra data and elapsed/delay state. The normal skip-all
+source call precedes update and refresh; a live skip word is not serialized
+into the restored record. Overwriting the disk source leaves the loaded CSS owner intact. The
+reader then restores the refreshed group, closes its file, refreshes a retained
+envelope and writes another CSS before normal envelope/manager/Script release.
+Six independent cold points and a fresh native-CSS-only reader cover these
+transitions. Typed Main387/388 consumers provide the proof; physical Main72/73
+are neither needed nor enabled.
+
+The accepted `.23` and modern CSS/file groups retain their own record widths and
+caller qualifications. This group adds the missing `.63` normal bridge without
+changing production code, ABI registration, time policy or checkpoint schema.
+Unknown padding is not an invented default; absent resources, uninitialized
+fields, wider filename/layout shapes and full Application startup keep their
+existing boundaries.
