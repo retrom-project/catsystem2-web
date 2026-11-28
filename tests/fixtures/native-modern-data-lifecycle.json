@@ -1,0 +1,330 @@
+{
+  "builds": [
+    {
+      "key": "G1BRIDGE-76",
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-scene-css-consumers-20261128/ORIGINAL-G1BRIDGE-76.json",
+        "sha256": "b9f6e3a5ccda5d030940fc15f97aa6232205b2d01e0aaafdb3ace8fbe803f728"
+      },
+      "startup": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp>32</bpp></TEXTURE><APP><imgcache>0</imgcache></APP><ETC><cache>0</cache></ETC><INT><int00><name>kcs</name><ext>kcs</ext><dir></dir></int00><int01><name>scene</name><ext>cst</ext><dir></dir></int01></INT></document>",
+      "inputs": [
+        {
+          "name": "startup.xml",
+          "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjY0PC93aWR0aD48aGVpZ2h0PjY0PC9oZWlnaHQ+PHZfd2lkdGg+NjQ8L3Zfd2lkdGg+PHZfaGVpZ2h0PjY0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48ZXh0PmtjczwvZXh0PjxkaXI+PC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2NlbmU8L25hbWU+PGV4dD5jc3Q8L2V4dD48ZGlyPjwvZGlyPjwvaW50MDE+PC9JTlQ+PC9kb2N1bWVudD4="
+        },
+        {
+          "name": "writer.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAALUEAADpBAAAAAAAAAAAAAAAEAAAABAAAOkEAAAAAAAAagkAAHicVdSxSsNQFAbgE40aMEi1FRwUisdeWm4VQQdBh4IRO1So4KDoUtviZAVbFNx8FIeCi5uv4OKm7j6CiKircv+k8Xe5fJz8uTm9yWlBH0pXN0bFEykk9skBOSRnyDnyDHmWnCcvkIvkMnmZvEpeI2+QK+SIXCXXyHXyHnkfPj1rtY2K73zeWWwZ9eFGr7FkNICb3a4YDeFus90xWoHbR2eXRiO4024tGa0m+Z4YrcGTw4c/RmXUWcZKU0Z9+HHkQIwGcL/f7xuV4M8+OSCH5Aw5R54hz5Lz5AVykVwmL5NXyWvkDXKFHJGr5Bq5Tt4j75OPAhGrkYioiIjRsriLeXHlJ1f2URjCGq3MT1p9ceUAicZQcuMg0USZEsf/E1afB5sOBuVkS6+tvv2VK0jPIU1l12Qhi1WnsY5jda/e6qcLZhDEzGXjXULcVKYOPez77uI5xAOKT6TPsPrhIiEiblqtbnrpKdWRw4pP1eqWl/zkZJ6Ti/E3J/TkbS9tNJcGLQYtPuukFcG2X5Jui7+DpLdv+ZemQjbrThVvqqi3mJDdi7vXeBpLeo+KV3/YiSvrvx6k198="
+        },
+        {
+          "name": "reader.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAAOADAAAUBAAAAAAAAAAAAAAAEAAAABAAABQEAAAAAAAAwAcAAHicTdOxSsNQFAbgUxr1DkFSo9ChQ/G0h5bWUrBDwQ4ZMnSIUKFDxS6lzWgLtij4Ng4ZfYwubuqub6EionJPqvmX8PHf/+SG5KbK6/rtnTDliKobO2ADdsEeeB9cBJfAZXAFXAM3wW1wB9wF98ABOAT3wRF4AB6CR+rLxSwWJsf6an40E3bUk9WkJWzU0+WShF31chrPhQN1PF7cCIfqeTxrCfc3/RUJR+pC/uJHmLataae+J+yoH7bOSdiokyRJhMlkdsAG7II98D64CC6By+AKuAZugtvgDrgL7oEDcAjugyPwADwEj8BjQ9TgkIiYiEi4SXaxTDZ+tLGjgf1+DX7/C4QDG/uB9j6yWM++xlV2tZLe0Gjx0xY9LaY/Rho/ZfMG5nd18csuGl2MYM+3/2fzNeYDvabvyNPKd7ab/m5ahEnft7txeHxYqPFz3g6eXd+/pAe3zq+a5Abr0zQ5+QVGZMZ+"
+        },
+        {
+          "name": "owned.cst",
+          "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+        },
+        {
+          "name": "scene/owned.cst",
+          "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+        },
+        {
+          "name": "scripts/writer.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAALUEAADpBAAAAAAAAAAAAAAAEAAAABAAAOkEAAAAAAAAagkAAHicVdSxSsNQFAbgE40aMEi1FRwUisdeWm4VQQdBh4IRO1So4KDoUtviZAVbFNx8FIeCi5uv4OKm7j6CiKircv+k8Xe5fJz8uTm9yWlBH0pXN0bFEykk9skBOSRnyDnyDHmWnCcvkIvkMnmZvEpeI2+QK+SIXCXXyHXyHnkfPj1rtY2K73zeWWwZ9eFGr7FkNICb3a4YDeFus90xWoHbR2eXRiO4024tGa0m+Z4YrcGTw4c/RmXUWcZKU0Z9+HHkQIwGcL/f7xuV4M8+OSCH5Aw5R54hz5Lz5AVykVwmL5NXyWvkDXKFHJGr5Bq5Tt4j75OPAhGrkYioiIjRsriLeXHlJ1f2URjCGq3MT1p9ceUAicZQcuMg0USZEsf/E1afB5sOBuVkS6+tvv2VK0jPIU1l12Qhi1WnsY5jda/e6qcLZhDEzGXjXULcVKYOPez77uI5xAOKT6TPsPrhIiEiblqtbnrpKdWRw4pP1eqWl/zkZJ6Ti/E3J/TkbS9tNJcGLQYtPuukFcG2X5Jui7+DpLdv+ZemQjbrThVvqqi3mJDdi7vXeBpLeo+KV3/YiSvrvx6k198="
+        },
+        {
+          "name": "scripts/reader.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAAOADAAAUBAAAAAAAAAAAAAAAEAAAABAAABQEAAAAAAAAwAcAAHicTdOxSsNQFAbgUxr1DkFSo9ChQ/G0h5bWUrBDwQ4ZMnSIUKFDxS6lzWgLtij4Ng4ZfYwubuqub6EionJPqvmX8PHf/+SG5KbK6/rtnTDliKobO2ADdsEeeB9cBJfAZXAFXAM3wW1wB9wF98ABOAT3wRF4AB6CR+rLxSwWJsf6an40E3bUk9WkJWzU0+WShF31chrPhQN1PF7cCIfqeTxrCfc3/RUJR+pC/uJHmLataae+J+yoH7bOSdiokyRJhMlkdsAG7II98D64CC6By+AKuAZugtvgDrgL7oEDcAjugyPwADwEj8BjQ9TgkIiYiEi4SXaxTDZ+tLGjgf1+DX7/C4QDG/uB9j6yWM++xlV2tZLe0Gjx0xY9LaY/Rho/ZfMG5nd18csuGl2MYM+3/2fzNeYDvabvyNPKd7ab/m5ahEnft7txeHxYqPFz3g6eXd+/pAe3zq+a5Abr0zQ5+QVGZMZ+"
+        }
+      ],
+      "steps": {
+        "writer": 1,
+        "reader": 1
+      },
+      "projections": {
+        "writer": {
+          "outputs": [
+            256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320,
+            324, 328, 332, 336, 340, 344
+          ],
+          "spans": [
+            {
+              "at": 2048,
+              "size": 64
+            }
+          ]
+        },
+        "reader": {
+          "outputs": [
+            256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320,
+            324, 328, 332, 336, 340, 344
+          ],
+          "spans": [
+            {
+              "at": 2112,
+              "size": 16
+            }
+          ]
+        }
+      },
+      "rows": [
+        {
+          "kind": "writer",
+          "label": "own76 real Script/FileServer/variable source and nested CSS writer bridge",
+          "words": [
+            287454020, 1, 1, 1, 1, 3, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 1304776705
+          ],
+          "spans": [
+            "T25lAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQ=="
+          ]
+        },
+        {
+          "kind": "reader",
+          "label": "own76 independent actual reader consumes restored range/nested bytes after source release",
+          "words": [
+            2166572391, 1, 287454020, 11, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            1304776705
+          ],
+          "spans": ["EQNb/wAHKRLKBVmlpaWlpQ=="]
+        }
+      ],
+      "marker": 1304776705,
+      "fileName": "modern-data.css",
+      "nativeFile": "Q1NTADUAAAA3AAAAZ0UjgXja42FgYGABYhdjJUE+IK0MxEuK+RUYGDgYhIFsWSAWBWJuIBZkjv7PwK4pdIo1EgBtLwVi",
+      "currentYieldQualification": "G2 current programs insert only already-qualified Main65 yields at meaningful owned states; semantic GCALL order/arguments/conditional final consumer unchanged from the actual original. Additional current frame boundaries are not additional original executions."
+    },
+    {
+      "key": "G2-74",
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-scene-css-consumers-20261128/ORIGINAL-G2-74.json",
+        "sha256": "2d07bbfab595fe93c205734a0e10b928dc5f314941125960ef388a535591a225"
+      },
+      "startup": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp>32</bpp></TEXTURE><APP><imgcache>0</imgcache></APP><ETC><cache>0</cache></ETC><INT><int00><name>kcs</name><ext>kcs</ext><dir></dir></int00><int01><name>scene</name><ext>cst</ext><dir></dir></int01></INT></document>",
+      "inputs": [
+        {
+          "name": "startup.xml",
+          "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjY0PC93aWR0aD48aGVpZ2h0PjY0PC9oZWlnaHQ+PHZfd2lkdGg+NjQ8L3Zfd2lkdGg+PHZfaGVpZ2h0PjY0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48ZXh0PmtjczwvZXh0PjxkaXI+PC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2NlbmU8L25hbWU+PGV4dD5jc3Q8L2V4dD48ZGlyPjwvZGlyPjwvaW50MDE+PC9JTlQ+PC9kb2N1bWVudD4="
+        },
+        {
+          "name": "writer.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAALoMAADuDAAAAAAAAAAAAAAAEAAAABAAAO4MAAAAAAAAdBkAAHicbdY/aBtXHMDxJ1kuKmhQkAseDBX92Q+Fc4OgHgx1y5WqrQoKiOKCB4Otyo5skC1hu6kpGTR4cMGDhwwZMqTUag1NIEMGp/WgwYHQpuDBg4dQMnToUNoOaenQob3fO919I7wcH97v9/7ovae734Q8uvz5l1ZMwpiJ0Ck4DWfgLDwCj8JjcB4ehwvwJFyEp+BpeAb24RJchitwFZ6F59RrraVlKyYVeGP99YaVlHPr07aVtHrzSn3TSsbZGGMl61xfXrfiq5fnmy0rJXVD88vqLc2vqOut9WtWOurVxvymlR31Wq3ZtLKrvlJvNK3sqY323Ve/v7qxaaWHMU/U7WZt1YoZDryu7Sn16lqjYsVXL2xPFq2UhuMxy/2cBSsd9fZk8f++O+rrrdW6lZ562c2lbtc2alZO1Y2NWtvKmXpFc87VpTdeu2TFvBR497NrH1tJqf/46dsvrGTVfjGftTKi7na7XSsmHTsFp+EMnIVH4FF4DM7D43ABnoSL8BQ8Dc/APlyCy3AFrsKz8Bw8Dy/CS/AK3ITb8Ba8Dd+AO/AOvAvvwfvwTfgWfBu+Ax/Ah/Bd+D78AD6Cj+EefAI/hp/Ap/AZfA4/hZ/Bv8C/wr/Bf8LP4X/gf2HzMu4/nIYzcBYegUfhMTgPj8MFeBIuwlPwNDwD+3AJLsMVuArPwnPwPLwIL8ErcBNuw1vwNnwD7sA78C68B+/DN+Fb8G34DnwAH8J34fvwA/gIPoZ78An8GH4Cn8Jn8Dn8VH3VGOPJ78YYSelr3teGrxLG9L8lxpiJnD712+bJD0EwjWajz54GfwyCGQaHg+Zv+n3CAiUM+hr8enDAzmAfV8hoiiR1hQtDUXBWm1P6TAwG53RYlxJ8tjypxUGticJgdjCYQTB4AXnySRzUqikXD+7JUj/oyTsm3L1+bHEo3F/XxZP6ULThI/FI+h56YRotwnK+Bt8y8R649TwP5slq4hgS30bis8HEfCJeRbQsT96ND7yq66y689EzfS8+CK34wqD7qpvoCnjyQSKap4BEH4mJwcSgVvTkKBnNX9H5KzjrS0PR/ahEy4pmTl88xXfBiGPo5F7CbqHHyeiWVjGim+7D/hUOi1fXP0x0ZdOpXtDvk+GviNZ18RTuWF6NEj35aCiaYgon90r0H/DkMF7FdGLgVrlBHiajW1XVhqBcDhvcGN0XGy74M84k4uyDONstx+jp/2WibD9aqyd/998ZiVzwj84Ff1FXgedywVM3syD3Mrqx1+/97Eryy/LQtVQfXXUtb/4HUWSiCg=="
+        },
+        {
+          "name": "reader.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAAA0LAABBCwAAAAAAAAAAAAAAEAAAABAAAEELAAAAAAAAGhYAAHicbdY/aBNRHMDxlz9KxAyRVOhQMPhrHpGLErBDwSoRgmSIUDBCh0Ib05oG0ia0VYs4ZOhQoUMHhw4dKraoqODgUKFDhwoOCh06dBDp4OAg6CDqIKL3u0vytXQ5Pvz+vHv3Lpf3kvLmzN2HVkzAmKTvMByBo3AM7oK74R44AffCKTgNZ+A+uB8egLNwDs7DBXgQLsJD6sn62LgVE3Y9PXW2YiXsuX6rYSWinjlXnrES9WyMsRLzXB6fspJVjw/X6lZy6orW59WzWl9Ql+tTN6001dXK8IyVefVkqVazsqA+V67UrCyqjfYuqa9Up2esbGHMbXWjVqpaMUdcT2k8rK5OVgpWsuqRuXTGSu5IZ8x8q2bESlM9l878651X365Xy1a21OPevdSN0nTJyo66Ml1qWNlVT2jNnjp3/vQJK+ao64U7N69bCau/vn9230pMnc0kYla61Ovr6+tWTKTjMByBo3AM7oK74R44AffCKTgNZ+A+uB8egLNwDs7DBXgQLsJD8DA8Co/BE3ANbsCz8Bx8D27C8/ACvAgvwQ/gZXgFXoXX4Cfwc/gl/AregDfhLXgbfgu/g3fgXXgP/gDvw5/gz/AX+Bv8Hf4F/4bNMfz+4QgchWNwF9wN98AJuBdOwWk4A/fB/fAAnIVzcB4uwINwER6Ch+FReAyegGtwA56F5+B7cBOehxfgRXgJfgAvwyvwKrwGP4Gfwy/hV/AGvAlvwdvwW/gdvAPvwnvwB7W7Mzry0xgjYf2bzxo38ChgTGsvMcYk4244KSfVeS156pZEtcQ9cjiyEWz3FNBzSl3Qnmuhdo8eTfySi3r1PvKIFv5xJxTTwggKL+l1//DCqM7isvFn4fU48qP1bN7Ek7qZOvLYnX7E2+0DnWTzYFKPRDr9pP8ZGx12M+g/SisZ0PCJkN/ZCmcP7fFK/J6RUPtuRe0sttfDkVInqScyP7l/MNnTTjpSDrVfZwI97lfgyI1OTy+SqweTqcMHTCM8Gmovrfd+a/8Hkv4P99AVc+R18L8348hawA8E4u47ibtr7x3q4nH3KkFjTErMcXfQ4O0XH71T3hmJepHBN1e9yIW/2v19oA=="
+        },
+        {
+          "name": "owned.cst",
+          "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+        },
+        {
+          "name": "scene/owned.cst",
+          "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+        },
+        {
+          "name": "scripts/writer.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAALoMAADuDAAAAAAAAAAAAAAAEAAAABAAAO4MAAAAAAAAdBkAAHicbdY/aBtXHMDxJ1kuKmhQkAseDBX92Q+Fc4OgHgx1y5WqrQoKiOKCB4Otyo5skC1hu6kpGTR4cMGDhwwZMqTUag1NIEMGp/WgwYHQpuDBg4dQMnToUNoOaenQob3fO919I7wcH97v9/7ovae734Q8uvz5l1ZMwpiJ0Ck4DWfgLDwCj8JjcB4ehwvwJFyEp+BpeAb24RJchitwFZ6F59RrraVlKyYVeGP99YaVlHPr07aVtHrzSn3TSsbZGGMl61xfXrfiq5fnmy0rJXVD88vqLc2vqOut9WtWOurVxvymlR31Wq3ZtLKrvlJvNK3sqY323Ve/v7qxaaWHMU/U7WZt1YoZDryu7Sn16lqjYsVXL2xPFq2UhuMxy/2cBSsd9fZk8f++O+rrrdW6lZ562c2lbtc2alZO1Y2NWtvKmXpFc87VpTdeu2TFvBR497NrH1tJqf/46dsvrGTVfjGftTKi7na7XSsmHTsFp+EMnIVH4FF4DM7D43ABnoSL8BQ8Dc/APlyCy3AFrsKz8Bw8Dy/CS/AK3ITb8Ba8Dd+AO/AOvAvvwfvwTfgWfBu+Ax/Ah/Bd+D78AD6Cj+EefAI/hp/Ap/AZfA4/hZ/Bv8C/wr/Bf8LP4X/gf2HzMu4/nIYzcBYegUfhMTgPj8MFeBIuwlPwNDwD+3AJLsMVuArPwnPwPLwIL8ErcBNuw1vwNnwD7sA78C68B+/DN+Fb8G34DnwAH8J34fvwA/gIPoZ78An8GH4Cn8Jn8Dn8VH3VGOPJ78YYSelr3teGrxLG9L8lxpiJnD712+bJD0EwjWajz54GfwyCGQaHg+Zv+n3CAiUM+hr8enDAzmAfV8hoiiR1hQtDUXBWm1P6TAwG53RYlxJ8tjypxUGticJgdjCYQTB4AXnySRzUqikXD+7JUj/oyTsm3L1+bHEo3F/XxZP6ULThI/FI+h56YRotwnK+Bt8y8R649TwP5slq4hgS30bis8HEfCJeRbQsT96ND7yq66y689EzfS8+CK34wqD7qpvoCnjyQSKap4BEH4mJwcSgVvTkKBnNX9H5KzjrS0PR/ahEy4pmTl88xXfBiGPo5F7CbqHHyeiWVjGim+7D/hUOi1fXP0x0ZdOpXtDvk+GviNZ18RTuWF6NEj35aCiaYgon90r0H/DkMF7FdGLgVrlBHiajW1XVhqBcDhvcGN0XGy74M84k4uyDONstx+jp/2WibD9aqyd/998ZiVzwj84Ff1FXgedywVM3syD3Mrqx1+/97Eryy/LQtVQfXXUtb/4HUWSiCg=="
+        },
+        {
+          "name": "scripts/reader.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAAA0LAABBCwAAAAAAAAAAAAAAEAAAABAAAEELAAAAAAAAGhYAAHicbdY/aBNRHMDxlz9KxAyRVOhQMPhrHpGLErBDwSoRgmSIUDBCh0Ib05oG0ia0VYs4ZOhQoUMHhw4dKraoqODgUKFDhwoOCh06dBDp4OAg6CDqIKL3u0vytXQ5Pvz+vHv3Lpf3kvLmzN2HVkzAmKTvMByBo3AM7oK74R44AffCKTgNZ+A+uB8egLNwDs7DBXgQLsJD6sn62LgVE3Y9PXW2YiXsuX6rYSWinjlXnrES9WyMsRLzXB6fspJVjw/X6lZy6orW59WzWl9Ql+tTN6001dXK8IyVefVkqVazsqA+V67UrCyqjfYuqa9Up2esbGHMbXWjVqpaMUdcT2k8rK5OVgpWsuqRuXTGSu5IZ8x8q2bESlM9l878651X365Xy1a21OPevdSN0nTJyo66Ml1qWNlVT2jNnjp3/vQJK+ao64U7N69bCau/vn9230pMnc0kYla61Ovr6+tWTKTjMByBo3AM7oK74R44AffCKTgNZ+A+uB8egLNwDs7DBXgQLsJD8DA8Co/BE3ANbsCz8Bx8D27C8/ACvAgvwQ/gZXgFXoXX4Cfwc/gl/AregDfhLXgbfgu/g3fgXXgP/gDvw5/gz/AX+Bv8Hf4F/4bNMfz+4QgchWNwF9wN98AJuBdOwWk4A/fB/fAAnIVzcB4uwINwER6Ch+FReAyegGtwA56F5+B7cBOehxfgRXgJfgAvwyvwKrwGP4Gfwy/hV/AGvAlvwdvwW/gdvAPvwnvwB7W7Mzry0xgjYf2bzxo38ChgTGsvMcYk4244KSfVeS156pZEtcQ9cjiyEWz3FNBzSl3Qnmuhdo8eTfySi3r1PvKIFv5xJxTTwggKL+l1//DCqM7isvFn4fU48qP1bN7Ek7qZOvLYnX7E2+0DnWTzYFKPRDr9pP8ZGx12M+g/SisZ0PCJkN/ZCmcP7fFK/J6RUPtuRe0sttfDkVInqScyP7l/MNnTTjpSDrVfZwI97lfgyI1OTy+SqweTqcMHTCM8Gmovrfd+a/8Hkv4P99AVc+R18L8348hawA8E4u47ibtr7x3q4nH3KkFjTErMcXfQ4O0XH71T3hmJepHBN1e9yIW/2v19oA=="
+        },
+        {
+          "name": "config/small.cgl",
+          "data": "1AAAAAAAAAABAAAAAAAAAEZpcnN0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAZWEwMSwyLDAsMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHBsYWluAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwAAAAEAAAAAAAAAT3RoZXIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAABtb3JlLDMsMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        },
+        {
+          "name": "scene/log.cst",
+          "data": "Q2F0U2NlbmVWAAAAaQAAAHici2RgYGBmYGCQYGBg0GFgYGBigAAmKGZkYGBggYpxMDAwCDEwMEgxMDCogOQUp+2Z6O/IwKgwrXrqNv+8VKiIE1QkpDyfgVHBrbSktCiVAQCzjhAh"
+        }
+      ],
+      "steps": {
+        "writer": 3,
+        "reader": 2
+      },
+      "projections": {
+        "writer": {
+          "outputs": [
+            256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320,
+            324, 328, 332, 336, 340, 344
+          ],
+          "spans": [
+            {
+              "at": 2048,
+              "size": 480
+            }
+          ]
+        },
+        "reader": {
+          "outputs": [
+            256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320,
+            324, 328, 332, 336, 340, 344
+          ],
+          "spans": [
+            {
+              "at": 2048,
+              "size": 480
+            }
+          ]
+        }
+      },
+      "rows": [
+        {
+          "kind": "writer",
+          "label": "real CGL and Scene text feed CG/displayLog and full-capacity copied records",
+          "words": [
+            1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 5, 7, 0, 1, 1, 0, 1, 2709137861, 2709137861, 2709137861,
+            2709137861, 2, 1304776706
+          ],
+          "spans": [
+            "lryRT0EApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpZZ7lbZPbmUApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWl782riUAwIBClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVEMyIRiHdmVaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpZa8kU9BAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaUApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWl"
+          ]
+        },
+        {
+          "kind": "reader",
+          "label": "new CSS reader/new CG and log owners plus real reconstructed LIFO use after source release",
+          "words": [
+            1, 1, 8, 8, 1, 1, 1, 1, 2, 1, 1, 0, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2, 1304776706
+          ],
+          "spans": [
+            "paWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWl782riUAwIBClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaVEMyIRiHdmVaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaUApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlRDMiEYh3ZlWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaXvzauJQDAgEKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQClpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWl"
+          ]
+        }
+      ],
+      "marker": 1304776706,
+      "fileName": "modern-groups.css",
+      "nativeFile": "Q1NTAJoAAACYAQAATQAAAHjas2VgYOAA4vdnV3c6GCgI2EH5LsZKgh3laaHyQLYGEEsAsQwQKwCxCgNuIArEDowMDEDEkJpoYBhvxHCGXAAyw4ABYpYh1Pz/QADiZ+am+8RXxBuQazqaWZQYhWJWQU5iZh6aSQaszAoffvIqpFrFFBSl6yYWpRbHpKSW6abmlcWUFRsZGBrHZCfnZCbpplRYwswCANmEwZs=",
+      "currentYieldQualification": "G2 current programs insert only already-qualified Main65 yields at meaningful owned states; semantic GCALL order/arguments/conditional final consumer unchanged from the actual original. Additional current frame boundaries are not additional original executions."
+    },
+    {
+      "key": "G2BRIDGE-76",
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-scene-css-consumers-20261128/ORIGINAL-G2BRIDGE-76.json",
+        "sha256": "9ef544c20f8acf4ba75a60d49bc57cdb5fb31efbd5e8a0d72ae708471ff1bd83"
+      },
+      "qualification": "1034 empty-language base-text fallback only; no CSTL/nonempty-language promotion",
+      "startup": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp>32</bpp></TEXTURE><APP><imgcache>0</imgcache></APP><ETC><cache>0</cache></ETC><INT><int00><name>kcs</name><ext>kcs</ext><dir></dir></int00><int01><name>scene</name><ext>cst</ext><dir></dir></int01></INT></document>",
+      "inputs": [
+        {
+          "name": "startup.xml",
+          "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjY0PC93aWR0aD48aGVpZ2h0PjY0PC9oZWlnaHQ+PHZfd2lkdGg+NjQ8L3Zfd2lkdGg+PHZfaGVpZ2h0PjY0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48ZXh0PmtjczwvZXh0PjxkaXI+PC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2NlbmU8L25hbWU+PGV4dD5jc3Q8L2V4dD48ZGlyPjwvZGlyPjwvaW50MDE+PC9JTlQ+PC9kb2N1bWVudD4="
+        },
+        {
+          "name": "writer.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAAGsJAACfCQAAAAAAAAAAAAAAEAAAABAAAJ8JAAAAAAAA1hIAAHicTdYxaBNRGMDx1yYtUTKktEKHgMGvebRcLQU7FKwQMUqEFIJk6FC0Ma1pJG1CUkuRDh06dOjQwcHBQbHFDgoODhU6ZGhB1KFDhw4iHRwcRByqODjIfZfc/Zfjx/d999737h7vLimHQ49fWDEdxiRbDsMROArH4D64H47DCXgAHoSH4VF4DB6HJ+AUnIYzcBbOwXl4Sr1QnZ2zYsKu64uXS1bCnquPalYi6sZIsWEl6tkYYyXmuTi3aCWlnpuuVK2k1SWtz6iXtD6rLlYXH1hZU5dL0w0r6+qFQqViZUM9UixVrGyqjd67pb5VrjesNDHmgbpWKZStmC7XixoPq5er5aKVpnrOq1fXCvWClSN1qV6oWTlWz2vNSVcw76k6feVSjxXT7XpnZ2fHiokEDsMROArH4D64H47DCXgAHoSH4VF4DB6HJ+AUnIYzcBbOwXl4Cp6GZ+BZeB6uwDV4CV6BV+E1eB3egDfhLfgJ/BR+Bj+Ht+Fd+DX8Fn4H78H7cBM+gD/An+Ej+Bg+gb/Ap/A3+Dv8A/4Fn8F/4X+wOYf9D0fgKByD++B+OA4n4AF4EB6GR+ExeByegFNwGs7AWTgH5+EpeBqegWfhebgC1+AleAVeVU8aYxz5aYyRsB5RKQ287DCmdWZljDHJXr3qOevIRzcZQdjotanJT24yymSXG37Vvsf7WDpyI5ghp9V61ZPfkZtBtX5OkUxKp3Z4uz2P95V1ZK/THzCrA+q1Vd0T8lvOYjbvLPdO7lPt83zYGOnD/d7WNDrKfqe/tpQmL/qFjtwJ+Q3pp75VcsF/FI7sBj3HtOfrptVzUp9+Ujq07l7IX35eb897rXS7yUKQ1F+HVtI9Ahy5HyT70cQ1TOEVnrkzx7Qw7o/iyEyotRHaq3rf6QdyGnB/D1oBb1HbQcCbzOgr/G38ThJ+J478ae+03l53H+iCB+WuPuTQ8puv3j/EkDz0IrnDSS9y9T/NIw07"
+        },
+        {
+          "name": "reader.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAABAIAABECAAAAAAAAAAAAAAAEAAAABAAAEQIAAAAAAAAIBAAAHicTdUxaFNRFMbxkzaVJwSMtEKHgMXTXFJaS6AdCkaIECRDhIAdOmRoSGMaeE1CUkuRDh06dOjQwcHBQbFBBQUHhwodOrTg4NChQweRDg4ODg6iDiLyzkvb/xJ+fDn3nHfhcm9SD8cePXcqEZFkz1HYg2NwHB6Ch+EEPAKPwil4Ak7D0/AMnIGzcA7OwwW4CM/Cc+al5kLVqUQDtxs3a06joZsPW049c2ey0nEaCy0iTuOhK9WG06y5WvKbTnPmmtXnzctWXzBXmo0HTtfN9Vqp43TDvFT2faeb5slKzXe6ZRZbu22+W293nO6j54G55ZfrTmUgcMPyqHmlWa843TdXw3pzq9wuOz0y19rlltNj86LVnAxczD0156ZuXHUqlwJ3u92uU/EuHIU9OAbH4SF4GE7AI/AonIIn4DQ8Dc/AGTgL5+A8XICL8Cw8B5fgeXgBXoR9uAUvw6vwGrwOb8Cb8Ba8DT+Gn8BP4WfwDvwKfgO/g9/Du/AevA8fwB/hT/ARfAyfwJ/hU/gr/A3+Dv+Af8J/4L+wXMb5hz04BsfhIXgYTsAj8CicgifgNDwNz8AZOAvn4DxcgIvwLDwHl+B5eAFehH24BS/Dq/CaObilx/W3iGjUrqisBMGLiEjvzsqLSHIwiJN6zZy3ktdBScxK7PmzOGnX5ri+DP70wrszEgS7fecNC2h43Vywhvf7zxvau2lxsnc2xEr2+nolZ+tv2294/D0r+RdsJW5dYjb5jvQmh2vG9dfZZs8Gf+g7D8Kt7UR6weBg8PUaEZGU9tuU/pW3X8KHbkyvhEnx8F6Y3PoPvnDuBA=="
+        },
+        {
+          "name": "owned.cst",
+          "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+        },
+        {
+          "name": "scene/owned.cst",
+          "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+        },
+        {
+          "name": "scripts/writer.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAAGsJAACfCQAAAAAAAAAAAAAAEAAAABAAAJ8JAAAAAAAA1hIAAHicTdYxaBNRGMDx1yYtUTKktEKHgMGvebRcLQU7FKwQMUqEFIJk6FC0Ma1pJG1CUkuRDh06dOjQwcHBQbHFDgoODhU6ZGhB1KFDhw4iHRwcRByqODjIfZfc/Zfjx/d999737h7vLimHQ49fWDEdxiRbDsMROArH4D64H47DCXgAHoSH4VF4DB6HJ+AUnIYzcBbOwXl4Sr1QnZ2zYsKu64uXS1bCnquPalYi6sZIsWEl6tkYYyXmuTi3aCWlnpuuVK2k1SWtz6iXtD6rLlYXH1hZU5dL0w0r6+qFQqViZUM9UixVrGyqjd67pb5VrjesNDHmgbpWKZStmC7XixoPq5er5aKVpnrOq1fXCvWClSN1qV6oWTlWz2vNSVcw76k6feVSjxXT7XpnZ2fHiokEDsMROArH4D64H47DCXgAHoSH4VF4DB6HJ+AUnIYzcBbOwXl4Cp6GZ+BZeB6uwDV4CV6BV+E1eB3egDfhLfgJ/BR+Bj+Ht+Fd+DX8Fn4H78H7cBM+gD/An+Ej+Bg+gb/Ap/A3+Dv8A/4Fn8F/4X+wOYf9D0fgKByD++B+OA4n4AF4EB6GR+ExeByegFNwGs7AWTgH5+EpeBqegWfhebgC1+AleAVeVU8aYxz5aYyRsB5RKQ287DCmdWZljDHJXr3qOevIRzcZQdjotanJT24yymSXG37Vvsf7WDpyI5ghp9V61ZPfkZtBtX5OkUxKp3Z4uz2P95V1ZK/THzCrA+q1Vd0T8lvOYjbvLPdO7lPt83zYGOnD/d7WNDrKfqe/tpQmL/qFjtwJ+Q3pp75VcsF/FI7sBj3HtOfrptVzUp9+Ujq07l7IX35eb897rXS7yUKQ1F+HVtI9Ahy5HyT70cQ1TOEVnrkzx7Qw7o/iyEyotRHaq3rf6QdyGnB/D1oBb1HbQcCbzOgr/G38ThJ+J478ae+03l53H+iCB+WuPuTQ8puv3j/EkDz0IrnDSS9y9T/NIw07"
+        },
+        {
+          "name": "scripts/reader.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAABAIAABECAAAAAAAAAAAAAAAEAAAABAAAEQIAAAAAAAAIBAAAHicTdUxaFNRFMbxkzaVJwSMtEKHgMXTXFJaS6AdCkaIECRDhIAdOmRoSGMaeE1CUkuRDh06dOjQwcHBQbFBBQUHhwodOrTg4NChQweRDg4ODg6iDiLyzkvb/xJ+fDn3nHfhcm9SD8cePXcqEZFkz1HYg2NwHB6Ch+EEPAKPwil4Ak7D0/AMnIGzcA7OwwW4CM/Cc+al5kLVqUQDtxs3a06joZsPW049c2ey0nEaCy0iTuOhK9WG06y5WvKbTnPmmtXnzctWXzBXmo0HTtfN9Vqp43TDvFT2faeb5slKzXe6ZRZbu22+W293nO6j54G55ZfrTmUgcMPyqHmlWa843TdXw3pzq9wuOz0y19rlltNj86LVnAxczD0156ZuXHUqlwJ3u92uU/EuHIU9OAbH4SF4GE7AI/AonIIn4DQ8Dc/AGTgL5+A8XICL8Cw8B5fgeXgBXoR9uAUvw6vwGrwOb8Cb8Ba8DT+Gn8BP4WfwDvwKfgO/g9/Du/AevA8fwB/hT/ARfAyfwJ/hU/gr/A3+Dv+Af8J/4L+wXMb5hz04BsfhIXgYTsAj8CicgifgNDwNz8AZOAvn4DxcgIvwLDwHl+B5eAFehH24BS/Dq/CaObilx/W3iGjUrqisBMGLiEjvzsqLSHIwiJN6zZy3ktdBScxK7PmzOGnX5ri+DP70wrszEgS7fecNC2h43Vywhvf7zxvau2lxsnc2xEr2+nolZ+tv2294/D0r+RdsJW5dYjb5jvQmh2vG9dfZZs8Gf+g7D8Kt7UR6weBg8PUaEZGU9tuU/pW3X8KHbkyvhEnx8F6Y3PoPvnDuBA=="
+        },
+        {
+          "name": "config/small.cgl",
+          "data": "1AAAAAAAAAABAAAAAAAAAEZpcnN0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAZWEwMSwyLDAsMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHBsYWluAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwAAAAEAAAAAAAAAT3RoZXIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAABtb3JlLDMsMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        },
+        {
+          "name": "scene/log.cst",
+          "data": "Q2F0U2NlbmVWAAAAaQAAAHici2RgYGBmYGCQYGBg0GFgYGBigAAmKGZkYGBggYpxMDAwCDEwMEgxMDCogOQUp+2Z6O/IwKgwrXrqNv+8VKiIE1QkpDyfgVHBrbSktCiVAQCzjhAh"
+        }
+      ],
+      "steps": {
+        "writer": 2,
+        "reader": 2
+      },
+      "projections": {
+        "writer": {
+          "outputs": [
+            256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320,
+            324, 328, 332, 336, 340, 344
+          ],
+          "spans": [
+            {
+              "at": 2240,
+              "size": 16
+            },
+            {
+              "at": 2304,
+              "size": 64
+            }
+          ]
+        },
+        "reader": {
+          "outputs": [
+            256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320,
+            324, 328, 332, 336, 340, 344
+          ],
+          "spans": [
+            {
+              "at": 2240,
+              "size": 16
+            },
+            {
+              "at": 2304,
+              "size": 64
+            }
+          ]
+        }
+      },
+      "rows": [
+        {
+          "kind": "writer",
+          "label": "own76 CGL/nonempty translated-log fallback and defined stack bytes enter native CSS",
+          "words": [
+            1, 1, 0, 1, 1, 1, 1, 1, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 1304776707
+          ],
+          "spans": [
+            "RDMiEaWlpaWlpaWlpaWlpQ==",
+            "AKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQ=="
+          ]
+        },
+        {
+          "kind": "reader",
+          "label": "own76 new owner/native reader consumes CG/speaker/stack bytes after original sources retire",
+          "words": [
+            1, 1, 1, 4, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 1304776707
+          ],
+          "spans": [
+            "RDMiEaWlpaWlpaWlpaWlpQ==",
+            "AKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQ=="
+          ]
+        }
+      ],
+      "marker": 1304776707,
+      "fileName": "modern-groups.css",
+      "nativeFile": "Q1NTAFoAAADsAAAATQAAAHjak2dgYNAAYgkglgFiBSBWYcANRIF4BRAzAnFqooFhvBF+9SDQoMevAMOMjAhxENMAShtCxf4DAYhfkJOYmQcVOwDUB8PI+gkBkFm2QJoFiF2MlQQBJdYUpw==",
+      "currentYieldQualification": "G2 current programs insert only already-qualified Main65 yields at meaningful owned states; semantic GCALL order/arguments/conditional final consumer unchanged from the actual original. Additional current frame boundaries are not additional original executions."
+    }
+  ],
+  "productionDelta": 0,
+  "scope": "Fixed parsed Script/actual resource consumer sequences; normal owners/copy/records/CSS. Never method-DTO population, no physical borrowed tree."
+}

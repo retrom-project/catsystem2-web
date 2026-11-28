@@ -306,3 +306,20 @@ register/select producer runs; current zero/no-write behavior cannot qualify
 Main658/659 for that state. Those producers are tracked separately with the
 Core/FES owner, rather than being manufactured in the data test. Run
 `node --test tests/native-modern-scene-css-owner.test.mjs` for this finite group.
+
+The connected registry/log/record group loads an authored 64-byte-variant CGL
+through the original `config` resolver and rebuilds a nonempty log from actual
+CST speaker/text records. CG registration, alias and group queries plus copied
+LIFO output bytes enter a CSS writer and independent parsed reader. The `.74`
+original runs 64 program GCALLs; the `.76` bridge runs 35, including only the
+empty-language/base-text branch of Main1034. Neither result declares arbitrary
+CGL versions, nonempty language prefixes or all CSTL forms. Both own parsers'
+complete bodies confirm the selected legacy 64-byte branch.
+
+Current Main65 partitions add meaningful cold boundaries without changing the
+original semantic call order: the source and copied record stacks remain live,
+then CG/log/Scene and the saved container remain live, and finally the new reader
+owns imported data. Complete original end outputs still match, and the original
+CSS bytes alone load into a fresh World. These extra current frame boundaries
+are not additional original executions. Run
+`node --test tests/native-modern-data-lifecycle.test.mjs`.
