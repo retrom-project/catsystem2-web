@@ -1566,3 +1566,15 @@ not repeat that whole group. Its normal CRT onexit initializer runs before the
 original MOT source static initializer. The earlier uninitialized-onexit prefix
 contains zero target calls and remains archived. Four additional independent cold
 continuations cover this build. No ABI slot or external raw-message contract changed.
+
+Exact SDK63 additionally checks Main454's inherited nonempty CP932 context,
+Main453's own exit-code write, Main452's self/FES values, and Main449's real Draw
+binding/rebind through a normally loaded and explicitly started FES. The parsed
+SHOW result and initialized output spans match the original; two current cold
+continuations retain the replacement binding and normal owner retirement. The
+surface receiver's own branch is joined with the equivalent modern binding/force
+consumer group, rather than claiming a new physical display result. Main449 is a
+surface binding operation; it is not a sleep setter. This evidence makes no new
+sleep, full Application, or arbitrary receiver claim. The original diagnostic
+row's VM+24 field is a stack pointer, not an instruction-PC oracle; it is excluded
+from comparisons. See `native-sdk63-fes-status-consumers.test.mjs`.
