@@ -52,3 +52,23 @@ before-fix control reads a different value; the corrected chain reads
 independent current cold continuation. The original whole-text/normal cleanup
 and pure VM checks use the current checkpoint contract. This is a bounded native
 helper proof, not a claim about arbitrary C memcpy overlap or alternate CPU modes.
+
+## Current non-LIFO offset diagnostic
+
+Main27 returns a virtual extension-segment offset, not a stable process pointer.
+A deterministic ordinary VM sequence on both fixed0e9b and6cd allocates A16/B64,
+records A8192/B8208, and stores `314159` at B and `2718` at B+16. After releasing A,
+the old number8208 selects B+16: parsing reads2718, an ordinary string append writes
+there, and freeing that old number returns0 while B's storage remains owned.
+The beginning of B still contains314159. This distinguishes virtual lookup changes
+from moving or already-released storage. The current snapshot retains that same
+interpretation; host references normalized before deletion retain their block ID.
+
+The complete own63 allocation, forward/inverse lookup, free and list-erase helpers
+statically use the same current-list length sums and remove the erased node without
+a hole. This is not evidence of a Web-only regression and no stable-address or
+allocator-schema change is made. Original non-LIFO behavior has not been dynamically
+captured, so the original finite LIFO qualification remains the boundary. Do not
+keep an old numeric offset as an opaque handle after deleting an earlier segment.
+The current diagnostic and both baseline outputs are preserved separately from the
+configuration checkpoint; see `native-cross-build-configuration-checkpoint.test.mjs`.

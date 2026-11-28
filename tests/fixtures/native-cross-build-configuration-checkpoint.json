@@ -184,5 +184,10 @@
     "Current-only LIFO heap release; an earlier-block-first draft exposed moving logical block addresses and a later free returning0. Raw original draft retained; not repaired or passed as native equivalence.",
     "Main1050 current default1; XML animation writer not qualified.",
     "No new native original run, ABI entry, fullApplication/root0 or physical-memory qualification."
-  ]
+  ],
+  "allocationDiagnostic": {
+    "profile": "rebellions-jp-engine-2.6.1.63",
+    "program": "S0NTAAIAAAAAAAAANAAAANwAAAAQAQAAAwAAACcAAAAAEAAAABAAADcBAAAAAAAAuAEAAHicU1UWYGBg0FaWZmBgUGZhYGBQU3ZgYGBQBZMowi4gYWEwqczAhFCiDFLCA5fUVpZE6GkAC0PUySCEW7Cr7kC2gREkCXKbMgdYcgp2PT1Iwkg2TGBgYLCWYGBgAJkD8gTIxUoMDAwCTAwMJkYMxoYmhqaWDEbmhhYMAI7vE40=",
+    "scope": "Current diagnostic only, same byte input on fixed0e9b/6cd. Addresses are VM extension offsets, not stable process pointers. Own63 original complete helpers statically use the same live-list sum/erase. No new original non-LIFO dynamic qualification or production fix."
+  }
 }

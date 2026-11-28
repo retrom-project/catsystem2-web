@@ -173,3 +173,74 @@ for (const f of fixture.cases)
         await w.close({ flushFiles: false });
       }
     });
+
+test('current extension-offset diagnostic preserves live storage and its existing rebase semantics cold', async () => {
+  const f = fixture.allocationDiagnostic,
+    files = { 'allocation-offsets.kcs': Uint8Array.from(Buffer.from(f.program, 'base64')) };
+  const open = async (initialize) => modernParticleMessageWorld(f.profile, files, { initialize });
+  let w = await open(true),
+    owner = await w.spawnScript('allocation-offsets.kcs', { initialExecute: false });
+  const replies = [],
+    dispatch = w.runtime.scheduler.dispatch.bind(w.runtime.scheduler);
+  let blockID, beforeReference;
+  w.runtime.scheduler.dispatch = async (...args) => {
+    const reply = await dispatch(...args);
+    if (args[4] === owner) {
+      replies.push({ id: args[1], value: reply.value });
+      if (args[1] === 27 && owner.machine.blockIDs.length === 2) {
+        blockID = owner.machine.blockIDs.at(-1);
+        beforeReference = w.engineMessages.normalizeSharedVM(owner.id, reply.value, 8).reference;
+      }
+    }
+    return reply;
+  };
+  try {
+    await w.runtime.scheduler.execute(owner);
+    let m = owner.machine;
+    assert.equal(m.load(68) - m.load(64), 16, 'allocation results are offsets in the same VM');
+    assert.deepEqual(
+      replies.filter((r) => r.id === 25).map((r) => r.value),
+      [314159, 2718, 271842],
+    );
+    assert.deepEqual(
+      replies.filter((r) => r.id === 28).map((r) => r.value),
+      [1, 0],
+      'later old numeric offset no longer matches the live block start',
+    );
+    assert.deepEqual(
+      m.blockIDs,
+      [blockID],
+      'B remains owned; this is not merely a different free return convention',
+    );
+    assert.equal(
+      new TextDecoder().decode(m.blockBytes(m.blockIndex(blockID)).subarray(0, 6)),
+      '314159',
+      'its storage start did not move or get overwritten',
+    );
+    assert.equal(beforeReference.offset, 0);
+    assert.equal(
+      w.engineMessages.normalizeSharedVM(owner.id, m.load(68), 8).reference.offset,
+      16,
+      'a newly bound old number selects a different offset',
+    );
+    const id = owner.id,
+      snapshot = await deserializeCheckpoint(await serializeCheckpoint(w.snapshot()));
+    await w.close({ flushFiles: false });
+    w = await open(false);
+    await w.restore(snapshot);
+    owner = w.runtime.scheduler.tasks.get(id);
+    m = owner.machine;
+    assert.deepEqual(m.blockIDs, [blockID]);
+    assert.equal(
+      (await w.runtime.native('main', 25, [m.load(68)], m, owner)).value,
+      271842,
+      'checkpoint retains the same virtual-offset interpretation',
+    );
+    assert.equal(
+      new TextDecoder().decode(m.blockBytes(m.blockIndex(blockID)).subarray(0, 6)),
+      '314159',
+    );
+  } finally {
+    await w.close({ flushFiles: false });
+  }
+});
