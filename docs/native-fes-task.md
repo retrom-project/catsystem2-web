@@ -1557,3 +1557,12 @@ missing-loose-file prefix, and all original raw controls remain in the ignored
 `sdk-modern-fes-context-registry-20261128` evidence directory. See
 `native-modern-fes-context-registry.test.mjs` and its fixture. This does not qualify
 full Application/Input publication, arbitrary physical memory, or physical GPU.
+
+The plain-ee6 SDK76 bridge executes the same catalogue, named/private copy,
+CP932 dictionary, result clear, explicit start, bound Draw force, colored CPLANE,
+and supplier retirement with one actual parsed child. It reuses the SDK74 two-Core
+reload group after checking both own wrappers and their receiver contexts; it does
+not repeat that whole group. Its normal CRT onexit initializer runs before the
+original MOT source static initializer. The earlier uninitialized-onexit prefix
+contains zero target calls and remains archived. Four additional independent cold
+continuations cover this build. No ABI slot or external raw-message contract changed.

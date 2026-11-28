@@ -510,6 +510,283 @@
           "overlap": "Main wrappers execute within actual Root or qualified carrier calls; all setup/cleanup in journal, no free bootstrap."
         }
       }
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "inputs": [
+        {
+          "name": "config/startup.xml",
+          "bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNDUkVFTj48d2lkdGg+MzI8L3dpZHRoPjxoZWlnaHQ+MjQ8L2hlaWdodD48dl93aWR0aD4zMjwvdl93aWR0aD48dl9oZWlnaHQ+MjQ8L3ZfaGVpZ2h0PjwvU0NSRUVOPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxURVhUVVJFPjxzaXplPjx4Pjg8L3g+PHk+ODwveT48L3NpemU+PHZ0Pjx4PjI8L3g+PHk+MTwveT48L3Z0PjxhcmVhMDA+PHN4PjA8L3N4PjxzeT4wPC9zeT48ZHg+MjwvZHg+PGR5PjE8L2R5PjwvYXJlYTAwPjxicHAzMnk+MDwvYnBwMzJ5PjxicHAxNnk+MTwvYnBwMTZ5PjxicHA+MzI8L2JwcD48L1RFWFRVUkU+PElOVD48aW50MDA+PG5hbWU+a2NzPC9uYW1lPjxpbnQ+c2NyaXB0cy5pbnQ8L2ludD48ZXh0PmtjczwvZXh0PjxkaXI+c2NyaXB0cy1sb29zZTwvZGlyPjwvaW50MDA+PGludDAxPjxuYW1lPnNjZW5lPC9uYW1lPjxpbnQ+c2NlbmUuaW50PC9pbnQ+PGV4dD5jc3Q8L2V4dD48ZGlyPnNjZW5lLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+ZmVzPC9uYW1lPjxpbnQ+dGFibGVzLmludDwvaW50PjxleHQ+ZmVzPC9leHQ+PGRpcj50YWJsZXMtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+          "sha256": "11485f8079b3b7e5dde8dc49cf8ebcc4ae678714ce851db897fd5b5a78854e7a"
+        },
+        {
+          "name": "startup.xml",
+          "bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNDUkVFTj48d2lkdGg+MzI8L3dpZHRoPjxoZWlnaHQ+MjQ8L2hlaWdodD48dl93aWR0aD4zMjwvdl93aWR0aD48dl9oZWlnaHQ+MjQ8L3ZfaGVpZ2h0PjwvU0NSRUVOPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxURVhUVVJFPjxzaXplPjx4Pjg8L3g+PHk+ODwveT48L3NpemU+PHZ0Pjx4PjI8L3g+PHk+MTwveT48L3Z0PjxhcmVhMDA+PHN4PjA8L3N4PjxzeT4wPC9zeT48ZHg+MjwvZHg+PGR5PjE8L2R5PjwvYXJlYTAwPjxicHAzMnk+MDwvYnBwMzJ5PjxicHAxNnk+MTwvYnBwMTZ5PjxicHA+MzI8L2JwcD48L1RFWFRVUkU+PElOVD48aW50MDA+PG5hbWU+a2NzPC9uYW1lPjxpbnQ+c2NyaXB0cy5pbnQ8L2ludD48ZXh0PmtjczwvZXh0PjxkaXI+c2NyaXB0cy1sb29zZTwvZGlyPjwvaW50MDA+PGludDAxPjxuYW1lPnNjZW5lPC9uYW1lPjxpbnQ+c2NlbmUuaW50PC9pbnQ+PGV4dD5jc3Q8L2V4dD48ZGlyPnNjZW5lLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+ZmVzPC9uYW1lPjxpbnQ+dGFibGVzLmludDwvaW50PjxleHQ+ZmVzPC9leHQ+PGRpcj50YWJsZXMtbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5pbWFnZTwvbmFtZT48aW50PmltYWdlcy5pbnQ8L2ludD48ZXh0PmhnMzwvZXh0PjxkaXI+aW1hZ2VzLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+          "sha256": "11485f8079b3b7e5dde8dc49cf8ebcc4ae678714ce851db897fd5b5a78854e7a"
+        },
+        {
+          "name": "scripts-loose/context-parent.kcs",
+          "bytes": "S0NTAAIAAAAAAAAANAAAAOEAAAAVAQAAAwAAAFAAAAAAEAAAABAAAGUBAAAAAAAAwgEAAHicU1VmYGBgUFPewc3AoApl70FiH0BiH4GwmRgYtJUvMjAwKLMwgJguICZEhQYDSAUPiBSGsBkYQUqcQEp4wEp0wJJgUtmBEWa4tnI/TIm2siPMQIJMiEHays4w16iCPaKt7A4TsJYAqWNkYNBiYGAA2ecN4rMwMBSlpmcWl6QWpaYolBdllqQWMRQnF2UWlBTr5uTnF6fGJOfnlaRWlOhCJPWyk4sZupdM92EAAD5YKTg=",
+          "sha256": "467850cbe29a1639b5fee8be5b5bdb0ec503b53f13636d74360dd351bd06043d"
+        },
+        {
+          "name": "scripts-loose/context-writer.kcs",
+          "bytes": "S0NTAAIAAAAAAAAANAAAAOMEAAAXBQAADQAAAMgAAAAAEAAAABAAAN8FAAAAAAAAxgkAAHicfZS/axRREMe/+3ajgQSMxCKF4OFwh/BSqFgEbNQzPw4PDUawPIIu52FMZBMvik0Q/AE2YuNPROEOUohYKAQJZIUoFhYpLBQsLCwsLPwPNDO+3Zs9ljTDZ+f7nffmzb7dIh348O1FiZ4DKDpuKV5W/FLxa8VvFK8oXlUcK15X/EnxZ8Ubir8o/qr4u+Ifin8q/qX4t+I/wu12u10ibOtwoLhXcb/iAcW7FA8p3i0MACVa6evwquJY8XofYOk4AJfYJw1ya5Y+egAFKrETLpEcfAfHQVfjseUYW/rFckhEiW4VjlaMYklEpNFSkBUt9XjpniOSHumq0YsXqbD/8l9LV7iLIUns3arFYREl0hER13i73k7adfE+m7YUp7Nx5UsBxzuDLD406SGGVZ9LHkcj9YtsGVAWX2IsFi/fAiN9Ghav5m+xXSpvZkVLj01Xt//d5/Ldj/Lclm4ZNwP32Toxlq56kH9wn+MeESM/R7Q076fLtvQ8TffVaGbnYemJSa/Gsn6RfmfYXrbS0tHkqitM1nuaPXdmgw2VLiefgV5DPjdL44l2+AKnPSACwHfr+uYzN3Vj85lf823WDXCPdQM8Y90APASe6SvWfeAt6z7wjnUfWON8APDvjC/d2OhUYW5xNowQhfXG/EJ0DZemo4thhJlGM5RQmDxdQaM+OxeF5wvTUb15EGOjZ8oTqJWrlfKJWrWGu60H1fszmKycHMfUxKmzkgDX/QNcr9+m",
+          "sha256": "dffe62c4430bdd28c605d3ebd807caddb0ecd384b6f4677ceb099fd9ba288d2d"
+        },
+        {
+          "name": "scripts-loose/context-reader.kcs",
+          "bytes": "S0NTAAIAAAAAAAAANAAAAMoDAAD+AwAADQAAAMgAAAAAEAAAABAAAMYEAAAAAAAAlAcAAHicnZO9SxxRFMXPzCwiaGHQIkXAJY9dhLEwwS5N4vq1ZIkSA5aLkGFd/IJnWAlpFhsLG0kTkkAw4IJFCCkiLEFwAxuxsJCQIoJFCgsLC/+EeO++mT0WadI8fnPOvffde2cmY+79OP2YNdsAMo53iHeJPxF/If5KXCfeJ24QN4mPiI+JT4h/Ef8mPiP+Q3xOfEF8SXylXKvValmDjjaniDuJu4l7iPuIbxPfUQaArKl3tXmfuEHc7AJCMwrACQPaoLQWmkMPMCkSbsEJrcFD8yhOzJi0Cj/bEUMi9w6p/NaPK6mQMVU/7qF1hqYiIT2U895PSm2T/C4pZe6q7Dr2xByR67s1Z1BNPc1DNQ9knM4k80azw+3o3mE1vyfRKoemkWzDCTRU6xoEcvaraQPXSWxWg39OzHukUqFZDVwP7udwF9Nmdv/jhgEVml5S5Jxq5+KdUMqN91zXL2YiDnswL7IHWACy51fXz1UPWL9+lpVtiO8DW+L7wAfxfUAGavjAZ/EDYE/8APgmfgAciJ4C5K+tpoDxsZn0ytpyZGGjUnn1hX2JpTm7EFksliuRHunpp3mUS8srNnqenrOlyn2Mjz3LTaKYK+Rzj4uFIjZ33hReL2I6/2QCM5NTsypA8v4C3nvKag==",
+          "sha256": "77f29dcd0d7928a3f4b39eb170d5a342c64e7ea977c5af8690e0448e3a5e628f"
+        },
+        {
+          "name": "scripts.int",
+          "bytes": "S0lGAAIAAAByZXNvdXJjZTc2LmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAE4AAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjA=",
+          "sha256": "6dbf6637d985327076b350115fa1810003a8b28da34932981eb422995d78faed"
+        },
+        {
+          "name": "tables.int",
+          "bytes": "S0lGAAEAAAByZWdpc3RyeS5mZXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAACYBAAAjREVGSU5FDQpCQVNFIGFuY2hvcg0KI1NUQVJUDQpuZXh0IFdBSVQNCiNXQUlUDQpicmVhaw0KbmV4dCBXQUlUDQojRkVUQ0gNClwxPV9DTElDS19MXw0KXDA9XDArMTANCnJlc3VsdCBcMA0KYnJlYWsNCiNtYXJrZXIuUElORw0KbGl2ZSBzaXplIDMgMg0KbGl2ZSBjb2xvciAweGZmMjA0MDYwDQpsaXZlIHByaSA1MDAwDQpsaXZlIHBvcyAoMStAKSAyIDANCmxpdmUgZGlzcCAxDQpmb3JjZV9yZWRyYXcNCnJlc3VsdCAxMDArQA0KYnJlYWsNCiNTSE9XDQpmb3JjZV9yZWRyYXcNCnJlc3VsdCAyMDArXDENCmJyZWFrDQo=",
+          "sha256": "ac5152386ca02689005ce40f58aa82b952313916c4a7dbe2d7ba40d300a6b9fc"
+        },
+        {
+          "name": "tables-loose/registry.fes",
+          "bytes": "I0RFRklORQ0KQkFTRSBhbmNob3INCiNTVEFSVA0KbmV4dCBXQUlUDQojV0FJVA0KYnJlYWsNCm5leHQgV0FJVA0KI0ZFVENIDQpcMT1fQ0xJQ0tfTF8NClwwPVwwKzEwDQpyZXN1bHQgXDANCmJyZWFrDQojbWFya2VyLlBJTkcNCmxpdmUgc2l6ZSAzIDINCmxpdmUgY29sb3IgMHhmZjIwNDA2MA0KbGl2ZSBwcmkgNTAwMA0KbGl2ZSBwb3MgKDErQCkgMiAwDQpsaXZlIGRpc3AgMQ0KZm9yY2VfcmVkcmF3DQpyZXN1bHQgMTAwK0ANCmJyZWFrDQojU0hPVw0KZm9yY2VfcmVkcmF3DQpyZXN1bHQgMjAwK1wxDQpicmVhaw0K",
+          "sha256": "430ed8240a18c3dc52359ac3d8155d6738a858b936bc1293f6201925a1b67a09"
+        },
+        {
+          "name": "images.int",
+          "bytes": "S0lGAAAAAAA=",
+          "sha256": "177dd2781908008abfd35f0c9a98d694a996b2e5045500e5b75d217a74394ef5"
+        },
+        {
+          "name": "scene.int",
+          "bytes": "S0lGAAAAAAA=",
+          "sha256": "177dd2781908008abfd35f0c9a98d694a996b2e5045500e5b75d217a74394ef5"
+        }
+      ],
+      "nativeRows": [
+        {
+          "phase": 0,
+          "children": [
+            {
+              "alive": true,
+              "id": 2,
+              "pointer": 537355232,
+              "pc": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "contextOut": [
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0
+              ],
+              "context": "共有"
+            }
+          ]
+        },
+        {
+          "phase": 1,
+          "children": [
+            {
+              "alive": true,
+              "id": 2,
+              "pointer": 537355232,
+              "pc": 1154,
+              "words": [
+                7, 31, 17, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                4, 2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": true,
+                "id": 7,
+                "pointer": 537410320,
+                "core": 537411808,
+                "exitCode": -1
+              }
+            }
+          ]
+        },
+        {
+          "phase": 2,
+          "children": [
+            {
+              "alive": true,
+              "id": 2,
+              "pointer": 537355232,
+              "pc": 1165,
+              "words": [
+                7, 31, 17, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                4, 2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": true,
+                "id": 7,
+                "pointer": 537410320,
+                "core": 537411808,
+                "exitCode": -1
+              }
+            }
+          ],
+          "drawCount": 1
+        },
+        {
+          "phase": 3,
+          "children": [
+            {
+              "alive": true,
+              "id": 2,
+              "pointer": 537355232,
+              "pc": 1233,
+              "words": [
+                7, 31, 17, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 2715403569, 0, 2715403569, 2715403569, 2715403569, 4,
+                2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": true,
+                "id": 7,
+                "pointer": 537410320,
+                "core": 537411808,
+                "exitCode": -1
+              }
+            }
+          ]
+        },
+        {
+          "phase": 4,
+          "children": [
+            {
+              "alive": true,
+              "id": 2,
+              "pointer": 537355232,
+              "pc": 1250,
+              "words": [
+                7, 31, 17, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 2715403569, 0, 2715403569, 2715403569, 2715403569, 4,
+                2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": false,
+                "id": 7,
+                "pointer": 537410320
+              }
+            }
+          ]
+        },
+        {
+          "phase": 5,
+          "children": [
+            {
+              "alive": false
+            }
+          ]
+        }
+      ],
+      "draws": [
+        {
+          "phase": 2,
+          "triangles": [
+            [
+              {
+                "x": 2,
+                "y": 2,
+                "z": 0.9230769276618958,
+                "w": 1,
+                "color": 4280303712,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 5,
+                "y": 2,
+                "z": 0.9230769276618958,
+                "w": 1,
+                "color": 4280303712,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 5,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 1,
+                "color": 4280303712,
+                "u": 0,
+                "v": 0
+              }
+            ],
+            [
+              {
+                "x": 2,
+                "y": 2,
+                "z": 0.9230769276618958,
+                "w": 1,
+                "color": 4280303712,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 2,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 1,
+                "color": 4280303712,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 5,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 1,
+                "color": 4280303712,
+                "u": 0,
+                "v": 0
+              }
+            ]
+          ],
+          "texture": 0
+        }
+      ],
+      "forcePhases": [1],
+      "currentPrivate": [[[0, null]], [[7, 17]], [[7, 17]], [[7, 17]], [[7, null]], [[null, null]]],
+      "cold": [0, 1, 2, 3],
+      "original": {
+        "path": ".local/phase11/sdk-modern-fes-context-registry-20261128/ORIGINAL-CONTEXT-76.json",
+        "sha256": "4970b518b60b6e7631fd81df335cdea363eae4aea77cfbff8c4c753ab8c17cb6",
+        "accounting": {
+          "target": 20,
+          "allGCALL": 47,
+          "closed": 47,
+          "bootstrap": 0,
+          "businessDirect": 9,
+          "journal": 60,
+          "rootFrames": 6,
+          "overlap": "Main wrappers execute within actual Root or qualified carrier calls; all setup/cleanup in journal, no free bootstrap."
+        }
+      }
     }
   ]
 }

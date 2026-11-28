@@ -81,14 +81,17 @@ for (const f of fixture.cases)
             f.currentPrivate[phase][i][1],
           );
           if (!i) {
-            assert.equal(impl.player.nativeCoreGeneration, phase >= 3 ? 2 : 1);
+            assert.equal(
+              impl.player.nativeCoreGeneration,
+              f.version === '74' && phase >= 3 ? 2 : 1,
+            );
             assert.equal(root.collection.count('marker'), 2);
             assert.equal(root.collection.lookup('marker', 1).nativeType, 0);
             assert.equal(root.collection.lookup('live').nativeType, 3);
             assert.equal(root.collection.lookup('live').pri, 5000, 'real named PRI initializer');
           }
         }
-        if ([2, 3].includes(phase)) {
+        if ((f.version === '74' ? [2, 3] : [2]).includes(phase)) {
           const draws = [];
           for (const item of w.graphics.tasks.values())
             if (item.record.kind === 2)
@@ -109,7 +112,8 @@ for (const f of fixture.cases)
         await w.sendEngine(parent.id, parent.id, 26, 0, 1024, { payload: parent.machine });
         for (phase = 0; phase < f.nativeRows.length; phase++) {
           await w.objects.update(w.root, 700 + phase);
-          if ([2, 3].includes(phase)) await w.objects.drawTick(700 + phase);
+          if ((f.version === '74' ? [2, 3] : [2]).includes(phase))
+            await w.objects.drawTick(700 + phase);
           await compare();
           if (phase === cold) {
             const id = parent.id,
