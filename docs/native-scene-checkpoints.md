@@ -278,3 +278,31 @@ including four independent cold restores. The runtime keeps its Script-only
 record fallback and does not treat FES or its parent context as a Scene owner.
 No Script Scene initializer is executed on the unrelated FES layout. References
 that would consume an absent history retain their existing diagnostic boundary.
+
+## Modern parsed Script CSS owners
+
+The exact `.74` build has a normal resource bridge through the qualified original
+CRT/FileServer/Top factory and two independently file-loaded child Scripts. The
+writer initializes a finite ordinary variable bank, consumes its expression result,
+loads authored CST text/history, and copies nonempty byte/string/nested entries
+into a cloned CSS container. It releases the original data owners before the new
+reader imports the file into different owners and consumes restored variables,
+CP932 strings and history through actual KCS calls and arithmetic. The unchanged
+`.76` data algorithms are not promoted by this `.74` execution alone.
+
+The scoped original run contains 61 program GCALLs including one yield and two
+qualified loader GCALLs, with three actual child Script Frames. Current controls
+cover cold continuation while writer owners are live, continuation after writer
+release, and a fresh parsed reader whose only saved input is the original CSS file.
+Caller spans and their canaries match. The nested raw container's first word is an
+ignored process pointer; fixed history-name NUL tails and the string-bank's eight
+unused bytes retain their existing unwritten-data qualification. They are not
+compared as invented zero fields. No physical borrowed tree, full Application,
+physical disk or product GAME_SAVE result is inferred.
+
+A newly created standalone bank does not establish a selected private context.
+The native bank constructor leaves that pointer unwritten until the real
+register/select producer runs; current zero/no-write behavior cannot qualify
+Main658/659 for that state. Those producers are tracked separately with the
+Core/FES owner, rather than being manufactured in the data test. Run
+`node --test tests/native-modern-scene-css-owner.test.mjs` for this finite group.

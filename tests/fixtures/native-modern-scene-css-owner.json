@@ -1,0 +1,149 @@
+{
+  "profile": "sdk-4.01-engine-2.6.1.74",
+  "PE": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+  "scope": "Own74 true normal CRT/FileServer/Top/factory-created parsed child Script -> variables/Scene/history/nested CSS -> independent new owner/caller. Main658/659 not included: uninitialized standalone private pointer is a failed precondition, not original zero semantics.",
+  "original": {
+    "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-scene-css-consumers-20261128/ORIGINAL-G1D5-74.json",
+    "sha256": "bb6a08c38c8313d396228366a92ad1d2ab5f67474095561938bcc9bebf28164a"
+  },
+  "startup": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp>32</bpp></TEXTURE><APP><imgcache>0</imgcache></APP><ETC><cache>0</cache></ETC><INT><int00><name>kcs</name><ext>kcs</ext><dir></dir></int00><int01><name>scene</name><ext>cst</ext><dir></dir></int01></INT></document>",
+  "inputs": [
+    {
+      "name": "startup.xml",
+      "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjY0PC93aWR0aD48aGVpZ2h0PjY0PC9oZWlnaHQ+PHZfd2lkdGg+NjQ8L3Zfd2lkdGg+PHZfaGVpZ2h0PjY0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48ZXh0PmtjczwvZXh0PjxkaXI+PC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2NlbmU8L25hbWU+PGV4dD5jc3Q8L2V4dD48ZGlyPjwvZGlyPjwvaW50MDE+PC9JTlQ+PC9kb2N1bWVudD4="
+    },
+    {
+      "name": "writer.kcs",
+      "data": "S0NTAAIAAAAAAAAANAAAAKkJAADdCQAAAAAAAAAAAAAAEAAAABAAAN0JAAAAAAAAUhMAAHicddY9aBRBFAfwmWQ1GzzDnntCioiH725ImDNETBEwxQU3uMIJV6SIZwpj7tBCE/EOFLFIIIqFhUUKCwsFDywsLCwsLFIYELHwIwELCwsLC5GgUVIElXmzt/u/qM3w4+3b+didnbd5Whm4el+RkELkIztgF5wCe+AMuBfcB86Cc+B+cAE8BB4Gj4BHwUVwAA7BJXAZPAGeZF+Yq9YUCcf40uzBqiKHPd2YHlTksmfqdaEoxa7P1GYVFdm1qbnLigL2bK06qCiM8htCUYmdO5TViubZ2aIQihbZS6UxoWiZne489VuR2Gksugb2KHLYL3ecFIpcdnD4QFqRx242m01Fwk3sgF1wCuyBM+BecB84C86B+8EF8BB4GDwCHgUXwQE4BJfAZfAEeBI8BT4NroLPgc+DL4Ib4Cvga+B58CL4JvgW+DZ4CXwHfBd8D/wA/BD8CPwY/AT8FPwMvAx+Dn4BfgV+DV4Fvwd/AH8EfwJ/Bn8Br4M3wJvgLbDohv0PdsEpsAfOgHvBfd1CaAqEECSE+VgLgj9cYcJvTNjhgOQ2zeF3JuxyoINbvz2saboj6q9148z2jDNJRhcHVtvH0vS2FWgd2uZI0bSWhO35fXacFjR9TcJF7mQfdwJhs8a8zy3t5XYXt+YU0rRhEj1O5FLgFyHlP4keJKa49wIsuYMnsG7SM5xuS0kXX1zmtZiIfZBRL7v5nu+txxSVnOhiT7wATd9MSopTTCXSdFTGb7DMedzysa1pXMYdcq2KLtrzVMAzPybjxeVkey956uQUU3Sikfv/SrG9HE9SCjD//TAvHHRBxo9oCNKzkC7/nW6Kp/TNNuBrtvJpGhPx3qpUKpVWobF2wFxo2t603YDe9jc9Es9L0w0Zb6mQpxjG92taS95oCN3ak9/u/F9Jt1zkOVHTJmxgGO16Mlogk257+OJWslFKsDl+xp+SX4LtbsuDt30S/BfBiW13ljkQyDhgBxa8oX7AwDBZuD1sD0jfrNU3K2v9k8jyygn7T3LkD4BAyeE="
+    },
+    {
+      "name": "reader.kcs",
+      "data": "S0NTAAIAAAAAAAAANAAAAJsHAADPBwAAAAAAAAAAAAAAEAAAABAAAM8HAAAAAAAANg8AAHicXdU/aFNBHMDxexjtC42SmhQyBAz+kiMlsVTsULDDEzNkSOENHSp2sDQBB03FBBRxKNLBwcGhg4ODggEHBwcHB4cMFkQcVBwcHBwcHBwcRIvUP9zvpXnfZHl8+N3vd+/e3bu7kuzM3HhoxXjGlAZOwD6cgtNwFs7BebgAF+EyXIXn4Hl4AV6EA7gG1+EGHMLL8Ir68kazZcUknK+2TzStJNRr3bVZK756vdMxVlLqznqrbSVQt1Y3rlmpqdut5qyV+iC/a6w01MWThYqVTXUhMMbKlnq7ccZY6aunDpz/Z8UccjYTM0etJNSvD54zVnx17dTxKStpda/X61kxfuwE7MMpOA1n4RychwtwES7DVXgOnocX4EU4gGtwHW7AIbwMr8Cr8AW4CV+EL8FX4C58Hb4Jb8Jb8G34DnwX3obvwffhB/Aj+DH8BH4KP4Ofwy/gPvwSfgW/gd/CH+CP8Cf4M/wF/gp/g7/DP+BdeA82Sfz/sA+n4DSchXNwPmlMRWrGGDHGbdaq0Y1rXPidCyc04M6LivzaD1gJXDgTaN5uHNazVsMlSWlK1KGvib9dYloTo4M4Cr+P66MzOTkeTqHbw9r4xzX62hid1xPROH3XOO0NG7OoPKKVe3FlQ0eoT5nWZ7RH05r4Nx5tDr1M6jPabP54orsXKnLWG85naOLKY+owGqhW3vKGlQW8ooBEbzxRr5hBY6DL0og/t+yNvqI02LV9nZeluJeqF6/fz+E6j8xF9D9Pjn+iXl+aOFIZasDdTxrwMm4pM27h9m8hL9xZim6h0/8BOyeZLw=="
+    },
+    {
+      "name": "owned.cst",
+      "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+    },
+    {
+      "name": "scene/owned.cst",
+      "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+    },
+    {
+      "name": "scripts/writer.kcs",
+      "data": "S0NTAAIAAAAAAAAANAAAAKkJAADdCQAAAAAAAAAAAAAAEAAAABAAAN0JAAAAAAAAUhMAAHicddY9aBRBFAfwmWQ1GzzDnntCioiH725ImDNETBEwxQU3uMIJV6SIZwpj7tBCE/EOFLFIIIqFhUUKCwsFDywsLCwsLFIYELHwIwELCwsLC5GgUVIElXmzt/u/qM3w4+3b+didnbd5Whm4el+RkELkIztgF5wCe+AMuBfcB86Cc+B+cAE8BB4Gj4BHwUVwAA7BJXAZPAGeZF+Yq9YUCcf40uzBqiKHPd2YHlTksmfqdaEoxa7P1GYVFdm1qbnLigL2bK06qCiM8htCUYmdO5TViubZ2aIQihbZS6UxoWiZne489VuR2Gksugb2KHLYL3ecFIpcdnD4QFqRx242m01Fwk3sgF1wCuyBM+BecB84C86B+8EF8BB4GDwCHgUXwQE4BJfAZfAEeBI8BT4NroLPgc+DL4Ib4Cvga+B58CL4JvgW+DZ4CXwHfBd8D/wA/BD8CPwY/AT8FPwMvAx+Dn4BfgV+DV4Fvwd/AH8EfwJ/Bn8Br4M3wJvgLbDohv0PdsEpsAfOgHvBfd1CaAqEECSE+VgLgj9cYcJvTNjhgOQ2zeF3JuxyoINbvz2saboj6q9148z2jDNJRhcHVtvH0vS2FWgd2uZI0bSWhO35fXacFjR9TcJF7mQfdwJhs8a8zy3t5XYXt+YU0rRhEj1O5FLgFyHlP4keJKa49wIsuYMnsG7SM5xuS0kXX1zmtZiIfZBRL7v5nu+txxSVnOhiT7wATd9MSopTTCXSdFTGb7DMedzysa1pXMYdcq2KLtrzVMAzPybjxeVkey956uQUU3Sikfv/SrG9HE9SCjD//TAvHHRBxo9oCNKzkC7/nW6Kp/TNNuBrtvJpGhPx3qpUKpVWobF2wFxo2t603YDe9jc9Es9L0w0Zb6mQpxjG92taS95oCN3ak9/u/F9Jt1zkOVHTJmxgGO16Mlogk257+OJWslFKsDl+xp+SX4LtbsuDt30S/BfBiW13ljkQyDhgBxa8oX7AwDBZuD1sD0jfrNU3K2v9k8jyygn7T3LkD4BAyeE="
+    },
+    {
+      "name": "scripts/reader.kcs",
+      "data": "S0NTAAIAAAAAAAAANAAAAJsHAADPBwAAAAAAAAAAAAAAEAAAABAAAM8HAAAAAAAANg8AAHicXdU/aFNBHMDxexjtC42SmhQyBAz+kiMlsVTsULDDEzNkSOENHSp2sDQBB03FBBRxKNLBwcGhg4ODggEHBwcHB4cMFkQcVBwcHBwcHBwcRIvUP9zvpXnfZHl8+N3vd+/e3bu7kuzM3HhoxXjGlAZOwD6cgtNwFs7BebgAF+EyXIXn4Hl4AV6EA7gG1+EGHMLL8Ir68kazZcUknK+2TzStJNRr3bVZK756vdMxVlLqznqrbSVQt1Y3rlmpqdut5qyV+iC/a6w01MWThYqVTXUhMMbKlnq7ccZY6aunDpz/Z8UccjYTM0etJNSvD54zVnx17dTxKStpda/X61kxfuwE7MMpOA1n4RychwtwES7DVXgOnocX4EU4gGtwHW7AIbwMr8Cr8AW4CV+EL8FX4C58Hb4Jb8Jb8G34DnwX3obvwffhB/Aj+DH8BH4KP4Ofwy/gPvwSfgW/gd/CH+CP8Cf4M/wF/gp/g7/DP+BdeA82Sfz/sA+n4DSchXNwPmlMRWrGGDHGbdaq0Y1rXPidCyc04M6LivzaD1gJXDgTaN5uHNazVsMlSWlK1KGvib9dYloTo4M4Cr+P66MzOTkeTqHbw9r4xzX62hid1xPROH3XOO0NG7OoPKKVe3FlQ0eoT5nWZ7RH05r4Nx5tDr1M6jPabP54orsXKnLWG85naOLKY+owGqhW3vKGlQW8ooBEbzxRr5hBY6DL0og/t+yNvqI02LV9nZeluJeqF6/fz+E6j8xF9D9Pjn+iXl+aOFIZasDdTxrwMm4pM27h9m8hL9xZim6h0/8BOyeZLw=="
+    }
+  ],
+  "projections": {
+    "writer": {
+      "outputs": [
+        256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324,
+        328, 332, 336, 340, 344
+      ],
+      "spans": [
+        {
+          "at": 2048,
+          "size": 64
+        },
+        {
+          "at": 2112,
+          "size": 16
+        },
+        {
+          "at": 2144,
+          "size": 16
+        }
+      ]
+    },
+    "reader": {
+      "outputs": [
+        256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324,
+        328, 332, 336, 340, 344
+      ],
+      "spans": [
+        {
+          "at": 2048,
+          "size": 64
+        },
+        {
+          "at": 2112,
+          "size": 16
+        },
+        {
+          "at": 2144,
+          "size": 16
+        },
+        {
+          "at": 2176,
+          "size": 64
+        },
+        {
+          "at": 2240,
+          "size": 4
+        },
+        {
+          "at": 2272,
+          "size": 16
+        }
+      ]
+    }
+  },
+  "rows": [
+    {
+      "kind": "writer",
+      "index": 0,
+      "label": "real own Script ordinary variables/expression and resource Scene history; selected private context separate",
+      "words": [
+        2709137861, 17, 24, 1, 1, 1, 1, 1, 1, 3, 1, 0, 1, 1, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 25, 2709137861, 2709137861
+      ],
+      "spans": [
+        "T25lAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQ==",
+        "paWlpaWlpaWlpaWlpaWlpQ==",
+        "paWlpaWlpaWlpaWlpaWlpQ=="
+      ]
+    },
+    {
+      "kind": "writer",
+      "index": 1,
+      "label": "source spans change, first-match mutation, clone and normal native file writer",
+      "words": [
+        2709137861, 17, 24, 1, 1, 1, 1, 1, 1, 3, 1, 0, 1, 1, 1, 4, 2166572391, 1, 11, 1, 25,
+        2166572395, 1304776705
+      ],
+      "spans": [
+        "T25lAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQ==",
+        "RDMiEaWlpaWlpaWlpaWlpQ==",
+        "EQNb/wAHKRLKBVmlpaWlpQ=="
+      ]
+    },
+    {
+      "kind": "reader",
+      "index": 0,
+      "label": "independent loaded Script/new CSS owner consumes variables/strings/nested data/history after old owners retire",
+      "words": [
+        2166572391, 1, 17, 19, 1, 1, 11, 4, 1, 1, 3, 0, 11, 2709137861, 2709137861, 2709137861,
+        2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 36, 1304776705
+      ],
+      "spans": [
+        "lExBAKWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQ==",
+        "EQNb/wAHKRLKBVmlpaWlpQ==",
+        "RDMiEaWlpaWlpaWlpaWlpQ==",
+        "c2NlbmVcb3duZWQApaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpQ==",
+        "AQAAAA==",
+        "EQNb/wAHKRLKBVmlpaWlpQ=="
+      ]
+    }
+  ],
+  "nativeFile": "Q1NTAHwAAADbAAAAZ0UjgXja42FgYOAAYkEgFgZiXiAWAWJGIGYH4ik+jgwwwAfEykC8xINPAaQLpF4WiEWBmBtkBnP0fwZ2TaFTrJHyQK4JVFtxcmpeakx+eV5qCgMTw/ojD96xKiziWH9E5AKrwoYGVgVmBlSgQIJeRjS9IGewALGLsZIgAEC1IDY=",
+  "canonicalFile": "modern-data.css",
+  "sourceRevision": "3d6eba2353e2082e1c3b0bfb91b4750eac73fe91",
+  "opaqueAndUnwritten": [
+    "Nested raw container record14 bytes0..3 is an ignored native process pointer, not a typed borrowed identity.",
+    "History record31/32 fixed32-byte name NUL tails are uninitialized on original newly-created rows; only imported originals preserve those bytes.",
+    "String bank record13 has8 unused trailing bytes; this run happened to capture zeros, no initial-zero guarantee inferred."
+  ]
+}
