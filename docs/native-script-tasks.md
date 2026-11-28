@@ -25,6 +25,21 @@ layout changes are involved. `tests/native-world-input-retirement.test.mjs`
 covers five-build retirement, independent modern cold continuations, concurrent
 close, missing-provider protection and cleanup after an actual callback fails.
 
+Final shutdown also retains each already initialized Draw surface bound to an
+actual current, pending or retained FES Core until all destruction callbacks
+finish. The Draw task still retires in the original order; its renderer, entries
+and bitmap stay usable by later parsed Script notifications. Final cleanup then
+releases those resources even if a callback fails. Temporary resource ownership
+reserves private World allocation identities for both these surfaces and the
+retained Input services, so a callback creating a new task cannot alias them.
+It does not recreate native task routes, extend ordinary Draw retirement, supply
+a missing surface, or change snapshots/native save layouts.
+`tests/native-world-final-fes-resources.test.mjs` follows the local CSS finalizer,
+independent parsed waiters and the FES hide/force-redraw dependency chain, including
+rebind, cold continuation, allocation during callbacks, failure isolation and
+concurrent close. Its finite CPU resources do not prove physical GPU rendering,
+font appearance or mounted-content availability after a host abort.
+
 Eight independent current checkpoints cover the pending queue, reload and
 retirement boundaries. Original PC0 bytes and the recreated-child observer's
 allocation-reuse gap remain capture-only; the latter has separate actual

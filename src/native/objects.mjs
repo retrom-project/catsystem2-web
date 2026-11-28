@@ -40,6 +40,8 @@ function snapshotSharedData(objects) {
   }
 }
 export class NativeObjects {
+  #resourceIDs = new Map();
+
   constructor() {
     this.factories = new Map();
     this.objects = new Map();
@@ -55,6 +57,26 @@ export class NativeObjects {
     )
       throw new Error(`Invalid or duplicate task factory ${kind}`);
     this.factories.set(kind, factory);
+  }
+  // A task may retire before a final callback finishes using its resource.
+  // Reserve only its private allocation identity; never restore a native route.
+  retainResourceIdentity(record) {
+    if (this.objects.get(record.id) !== record)
+      throw new Error('Native resource identity requires its actual live task');
+    let retained = this.#resourceIDs.get(record.id);
+    if (!retained) {
+      retained = { record, count: 0 };
+      this.#resourceIDs.set(record.id, retained);
+    }
+    if (retained.record !== record)
+      throw new Error('Native resource identity belongs to another task');
+    retained.count++;
+    let active = true;
+    return () => {
+      if (!active) return;
+      active = false;
+      if (!--retained.count) this.#resourceIDs.delete(record.id);
+    };
   }
   async create({
     kind,
@@ -76,7 +98,7 @@ export class NativeObjects {
         `Native task kind ${kind} has not been implemented (name=${name}, parent=${parent}, creator=${creator})`,
       );
     let id = 0;
-    while (this.objects.has(id)) id++;
+    while (this.objects.has(id) || this.#resourceIDs.has(id)) id++;
     const owner = this.objects.get(parent);
     const identity =
       this.identity?.({ kind, parent, name, creator, frameRate, nativeID, namespace }) ?? {};

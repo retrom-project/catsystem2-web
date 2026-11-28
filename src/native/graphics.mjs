@@ -93,6 +93,8 @@ const BASE_PLANE_MESSAGES = new Set([
 ]);
 
 export class NativeGraphics {
+  #finalSurfaces = null;
+
   synchronizeView() {
     originalView(this.world, 'syncView');
   }
@@ -225,6 +227,52 @@ export class NativeGraphics {
     if (!this.fesSurfaces.has(id)) this.fesSurfaces.set(id, new Map());
     this.fesSurfaces.get(id).set(owner, player);
     player.nativeGraphics = this;
+  }
+  // Final Root callbacks can still render to surfaces whose task records have
+  // already retired. Hold only existing, initialized, actually bound Draws.
+  retainFinalFESSurfaces() {
+    if (this.#finalSurfaces) throw new Error('Native final surface retirement is already active');
+    const retained = new Map();
+    for (const [id, players] of this.fesSurfaces) {
+      const draw = this.drawTasks.get(id),
+        record = this.world.objects.objects.get(id);
+      if (
+        !(draw instanceof NativeDrawTask) ||
+        record?.kind !== 15 ||
+        record.implementation !== draw ||
+        !draw.state.renderer
+      )
+        continue;
+      const used = [...players].some(([owner, player]) => {
+        const task = this.world.objects.objects.get(owner),
+          implementation = task?.implementation;
+        return (
+          task?.kind === 34 &&
+          (implementation.player === player ||
+            implementation.pendingPlayer === player ||
+            [...implementation.retainedPlayers.values()].includes(player))
+        );
+      });
+      if (used) retained.set(draw, this.world.objects.retainResourceIdentity(record));
+    }
+    this.#finalSurfaces = retained;
+    return async () => {
+      this.#finalSurfaces = null;
+      const errors = [];
+      for (const [draw, releaseIdentity] of retained)
+        try {
+          await draw.close();
+        } catch (error) {
+          errors.push(error);
+        } finally {
+          releaseIdentity();
+        }
+      retained.clear();
+      if (errors.length) throw new AggregateError(errors, 'Native final surface cleanup failed');
+    };
+  }
+  deferFinalSurfaceClose(draw) {
+    return this.#finalSurfaces?.has(draw) ?? false;
   }
   rememberFESSurface(id, player) {
     const draw = this.drawTasks.get(id),

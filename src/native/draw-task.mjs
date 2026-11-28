@@ -674,6 +674,7 @@ export class NativeDrawTask {
     await this.render();
   }
   async close() {
+    if (this.graphics.deferFinalSurfaceClose(this)) return;
     if (this.state.renderer) await this.releaseRenderer();
     if (this.state.baseImage) await this.graphics.images.release(this.state.baseImage);
     this.state.baseImage = null;

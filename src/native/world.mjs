@@ -1259,8 +1259,13 @@ export class NativeWorld {
         record = this.objects.objects.get(id),
         state = record?.implementation?.inputState;
       if (record?.kind === 11 && record.parent === top.id && state instanceof NativeInput)
-        this.#closingInputs.set(top, { id, state });
+        this.#closingInputs.set(top, {
+          id,
+          state,
+          releaseIdentity: this.objects.retainResourceIdentity(record),
+        });
     }
+    const releaseSurfaces = this.graphics.retainFinalFESSurfaces();
     try {
       for (const { id } of [...this.objects.objects.values()].filter(
         (record) => record.parent === null,
@@ -1269,6 +1274,8 @@ export class NativeWorld {
       for (const id of [...this.objects.objects.keys()])
         await attempt(() => this.objects.release(id));
     } finally {
+      await attempt(releaseSurfaces);
+      for (const retained of this.#closingInputs.values()) retained.releaseIdentity();
       this.#closingInputs = null;
     }
     await attempt(() => this.text.close());
