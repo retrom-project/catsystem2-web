@@ -5,6 +5,8 @@ import { readFile } from 'node:fs/promises';
 import { modernParticleMessageWorld } from './fixtures/modern-particle-message-world.mjs';
 import { parseXML } from '../src/xml.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
+// The original file-time fixture uses a controlled UTC host.
+process.env.TZ = 'UTC';
 const fixture = JSON.parse(
   await readFile(new URL('./fixtures/native-modern-script-file-owner.json', import.meta.url)),
 );
