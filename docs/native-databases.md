@@ -36,3 +36,14 @@ wrapper and detailed verifier are preserved under `oracle/database.mjs`.
 
 Run `node --test tests/native-database.test.mjs` and, with private images,
 `node --test tests/differential/native-database.test.mjs`.
+
+The modern finite owner chain uses a nonempty authored KCDB with initialized
+`ID`, `TITLE_S`, `TITLE` and `INDEX` columns. Actual `.74` parsed Scripts set two
+different flags, clear dirty, repeat an existing flag, export through an owned
+Main833 allocation and copy it into native CSS. A new reader imports into a
+separate database, releases both the raw copy and CSS owner, then exports again
+to a checked Script span whose flag words drive a branch. Plain ee6 `.76` reuses
+this finite group after its complete wrapper, constructor, fields, parser and
+callee contexts are matched; both builds have independent checkpoint controls.
+This does not extend the old proof to missing field buffers, arbitrary delimiter
+grammars, invalid raw spans or uninitialized records.

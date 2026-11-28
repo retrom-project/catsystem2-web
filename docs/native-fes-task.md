@@ -1471,3 +1471,34 @@ queries and `variableBank()` remain strict. A previously invalid active lifetime
 can still report its message3 failure during disposal; this rule does not swallow
 that failure or promise original WinMain exit behavior. No reference count,
 persistent field, checkpoint version or alternate reader is introduced.
+
+The cross-build Task/context metadata controls now include intact SDK74 and
+plain ee6-SDK76 factory-created kind1 Tops, file-loaded parsed Scripts and three
+normal Root frames. They cover surface binding, label results, an actual owned
+GlobalFile in `_SAVEOBJ_`, exit words, sleep callbacks and recipient retirement.
+The SDK63/67 controls retain their separately established callback differences.
+Fresh current continuations restore the live owners before the last frame and
+release the file after the FES and Draw retire.
+
+These finite metadata observations do not qualify a nested Top's Sound/Input
+services. The native FES initialization sends its service queries to target0;
+the SDK63 receiver at44fd47/44fd65 makes this explicit. A native metadata path
+that does not consume an unwritten service field cannot prove that field valid.
+The current primary-Root controls preserve the initialized-result guard for a
+separate Top. No App0 publisher, full WinMain or physical input is claimed.
+
+The same finite context group now exercises Main649/650 using a real selected
+FES bank and an owned GlobalFile: scalar selection, full2048-byte export, mutation,
+import and a later scalar read. SDK74 and plain ee6-SDK76 original parsed callers
+match all512 words, normal retirement and final release. Current cold controls
+retain live strings/bank/file state and the pending recipient retirement boundary.
+Owned CP932 entries are replaced through Main276 and expanded through Main278;
+SDK63 also has a separate intact parsed-Script two-span original control.
+
+SDK63's initialized, unstarted FES bank has matching finite transfer bytes and
+values, but its native retirement under the older host reaches a CRT
+invalid-parameter failure, including when a following Root collection is tried.
+Both original failures remain evidence; this shape has no native lifecycle pass.
+The passing current primary-Root contrast does not remove that qualification gap.
+SDK67 reuses its existing own receiver/bank-selection body evidence and current
+contrast; no new SDK67 original full-chain run is claimed here.

@@ -282,7 +282,7 @@ test('disk save services preserve names and timestamp policy, reopen native CSS 
     disk = new Map();
   const services = {
     handles,
-    contextName: 'saves/profile-one',
+    saveDirectory: 'saves/profile-one',
     format: (at) => m.string(at),
     persistence: {
       read: async (name) => disk.get(name) ?? null,
@@ -495,7 +495,7 @@ for (const profile of ['grisaia-jp-engine-2.6.1.23', 'bokutomo-engine-2.6.1.67']
               [59],
             ]),
         });
-      const task = await runtime.spawn('css-time.kcs', { context: { contextName: 'save' } }),
+      const task = await runtime.spawn('css-time.kcs', { context: { saveDirectory: 'save' } }),
         m = task.machine,
         stack = m.sp;
       m.writeString('save0000.dat', 256);
@@ -534,7 +534,7 @@ test('2.6.1.23 CSS timestamp validates every destination before writing', async 
         [59],
       ]),
   });
-  const task = await runtime.spawn('time-spans.kcs', { context: { contextName: 'save' } }),
+  const task = await runtime.spawn('time-spans.kcs', { context: { saveDirectory: 'save' } }),
     m = task.machine;
   m.writeString('save0000.dat', 128);
   m.bytes(64, 16).fill(0xa5);

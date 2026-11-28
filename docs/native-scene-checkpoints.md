@@ -278,3 +278,33 @@ including four independent cold restores. The runtime keeps its Script-only
 record fallback and does not treat FES or its parent context as a Scene owner.
 No Script Scene initializer is executed on the unrelated FES layout. References
 that would consume an absent history retain their existing diagnostic boundary.
+
+Script-relative CSS files use a separate owned save directory. The Top directory
+writer updates the constructor source; each new Script copies that value, and
+later Top changes leave existing Scripts' paths intact. The raw25/26 context name
+is a different buffer and does not redirect CSS storage. Current checkpoints
+retain the Script's directory independently of the Top and context. Internal
+persistence callers pass `saveDirectory`; the development service contract and
+its tests are updated in place, with no native CSS/GAME_SAVE layout change.
+Exact modern controls exercise two directories with the same basename, initialized
+UTC write timestamps, own76 preserving-time overwrite, independent native-CSS
+readers and actual deletion while the peer directory's file remains readable.
+These are controlled virtual-file effects, not physical Windows persistence.
+
+Scene creation copies startup language prefixes into each reader. The shared
+explicit and Script-owned factories use the configuration's authored entries
+when the host has not supplied an explicit prefix list. Existing readers retain
+their own registered prefixes and translated records when input files change;
+new readers observe the replacement resource. Checkpoints preserve those owned
+records. The display-log rebuild's temporary reader still starts without any
+registered language, so a nonempty language argument keeps its original base-text
+fallback.
+
+The plain ee6 `.76` finite producer proof runs the original Settings initializer
+prefix, opens a real UTF-8 XML document through Main590, executes the intact
+startup writer and releases the document through Main591 before Scene creation.
+It covers two authored `en`/`jp` entries, CSTL segment joining, parsed Script
+numeric/expression consumption, source replacement and native CSS/new-reader
+log persistence. The Engine/Settings host backing ends at process teardown;
+this does not qualify Engine/WinMain initialization or its full destructor.
+The earlier base-only display-log proof remains limited to its original inputs.

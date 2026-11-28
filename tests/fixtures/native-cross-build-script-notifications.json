@@ -1,0 +1,75 @@
+{
+  "scope": "Ordinary Top/Script ignored notification wrappers, null Main571 external-word shape only; not callback delivery",
+  "profiles": [
+    {
+      "version": "23",
+      "profile": "grisaia-jp-engine-2.6.1.23",
+      "raw": [400, 403, 402],
+      "result": {
+        "control": 2
+      },
+      "interpretation": "receiver-ignore",
+      "reuse": "Accepted own-body/context/raw table and ordinary receiver groups; no new original run. See complete batch evidence index."
+    },
+    {
+      "version": "63",
+      "profile": "rebellions-jp-engine-2.6.1.63",
+      "raw": [423, 426, 425],
+      "result": {
+        "control": 2
+      },
+      "interpretation": "receiver-ignore",
+      "ownEvidence": {
+        "file": "ORIGINAL-NOTIFICATION-63.json",
+        "sha256": "dd6bf015b74e12e9e930c80c44ce55e4792b250248d0a934575024fabbce57c9",
+        "executableSha256": "c8d4d7091347fc35b22b2dc0cb02793671cd726781d8462134ea602b191c729a",
+        "actualGCALL": 14,
+        "targetGCALL": 9,
+        "senderRaw": [423, 426, 425, 423, 426, 425],
+        "scriptReceiverRaw": [423, 426, 425],
+        "zeroFlags": true,
+        "processClosed": true
+      }
+    },
+    {
+      "version": "67",
+      "profile": "bokutomo-engine-2.6.1.67",
+      "raw": [424, 427, 426],
+      "result": {
+        "control": 2
+      },
+      "interpretation": "receiver-ignore",
+      "reuse": "Accepted own-body/context/raw table and ordinary receiver groups; no new original run. See complete batch evidence index."
+    },
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "raw": [437, 440, 439],
+      "result": {
+        "control": 2
+      },
+      "interpretation": "receiver-ignore",
+      "ownEvidence": {
+        "file": "ORIGINAL-NOTIFICATION-74.json",
+        "sha256": "a0d278cbece2f205519d4683ed012d6d375a286d95462f62f508f8a6e95a50cf",
+        "executableSha256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f",
+        "actualGCALL": 11,
+        "targetGCALL": 9,
+        "senderRaw": [437, 440, 439, 437, 440, 439],
+        "scriptReceiverRaw": [437, 440, 439],
+        "zeroFlags": true,
+        "processClosed": true
+      }
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "raw": [442, 445, 444],
+      "result": {
+        "control": 2
+      },
+      "interpretation": "receiver-ignore",
+      "reuse": "Accepted own-body/context/raw table and ordinary receiver groups; no new original run. See complete batch evidence index."
+    }
+  ]
+}

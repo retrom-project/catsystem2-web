@@ -17,6 +17,11 @@ const word = (value) => nativeReply(1, value >>> 0);
 const done = () => nativeReply(2);
 const stripExtension = (name) => String(name).replace(/\.[^\\/.]*$/, '');
 const seenKeys = new WeakMap();
+export function nativeSceneLanguages(services) {
+  return services.sceneLanguages?.length
+    ? services.sceneLanguages
+    : (services.configuration?.language?.entries.map((entry) => entry.prefix) ?? []);
+}
 const nameBytes = (name) => {
   const bytes = name instanceof Uint8Array ? name : encodeCP932(String(name)),
     nul = bytes.indexOf(0);
@@ -535,7 +540,7 @@ export function nativeSceneData(id, args, machine, services = {}) {
     return word(
       services.handles.add(
         'scene-data',
-        new NativeSceneData({ languages: services.sceneLanguages }),
+        new NativeSceneData({ languages: nativeSceneLanguages(services) }),
       ),
     );
   }

@@ -544,6 +544,7 @@ export default {
   fileIO: { rawModeAndBoundedBuffer: true, defaultReadOnly: true },
   nameTable: { fixedPairs: true },
   messages: {
+    scriptNotifications: { 570: 437, 571: 440, 572: 439 },
     screenEvent: 21,
     windowDirectClose: 0x433,
     windowCloseConfirmation: {

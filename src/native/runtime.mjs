@@ -18,7 +18,7 @@ import { nativeGallery, nativeGalleryCodec } from './gallery.mjs';
 import { NativeGlobalFile, nativePersistence, createGlobalEntries } from './persistence.mjs';
 import { nativeFiles } from './storage.mjs';
 import { nativeMotion } from './motion.mjs';
-import { NativeSceneData, nativeSceneData } from './scene-data.mjs';
+import { NativeSceneData, nativeSceneData, nativeSceneLanguages } from './scene-data.mjs';
 import { nativeCharacterNames, nativeCharacterNamesCodec } from './character-names.mjs';
 import { nativeDictionary, nativeDictionaryCodec } from './dictionary.mjs';
 import {
@@ -224,7 +224,7 @@ export class NativeRuntime {
     if (!task.context.sceneData && create)
       task.context.sceneData = this.handles.add(
         'scene-data',
-        new NativeSceneData({ languages: this.services.sceneLanguages }),
+        new NativeSceneData({ languages: nativeSceneLanguages(this.services) }),
       );
     return task.context.sceneData ? this.handles.get(task.context.sceneData, 'scene-data') : null;
   }
@@ -328,6 +328,10 @@ export class NativeRuntime {
         profile: this.profile,
         owner: task.id,
         contextName: task.context.contextName ?? '',
+        saveDirectory:
+          this.services.world?.objects.objects.get(task.id)?.nativeSaveDirectory ??
+          task.context.saveDirectory ??
+          '',
       };
       services.markStringsDirty = () => {
         const record = this.services.world?.objects.objects.get(task.id);

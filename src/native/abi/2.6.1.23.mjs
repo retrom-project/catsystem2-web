@@ -1581,6 +1581,7 @@ export default {
     systemEntropy: null,
   },
   messages: {
+    scriptNotifications: { 570: 400, 571: 403, 572: 402 },
     areaAdditionalServices,
     areaServiceKinds: { 198: [26, 27], 199: [0, 26, 27] },
     channels: {

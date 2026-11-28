@@ -4,6 +4,7 @@ import { nativeReply } from '../kcs/vm.mjs';
 import { nativeABI, nativeABIBehavior } from './abi/index.mjs';
 import { nativeDeflate } from './zlib.mjs';
 import { nativeFileTime, nativeSystemTime } from './file-time.mjs';
+import { nativeVirtualFilePath } from './file-path.mjs';
 
 export function nativeSavePath(directory, filename) {
   const name = filename.replaceAll('\\', '/'),
@@ -322,9 +323,11 @@ export function nativePersistence(id, args, machine, services = {}) {
   if ([0xf5, 0xf7, 0xff, 0x3de, 0x407].includes(id)) {
     if (!services.format || !services.persistence) return undefined;
     if ([0xf5, 0x407].includes(id) && !args[0]) return result(0);
-    const name = nativeSavePath(
-        services.contextName ?? '',
-        services.format(args[id === 0xf5 || id === 0x407 ? 1 : 0], machine),
+    const name = nativeVirtualFilePath(
+        nativeSavePath(
+          services.saveDirectory ?? '',
+          services.format(args[id === 0xf5 || id === 0x407 ? 1 : 0], machine),
+        ),
       ),
       storage = services.persistence;
     if (id === 0x3de) {
