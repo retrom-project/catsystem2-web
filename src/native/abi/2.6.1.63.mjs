@@ -3516,8 +3516,13 @@ export default {
             'Own rotate-relative wrapper selects SSE directions and both original normalization widths. The x87 axis assembler preserves hardware words even when FSINCOS cannot reduce or the angles are not finite. Output and reference or angle storage can alias.',
         },
         {
-          ids: [17, 38, 41],
+          ids: [38],
           value: '2.6.1.63-own-warning-title-motion-calls-wrappers-and-authored-control',
+        },
+        {
+          ids: [17, 41],
+          value:
+            'Own c8d4 SDK63 explicit MOT manager loads the real generic VM and callback: one-word rounding and five-word interpolation return C1 words, drive a parsed VM branch and shared position, and are consumed by Main302. Clear, rebind and normal manager deletion complete; fresh current continuations retain the loaded and evaluated record. This finite bridge does not extend other arithmetic domains.',
         },
       ],
       signatures: [
@@ -3615,13 +3620,17 @@ export default {
             'Own 2.6.1.63 Particle v2 integer absolute value preserves the most negative word. Visibility writes one raw DWORD at an unsigned in-range index. The highest index is the particle count minus one.',
         },
         {
-          ids: [7, 16, 22, 23, 24, 38],
-          value:
-            '2.6.1.63 own Particle v2 cosine and remainder write float results. The three rotation wrappers update four 28-byte vertices. The projection wrapper writes four bounds from the inverse view at the bank priority and requested depth.',
+          ids: [7, 16],
+          value: '2.6.1.63 own Particle v2 cosine and remainder write float results.',
         },
         {
-          ids: [1, 2, 5, 6, 19, 25, 26, 27, 28, 30, 31, 34, 35, 36, 50],
+          ids: [6, 19, 34],
           value: '2.6.1.63-own-title-particle-v2-wrappers-receiver-and-authored-control',
+        },
+        {
+          ids: [1, 2, 5, 22, 23, 24, 25, 26, 27, 28, 30, 31, 35, 36, 38, 50],
+          value:
+            'Own c8d4 normal Main66/Main143 parsed Script loads a genuine kind16 v2 VM through Main271; the native loader binds table710f90 and the actual particle owner. Finite frame/viewport/register words, four 28-byte quad vertices, position and inverse-view bounds feed actual Root/View COM-memory atlas/triangle submissions. Copied registers survive source zeroing; a second real script/atlas, stop and retirement complete normally. Same-body v1 and other SDK proofs are reused only with their separate caller contexts. These two-particle finite shapes do not qualify dense256 scenes, physical GPU/shaders, absent resources, stale owners or unproved arithmetic domains.',
         },
       ],
       signatures: [

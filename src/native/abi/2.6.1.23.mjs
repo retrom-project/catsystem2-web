@@ -1467,7 +1467,6 @@ export default {
     debugUsesNativeLogger: true,
     scriptVersionFallback: 'particle-v1',
     frameScale: 'x87-uint32',
-    beforeFrameUpdatedByIdle: true,
     scriptUsesTaskFrameRate: true,
     scriptStartPreservesState: true,
     drawPortEnabledByIdle: true,

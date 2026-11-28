@@ -247,3 +247,24 @@ for these native script banks. Cold restore retains disabled/enabled states
 without inferring them from buffers or clocks. This is the current development
 contract; native GAME_SAVE layout is unchanged. Other SDK builds retain their
 existing policy until independently proved.
+
+SDK `.63` particle-v2 auxiliary-table qualification uses the actual kind16
+factory, loaded parsed Script caller and own table. The
+[SDK63 auxiliary golden](../tests/fixtures/native-sdk63-aux-particle.json)
+records the sixteen remaining finite entries through two live particles, copied
+registers, independently cleared producer storage, quad/position/projection
+consumers and two asymmetric HG3 atlases. Normal Root idle and collector/View
+consumers cover stop, replacement, restart, retirement and following-parent
+pruning. Seven independent cold points retain these owners and initialized
+buffers. Submitted COM-memory triangles and atlas bytes are compared exactly;
+this is not physical GPU, shader or dense 256-particle scene evidence.
+
+Native particle task idle commits its completion stamp after the entire VM
+invocation. Complete own constructor/vtable/Frame contexts in `.23`, `.63`,
+`.67`, `.74` and plain `.76` show the same store. This is shared task lifecycle
+behavior, replacing the former `.23` capability split. In-loop before-frame
+queries still consume the previous completion, including the first pre-idle
+sentinel; standalone VM update and start behavior are unchanged. Constructor
+and rebind field captures without a getter invocation do not qualify
+outside-idle queries or establish an SDK difference. Ordinary missing-resource,
+uninitialized-consumer and unknown receiver guards remain in force.
