@@ -10,6 +10,36 @@ import { kcsProgram } from './helpers.mjs';
 const golden = JSON.parse(
   await readFile(new URL('./fixtures/native-host-basic-legacy-golden.json', import.meta.url)),
 );
+function systemTimeDate(systemTime) {
+  const view = new DataView(Uint8Array.from(systemTime).buffer),
+    words = Array.from({ length: 8 }, (_, i) => view.getUint16(i * 2, true));
+  return {
+    getFullYear: () => words[0],
+    getMonth: () => words[1] - 1,
+    getDay: () => words[2],
+    getDate: () => words[3],
+    getHours: () => words[4],
+    getMinutes: () => words[5],
+    getSeconds: () => words[6],
+  };
+}
+function expectedLocalOutputs(row, date) {
+  const fields = [
+    date.getFullYear() & 0xffff,
+    date.getMonth() + 1,
+    date.getDay(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+  ];
+  const last = new Map();
+  row.args.slice(0, 7).forEach((at, i) => last.set(at, fields[i]));
+  return row.args.slice(0, 7).map((at) => {
+    const value = last.get(at);
+    return [at, [value & 0xff, (value >>> 8) & 0xff, (value >>> 16) & 0xff, (value >>> 24) & 0xff]];
+  });
+}
 for (const profile of [
   'grisaia-jp-engine-2.6.1.23',
   'rebellions-jp-engine-2.6.1.63',
@@ -74,12 +104,13 @@ for (const profile of [
         assert.equal(result.status, 'halted');
         assert.equal(machine.sp, 3588);
         assert.equal(machine.load(3584), 0x93deff25);
-        if (row.id === 11)
+        if (row.id === 11) {
+          assert.deepEqual(expectedLocalOutputs(row, systemTimeDate(row.systemTime)), row.outputs);
           assert.deepEqual(
             row.args.slice(0, 7).map((at) => [at, [...machine.bytes(at, 4)]]),
-            row.outputs,
+            expectedLocalOutputs(row, new Date(row.epoch)),
           );
-        else
+        } else
           assert.deepEqual(actualBox, {
             type: 'script-message-box',
             caption: row.box.caption,
@@ -105,7 +136,7 @@ for (const profile of [
     try {
       first.clock.restore({
         elapsed: { numerator: 0n, denominator: 1n },
-        utcOrigin: { numerator: BigInt(Date.UTC(70000, 0, 1)), denominator: 1n },
+        utcOrigin: { numerator: BigInt(Date.UTC(70000, 5, 15)), denominator: 1n },
       });
       await first.initialize('case.kcs');
       const words = [256, 260, 264, 268, 272, 276, 280].map((at) => first.main.machine.load(at));
