@@ -803,6 +803,7 @@ export class NativeGraphicTask {
     this.planeVisibilityUpdatesInput =
       record.kind === 2 && Boolean(abi?.planeVisibilityUpdatesInput);
     this.planeEmptyGraphRequiresMode1 = Boolean(abi?.planeEmptyGraphRequiresMode1);
+    this.primitiveModelsRejectOccupied = Boolean(abi?.primitiveModelsRejectOccupied);
     this.planeAlphaRequiresGraph = Boolean(abi?.planeAlphaRequiresGraph);
     this.planeUsesLegacyTexturedKX2 = Boolean(abi?.planeUsesLegacyTexturedKX2);
     this.planeUsesLegacyColoredKX2 = Boolean(abi?.planeUsesLegacyColoredKX2);
@@ -1040,6 +1041,13 @@ export class NativeGraphicTask {
       return 0;
     if (this.record.kind === 6 && !BASE_PLANE_MESSAGES.has(id))
       return this.base.message(words, context);
+    if (
+      this.record.kind === 2 &&
+      this.primitiveModelsRejectOccupied &&
+      [41, 42, 45].includes(id) &&
+      this.graph
+    )
+      return 0;
     const preservesModel = this.planeUsesLegacyTexturedKX2 && (id === 69 || id === 70);
     if (!preservesModel && [3, 41, 42, 45, 46, 68, 69, 70, 83].includes(id)) {
       await originalView(this.world, 'movieRelease', this);

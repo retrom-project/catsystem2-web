@@ -1,5 +1,15 @@
 # Persistent bitmaps and native operations
 
+SDK23 collection blur visits the loaded layers and marks the owner pending,
+without first expanding the output, refreshing the owner's cached bounds, or
+compensating the layer base coordinates.
+Its single layer can share the output bitmap, so the physical pixels and bitmap
+bounds can change while the cached owner bounds stay unchanged. The normal
+resource-to-owner Script chain compares both states and continues after an
+independent current checkpoint. The modern collection helper additionally
+expands its output and refreshes those cached bounds before visiting each layer;
+that is a confirmed native implementation difference, not a caller capability.
+
 SDK 2.6.1.23 base and alpha commands (`370`, `371`, `374`, `377`, `378`)
 use the same typed bitmap model. Their own original Main112 constructor,
 Script automatic list and loader-bound VM establish the live-owner contract:
@@ -831,3 +841,39 @@ Draw cache rule. Exact ten-word copy inputs and real source bitmaps remain
 required. Empty source, VRAM-only target, arbitrary overlap and physical GPU
 output are not qualified. Main682 remains protected: its own wrapper writes a
 separate View field and has no demonstrated ImageOwner contract.
+
+Main713 applies the shared neutral RGB tone shortcut before accessing its ImageOwner.
+The complete own74/own76 wrappers return control2 when all three percentages are100,
+matching the accepted23/63/67 branch. No owner, layer or pixel is consumed on that
+branch; no profile policy is needed. A nonneutral call still requires the actual
+owner and the existing loaded-layer/pixel-format qualifications. This shortcut
+does not admit the rest of the ImageOwner family or undefined nonneutral pointers.
+Main121 is a separate bitmap consumer. Its accepted SDK23/63/67 neutral-owner
+policy and four-word signature remain in place; the modern bitmap tone path
+still requires a real bitmap. Main713 does not consume that bitmap policy.
+
+## RGBA32 scaled copy and normal Area output
+
+Main116 scales RGBA32 directly into the existing RGBA32 destination. A sample
+whose four source alpha values sum to zero leaves the destination cell unchanged.
+The shared implementation uses that existing target rather than blitting a fresh
+zero-filled temporary over the whole rectangle. The five exact-build wrappers
+and their relevant bilinear branches have the same storage and skip contract;
+this does not extend the different RGB24 or packed-output kernels.
+Scaled copy writes back into the destination's existing live allocation.
+Previously borrowed pixel views, buffer views, frames and data aliases therefore
+observe the write in both directions. The same rule applies to the existing
+physical-row ImageOwner copy helper. A real resize still replaces storage under
+its separate geometry and positive-canvas contract; a cold restore creates a
+new allocation while preserving aliases within the restored world.
+
+Normal loaded Script groups on SDK23 and the plain SDK76 build compare every
+pixel after scaling into a filled target, same-backing scaling, an independent
+Main118 clone, and source/destination release. The alias operation reads earlier
+writes in the native traversal order. The SDK23 Root group also consumes an
+intersection rectangle in a newly registered BasePlane Input, runs a real
+same-size RGBA Area27 source/work/finish sequence through Root draw, and compares
+its View upload source with the current VRAM crop. Three independent current
+cold continuations preserve these resource and output dependencies. This is
+software/COM-memory output evidence; ScreenEffect render-target allocation and
+physical texture sampling are separate qualifications.

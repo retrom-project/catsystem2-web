@@ -260,3 +260,26 @@ The paired fixtures exercise actual factory Script/parsed Actor+VM calls, primar
 Model unload/reset/replacement removes the primary key alone. Trail history and independently registered clones survive until explicit trail disable/reconfigure or task retirement; a fresh primary still starts hidden. File-backed trail clones perform their own normal resource reads and own decoded geometry. Pending reconstruction canceled by disable, a newer configure or task retirement cannot publish its old keys; a throwing provider releases only that partial reconstruction. Cold state retains the independent primary and trail owners, including a trail with no primary.
 
 The exact modern original group covers mode0–5 ring/COM consumers on 74 with a 76 context bridge, clone file reads, reset/replacement and final retirement. Defined ring lanes match words and finite submitted vertices match within one f32 ULP; undefined ID/scratch/vector-W lanes are omitted. Main399 changes history before the next ordinary draw update publishes it. Strip dimensions come from the retained Plane shape producer, not the later file-model bounds; the bounded five-build static bridge removes the former 63/67-only dimension flag. Real numeric x87/SSE strategies remain separate. These are ordinary COM-memory checks without physical GPU, full M2, or arbitrary model types. See `tests/fixtures/native-modern-plane-trails.json`.
+
+### Primitive registration on an occupied Plane
+
+Main78/79/80 use the same occupied-key rule as the original model manager.
+The .23/.63/.67 primitive receivers construct a candidate without removing the
+existing key; registration rejects that candidate and leaves the old model,
+metadata and display word intact. This includes Main80's attempt to register an
+empty model: it is not an unconditional unload. The exact modern .74/.76
+receivers first remove the old primary, so a successful primitive replaces it and
+starts hidden while retaining the separate Plane own-display state.
+`primitiveModelsRejectOccupied` records this confirmed receiver difference.
+
+The .23 comparison executes seven normal Root frames through the real loaded
+Script. Matrix identity and an explicit translated matrix feed actual Plane
+bounds and Input registration; alpha, colour, scale and clear are
+observed in their consumers. Replacing a 6x4 model with an empty or 5x3 candidate
+keeps the original 6x4 dimensions. The five-build bridge follows each primitive
+receiver into the registration helper and occupied-key rejection, including the
+modern deletion before construction. Current VM controls and independent cold
+continuations retain the corresponding per-build result. Host cursor position
+is an explicit input; task lifetime is checked in the task map independently of
+the earlier graphics-resource release. See
+`tests/fixtures/native-sdk23-plane-geometry-input-chain.json`.

@@ -350,6 +350,7 @@ export default {
   },
   movie: { alwaysUseBgmVolume: true },
   particle: {
+    scriptStartPreservesState: true,
     debugUsesNativeLogger: true,
     deferGraphAttachment: true,
     frameScale: 'x87-uint32',
@@ -1298,6 +1299,7 @@ export default {
     cameraNearRequiresMode1: true,
     drawPendingCopiesWholeBitmap: true,
     dividedMesh: { receiverKinds: [2], rejectOccupiedModel: true, requiresTexturePages: true },
+    primitiveModelsRejectOccupied: true,
     texturedBoundsQuery: null,
     coordinateModeRequiresGraph: true,
   },
@@ -1702,7 +1704,7 @@ export default {
         {
           ids: [80, 83, 86, 87],
           value:
-            'Own Plane raw42 releases the old graph and creates an empty graph only in initialized hardware mode one. Raw65 clears the visible dimensions and unregisters tracked Input. Raw58 and raw59 select the independent transforms, copy x87 FLOAT words and leave the packet unwritten without the original device or registered graph.',
+            'Own Plane raw42 attempts an empty graph registration only in initialized hardware mode one. Its occupied registry key preserves the existing model and cached dimensions; unlike modern receivers it does not first remove that key. Raw65 clears the visible dimensions and unregisters tracked Input. Raw58 and raw59 select the independent transforms, copy x87 FLOAT words and leave the packet unwritten without the original device or registered graph.',
         },
         {
           ids: [261, 340, 862],
@@ -1884,9 +1886,14 @@ export default {
             'Own 0x4a19e0 rebuilds the narrow display log through the saved scene path from its two handles and two formatted command names. It clears the old owner, appends only elapsed blocks and returns control 2.',
         },
         {
-          ids: [271, 272, 273, 274, 275, 693],
+          ids: [271, 272, 273, 274, 275],
           value:
-            '2.6.1.63 own Particle wrappers use raw 302–304, 306 and 307. Raw 302 receives the family, two CP932 names, count, priority, 32 registers and a cleared draw word. Raw 306 writes the active word.',
+            'Own raw302–304/306/307 script producers are joined with the accepted actual kind16 v2 table and real parsed Script/Root/View consumers. Both normal v1/v2 sources and finite HG3 atlases, copied registers after source zeroing, active reload versus callback binding, explicit restart, stop and normal next-Root retirement have exact control/write and current cold evidence. Source replacement retains active but clears the native callback; legacy Start preserves existing vectors. See native-sdk63-particle-attachment and native-sdk63-aux-particle fixtures. No plugin, unknown shape or physical memory extension follows.',
+        },
+        {
+          ids: [693],
+          value:
+            'Own plugin wrapper uses the same raw302 packet family and cleared draw word; this existing wrapper proof does not qualify an arbitrary plugin or its later consumers.',
         },
         {
           ids: [265, 266, 267, 268, 269, 270],
@@ -1901,7 +1908,7 @@ export default {
         {
           ids: [426, 427],
           value:
-            '2.6.1.63 own Main426 and Main427 send raw Particle 308 and 309 with the second word in L. The owned receiver preserves signed alpha below 255 and maps higher alpha to 256. Zero attachment clears the graph reference.',
+            '2.6.1.63 own Main426 and Main427 send raw Particle 308 and 309 with the second word in L. The actual parsed Script/kind16 receiver preserves signed alpha below 255 and maps higher alpha to 256. Zero attachment clears the graph reference. Real v2 queries consume the borrowed fresh Plane registration/base/position and drive finite quad/atlas submissions; move, missing Plane after retirement, v1 source replacement, explicit restart and independent owner release are covered without retaining the Plane or comparing address values.',
         },
         {
           ids: [218, 712, 715],
@@ -3516,8 +3523,13 @@ export default {
             'Own rotate-relative wrapper selects SSE directions and both original normalization widths. The x87 axis assembler preserves hardware words even when FSINCOS cannot reduce or the angles are not finite. Output and reference or angle storage can alias.',
         },
         {
-          ids: [17, 38, 41],
+          ids: [38],
           value: '2.6.1.63-own-warning-title-motion-calls-wrappers-and-authored-control',
+        },
+        {
+          ids: [17, 41],
+          value:
+            'Own c8d4 SDK63 explicit MOT manager loads the real generic VM and callback: one-word rounding and five-word interpolation return C1 words, drive a parsed VM branch and shared position, and are consumed by Main302. Clear, rebind and normal manager deletion complete; fresh current continuations retain the loaded and evaluated record. This finite bridge does not extend other arithmetic domains.',
         },
       ],
       signatures: [
@@ -3615,13 +3627,17 @@ export default {
             'Own 2.6.1.63 Particle v2 integer absolute value preserves the most negative word. Visibility writes one raw DWORD at an unsigned in-range index. The highest index is the particle count minus one.',
         },
         {
-          ids: [7, 16, 22, 23, 24, 38],
-          value:
-            '2.6.1.63 own Particle v2 cosine and remainder write float results. The three rotation wrappers update four 28-byte vertices. The projection wrapper writes four bounds from the inverse view at the bank priority and requested depth.',
+          ids: [7, 16],
+          value: '2.6.1.63 own Particle v2 cosine and remainder write float results.',
         },
         {
-          ids: [1, 2, 5, 6, 19, 25, 26, 27, 28, 30, 31, 34, 35, 36, 50],
+          ids: [6, 19, 34],
           value: '2.6.1.63-own-title-particle-v2-wrappers-receiver-and-authored-control',
+        },
+        {
+          ids: [1, 2, 5, 22, 23, 24, 25, 26, 27, 28, 30, 31, 35, 36, 38, 50],
+          value:
+            'Own c8d4 normal Main66/Main143 parsed Script loads a genuine kind16 v2 VM through Main271; the native loader binds table710f90 and the actual particle owner. Finite frame/viewport/register words, four 28-byte quad vertices, position and inverse-view bounds feed actual Root/View COM-memory atlas/triangle submissions. Copied registers survive source zeroing; a second real script/atlas, stop and retirement complete normally. Same-body v1 and other SDK proofs are reused only with their separate caller contexts. These two-particle finite shapes do not qualify dense256 scenes, physical GPU/shaders, absent resources, stale owners or unproved arithmetic domains.',
         },
       ],
       signatures: [

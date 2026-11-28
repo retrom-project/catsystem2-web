@@ -170,19 +170,21 @@ export async function bitmapTransfer(world, destination, source, args, copy, tas
       sh = sr[3] - sr[1],
       dw = dr[2] - dr[0],
       dh = dr[3] - dr[1],
-      physical = flipBitmapRows(await source.pixels(), source.width, source.height);
+      sourcePixels = await source.pixels(),
+      physical = flipBitmapRows(sourcePixels, source.width, source.height);
     const region = {
       width: sw,
       height: sh,
       x: sr[0],
       y: sr[1],
     };
-    if (args.copyPhysicalRows) {
+    if (args.copyPhysicalRows || (source.state.bpp === 4 && outputBpp === 4)) {
       // An empty source sample preserves the destination. Aliased layers reuse
       // the physical input buffer so the next sample sees earlier writes.
-      const output = sameBacking
-        ? physical
-        : flipBitmapRows(await destination.pixels(), destination.width, destination.height);
+      const pixels = sameBacking ? sourcePixels : await destination.pixels(),
+        output = sameBacking
+          ? physical
+          : flipBitmapRows(pixels, destination.width, destination.height);
       resampleBitmap(physical, source.width, source.height, dw, dh, region, {
         pixels: output,
         width: destination.width,
@@ -190,7 +192,9 @@ export async function bitmapTransfer(world, destination, source, args, copy, tas
         y: dr[1],
         bpp: outputBpp,
       });
-      destination.state.rgba = flipBitmapRows(output, destination.width, destination.height);
+      // Copy back into the live allocation: neither this operation nor the
+      // physical-row variant changes the destination geometry or pixel format.
+      pixels.set(flipBitmapRows(output, destination.width, destination.height));
       destination.state.source = null;
       return destination.changed();
     }
@@ -275,7 +279,7 @@ export async function bitmapTransfer(world, destination, source, args, copy, tas
     copy,
   });
 }
-export async function bitmapBlur(bitmap, radiusX, radiusY) {
+export async function bitmapBlur(bitmap, radiusX, radiusY, { updateBase = true } = {}) {
   const s = bitmap.state;
   if (![3, 4].includes(s.bpp)) return;
   const rx = Math.max(0, Math.min(255, radiusX | 0)),
@@ -348,8 +352,7 @@ export async function bitmapBlur(bitmap, radiusX, radiusY) {
   }
   const rgba = pass(pass(input, rx, false), ry, true);
   Object.assign(s, {
-    baseX: s.baseX + oldX - s.offsetX,
-    baseY: s.baseY + oldY - s.offsetY,
+    ...(updateBase ? { baseX: s.baseX + oldX - s.offsetX, baseY: s.baseY + oldY - s.offsetY } : {}),
     rgba,
     source: null,
   });

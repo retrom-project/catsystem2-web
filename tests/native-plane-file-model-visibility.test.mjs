@@ -106,18 +106,36 @@ for (const profile of [
             'native complete manager priority window',
           );
         }
-        await restored.message([0, 42, 0, 0], {
-          payload: new NativeGraphicsPacket([
-            0,
-            0,
-            0,
-            floatBits(8),
-            floatBits(6),
-            0,
-            0,
-            0xff4080c0,
-          ]),
-        });
+        const previousGraph = restored.graph;
+        const rectangle = async () =>
+          restored.message([0, 42, 0, 0], {
+            payload: new NativeGraphicsPacket([
+              0,
+              0,
+              0,
+              floatBits(8),
+              floatBits(6),
+              0,
+              0,
+              0xff4080c0,
+            ]),
+          });
+        await rectangle();
+        if (
+          [
+            'grisaia-jp-engine-2.6.1.23',
+            'rebellions-jp-engine-2.6.1.63',
+            'bokutomo-engine-2.6.1.67',
+          ].includes(profile)
+        ) {
+          assert.equal(
+            restored.graph,
+            previousGraph,
+            'occupied legacy primitive keeps its original model',
+          );
+          await restored.message([0, 68, 0, 0]);
+          await rectangle();
+        }
         assert.equal(restored.graph.registrationEnabled, false);
         assert.equal(
           await count(restored),

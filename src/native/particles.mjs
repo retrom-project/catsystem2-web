@@ -100,7 +100,7 @@ export class NativeParticleTask {
     this.record = record;
     this.key = `task:${record.id}`;
     this.base = this.world.base(record);
-    this.state = { active: false, alpha: 256, attachment: -1 };
+    this.state = { active: false, alpha: 256, attachment: -1, blendMode: 0 };
     this.persistTaskFields = nativeABI(this.world.profile).particle?.taskFieldsPersistWithoutBank;
     if (this.persistTaskFields)
       Object.assign(this.state, { registers: null, family: null, atlas: null });
@@ -111,12 +111,16 @@ export class NativeParticleTask {
   get active() {
     return this.bank ? this.owner.host.busy(this.key) : this.state.active;
   }
+  blendMode() {
+    return this.bank?.family === 'script' ? this.bank.instance.blendMode : this.state.blendMode;
+  }
   bindScriptFrameRate(bank) {
     if (this.owner.scriptUsesTaskFrameRate && bank.family === 'script')
       bank.instance.fps = this.record.frameRate;
   }
   async load(spec) {
     const active = this.active;
+    this.state.blendMode = this.blendMode();
     if (this.persistTaskFields) {
       if (this.bank) this.state.atlas = this.atlasState();
       this.state.family = spec.family;
@@ -149,6 +153,7 @@ export class NativeParticleTask {
       this.state.atlas = null;
     }
     this.bindScriptFrameRate(bank);
+    if (bank.family === 'script') bank.instance.blendMode = this.state.blendMode;
     // Native 13A resets clocks and resources but retains the active DWORD.
     // It does not implicitly call Init on a replacement DLL.
     this.state.active = active;
@@ -249,6 +254,7 @@ export class NativeParticleTask {
         return unwritten;
       case 0x13d:
         this.state.active = false;
+        this.state.blendMode = this.blendMode();
         if (this.persistTaskFields && this.bank) {
           this.state.registers = this.bank.instance.registers.slice();
           this.state.atlas = this.atlasState();
@@ -292,15 +298,18 @@ export class NativeParticleTask {
     this.state.active = this.owner.host.busy(this.key);
   }
   snapshot() {
+    const state = { ...this.state, blendMode: this.blendMode() };
     return this.persistTaskFields
       ? {
-          ...this.state,
+          ...state,
           registers: this.state.registers?.slice() ?? null,
           atlas: this.state.atlas && { ...this.state.atlas },
         }
-      : { ...this.state };
+      : state;
   }
   restore(state) {
+    if (!Number.isInteger(state.blendMode) || state.blendMode < 0 || state.blendMode > 5)
+      throw new Error('Native particle task requires its initialized blend mode');
     if (
       this.persistTaskFields &&
       (!['script', 'plugin', null].includes(state.family) ||

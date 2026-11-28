@@ -60,8 +60,6 @@ export class Particles {
     this.registry = registry;
     this.profile = profile;
     this.nativeRefBuffers = profile && nativeABI(profile).particle?.refBuffersFollowNativeHeap;
-    this.drawPortEnabledByIdle = profile && nativeABI(profile).particle?.drawPortEnabledByIdle;
-    this.drawPortRequiresStart = profile && nativeABI(profile).particle?.drawPortRequiresStart;
     this.drawPortPersistsAfterExit =
       profile && nativeABI(profile).particle?.drawPortPersistsAfterExit;
     this.scriptStartPreservesState =
@@ -346,10 +344,10 @@ export class Particles {
       : await (bank.family === 'plugin'
           ? this.readPlugin(bank.program)
           : this.scriptBytes(bank.program));
-    if (this.atlas && this.drawPortEnabledByIdle && bank.family === 'script')
+    if (this.atlas && bank.family === 'script') {
       bank.nativeDrawEnabled = false;
-    if (this.atlas && this.drawPortRequiresStart && bank.family === 'script')
       bank.nativeDrawBound = false;
+    }
     if (bank.family === 'plugin') {
       await this.preloadData();
       const runtime = await this.pluginRuntime();
@@ -420,6 +418,7 @@ export class Particles {
       bank.instance.attachPlane = this.refreshAttachment(bank);
     bank.instance?.stop();
     if (bank.nativeDrawEnabled !== undefined) bank.nativeDrawEnabled = false;
+    if (bank.nativeDrawBound !== undefined) bank.nativeDrawBound = false;
     bank.started = false;
     bank.retireAt = null;
     this.metadata(bank);
@@ -694,7 +693,6 @@ export class Particles {
   validateNativeDrawPortState(state) {
     if (
       this.atlas &&
-      this.drawPortEnabledByIdle &&
       state.banks.some(
         (bank) => bank.family === 'script' && typeof bank.nativeDrawEnabled !== 'boolean',
       )
@@ -702,7 +700,6 @@ export class Particles {
       throw new Error('Particle checkpoint requires its native graph-port enable state');
     if (
       this.atlas &&
-      this.drawPortRequiresStart &&
       state.banks.some(
         (bank) => bank.family === 'script' && typeof bank.nativeDrawBound !== 'boolean',
       )

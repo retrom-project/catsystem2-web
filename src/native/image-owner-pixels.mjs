@@ -103,12 +103,7 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
   }
   if (!first) return id === 0x2d4 || id === 0x2d5 ? value(1) : done();
   const neutralTone = () => a(1) === 100 && a(2) === 100 && a(3) === 100;
-  if (
-    id === 0x2c9 &&
-    nativeABI(world.profile).graphics.bitmapToneSkipsNeutralOwner &&
-    neutralTone()
-  )
-    return done();
+  if (id === 0x2c9 && neutralTone()) return done();
   const record = owners.get(first),
     bitmap = record.bitmap ? images.get(record.bitmap) : null;
   if (id === 0x2d4)
@@ -138,7 +133,6 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
       await bitmapColor(bitmap, 'filter', a(1));
     return done();
   }
-  if (id === 0x2c9 && neutralTone()) return done();
   if (!record.layers)
     throw new RangeError('Original image collection operation requires loaded layers');
   const visit = async (fn) => {
@@ -156,21 +150,22 @@ export async function imageOwnerPixels(owners, id, a, machine, task) {
   else if (id === 0x2d7) await visit((b) => bitmapTransform(b, 'mirror', a(1) | 0));
   else if (id === 0x2da) await visit((b) => b.resize(a(1) >>> 0, a(2) >>> 0));
   else if (id === 0x2d6) {
+    const directKernel = nativeABI(world.profile).graphics.imageOwnerBlurDirectKernel;
     // Preserve the output expansion before each layer's own blur. The output
     // and the one static layer can deliberately reference the same bitmap.
     for (const layer of record.layers) {
       if (layer.bitmap) {
-        if (bitmap) {
+        if (bitmap && !directKernel) {
           await owners.expand(bitmap, a(1) | 0, a(2) | 0);
           record.info[0] = bitmap.width;
           record.info[1] = bitmap.height;
           record.info[4] = bitmap.state.offsetX;
           record.info[5] = bitmap.state.offsetY;
         }
-        await bitmapBlur(images.get(layer.bitmap), a(1), a(2));
+        await bitmapBlur(images.get(layer.bitmap), a(1), a(2), { updateBase: !directKernel });
       } else
         for (const frame of layer.animation?.frames ?? [])
-          await bitmapBlur(images.get(frame.bitmap), a(1), a(2));
+          await bitmapBlur(images.get(frame.bitmap), a(1), a(2), { updateBase: !directKernel });
     }
   }
   record.info[9] = 1;

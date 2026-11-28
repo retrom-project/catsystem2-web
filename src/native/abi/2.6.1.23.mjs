@@ -1058,7 +1058,7 @@ const mainEvidence = [
   {
     ids: [712, 715, 717, 724, 726, 730, 737],
     value:
-      'Own 2.6.1.23 Script images 0x4765a0–0x476b1c and 0x477110 read geometry and attributes and apply authored blur, resize and filter',
+      'Own 2.6.1.23 Script images 0x4765a0–0x476b1c and 0x477110 read geometry and attributes and apply authored blur, resize and filter. The qualified declared-resource Script chain compares raw HG2 metadata and mutable decoding, loaded HG3 owners, canvas/offset/base writes, transformed attributes, alpha/tone/filter/resize/blur, copied pixels and explicit release. Main726 at 0x476a70 calls owner0x4f5d80, which directly invokes RGB/RGBA kernels0x4db810/0x4dbd30; unlike the modern object method it neither pre-expands the output/cached bounds nor compensates layer base coordinates. Both bitmap state and stale owner cache are preserved through independent current cold.',
   },
   {
     ids: [625, 728],
@@ -1467,11 +1467,8 @@ export default {
     debugUsesNativeLogger: true,
     scriptVersionFallback: 'particle-v1',
     frameScale: 'x87-uint32',
-    beforeFrameUpdatedByIdle: true,
     scriptUsesTaskFrameRate: true,
     scriptStartPreservesState: true,
-    drawPortEnabledByIdle: true,
-    drawPortRequiresStart: true,
     drawPortPersistsAfterExit: true,
     quadUsesX87: true,
     textureCoordinatesUseX87: true,
@@ -1776,10 +1773,12 @@ export default {
   },
   graphics: {
     cameraNearRequiresMode1: true,
+    primitiveModelsRejectOccupied: true,
     dividedMesh: { receiverKinds: [2], rejectOccupiedModel: true },
     areaBlankWorkKinds: [27],
     bitmapAlphaQueryRequiresOwner: true,
     imageOwnerAlphaQueryRequiresBitmap: true,
+    imageOwnerBlurDirectKernel: true,
     bitmapResizeUsesLegacyCells: true,
     bitmapToneSkipsNeutralOwner: true,
     bitmapCompositeUsesLegacyRows: true,

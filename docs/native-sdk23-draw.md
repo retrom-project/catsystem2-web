@@ -125,3 +125,24 @@ layer orders and later drawings, reusing the established presentation path.
 An unqualified non-HG animated Main710 owner remains protected at construction;
 Main703's separately qualified empty source contract does not establish its
 owner storage layout.
+
+The ordinary Root-frame resource chain also has an independent .23 comparison.
+The original App-controller Root and mode1 View, unredirected CRT/FileServer and
+factory-created Script load the actual KCS program. Nine Root updates execute
+28 business GCALLs (39 including waits and the three established load calls).
+They compare every 12x8 output pixel after owner entry clipping, replacement,
+caller release, rectangle update, independent bitmap cloning, base-image binding,
+clear and forced publication. The final Root frame retires the Draw normally.
+The corresponding World control resumes independent current checkpoints after
+the replacement and after the cloned base bitmap's caller has released it.
+This proves the CPU bitmap/resource and configured COM-memory path; it does not
+claim physical texture sampling, a new GPU host, or coverage of arbitrary packet
+shapes. The original bitmap observer reads pitch times height rather than the
+potentially stale cached byte-length header.
+The exact SDK74 and plain SDK76 builds also have a normal loaded-Script bridge
+for Main731/732. Each creates the actual typed Draw and initialized renderer,
+loads an ImageOwner, rasterizes it, replaces the retained key with another
+owner, releases both creators, and compares all output pixels after subsequent
+raster and clear. The normal host then retires the Draw. This confirms the
+modern caller and retained ownership context, with the same software/COM-memory
+scope as the SDK23 group; it does not qualify physical texture sampling.

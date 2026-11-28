@@ -35,7 +35,8 @@ for (const build of golden.builds)
   test(`${build.version} default Particle rendering follows the own port through first idle, restart, reload and cold`, async () => {
     let { world, files, id, packet } = await fixture(build),
       clock = 1000,
-      stale;
+      stale,
+      bound = false;
     try {
       for (const expected of build.phases) {
         const message = {
@@ -48,6 +49,8 @@ for (const build of golden.builds)
           'start-after-reload': 315,
           release: 317,
         }[expected.label];
+        if (message === 314 || message === 317) bound = false;
+        if (message === 315) bound = true;
         if (message)
           await world.sendEngine(
             id,
@@ -98,7 +101,7 @@ for (const build of golden.builds)
         const items = world.particles.drawItems();
         assert.equal(
           items.length,
-          Number(Boolean(expected.enabled) && Boolean(expected.active)),
+          Number(Boolean(expected.enabled) && Boolean(expected.active) && bound),
           expected.label + ' default renderer items',
         );
         if (expected.label === 'idle-first') stale = items[0];
@@ -155,7 +158,7 @@ for (const build of golden.builds)
   });
 
 for (const build of golden.builds)
-  test(`${build.version} real FES start after its child's logic phase waits for the child's first idle`, async () => {
+  test(`${build.version} real FES explicit start waits for its child's first idle`, async () => {
     const input = build.input,
       world = await defaultParticleFESWorld(build.profile, {
         'screen.fes': new TextEncoder().encode(
@@ -166,7 +169,14 @@ for (const build of golden.builds)
       });
     try {
       const fes = await loadDefaultFES(world);
-      await world.tick();
+      await world.runtime.native(
+        'main',
+        448,
+        [world.nativeTaskID(fes.id)],
+        world.main.machine,
+        world.main,
+        world.runtime.scheduler,
+      );
       const object = fes.instance.collection.lookup('p', 0),
         task = world.particles.get(object.particleResource.taskID),
         bank = task.bank;

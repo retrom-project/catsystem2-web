@@ -51,3 +51,63 @@ control 2 without a result. The browser guards lookups that would cross the
 allocated rows and formatted names that would overrun the 32-byte field.
 Original physical allocation and byte probes and ordinary World GCALLs
 cover the author-visible behavior and cold handle ownership.
+
+## SDK23 loaded resource consumer bridge
+
+For fixed SDK23 `9f3a5ad0…`, `sdk23-name-resources.test.mjs` N1 uses the
+qualified CRT/FileServer/controller Root and a normal Settings FES category.
+Two real Main633 owners parse a finite two-row CP932 table. Primary-name, numeric,
+field and filename-rule outputs feed later GCALL arguments; the substituted
+filename loads an actual Scene whose two text blocks are consumed after the first
+table and then both tables are destroyed. Source/query strings are overwritten
+without changing the parsed owner. SDK23 does not enable fifth-column aliases;
+its normal alias miss is distinct from canonical-name success.
+
+The original constructor frees its temporary resource buffer after building its
+owned 100-byte rows (numeric ID and three 32-byte fields). The bridge checks the
+complete VM outputs and canaries through normal release, plus five independent
+serialized World continuations. It qualifies the authored finite table and
+replacement forms; it does not add arbitrary parser, locale or format support.
+All 18 target calls matched without a production or ABI change.
+
+N2 adds the matching normal SDK23 allocator/loaded-VM context bridge for
+Main289–293. Two real three-row allocations receive copied filenames and word
+pairs with a spare empty row. A folded-name lookup and reverse lookup select an
+actual Scene file and block; source strings are overwritten, the first pair
+owner is released, and the second selects a different Scene. Both pair owners
+then retire before the independently parsed Scene is consumed again. Complete
+live allocation bytes and VM destination/canary spans match the original,
+including five independent current cold continuations.
+
+The existing broader legacy-name-pairs evidence retains its scoped heap/CRT
+qualification. Its out-of-allocation witnesses are not repeated or promoted by
+this normal bridge. Main290 uses the typed name-pairs owner; the separate
+833/834 raw-allocation domain keeps its existing ownership guards. The new
+11-target/32-GCALL sequence requires no production, layout or ABI change.
+
+## Modern loaded resource consumers
+
+Exact `0e1dde51…` (74) and plain `ee6bf5cb…` (76) use real Settings XML
+initialization and the FileServer `fes` category to load two independent,
+nonempty authored tables. Canonical names, numeric IDs, fields, wildcard matching
+and replacement filenames feed parsed Script arguments and actual Scene text.
+The original 74 parser owns 100-byte fixed records and searches primary names;
+76 owns larger string/vector records and also searches fifth-column aliases.
+The finite alias miss in 74 and success in 76 are compared separately.
+
+The same original programs allocate two normal two-row name-pair owners, append
+short filenames, perform folded and reverse lookups, then use the returned words
+to select different Scene blocks. Source strings are overwritten; one owner and
+then both owners are released before subsequent consumers. A new table reader
+sees the replaced resource's ID while the existing owner retains the old ID.
+Complete VM outputs and canary spans match both originals, including ten
+independent current checkpoint continuations across this and the XML/tone group.
+`native-modern-xml-tone-name.test.mjs` preserves those consumer programs.
+
+This qualifies the existing common name-pair implementation for plain 76 and
+replaces its old unsupported migration decision; it adds no new record format
+or layout. The historical zero-call static survey remains unchanged. Resource
+reads use the qualified loose-file backend and finite Settings prefix. Full
+Engine teardown, KIF rebind's unqualified 64-bit seek leaf, physical Windows
+storage, arbitrary TSV grammar and the wrapped 638e executable remain outside
+this proof.

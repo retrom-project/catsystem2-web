@@ -33,3 +33,47 @@ This change closes native **text** byte ownership/output. Byte aliases in elemen
 names and formatted path lookup are separate existing behavior; their equivalence
 is not established by this text fix. Evidence is complete static producer/string
 bodies plus authored Node/World/fresh tests, with no new original execution.
+
+## SDK23 resource and caller bridge
+
+`tests/sdk23-xml-tone-resources.test.mjs` X1 binds the existing XML behavior to
+the fixed `9f3a5ad0…` native body and a real mounted FileServer context. Main674
+looks up the authored `config` Settings category; that returned index formats a
+filename passed through Main598's finite comma-selector base extraction and
+then Main590. The open wrapper uses stream flags `0x13`, not category number19.
+It closes the source stream and frees its temporary input after constructing
+the parsed document owner.
+
+Two distinct Main590 owners supply finite present integer/text paths and a
+Scene filename. Values reach loaded Script variables, expressions and formatting;
+the filename loads an actual Scene whose text remains consumable after both
+XML owners close normally. The defined absent integer path returns its fallback;
+an absent text path preserves the existing destination. CP932 text and literal
+entity spelling are compared as bytes, with bounded destinations and canaries.
+This does not claim arbitrary XML grammar or locale support.
+
+The current VM tests overwrite returned resource bytes after parsing and resume
+later consumers at four independent cold points, closing the old World first.
+Neither the remaining live owner nor its restored parsed state reopens that
+resource. This document-owner bridge is separate from startup XML configuration
+production and from native GAME_SAVE product persistence.
+
+## Modern Settings and document consumers
+
+The exact 74 and plain ee6-76 programs in
+`tests/native-modern-xml-tone-name.test.mjs` use a separate parsed Main590
+startup document and the intact Settings initializer/XML writer. That finite
+prefix produces the real `config` and `fes` rows; Main674's returned category
+index formats the filename selected by Main598. Actual FileServer reads then
+create two independent document owners. Version 74 requires Shift_JIS and 76
+requires UTF-8; text bytes, including literal entity spelling, match each own
+original rather than being converted by a browser XML parser.
+
+Present integer/text queries drive Script variables, an expression and an actual
+Scene filename. Defined absent queries preserve fallback or destination bytes.
+After one owner closes and the same loose source is replaced, the old owner
+still reads 17 and a new reader reads 31. Both original streams, temporary buffers
+and explicit document owners close normally; serialized current continuations
+preserve this owned state. The qualification covers existing virtual file ports
+and the finite Settings prefix. It excludes full Engine construction/destruction,
+KIF rebind's unqualified 64-bit seek leaf, arbitrary grammar and physical storage.

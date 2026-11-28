@@ -81,10 +81,11 @@ branch while returning control 2. Their signature resultWritten is null in both
 ABI records. KCS receives the declared void control. The completed migration
 uses the corresponding JS data models for normal calls.
 
-## Reviewed unsupported entries
+## Historical unsupported entries
 
-Game 121 through 125 retain namePairs.allocate, free, append, findName and
-findPair. Normal World dispatch reaches UnsupportedKCSNative for all five.
+The initial review retained guards for game 121 through 125: namePairs.allocate,
+free, append, findName and findPair. At that point normal World dispatch reached
+UnsupportedKCSNative for all five.
 Diagnostics include the profile, table, ID, arguments, task, script position and
 source metadata. The frozen game corpus contains 103 KCS files and the SDK
 contains 186. None references main 121 through 125. The strict instruction
@@ -95,8 +96,11 @@ reach these entries through ordinary GCALL.
 Reproduce the static input with scripts/native-audit.mjs and its --corpus option,
 then inspect each corpus.nativeIds entry. references.json identifies the two
 frozen EXEs. Raw IDA output and private corpus measurements remain in ignored
-local evidence storage. The five reviewed unsupported decisions remain explicit dispatcher guards and
-contract tests; deleting the migration dashboard does not enable them.
+local evidence storage. The later exact-76 authored resource/Script consumer
+qualification supersedes these five migration guards, as recorded in
+[the name-table contract](native-name-tables.md#modern-loaded-resource-consumers).
+That new runtime qualification does not alter the historical static survey or
+qualify unproved allocation, format or physical-pointer shapes.
 
 ## Mission empty-character query
 

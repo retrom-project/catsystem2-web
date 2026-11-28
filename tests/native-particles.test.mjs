@@ -122,7 +122,7 @@ test('native particle factory and main PTCL wrappers route real task IDs, raw re
   await world.objects.tick(5);
   assert.equal(task.bank.instance.frame, 0);
   await world.objects.tick(8);
-  assert.equal(task.bank.instance.before, 0);
+  assert.equal(task.bank.instance.before, 3, 'native idle commits its completed frame');
   assert.equal(task.bank.instance.frame, 3);
   assert.equal(world.particles.drawItems().length, 1);
   machine.store(128, floatBits(9));

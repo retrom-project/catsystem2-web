@@ -347,6 +347,7 @@ export default {
     yawPitchRollUsesSSEWords: true,
   },
   particle: {
+    scriptStartPreservesState: true,
     debugUsesNativeLogger: true,
     taskMessageStart: 303,
     deferGraphAttachment: true,
@@ -1464,6 +1465,7 @@ export default {
     cameraNearRequiresMode1: true,
     drawPendingCopiesWholeBitmap: true,
     dividedMesh: { receiverKinds: [2], rejectOccupiedModel: true, requiresTexturePages: true },
+    primitiveModelsRejectOccupied: true,
     bitmapCopyToVRAMOnly: true,
     texturedBoundsQuery: null,
     coordinateModeRequiresGraph: true,
