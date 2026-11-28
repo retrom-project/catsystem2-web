@@ -431,18 +431,17 @@ export class NativeSound {
       m.pcmBytes !== undefined
     ) {
       const halfSecond = Math.floor((m.sampleRate * m.channels * (m.bitsPerSample >>> 3)) / 2);
-      const decodedBytes =
-        this.abi.sound.decoderOptionAddsSilence && decoderOption
-          ? Number(
-              (BigInt(m.pcmBytes) +
-                BigInt(Math.floor(((decoderOption >>> 0) * m.sampleRate) / 1000)) *
-                  BigInt(m.channels * (m.bitsPerSample >>> 3))) &
-                0xffffffffn,
-            )
-          : m.pcmBytes;
+      const decodedBytes = decoderOption
+        ? Number(
+            (BigInt(m.pcmBytes) +
+              BigInt(Math.floor(((decoderOption >>> 0) * m.sampleRate) / 1000)) *
+                BigInt(m.channels * (m.bitsPerSample >>> 3))) &
+              0xffffffffn,
+          )
+        : m.pcmBytes;
       if (8 * halfSecond >= decodedBytes) device.sourceMode = 'static';
     }
-    if ((this.abi.sound.decoderOptionAddsSilence && decoderOption) || m.nativeMSADPCM) {
+    if (decoderOption || m.nativeMSADPCM) {
       if (typeof this.audio.prepareNativeDecoderBuffer !== 'function')
         throw new Error('Native decoder prefix service is unavailable');
       const state = await this.audio.prepareNativeDecoderBuffer(

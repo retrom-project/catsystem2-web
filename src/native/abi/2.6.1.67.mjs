@@ -421,7 +421,6 @@ export default {
   },
   sound: {
     banks: 32,
-    decoderOptionAddsSilence: true,
     msADPCMUsesNativePCM: true,
     tagKeysUseBytes: true,
     tagAllReadsOutsideBankTable: true,

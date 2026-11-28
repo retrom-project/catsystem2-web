@@ -335,3 +335,30 @@ flow and actual lookup context. A separate SDK76 parsed program consumes that
 whole group. Counts distinguish these bridges from new native executions. This
 is a qualified Engine-class/data-owner and controlled filesystem scope, not
 WinMain, full Application startup or a physical audio device.
+
+## Primary decoder option and initialized legacy metadata
+
+SDK74 and plain SDK76 Main935/936 use the same PCM decoder silence prefix as
+SDK63/67. Whole unsigned 60Hz ticks become whole milliseconds before the decoder
+adds whole sample frames. Prefix bytes count toward the short-source static
+conversion threshold and stored static capacity, while Main569 still returns
+the original file's frame count. This is common decoder behavior, not a build
+capability. Unsupported codecs retain their existing diagnostic.
+
+The finite modern group uses real FileServer resources, two distinct PCM8
+sources, fixed and allocated banks, nonzero prefixes, completion events,
+pause/resume, replacement, release and fresh checkpoint owners. Original COM
+buffer bytes and Script queries match current output. Main400's authored table
+is loaded into the actual Sound owner and binds its ranges to declared type1;
+the short source is independently confirmed to convert to static before Play.
+This proves table ownership and binding, not stream loop-range playback. The
+static buffer repeats its stored PCM, including its silence prefix.
+
+Legacy filename gain, voice enable/master and voice index read initialized
+Settings, separately from the newer SoundConfig table. The Engine-class startup
+reader leaves derived gain words untouched until its real volume-derivation
+method runs. The independent metadata bridge calls that existing method on the
+original owner, then feeds filename gain through an actual loaded-bank setter
+and readback into parsed Script arithmetic. The earlier pre-derivation zero
+observations remain separate; they do not establish an implicit refresh rule.
+SDK76 reuses the complete equivalent derivation and relevant owner context.

@@ -1,0 +1,439 @@
+{
+  "scope": "Actual static PCM8 prefix capacity/bytes/normal completion, loop-table load and binding, legacy initialized filename metadata and parsed bank consumers. Stream loop-range playback/physicalAV/new codecs are not qualified. G1 excludes Main605 derived-volume cells because that class-level host stops before the real Settings derivation; the independent metadata row executes that real method.",
+  "versions": [
+    {
+      "version": "74",
+      "files": {
+        "main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+        "scripts-loose/main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+        "source.kcs": "S0NTAAIAAAAAAAAANAAAAO4HAAAiCAAAAAAAAAAAAAAAEAAAABAAACIIAAAAAAAA3A8AAHicjZXPaxNBFMffxq0sWDCwOfQQRHhmKGwpK/RQsUiEHAImELCHgq39QZQcFjbUoDn0kEMPPXjw4EGwSv2x6p/hwYNX/xL/ASEyb7o7390M4iV8+M73zZv35k22xf3ew0GLsyzLFJNHlLMPHAAvA9eBG8ArwE3gm8C3gFeB14Bj4A3gTeAt4DZwB7gL3AMeAG8D7wDvAh8AD4FHwAnwGHgCPAU+AZ4BnwKfAb8EfgX8GvgN8Lnw0+l+oph8zWk6XlfsC0+OElIc+JeeZ4rbwqP0eKK4I0xEpLibe1LFMxM7enKs+BQ8Z8KHSRwr/i68/uLwueIf4PkpfJTGtxXTkvX4S9YTCOsdIt6rEbEvshlPIz+2sg/yvpUDkHtXCtnMr85c2rsOMmzSABk2MQOuD9uSpkZyFRwQyPJruumRtrwlIq5TLpQtNeHrYvyqEzVE6INx5ttQY78h9m/aviLnahbniviOrcK8O68qyxMMdUxJXi3crTCQxQ9UFGdkcxNXZcNPenEZyvo9n88j/lyJ4WtkY77kMRHf14gtq4n8rhpelcMmFFVxR/yRinLWwJdZOQZ5zyvkDejghXVvgvzAtmrLc5RQcrQhDcgdaD2k6YL7fS7nAvh6OH8wHDWwwxQtDMQA4qsdvDzVuU3fF8ejPPzfBW+7C96xQ/Ufd7brfqQH7kc6dD/SkS0yHFbnmKopE7jhovZSqQs1jT3n5Uzcz2oKbmeCxZATdxtm7j88/cXwQr0Y6tLzz8a9XxcDxX88ort/AYNLGVc=",
+        "scripts-loose/source.kcs": "S0NTAAIAAAAAAAAANAAAAO4HAAAiCAAAAAAAAAAAAAAAEAAAABAAACIIAAAAAAAA3A8AAHicjZXPaxNBFMffxq0sWDCwOfQQRHhmKGwpK/RQsUiEHAImELCHgq39QZQcFjbUoDn0kEMPPXjw4EGwSv2x6p/hwYNX/xL/ASEyb7o7390M4iV8+M73zZv35k22xf3ew0GLsyzLFJNHlLMPHAAvA9eBG8ArwE3gm8C3gFeB14Bj4A3gTeAt4DZwB7gL3AMeAG8D7wDvAh8AD4FHwAnwGHgCPAU+AZ4BnwKfAb8EfgX8GvgN8Lnw0+l+oph8zWk6XlfsC0+OElIc+JeeZ4rbwqP0eKK4I0xEpLibe1LFMxM7enKs+BQ8Z8KHSRwr/i68/uLwueIf4PkpfJTGtxXTkvX4S9YTCOsdIt6rEbEvshlPIz+2sg/yvpUDkHtXCtnMr85c2rsOMmzSABk2MQOuD9uSpkZyFRwQyPJruumRtrwlIq5TLpQtNeHrYvyqEzVE6INx5ttQY78h9m/aviLnahbniviOrcK8O68qyxMMdUxJXi3crTCQxQ9UFGdkcxNXZcNPenEZyvo9n88j/lyJ4WtkY77kMRHf14gtq4n8rhpelcMmFFVxR/yRinLWwJdZOQZ5zyvkDejghXVvgvzAtmrLc5RQcrQhDcgdaD2k6YL7fS7nAvh6OH8wHDWwwxQtDMQA4qsdvDzVuU3fF8ejPPzfBW+7C96xQ/Ufd7brfqQH7kc6dD/SkS0yHFbnmKopE7jhovZSqQs1jT3n5Uzcz2oKbmeCxZATdxtm7j88/cXwQr0Y6tLzz8a9XxcDxX88ort/AYNLGVc=",
+        "startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VORENPTkZJRz5wcmltYXJ5LnhtbDwvU09VTkRDT05GSUc+PElOVD48aW50MDA+PG5hbWU+a2NzPC9uYW1lPjxpbnQ+c2NyaXB0cy5pbnQ8L2ludD48ZXh0PmtjczwvZXh0PjxkaXI+c2NyaXB0cy1sb29zZTwvZGlyPjwvaW50MDA+PGludDAxPjxuYW1lPnNlPC9uYW1lPjxpbnQ+c2UuaW50PC9pbnQ+PGV4dD53YXY8L2V4dD48ZGlyPnNvdW5kLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+dGFnPC9uYW1lPjxpbnQ+dGFnLmludDwvaW50PjxleHQ+dGFnPC9leHQ+PGRpcj50YWctbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5jb25maWc8L25hbWU+PGludD5jb25maWcuaW50PC9pbnQ+PGV4dD54bWw8L2V4dD48ZGlyPmNvbmZpZy1sb29zZTwvZGlyPjwvaW50MDM+PC9JTlQ+PFNPVU5ER1JPVVA+PGdyb3VwMDA+PGlkPjc8L2lkPjx0eXBlPnZvaWNlPC90eXBlPjxtaW4+MDwvbWluPjxtYXg+MjwvbWF4PjwvZ3JvdXAwMD48Z3JvdXAwMT48aWQ+ODwvaWQ+PHR5cGU+c2U8L3R5cGU+PG1pbj4yPC9taW4+PG1heD40PC9tYXg+PC9ncm91cDAxPjwvU09VTkRHUk9VUD48Vk9JQ0U+PHYwMD48dm9pY2U+QWxpY2U8L3ZvaWNlPjxoZWFkPmFsPC9oZWFkPjxpbnQ+cGNtPC9pbnQ+PGdyb3VwPjc8L2dyb3VwPjxtYXN0ZXJ2b2w+NzM8L21hc3RlcnZvbD48cGxheT4xPC9wbGF5PjwvdjAwPjx2MDE+PHZvaWNlPkJvYjwvdm9pY2U+PGhlYWQ+Ym88L2hlYWQ+PGludD5zZTwvaW50Pjxncm91cD44PC9ncm91cD48bWFzdGVydm9sPjYxPC9tYXN0ZXJ2b2w+PHBsYXk+MTwvcGxheT48L3YwMT48dm9sPjxiZ20+MjU8L2JnbT48c2U+MzA8L3NlPjx2b2ljZT40MDwvdm9pY2U+PHN5c3ZvaWNlPjUwPC9zeXN2b2ljZT48L3ZvbD48L1ZPSUNFPjwvZG9jdW1lbnQ+",
+        "config/startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VORENPTkZJRz5wcmltYXJ5LnhtbDwvU09VTkRDT05GSUc+PElOVD48aW50MDA+PG5hbWU+a2NzPC9uYW1lPjxpbnQ+c2NyaXB0cy5pbnQ8L2ludD48ZXh0PmtjczwvZXh0PjxkaXI+c2NyaXB0cy1sb29zZTwvZGlyPjwvaW50MDA+PGludDAxPjxuYW1lPnNlPC9uYW1lPjxpbnQ+c2UuaW50PC9pbnQ+PGV4dD53YXY8L2V4dD48ZGlyPnNvdW5kLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+dGFnPC9uYW1lPjxpbnQ+dGFnLmludDwvaW50PjxleHQ+dGFnPC9leHQ+PGRpcj50YWctbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5jb25maWc8L25hbWU+PGludD5jb25maWcuaW50PC9pbnQ+PGV4dD54bWw8L2V4dD48ZGlyPmNvbmZpZy1sb29zZTwvZGlyPjwvaW50MDM+PC9JTlQ+PFNPVU5ER1JPVVA+PGdyb3VwMDA+PGlkPjc8L2lkPjx0eXBlPnZvaWNlPC90eXBlPjxtaW4+MDwvbWluPjxtYXg+MjwvbWF4PjwvZ3JvdXAwMD48Z3JvdXAwMT48aWQ+ODwvaWQ+PHR5cGU+c2U8L3R5cGU+PG1pbj4yPC9taW4+PG1heD40PC9tYXg+PC9ncm91cDAxPjwvU09VTkRHUk9VUD48Vk9JQ0U+PHYwMD48dm9pY2U+QWxpY2U8L3ZvaWNlPjxoZWFkPmFsPC9oZWFkPjxpbnQ+cGNtPC9pbnQ+PGdyb3VwPjc8L2dyb3VwPjxtYXN0ZXJ2b2w+NzM8L21hc3RlcnZvbD48cGxheT4xPC9wbGF5PjwvdjAwPjx2MDE+PHZvaWNlPkJvYjwvdm9pY2U+PGhlYWQ+Ym88L2hlYWQ+PGludD5zZTwvaW50Pjxncm91cD44PC9ncm91cD48bWFzdGVydm9sPjYxPC9tYXN0ZXJ2b2w+PHBsYXk+MTwvcGxheT48L3YwMT48dm9sPjxiZ20+MjU8L2JnbT48c2U+MzA8L3NlPjx2b2ljZT40MDwvdm9pY2U+PHN5c3ZvaWNlPjUwPC9zeXN2b2ljZT48L3ZvbD48L1ZPSUNFPjwvZG9jdW1lbnQ+",
+        "config-loose/primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VOREdST1VQPjxlZmZlY3RzPjxpZD43NzwvaWQ+PHR5cGU+c2U8L3R5cGU+PGxhYmVsPkVmZmVjdHM8L2xhYmVsPjxtaW4+MjwvbWluPjxtYXg+NDwvbWF4PjwvZWZmZWN0cz48L1NPVU5ER1JPVVA+PE1BU1RFUj48dm9sdW1lPjc5PC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5PjxtdXRlPjA8L211dGU+PHZvaWNldm9sPjgxPC92b2ljZXZvbD48c2tpcHZvbD4zNTwvc2tpcHZvbD48L01BU1RFUj48UEFSVD48ZWZmZWN0cz48aWQ+NDwvaWQ+PGdyb3VwPjc3PC9ncm91cD48c2FtZWlkPjE8L3NhbWVpZD48bmFtZT6M+InKibk8L25hbWU+PHR5cGU+c2U8L3R5cGU+PGhlYWQ+RlhfPC9oZWFkPjxpbnQ+c2U8L2ludD48bWFzdGVydm9sPjYyPC9tYXN0ZXJ2b2w+PHZvbHVtZT44Mjwvdm9sdW1lPjxwbGF5PjE8L3BsYXk+PHN5c3BsYXk+MTwvc3lzcGxheT48dm9pY2V2b2w+NTU8L3ZvaWNldm9sPjxza2lwdm9sPjMxPC9za2lwdm9sPjxtdXRlPjA8L211dGU+PC9lZmZlY3RzPjwvUEFSVD48L2RvY3VtZW50Pg==",
+        "primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VOREdST1VQPjxlZmZlY3RzPjxpZD43NzwvaWQ+PHR5cGU+c2U8L3R5cGU+PGxhYmVsPkVmZmVjdHM8L2xhYmVsPjxtaW4+MjwvbWluPjxtYXg+NDwvbWF4PjwvZWZmZWN0cz48L1NPVU5ER1JPVVA+PE1BU1RFUj48dm9sdW1lPjc5PC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5PjxtdXRlPjA8L211dGU+PHZvaWNldm9sPjgxPC92b2ljZXZvbD48c2tpcHZvbD4zNTwvc2tpcHZvbD48L01BU1RFUj48UEFSVD48ZWZmZWN0cz48aWQ+NDwvaWQ+PGdyb3VwPjc3PC9ncm91cD48c2FtZWlkPjE8L3NhbWVpZD48bmFtZT6M+InKibk8L25hbWU+PHR5cGU+c2U8L3R5cGU+PGhlYWQ+RlhfPC9oZWFkPjxpbnQ+c2U8L2ludD48bWFzdGVydm9sPjYyPC9tYXN0ZXJ2b2w+PHZvbHVtZT44Mjwvdm9sdW1lPjxwbGF5PjE8L3BsYXk+PHN5c3BsYXk+MTwvc3lzcGxheT48dm9pY2V2b2w+NTU8L3ZvaWNldm9sPjxza2lwdm9sPjMxPC9za2lwdm9sPjxtdXRlPjA8L211dGU+PC9lZmZlY3RzPjwvUEFSVD48L2RvY3VtZW50Pg==",
+        "tag-loose/fx_owned.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+        "tag-loose/fx_other.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+        "scripts.int": "S0lGAAAAAAA=",
+        "se.int": "S0lGAAAAAAA=",
+        "tag.int": "S0lGAAAAAAA=",
+        "config.int": "S0lGAAAAAAA=",
+        "sound-loose/fx_loop.tbl": "Znhfc2hvcnQgMTYgNDAwMA0KZnhfb3RoZXIgMzIgNjAwMA0K"
+      },
+      "outputs": [
+        260, 264, 268, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324, 328, 332,
+        336, 340, 344, 348, 356, 360, 364, 368, 372, 376, 380, 388
+      ],
+      "phases": [
+        {
+          "frame": 100,
+          "advance": 0
+        },
+        {
+          "frame": 101,
+          "advance": 0
+        },
+        {
+          "frame": 102,
+          "advance": 1000
+        },
+        {
+          "frame": 106,
+          "advance": 500
+        },
+        {
+          "frame": 114,
+          "advance": 250
+        },
+        {
+          "frame": 115,
+          "advance": 0
+        }
+      ],
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-primary-loop-metadata-20261128/ORIGINAL-P1-74.json",
+        "sha256": "3b234d15ee40191eb26c0c6d60b5c693dc40b67af288533be84e8e88a51ca8ce"
+      },
+      "rows": [
+        {
+          "frame": 100,
+          "words": [
+            1, 73, 0, 61, 1, 2, 8000, 8000, 8000, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485
+          ],
+          "marker": 0,
+          "banks": [
+            {
+              "bank": 0,
+              "capacity": 8000,
+              "loopStart": "16",
+              "loopEnd": "4000",
+              "sha256": "15fb953499475c0798fcdcb438a309a594950af11267d10e2f1fbdb747fb0ef9"
+            },
+            {
+              "bank": 1,
+              "capacity": 10000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "d600be323562768e49ebdc404697312711b9394048d4d8cf3d83552268867159"
+            },
+            {
+              "bank": 2,
+              "capacity": 12000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "43fbe550b7778a91c899c862936965c548bc959058bbf721461dfb64bac81c1b"
+            }
+          ]
+        },
+        {
+          "frame": 101,
+          "words": [
+            1, 73, 0, 61, 1, 2, 8000, 8000, 8000, 73, 4294967284, 0, 1, 0, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "marker": 0,
+          "banks": [
+            {
+              "bank": 0,
+              "capacity": 8000,
+              "loopStart": "16",
+              "loopEnd": "4000",
+              "sha256": "15fb953499475c0798fcdcb438a309a594950af11267d10e2f1fbdb747fb0ef9"
+            },
+            {
+              "bank": 1,
+              "capacity": 10000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "d600be323562768e49ebdc404697312711b9394048d4d8cf3d83552268867159"
+            },
+            {
+              "bank": 2,
+              "capacity": 12000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "43fbe550b7778a91c899c862936965c548bc959058bbf721461dfb64bac81c1b"
+            }
+          ]
+        },
+        {
+          "frame": 102,
+          "words": [
+            1, 73, 0, 61, 1, 2, 8000, 8000, 8000, 73, 4294967284, 0, 1, 0, 1, 0, 1, 0, 8000,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "marker": 0,
+          "banks": [
+            {
+              "bank": 0,
+              "capacity": 8128,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "bdbb3342e0b87c30f62b98f39eb51a12cbea12c0d5d147d37406d4325e6bc10a"
+            },
+            {
+              "bank": 1,
+              "capacity": 10000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "d600be323562768e49ebdc404697312711b9394048d4d8cf3d83552268867159"
+            },
+            {
+              "bank": 2,
+              "capacity": 12000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "43fbe550b7778a91c899c862936965c548bc959058bbf721461dfb64bac81c1b"
+            }
+          ]
+        },
+        {
+          "frame": 106,
+          "words": [
+            1, 73, 0, 61, 1, 2, 8000, 8000, 8000, 73, 4294967284, 0, 1, 0, 1, 0, 1, 0, 8000, 0, 0,
+            73, 61, 1, 61, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "marker": 0,
+          "banks": [
+            {
+              "bank": 1,
+              "capacity": 10000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "d600be323562768e49ebdc404697312711b9394048d4d8cf3d83552268867159"
+            },
+            {
+              "bank": 2,
+              "capacity": 12000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "43fbe550b7778a91c899c862936965c548bc959058bbf721461dfb64bac81c1b"
+            }
+          ]
+        },
+        {
+          "frame": 114,
+          "words": [
+            1, 73, 0, 61, 1, 2, 8000, 8000, 8000, 73, 4294967284, 0, 1, 0, 1, 0, 1, 0, 8000, 0, 0,
+            73, 61, 1, 61, 1, 0, 8000, 2779096485, 2779096485
+          ],
+          "marker": 0,
+          "banks": [
+            {
+              "bank": 2,
+              "capacity": 12000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "43fbe550b7778a91c899c862936965c548bc959058bbf721461dfb64bac81c1b"
+            }
+          ]
+        },
+        {
+          "frame": 115,
+          "words": [
+            1, 73, 0, 61, 1, 2, 8000, 8000, 8000, 73, 4294967284, 0, 1, 0, 1, 0, 1, 0, 8000, 0, 0,
+            73, 61, 1, 61, 1, 0, 8000, 0, 73
+          ],
+          "marker": 1352716606,
+          "banks": []
+        }
+      ]
+    },
+    {
+      "version": "76",
+      "files": {
+        "main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+        "scripts-loose/main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+        "source.kcs": "S0NTAAIAAAAAAAAANAAAABkFAABNBQAAAAAAAAAAAAAAEAAAABAAAE0FAAAAAAAAMgoAAHicbdMxS8NAFAfwl5pCBkEhHTqICM8ehZQSwaGiSIUOBVso6OCg1haVDoGUWrRDhw4dOjg4ODhUqELQj+Hg4Or3cZB7aZK/2OX48c/Lvcdxl+N67aiR4yAIAsVkEEU2wRZ4GbwKzoCz4DXwBngTnAcXwC54G1wC74HL4Aq4Cq6BG+Bj8An4FHwBvgR3wB64C+6DB+AheAQegyfge/AD+BH8BJ6KrwdNTzGZ2r7fLSo2xf22R4otc15zo7gs7vi9vuKKmIhIcTWq8RWPwn87Vz3FY6iZiFue6yr+EBfvWreKP6HmS9z23S3FlE5qzHRSY4n1Dg6fpYjYlDi8nmF8nsQmxM0kDi+tbuFwbSmOw7up++TkPBw5RbYIYlnDgzDEK6QL3/QuGQnqUDiCwpSs61L+rsuz0nQtburwTjKivAdbf/wT55MRbUs+vtB8RIcPNHHOlMTPUUW4XzgPxvPurxS3KcBQsyQuGQvaOHyYzFeGsSGuQAz7VaHNNIqjujjAjv+37i4+qIGx8EeoGMIlgJukH5ph69XW9yF6Yfvfs4biH4No9xeRrd1f",
+        "scripts-loose/source.kcs": "S0NTAAIAAAAAAAAANAAAABkFAABNBQAAAAAAAAAAAAAAEAAAABAAAE0FAAAAAAAAMgoAAHicbdMxS8NAFAfwl5pCBkEhHTqICM8ehZQSwaGiSIUOBVso6OCg1haVDoGUWrRDhw4dOjg4ODhUqELQj+Hg4Or3cZB7aZK/2OX48c/Lvcdxl+N67aiR4yAIAsVkEEU2wRZ4GbwKzoCz4DXwBngTnAcXwC54G1wC74HL4Aq4Cq6BG+Bj8An4FHwBvgR3wB64C+6DB+AheAQegyfge/AD+BH8BJ6KrwdNTzGZ2r7fLSo2xf22R4otc15zo7gs7vi9vuKKmIhIcTWq8RWPwn87Vz3FY6iZiFue6yr+EBfvWreKP6HmS9z23S3FlE5qzHRSY4n1Dg6fpYjYlDi8nmF8nsQmxM0kDi+tbuFwbSmOw7up++TkPBw5RbYIYlnDgzDEK6QL3/QuGQnqUDiCwpSs61L+rsuz0nQtburwTjKivAdbf/wT55MRbUs+vtB8RIcPNHHOlMTPUUW4XzgPxvPurxS3KcBQsyQuGQvaOHyYzFeGsSGuQAz7VaHNNIqjujjAjv+37i4+qIGx8EeoGMIlgJukH5ph69XW9yF6Yfvfs4biH4No9xeRrd1f",
+        "startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNPVU5EQ09ORklHPnByaW1hcnkueG1sPC9TT1VORENPTkZJRz48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2U8L25hbWU+PGludD5zZS5pbnQ8L2ludD48ZXh0PndhdjwvZXh0PjxkaXI+c291bmQtbG9vc2U8L2Rpcj48L2ludDAxPjxpbnQwMj48bmFtZT50YWc8L25hbWU+PGludD50YWcuaW50PC9pbnQ+PGV4dD50YWc8L2V4dD48ZGlyPnRhZy1sb29zZTwvZGlyPjwvaW50MDI+PGludDAzPjxuYW1lPmNvbmZpZzwvbmFtZT48aW50PmNvbmZpZy5pbnQ8L2ludD48ZXh0PnhtbDwvZXh0PjxkaXI+Y29uZmlnLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48U09VTkRHUk9VUD48Z3JvdXAwMD48aWQ+NzwvaWQ+PHR5cGU+dm9pY2U8L3R5cGU+PG1pbj4wPC9taW4+PG1heD4yPC9tYXg+PC9ncm91cDAwPjxncm91cDAxPjxpZD44PC9pZD48dHlwZT5zZTwvdHlwZT48bWluPjI8L21pbj48bWF4PjQ8L21heD48L2dyb3VwMDE+PC9TT1VOREdST1VQPjxWT0lDRT48djAwPjx2b2ljZT5BbGljZTwvdm9pY2U+PGhlYWQ+YWw8L2hlYWQ+PGludD5wY208L2ludD48Z3JvdXA+NzwvZ3JvdXA+PG1hc3RlcnZvbD43MzwvbWFzdGVydm9sPjxwbGF5PjE8L3BsYXk+PC92MDA+PHYwMT48dm9pY2U+Qm9iPC92b2ljZT48aGVhZD5ibzwvaGVhZD48aW50PnNlPC9pbnQ+PGdyb3VwPjg8L2dyb3VwPjxtYXN0ZXJ2b2w+NjE8L21hc3RlcnZvbD48cGxheT4xPC9wbGF5PjwvdjAxPjx2b2w+PGJnbT4yNTwvYmdtPjxzZT4zMDwvc2U+PHZvaWNlPjQwPC92b2ljZT48c3lzdm9pY2U+NTA8L3N5c3ZvaWNlPjwvdm9sPjwvVk9JQ0U+PC9kb2N1bWVudD4=",
+        "config/startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNPVU5EQ09ORklHPnByaW1hcnkueG1sPC9TT1VORENPTkZJRz48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2U8L25hbWU+PGludD5zZS5pbnQ8L2ludD48ZXh0PndhdjwvZXh0PjxkaXI+c291bmQtbG9vc2U8L2Rpcj48L2ludDAxPjxpbnQwMj48bmFtZT50YWc8L25hbWU+PGludD50YWcuaW50PC9pbnQ+PGV4dD50YWc8L2V4dD48ZGlyPnRhZy1sb29zZTwvZGlyPjwvaW50MDI+PGludDAzPjxuYW1lPmNvbmZpZzwvbmFtZT48aW50PmNvbmZpZy5pbnQ8L2ludD48ZXh0PnhtbDwvZXh0PjxkaXI+Y29uZmlnLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48U09VTkRHUk9VUD48Z3JvdXAwMD48aWQ+NzwvaWQ+PHR5cGU+dm9pY2U8L3R5cGU+PG1pbj4wPC9taW4+PG1heD4yPC9tYXg+PC9ncm91cDAwPjxncm91cDAxPjxpZD44PC9pZD48dHlwZT5zZTwvdHlwZT48bWluPjI8L21pbj48bWF4PjQ8L21heD48L2dyb3VwMDE+PC9TT1VOREdST1VQPjxWT0lDRT48djAwPjx2b2ljZT5BbGljZTwvdm9pY2U+PGhlYWQ+YWw8L2hlYWQ+PGludD5wY208L2ludD48Z3JvdXA+NzwvZ3JvdXA+PG1hc3RlcnZvbD43MzwvbWFzdGVydm9sPjxwbGF5PjE8L3BsYXk+PC92MDA+PHYwMT48dm9pY2U+Qm9iPC92b2ljZT48aGVhZD5ibzwvaGVhZD48aW50PnNlPC9pbnQ+PGdyb3VwPjg8L2dyb3VwPjxtYXN0ZXJ2b2w+NjE8L21hc3RlcnZvbD48cGxheT4xPC9wbGF5PjwvdjAxPjx2b2w+PGJnbT4yNTwvYmdtPjxzZT4zMDwvc2U+PHZvaWNlPjQwPC92b2ljZT48c3lzdm9pY2U+NTA8L3N5c3ZvaWNlPjwvdm9sPjwvVk9JQ0U+PC9kb2N1bWVudD4=",
+        "config-loose/primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNPVU5ER1JPVVA+PGVmZmVjdHM+PGlkPjc3PC9pZD48dHlwZT5zZTwvdHlwZT48bGFiZWw+RWZmZWN0czwvbGFiZWw+PG1pbj4yPC9taW4+PG1heD40PC9tYXg+PC9lZmZlY3RzPjwvU09VTkRHUk9VUD48TUFTVEVSPjx2b2x1bWU+Nzk8L3ZvbHVtZT48cGxheT4xPC9wbGF5PjxzeXNwbGF5PjE8L3N5c3BsYXk+PG11dGU+MDwvbXV0ZT48dm9pY2V2b2w+ODE8L3ZvaWNldm9sPjxza2lwdm9sPjM1PC9za2lwdm9sPjwvTUFTVEVSPjxQQVJUPjxlZmZlY3RzPjxpZD40PC9pZD48Z3JvdXA+Nzc8L2dyb3VwPjxzYW1laWQ+MTwvc2FtZWlkPjxuYW1lPuWKueaenOmfszwvbmFtZT48dHlwZT5zZTwvdHlwZT48aGVhZD5GWF88L2hlYWQ+PGludD5zZTwvaW50PjxtYXN0ZXJ2b2w+NjI8L21hc3RlcnZvbD48dm9sdW1lPjgyPC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5Pjx2b2ljZXZvbD41NTwvdm9pY2V2b2w+PHNraXB2b2w+MzE8L3NraXB2b2w+PG11dGU+MDwvbXV0ZT48L2VmZmVjdHM+PC9QQVJUPjwvZG9jdW1lbnQ+",
+        "primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNPVU5ER1JPVVA+PGVmZmVjdHM+PGlkPjc3PC9pZD48dHlwZT5zZTwvdHlwZT48bGFiZWw+RWZmZWN0czwvbGFiZWw+PG1pbj4yPC9taW4+PG1heD40PC9tYXg+PC9lZmZlY3RzPjwvU09VTkRHUk9VUD48TUFTVEVSPjx2b2x1bWU+Nzk8L3ZvbHVtZT48cGxheT4xPC9wbGF5PjxzeXNwbGF5PjE8L3N5c3BsYXk+PG11dGU+MDwvbXV0ZT48dm9pY2V2b2w+ODE8L3ZvaWNldm9sPjxza2lwdm9sPjM1PC9za2lwdm9sPjwvTUFTVEVSPjxQQVJUPjxlZmZlY3RzPjxpZD40PC9pZD48Z3JvdXA+Nzc8L2dyb3VwPjxzYW1laWQ+MTwvc2FtZWlkPjxuYW1lPuWKueaenOmfszwvbmFtZT48dHlwZT5zZTwvdHlwZT48aGVhZD5GWF88L2hlYWQ+PGludD5zZTwvaW50PjxtYXN0ZXJ2b2w+NjI8L21hc3RlcnZvbD48dm9sdW1lPjgyPC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5Pjx2b2ljZXZvbD41NTwvdm9pY2V2b2w+PHNraXB2b2w+MzE8L3NraXB2b2w+PG11dGU+MDwvbXV0ZT48L2VmZmVjdHM+PC9QQVJUPjwvZG9jdW1lbnQ+",
+        "tag-loose/fx_owned.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+        "tag-loose/fx_other.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+        "scripts.int": "S0lGAAAAAAA=",
+        "se.int": "S0lGAAAAAAA=",
+        "tag.int": "S0lGAAAAAAA=",
+        "config.int": "S0lGAAAAAAA=",
+        "sound-loose/fx_loop.tbl": "Znhfc2hvcnQgMTYgNDAwMA0KZnhfb3RoZXIgMzIgNjAwMA0K"
+      },
+      "outputs": [
+        260, 264, 268, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324, 328, 332,
+        336, 340, 344, 348, 356, 360, 364, 368, 372, 376, 380, 388
+      ],
+      "phases": [
+        {
+          "frame": 100,
+          "advance": 0
+        },
+        {
+          "frame": 101,
+          "advance": 0
+        },
+        {
+          "frame": 102,
+          "advance": 1250
+        },
+        {
+          "frame": 114,
+          "advance": 250
+        },
+        {
+          "frame": 115,
+          "advance": 0
+        }
+      ],
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-primary-loop-metadata-20261128/ORIGINAL-P1-76.json",
+        "sha256": "87ff09b0e57da0d6e9035f80dfe4dd3b9bb1bef224982e85f19f7d14451896b2"
+      },
+      "rows": [
+        {
+          "frame": 100,
+          "words": [
+            1, 73, 2779096485, 2779096485, 1, 2, 8000, 2779096485, 8000, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "marker": 0,
+          "banks": [
+            {
+              "bank": 0,
+              "capacity": 10000,
+              "loopStart": "16",
+              "loopEnd": "4000",
+              "sha256": "d600be323562768e49ebdc404697312711b9394048d4d8cf3d83552268867159"
+            },
+            {
+              "bank": 2,
+              "capacity": 12000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "43fbe550b7778a91c899c862936965c548bc959058bbf721461dfb64bac81c1b"
+            }
+          ]
+        },
+        {
+          "frame": 101,
+          "words": [
+            1, 73, 2779096485, 2779096485, 1, 2, 8000, 2779096485, 8000, 73, 2779096485, 2779096485,
+            1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485
+          ],
+          "marker": 0,
+          "banks": [
+            {
+              "bank": 0,
+              "capacity": 10000,
+              "loopStart": "16",
+              "loopEnd": "4000",
+              "sha256": "d600be323562768e49ebdc404697312711b9394048d4d8cf3d83552268867159"
+            },
+            {
+              "bank": 2,
+              "capacity": 12000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "43fbe550b7778a91c899c862936965c548bc959058bbf721461dfb64bac81c1b"
+            }
+          ]
+        },
+        {
+          "frame": 102,
+          "words": [
+            1, 73, 2779096485, 2779096485, 1, 2, 8000, 2779096485, 8000, 73, 2779096485, 2779096485,
+            1, 2779096485, 1, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485
+          ],
+          "marker": 0,
+          "banks": [
+            {
+              "bank": 2,
+              "capacity": 12000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "43fbe550b7778a91c899c862936965c548bc959058bbf721461dfb64bac81c1b"
+            }
+          ]
+        },
+        {
+          "frame": 114,
+          "words": [
+            1, 73, 2779096485, 2779096485, 1, 2, 8000, 2779096485, 8000, 73, 2779096485, 2779096485,
+            1, 2779096485, 1, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 1, 2779096485, 8000, 2779096485, 2779096485
+          ],
+          "marker": 0,
+          "banks": [
+            {
+              "bank": 2,
+              "capacity": 12000,
+              "loopStart": "0",
+              "loopEnd": "-1",
+              "sha256": "43fbe550b7778a91c899c862936965c548bc959058bbf721461dfb64bac81c1b"
+            }
+          ]
+        },
+        {
+          "frame": 115,
+          "words": [
+            1, 73, 2779096485, 2779096485, 1, 2, 8000, 2779096485, 8000, 73, 2779096485, 2779096485,
+            1, 2779096485, 1, 0, 1, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 1, 2779096485, 8000, 0, 2779096485
+          ],
+          "marker": 1352716606,
+          "banks": []
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "files": {
+      "main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+      "scripts-loose/main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+      "source.kcs": "S0NTAAIAAAAAAAAANAAAANsBAAAPAgAAAAAAAAAAAAAAEAAAABAAAA8CAAAAAAAAtgMAAHicXZCxCsIwEIb/aAsZOhTq4OB2NEtB6iyIg4ODgy8gpQ7iIBRU1HfRQYW+h4ODq+/jIJfYJnY5Pr78l8slprIsS0UQQPxjz2HpcOBw6HDH4a7DPc2rU7ZTNPaY18V2r2iiGQAUTTXnmzRV9NDcP+YHRU8n89K8LNKBIvg24/k2IzXzDQktWgB5Wpu1uOlPmw1NOrNaOulZu9Zmb55TVbNNCxw8A6DQHkY8M6Eba1nrhO6oLwyF1ZdKC90Y8dPMl4qIaySbImiKsBYxjd7XuaKPAIZf/oo/dA==",
+      "scripts-loose/source.kcs": "S0NTAAIAAAAAAAAANAAAANsBAAAPAgAAAAAAAAAAAAAAEAAAABAAAA8CAAAAAAAAtgMAAHicXZCxCsIwEIb/aAsZOhTq4OB2NEtB6iyIg4ODgy8gpQ7iIBRU1HfRQYW+h4ODq+/jIJfYJnY5Pr78l8slprIsS0UQQPxjz2HpcOBw6HDH4a7DPc2rU7ZTNPaY18V2r2iiGQAUTTXnmzRV9NDcP+YHRU8n89K8LNKBIvg24/k2IzXzDQktWgB5Wpu1uOlPmw1NOrNaOulZu9Zmb55TVbNNCxw8A6DQHkY8M6Eba1nrhO6oLwyF1ZdKC90Y8dPMl4qIaySbImiKsBYxjd7XuaKPAIZf/oo/dA==",
+      "startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VORENPTkZJRz5wcmltYXJ5LnhtbDwvU09VTkRDT05GSUc+PElOVD48aW50MDA+PG5hbWU+a2NzPC9uYW1lPjxpbnQ+c2NyaXB0cy5pbnQ8L2ludD48ZXh0PmtjczwvZXh0PjxkaXI+c2NyaXB0cy1sb29zZTwvZGlyPjwvaW50MDA+PGludDAxPjxuYW1lPnNlPC9uYW1lPjxpbnQ+c2UuaW50PC9pbnQ+PGV4dD53YXY8L2V4dD48ZGlyPnNvdW5kLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+dGFnPC9uYW1lPjxpbnQ+dGFnLmludDwvaW50PjxleHQ+dGFnPC9leHQ+PGRpcj50YWctbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5jb25maWc8L25hbWU+PGludD5jb25maWcuaW50PC9pbnQ+PGV4dD54bWw8L2V4dD48ZGlyPmNvbmZpZy1sb29zZTwvZGlyPjwvaW50MDM+PC9JTlQ+PFNPVU5ER1JPVVA+PGdyb3VwMDA+PGlkPjc8L2lkPjx0eXBlPnZvaWNlPC90eXBlPjxtaW4+MDwvbWluPjxtYXg+MjwvbWF4PjwvZ3JvdXAwMD48Z3JvdXAwMT48aWQ+ODwvaWQ+PHR5cGU+c2U8L3R5cGU+PG1pbj4yPC9taW4+PG1heD40PC9tYXg+PC9ncm91cDAxPjwvU09VTkRHUk9VUD48Vk9JQ0U+PHYwMD48dm9pY2U+QWxpY2U8L3ZvaWNlPjxoZWFkPmFsPC9oZWFkPjxpbnQ+cGNtPC9pbnQ+PGdyb3VwPjc8L2dyb3VwPjxtYXN0ZXJ2b2w+NzM8L21hc3RlcnZvbD48cGxheT4xPC9wbGF5PjwvdjAwPjx2MDE+PHZvaWNlPkJvYjwvdm9pY2U+PGhlYWQ+Ym88L2hlYWQ+PGludD5zZTwvaW50Pjxncm91cD44PC9ncm91cD48bWFzdGVydm9sPjYxPC9tYXN0ZXJ2b2w+PHBsYXk+MTwvcGxheT48L3YwMT48dm9sPjxiZ20+MjU8L2JnbT48c2U+MzA8L3NlPjx2b2ljZT40MDwvdm9pY2U+PHN5c3ZvaWNlPjUwPC9zeXN2b2ljZT48L3ZvbD48L1ZPSUNFPjwvZG9jdW1lbnQ+",
+      "config/startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VORENPTkZJRz5wcmltYXJ5LnhtbDwvU09VTkRDT05GSUc+PElOVD48aW50MDA+PG5hbWU+a2NzPC9uYW1lPjxpbnQ+c2NyaXB0cy5pbnQ8L2ludD48ZXh0PmtjczwvZXh0PjxkaXI+c2NyaXB0cy1sb29zZTwvZGlyPjwvaW50MDA+PGludDAxPjxuYW1lPnNlPC9uYW1lPjxpbnQ+c2UuaW50PC9pbnQ+PGV4dD53YXY8L2V4dD48ZGlyPnNvdW5kLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+dGFnPC9uYW1lPjxpbnQ+dGFnLmludDwvaW50PjxleHQ+dGFnPC9leHQ+PGRpcj50YWctbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5jb25maWc8L25hbWU+PGludD5jb25maWcuaW50PC9pbnQ+PGV4dD54bWw8L2V4dD48ZGlyPmNvbmZpZy1sb29zZTwvZGlyPjwvaW50MDM+PC9JTlQ+PFNPVU5ER1JPVVA+PGdyb3VwMDA+PGlkPjc8L2lkPjx0eXBlPnZvaWNlPC90eXBlPjxtaW4+MDwvbWluPjxtYXg+MjwvbWF4PjwvZ3JvdXAwMD48Z3JvdXAwMT48aWQ+ODwvaWQ+PHR5cGU+c2U8L3R5cGU+PG1pbj4yPC9taW4+PG1heD40PC9tYXg+PC9ncm91cDAxPjwvU09VTkRHUk9VUD48Vk9JQ0U+PHYwMD48dm9pY2U+QWxpY2U8L3ZvaWNlPjxoZWFkPmFsPC9oZWFkPjxpbnQ+cGNtPC9pbnQ+PGdyb3VwPjc8L2dyb3VwPjxtYXN0ZXJ2b2w+NzM8L21hc3RlcnZvbD48cGxheT4xPC9wbGF5PjwvdjAwPjx2MDE+PHZvaWNlPkJvYjwvdm9pY2U+PGhlYWQ+Ym88L2hlYWQ+PGludD5zZTwvaW50Pjxncm91cD44PC9ncm91cD48bWFzdGVydm9sPjYxPC9tYXN0ZXJ2b2w+PHBsYXk+MTwvcGxheT48L3YwMT48dm9sPjxiZ20+MjU8L2JnbT48c2U+MzA8L3NlPjx2b2ljZT40MDwvdm9pY2U+PHN5c3ZvaWNlPjUwPC9zeXN2b2ljZT48L3ZvbD48L1ZPSUNFPjwvZG9jdW1lbnQ+",
+      "config-loose/primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VOREdST1VQPjxlZmZlY3RzPjxpZD43NzwvaWQ+PHR5cGU+c2U8L3R5cGU+PGxhYmVsPkVmZmVjdHM8L2xhYmVsPjxtaW4+MjwvbWluPjxtYXg+NDwvbWF4PjwvZWZmZWN0cz48L1NPVU5ER1JPVVA+PE1BU1RFUj48dm9sdW1lPjc5PC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5PjxtdXRlPjA8L211dGU+PHZvaWNldm9sPjgxPC92b2ljZXZvbD48c2tpcHZvbD4zNTwvc2tpcHZvbD48L01BU1RFUj48UEFSVD48ZWZmZWN0cz48aWQ+NDwvaWQ+PGdyb3VwPjc3PC9ncm91cD48c2FtZWlkPjE8L3NhbWVpZD48bmFtZT6M+InKibk8L25hbWU+PHR5cGU+c2U8L3R5cGU+PGhlYWQ+RlhfPC9oZWFkPjxpbnQ+c2U8L2ludD48bWFzdGVydm9sPjYyPC9tYXN0ZXJ2b2w+PHZvbHVtZT44Mjwvdm9sdW1lPjxwbGF5PjE8L3BsYXk+PHN5c3BsYXk+MTwvc3lzcGxheT48dm9pY2V2b2w+NTU8L3ZvaWNldm9sPjxza2lwdm9sPjMxPC9za2lwdm9sPjxtdXRlPjA8L211dGU+PC9lZmZlY3RzPjwvUEFSVD48L2RvY3VtZW50Pg==",
+      "primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VOREdST1VQPjxlZmZlY3RzPjxpZD43NzwvaWQ+PHR5cGU+c2U8L3R5cGU+PGxhYmVsPkVmZmVjdHM8L2xhYmVsPjxtaW4+MjwvbWluPjxtYXg+NDwvbWF4PjwvZWZmZWN0cz48L1NPVU5ER1JPVVA+PE1BU1RFUj48dm9sdW1lPjc5PC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5PjxtdXRlPjA8L211dGU+PHZvaWNldm9sPjgxPC92b2ljZXZvbD48c2tpcHZvbD4zNTwvc2tpcHZvbD48L01BU1RFUj48UEFSVD48ZWZmZWN0cz48aWQ+NDwvaWQ+PGdyb3VwPjc3PC9ncm91cD48c2FtZWlkPjE8L3NhbWVpZD48bmFtZT6M+InKibk8L25hbWU+PHR5cGU+c2U8L3R5cGU+PGhlYWQ+RlhfPC9oZWFkPjxpbnQ+c2U8L2ludD48bWFzdGVydm9sPjYyPC9tYXN0ZXJ2b2w+PHZvbHVtZT44Mjwvdm9sdW1lPjxwbGF5PjE8L3BsYXk+PHN5c3BsYXk+MTwvc3lzcGxheT48dm9pY2V2b2w+NTU8L3ZvaWNldm9sPjxza2lwdm9sPjMxPC9za2lwdm9sPjxtdXRlPjA8L211dGU+PC9lZmZlY3RzPjwvUEFSVD48L2RvY3VtZW50Pg==",
+      "tag-loose/fx_owned.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+      "tag-loose/fx_other.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+      "scripts.int": "S0lGAAAAAAA=",
+      "se.int": "S0lGAAAAAAA=",
+      "tag.int": "S0lGAAAAAAA=",
+      "config.int": "S0lGAAAAAAA=",
+      "sound-loose/fx_loop.tbl": "Znhfc2hvcnQgMTYgNDAwMA0KZnhfb3RoZXIgMzIgNjAwMA0K"
+    },
+    "filesByVersion": {
+      "74": {
+        "main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+        "scripts-loose/main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+        "source.kcs": "S0NTAAIAAAAAAAAANAAAANsBAAAPAgAAAAAAAAAAAAAAEAAAABAAAA8CAAAAAAAAtgMAAHicXZCxCsIwEIb/aAsZOhTq4OB2NEtB6iyIg4ODgy8gpQ7iIBRU1HfRQYW+h4ODq+/jIJfYJnY5Pr78l8slprIsS0UQQPxjz2HpcOBw6HDH4a7DPc2rU7ZTNPaY18V2r2iiGQAUTTXnmzRV9NDcP+YHRU8n89K8LNKBIvg24/k2IzXzDQktWgB5Wpu1uOlPmw1NOrNaOulZu9Zmb55TVbNNCxw8A6DQHkY8M6Eba1nrhO6oLwyF1ZdKC90Y8dPMl4qIaySbImiKsBYxjd7XuaKPAIZf/oo/dA==",
+        "scripts-loose/source.kcs": "S0NTAAIAAAAAAAAANAAAANsBAAAPAgAAAAAAAAAAAAAAEAAAABAAAA8CAAAAAAAAtgMAAHicXZCxCsIwEIb/aAsZOhTq4OB2NEtB6iyIg4ODgy8gpQ7iIBRU1HfRQYW+h4ODq+/jIJfYJnY5Pr78l8slprIsS0UQQPxjz2HpcOBw6HDH4a7DPc2rU7ZTNPaY18V2r2iiGQAUTTXnmzRV9NDcP+YHRU8n89K8LNKBIvg24/k2IzXzDQktWgB5Wpu1uOlPmw1NOrNaOulZu9Zmb55TVbNNCxw8A6DQHkY8M6Eba1nrhO6oLwyF1ZdKC90Y8dPMl4qIaySbImiKsBYxjd7XuaKPAIZf/oo/dA==",
+        "startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VORENPTkZJRz5wcmltYXJ5LnhtbDwvU09VTkRDT05GSUc+PElOVD48aW50MDA+PG5hbWU+a2NzPC9uYW1lPjxpbnQ+c2NyaXB0cy5pbnQ8L2ludD48ZXh0PmtjczwvZXh0PjxkaXI+c2NyaXB0cy1sb29zZTwvZGlyPjwvaW50MDA+PGludDAxPjxuYW1lPnNlPC9uYW1lPjxpbnQ+c2UuaW50PC9pbnQ+PGV4dD53YXY8L2V4dD48ZGlyPnNvdW5kLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+dGFnPC9uYW1lPjxpbnQ+dGFnLmludDwvaW50PjxleHQ+dGFnPC9leHQ+PGRpcj50YWctbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5jb25maWc8L25hbWU+PGludD5jb25maWcuaW50PC9pbnQ+PGV4dD54bWw8L2V4dD48ZGlyPmNvbmZpZy1sb29zZTwvZGlyPjwvaW50MDM+PC9JTlQ+PFNPVU5ER1JPVVA+PGdyb3VwMDA+PGlkPjc8L2lkPjx0eXBlPnZvaWNlPC90eXBlPjxtaW4+MDwvbWluPjxtYXg+MjwvbWF4PjwvZ3JvdXAwMD48Z3JvdXAwMT48aWQ+ODwvaWQ+PHR5cGU+c2U8L3R5cGU+PG1pbj4yPC9taW4+PG1heD40PC9tYXg+PC9ncm91cDAxPjwvU09VTkRHUk9VUD48Vk9JQ0U+PHYwMD48dm9pY2U+QWxpY2U8L3ZvaWNlPjxoZWFkPmFsPC9oZWFkPjxpbnQ+cGNtPC9pbnQ+PGdyb3VwPjc8L2dyb3VwPjxtYXN0ZXJ2b2w+NzM8L21hc3RlcnZvbD48cGxheT4xPC9wbGF5PjwvdjAwPjx2MDE+PHZvaWNlPkJvYjwvdm9pY2U+PGhlYWQ+Ym88L2hlYWQ+PGludD5zZTwvaW50Pjxncm91cD44PC9ncm91cD48bWFzdGVydm9sPjYxPC9tYXN0ZXJ2b2w+PHBsYXk+MTwvcGxheT48L3YwMT48dm9sPjxiZ20+MjU8L2JnbT48c2U+MzA8L3NlPjx2b2ljZT40MDwvdm9pY2U+PHN5c3ZvaWNlPjUwPC9zeXN2b2ljZT48L3ZvbD48L1ZPSUNFPjwvZG9jdW1lbnQ+",
+        "config/startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VORENPTkZJRz5wcmltYXJ5LnhtbDwvU09VTkRDT05GSUc+PElOVD48aW50MDA+PG5hbWU+a2NzPC9uYW1lPjxpbnQ+c2NyaXB0cy5pbnQ8L2ludD48ZXh0PmtjczwvZXh0PjxkaXI+c2NyaXB0cy1sb29zZTwvZGlyPjwvaW50MDA+PGludDAxPjxuYW1lPnNlPC9uYW1lPjxpbnQ+c2UuaW50PC9pbnQ+PGV4dD53YXY8L2V4dD48ZGlyPnNvdW5kLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+dGFnPC9uYW1lPjxpbnQ+dGFnLmludDwvaW50PjxleHQ+dGFnPC9leHQ+PGRpcj50YWctbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5jb25maWc8L25hbWU+PGludD5jb25maWcuaW50PC9pbnQ+PGV4dD54bWw8L2V4dD48ZGlyPmNvbmZpZy1sb29zZTwvZGlyPjwvaW50MDM+PC9JTlQ+PFNPVU5ER1JPVVA+PGdyb3VwMDA+PGlkPjc8L2lkPjx0eXBlPnZvaWNlPC90eXBlPjxtaW4+MDwvbWluPjxtYXg+MjwvbWF4PjwvZ3JvdXAwMD48Z3JvdXAwMT48aWQ+ODwvaWQ+PHR5cGU+c2U8L3R5cGU+PG1pbj4yPC9taW4+PG1heD40PC9tYXg+PC9ncm91cDAxPjwvU09VTkRHUk9VUD48Vk9JQ0U+PHYwMD48dm9pY2U+QWxpY2U8L3ZvaWNlPjxoZWFkPmFsPC9oZWFkPjxpbnQ+cGNtPC9pbnQ+PGdyb3VwPjc8L2dyb3VwPjxtYXN0ZXJ2b2w+NzM8L21hc3RlcnZvbD48cGxheT4xPC9wbGF5PjwvdjAwPjx2MDE+PHZvaWNlPkJvYjwvdm9pY2U+PGhlYWQ+Ym88L2hlYWQ+PGludD5zZTwvaW50Pjxncm91cD44PC9ncm91cD48bWFzdGVydm9sPjYxPC9tYXN0ZXJ2b2w+PHBsYXk+MTwvcGxheT48L3YwMT48dm9sPjxiZ20+MjU8L2JnbT48c2U+MzA8L3NlPjx2b2ljZT40MDwvdm9pY2U+PHN5c3ZvaWNlPjUwPC9zeXN2b2ljZT48L3ZvbD48L1ZPSUNFPjwvZG9jdW1lbnQ+",
+        "config-loose/primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VOREdST1VQPjxlZmZlY3RzPjxpZD43NzwvaWQ+PHR5cGU+c2U8L3R5cGU+PGxhYmVsPkVmZmVjdHM8L2xhYmVsPjxtaW4+MjwvbWluPjxtYXg+NDwvbWF4PjwvZWZmZWN0cz48L1NPVU5ER1JPVVA+PE1BU1RFUj48dm9sdW1lPjc5PC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5PjxtdXRlPjA8L211dGU+PHZvaWNldm9sPjgxPC92b2ljZXZvbD48c2tpcHZvbD4zNTwvc2tpcHZvbD48L01BU1RFUj48UEFSVD48ZWZmZWN0cz48aWQ+NDwvaWQ+PGdyb3VwPjc3PC9ncm91cD48c2FtZWlkPjE8L3NhbWVpZD48bmFtZT6M+InKibk8L25hbWU+PHR5cGU+c2U8L3R5cGU+PGhlYWQ+RlhfPC9oZWFkPjxpbnQ+c2U8L2ludD48bWFzdGVydm9sPjYyPC9tYXN0ZXJ2b2w+PHZvbHVtZT44Mjwvdm9sdW1lPjxwbGF5PjE8L3BsYXk+PHN5c3BsYXk+MTwvc3lzcGxheT48dm9pY2V2b2w+NTU8L3ZvaWNldm9sPjxza2lwdm9sPjMxPC9za2lwdm9sPjxtdXRlPjA8L211dGU+PC9lZmZlY3RzPjwvUEFSVD48L2RvY3VtZW50Pg==",
+        "primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VOREdST1VQPjxlZmZlY3RzPjxpZD43NzwvaWQ+PHR5cGU+c2U8L3R5cGU+PGxhYmVsPkVmZmVjdHM8L2xhYmVsPjxtaW4+MjwvbWluPjxtYXg+NDwvbWF4PjwvZWZmZWN0cz48L1NPVU5ER1JPVVA+PE1BU1RFUj48dm9sdW1lPjc5PC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5PjxtdXRlPjA8L211dGU+PHZvaWNldm9sPjgxPC92b2ljZXZvbD48c2tpcHZvbD4zNTwvc2tpcHZvbD48L01BU1RFUj48UEFSVD48ZWZmZWN0cz48aWQ+NDwvaWQ+PGdyb3VwPjc3PC9ncm91cD48c2FtZWlkPjE8L3NhbWVpZD48bmFtZT6M+InKibk8L25hbWU+PHR5cGU+c2U8L3R5cGU+PGhlYWQ+RlhfPC9oZWFkPjxpbnQ+c2U8L2ludD48bWFzdGVydm9sPjYyPC9tYXN0ZXJ2b2w+PHZvbHVtZT44Mjwvdm9sdW1lPjxwbGF5PjE8L3BsYXk+PHN5c3BsYXk+MTwvc3lzcGxheT48dm9pY2V2b2w+NTU8L3ZvaWNldm9sPjxza2lwdm9sPjMxPC9za2lwdm9sPjxtdXRlPjA8L211dGU+PC9lZmZlY3RzPjwvUEFSVD48L2RvY3VtZW50Pg==",
+        "tag-loose/fx_owned.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+        "tag-loose/fx_other.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+        "scripts.int": "S0lGAAAAAAA=",
+        "se.int": "S0lGAAAAAAA=",
+        "tag.int": "S0lGAAAAAAA=",
+        "config.int": "S0lGAAAAAAA=",
+        "sound-loose/fx_loop.tbl": "Znhfc2hvcnQgMTYgNDAwMA0KZnhfb3RoZXIgMzIgNjAwMA0K"
+      },
+      "76": {
+        "main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+        "scripts-loose/main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+        "source.kcs": "S0NTAAIAAAAAAAAANAAAANsBAAAPAgAAAAAAAAAAAAAAEAAAABAAAA8CAAAAAAAAtgMAAHicXZCxCsIwEIb/aAsZOhTq4OB2NEtB6iyIg4ODgy8gpQ7iIBRU1HfRQYW+h4ODq+/jIJfYJnY5Pr78l8slprIsS0UQQPxjz2HpcOBw6HDH4a7DPc2rU7ZTNPaY18V2r2iiGQAUTTXnmzRV9NDcP+YHRU8n89K8LNKBIvg24/k2IzXzDQktWgB5Wpu1uOlPmw1NOrNaOulZu9Zmb55TVbNNCxw8A6DQHkY8M6Eba1nrhO6oLwyF1ZdKC90Y8dPMl4qIaySbImiKsBYxjd7XuaKPAIZf/oo/dA==",
+        "scripts-loose/source.kcs": "S0NTAAIAAAAAAAAANAAAANsBAAAPAgAAAAAAAAAAAAAAEAAAABAAAA8CAAAAAAAAtgMAAHicXZCxCsIwEIb/aAsZOhTq4OB2NEtB6iyIg4ODgy8gpQ7iIBRU1HfRQYW+h4ODq+/jIJfYJnY5Pr78l8slprIsS0UQQPxjz2HpcOBw6HDH4a7DPc2rU7ZTNPaY18V2r2iiGQAUTTXnmzRV9NDcP+YHRU8n89K8LNKBIvg24/k2IzXzDQktWgB5Wpu1uOlPmw1NOrNaOulZu9Zmb55TVbNNCxw8A6DQHkY8M6Eba1nrhO6oLwyF1ZdKC90Y8dPMl4qIaySbImiKsBYxjd7XuaKPAIZf/oo/dA==",
+        "startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNPVU5EQ09ORklHPnByaW1hcnkueG1sPC9TT1VORENPTkZJRz48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2U8L25hbWU+PGludD5zZS5pbnQ8L2ludD48ZXh0PndhdjwvZXh0PjxkaXI+c291bmQtbG9vc2U8L2Rpcj48L2ludDAxPjxpbnQwMj48bmFtZT50YWc8L25hbWU+PGludD50YWcuaW50PC9pbnQ+PGV4dD50YWc8L2V4dD48ZGlyPnRhZy1sb29zZTwvZGlyPjwvaW50MDI+PGludDAzPjxuYW1lPmNvbmZpZzwvbmFtZT48aW50PmNvbmZpZy5pbnQ8L2ludD48ZXh0PnhtbDwvZXh0PjxkaXI+Y29uZmlnLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48U09VTkRHUk9VUD48Z3JvdXAwMD48aWQ+NzwvaWQ+PHR5cGU+dm9pY2U8L3R5cGU+PG1pbj4wPC9taW4+PG1heD4yPC9tYXg+PC9ncm91cDAwPjxncm91cDAxPjxpZD44PC9pZD48dHlwZT5zZTwvdHlwZT48bWluPjI8L21pbj48bWF4PjQ8L21heD48L2dyb3VwMDE+PC9TT1VOREdST1VQPjxWT0lDRT48djAwPjx2b2ljZT5BbGljZTwvdm9pY2U+PGhlYWQ+YWw8L2hlYWQ+PGludD5wY208L2ludD48Z3JvdXA+NzwvZ3JvdXA+PG1hc3RlcnZvbD43MzwvbWFzdGVydm9sPjxwbGF5PjE8L3BsYXk+PC92MDA+PHYwMT48dm9pY2U+Qm9iPC92b2ljZT48aGVhZD5ibzwvaGVhZD48aW50PnNlPC9pbnQ+PGdyb3VwPjg8L2dyb3VwPjxtYXN0ZXJ2b2w+NjE8L21hc3RlcnZvbD48cGxheT4xPC9wbGF5PjwvdjAxPjx2b2w+PGJnbT4yNTwvYmdtPjxzZT4zMDwvc2U+PHZvaWNlPjQwPC92b2ljZT48c3lzdm9pY2U+NTA8L3N5c3ZvaWNlPjwvdm9sPjwvVk9JQ0U+PC9kb2N1bWVudD4=",
+        "config/startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNPVU5EQ09ORklHPnByaW1hcnkueG1sPC9TT1VORENPTkZJRz48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2U8L25hbWU+PGludD5zZS5pbnQ8L2ludD48ZXh0PndhdjwvZXh0PjxkaXI+c291bmQtbG9vc2U8L2Rpcj48L2ludDAxPjxpbnQwMj48bmFtZT50YWc8L25hbWU+PGludD50YWcuaW50PC9pbnQ+PGV4dD50YWc8L2V4dD48ZGlyPnRhZy1sb29zZTwvZGlyPjwvaW50MDI+PGludDAzPjxuYW1lPmNvbmZpZzwvbmFtZT48aW50PmNvbmZpZy5pbnQ8L2ludD48ZXh0PnhtbDwvZXh0PjxkaXI+Y29uZmlnLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48U09VTkRHUk9VUD48Z3JvdXAwMD48aWQ+NzwvaWQ+PHR5cGU+dm9pY2U8L3R5cGU+PG1pbj4wPC9taW4+PG1heD4yPC9tYXg+PC9ncm91cDAwPjxncm91cDAxPjxpZD44PC9pZD48dHlwZT5zZTwvdHlwZT48bWluPjI8L21pbj48bWF4PjQ8L21heD48L2dyb3VwMDE+PC9TT1VOREdST1VQPjxWT0lDRT48djAwPjx2b2ljZT5BbGljZTwvdm9pY2U+PGhlYWQ+YWw8L2hlYWQ+PGludD5wY208L2ludD48Z3JvdXA+NzwvZ3JvdXA+PG1hc3RlcnZvbD43MzwvbWFzdGVydm9sPjxwbGF5PjE8L3BsYXk+PC92MDA+PHYwMT48dm9pY2U+Qm9iPC92b2ljZT48aGVhZD5ibzwvaGVhZD48aW50PnNlPC9pbnQ+PGdyb3VwPjg8L2dyb3VwPjxtYXN0ZXJ2b2w+NjE8L21hc3RlcnZvbD48cGxheT4xPC9wbGF5PjwvdjAxPjx2b2w+PGJnbT4yNTwvYmdtPjxzZT4zMDwvc2U+PHZvaWNlPjQwPC92b2ljZT48c3lzdm9pY2U+NTA8L3N5c3ZvaWNlPjwvdm9sPjwvVk9JQ0U+PC9kb2N1bWVudD4=",
+        "config-loose/primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNPVU5ER1JPVVA+PGVmZmVjdHM+PGlkPjc3PC9pZD48dHlwZT5zZTwvdHlwZT48bGFiZWw+RWZmZWN0czwvbGFiZWw+PG1pbj4yPC9taW4+PG1heD40PC9tYXg+PC9lZmZlY3RzPjwvU09VTkRHUk9VUD48TUFTVEVSPjx2b2x1bWU+Nzk8L3ZvbHVtZT48cGxheT4xPC9wbGF5PjxzeXNwbGF5PjE8L3N5c3BsYXk+PG11dGU+MDwvbXV0ZT48dm9pY2V2b2w+ODE8L3ZvaWNldm9sPjxza2lwdm9sPjM1PC9za2lwdm9sPjwvTUFTVEVSPjxQQVJUPjxlZmZlY3RzPjxpZD40PC9pZD48Z3JvdXA+Nzc8L2dyb3VwPjxzYW1laWQ+MTwvc2FtZWlkPjxuYW1lPuWKueaenOmfszwvbmFtZT48dHlwZT5zZTwvdHlwZT48aGVhZD5GWF88L2hlYWQ+PGludD5zZTwvaW50PjxtYXN0ZXJ2b2w+NjI8L21hc3RlcnZvbD48dm9sdW1lPjgyPC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5Pjx2b2ljZXZvbD41NTwvdm9pY2V2b2w+PHNraXB2b2w+MzE8L3NraXB2b2w+PG11dGU+MDwvbXV0ZT48L2VmZmVjdHM+PC9QQVJUPjwvZG9jdW1lbnQ+",
+        "primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNPVU5ER1JPVVA+PGVmZmVjdHM+PGlkPjc3PC9pZD48dHlwZT5zZTwvdHlwZT48bGFiZWw+RWZmZWN0czwvbGFiZWw+PG1pbj4yPC9taW4+PG1heD40PC9tYXg+PC9lZmZlY3RzPjwvU09VTkRHUk9VUD48TUFTVEVSPjx2b2x1bWU+Nzk8L3ZvbHVtZT48cGxheT4xPC9wbGF5PjxzeXNwbGF5PjE8L3N5c3BsYXk+PG11dGU+MDwvbXV0ZT48dm9pY2V2b2w+ODE8L3ZvaWNldm9sPjxza2lwdm9sPjM1PC9za2lwdm9sPjwvTUFTVEVSPjxQQVJUPjxlZmZlY3RzPjxpZD40PC9pZD48Z3JvdXA+Nzc8L2dyb3VwPjxzYW1laWQ+MTwvc2FtZWlkPjxuYW1lPuWKueaenOmfszwvbmFtZT48dHlwZT5zZTwvdHlwZT48aGVhZD5GWF88L2hlYWQ+PGludD5zZTwvaW50PjxtYXN0ZXJ2b2w+NjI8L21hc3RlcnZvbD48dm9sdW1lPjgyPC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5Pjx2b2ljZXZvbD41NTwvdm9pY2V2b2w+PHNraXB2b2w+MzE8L3NraXB2b2w+PG11dGU+MDwvbXV0ZT48L2VmZmVjdHM+PC9QQVJUPjwvZG9jdW1lbnQ+",
+        "tag-loose/fx_owned.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+        "tag-loose/fx_other.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+        "scripts.int": "S0lGAAAAAAA=",
+        "se.int": "S0lGAAAAAAA=",
+        "tag.int": "S0lGAAAAAAA=",
+        "config.int": "S0lGAAAAAAA=",
+        "sound-loose/fx_loop.tbl": "Znhfc2hvcnQgMTYgNDAwMA0KZnhfb3RoZXIgMzIgNjAwMA0K"
+      }
+    },
+    "outputs": [256, 260, 264, 268, 272, 276],
+    "row": {
+      "frame": 100,
+      "words": [40, 30, 73, 1, 40, 184],
+      "marker": 1352716606
+    },
+    "original": {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-primary-loop-metadata-20261128/ORIGINAL-META3-74.json",
+      "sha256": "fbb02ef79f4336e0aaa867a010a5085e52c809aa127ea00ee0446b6bcf281444"
+    },
+    "derivation": {
+      "entry": 6050016,
+      "owner": 537148544,
+      "before": {
+        "raw": [100, 25, 30, 40, 100],
+        "derived": [0, 0, 0, 0]
+      },
+      "result": 2800,
+      "after": {
+        "raw": [100, 25, 30, 40, 100],
+        "derived": [25, 30, 40, 100]
+      },
+      "scope": "Actual bounded Settings derivation method, called on the original initialized Engine-class owner after its original startup XML reader. No field writes; direct method is the same tail used by original preference application, not full Application initialization."
+    },
+    "bridge76": "Own76 initialized Engine XML owner plus complete same-body 0x714270 volume derivation and 605/607/844 wrappers; own parsed current consumer, no new original76 execution."
+  }
+}
