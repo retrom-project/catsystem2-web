@@ -277,3 +277,89 @@ native word-write overrun is modeled; static decoding does not need that
 restriction. Other decoder options, including Ogg, remain diagnostic pending
 their own codec output and lifecycle proofs. Controlled VFS/COM output and
 scheduled AudioBuffer PCM checks do not establish physical device playback.
+
+## Modern primary completion and ownership
+
+The exact SDK74 and plain SDK76 primary managers now use the common native
+buffer-completion path. Their original parsed Scripts load two nonempty PCM8
+WAV sources through the normal FileServer, query and consume gain/pan, receive
+real virtual completion events, repeat, pause, resume, stop, rebind and release.
+Completion counts survive pause, reset on Play/Stop, and the saved remaining
+repeat count survives reconstruction in a fresh World. This behavior also
+retains the already qualified SDK23/63/67 path; it is not an ABI capability.
+
+The source buffers and completed PCM bytes are independently owned. The finite
+COM-memory output and matching WebAudio clock prove CPU-visible samples and
+state, not physical sound, alternate backend 104, spatial output or additional
+stream/decoder shapes. The SDK74 probe's by-type group miss and incorrect
+final comparison remain author-input observations; SDK76 separately exercises
+positive by-ID allocation and the result-dependent Script branch. The original
+pause/resume cancels the pending fade, so its later queried value remains 37.
+
+The nonempty modern SoundConfig group uses the original Engine-class reader,
+resource-authored Settings INT rows, normal FileServer mounts and real WAV/TAG
+sources. Its parsed Script consumes master/filename/type/key fields in an
+arithmetic checksum, uses effective volume and TAG values in peer bank setters,
+and loads a source from the actual configured group. The CP932 TAG first-insert
+value remains independent after peer replacement. The original reader releases
+its XML input; current owners also survive source-buffer overwrite and a fresh
+checkpoint owner constructed from changed configuration XML.
+
+SDK74 executes the complete finite field group. SDK76 independently executes the
+same nonempty producer and each selector context; its remaining field getters
+reuse complete equivalent bodies, preserving record offsets, defaults, control
+flow and actual lookup context. A separate SDK76 parsed program consumes that
+whole group. Counts distinguish these bridges from new native executions. This
+is a qualified Engine-class/data-owner and controlled filesystem scope, not
+WinMain, full Application startup or a physical audio device.
+
+## Primary decoder option and initialized legacy metadata
+
+SDK74 and plain SDK76 Main935/936 use the same PCM decoder silence prefix as
+SDK63/67. Whole unsigned 60Hz ticks become whole milliseconds before the decoder
+adds whole sample frames. Prefix bytes count toward the short-source static
+conversion threshold and stored static capacity, while Main569 still returns
+the original file's frame count. This is common decoder behavior, not a build
+capability. Unsupported codecs retain their existing diagnostic.
+
+The finite modern group uses real FileServer resources, two distinct PCM8
+sources, fixed and allocated banks, nonzero prefixes, completion events,
+pause/resume, replacement, release and fresh checkpoint owners. Original COM
+buffer bytes and Script queries match current output. Main400's authored table
+is loaded into the actual Sound owner and binds its ranges to declared type1;
+the short source is independently confirmed to convert to static before Play.
+This proves table ownership and binding, not stream loop-range playback. The
+static buffer repeats its stored PCM, including its silence prefix.
+
+Legacy filename gain, voice enable/master and voice index read initialized
+Settings, separately from the newer SoundConfig table. The Engine-class startup
+reader leaves derived gain words untouched until its real volume-derivation
+method runs. The independent metadata bridge calls that existing method on the
+original owner, then feeds filename gain through an actual loaded-bank setter
+and readback into parsed Script arithmetic. The earlier pre-derivation zero
+observations remain separate; they do not establish an implicit refresh rule.
+SDK76 reuses the complete equivalent derivation and relevant owner context.
+
+The exact SDK63 bridge maps its own raw Sound selectors, 32 banks and 128-byte
+control records through the real factory/constructor and complete relevant
+receiver/Frame bodies. Its finite integer fade end branch is distinct from any
+claim about arbitrary floating-point trajectories. A parsed current Script
+uses normal legacy Settings, explicit FileServer paths and public Main602 group
+creation, consumes completed gain/pan, and then observes Play restoring the base
+gain. It replaces two prefixed PCM sources and completes pending release across
+four fresh current owners. This reuses the corrected original primary-source
+and bounded COM/allocator/CRT receipts plus the complete body/context bridges;
+it is no new native SDK63 execution or full Application qualification.
+
+The two normal loop-table entries are distinct. Duplicate-entry mutation,
+stream range playback, alternate backend104, spatial/physical output and other
+codec options remain outside this finite bridge. SDK63's original stereo default
+is established by its actual Settings initializer; the pan bridge does not
+invent a new profile flag or replace an uninitialized field.
+
+A normal repeated-key modern table keeps the first end while updating start;
+the loaded short type1 owner therefore receives 32/4000 from rows 16/4000 and
+32/6000. SDK74's original resource/Script/decoder group verifies that binding
+and normal release; the complete SDK63/67/76 writers have the same relevant
+update rule. Independent modern current owners retain it across reconstruction.
+The existing shared implementation already implements this behavior.

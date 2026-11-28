@@ -113,3 +113,21 @@ the first out-of-range index and the neighboring block boundaries through KCS.
 
 Run `node --test tests/native-configuration-query.test.mjs` and, with private images,
 `node --test tests/differential/native-configuration-query.test.mjs`.
+
+## Current configuration checkpoint (partial)
+
+`native-cross-build-configuration-checkpoint.test.mjs` preserves a current-only
+regression chain for exact63/67/74/plain-ee6: normal startup XML, parsed metadata
+queries and variable/format consumers, independent owned block copies, source
+release and replacement, and eight independent cold continuations. The76 case
+also consumes queried language prefixes through a real CSTL reader. The63/76
+cases cover their different message/effect block lengths and ordered copy outputs;
+67/74 use thin metadata continuations.
+
+This checkpoint adds no original execution, production implementation, ABI entry,
+or SDK qualification. The existing SDK23 C1/C2 original group retains its own
+scope. The missing cross-build normal writer/context bridges and modern361/533
+preference/application consumers remain open. Main1050 here observes its current
+constructor default; no startup animation writer is inferred. Heap cleanup is
+LIFO. The preserved earlier-block-first draft and its VM-offset diagnostic remain
+separate from this successful path; see [native-guest-memory.md](native-guest-memory.md).

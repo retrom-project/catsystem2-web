@@ -1502,3 +1502,79 @@ Both original failures remain evidence; this shape has no native lifecycle pass.
 The passing current primary-Root contrast does not remove that qualification gap.
 SDK67 reuses its existing own receiver/bank-selection body evidence and current
 contrast; no new SDK67 original full-chain run is claimed here.
+
+## SDK63 named objects and registered private consumers
+
+The exact .63 `c8d4` build also has a complete finite chain from a loaded parent
+Script bank to two separately loaded Script contexts and two explicitly started
+FES owners. Main631 creates two indexed BASE receivers and one CPLANE from the
+literal type/name/count packet. Main632 sends the same expanded `argv1` as both
+strings; `argv2` stays ignored. Main664–668 preserve registered caller identity,
+private-word copy direction and initialized result writes. Main882/883 preserve
+the CP932 key bytes. A real label changes the CPLANE's size, position, color and
+priority; the original Root/View COM-memory consumer produces the corresponding
+colored triangles. These calls retain their existing ABI registrations.
+
+Reloading A's Core resets its dictionary while B and the two Script private
+contexts retain their independent values. The test replays every target control,
+writeback and complete packet, then independently serializes and restores each
+of eight boundaries through normal FES retirement and supplier retirement.
+The native golden contains the completed 44-target prefix and both geometry
+outputs; its old cleanup failure remains recorded separately. The finite native
+retirement witness supplies the real MOT source startup initializer already used
+by the qualified M2 host. That initializer is also needed by the common source
+release path when no MOT program has been loaded. A separate minimal nonstarted
+FES `209 → 66/447/67 → Root` witness records the actual final free with that normal
+startup prerequisite. Neither witness turns the old nested target-zero query
+into primary Application, Input or Sound qualification.
+
+The wider .23/.67 private and dynamic groups retain their own original evidence;
+modern parent-Script registration/selection retains its W59 producer evidence.
+No new cross-build shape is inferred from a shared label or registered slot.
+ImageData Main738 remains conditional on its encoded descriptor and last owner;
+this CPLANE chain supplies no image descriptor, font, physical GPU or arbitrary
+memory qualification. The test fixture records the precise original-prefix and
+retirement evidence separately.
+
+### Modern registered context and dynamic consumers
+
+Exact SDK74 uses a real kind1 Top, a normally loaded parent Script, and its public
+context-name receiver before Main66/143 registers two independent parsed children.
+Main454 returns the inherited CP932 bytes, separately from the save directory.
+Explicit Main447/448 initialization and start precede dynamic Main631 BASE/CPLANE
+creation, Main632's argv1-twice row, named Main664 values, private copy/result, and
+CP932 dictionary consumers. The real notification reaches the bound Draw receiver;
+the CPLANE colored geometry matches the original COM-memory consumer. Reloading
+one Core preserves the other Core and both Script registrations; normal retirement
+and six independent current cold continuations retain this isolation.
+
+The shared dynamic type directory now names its first native type `BASE`. Every
+native FES player also binds its existing typed bank's named-variable reader;
+modern FES expressions must see names published by Main664. The legacy local-access
+policy still governs its separately evidenced wrapper validation and formatting.
+No new policy is inferred from an untested build. The limited native host, original
+missing-loose-file prefix, and all original raw controls remain in the ignored
+`sdk-modern-fes-context-registry-20261128` evidence directory. See
+`native-modern-fes-context-registry.test.mjs` and its fixture. This does not qualify
+full Application/Input publication, arbitrary physical memory, or physical GPU.
+
+The plain-ee6 SDK76 bridge executes the same catalogue, named/private copy,
+CP932 dictionary, result clear, explicit start, bound Draw force, colored CPLANE,
+and supplier retirement with one actual parsed child. It reuses the SDK74 two-Core
+reload group after checking both own wrappers and their receiver contexts; it does
+not repeat that whole group. Its normal CRT onexit initializer runs before the
+original MOT source static initializer. The earlier uninitialized-onexit prefix
+contains zero target calls and remains archived. Four additional independent cold
+continuations cover this build. No ABI slot or external raw-message contract changed.
+
+Exact SDK63 additionally checks Main454's inherited nonempty CP932 context,
+Main453's own exit-code write, Main452's self/FES values, and Main449's real Draw
+binding/rebind through a normally loaded and explicitly started FES. The parsed
+SHOW result and initialized output spans match the original; two current cold
+continuations retain the replacement binding and normal owner retirement. The
+surface receiver's own branch is joined with the equivalent modern binding/force
+consumer group, rather than claiming a new physical display result. Main449 is a
+surface binding operation; it is not a sleep setter. This evidence makes no new
+sleep, full Application, or arbitrary receiver claim. The original diagnostic
+row's VM+24 field is a stack pointer, not an instruction-PC oracle; it is excluded
+from comparisons. See `native-sdk63-fes-status-consumers.test.mjs`.

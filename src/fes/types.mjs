@@ -42,7 +42,10 @@ export const FES_OBJECT_TYPES = Object.freeze({
 });
 
 // Factory indexes 33..35 intentionally differ from runtime object type codes.
-export const FES_OBJECT_DEFINITION_ORDER = Object.freeze(['', ...Object.keys(FES_OBJECT_TYPES)]);
+export const FES_OBJECT_DEFINITION_ORDER = Object.freeze([
+  'BASE',
+  ...Object.keys(FES_OBJECT_TYPES),
+]);
 
 // Normal DEFINE compares the existing narrow names in the C locale. Keep the
 // factory catalogue authoritative; the declaration retains raw diagnostic text.

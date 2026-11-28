@@ -384,12 +384,10 @@ export default {
   resources: { categoryCount: 64 },
   sound: {
     banks: 32,
-    decoderOptionAddsSilence: true,
     msADPCMUsesNativePCM: true,
     tagKeysUseBytes: true,
     tagAllReadsOutsideBankTable: true,
     load3DPositionFromPan: true,
-    bufferCompletionNotifications: true,
     streamRefillUsesNativeActivity: true,
     unwrittenQueryBanks: [587],
     mainLoadPacketBytes: 280,
