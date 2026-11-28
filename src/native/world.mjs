@@ -1265,7 +1265,8 @@ export class NativeWorld {
           releaseIdentity: this.objects.retainResourceIdentity(record),
         });
     }
-    const releaseSurfaces = this.graphics.retainFinalFESSurfaces();
+    const releaseSurfaces = this.graphics.retainFinalFESSurfaces(),
+      releaseSounds = this.sound.retainFinalTasks();
     try {
       for (const { id } of [...this.objects.objects.values()].filter(
         (record) => record.parent === null,
@@ -1275,6 +1276,7 @@ export class NativeWorld {
         await attempt(() => this.objects.release(id));
     } finally {
       await attempt(releaseSurfaces);
+      await attempt(releaseSounds);
       for (const retained of this.#closingInputs.values()) retained.releaseIdentity();
       this.#closingInputs = null;
     }
