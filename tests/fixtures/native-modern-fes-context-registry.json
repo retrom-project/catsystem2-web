@@ -1,0 +1,515 @@
+{
+  "scope": "Own74 actual Top, normal typed Script context publisher, registered parsed supplier Script contexts, explicit FES load/start, BASE/CPLANE and real named/private/dictionary consumers, Draw force+COM geometry, independent Core reload and normal retirement. Finite software geometry; no full App/Input publisher or physical GPU.",
+  "cases": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "inputs": [
+        {
+          "name": "config/startup.xml",
+          "bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48RVRDPjxjYWNoZT4wPC9jYWNoZT48L0VUQz48QVBQPjxpbWdjYWNoZT4wPC9pbWdjYWNoZT48L0FQUD48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lLmludDwvaW50PjxleHQ+Y3N0PC9leHQ+PGRpcj5zY2VuZS1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPmZlczwvbmFtZT48aW50PnRhYmxlcy5pbnQ8L2ludD48ZXh0PmZlczwvZXh0PjxkaXI+dGFibGVzLWxvb3NlPC9kaXI+PC9pbnQwMj48aW50MDM+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDM+PC9JTlQ+PC9kb2N1bWVudD4=",
+          "sha256": "c257e6fde03bfbd4a425e24cb0b73d985980cfab6e1f80bbd9c953f4e6c96d11"
+        },
+        {
+          "name": "startup.xml",
+          "bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48RVRDPjxjYWNoZT4wPC9jYWNoZT48L0VUQz48QVBQPjxpbWdjYWNoZT4wPC9pbWdjYWNoZT48L0FQUD48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5zY2VuZTwvbmFtZT48aW50PnNjZW5lLmludDwvaW50PjxleHQ+Y3N0PC9leHQ+PGRpcj5zY2VuZS1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPmZlczwvbmFtZT48aW50PnRhYmxlcy5pbnQ8L2ludD48ZXh0PmZlczwvZXh0PjxkaXI+dGFibGVzLWxvb3NlPC9kaXI+PC9pbnQwMj48aW50MDM+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDM+PC9JTlQ+PC9kb2N1bWVudD4=",
+          "sha256": "c257e6fde03bfbd4a425e24cb0b73d985980cfab6e1f80bbd9c953f4e6c96d11"
+        },
+        {
+          "name": "scripts-loose/context-parent.kcs",
+          "bytes": "S0NTAAIAAAAAAAAANAAAAEgBAAB8AQAABgAAAJ8AAAAAEAAAABAAABsCAAAAAAAAkAIAAHicU1VmYGBgUFPewc3AoApl70FiH0BiH4GwmRgYtJUvMjAwKLMwgJguICZEhQYDSAUPiBSGsBkYQUqcQEp4wEp0wJJgUtmBEWa4tnI/TAmq/gZ0/QZgSTCpfACbfm1lR5iDyGRCnKet7AzzI8Q+ZAFweGkru8MErEEKQH4FuRTkrWQgH+T2UiAf5MxpIHkWBobZIHEWBoai1PTM4pLUotQUhfKizJLUIobi5KLMgpJi3Zz8/OLUmOT8vJLUihJdiKRednIxspai1MQUnFogkmAt3Uum+zAEBHkyAABR2Uld",
+          "sha256": "a585d6633ed6fade5eaed389794938ad67d06b249ed06cffede36b4b7ea01e45"
+        },
+        {
+          "name": "scripts-loose/context-writer.kcs",
+          "bytes": "S0NTAAIAAAAAAAAANAAAAPYGAAAqBwAADQAAAMgAAAAAEAAAABAAAPIHAAAAAAAA7A0AAHiczZW/axRREMe/u3vRQAJGYiCFxZLHHcpLoZIiYAr1zI/DQw8jWB5Bl/MwJmETL4pNEPwBNmLjT0ThDixELBQOCWSFRCwsRC0ULCwsLCz8D0xm7u3u7GWxErQZPjffmffmvZl9l1V71748zqlHALKG64KfCH4q+LngF4KbgpcFB4JXBb8V/E7we8GfBH8W/FXwN8HfBf8Q/FPwL+ZGo9HIKWyJOSO4U3C34B7BOwT3C97JDAA51eyKeVlwIHi1C9DqMADj2MUFUmlavbEAlRGO7TCO8ODbyPaaHItCDlFIN4cMscjWrEJWcyCHhCIiq1UmKWrVYUV7DrN7uC1HLp5V7p6531qdpyr62THwpxIHWWSrDrC4Qtt1xm5TxeukW6sguhuTvpQhe72XxDt2dIhBUeeSRdbm/EUK6REhDtuAQ6z0ENhcp03ihfQttnLmlaSo1T27rdpW9Kn06Ltp0Vpdtc0dmM/WiAFX1YH0gztk+1j0nRRRq3knWrYu2+HEV9bavxbdh3JFtR8Rtsb0eijp1upgON4C/8fZnSu5idn9O4O56ZaDTf3Znd6ffz3ScgSs5AjITpqDP0hOrVb37ej2W896lt1rVltcPnzVEuMxwI4P8Ys3wikjyZSwDelrNPl1HQ+1/WfIbQE+AOrqpY3fdLzLG7/pmq6RbgM3SbeBh6TbAH0X9Jk9I90BXpLuAK9Id4AV8mcA+oejpo2NTrqzizOeD9+rVOcX/Is4N+Wf9XxMV2seG7d0vIBqZWbW9067U36ltg9joyfyEyjni4X8kXKxjBv128Vb0ygVjo5jcuLYSXaA8tYB1roKRA==",
+          "sha256": "303cff4474c06862bb6b6215e97dc662f1dcc8cdbc5d0b53f3324595e910ff6f"
+        },
+        {
+          "name": "scripts-loose/context-reader.kcs",
+          "bytes": "S0NTAAIAAAAAAAAANAAAAMoDAAD+AwAADQAAAMgAAAAAEAAAABAAAMYEAAAAAAAAlAcAAHicnZO9SxxRFMXPzCwiaGHQIkXAJY9dhLEwwS5N4vq1ZIkSA5aLkGFd/IJnWAlpFhsLG0kTkkAw4IJFCCkiLEFwAxuxsJCQIoJFCgsLC/+EeO++mT0WadI8fnPOvffde2cmY+79OP2YNdsAMo53iHeJPxF/If5KXCfeJ24QN4mPiI+JT4h/Ef8mPiP+Q3xOfEF8SXylXKvValmDjjaniDuJu4l7iPuIbxPfUQaArKl3tXmfuEHc7AJCMwrACQPaoLQWmkMPMCkSbsEJrcFD8yhOzJi0Cj/bEUMi9w6p/NaPK6mQMVU/7qF1hqYiIT2U895PSm2T/C4pZe6q7Dr2xByR67s1Z1BNPc1DNQ9knM4k80azw+3o3mE1vyfRKoemkWzDCTRU6xoEcvaraQPXSWxWg39OzHukUqFZDVwP7udwF9Nmdv/jhgEVml5S5Jxq5+KdUMqN91zXL2YiDnswL7IHWACy51fXz1UPWL9+lpVtiO8DW+L7wAfxfUAGavjAZ/EDYE/8APgmfgAciJ4C5K+tpoDxsZn0ytpyZGGjUnn1hX2JpTm7EFksliuRHunpp3mUS8srNnqenrOlyn2Mjz3LTaKYK+Rzj4uFIjZ33hReL2I6/2QCM5NTsypA8v4C3nvKag==",
+          "sha256": "77f29dcd0d7928a3f4b39eb170d5a342c64e7ea977c5af8690e0448e3a5e628f"
+        },
+        {
+          "name": "scripts.int",
+          "bytes": "S0lGAAIAAAByZXNvdXJjZTc0LmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAE4AAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA5gAAAE4AAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjA=",
+          "sha256": "a903cbfc3c2f7d7b1deee2f6f3abe7f9171942c294f3731ac621984b08f17fb7"
+        },
+        {
+          "name": "tables.int",
+          "bytes": "S0lGAAEAAAByZWdpc3RyeS5mZXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAACYBAAAjREVGSU5FDQpCQVNFIGFuY2hvcg0KI1NUQVJUDQpuZXh0IFdBSVQNCiNXQUlUDQpicmVhaw0KbmV4dCBXQUlUDQojRkVUQ0gNClwxPV9DTElDS19MXw0KXDA9XDArMTANCnJlc3VsdCBcMA0KYnJlYWsNCiNtYXJrZXIuUElORw0KbGl2ZSBzaXplIDMgMg0KbGl2ZSBjb2xvciAweGZmMjA0MDYwDQpsaXZlIHByaSA1MDAwDQpsaXZlIHBvcyAoMStAKSAyIDANCmxpdmUgZGlzcCAxDQpmb3JjZV9yZWRyYXcNCnJlc3VsdCAxMDArQA0KYnJlYWsNCiNTSE9XDQpmb3JjZV9yZWRyYXcNCnJlc3VsdCAyMDArXDENCmJyZWFrDQo=",
+          "sha256": "ac5152386ca02689005ce40f58aa82b952313916c4a7dbe2d7ba40d300a6b9fc"
+        },
+        {
+          "name": "tables-loose/registry.fes",
+          "bytes": "I0RFRklORQ0KQkFTRSBhbmNob3INCiNTVEFSVA0KbmV4dCBXQUlUDQojV0FJVA0KYnJlYWsNCm5leHQgV0FJVA0KI0ZFVENIDQpcMT1fQ0xJQ0tfTF8NClwwPVwwKzEwDQpyZXN1bHQgXDANCmJyZWFrDQojbWFya2VyLlBJTkcNCmxpdmUgc2l6ZSAzIDINCmxpdmUgY29sb3IgMHhmZjIwNDA2MA0KbGl2ZSBwcmkgNTAwMA0KbGl2ZSBwb3MgKDErQCkgMiAwDQpsaXZlIGRpc3AgMQ0KZm9yY2VfcmVkcmF3DQpyZXN1bHQgMTAwK0ANCmJyZWFrDQojU0hPVw0KZm9yY2VfcmVkcmF3DQpyZXN1bHQgMjAwK1wxDQpicmVhaw0K",
+          "sha256": "430ed8240a18c3dc52359ac3d8155d6738a858b936bc1293f6201925a1b67a09"
+        },
+        {
+          "name": "images.int",
+          "bytes": "S0lGAAAAAAA=",
+          "sha256": "177dd2781908008abfd35f0c9a98d694a996b2e5045500e5b75d217a74394ef5"
+        },
+        {
+          "name": "scene.int",
+          "bytes": "S0lGAAAAAAA=",
+          "sha256": "177dd2781908008abfd35f0c9a98d694a996b2e5045500e5b75d217a74394ef5"
+        }
+      ],
+      "nativeRows": [
+        {
+          "phase": 0,
+          "children": [
+            {
+              "alive": true,
+              "id": 2,
+              "pointer": 537258752,
+              "pc": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "contextOut": [
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0
+              ],
+              "context": "共有"
+            },
+            {
+              "alive": true,
+              "id": 3,
+              "pointer": 537262176,
+              "pc": 0,
+              "words": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              "contextOut": [
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0
+              ],
+              "context": "共有"
+            }
+          ]
+        },
+        {
+          "phase": 1,
+          "children": [
+            {
+              "alive": true,
+              "id": 2,
+              "pointer": 537258752,
+              "pc": 1142,
+              "words": [
+                7, 21, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 4, 2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": true,
+                "id": 8,
+                "pointer": 537341856,
+                "core": 537343408,
+                "exitCode": -1
+              }
+            },
+            {
+              "alive": true,
+              "id": 3,
+              "pointer": 537262176,
+              "pc": 464,
+              "words": [
+                2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 4, 2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": false
+              }
+            }
+          ]
+        },
+        {
+          "phase": 2,
+          "children": [
+            {
+              "alive": true,
+              "id": 2,
+              "pointer": 537258752,
+              "pc": 1153,
+              "words": [
+                7, 21, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 4, 2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": true,
+                "id": 8,
+                "pointer": 537341856,
+                "core": 537343408,
+                "exitCode": -1
+              }
+            },
+            {
+              "alive": true,
+              "id": 3,
+              "pointer": 537262176,
+              "pc": 792,
+              "words": [
+                10, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 4, 2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": true,
+                "id": 11,
+                "pointer": 537365488,
+                "core": 537367008,
+                "exitCode": -1
+              }
+            }
+          ],
+          "drawCount": 1
+        },
+        {
+          "phase": 3,
+          "children": [
+            {
+              "alive": true,
+              "id": 2,
+              "pointer": 537258752,
+              "pc": 1611,
+              "words": [
+                7, 21, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 0,
+                2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                4, 2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": true,
+                "id": 8,
+                "pointer": 537341856,
+                "core": 537389232,
+                "exitCode": -1
+              }
+            },
+            {
+              "alive": true,
+              "id": 3,
+              "pointer": 537262176,
+              "pc": 890,
+              "words": [
+                10, 31, 205, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                4, 2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": true,
+                "id": 11,
+                "pointer": 537365488,
+                "core": 537367008,
+                "exitCode": -1
+              }
+            }
+          ],
+          "drawCount": 0
+        },
+        {
+          "phase": 4,
+          "children": [
+            {
+              "alive": true,
+              "id": 2,
+              "pointer": 537258752,
+              "pc": 1696,
+              "words": [
+                7, 21, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 0,
+                2715403569, 2715403569, 2715403569, 0, 2715403569, 2715403569, 2715403569, 4,
+                2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": true,
+                "id": 8,
+                "pointer": 537341856,
+                "core": 537389232,
+                "exitCode": -1
+              }
+            },
+            {
+              "alive": true,
+              "id": 3,
+              "pointer": 537262176,
+              "pc": 941,
+              "words": [
+                10, 31, 205, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                4, 4294967295, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": true,
+                "id": 11,
+                "pointer": 537365488,
+                "core": 537367008,
+                "exitCode": -1
+              }
+            }
+          ]
+        },
+        {
+          "phase": 5,
+          "children": [
+            {
+              "alive": true,
+              "id": 2,
+              "pointer": 537258752,
+              "pc": 1764,
+              "words": [
+                7, 21, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 0,
+                2715403569, 2715403569, 2715403569, 0, 2715403569, 2715403569, 2715403569, 4,
+                2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": false,
+                "id": 8,
+                "pointer": 537341856
+              }
+            },
+            {
+              "alive": true,
+              "id": 3,
+              "pointer": 537262176,
+              "pc": 952,
+              "words": [
+                10, 31, 205, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                4, 4294967295, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": false,
+                "id": 11,
+                "pointer": 537365488
+              }
+            }
+          ]
+        },
+        {
+          "phase": 6,
+          "children": [
+            {
+              "alive": true,
+              "id": 2,
+              "pointer": 537258752,
+              "pc": 1781,
+              "words": [
+                7, 21, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 0,
+                2715403569, 2715403569, 2715403569, 0, 2715403569, 2715403569, 2715403569, 4,
+                2715403569, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": false,
+                "id": 8,
+                "pointer": 537341856
+              }
+            },
+            {
+              "alive": true,
+              "id": 3,
+              "pointer": 537262176,
+              "pc": 969,
+              "words": [
+                10, 31, 205, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569, 2715403569,
+                4, 4294967295, 2715403569, 2715403569, 2715403569
+              ],
+              "contextOut": [
+                139, 164, 151, 76, 0, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165,
+                165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165, 165
+              ],
+              "context": "共有",
+              "fes": {
+                "alive": false,
+                "id": 11,
+                "pointer": 537365488
+              }
+            }
+          ]
+        },
+        {
+          "phase": 7,
+          "children": [
+            {
+              "alive": false
+            },
+            {
+              "alive": false
+            }
+          ]
+        }
+      ],
+      "draws": [
+        {
+          "phase": 2,
+          "triangles": [
+            [
+              {
+                "x": 1,
+                "y": 2,
+                "z": 0.9230769276618958,
+                "w": 1,
+                "color": 4280303712,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 4,
+                "y": 2,
+                "z": 0.9230769276618958,
+                "w": 1,
+                "color": 4280303712,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 4,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 1,
+                "color": 4280303712,
+                "u": 0,
+                "v": 0
+              }
+            ],
+            [
+              {
+                "x": 1,
+                "y": 2,
+                "z": 0.9230769276618958,
+                "w": 1,
+                "color": 4280303712,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 1,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 1,
+                "color": 4280303712,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 4,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 1,
+                "color": 4280303712,
+                "u": 0,
+                "v": 0
+              }
+            ]
+          ],
+          "texture": 0
+        }
+      ],
+      "forcePhases": [1, 2, 3, 3],
+      "currentPrivate": [
+        [
+          [0, null],
+          [0, null]
+        ],
+        [
+          [7, 7],
+          [0, null]
+        ],
+        [
+          [7, 10],
+          [10, 10]
+        ],
+        [
+          [7, 0],
+          [10, 10]
+        ],
+        [
+          [7, 0],
+          [10, 10]
+        ],
+        [
+          [7, null],
+          [10, null]
+        ],
+        [
+          [7, null],
+          [10, null]
+        ],
+        [
+          [null, null],
+          [null, null]
+        ]
+      ],
+      "cold": [0, 1, 2, 3, 4, 5],
+      "original": {
+        "path": ".local/phase11/sdk-modern-fes-context-registry-20261128/ORIGINAL-CONTEXT-74.json",
+        "sha256": "933befe72ead12f893aa5df917fba24e8f97fbf798116baca386d7a8f85e808e",
+        "accounting": {
+          "target": 40,
+          "allGCALL": 100,
+          "closed": 100,
+          "bootstrap": 0,
+          "businessDirect": 13,
+          "journal": 64,
+          "rootFrames": 8,
+          "overlap": "Main wrappers execute within actual Root or qualified carrier calls; all setup/cleanup in journal, no free bootstrap."
+        }
+      }
+    }
+  ]
+}

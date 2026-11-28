@@ -114,14 +114,13 @@ export function createNativeFESTask(world, record) {
         bank?.selectContext(instance.nativeVariableContextKey);
         return bank?.context(instance.nativeVariableContextKey) ?? null;
       };
-      if (nativeABI(world.profile).fes.localAccessUsesNativeTypes)
-        player.nativeNamedVariable = (instance, name, index) => {
-          const bytes = typeof name === 'string' ? encodeCP932(name) : name,
-            bank = variableBank();
-          if (bytes.length > 32 || !bank?.selectContext(instance.nativeVariableContextKey ?? key))
-            return undefined;
-          return bank.findName(bytes, index);
-        };
+      player.nativeNamedVariable = (instance, name, index) => {
+        const bytes = typeof name === 'string' ? encodeCP932(name) : name,
+          bank = variableBank();
+        if (bytes.length > 32 || !bank?.selectContext(instance.nativeVariableContextKey ?? key))
+          return undefined;
+        return bank.findName(bytes, index);
+      };
     },
     async initialize(variableBank) {
       const runtime = world.runtime;

@@ -1535,3 +1535,25 @@ ImageData Main738 remains conditional on its encoded descriptor and last owner;
 this CPLANE chain supplies no image descriptor, font, physical GPU or arbitrary
 memory qualification. The test fixture records the precise original-prefix and
 retirement evidence separately.
+
+### Modern registered context and dynamic consumers
+
+Exact SDK74 uses a real kind1 Top, a normally loaded parent Script, and its public
+context-name receiver before Main66/143 registers two independent parsed children.
+Main454 returns the inherited CP932 bytes, separately from the save directory.
+Explicit Main447/448 initialization and start precede dynamic Main631 BASE/CPLANE
+creation, Main632's argv1-twice row, named Main664 values, private copy/result, and
+CP932 dictionary consumers. The real notification reaches the bound Draw receiver;
+the CPLANE colored geometry matches the original COM-memory consumer. Reloading
+one Core preserves the other Core and both Script registrations; normal retirement
+and six independent current cold continuations retain this isolation.
+
+The shared dynamic type directory now names its first native type `BASE`. Every
+native FES player also binds its existing typed bank's named-variable reader;
+modern FES expressions must see names published by Main664. The legacy local-access
+policy still governs its separately evidenced wrapper validation and formatting.
+No new policy is inferred from an untested build. The limited native host, original
+missing-loose-file prefix, and all original raw controls remain in the ignored
+`sdk-modern-fes-context-registry-20261128` evidence directory. See
+`native-modern-fes-context-registry.test.mjs` and its fixture. This does not qualify
+full Application/Input publication, arbitrary physical memory, or physical GPU.
