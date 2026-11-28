@@ -202,6 +202,8 @@ const deviceBank = () => ({
 });
 
 export class NativeSound {
+  #finalTasks = null;
+
   constructor(world) {
     this.world = world;
     this.audio = world.audio;
@@ -241,6 +243,42 @@ export class NativeSound {
     const rootID = this.world.engineMessages?.closestTop(taskID)?.id ?? this.world.root;
     const base = this.world.objects.objects.get(rootID)?.implementation;
     return base ? this.get(base.sound) : null;
+  }
+  retainFinalTasks() {
+    if (this.#finalTasks) throw new Error('Native final sound retirement is already active');
+    const retained = new Map(),
+      records = this.world.objects.objects;
+    for (const [id, task] of this.tasks) {
+      const record = records.get(id),
+        top = records.get(record?.parent);
+      if (
+        !(task instanceof NativeSoundTask) ||
+        record?.kind !== 13 ||
+        record.implementation !== task ||
+        top?.kind !== 1 ||
+        top.implementation.sound !== id
+      )
+        continue;
+      retained.set(task, this.world.objects.retainResourceIdentity(record));
+    }
+    this.#finalTasks = retained;
+    return async () => {
+      this.#finalTasks = null;
+      const errors = [];
+      for (const [task, releaseIdentity] of retained)
+        try {
+          await task.close();
+        } catch (error) {
+          errors.push(error);
+        } finally {
+          releaseIdentity();
+        }
+      retained.clear();
+      if (errors.length) throw new AggregateError(errors, 'Native final sound cleanup failed');
+    };
+  }
+  deferFinalTaskClose(task) {
+    return this.#finalTasks?.has(task) ?? false;
   }
   create(record) {
     const task = new NativeSoundTask(this, record);
@@ -1351,6 +1389,7 @@ export class NativeSoundTask {
     state.controls.forEach((c, i) => this.controls[i].restore(c, this.world.runtime.handles));
   }
   async close() {
+    if (this.sound.deferFinalTaskClose(this)) return;
     for (let i = 0; i < this.sound.bankCount; i++) {
       this.sound.release(i);
       this.clearAux(i);

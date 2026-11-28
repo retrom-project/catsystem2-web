@@ -40,6 +40,20 @@ rebind, cold continuation, allocation during callbacks, failure isolation and
 concurrent close. Its finite CPU resources do not prove physical GPU rendering,
 font appearance or mounted-content availability after a host abort.
 
+Final shutdown also keeps each Top's actual owned Sound task resource until
+its dependent destruction callbacks finish. Its task record and native routes
+still retire in their original order. A later parsed Script's Main156 therefore
+uses the same Sound service, controls and bank resources through its still-live
+Top; final cleanup releases the retained service and its reserved allocation
+identity. This does not supply a missing Sound task, change raw message routing,
+or extend ordinary task retirement. No audio backend or checkpoint layout changes
+are involved. `tests/native-world-final-sound-resources.test.mjs` isolates the
+parsed callback order, independent Tops, allocation, cold continuation, ordinary
+missing-service guard and cleanup after callback failure. These finite resources
+do not generate PCM; complete widget/resource consumption is separately checked
+with the real mounted scripts, fonts and WebAudio in a source-mode browser exit
+replay. A list of outer Main calls alone does not establish that internal graph.
+
 Eight independent current checkpoints cover the pending queue, reload and
 retirement boundaries. Original PC0 bytes and the recreated-child observer's
 allocation-reuse gap remain capture-only; the latter has separate actual
