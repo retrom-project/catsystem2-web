@@ -300,3 +300,21 @@ native word-write overrun is modeled; static decoding does not need that
 restriction. Other decoder options, including Ogg, remain diagnostic pending
 their own codec output and lifecycle proofs. Controlled VFS/COM output and
 scheduled AudioBuffer PCM checks do not establish physical device playback.
+
+## Modern primary completion and ownership
+
+The exact SDK74 and plain SDK76 primary managers now use the common native
+buffer-completion path. Their original parsed Scripts load two nonempty PCM8
+WAV sources through the normal FileServer, query and consume gain/pan, receive
+real virtual completion events, repeat, pause, resume, stop, rebind and release.
+Completion counts survive pause, reset on Play/Stop, and the saved remaining
+repeat count survives reconstruction in a fresh World. This behavior also
+retains the already qualified SDK23/63/67 path; it is not an ABI capability.
+
+The source buffers and completed PCM bytes are independently owned. The finite
+COM-memory output and matching WebAudio clock prove CPU-visible samples and
+state, not physical sound, alternate backend 104, spatial output or additional
+stream/decoder shapes. The SDK74 probe's by-type group miss and incorrect
+final comparison remain author-input observations; SDK76 separately exercises
+positive by-ID allocation and the result-dependent Script branch. The original
+pause/resume cancels the pending fade, so its later queried value remains 37.

@@ -296,8 +296,7 @@ export class NativeSound {
     return this.world.frame >>> 0;
   }
   playing(bank) {
-    if (this.abi.sound.bufferCompletionNotifications && this.audio?.nativePlaying)
-      return this.audio.nativePlaying(this.key(bank));
+    if (this.audio?.nativePlaying) return this.audio.nativePlaying(this.key(bank));
     return !!this.channel(bank)?.playing;
   }
   factor(bank) {
@@ -330,8 +329,7 @@ export class NativeSound {
   }
   release(bank) {
     const device = this.device[bank];
-    if (this.abi.sound.bufferCompletionNotifications)
-      device.completionCount = this.channel(bank)?.completionCount ?? device.completionCount;
+    device.completionCount = this.channel(bank)?.completionCount ?? device.completionCount;
     this.audio?.stop(this.key(bank));
     this.audio?.releaseNativeDecoderBuffer?.(this.key(bank));
     delete device.nativeDecoderBuffer;
@@ -347,12 +345,10 @@ export class NativeSound {
       channel.offset = 0;
       channel.paused = false;
       channel.ended = true;
-      if (this.abi.sound.bufferCompletionNotifications) {
-        channel.completionCount = 0;
-        this.audio.resetNativePCM?.(this.key(bank));
-        if (channel.nativeDecoderBuffer)
-          this.device[bank].nativeDecoderBuffer = structuredClone(channel.nativeDecoderBuffer);
-      }
+      channel.completionCount = 0;
+      this.audio.resetNativePCM?.(this.key(bank));
+      if (channel.nativeDecoderBuffer)
+        this.device[bank].nativeDecoderBuffer = structuredClone(channel.nativeDecoderBuffer);
     } else if (this.device[bank].nativeDecoderBuffer) {
       this.device[bank].nativeDecoderBuffer = this.audio.resetNativeDecoderBuffer(
         this.key(bank),
@@ -510,7 +506,7 @@ export class NativeSound {
       loopStartFrame: device.loopStart,
       loopEndFrame: device.loopEnd,
       sourceMode: device.sourceMode,
-      nativeBufferPlayback: !!this.abi.sound.bufferCompletionNotifications,
+      nativeBufferPlayback: true,
       nativeStreamActivity: !!this.abi.sound.streamRefillUsesNativeActivity,
       nativeLevelProperty: device.property,
       ...(device.nativeDecoderBuffer
@@ -628,10 +624,8 @@ export class NativeSound {
           ...state.channels[bank],
           nativeCategory: device.category,
           volumeFactor: this.factor(bank),
-          loopCount: this.abi.sound.bufferCompletionNotifications
-            ? state.channels[bank].loopCount
-            : device.loopCount,
-          nativeBufferPlayback: !!this.abi.sound.bufferCompletionNotifications,
+          loopCount: state.channels[bank].loopCount,
+          nativeBufferPlayback: true,
           nativeStreamActivity: !!this.abi.sound.streamRefillUsesNativeActivity,
           loopStartFrame: device.loopStart,
           loopEndFrame: device.loopEnd,
@@ -1270,9 +1264,7 @@ export class NativeSoundTask {
       case 200:
         return device.metadata ? nativeSoundDecoderQuery(device.metadata) : 0;
       case 201:
-        return this.sound.abi.sound.bufferCompletionNotifications || device.sourceMode === 'static'
-          ? (this.sound.channel(selected[0])?.completionCount ?? device.completionCount) >>> 0
-          : 0;
+        return (this.sound.channel(selected[0])?.completionCount ?? device.completionCount) >>> 0;
       case 202:
         return Number(BigInt.asUintN(32, device.loopStart));
       case 210:

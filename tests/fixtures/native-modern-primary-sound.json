@@ -1,0 +1,205 @@
+{
+  "scope": "Normal primary mode1, nonempty matched WAV PCM8, actual parsed Script and original Root frames. COM-memory/virtual events only; no stream/3D/physical output. SDK74 old branch80 and by-type77 miss remain author-input observations, not positive allocated-group proof. SDK76 has actual by-ID group2 positive and final expression44 branch.",
+  "versions": [
+    {
+      "version": "74",
+      "originalReceipt": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-primary-sound-20261128/ORIGINAL-G1-74.json",
+      "originalReceiptSha256": "cec2135174285fd03655ce4f6361452f7871e1939863d357c1ebb4341ad01a35",
+      "program": "S0NTAAIAAAAAAAAANAAAAIYKAAC6CgAAAAAAAAAAAAAAEAAAABAAALoKAAAAAAAADBUAAHiclZYxaJNBFMffhQ8JmiGQDB06BC75iHxVKgSs2CFChogJRAxYNEKFBDKEptjUVuiQIUKHDh06CKYatREHBQcHBwcHBwcHiwoOIg4ODoIODg5C5HvX5P4XL01dPn7879177957d0lCXshfPJ+Q3W6360oSRH12gIPAIeAwcBR4AngSOAYcB04CTwFPA6eAZ4BngdPAGeAscA64AFwEngMuAc8Dl4GrwDXgReAG8CrwGnATuAW8DrwBvAm8BXwLuA3cAd4BfgT8GPgp8DPg58AvgF8CvwJ+DfwG+C3we+CPwJ+AvwB/Bf4G/B34J/Av4N/Af5iX6ssLriTH5/KxWt2VDnN9qVJyZVDxykLFlSFlc3zlqivDzNeJyJVRR/tJg58M+MkqblQrrswxX2M/BfBTZI6f8E66sslMrLcGnOA8Pb5ZMsiL6uKqxfTwogOLen9CBsg3vE1EMsyyINOLxUQtJli+R3shlOzJ+77gcMwgxPzR6/U8uTNs3dXW6k3h8BF/p+FbDPtWr04eUg7w1wHnlwJEMkraEA9OpM9W6hvuvWCRqNBBt82c+3u2zeRGWHuyo3OeEFo+FRjIkyCf03IMqneWv4fY5IHvMAT5HIHFh+aiJ6+IgcM4F/WMb0FkDZkU1rynoBogT4M1dCYlrO2dAflOX7YEm7VXIw3TkRo7HZmxR81CdUd0Dqxz9sIUdFLjL5WxsyhGDw5Pnyfbukh5trgcMIQDjfOcsI5CaWx95u0nLtt7XrX3vGaPvgjy3eFRgBwaYNc27Q7wQhl3bHW/dgszgqUw7X0Gds0+sE2hWwnWLZAhv/WhhvxrsSHMlhuv+6b9hm79/yNpjFmMhV19eHX/qpzbO13AJufzQQf2/3tEIv5XFogoKW8cVtuffFY/tkflTVZCu52GUk7/BeqalVs=",
+      "phases": [
+        {
+          "frame": 100,
+          "advance": 0
+        },
+        {
+          "frame": 101,
+          "advance": 8000
+        },
+        {
+          "frame": 102,
+          "advance": 0
+        },
+        {
+          "frame": 106,
+          "advance": 8000
+        },
+        {
+          "frame": 113,
+          "advance": 0
+        },
+        {
+          "frame": 114,
+          "advance": 0
+        }
+      ],
+      "outputs": [
+        256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324,
+        328, 332, 336, 340, 344, 348, 352, 356, 360, 364, 368, 372, 376, 380, 384, 388, 392, 396,
+        400, 404, 408
+      ],
+      "rows": [
+        {
+          "frame": 100,
+          "words": [
+            1, 1, 37, 4294967279, 37, 4294967295, 1, 64000, 0, 1, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "marker": 2779096485
+        },
+        {
+          "frame": 101,
+          "words": [
+            1, 1, 37, 4294967279, 37, 4294967295, 1, 64000, 0, 1, 1, 1, 0, 44, 4294967284, 0, 1, 44,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "marker": 2779096485
+        },
+        {
+          "frame": 102,
+          "words": [
+            1, 1, 37, 4294967279, 37, 4294967295, 1, 64000, 0, 1, 1, 1, 0, 44, 4294967284, 0, 1, 44,
+            1, 0, 1, 0, 4294967295, 0, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485
+          ],
+          "marker": 2779096485
+        },
+        {
+          "frame": 106,
+          "words": [
+            1, 1, 37, 4294967279, 37, 4294967295, 1, 64000, 0, 1, 1, 1, 0, 44, 4294967284, 0, 1, 44,
+            1, 0, 1, 0, 4294967295, 0, 1, 0, 37, 4294967284, 0, 0, 64000, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "marker": 2779096485
+        },
+        {
+          "frame": 113,
+          "words": [
+            1, 1, 37, 4294967279, 37, 4294967295, 1, 64000, 0, 1, 1, 1, 0, 44, 4294967284, 0, 1, 44,
+            1, 0, 1, 0, 4294967295, 0, 1, 0, 37, 4294967284, 0, 0, 64000, 0, 0, 0, 0, 2779096485,
+            2779096485, 2779096485, 2779096485
+          ],
+          "marker": 2779096485
+        },
+        {
+          "frame": 114,
+          "words": [
+            1, 1, 37, 4294967279, 37, 4294967295, 1, 64000, 0, 1, 1, 1, 0, 44, 4294967284, 0, 1, 44,
+            1, 0, 1, 0, 4294967295, 0, 1, 0, 37, 4294967284, 0, 0, 64000, 0, 0, 0, 0, 0, 1, 0, 44
+          ],
+          "marker": 3735879681
+        }
+      ],
+      "nativePCM": [
+        "181c7945cf6927c95aeaf5cb05500b8a13f9ed61bb101ea2e2ce89eaa0d22a70",
+        "9fa645c9aede41e44559d06b01c3dd8f9e83b60613b93ba3fdb3318b88cbaeac"
+      ]
+    },
+    {
+      "version": "76",
+      "originalReceipt": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-primary-sound-20261128/ORIGINAL-G1B-76.json",
+      "originalReceiptSha256": "40b052b282c2dbafe2bb5133a255885e09015b41ac607d150f26711d58c330ba",
+      "program": "S0NTAAIAAAAAAAAANAAAAIYKAAC6CgAAAAAAAAAAAAAAEAAAABAAALoKAAAAAAAADBUAAHiclZYxaJNBFMfvwocEzRBIhg4dCi/5iHxRKgSs2CFChogJRAxYNEKFBDKEptjUVuiQIUKHDh06CKYatREHBQcHBwcHBwcHiwoOIg4ODoIODg5C5HvX5P4XL01dPn7879177957d0mcLuQvno9Tt9vtuiSkEH12gIPAIeAwcBR4AngSeAo4BpwATgJPA6eAZ4BngdPAGeAscA64AFwEngMuAc8Dl4GrwDXgReAG8CrwGnATuAW8DrwBvAm8BXwLuA3cAd4BfgT8GPgp8DPg58AvgF8CvwJ+DfwG+C3we+CPwJ+AvwB/Bf4G/B34J/Av4N/Af5iX6ssLLgnH5/KxWt0lh7m+VCm5FFS8slBxKaRsjq9cdSnMfF0I4VLU0X7S4CcDfrKKG9WKSznma+ynAH6KzLET3kmXmsyC9daA45ynxzeLgryoLq5aTA8vOrCo98cpIHzD20IICrMshenFYqIW4yzfE3shlOzRfV9wOGYQYv7o9Xoe7Qxbd7W1elM4fMTfafiWw77Vq5OHlAP8dcD5pYAQFBXaEA+uN3lU6hvuvWCRqNRBt82c+3u2zeRGWHvU0TlPSC2fCgzkSZDPaXkKqneWv4fY5IHvMAT5HIHFh+aiR1fkwGGMi3rGtxDCGjIhrXknoRogT4M1dCYlre2dAflOX7YEm7VXIw3TkRo7HZmxR81CdUd0Dqxz9sIUdFLjL5WxsyhHDw5Pn0dtXaQ8W1wOGMKBxnlOWkehNLY+8/YTl+09r9p7XrNHXwT57vAoQA4NsGubdgd4oYw7trpfu6UZwVKY9j4Du2Yf2KbUrQTrFsiQ3/pQQ/612JBmy43XfdN+Q7f+/5E0xmyKhV19eHX/qpzbO13AJufzQQf2/3tEIv6XkkKIBN04rLY/+ax+bI/STVZCu52GUk7/Be0plTk=",
+      "phases": [
+        {
+          "frame": 100,
+          "advance": 0
+        },
+        {
+          "frame": 101,
+          "advance": 8000
+        },
+        {
+          "frame": 102,
+          "advance": 0
+        },
+        {
+          "frame": 106,
+          "advance": 8000
+        },
+        {
+          "frame": 113,
+          "advance": 0
+        },
+        {
+          "frame": 114,
+          "advance": 0
+        }
+      ],
+      "outputs": [
+        256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324,
+        328, 332, 336, 340, 344, 348, 352, 356, 360, 364, 368, 372, 376, 380, 384, 388, 392, 396,
+        400, 404, 408
+      ],
+      "rows": [
+        {
+          "frame": 100,
+          "words": [
+            1, 1, 37, 4294967279, 37, 2, 1, 64000, 0, 1, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "marker": 2779096485
+        },
+        {
+          "frame": 101,
+          "words": [
+            1, 1, 37, 4294967279, 37, 2, 1, 64000, 0, 1, 1, 1, 0, 44, 4294967284, 0, 1, 44,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "marker": 2779096485
+        },
+        {
+          "frame": 102,
+          "words": [
+            1, 1, 37, 4294967279, 37, 2, 1, 64000, 0, 1, 1, 1, 0, 44, 4294967284, 0, 1, 44, 1, 0, 1,
+            0, 4294967295, 0, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485
+          ],
+          "marker": 2779096485
+        },
+        {
+          "frame": 106,
+          "words": [
+            1, 1, 37, 4294967279, 37, 2, 1, 64000, 0, 1, 1, 1, 0, 44, 4294967284, 0, 1, 44, 1, 0, 1,
+            0, 4294967295, 0, 1, 0, 37, 4294967284, 0, 0, 64000, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485
+          ],
+          "marker": 2779096485
+        },
+        {
+          "frame": 113,
+          "words": [
+            1, 1, 37, 4294967279, 37, 2, 1, 64000, 0, 1, 1, 1, 0, 44, 4294967284, 0, 1, 44, 1, 0, 1,
+            0, 4294967295, 0, 1, 0, 37, 4294967284, 0, 0, 64000, 0, 0, 0, 64000, 2779096485,
+            2779096485, 2779096485, 2779096485
+          ],
+          "marker": 2779096485
+        },
+        {
+          "frame": 114,
+          "words": [
+            1, 1, 37, 4294967279, 37, 2, 1, 64000, 0, 1, 1, 1, 0, 44, 4294967284, 0, 1, 44, 1, 0, 1,
+            0, 4294967295, 0, 1, 0, 37, 4294967284, 0, 0, 64000, 0, 0, 0, 64000, 0, 1, 0, 44
+          ],
+          "marker": 1956696332
+        }
+      ],
+      "nativePCM": [
+        "181c7945cf6927c95aeaf5cb05500b8a13f9ed61bb101ea2e2ce89eaa0d22a70",
+        "9fa645c9aede41e44559d06b01c3dd8f9e83b60613b93ba3fdb3318b88cbaeac"
+      ]
+    }
+  ]
+}
