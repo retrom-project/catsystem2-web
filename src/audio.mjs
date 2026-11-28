@@ -351,12 +351,6 @@ export class AudioMixer {
         prefixBytes,
       },
       previous = this.nativeDecoderBuffers.get(key);
-    if (
-      pcm.precision === 'native-ms-adpcm' &&
-      mode === 'stream' &&
-      Math.floor((pcm.sampleRate * stride) / 2) % stride
-    )
-      throw new Error('Native MS ADPCM stream read crossing a PCM frame is unrecovered');
     if (state.capacity % stride) throw new Error('Native decoder buffer splits a PCM frame');
     if (
       previous &&
@@ -1134,7 +1128,10 @@ export class AudioMixer {
       state = channel.pcmWindows,
       stride = pcm.channels * (pcm.bitsPerSample >>> 3),
       bytesPerSecond = pcm.sampleRate * stride,
-      consumed = Math.floor((channel.pcmProgress * bytesPerSecond) / state.halfSecondBytes);
+      playedBytes = pcm.prefixOverwrites
+        ? Math.floor(channel.pcmProgress * pcm.sampleRate) * stride
+        : Math.floor(channel.pcmProgress * bytesPerSecond),
+      consumed = Math.floor(playedBytes / state.halfSecondBytes);
     if (channel.nativeStreamQueue) {
       const queue = channel.nativeStreamQueue,
         previousRefills = channel.pcmRefills;
@@ -1142,7 +1139,7 @@ export class AudioMixer {
         const next = channel.pcmRefills++,
           cursor =
             channel.pcmRefills === consumed
-              ? Math.floor(channel.pcmProgress * bytesPerSecond) % queue.ring.length
+              ? playedBytes % queue.ring.length
               : (channel.pcmRefills * state.halfSecondBytes) % queue.ring.length,
           ended = queue.refill(next, cursor, {
             loopStart: Math.round(channel.loopStart * bytesPerSecond),

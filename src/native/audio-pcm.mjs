@@ -62,6 +62,7 @@ export function decodeNativeMSADPCM(bytes) {
       return count;
     },
     pcm = new Uint8Array(countBytes(data.at)),
+    blockStarts = [],
     view = new DataView(pcm.buffer),
     signed16 = (word) => (word << 16) >> 16;
   let output = 0;
@@ -70,6 +71,7 @@ export function decodeNativeMSADPCM(bytes) {
     output += 2;
   };
   for (let position = data.at; position < end; position += blockBytes) {
+    blockStarts.push(output);
     const size = Math.min(blockBytes, end - position),
       state = [];
     for (let channel = 0; channel < channels; channel++) {
@@ -119,7 +121,26 @@ export function decodeNativeMSADPCM(bytes) {
     precision: 'native-ms-adpcm',
     advertisedBytes: countBytes(coefficientEnd),
     prefixOverwrites: true,
+    blockStarts: Uint32Array.from(blockStarts),
   };
+}
+
+function nativeReadEnd(source, end) {
+  if (!source.blockStarts) return end;
+  let first = 0,
+    last = source.blockStarts.length;
+  while (first < last) {
+    const middle = Math.floor((first + last) / 2);
+    if (source.blockStarts[middle] <= end) first = middle + 1;
+    else last = middle;
+  }
+  const start = source.blockStarts[Math.max(0, first - 1)] ?? 0,
+    frame = source.channels * 2;
+  // Block headers emit the second and first sample as complete channel frames;
+  // encoded nibbles then emit one signed word at a time.
+  return end < start + 2 * frame
+    ? start + Math.ceil((end - start) / frame) * frame
+    : Math.ceil(end / 2) * 2;
 }
 
 export function sourcePCM(bytes, metadata, buffer) {
@@ -327,6 +348,7 @@ export class NativePCMQueue {
       this.ring.length !== capacity ||
       this.lastCursor >= capacity ||
       this.decoderByte > source.pcm.length ||
+      nativeReadEnd(source, this.decoderByte) !== this.decoderByte ||
       (this.prefixRemaining !== undefined &&
         (!Number.isSafeInteger(this.prefixRemaining) || this.prefixRemaining < 0)) ||
       !Number.isFinite(progress)
@@ -335,17 +357,18 @@ export class NativePCMQueue {
     this.count = count;
   }
   read(length, end, previous) {
+    const prefix = Math.min(length, this.prefixRemaining ?? 0),
+      target = Math.min(end, this.source.pcm.length, this.decoderByte + length - prefix),
+      stop = nativeReadEnd(this.source, target);
+    if (stop > this.decoderByte + length - prefix)
+      throw new Error('Native MS ADPCM read exceeds its owning locked byte span');
     if (!this.prefixRemaining) {
-      const bytes = this.source.pcm.subarray(
-        this.decoderByte,
-        Math.min(end, this.decoderByte + length),
-      );
+      const bytes = this.source.pcm.subarray(this.decoderByte, stop);
       this.decoderByte += bytes.length;
       return bytes;
     }
-    const prefix = Math.min(length, this.prefixRemaining ?? 0),
-      data = this.source.pcm.subarray(this.decoderByte, this.decoderByte + length - prefix),
-      count = Math.min(data.length, Math.max(0, end - this.decoderByte)),
+    const data = this.source.pcm.subarray(this.decoderByte, stop),
+      count = data.length,
       bytes = new Uint8Array(prefix + count);
     if (this.source.bitsPerSample === 8) bytes.fill(128);
     if (this.source.prefixOverwrites) {
