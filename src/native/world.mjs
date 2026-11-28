@@ -110,6 +110,8 @@ export class NativeWorld {
   #soundOpen = null;
   #framePacket = null;
   #updatedFramePacket = null;
+  #closingInputs = null;
+  #closePromise = null;
 
   constructor({
     game,
@@ -538,8 +540,11 @@ export class NativeWorld {
   }
   inputFor(worldID) {
     const top = this.engineMessages.closestTop(worldID),
-      id = top?.implementation?.input;
-    return this.objects.objects.get(id)?.implementation?.inputState ?? null;
+      id = top?.implementation?.input,
+      record = this.objects.objects.get(id);
+    if (record) return record.implementation?.inputState ?? null;
+    const retained = this.#closingInputs?.get(top);
+    return retained && retained.id === id ? retained.state : null;
   }
   inputTask(record) {
     const world = this,
@@ -1215,11 +1220,20 @@ export class NativeWorld {
       this.runtime.handles.get(handle, 'variable-bank').selectedContext = key;
   }
   async close({ flushFiles = true } = {}) {
+    if (this.#closePromise) return this.#closePromise;
     if (this.closed) return;
     if (this.running || this.frameSettled)
       throw new Error('Native world close requires a settled frame');
     this.dispatchContext.assertSettled();
     this.effekseer.assertSettled();
+    this.#closePromise = this.#close(flushFiles);
+    try {
+      return await this.#closePromise;
+    } finally {
+      this.#closePromise = null;
+    }
+  }
+  async #close(flushFiles) {
     this.disposalRequested = true;
     this.framePacer?.close();
     this.#framePacket = null;
@@ -1235,12 +1249,28 @@ export class NativeWorld {
           errors.push(error);
         }
       };
-    for (const { id } of [...this.objects.objects.values()].filter(
-      (record) => record.parent === null,
-    ))
-      await attempt(() => this.objects.release(id));
-    for (const id of [...this.objects.objects.keys()])
-      await attempt(() => this.objects.release(id));
+    // Native task order retires the Input child before later Script/FES
+    // destruction callbacks. Keep the already owned service available to
+    // those callbacks without inventing another task or changing raw routes.
+    this.#closingInputs = new Map();
+    for (const top of this.objects.objects.values()) {
+      if (top.kind !== 1) continue;
+      const id = top.implementation.input,
+        record = this.objects.objects.get(id),
+        state = record?.implementation?.inputState;
+      if (record?.kind === 11 && record.parent === top.id && state instanceof NativeInput)
+        this.#closingInputs.set(top, { id, state });
+    }
+    try {
+      for (const { id } of [...this.objects.objects.values()].filter(
+        (record) => record.parent === null,
+      ))
+        await attempt(() => this.objects.release(id));
+      for (const id of [...this.objects.objects.keys()])
+        await attempt(() => this.objects.release(id));
+    } finally {
+      this.#closingInputs = null;
+    }
     await attempt(() => this.text.close());
     if (flushFiles) await attempt(() => this.flushConfiguration());
     await attempt(() => this.runtime.services.files.closeAll({ flush: flushFiles }));

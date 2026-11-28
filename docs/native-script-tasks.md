@@ -11,6 +11,20 @@ Script returns1 without delivery. A wait's idle return0 leaves its destination
 unchanged. A queue retained over reload can be dropped by the first update
 before the replacement VM has armed a wait; retention does not promise delivery.
 
+Final World shutdown preserves each live Top's already owned Input service until
+all task destruction callbacks finish. The native child retirement order still
+removes the Input task before later Script/FES children. A parsed child handling
+its normal retirement notification can therefore disable its registered Plane
+through Main105 while the original Input task record is already gone. This
+temporary service ownership does not recreate a task or change raw routing;
+an Input absent before shutdown still fails the normal availability guard.
+The service references are released even when a callback fails. Concurrent
+World close callers share one cleanup pass and its rejection, while subsequent
+closes of the completed World remain harmless. No checkpoint or native save
+layout changes are involved. `tests/native-world-input-retirement.test.mjs`
+covers five-build retirement, independent modern cold continuations, concurrent
+close, missing-provider protection and cleanup after an actual callback fails.
+
 Eight independent current checkpoints cover the pending queue, reload and
 retirement boundaries. Original PC0 bytes and the recreated-child observer's
 allocation-reuse gap remain capture-only; the latter has separate actual
