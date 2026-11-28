@@ -345,3 +345,13 @@ also preserves two different snapshots while their bitmap source changes. Cold
 controls retain the live bitmap and first saved snapshot. This finite software
 codec proof does not qualify arbitrary HG2 content, the ImageOwner table family,
 physical pointer trees, GPU output or native GAME_SAVE product persistence.
+
+Own76 reuses the own74 finite clear/remove/clone, CG alias/clear and 8-byte
+record-stack copy/count shapes only after its complete wrappers and relevant
+callee fields are matched to its own normal constructors/readers. Its display-log
+bridge is limited to base CST text: Main1034's actual empty-language path runs
+the same add/clear helpers and base-text fallback used by Main698/699/876. The
+translation/CSTL branches are excluded. The current parsed container and
+registry/log/stack programs additionally cross an independent cold World on
+own76; these controls reuse the own74 output receipt rather than claiming a
+second native execution of every identical operation.
