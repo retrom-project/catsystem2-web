@@ -323,3 +323,14 @@ owns imported data. Complete original end outputs still match, and the original
 CSS bytes alone load into a fresh World. These extra current frame boundaries
 are not additional original executions. Run
 `node --test tests/native-modern-data-lifecycle.test.mjs`.
+
+Modern private-variable consumers additionally use a parsed parent that initializes
+its ordinary bank before creating and loading child Scripts. The intact loaders
+register each actual child and select its private words before Main658/659 and
+Main213 consume them. Own74 proves two independent private namespaces sharing
+ordinary words; own76 adds its own one-child register/select bridge. The current
+checkpoint tests resume both forms in a new World. This is a Script-context
+producer proof, not a replacement for FES initialization. The own74 raw preserves
+a post-output author count failure: 28 observed GCALLs include the one loader,
+while the parsed programs contain 27; all four output stages and normal cleanup
+completed. Its accounting appendix corrects this without another original run.
