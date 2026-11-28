@@ -1811,7 +1811,6 @@ export default {
     renderSourceEmptyFrameFormats: ['BMP', 'PSD', 'KCF', 'PNG'],
     retainedEmptySources: true,
     retainedAllImageFrames: true,
-    retainedSourcesUseStoredLayer: true,
     renderSources: { stride: 72, bytes: 276 },
     retainedBytes: 196,
     screenCaptureOpaque: true,

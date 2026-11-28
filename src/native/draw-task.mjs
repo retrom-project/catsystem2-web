@@ -491,14 +491,17 @@ export class NativeDrawTask {
     if (!bounds) throw new Error('Drawing entry has no previous dirty bounds');
     if (!previous && nativeABI(this.world.profile).graphics.drawAccumulatesBounds) {
       bounds = nativeRectangleUnion(item.dirtyBounds ?? [0, 0, 0, 0], bounds);
+    }
+    // Native scalar invalidation intersects the entry's stored clip before
+    // marking the renderer. Pixels outside that clip were never dirtied.
+    if (!item.mode)
       bounds = [
         Math.max(bounds[0], item.clip[0]),
         Math.max(bounds[1], item.clip[1]),
         Math.min(bounds[2], item.clip[2]),
         Math.min(bounds[3], item.clip[3]),
       ];
-      if (bounds[0] >= bounds[2] || bounds[1] >= bounds[3]) bounds = [0, 0, 0, 0];
-    }
+    if (bounds[0] >= bounds[2] || bounds[1] >= bounds[3]) bounds = [0, 0, 0, 0];
     item.dirtyBounds = bounds;
     if (!item.visible || !item.image) return;
     this.state.renderer.dirtyRects.push([...bounds]);

@@ -338,11 +338,9 @@ export class NativeRetainedDraw {
         inputToken,
         source,
       };
-      if (nativeABI(this.world.profile).graphics.retainedSourcesUseStoredLayer) {
-        const sourceState = this.sources.get(source);
-        if (kind !== 2) sourceState.layer = draw.entry(key)?.layer ?? key >>> 16;
-        record.layer = sourceState.layer;
-      }
+      const sourceState = this.sources.get(source);
+      if (kind !== 2) sourceState.layer = draw.entry(key)?.layer ?? key >>> 16;
+      record.layer = sourceState.layer;
       this.items.set(this.key(draw, key), record);
     }
     await this.syncOwner(record.source);
@@ -434,12 +432,10 @@ export class NativeRetainedDraw {
     visit(record.source);
   }
   layer(draw, key) {
-    if (!nativeABI(this.world.profile).graphics.retainedSourcesUseStoredLayer) return undefined;
     const record = this.record(draw, key);
     return record ? this.sources.get(record.source).layer : undefined;
   }
   setLayer(draw, key, value) {
-    if (!nativeABI(this.world.profile).graphics.retainedSourcesUseStoredLayer) return;
     const record = this.record(draw, key);
     if (record) {
       this.sources.get(record.source).layer = value | 0;
@@ -663,8 +659,7 @@ export class NativeRetainedDraw {
       retained: record.source,
       ...(source.retainedOwner ? { borrowedBitmap: true } : {}),
     });
-    if (nativeABI(this.world.profile).graphics.retainedSourcesUseStoredLayer)
-      item.layer = record.layer;
+    item.layer = record.layer;
     if (source.clip) item.clip = [...source.clip];
     record.revision = source.revision;
     return item;

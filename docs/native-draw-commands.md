@@ -246,3 +246,24 @@ immediately. It marks the task dirty even before a renderer exists. Short
 original CPU cases execute the owned Draw and bitmap constructors, sender
 wrappers, entry map and pixel compositor. World cases exercise the same
 ownership, integer endpoints and visible pixel bounds through the KCS opcode.
+
+## Encoded sources, layers and clipped invalidation
+
+A Main703 retained source owns layer0 before any Draw key references it.
+Main707/708 keep that layer instead of deriving it from the key's upper word.
+Main462 reads the shared source field; each renderer still keeps its own
+ordering key. Bitmap and encoded-source entries created by the renderer start
+with their key's layer. The same behavior applies to the five fixed builds;
+the former legacy-only stored-layer switch has been removed.
+
+Scalar entry invalidation intersects the stored entry clip before it reaches
+the renderer. A replaced bitmap can therefore leave previously drawn
+zero-alpha RGB outside that clip untouched. This does not change the renderer's
+clear/paint algorithm or the lifetime of a borrowed output. The ordinary
+modern comparison covers bitmap colour/geometry/copy/transform consumers,
+encoded and multiframe source replacement, clipped visibility, source-array
+release, later pixels, base-image copying, clear and retirement. Independent
+cold continuations include source-free use after the array owner releases.
+A separate unchanged translucent middle entry checks that separated updates
+do not blend it over its previous pixels. These are bounded CPU/COM-memory
+results; they do not establish physical texture sampling or every format.
