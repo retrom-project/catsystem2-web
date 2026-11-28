@@ -158,7 +158,7 @@ for (const build of golden.builds)
   });
 
 for (const build of golden.builds)
-  test(`${build.version} real FES start after its child's logic phase waits for the child's first idle`, async () => {
+  test(`${build.version} real FES explicit start waits for its child's first idle`, async () => {
     const input = build.input,
       world = await defaultParticleFESWorld(build.profile, {
         'screen.fes': new TextEncoder().encode(
@@ -169,7 +169,14 @@ for (const build of golden.builds)
       });
     try {
       const fes = await loadDefaultFES(world);
-      await world.tick();
+      await world.runtime.native(
+        'main',
+        448,
+        [world.nativeTaskID(fes.id)],
+        world.main.machine,
+        world.main,
+        world.runtime.scheduler,
+      );
       const object = fes.instance.collection.lookup('p', 0),
         task = world.particles.get(object.particleResource.taskID),
         bank = task.bank;
