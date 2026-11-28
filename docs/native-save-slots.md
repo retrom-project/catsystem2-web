@@ -97,3 +97,29 @@ checks all image pixels and defined geometry, six independent cold continuations
 and the other four builds' current VM bridge. Compressed HG2 representations can
 differ while decoding identically. These cases do not establish arbitrary image
 formats, GPU presentation or additional CSS task-tree layouts.
+
+## SDK63 Scene and CSS owner consumers
+
+The SDK63 Scene/CSS consumer fixture runs real parsed writer and reader Scripts
+under independently initialized owners. Normal variables, backup/restore and
+expressions, copied byte records, numbered strings, nested containers and Scene
+history reach the native CSS stream and a fresh reader. Source buffers and
+owners are replaced or released before later consumers run. The restored
+history filename loads the changed CST resource, while captured strings retain
+their earlier bytes.
+
+This build uses the existing 40-byte history records and 72-byte string pairs.
+Raw-data transfer is qualified for allocations returned by the owning API;
+arbitrary physical pointers and borrowed Scene trees remain outside this group.
+No time value is inferred from an uninitialized CSS record.
+
+Seen-name query strips the filename extension. The raw seen-alias operation
+matches its source key as given: `owned.cst` misses a stored `owned`, while
+`owned` to `alias` is observed by the later `ALIAS.cst` query. The source file
+owner can be released before that alias, clear and final Scene disposal.
+
+The original full writer prefix and its observer failure are retained separately
+from the minimal normal writer/independent-reader completion. Current tests also
+consume the actual native CSS bytes and preserve live owners across checkpoints.
+This qualifies the finite typed data/virtual-file contract, without changing
+GAME_SAVE layout, enabling physical trees, or claiming full Application startup.
