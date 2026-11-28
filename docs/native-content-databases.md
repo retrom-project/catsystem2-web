@@ -145,3 +145,15 @@ historical host qualification or declare all Question inputs proved. The legacy
 Question allocation is 740 bytes versus 620 in the modern builds, so this bridge
 compares typed results and written string spans, not a shared physical heap layout.
 Run `node --test tests/native-authored-question-consumers.test.mjs` for this group.
+
+The matching Mission/Selection/compiled group uses 50 loaded Script calls in
+`.63` and a smaller 31-call `.67` context bridge. Mission progress is written
+into owned raw bytes and imported by a distinct resource owner. Selected row
+metadata and compiled fields feed a Script expression and branch. The single
+missing Selection slot exercises the existing legacy redistribution rule and
+exactly 2,000 actual integer draws; the complete resulting MT state is paired.
+Modern controls retain their separately established append-without-RNG rule.
+Two successive current cold restores per profile preserve remaining owners after
+source removal, independent mutation and normal releases. This does not qualify
+all condition codes, arbitrary files or unspecified raw export padding.
+Run `node --test tests/native-authored-mission-selection-consumers.test.mjs`.
