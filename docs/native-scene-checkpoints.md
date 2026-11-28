@@ -355,3 +355,15 @@ translation/CSTL branches are excluded. The current parsed container and
 registry/log/stack programs additionally cross an independent cold World on
 own76; these controls reuse the own74 output receipt rather than claiming a
 second native execution of every identical operation.
+
+Script-relative CSS files use a separate owned save directory. The Top directory
+writer updates the constructor source; each new Script copies that value, and
+later Top changes leave existing Scripts' paths intact. The raw25/26 context name
+is a different buffer and does not redirect CSS storage. Current checkpoints
+retain the Script's directory independently of the Top and context. Internal
+persistence callers pass `saveDirectory`; the development service contract and
+its tests are updated in place, with no native CSS/GAME_SAVE layout change.
+Exact modern controls exercise two directories with the same basename, initialized
+UTC write timestamps, own76 preserving-time overwrite, independent native-CSS
+readers and actual deletion while the peer directory's file remains readable.
+These are controlled virtual-file effects, not physical Windows persistence.

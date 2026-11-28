@@ -328,6 +328,10 @@ export class NativeRuntime {
         profile: this.profile,
         owner: task.id,
         contextName: task.context.contextName ?? '',
+        saveDirectory:
+          this.services.world?.objects.objects.get(task.id)?.nativeSaveDirectory ??
+          task.context.saveDirectory ??
+          '',
       };
       services.markStringsDirty = () => {
         const record = this.services.world?.objects.objects.get(task.id);

@@ -61,6 +61,15 @@ export function createNativeScriptTask(world, record) {
   record.scriptDebugData ??= 0;
   record.scriptDebugHook ??= 0;
   record.scriptMessages ??= [];
+  if (record.nativeSaveDirectory === undefined) {
+    const top =
+      world.objects.objects.get(record.namespace) ?? world.engineMessages.closestTop(record);
+    if (typeof top?.implementation?.caption !== 'string')
+      throw new Error('Native Script requires its Top save directory');
+    record.nativeSaveDirectory = top.implementation.caption;
+  }
+  if (typeof record.nativeSaveDirectory !== 'string')
+    throw new TypeError('Native Script save directory requires owned text');
   if (nativeABI(world.profile).framePacing) {
     if (!world.restoring) {
       record.scriptUpdateAccumulator ??= 0;
