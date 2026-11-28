@@ -108,3 +108,34 @@ for (const r of fixture.versions) {
     }
   });
 }
+
+for (const version of ['74', '76']) {
+  test(`SDK${version} repeated authored loop key changes start, preserves first end and survives a fresh current owner`, async () => {
+    const r = { ...fixture.duplicate, files: fixture.duplicate.filesByVersion[version] };
+    for (const cut of [-1, 0]) {
+      let o = await configuredPrimarySoundWorld(version, input(r));
+      try {
+        if (cut === 0) {
+          await phase(o, r, 0);
+          const state = await deserializeCheckpoint(await serializeCheckpoint(o.w.snapshot()));
+          await o.w.close({ flushFiles: false });
+          o = await configuredPrimarySoundWorld(version, input(r), state);
+        }
+        for (let i = cut + 1; i < r.phases.length; i++) await phase(o, r, i);
+        assert.deepEqual(
+          [...o.w.sound.primary().loopPoints.values()].map(({ start, end }) => [start, end]),
+          [[32n, 4000n]],
+        );
+        assert.equal(o.task.machine.load(256), 8000);
+        assert.equal(
+          o.task.machine.load(260),
+          0,
+          'normal release is consumed by the parsed Script',
+        );
+        assert.equal(o.w.audio.nativeDecoderBuffers.size, 0);
+      } finally {
+        await o.w.close({ flushFiles: false });
+      }
+    }
+  });
+}

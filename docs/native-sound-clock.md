@@ -379,3 +379,10 @@ stream range playback, alternate backend104, spatial/physical output and other
 codec options remain outside this finite bridge. SDK63's original stereo default
 is established by its actual Settings initializer; the pan bridge does not
 invent a new profile flag or replace an uninitialized field.
+
+A normal repeated-key modern table keeps the first end while updating start;
+the loaded short type1 owner therefore receives 32/4000 from rows 16/4000 and
+32/6000. SDK74's original resource/Script/decoder group verifies that binding
+and normal release; the complete SDK63/67/76 writers have the same relevant
+update rule. Independent modern current owners retain it across reconstruction.
+The existing shared implementation already implements this behavior.
