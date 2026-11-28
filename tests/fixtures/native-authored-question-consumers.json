@@ -1,0 +1,327 @@
+{
+  "scope": "Own63/67 normal true-CRT/Settings/FileServer mounted nonempty Question/configuration -> real factory/loaded Script frame -> actual expression/branch, raw progress writer/newowner reader, normal release. Modern current controls reuse accepted original family evidence; no fresh modern native execution.",
+  "program": "S0NTAAIAAAAAAAAANAAAANQCAAAIAwAABgAAAM8BAAAAEAAAABAAANcEAAAAAAAAqAUAAHic01Z+xsTAoMzAwMCgpuzAwMCgjSzgwsDAoCoMElZVZmAESb4ASXKAJRuQJB3Aku8Qki1Ikg1gyfcIyQ64pLbyH5AwC5LAS5iAmnIPsvUQkgWkhIOZgUGZB6xkAoYSB7CSV0xwJVPQlGgrv0Y4ZQaGfkaIKawghW9ACgXACudgmPIWZgqqMDMz3PAFGJL/sOthQehZApZ0QQ+KFQwMDIzCIN8qs4MF1jAwMAgLg2wAu1hD+QEjxPVr76kpb2BgYNBUfgMWeb9veSBEBGIslpjcgmQnUny4YPfVDgzn/0cYtQcsuQcs7MgMd74HQo+wB7qeAwjboJIMCNuO4HPKCSQ9TjDbrA1A6hgZGKwYGBhACdMTyAelQX+QOAsDQz9IHEQzMjCA4rmwNLW4JDM/r5ghOT8vLTO9tCgRwk3MKchIZPCmDDCEjGzA4EgZYAAApi3SRA==",
+  "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5kYXRhYmFzZTwvbmFtZT48aW50PmRhdGFiYXNlLmludDwvaW50PjxleHQ+ZGI8L2V4dD48ZGlyPmRhdGFiYXNlLWxvb3NlPC9kaXI+PC9pbnQwMT48L0lOVD48L2RvY3VtZW50Pg==",
+  "resources": [
+    [
+      "questions.db",
+      "S0NEQvEAAAA4BwAAeJzjYmBgcI93ZEAHLGBxJxzizljFPV1QxRhh4r7uWNUHYohCNDkaYgo7MDAwOBrhEDfGIW6CXZyZgYFBhAniPiYon5uBgYGdgYHBLbOouEQhsbQkI78oNUWhsDS1uCQzP88em1OHIwjKTM8ooUB/cGpyfl4K+fpDMjKLKNDO4JZfWlSSQb5+WJoApU8eBgYGDgYGhsm/plX3vGo6M+HutEcUOG3IgsmzmpZRor/pJGX2N21u+kiR/meU6QelB1YGBgY2BgYGMQYGBk5Q2ZKXX5KRWjTyCggowKwxSAOYNQtpALMGIg24EKEGHwAA3RQzHg=="
+    ],
+    [
+      "configurations.db",
+      "I2FscGhhDQpDTlQgMg0KTk9STUEgMQ0KUklWQUwgNw0KUlRZUEUgMg0KUklNRyByaXZhbC5wbmcNClJQT1MgMTAgMjANCk1FTUJFUiAwIDENClBBUlRORVIgMg0KQkcgZmllbGQucG5nDQpCR00gNg0KRVhQIDMwDQpQV0lOIDENClBMT1NFIDINClJXSU4gMw0KUkxPU0UgNA0KJEdFTg0KR0VOUkVfQSBADQpHRU5SRV9CIEANCkdFTlJFX0MgQA0KI2JldGENCkNOVCAxDQpOT1JNQSAyDQokR0VODQpHRU5SRV9BIDINCkdFTlJFX0IgNQ0KR0VOUkVfQyA2DQo="
+    ]
+  ],
+  "outputs": [
+    128, 132, 136, 140, 144, 148, 152, 156, 160, 164, 168, 172, 176, 180, 184, 188, 192, 196, 200
+  ],
+  "textOutputs": [
+    {
+      "at": 1024,
+      "size": 64
+    },
+    {
+      "at": 1088,
+      "size": 256
+    },
+    {
+      "at": 1344,
+      "size": 64
+    }
+  ],
+  "ownerWords": [64, 68],
+  "consumer": 1369947887,
+  "builds": [
+    {
+      "version": "63",
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-authored-database-consumers-20261128/ORIGINAL-G1-63-D2.json",
+        "sha256": "ca97525996b495d8422c888617694fb40d3d81ee7fe9662ac2c7eca9747210a9",
+        "allClosed": true,
+        "actualAllGCALL": 32
+      },
+      "words": [1, 1, 1, 3, 22, 1, 9, 1, 1, 1, 0, 29, 1369947887, 1, 0, 276, 276, 1, 1],
+      "text": [
+        "UVVFU1RJT05TAEtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLAA==",
+        "QW5vdGhlciBxdWVzdGlvbj8AVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUAA==",
+        "QgBBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBAA=="
+      ],
+      "controls": [
+        {
+          "id": 742,
+          "control": 1,
+          "result": "owned"
+        },
+        {
+          "id": 742,
+          "control": 1,
+          "result": "owned"
+        },
+        {
+          "id": 744,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 750,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 751,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 764,
+          "control": 2,
+          "result": null
+        },
+        {
+          "id": 745,
+          "control": 1,
+          "result": 3
+        },
+        {
+          "id": 776,
+          "control": 1,
+          "result": 22
+        },
+        {
+          "id": 746,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 747,
+          "control": 1,
+          "result": 9
+        },
+        {
+          "id": 748,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 749,
+          "control": 2,
+          "result": null
+        },
+        {
+          "id": 771,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 766,
+          "control": 2,
+          "result": null
+        },
+        {
+          "id": 772,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 745,
+          "control": 1,
+          "result": 0
+        },
+        {
+          "id": 744,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 764,
+          "control": 2,
+          "result": null
+        },
+        {
+          "id": 771,
+          "control": 1,
+          "result": 0
+        },
+        {
+          "id": 767,
+          "control": 1,
+          "result": 276
+        },
+        {
+          "id": 833,
+          "control": 1,
+          "result": "owned"
+        },
+        {
+          "id": 767,
+          "control": 1,
+          "result": 276
+        },
+        {
+          "id": 768,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 771,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 834,
+          "control": 2,
+          "result": null
+        }
+      ]
+    },
+    {
+      "version": "67",
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-authored-database-consumers-20261128/ORIGINAL-G1-67-D2.json",
+        "sha256": "03cd24e8531cc3da346bcf7e79555febfdb767458584972d9af512c05c69544b",
+        "allClosed": true,
+        "actualAllGCALL": 32
+      },
+      "words": [1, 1, 1, 3, 22, 1, 9, 1, 1, 1, 0, 29, 1369947887, 1, 0, 276, 276, 1, 1],
+      "text": [
+        "UVVFU1RJT05TAEtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLAA==",
+        "QW5vdGhlciBxdWVzdGlvbj8AVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUAA==",
+        "QgBBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBAA=="
+      ],
+      "controls": [
+        {
+          "id": 742,
+          "control": 1,
+          "result": "owned"
+        },
+        {
+          "id": 742,
+          "control": 1,
+          "result": "owned"
+        },
+        {
+          "id": 744,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 750,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 751,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 764,
+          "control": 2,
+          "result": null
+        },
+        {
+          "id": 745,
+          "control": 1,
+          "result": 3
+        },
+        {
+          "id": 776,
+          "control": 1,
+          "result": 22
+        },
+        {
+          "id": 746,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 747,
+          "control": 1,
+          "result": 9
+        },
+        {
+          "id": 748,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 749,
+          "control": 2,
+          "result": null
+        },
+        {
+          "id": 771,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 766,
+          "control": 2,
+          "result": null
+        },
+        {
+          "id": 772,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 745,
+          "control": 1,
+          "result": 0
+        },
+        {
+          "id": 744,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 764,
+          "control": 2,
+          "result": null
+        },
+        {
+          "id": 771,
+          "control": 1,
+          "result": 0
+        },
+        {
+          "id": 767,
+          "control": 1,
+          "result": 276
+        },
+        {
+          "id": 833,
+          "control": 1,
+          "result": "owned"
+        },
+        {
+          "id": 767,
+          "control": 1,
+          "result": 276
+        },
+        {
+          "id": 768,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 771,
+          "control": 1,
+          "result": 1
+        },
+        {
+          "id": 834,
+          "control": 2,
+          "result": null
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Question owner0x2e4 in63/67 vs0x26c modern, not a shared physical layout claim.",
+    "Only defined projected VM words/string spans; opaque handles and native heap padding excluded.",
+    "Only bounded question progress format/raw temporary; no new nativeGAME_SAVE/PFB/physical disk qualification.",
+    "Original bootstrap uses already-qualified observed carrier; business bytes are real FileServer-loaded KCS and code hash stays unchanged.",
+    "Two63 author precondition attempts0target (3+5bootstrapGCALL) retained; final pair25program+2release+5bootstrap=32GCALL each."
+  ]
+}

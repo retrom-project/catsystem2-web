@@ -130,3 +130,18 @@ measurements. Authored resources contain no game database assets.
 Run `node --test tests/native-content-tables-js.test.mjs` for pure JS lifecycle
 and CSS coverage. With private images, run
 `node --test tests/differential/native-{content-tables,question-table,mission-table,raw-data}.test.mjs`.
+
+## Authored legacy Question consumers
+
+The exact `.63/.67` builds now have a normal nonempty resource bridge through
+original CRT/Settings/FileServer category mounts and an actual factory-created,
+file-loaded Script. Each final program executes 25 GCALLs, including an integer
+expression and branch driven by the question result. The 12/88-byte progress
+writer is consumed by a second independent owner before normal release. Four
+current GameFiles/Script controls compare the defined VM outputs and preserve
+those owners through independent cold restoration with an empty resource archive.
+This supplements the older modern database evidence; it does not upgrade its
+historical host qualification or declare all Question inputs proved. The legacy
+Question allocation is 740 bytes versus 620 in the modern builds, so this bridge
+compares typed results and written string spans, not a shared physical heap layout.
+Run `node --test tests/native-authored-question-consumers.test.mjs` for this group.
