@@ -1,0 +1,747 @@
+{
+  "profile": "rebellions-jp-engine-2.6.1.63",
+  "tag": 28465,
+  "base": "3f8cd4eb85df6c45b7836c5a4ad3b3764849eb27",
+  "scope": "Own63 completed target prefix and both real colored Root/View outputs. The old full V3 retirement stopped at missing qualified MOT source startup; separate normal minimal CPLANE/started retirement plus accepted W45/W49 lifecycle evidence closes that host prerequisite, without re-running the 44 targets. Current cold is independent checkpoint evidence. No fullApp/primaryApp0, HID/Sound/GPU/ImageData738/physical qualification.",
+  "evidence": [
+    {
+      "name": "ORIGINAL-REGISTRY63-V3.json",
+      "sha256": "ace345d5e5e5d2a068616b1522de495ee843d7ca43be0e748694e83306fc0bd6"
+    },
+    {
+      "name": "ORIGINAL-RETIRE-MINIMAL63-V3.json",
+      "sha256": "81fb4993219754cd0f9c05f44a87eb87127b57753d7882d7556f9d41359aa8ac"
+    },
+    {
+      "name": "PLAN-V3.json",
+      "sha256": "073b437017223223ee5206b1806bc1c6d1ad7bc3dc5310c491b903d10e1349e4"
+    },
+    {
+      "name": "CURRENT-PRECHECK.json",
+      "sha256": "abc8a4b980403ce4cfcd23d177cad6fe95bd8d896a0e51c443234dc7ed8c9e32"
+    },
+    {
+      "name": "registry-case.mjs",
+      "sha256": "542bff12f1fcd9d69a1a1ea9f57edaa45edc1e19f13b7b446ffd52703ba951ba"
+    },
+    {
+      "name": "../sdk63-67-motion-secondary-20261128/ORIGINAL-M2-63.json",
+      "sha256": "c9e71607a991cba89026e6412ba001c1abdea650f37c4a9e67999c29d9de77b9"
+    },
+    {
+      "name": "ORIGINAL-NONSTART-RETIRE63.json",
+      "sha256": "145083b11de98dbffed6e67e31c3a34eab349dc2ae3c935c1e694dc16a11cce1"
+    }
+  ],
+  "inputs": [
+    {
+      "name": "config/startup.xml",
+      "bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48RVRDPjxjYWNoZT4wPC9jYWNoZT48L0VUQz48QVBQPjxpbWdjYWNoZT4wPC9pbWdjYWNoZT48L0FQUD48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PGZpbHRlcl9taW4+MTwvZmlsdGVyX21pbj48ZmlsdGVyX21hZz4xPC9maWx0ZXJfbWFnPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2NlbmU8L25hbWU+PGludD5zY2VuZS5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmUtbG9vc2U8L2Rpcj48L2ludDAxPjxpbnQwMj48bmFtZT5mZXM8L25hbWU+PGludD50YWJsZXMuaW50PC9pbnQ+PGV4dD5mZXM8L2V4dD48ZGlyPnRhYmxlcy1sb29zZTwvZGlyPjwvaW50MDI+PGludDAzPjxuYW1lPmltYWdlPC9uYW1lPjxpbnQ+aW1hZ2VzLmludDwvaW50PjxleHQ+aGczPC9leHQ+PGRpcj5pbWFnZXMtbG9vc2U8L2Rpcj48L2ludDAzPjwvSU5UPjwvZG9jdW1lbnQ+"
+    },
+    {
+      "name": "startup.xml",
+      "bytes": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48L1NDUkVFTj48RVRDPjxjYWNoZT4wPC9jYWNoZT48L0VUQz48QVBQPjxpbWdjYWNoZT4wPC9pbWdjYWNoZT48L0FQUD48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwMzJ5PjA8L2JwcDMyeT48YnBwMTZ5PjE8L2JwcDE2eT48YnBwPjMyPC9icHA+PGZpbHRlcl9taW4+MTwvZmlsdGVyX21pbj48ZmlsdGVyX21hZz4xPC9maWx0ZXJfbWFnPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2NlbmU8L25hbWU+PGludD5zY2VuZS5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmUtbG9vc2U8L2Rpcj48L2ludDAxPjxpbnQwMj48bmFtZT5mZXM8L25hbWU+PGludD50YWJsZXMuaW50PC9pbnQ+PGV4dD5mZXM8L2V4dD48ZGlyPnRhYmxlcy1sb29zZTwvZGlyPjwvaW50MDI+PGludDAzPjxuYW1lPmltYWdlPC9uYW1lPjxpbnQ+aW1hZ2VzLmludDwvaW50PjxleHQ+aGczPC9leHQ+PGRpcj5pbWFnZXMtbG9vc2U8L2Rpcj48L2ludDAzPjwvSU5UPjwvZG9jdW1lbnQ+"
+    },
+    {
+      "name": "scripts-loose/registry-parent.kcs",
+      "bytes": "S0NTAAIAAAAAAAAANAAAADMBAABnAQAABAAAAIIAAAAAEAAAABAAAOkBAAAAAAAAZgIAAHicdU+7CsJAEJyInXZpLQJLfBDj4w9EBWt7C4MeEhQS7oJi5x/4OxYWKfwB/SLdO09i0GaZ3ZnZnfUJAJp0qQH+G18LOC/gm8EVIKA7AKqC4ZShUbTBijpX12A4LBmzpK4lXU3qSiPHLg/obCXf/lPZP9CkrpT/9vMvAc1swhY9ALguv0XDxA5MiIAmVme2FgflTR1qOIDHBx2gD4A/mL96jrl89ZwolfE+yoR3kHEmJNRKxmmmwl2SKLGQYhOrTB5Dw/a2K/UxSBGt/xsMqw1PuUFEkA=="
+    },
+    {
+      "name": "scripts-loose/registry-writer.kcs",
+      "bytes": "S0NTAAIAAAAAAAAANAAAALYFAADqBQAACgAAALAAAAAAEAAAABAAAJoGAAAAAAAAbAsAAHicvVO/TxRREP72rQQTLEgu9osvoGRNhP/AcAJevJiL2l9WboMrx488Lgd212hM7IyJihaaUJhIQUFBcYlbXEFBQbTjD6H2Zm73bnZ9nEJhM/nefN+bmTczb1LPni19ndJfAEwmeFfgbwLvCbwv8IHAhwK3BY4F7gh8JPCxwCeMAWBKH44NcFvgWODOGODrewASxy0OcINsoYfhkGSOJNdYcptJtvoukz8cQF/tu30dk+OK0IFtyyGrWLKlAD0uJC7bmCWOXQLFORWR2yopKJtilG++zJK+3lHWgpbs6o95dUsN7oAlzWxtvv6U3kmW4rzEMYcaYfLDH29wyV5n0rgW0tebbtLrZOHSQbiDBv+9wt56eoL8hXSEvDe+XkSivqlPFVAo0Arp2fXUcW6vetlfqX6Ze8PI/WEPPLDX89zN1UOOf6+n99cm2P0T/Z7M8J0ZeyXty+x8Pkj8nz8Er8S0fZkuti+dYb05sk9pfCQ3JXJYYh+LlJ+zw8voToS7mKax5H2dz0uOabYVeqkDPAVAU1zpnqkFpnumPm8R351Gi3gFvCNeATvEK4A+HD3/O/EusBashrU7GyZqBo3QW5h/DBMuR5sN8wKrgVkJDepRM2TjVR6VEC2vrZuw5j0Lg1povEYQ1bEw/6R4H9ViuVR8UC1X8Wb3ffltHZXSw0X8BtWYzfQ="
+    },
+    {
+      "name": "scripts-loose/registry-reader.kcs",
+      "bytes": "S0NTAAIAAAAAAAAANAAAAI4EAADCBAAACgAAALAAAAAAEAAAABAAAHIFAAAAAAAAHAkAAHicfVM9bxNBFJzbTYEUCiT/AA5WNiBHIvkHBpMECyuyAr054lM4xUnQxnJC5wYaOoSEElIEyQVSUqRI4cISV6SgoEBQ0+cXUOP37sPvLpc0T3Mzs7vzdt+VzcK/ta8VcwSgHOOhwN8EPhH4VOAzgUcCjwUOBT4X+IfAPwX+xRgAKmY0O8VjgUOBz2eBqnkCICbu8wYjppeJngFwz/wFUCrRLmZhOyHKxgX5fie+ipknujQfpdAk7mjA3GDxKBWrZl/FaxL3QCWpolo1fbLcEmu+qPScoaAP0q3MXaajHuCQ+Jiy3eQ1cyxyNTUWvztxtoiumtBJU81hmmfgUFVs2Z2miiyaa8gWp9gC7q2mSNxTcaDsEWVe+S4ryt4y7rVi937efe2lXnWCpnqbRatzYWt6eh9O8YbilaK/4I4Q/yC58csz9kjnZoyIK1uL2nmv0uk6uW70TnMNZsSz4vSj4pgX+ZgXunD5WOx6mE2f8YWCriMd5UvnvpzJnUvEA64tugwHeAWAJntj8k1vZCffNJi7pE/Gd0C6Aj6RroAD0hVAfxPdyjHpGtjyNv3Owzc26Hs9311afA7rrwc7PfsWm57d8C26Qd/n4rZWGwjWt7at33Ff+17Ht27PC7pYWnxRf4p2vdmoP2s32/gw/Nz82EWrsbKM/5kNtNg="
+    },
+    {
+      "name": "scripts.int",
+      "bytes": "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"
+    },
+    {
+      "name": "tables.int",
+      "bytes": "S0lGAAEAAAByZWdpc3RyeS5mZXMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUAAAAN8AAAAjREVGSU5FDQpCQVNFIGFuY2hvcg0KI1NUQVJUDQpuZXh0IFdBSVQNCiNXQUlUDQpicmVhaw0KbmV4dCBXQUlUDQojRkVUQ0gNClwwPVwwKzEwDQpyZXN1bHQgXDANCmJyZWFrDQojbWFya2VyLlBJTkcNCmxpdmUgc2l6ZSAzIDINCmxpdmUgY29sb3IgMHhmZjIwNDA2MA0KbGl2ZSBwcmkgNTAwMA0KbGl2ZSBwb3MgKDErQCkgMiAwDQpsaXZlIGRpc3AgMQ0KcmVzdWx0IDEwMCtADQpicmVhaw0K"
+    },
+    {
+      "name": "images.int",
+      "bytes": "S0lGAAAAAAA="
+    },
+    {
+      "name": "scene.int",
+      "bytes": "S0lGAAAAAAA="
+    }
+  ],
+  "rootSteps": [
+    {},
+    {},
+    {
+      "writer": 1,
+      "reader": 1,
+      "draw": true
+    },
+    {
+      "writer": 2,
+      "reader": 2,
+      "draw": true
+    },
+    {
+      "writer": 3,
+      "reader": 3
+    },
+    {},
+    {
+      "parent": 1
+    },
+    {}
+  ],
+  "cold": [0, 1, 2, 3, 4, 5, 6, 7],
+  "calls": [
+    {
+      "phase": 1,
+      "caller": "writer",
+      "id": 631,
+      "args": ["A", 0, 384, 2],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 1,
+      "caller": "writer",
+      "id": 631,
+      "args": ["A", 3, 448, 1],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 1,
+      "caller": "writer",
+      "id": 632,
+      "args": ["A", 512, 576],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 1,
+      "caller": "writer",
+      "id": 666,
+      "args": ["A"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 1,
+      "caller": "writer",
+      "id": 665,
+      "args": ["A"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 1,
+      "caller": "writer",
+      "id": 667,
+      "args": ["A"],
+      "control": 1,
+      "written": true,
+      "value": 17
+    },
+    {
+      "phase": 1,
+      "caller": "writer",
+      "id": 666,
+      "args": ["A"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 1,
+      "caller": "writer",
+      "id": 664,
+      "args": ["A", 704, 5],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 1,
+      "caller": "writer",
+      "id": 882,
+      "args": ["A", 768, 21],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 1,
+      "caller": "writer",
+      "id": 883,
+      "args": ["A", 768],
+      "control": 1,
+      "written": true,
+      "value": 21
+    },
+    {
+      "phase": 1,
+      "caller": "writer",
+      "id": 667,
+      "args": ["A"],
+      "control": 1,
+      "written": true,
+      "value": 100
+    },
+    {
+      "phase": 2,
+      "caller": "writer",
+      "id": 665,
+      "args": ["A"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 2,
+      "caller": "writer",
+      "id": 883,
+      "args": ["A", 768],
+      "control": 1,
+      "written": true,
+      "value": 21
+    },
+    {
+      "phase": 2,
+      "caller": "reader",
+      "id": 883,
+      "args": ["A", 768],
+      "control": 1,
+      "written": true,
+      "value": 21
+    },
+    {
+      "phase": 2,
+      "caller": "reader",
+      "id": 665,
+      "args": ["A"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 2,
+      "caller": "reader",
+      "id": 667,
+      "args": ["A"],
+      "control": 1,
+      "written": true,
+      "value": 10
+    },
+    {
+      "phase": 2,
+      "caller": "reader",
+      "id": 666,
+      "args": ["A"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 2,
+      "caller": "reader",
+      "id": 631,
+      "args": ["B", 0, 384, 2],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 2,
+      "caller": "reader",
+      "id": 631,
+      "args": ["B", 3, 448, 1],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 2,
+      "caller": "reader",
+      "id": 632,
+      "args": ["B", 512, 576],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 2,
+      "caller": "reader",
+      "id": 666,
+      "args": ["B"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 2,
+      "caller": "reader",
+      "id": 665,
+      "args": ["B"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 2,
+      "caller": "reader",
+      "id": 666,
+      "args": ["B"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 2,
+      "caller": "reader",
+      "id": 882,
+      "args": ["B", 768, 31],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 2,
+      "caller": "reader",
+      "id": 667,
+      "args": ["B"],
+      "control": 1,
+      "written": true,
+      "value": 101
+    },
+    {
+      "phase": 3,
+      "caller": "writer",
+      "id": 665,
+      "args": ["A"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 3,
+      "caller": "writer",
+      "id": 883,
+      "args": ["B", 768],
+      "control": 1,
+      "written": true,
+      "value": 31
+    },
+    {
+      "phase": 3,
+      "caller": "writer",
+      "id": 883,
+      "args": ["A", 768],
+      "control": 1,
+      "written": true,
+      "value": 0
+    },
+    {
+      "phase": 3,
+      "caller": "writer",
+      "id": 631,
+      "args": ["A", 0, 384, 2],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 3,
+      "caller": "writer",
+      "id": 631,
+      "args": ["A", 3, 448, 1],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 3,
+      "caller": "writer",
+      "id": 632,
+      "args": ["A", 512, 576],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 3,
+      "caller": "writer",
+      "id": 882,
+      "args": ["A", 768, 41],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 3,
+      "caller": "writer",
+      "id": 667,
+      "args": ["A"],
+      "control": 1,
+      "written": true,
+      "value": 100
+    },
+    {
+      "phase": 3,
+      "caller": "writer",
+      "id": 883,
+      "args": ["B", 768],
+      "control": 1,
+      "written": true,
+      "value": 31
+    },
+    {
+      "phase": 3,
+      "caller": "reader",
+      "id": 665,
+      "args": ["B"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 3,
+      "caller": "reader",
+      "id": 883,
+      "args": ["A", 768],
+      "control": 1,
+      "written": true,
+      "value": 41
+    },
+    {
+      "phase": 3,
+      "caller": "reader",
+      "id": 883,
+      "args": ["B", 768],
+      "control": 1,
+      "written": true,
+      "value": 31
+    },
+    {
+      "phase": 3,
+      "caller": "reader",
+      "id": 667,
+      "args": ["B"],
+      "control": 1,
+      "written": true,
+      "value": 101
+    },
+    {
+      "phase": 4,
+      "caller": "writer",
+      "id": 667,
+      "args": ["A"],
+      "control": 1,
+      "written": true,
+      "value": 100
+    },
+    {
+      "phase": 4,
+      "caller": "writer",
+      "id": 668,
+      "args": ["A"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 4,
+      "caller": "writer",
+      "id": 667,
+      "args": ["A"],
+      "control": 1,
+      "written": true,
+      "value": 0
+    },
+    {
+      "phase": 4,
+      "caller": "reader",
+      "id": 667,
+      "args": ["B"],
+      "control": 1,
+      "written": true,
+      "value": 101
+    },
+    {
+      "phase": 4,
+      "caller": "reader",
+      "id": 668,
+      "args": ["B"],
+      "control": 2,
+      "written": false
+    },
+    {
+      "phase": 4,
+      "caller": "reader",
+      "id": 667,
+      "args": ["B"],
+      "control": 1,
+      "written": true,
+      "value": 0
+    }
+  ],
+  "nativeRows": [
+    {
+      "phase": 0,
+      "children": [
+        {
+          "alive": true,
+          "words": null
+        },
+        {
+          "alive": true,
+          "words": null
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "children": [
+        {
+          "alive": true,
+          "words": [
+            17, 21, 100, 2707682865, 2707682865, 2707682865, 2707682865, 2707682865, 2707682865,
+            2707682865, 2707682865, 2707682865, 2707682865
+          ]
+        },
+        {
+          "alive": true,
+          "words": [
+            2707682865, 2707682865, 2707682865, 2707682865, 2707682865, 2707682865, 2707682865,
+            2707682865, 2707682865, 2707682865, 2707682865, 2707682865, 2707682865
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "children": [
+        {
+          "alive": true,
+          "words": [
+            17, 21, 100, 17, 17, 21, 2707682865, 2707682865, 2707682865, 2707682865, 2707682865,
+            2707682865, 2707682865
+          ]
+        },
+        {
+          "alive": true,
+          "words": [
+            21, 10, 101, 2707682865, 2707682865, 2707682865, 2707682865, 2707682865, 2707682865,
+            2707682865, 2707682865, 2707682865, 2707682865
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "children": [
+        {
+          "alive": true,
+          "words": [17, 21, 100, 17, 17, 21, 17, 31, 0, 100, 31, 2707682865, 2707682865]
+        },
+        {
+          "alive": true,
+          "words": [
+            21, 10, 101, 47, 41, 31, 101, 2707682865, 2707682865, 2707682865, 2707682865,
+            2707682865, 2707682865
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "children": [
+        {
+          "alive": true,
+          "words": [17, 21, 100, 17, 17, 21, 17, 31, 0, 100, 31, 100, 0]
+        },
+        {
+          "alive": true,
+          "words": [
+            21, 10, 101, 47, 41, 31, 101, 101, 0, 2707682865, 2707682865, 2707682865, 2707682865
+          ]
+        }
+      ]
+    }
+  ],
+  "draws": [
+    {
+      "phase": 2,
+      "triangles": [
+        [
+          {
+            "x": 1,
+            "y": 2,
+            "z": 0.9230769276618958,
+            "w": 1,
+            "color": 4280303712,
+            "u": 0,
+            "v": 0
+          },
+          {
+            "x": 4,
+            "y": 2,
+            "z": 0.9230769276618958,
+            "w": 1,
+            "color": 4280303712,
+            "u": 0,
+            "v": 0
+          },
+          {
+            "x": 4,
+            "y": 4,
+            "z": 0.9230769276618958,
+            "w": 1,
+            "color": 4280303712,
+            "u": 0,
+            "v": 0
+          }
+        ],
+        [
+          {
+            "x": 1,
+            "y": 2,
+            "z": 0.9230769276618958,
+            "w": 1,
+            "color": 4280303712,
+            "u": 0,
+            "v": 0
+          },
+          {
+            "x": 1,
+            "y": 4,
+            "z": 0.9230769276618958,
+            "w": 1,
+            "color": 4280303712,
+            "u": 0,
+            "v": 0
+          },
+          {
+            "x": 4,
+            "y": 4,
+            "z": 0.9230769276618958,
+            "w": 1,
+            "color": 4280303712,
+            "u": 0,
+            "v": 0
+          }
+        ]
+      ]
+    },
+    {
+      "phase": 3,
+      "triangles": [
+        [
+          {
+            "x": 2,
+            "y": 2,
+            "z": 0.9230769276618958,
+            "w": 1,
+            "color": 4280303712,
+            "u": 0,
+            "v": 0
+          },
+          {
+            "x": 5,
+            "y": 2,
+            "z": 0.9230769276618958,
+            "w": 1,
+            "color": 4280303712,
+            "u": 0,
+            "v": 0
+          },
+          {
+            "x": 5,
+            "y": 4,
+            "z": 0.9230769276618958,
+            "w": 1,
+            "color": 4280303712,
+            "u": 0,
+            "v": 0
+          }
+        ],
+        [
+          {
+            "x": 2,
+            "y": 2,
+            "z": 0.9230769276618958,
+            "w": 1,
+            "color": 4280303712,
+            "u": 0,
+            "v": 0
+          },
+          {
+            "x": 2,
+            "y": 4,
+            "z": 0.9230769276618958,
+            "w": 1,
+            "color": 4280303712,
+            "u": 0,
+            "v": 0
+          },
+          {
+            "x": 5,
+            "y": 4,
+            "z": 0.9230769276618958,
+            "w": 1,
+            "color": 4280303712,
+            "u": 0,
+            "v": 0
+          }
+        ]
+      ]
+    }
+  ],
+  "packets": [
+    {
+      "phase": 1,
+      "type": "create36",
+      "bytes": "bWFya2VyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAA",
+      "objectType": 0
+    },
+    {
+      "phase": 1,
+      "type": "create36",
+      "bytes": "bGl2ZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+      "objectType": 3
+    },
+    {
+      "phase": 1,
+      "type": "apply256x2",
+      "header": "live PRI",
+      "row": "live PRI"
+    },
+    {
+      "phase": 2,
+      "type": "create36",
+      "bytes": "bWFya2VyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAA",
+      "objectType": 0
+    },
+    {
+      "phase": 2,
+      "type": "create36",
+      "bytes": "bGl2ZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+      "objectType": 3
+    },
+    {
+      "phase": 2,
+      "type": "apply256x2",
+      "header": "live PRI",
+      "row": "live PRI"
+    },
+    {
+      "phase": 3,
+      "type": "create36",
+      "bytes": "bWFya2VyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAA",
+      "objectType": 0
+    },
+    {
+      "phase": 3,
+      "type": "create36",
+      "bytes": "bGl2ZQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAA",
+      "objectType": 3
+    },
+    {
+      "phase": 3,
+      "type": "apply256x2",
+      "header": "live PRI",
+      "row": "live PRI"
+    }
+  ],
+  "limits": {
+    "existingSlots": 9,
+    "newSlots": 0,
+    "ImageData738": "not qualified by this group; encoded descriptor/borrow/last-owner remains conditional",
+    "physical72_73": "guarded",
+    "private658_659": "unknown",
+    "nativeInitialSoundQuery": "incidental old nested Top result is not Sound or primaryApp0 qualification",
+    "allOtherBuilds": "old exact-body/context proof reused only in its own forms; no mechanical new full-chain claim"
+  }
+}

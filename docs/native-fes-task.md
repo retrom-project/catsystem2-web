@@ -1502,3 +1502,36 @@ Both original failures remain evidence; this shape has no native lifecycle pass.
 The passing current primary-Root contrast does not remove that qualification gap.
 SDK67 reuses its existing own receiver/bank-selection body evidence and current
 contrast; no new SDK67 original full-chain run is claimed here.
+
+## SDK63 named objects and registered private consumers
+
+The exact .63 `c8d4` build also has a complete finite chain from a loaded parent
+Script bank to two separately loaded Script contexts and two explicitly started
+FES owners. Main631 creates two indexed BASE receivers and one CPLANE from the
+literal type/name/count packet. Main632 sends the same expanded `argv1` as both
+strings; `argv2` stays ignored. Main664–668 preserve registered caller identity,
+private-word copy direction and initialized result writes. Main882/883 preserve
+the CP932 key bytes. A real label changes the CPLANE's size, position, color and
+priority; the original Root/View COM-memory consumer produces the corresponding
+colored triangles. These calls retain their existing ABI registrations.
+
+Reloading A's Core resets its dictionary while B and the two Script private
+contexts retain their independent values. The test replays every target control,
+writeback and complete packet, then independently serializes and restores each
+of eight boundaries through normal FES retirement and supplier retirement.
+The native golden contains the completed 44-target prefix and both geometry
+outputs; its old cleanup failure remains recorded separately. The finite native
+retirement witness supplies the real MOT source startup initializer already used
+by the qualified M2 host. That initializer is also needed by the common source
+release path when no MOT program has been loaded. A separate minimal nonstarted
+FES `209 → 66/447/67 → Root` witness records the actual final free with that normal
+startup prerequisite. Neither witness turns the old nested target-zero query
+into primary Application, Input or Sound qualification.
+
+The wider .23/.67 private and dynamic groups retain their own original evidence;
+modern parent-Script registration/selection retains its W59 producer evidence.
+No new cross-build shape is inferred from a shared label or registered slot.
+ImageData Main738 remains conditional on its encoded descriptor and last owner;
+this CPLANE chain supplies no image descriptor, font, physical GPU or arbitrary
+memory qualification. The test fixture records the precise original-prefix and
+retirement evidence separately.
