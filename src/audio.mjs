@@ -16,6 +16,11 @@ import {
 const isVoice = (channel) =>
   channel.group === 'voice' || (channel.group === 'native' && channel.nativeCategory === 'voice');
 const nativeCategories = new Set([null, 'bgm', 'se', 'voice', 'sysvoice']);
+const validNativeCompletion = (channel) =>
+  channel.nativeCompleted === undefined ||
+  (channel.nativeCompleted === true &&
+    channel.nativeBufferPlayback === true &&
+    channel.ended === true);
 const validNativeDrain = (channel) =>
   channel.nativeDraining === undefined ||
   channel.nativeDraining === false ||
@@ -389,6 +394,8 @@ export class AudioMixer {
     this.nativeDecoderBuffers.delete(key);
   }
   async play(sound) {
+    if (!validNativeCompletion(sound))
+      throw new Error('Invalid native audio completion checkpoint');
     if (!validNativeDrain(sound)) throw new Error('Invalid native audio drain checkpoint');
     if (!validNativeQueue(sound)) throw new Error('Invalid native PCM queue checkpoint');
     if (!validNativeDecoderBuffer(sound))
@@ -656,6 +663,7 @@ export class AudioMixer {
           return;
         }
       }
+      if (channel.nativeBufferPlayback) channel.nativeCompleted = true;
       channel.offset = channel.nativeBufferPlayback
         ? 0
         : channel.loop
@@ -1107,7 +1115,7 @@ export class AudioMixer {
     return c
       ? {
           file: c.file,
-          time: this.position(c),
+          time: c.nativeCompleted && c.ended ? c.duration : this.position(c),
           playing: voices.some((voice) => voice.playing),
           envelope: c.envelope,
           tags: c.tags,
@@ -1244,6 +1252,7 @@ export class AudioMixer {
     if (position < channel.nativeDrainEnd) return;
     this.detach(channel);
     this.resetNativePCM(channel.channel);
+    channel.nativeCompleted = true;
     channel.offset = 0;
     channel.playing = false;
     channel.ended = true;
@@ -1352,6 +1361,7 @@ export class AudioMixer {
         ? { nativeDecoderBuffer: structuredClone(c.nativeDecoderBuffer) }
         : {}),
       completionCount: c.completionCount,
+      ...(c.nativeCompleted ? { nativeCompleted: true } : {}),
       loopStartFrame: c.loopStartFrame,
       loopEndFrame: c.loopEndFrame,
       sourceMode: c.sourceMode,
@@ -1376,6 +1386,8 @@ export class AudioMixer {
     };
   }
   async restore(state) {
+    if (state.channels.some((channel) => !validNativeCompletion(channel)))
+      throw new Error('Invalid native audio completion checkpoint');
     if (state.channels.some((channel) => !validNativeDrain(channel)))
       throw new Error('Invalid native audio drain checkpoint');
     if (state.channels.some((channel) => !validNativeQueue(channel)))

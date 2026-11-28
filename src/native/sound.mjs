@@ -346,6 +346,7 @@ export class NativeSound {
       channel.paused = false;
       channel.ended = true;
       channel.completionCount = 0;
+      delete channel.nativeCompleted;
       this.audio.resetNativePCM?.(this.key(bank));
       if (channel.nativeDecoderBuffer)
         this.device[bank].nativeDecoderBuffer = structuredClone(channel.nativeDecoderBuffer);

@@ -96,6 +96,11 @@ test('retained native voice completion exposes real metadata without extending p
     assert.equal(completed.file, 'afile.wav');
     assert.equal(completed.playing, false);
     assert.equal(completed.time, 2);
+    assert.equal(
+      core.audio.position(channel),
+      0,
+      'Native completion still rewinds its buffer cursor',
+    );
     assert.equal(await core.host.waitTag('cue', 0), null);
     assert.equal(core.host.tagReady(wait), true);
     assert.equal(!completed.playing, true, 'The existing auto gate is ready, not held active');
@@ -149,6 +154,8 @@ test('retained native voice completion exposes real metadata without extending p
     assert.deepEqual(cold.snapshot(), saved);
     assert.equal(cold.voiceInfo().file, 'afile.wav');
     assert.equal(cold.voiceInfo().playing, false);
+    assert.equal(cold.voiceInfo().time, 2);
+    assert.equal(cold.position(cold.channels.get('native:3')), 0);
     cold.activate();
     assert.equal(next.context.sources.length, 0);
     await command(core.audio, 'pcm', [0], 'play', ['high.wav']);
@@ -175,16 +182,64 @@ test('retained native voice completion exposes real metadata without extending p
     assert.equal(core.audio.voiceInfo().playing, false);
     assert.equal(core.audio.voiceInfo().time, 0);
     assert.equal(emote.drawing(stage, 0, core.audio.voiceInfo()).variables.mouth, 0);
+    assert.equal(await sound.load(3, 'high.wav', 1, 0, 'voice'), true);
+    assert.deepEqual(core.audio.voiceInfo(), {}, 'Replacing a source discards its old completion');
+    await sound.play(3, 1, control);
+    context.advance(0.125);
+    assert.equal(core.audio.voiceInfo().file, 'high.wav');
+    assert.equal(core.audio.voiceInfo().time, 0.125);
+    assert.equal(cold.voiceInfo().file, 'afile.wav');
+    assert.equal(
+      cold.voiceInfo().time,
+      2,
+      'Source replacement cannot change the independent owner',
+    );
     sound.release(3);
     assert.deepEqual(core.audio.voiceInfo(), {});
     await core.dispose();
     core = null;
     assert.equal(cold.voiceInfo().file, 'afile.wav');
     assert.equal(cold.voiceInfo().playing, false);
+    assert.equal(cold.voiceInfo().time, 2);
   } finally {
     await cold?.dispose();
     await core?.dispose();
     environment.restore();
+  }
+});
+
+test('static native voice completion survives cold metadata without accepting a live completion marker', async () => {
+  const { mixer, context } = fixture(),
+    next = fixture(),
+    cold = new AudioMixer(mixer.game, next.context, { deferPlayback: true });
+  try {
+    await mixer.play({
+      channel: 'native:0',
+      file: 'voice.wav',
+      group: 'native',
+      nativeCategory: 'voice',
+      sourceMode: 'static',
+      nativeBufferPlayback: true,
+      tags: { cue: 1 },
+    });
+    context.advance(3);
+    const saved = mixer.snapshot();
+    assert.equal(saved.channels[0].completionCount, 1);
+    assert.equal(saved.channels[0].offset, 0);
+    assert.equal(mixer.voiceInfo().time, 2);
+    await cold.restore(saved);
+    assert.deepEqual(cold.snapshot(), saved);
+    assert.equal(cold.voiceInfo().time, 2);
+    assert.equal(next.context.sources.length, 0);
+    for (const field of ['ended', 'nativeBufferPlayback']) {
+      const invalid = structuredClone(saved);
+      invalid.channels[0][field] = false;
+      await assert.rejects(cold.restore(invalid), /Invalid native audio completion checkpoint/);
+      assert.deepEqual(cold.snapshot(), saved);
+    }
+  } finally {
+    await cold.dispose();
+    await mixer.dispose();
   }
 });
 

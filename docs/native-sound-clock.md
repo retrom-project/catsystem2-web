@@ -123,6 +123,15 @@ voice completion keeps its existing selection behavior. Lip motion, tag waits
 and auto advancement continue to consume the existing explicit `playing` gate;
 retained metadata never represents continuing playback.
 
+The retained `voiceInfo().time` endpoint is separate from the native buffer
+cursor, which rewinds to zero on completion. Actual source-end or stream-drain
+completion retains a `nativeCompleted` marker in the current internal channel
+checkpoint, separate from the static-buffer completion counter. Only this host
+metadata projection then reports the duration. Native position queries and saved
+offsets keep zero; Stop clears the marker and reports zero here too. Pause/resume,
+replacement and independent cold owners retain their own state. This does not
+change the native GAME_SAVE files or add a checkpoint format generation.
+
 Ordinary audio regressions and the shared owned AudioContext fixture have no
 original-engine dependency. The explicit physical-checkpoint composition test
 lives separately in the oracle group, with its original body and assertions.
