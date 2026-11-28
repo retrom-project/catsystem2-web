@@ -51,11 +51,11 @@ const parent = kcsProgram(
     ...call(260, [V(68), 0, 0]),
     ...call(261, [V(68)], 88),
     ...call(117, [V(88), 0, 0, 2, 2, 0xff203040]),
+    ...call(66, [34, V(64), 1088], 72),
+    ...call(447, [V(72), 1152]),
     ...call(66, [15, V(64), 1024], 92),
     ...call(256, [V(92), 2, 2]),
     ...call(260, [V(92), 0, 0]),
-    ...call(66, [34, V(64), 1088], 72),
-    ...call(447, [V(72), 1152]),
     ...call(66, [12, V(72), 1216], 76),
     ...call(143, [V(76), 1280, 0]),
     ...call(66, [34, V(76), 1344], 80),
@@ -328,6 +328,7 @@ for (const profile of profiles) {
       await h.w.close({ flushFiles: false });
       assert.equal(h.redraws.length, 1);
       assert.equal(h.redraws[0].drawID, h.roles.spare);
+      assert.equal(h.redraws[0].recordLive, true);
       assert.equal(h.draw.state.renderer, null);
       assert.equal(spare.state.renderer, null);
       released(h);
