@@ -156,7 +156,11 @@ for (const profile of profiles) {
       const h = await open(profile),
         seen = observe(h);
       try {
-        if (stage !== 'notify') {
+        if (stage === 'notify') {
+          h.player.notify = async () => {
+            throw new Error('live337 notify');
+          };
+        } else {
           const owner = stage === 'syncFES' ? h.world.graphics : h.task.input,
             name = stage === 'syncFES' ? 'syncFES' : 'sync',
             operation = owner[name].bind(owner);
@@ -167,7 +171,7 @@ for (const profile of profiles) {
         }
         await assert.rejects(
           notify(h, stage === 'notify' ? 'BAD' : 'FILE'),
-          stage === 'notify' ? /UNKNOWN_LIVE_IDENTIFIER/ : new RegExp('live337 ' + stage),
+          new RegExp('live337 ' + stage),
         );
         assert.equal(h.world.objects.objects.get(h.id), h.record);
         assert.equal(h.record.state, 'active');

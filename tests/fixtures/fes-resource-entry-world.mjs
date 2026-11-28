@@ -21,6 +21,7 @@ export async function entryWorld(profile, files = {}, initialize = true) {
     },
     { initialize: false },
   );
+  world.graphics.createLogicalDevice();
   world.game.width = 32;
   world.game.height = 24;
   world.game.resolveCategory = (name, category) => {
