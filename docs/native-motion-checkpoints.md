@@ -350,3 +350,32 @@ observed separately from Main307 dispatch. Current cold continuations cover
 loaded, evaluated, cleared and rebound states; the existing FES same-frame
 consumer proof is reused. No new ABI slot, renderer or full-Application claim is
 implied by these two scalar bridges.
+
+The SDK `.63` [group/default consumer golden](../tests/fixtures/native-sdk63-mot-group-default.json)
+pairs Main298, Main300 and Main586 with their actual loaded manager records.
+Main299 produces the base bank; Main300 copies its nine fields to independent
+VM spans. Main586 copies the full default DWORD into each newly loaded record,
+and subsequent changes leave existing record flags intact. Two real MOT VMs
+read those words, branch and write the working object. Removing one group
+exposes the other record; removing both restores the explicit base on update.
+A rebound record takes the current default. Parsed Script branches consume both
+base and working readbacks, rather than treating the manager fields as the
+only evidence.
+
+The creator Script then retires normally. A separate loaded Script receives
+the live manager through an ordinary queued packet, continues its updates,
+removes/rebinds the group and explicitly deletes the manager. Six independent
+cold points cover loaded records, group removal, replacement, creator
+retirement, deletion and following parent pruning. The original wrappers
+return control2 without writing a result. Manager pointers are normalized by
+ownership; they are never compared numerically with current opaque handles.
+
+Own `.23` and modern `.74`/plain `.76` manager/record groups and `.67` live
+manager proof are reused with their separately checked wrapper, record and
+caller contexts. The new bounded join confirms group-field/container layout
+differences and the same default-to-record copy. Four current build bridges
+reuse this finite program; they are not four new full native startup proofs.
+No runtime policy, start/clock behavior, checkpoint schema or ABI registration
+changes are required. FES same-frame MOT consumers retain their accepted scope;
+this explicit-manager group does not qualify full Application startup,
+unstarted-FES retirement, physical memory, GPU or larger resource domains.
