@@ -38,6 +38,6 @@
 
 ## 已采用与 source-only
 
-活跃 `0e9b` 的接受根明确列出已集成 W63/W64/W69/W71，以及此前 Clock、Task/FES、内存复制和最终资源退休等生产差量；W57/W59/W65–68/W70 的 0prod 证明按原范围复用。W72 为有限 exact63 FES named/private 资格。W73、W74、W75 是已接受但尚未切入的独立生产后继，详见发布准备。不能从联合 HEAD 拼出一个“已验收版本”。
+活跃 `0e9b` 的接受根明确列出已集成 W63/W64/W69/W71，以及此前 Clock、Task/FES、内存复制和最终资源退休等生产差量；W57/W59/W65–68/W70 的 0prod 证明按原范围复用。W72 为有限 exact63 FES named/private 资格。W73、W74、W75、W76 是已接受但尚未切入的独立生产后继，详见发布准备。不能从联合 HEAD 拼出一个“已验收版本”。
 
 所有资格保留原 CRT/allocator、primary Sound source、局部 carrier、虚拟 Win32/FileServer、Window/DOM/COM-memory 端口限制。软件 canvas/SwiftShader 小图、纯 COM-memory Present 记录、真实 UHD Stage 和物理扫描输出是不同证据；本目录不将其互换。

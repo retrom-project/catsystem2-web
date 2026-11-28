@@ -199,8 +199,8 @@
       "path": ".local/phase11/sdk-primary-loop-metadata-20261128/READY.json",
       "sha256": "9dcbb3475b42908eaaae1ac632e52b780b193c4b8a3e8a8cd2bafd5138a0e92b",
       "bytes": 5537,
-      "status": "pending-review",
-      "scope": "PCM prefix/loop/metadata; author failures and duplicate-key diagnosis withdrawal retained",
+      "status": "accepted-pending-integration",
+      "scope": "Root-accepted finite PCM prefix/loop/metadata; prior author failures and duplicate-key diagnosis withdrawal retained; not active/product/released",
       "source": "fca6206e7179d68cc4da4ed93d29c8570674fcdd"
     },
     {
@@ -208,7 +208,7 @@
       "path": ".local/phase11/sdk-cross-build-configuration-metadata-20261128/READY.json",
       "sha256": "3ee5f984207ca7b8fc5ce1db9e20c93e52d619f03c0016b45051ce789431e2f9",
       "bytes": 2307,
-      "status": "current-only-partial",
+      "status": "accepted-current-only-partial",
       "scope": "13current/config8cold/diagnostic1cold;0prod0ABI0newnative",
       "source": "c53b046e32e53f0cc0c9c71a6c3d3c24afb366fc"
     },
@@ -271,6 +271,49 @@
       "bytes": 2013,
       "status": "input-unavailable",
       "scope": "Actual authored dense input threshold not met; user has no alternate"
+    },
+    {
+      "id": "W76-root",
+      "path": ".local/phase11/sdk-primary-loop-metadata-20261128/ROOT-ACCEPTANCE.json",
+      "sha256": "3fc296c887dbb68bd961c1cd911bd08d826ae9e514a9552208e7d35c45058983",
+      "bytes": 1708,
+      "status": "accepted-pending-integration",
+      "scope": "Root finite source-only27new/1strengthened;6unique/0finding;no product or fullSDK",
+      "source": "fca6206e7179d68cc4da4ed93d29c8570674fcdd"
+    },
+    {
+      "id": "W76-review",
+      "path": ".local/phase11/sdk-runtime-review-wave76/REPORT.json",
+      "sha256": "a6e7bdc10cc9d19a899459bba1e9e0b925acaeaf10bfeb7fa9bcba1d5b839ed2",
+      "bytes": 11427,
+      "status": "accepted-finite-review",
+      "scope": "4targeted+2independent finalgreen; original author reds preserved",
+      "source": "fca6206e7179d68cc4da4ed93d29c8570674fcdd"
+    },
+    {
+      "id": "W76-review-ready",
+      "path": ".local/phase11/sdk-runtime-review-wave76/READY.json",
+      "sha256": "ca2d7fe4b45564fbc2c8607e4f9fc440e3e474d629f98a14ffd45f76126906c2",
+      "bytes": 1262,
+      "status": "accepted-finite-review",
+      "scope": "Fixed review source/closure; no publication",
+      "source": "fca6206e7179d68cc4da4ed93d29c8570674fcdd"
+    },
+    {
+      "id": "config-root",
+      "path": ".local/phase11/sdk-cross-build-configuration-metadata-20261128/ROOT-ACCEPTANCE.json",
+      "sha256": "de050e887c7363f0931d7854dc408d79a8cb40bcf1a2b37cd5e2f3f7c58c1c56",
+      "bytes": 1341,
+      "status": "accepted-current-only-partial",
+      "scope": "4testdoc0prod0ABI0native; compressed VM offset preserved; no native nonLIFO dynamic proof",
+      "source": "c53b046e32e53f0cc0c9c71a6c3d3c24afb366fc"
     }
-  ]
+  ],
+  "releasePreparation": {
+    "proposedCoreTag": "v0.1.0-rc.1",
+    "tagCreated": false,
+    "finalCutAndAssets": "Integrator RELEASE-PREPARED receipt, not source self-reference",
+    "docsFreeze": "After accepted-status refresh until current release candidate complete",
+    "activeSourceUnchanged": "0e9b20b7454d06d797c5e84c88995dc6a519e757"
+  }
 }

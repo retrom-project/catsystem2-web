@@ -17,7 +17,7 @@
 | W74        | modern FES typed named getter/private/context/status                | accepted source-only6cd，尚未切入。                                                |
 | W75        | ImageData20B/lastowner、stored layer、scalar clip、实际消费者与退休 | accepted repair833，尚未切入；没有新的原 affine 扩张证明。                         |
 
-W76 的 27 新 finite 注释 / 165 强化是 **待审 owner 申报**，不进入上述 accepted 累计。Config 当前 checkpoint 也不增加 native ABI 资格。机器引用只做 provenance/版本分层，不替代功能覆盖分类。
+W76 已由 Root 有限 source-only 接受：27 新 finite 注释 / 1 强化，以 Root unique join 范围为准，不把 owner supporting/context 注释重复加成新槽。6 unique case / 0 finding；其 source 尚未集成或发布。Config c53 已接受为 current-only partial checkpoint，4 test/doc、0prod/0ABI/0新原 native；不增加 native ABI 资格。机器引用只做 provenance/版本分层，不替代功能覆盖分类。
 
 W39/W40/W42 早期 changes-required 报告必须连同已闭合 RECHECK 读取。W55 已审附录保存三个闭合指针；不能只链接原 open 报告当接受证明。旧 Main724 根亦保留旧 accepted raw/有限 port/当时 expected helper SHA；当前 helper 已漂移不能被当成旧运行逐字源。
 
@@ -35,7 +35,7 @@ node --test tests/native-modern-primary-sound.test.mjs tests/native-modern-prima
 # W74：真实 current FES caller / registry / 生命周期。
 node --test tests/native-modern-fes-context-registry.test.mjs
 
-# 仅当 W76 接受或调查它自身 finding 时，用其封定 source：
+# W76：已接受 source 的有限 loop/metadata 当前回归（按需复验，不在本批执行）：
 node --test tests/native-primary-loop-metadata.test.mjs tests/native-sdk63-primary-loop-metadata.test.mjs
 
 # Config partial/VM offset：仅当前 checkpoint，不能产生 native 正证。
@@ -73,8 +73,8 @@ node --test tests/native-cross-build-configuration-checkpoint.test.mjs
 | W73-root             | [.local/phase11/sdk-modern-primary-sound-20261128/ROOT-ACCEPTANCE.json](../../../.local/phase11/sdk-modern-primary-sound-20261128/ROOT-ACCEPTANCE.json)                                                   | `0ce26cee1c9c931e…` | accepted-pending-integration    |
 | W74-root             | [.local/phase11/sdk-modern-fes-context-registry-20261128/ROOT-ACCEPTANCE.json](../../../.local/phase11/sdk-modern-fes-context-registry-20261128/ROOT-ACCEPTANCE.json)                                     | `c982931675b49d5a…` | accepted-pending-integration    |
 | W75-root             | [.local/phase11/sdk-graphics-remaining-consumers-20261128/repair1/ROOT-ACCEPTANCE.json](../../../.local/phase11/sdk-graphics-remaining-consumers-20261128/repair1/ROOT-ACCEPTANCE.json)                   | `1f922cd81ba47ae6…` | accepted-pending-integration    |
-| W76-ready            | [.local/phase11/sdk-primary-loop-metadata-20261128/READY.json](../../../.local/phase11/sdk-primary-loop-metadata-20261128/READY.json)                                                                     | `9dcbb3475b42908e…` | pending-review                  |
-| config-checkpoint    | [.local/phase11/sdk-cross-build-configuration-metadata-20261128/READY.json](../../../.local/phase11/sdk-cross-build-configuration-metadata-20261128/READY.json)                                           | `3ee5f984207ca7b8…` | current-only-partial            |
+| W76-ready            | [.local/phase11/sdk-primary-loop-metadata-20261128/READY.json](../../../.local/phase11/sdk-primary-loop-metadata-20261128/READY.json)                                                                     | `9dcbb3475b42908e…` | accepted-pending-integration    |
+| config-checkpoint    | [.local/phase11/sdk-cross-build-configuration-metadata-20261128/READY.json](../../../.local/phase11/sdk-cross-build-configuration-metadata-20261128/READY.json)                                           | `3ee5f984207ca7b8…` | accepted-current-only-partial   |
 | VM-offset-diagnostic | [.local/phase11/sdk-cross-build-configuration-metadata-20261128/ALLOCATOR-CONCLUSION.json](../../../.local/phase11/sdk-cross-build-configuration-metadata-20261128/ALLOCATOR-CONCLUSION.json)             | `ce908c3936677d91…` | diagnostic-limited              |
 | cold1740             | [.local/phase11/emote-cold-f1740-20261119/F1740-COLD-ACCEPTANCE.json](../../../.local/phase11/emote-cold-f1740-20261119/F1740-COLD-ACCEPTANCE.json)                                                       | `c3ec63c623a69030…` | accepted-historical-performance |
 | cold1740-followup    | [.local/phase11/emote-f1740-latency-20261119/F1740-UHD730-FINAL-ACCEPTANCE.json](../../../.local/phase11/emote-f1740-latency-20261119/F1740-UHD730-FINAL-ACCEPTANCE.json)                                 | `f912017e06580ff0…` | accepted-historical-performance |
@@ -82,5 +82,9 @@ node --test tests/native-cross-build-configuration-checkpoint.test.mjs
 | perf-hotchain        | [.local/phase11/retrom-engine63-sdk-acceptance/wave34/hot-chain-withdrawal/WITHDRAWAL.json](../../../.local/phase11/retrom-engine63-sdk-acceptance/wave34/hot-chain-withdrawal/WITHDRAWAL.json)           | `c5173c61e3df3572…` | withdrawn                       |
 | video-driver         | [.local/phase11/engine63-video-context-20261122/4118-OP1-WEBGL-CONTEXT-EVIDENCE.json](../../../.local/phase11/engine63-video-context-20261122/4118-OP1-WEBGL-CONTEXT-EVIDENCE.json)                       | `5d86fc044cb347c9…` | external-limit                  |
 | dense-survey         | [.local/phase11/game-real-raf-m2-geometry-20261118/ROUTE-DENSE-CHECKPOINT-PROJECTION.json](../../../.local/phase11/game-real-raf-m2-geometry-20261118/ROUTE-DENSE-CHECKPOINT-PROJECTION.json)             | `ab1900f3a5c889ff…` | input-unavailable               |
+| W76-root             | [.local/phase11/sdk-primary-loop-metadata-20261128/ROOT-ACCEPTANCE.json](../../../.local/phase11/sdk-primary-loop-metadata-20261128/ROOT-ACCEPTANCE.json)                                                 | `3fc296c887dbb68b…` | accepted-pending-integration    |
+| W76-review           | [.local/phase11/sdk-runtime-review-wave76/REPORT.json](../../../.local/phase11/sdk-runtime-review-wave76/REPORT.json)                                                                                     | `a6e7bdc10cc9d19a…` | accepted-finite-review          |
+| W76-review-ready     | [.local/phase11/sdk-runtime-review-wave76/READY.json](../../../.local/phase11/sdk-runtime-review-wave76/READY.json)                                                                                       | `ca2d7fe4b45564fb…` | accepted-finite-review          |
+| config-root          | [.local/phase11/sdk-cross-build-configuration-metadata-20261128/ROOT-ACCEPTANCE.json](../../../.local/phase11/sdk-cross-build-configuration-metadata-20261128/ROOT-ACCEPTANCE.json)                       | `de050e887c7363f0…` | accepted-current-only-partial   |
 
 本机共享 state 中的选择字段是 `stage11OriginalRouteStory`、`stage11GalleryActualInput`、`stage11BatchVersionAbiAcceptance.acceptedActivePFBPair`、`pendingAcceptedAfter0e9b` 和各 `reviewWave*`。不要整份 dump 或修改 Root state。后续最终 cut/接受状态变化时更新本目录的薄指针，原 sealed READY/raw/接受根保持原样。
