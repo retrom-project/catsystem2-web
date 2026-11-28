@@ -350,6 +350,7 @@ export default {
   },
   movie: { alwaysUseBgmVolume: true },
   particle: {
+    scriptStartPreservesState: true,
     debugUsesNativeLogger: true,
     deferGraphAttachment: true,
     frameScale: 'x87-uint32',
@@ -1884,9 +1885,14 @@ export default {
             'Own 0x4a19e0 rebuilds the narrow display log through the saved scene path from its two handles and two formatted command names. It clears the old owner, appends only elapsed blocks and returns control 2.',
         },
         {
-          ids: [271, 272, 273, 274, 275, 693],
+          ids: [271, 272, 273, 274, 275],
           value:
-            '2.6.1.63 own Particle wrappers use raw 302–304, 306 and 307. Raw 302 receives the family, two CP932 names, count, priority, 32 registers and a cleared draw word. Raw 306 writes the active word.',
+            'Own raw302–304/306/307 script producers are joined with the accepted actual kind16 v2 table and real parsed Script/Root/View consumers. Both normal v1/v2 sources and finite HG3 atlases, copied registers after source zeroing, active reload versus callback binding, explicit restart, stop and normal next-Root retirement have exact control/write and current cold evidence. Source replacement retains active but clears the native callback; legacy Start preserves existing vectors. See native-sdk63-particle-attachment and native-sdk63-aux-particle fixtures. No plugin, unknown shape or physical memory extension follows.',
+        },
+        {
+          ids: [693],
+          value:
+            'Own plugin wrapper uses the same raw302 packet family and cleared draw word; this existing wrapper proof does not qualify an arbitrary plugin or its later consumers.',
         },
         {
           ids: [265, 266, 267, 268, 269, 270],
@@ -1901,7 +1907,7 @@ export default {
         {
           ids: [426, 427],
           value:
-            '2.6.1.63 own Main426 and Main427 send raw Particle 308 and 309 with the second word in L. The owned receiver preserves signed alpha below 255 and maps higher alpha to 256. Zero attachment clears the graph reference.',
+            '2.6.1.63 own Main426 and Main427 send raw Particle 308 and 309 with the second word in L. The actual parsed Script/kind16 receiver preserves signed alpha below 255 and maps higher alpha to 256. Zero attachment clears the graph reference. Real v2 queries consume the borrowed fresh Plane registration/base/position and drive finite quad/atlas submissions; move, missing Plane after retirement, v1 source replacement, explicit restart and independent owner release are covered without retaining the Plane or comparing address values.',
         },
         {
           ids: [218, 712, 715],

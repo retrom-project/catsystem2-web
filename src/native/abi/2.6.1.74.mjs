@@ -101,7 +101,6 @@ export default {
     taskMessagesUseRawTransport: true,
     taskFieldsPersistWithoutBank: true,
     refBuffersFollowNativeHeap: true,
-    drawPortEnabledByIdle: true,
     scriptLoadsBeforeTexture: true,
     scriptLoadMissingReturnsUnwritten: true,
     deferGraphAttachment: true,

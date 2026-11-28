@@ -1,15 +1,18 @@
 # Native Particle tasks
 
-The fixed SDK23 native graph port separates script activity, the renderer's
-enabled flag and its callback binding. Load creates a disabled model. Start
-binds the callback and restarts relative time without resetting the quad,
-backup, visibility or vector buffers, or immediately changing retained frame
-words. The first subsequent idle enables the model. Script `exit` stops updates
-while the already enabled model continues drawing; explicit stop disables it.
-An active load replaces the model and retains script activity, but requires
-another start to bind the new model's callback. The current checkpoint stores
-that binding independently of the idle enable flag. These policies apply only
-to the qualified SDK23 build; other profiles retain their existing defaults.
+The five qualified native script graph ports separate activity, the renderer's
+enabled flag and its callback binding. Load creates a disabled model without a
+callback. Start binds the callback; the first subsequent idle enables the model.
+An active load retains activity but clears that binding, so an idle alone cannot
+make the replacement draw. Explicit stop clears the callback and disables the
+port. The current checkpoint stores both graph states independently. This is a
+shared native graph lifecycle, rather than an SDK capability switch.
+
+SDK23/63/67 Start restarts relative time without resetting the quad, backup,
+visibility or vector buffers or immediately changing retained frame words.
+SDK74/76 call their separate particle-buffer initializer before binding; that
+proven difference remains explicit. These statements cover normal script banks,
+not unknown plugin or external draw callbacks.
 
 The loaded interpreter inherits its actual task FPS. A normal application
 initializer argument of 30 gives `GetFps=30` and `CalcFrame(123)=61`. The original
@@ -55,15 +58,12 @@ plug-in/PPI loading or later external extra-name consumers. Those shapes keep
 their existing guards or separately qualified behavior. No native GAME_SAVE
 word or platform save layout changes in this group.
 
-SDK23 idle copies its current relative frame into the retained previous-frame
-field after the particle loop. Its explicit profile policy performs that copy
-even without the modern RefBuffer backend. The interpreter still observes
-`0xffffffff` during the first invocation. The current unstarted `hasFrame=false`
-state uses an interpreter sentinel; it is not a numeric comparison to the
-original task's pre-update raw zero. Standalone `update()` and other profiles'
-completion policies keep their existing behavior. This normal initialized
-bridge does not establish physical GPU output, allocation-failure behavior or
-every operand domain for the two tables.
+The five qualified idle bodies copy the current relative frame into the retained
+previous-frame field after the particle loop. The interpreter still observes
+`0xffffffff` during its first invocation. The current unstarted `hasFrame=false`
+state is an interpreter sentinel, not a comparison to pre-update native raw
+bytes. Standalone `update()` retains its own contract. No physical GPU output,
+allocation-failure behavior or arbitrary operand domain follows from this bridge.
 
 ## Fixed SDK 2.6.1.23 external script loader
 
@@ -268,3 +268,34 @@ sentinel; standalone VM update and start behavior are unchanged. Constructor
 and rebind field captures without a getter invocation do not qualify
 outside-idle queries or establish an SDK difference. Ordinary missing-resource,
 uninitialized-consumer and unknown receiver guards remain in force.
+
+## Exact SDK63 attached Particle lifecycle
+
+The configured normal Root, Main66/Main143 loaded Script and kind16 factory run
+both PTCL tables against real finite HG3 atlases. Main426 carries signed alpha in
+raw308 L (255 maps to256); Main427 carries the graph ID in raw309 L, with graph0
+stored as minus-one. In v2, entries46–49 read that ID, actual registration, base
+and position. Their initialized outputs drive quad generation and the real
+Root/View COM-memory triangle submission. Plane edits made by the parent Script
+reach the child's interpreter on the following Root update; draw alpha changes
+on the current collector pass.
+
+Attachment borrows the Plane ID and does not keep the Plane alive. After ordinary
+Plane retirement, a still-live Particle's defined group queries write zero.
+A fresh Plane, v1 source/atlas and copied register bank can then be rebound.
+Active source replacement frees the previous interpreter/buffers/atlas and clears
+the graph callback; normal Main272 rebinds it without resetting the legacy
+vectors. Stop, next-update task collection and independent Plane retirement are
+separate observations. Ten independent current cold continuations cover the
+states on either side of those boundaries.
+
+The native fixtures preserve actual GCALL control/write status and complete
+initialized buffers; graph IDs are compared by owner role, never physical address.
+The raw original draw filter incorrectly compared encoded top-down input with
+decoded atlas pixels; its full `allDraws` stream supplies the corrected finite
+FVF324/atlas comparison. A reused VM address after a load is not evidence that
+the replacement has run. Original raw files and this observer correction remain
+in the ignored acceptance index. Main271–275 producer/control and owner evidence
+is joined with the accepted auxiliary-table group, rather than counted again as
+new slots. Plugin693, unknown receivers/shapes, physical table0, absent resources,
+dense256, App0 and physical GPU/shader output remain outside this group.

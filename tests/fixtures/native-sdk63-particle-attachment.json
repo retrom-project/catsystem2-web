@@ -1,0 +1,1430 @@
+{
+  "profile": "rebellions-jp-engine-2.6.1.63",
+  "tag": 1703,
+  "evidence": [
+    {
+      "path": ".local/phase11/sdk63-particle-attachment-lifecycle-20261128/ORIGINAL-ATTACHMENT63.json",
+      "sha256": "7c30aa8d416d15247f4a9be04decd6935505b7d9ad5d6eee3cff5708055954f0",
+      "accounting": {
+        "selectedTarget": 56,
+        "allGCALL": 121,
+        "observedGCALL": 118,
+        "bootstrap": 3,
+        "businessDirect": 19,
+        "journalEntries": 87,
+        "closed": 118,
+        "overlap": "PTCL/GCALL wrappers occur within actual Root frame; direct collector/View and setup/cleanup are separate actual journals, not added as independent function tests."
+      }
+    },
+    {
+      "path": ".local/phase11/sdk63-particle-attachment-lifecycle-20261128/ORIGINAL-RESTART63.json",
+      "sha256": "f8ce48bf07a0def3eda55bf4347de2aaaed1bb5b4df63d78094eb8d9ee0cec5c",
+      "accounting": {
+        "selectedTarget": 11,
+        "allGCALL": 39,
+        "observedGCALL": 36,
+        "bootstrap": 3,
+        "businessDirect": 10,
+        "journalEntries": 71,
+        "closed": 36,
+        "overlap": "PTCL/GCALL wrappers occur within actual Root frame; direct collector/View and setup/cleanup are separate actual journals, not added as independent function tests."
+      }
+    }
+  ],
+  "cases": [
+    {
+      "name": "attachment",
+      "cold": [0, 1, 2, 3, 4, 5, 6, 7],
+      "inputs": {
+        "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48ZnBzPjYwPC9mcHM+PC9TQ1JFRU4+PEVUQz48Y2FjaGU+MDwvY2FjaGU+PC9FVEM+PEFQUD48aW1nY2FjaGU+MDwvaW1nY2FjaGU+PC9BUFA+PFRFWFRVUkU+PHNpemU+PHg+ODwveD48eT44PC95Pjwvc2l6ZT48dnQ+PHg+MjwveD48eT4xPC95PjwvdnQ+PGFyZWEwMD48c3g+MDwvc3g+PHN5PjA8L3N5PjxkeD4yPC9keD48ZHk+MTwvZHk+PC9hcmVhMDA+PGJwcDMyeT4wPC9icHAzMnk+PGJwcDE2eT4xPC9icHAxNnk+PGJwcD4zMjwvYnBwPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPnB0Y2w8L25hbWU+PGludD5wdGNsLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5wdGNsLWxvb3NlPC9kaXI+PC9pbnQwMj48aW50MDM+PG5hbWU+c2NlbmU8L25hbWU+PGludD5zY2VuZS5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmUtbG9vc2U8L2Rpcj48L2ludDAzPjwvSU5UPjwvZG9jdW1lbnQ+",
+        "archives": [
+          {
+            "name": "scripts.int",
+            "bytes": "S0lGAAMAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAE4AAAByZXNvdXJjZTYzLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALgEAAE4AAABhdHRhY2htZW50LW1haW4ua2NzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfAEAAAYDAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAjgoAAMIKAAAHAAAAkAAAAAAQAAAAEAAAUgsAAAAAAAAcFQAAeJztlTFoU0EYx7/3SEprC0bToYPDg/NFy2uhSoYMghcbsUPBDBE6FMyziYSSpmKDFnHI4NDBoUMHh1IiFBpqhgwZMmQIqODg4CDUwaGDg4ODg4ODEHv33pl/Lq9mc3I5fu9/33ffve++785mhnGwYjMiohijEJHiEPAo8ARwBHgSeAr4ArAFfBH4MvAM8BxwHDgBfA2YA6eAF4AXgdPAGeAl4GXgLHAOuABcBH4AXAbeBH7qcyQZYxWfqzzGnoHNFvBz4G3gHeAXwLvAVeB94BpwHbgB3ARuAbeBO8BvgN8Bvwf+APwR+BPwZ+Bj4C/AX4G/AX8H/gH8E/iX5LfTT17GWJV6vA9cA64DN4CbwC3gNnCHiByWIiJV+HLSFGPUYzKEyQ1hMuH1g5ycIX/HSTF2uM2y3Oo67LYwjPSbcDFy7v2gw+4MmlhyFZ70TJRhRhhOgqEh5WUhj0ohAhvl+kbn5KQcWcUQY8dQq9iM+O5NW14wDjtrELEpryLRSYY7NFQ4T5Z7cdirftlhESGEpGNrXAi3yBcusdchomi0PU7EDkaUoBzPK0d1xgPuZlhzF0Ive9syb8f81OwNxKkFx1nV46yGe9mgoN9W8qGeDQhWDw52pAc7Cg/Jsc26Q4M1goOlRrRgQlBh5pVdwHrN4PV29PWE0N843NTqMS4n437WvOOqcptZPNvfOMqkcr3XPlrjKJMO967qU48+Htg46uxMWebm0K5oQfnHg48muFnkC+Kw6B/Zv2cqcOH9f1j+5cMyUMp3x7RSFkJAJ7SDO2FPd98D93PG6Z3VAbnXgYMBunqA7livDP/mmDijOQohwC6r2wlhWo4JkTmDaEG0oUG0dPItnpLcybd4TIpi3iTaFPMm0ZaYN4nuP8xvFKx00S3lrfVSntxy2V0prOVLZSudmV/0v/O52UdXyS0X3Y1ZF7Qrff7lx+u+zT36DfgjQxQ="
+          },
+          {
+            "name": "images.int",
+            "bytes": "S0lGAAIAAABhdGxhcy1hLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAKIAAABhdGxhcy1iLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOgEAAKMAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARgAAAAAAAAAEAAAAIgAAAEAAAAAMAAAABAAAAHic42hoaBBEAsoTJ06UQQJMc+bMUUMGy5Yt40ECAJJvC8F4nGtkEGAAAAIoAJJIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARwAAAAAAAAAEAAAAIwAAAEAAAAAMAAAABAAAAHicE2poaGBBAlItLS2mSEB169atkkggMjIy0hgJAACaCQ0deJxrZBBgAAACKACS"
+          },
+          {
+            "name": "ptcl.int",
+            "bytes": "S0lGAAIAAABhdHRhY2hlZC12Mi5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAI0AAABhdHRhY2hlZC12MS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJQEAAGYAAABLQ1MAAgAAAAIAAAA0AAAAlgAAAMoAAAAAAAAAAAAAAAAQAAAAEAAAygAAAAAAAAAsAQAAeJzTVtZjYGBQZmBgYFBTdmBgYNBW1kcIuDAwMKgqe4BJH7CkAUiSAywQACZDwGQEWNIQJMkDFmBgAgnIgQRYQALCYNXCYNXCENXSCNWMYAEjmGprAFmKCulLQ1MAAgAAAAEAAAA0AAAAQAAAAHQAAAAAAAAAAAAAAAAQAAAAEAAAdAAAAAAAAACAAAAAeJxTVW5gYGDQVlZmYGBQZmFgYFBVZmACCcjBBYQbwGQLRBKsWhokycPAwGANAKWsBM0="
+          },
+          {
+            "name": "scene.int",
+            "bytes": "S0lGAAAAAAA="
+          }
+        ],
+        "main": "S0NTAAIAAAAAAAAANAAAAI4KAADCCgAABwAAAJAAAAAAEAAAABAAAFILAAAAAAAAHBUAAHic7ZUxaFNBGMe/90hKawtG06GDw4PzRctroUqGDIIXG7FDwQwROhTMs4mEkqZigxZxyODQwaFDB4dSIhQaaoYMGTJkCKjg4OAg1MGhg4ODg4ODgxB7996Zfy6vZnNyOX7vf993373vvu/OZoZxsGIzIqIYoxCR4hDwKPAEcAR4EngK+AKwBXwR+DLwDPAccBw4AXwNmAOngBeAF4HTwBngJeBl4CxwDrgAXAR+AFwG3gR+6nMkGWMVn6s8xp6BzRbwc+Bt4B3gF8C7wFXgfeAacB24AdwEbgG3gTvAb4DfAb8H/gD8EfgT8GfgY+AvwF+BvwF/B/4B/BP4l+S3009exliVerwPXAOuAzeAm8At4DZwh4gcliIiVfhy0hRj1GMyhMkNYTLh9YOcnCF/x0kxdrjNstzqOuy2MIz0m3Axcu79oMPuDJpYchWe9EyUYUYYToKhIeVlIY9KIQIb5fpG5+SkHFnFEGPHUKvYjPjuTVteMA47axCxKa8i0UmGOzRUOE+We3HYq37ZYREhhKRja1wIt8gXLrHXIaJotD1OxA5GlKAczytHdcYD7mZYcxdCL3vbMm/H/NTsDcSpBcdZ1eOshnvZoKDfVvKhng0IVg8OdqQHOwoPybHNukODNYKDpUa0YEJQYeaVXcB6zeD1dvT1hNDfONzU6jEuJ+N+1rzjqnKbWTzb3zjKpHK91z5a4yiTDveu6lOPPh7YOOrsTFnm5tCuaEH5x4OPJrhZ5AvisOgf2b9nKnDh/X9Y/uXDMlDKd8e0UhZCQCe0gzthT3ffA/dzxumd1QG514GDAbp6gO5Yrwz/5pg4ozkKIcAuq9sJYVqOCZE5g2hBtKFBtHTyLZ6S3Mm3eEyKYt4k2hTzJtGWmDeJ7j/MbxSsdNEt5a31Up7cctldKazlS2UrnZlf9L/zudlHV8ktF92NWRe0K33+5cfrvs09+g34I0MU",
+        "v1": "S0NTAAIAAAABAAAANAAAAEAAAAB0AAAAAAAAAAAAAAAAEAAAABAAAHQAAAAAAAAAgAAAAHicU1VuYGBg0FZWZmBgUGZhYGBQVWZgAgnIwQWEG8BkC0QSrFoaJMnDwMBgDQClrATN",
+        "v2": "S0NTAAIAAAACAAAANAAAAJYAAADKAAAAAAAAAAAAAAAAEAAAABAAAMoAAAAAAAAALAEAAHic01bWY2BgUGZgYGBQU3ZgYGDQVtZHCLgwMDCoKnuASR+wpAFIkgMsEAAmQ8BkBFjSECTJAxZgYAIJyIEEWEACwmDVwmDVwhDV0gjVjGABI5hqawBZigrp"
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "fresh actual colored Plane and kind16 v2 source; real owner binding/alpha128",
+          "caller": [
+            1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861
+          ],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 128,
+            "attachment": "plane1",
+            "version": 131072,
+            "frame": 0,
+            "before": 0,
+            "now": 0,
+            "executed": false,
+            "results": null,
+            "buffers": null,
+            "table": "particle-v2"
+          }
+        },
+        {
+          "phase": 1,
+          "label": "actual v2 attachment getters drive quad/atlas alpha128",
+          "caller": [
+            1, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 128,
+            "attachment": "plane1",
+            "version": 131072,
+            "frame": 0,
+            "before": 0,
+            "now": 1,
+            "executed": true,
+            "results": {
+              "64": "plane1",
+              "68": 1,
+              "72": 1073741824,
+              "76": 1077936128,
+              "80": 1092616192,
+              "84": 1094713344,
+              "88": 0
+            },
+            "buffers": [
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAgQQAAQEEAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AACAPwAAgD8AAIA/AAAAAA==",
+              "AQAAAA=="
+            ],
+            "table": "particle-v2"
+          },
+          "drawCount": 1
+        },
+        {
+          "phase": 2,
+          "label": "ordinary Plane motion changes actual attached-position/quad producer",
+          "caller": [
+            1, 1, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 128,
+            "attachment": "plane1",
+            "version": 131072,
+            "frame": 1,
+            "before": 1,
+            "now": 1,
+            "executed": true,
+            "results": {
+              "64": "plane1",
+              "68": 1,
+              "72": 1073741824,
+              "76": 1077936128,
+              "80": 1092616192,
+              "84": 1094713344,
+              "88": 0
+            },
+            "buffers": [
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAgQQAAQEEAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AACAPwAAgD8AAIA/AAAAAA==",
+              "AQAAAA=="
+            ],
+            "table": "particle-v2"
+          }
+        },
+        {
+          "phase": 3,
+          "label": "literal graph0 detach and alpha0 consume defined zero attachment vectors",
+          "caller": [1, 1, 1, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 0,
+            "attachment": 4294967295,
+            "version": 131072,
+            "frame": 2,
+            "before": 2,
+            "now": 1,
+            "executed": true,
+            "results": {
+              "64": "plane1",
+              "68": 1,
+              "72": 1073741824,
+              "76": 1077936128,
+              "80": 1099956224,
+              "84": 1088421888,
+              "88": 0
+            },
+            "buffers": [
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AACQQQAA4EAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AACAPwAAgD8AAIA/AAAAAA==",
+              "AQAAAA=="
+            ],
+            "table": "particle-v2"
+          },
+          "drawCount": 0
+        },
+        {
+          "phase": 4,
+          "label": "live reattachment and255 normalization feed actual geometry",
+          "caller": [1, 1, 1, 1, 1, 2709137861, 2709137861, 2709137861, 2709137861],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 256,
+            "attachment": "plane1",
+            "version": 131072,
+            "frame": 3,
+            "before": 3,
+            "now": 1,
+            "executed": true,
+            "results": {
+              "64": 4294967295,
+              "68": 0,
+              "72": 0,
+              "76": 0,
+              "80": 0,
+              "84": 0,
+              "88": 0
+            },
+            "buffers": [
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AACAPwAAgD8AAIA/AAAAAA==",
+              "AQAAAA=="
+            ],
+            "table": "particle-v2"
+          }
+        },
+        {
+          "phase": 5,
+          "label": "Plane retires first; live v2 keeps ID but missing-group queries resolve normally",
+          "caller": [1, 1, 1, 1, 1, 1, 2709137861, 2709137861, 2709137861],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 256,
+            "attachment": "plane1",
+            "version": 131072,
+            "frame": 4,
+            "before": 4,
+            "now": 1,
+            "executed": true,
+            "results": {
+              "64": "plane1",
+              "68": 1,
+              "72": 1073741824,
+              "76": 1077936128,
+              "80": 1099956224,
+              "84": 1088421888,
+              "88": 0
+            },
+            "buffers": [
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AACQQQAA4EAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AACAPwAAgD8AAIA/AAAAAA==",
+              "AQAAAA=="
+            ],
+            "table": "particle-v2"
+          },
+          "drawCount": 1
+        },
+        {
+          "phase": 6,
+          "label": "fresh Plane generation and real v1/atlas replacement/register rebind",
+          "caller": [1, 1, 1, 1, 1, 1, 1, 2709137861, 2709137861],
+          "zeroedRegisterSource": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": false
+            },
+            {
+              "role": "plane2",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 128,
+            "attachment": "plane2",
+            "version": 65536,
+            "frame": 0,
+            "before": 0,
+            "now": 1,
+            "executed": false,
+            "results": null,
+            "buffers": null,
+            "table": "particle-v1"
+          }
+        },
+        {
+          "phase": 7,
+          "label": "real v1 finite quad/atlas after replacement; no v2-only query dispatch",
+          "caller": [1, 1, 1, 1, 1, 1, 1, 1, 2709137861],
+          "zeroedRegisterSource": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": false
+            },
+            {
+              "role": "plane2",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 128,
+            "attachment": "plane2",
+            "version": 65536,
+            "frame": 0,
+            "before": 0,
+            "now": 1,
+            "executed": true,
+            "results": {
+              "128": 1091567616,
+              "132": 1084227584
+            },
+            "buffers": [
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAQQQAAoEAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AACAPwAAgD8AAIA/AAAAAA==",
+              "AQAAAA=="
+            ],
+            "table": "particle-v1"
+          },
+          "drawCount": 0
+        },
+        {
+          "phase": 8,
+          "label": "normal stop/defined inactive query and particle retires before Plane2",
+          "caller": [1, 1, 1, 1, 1, 1, 1, 1, 0],
+          "zeroedRegisterSource": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": false
+            },
+            {
+              "role": "plane2",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 0,
+            "alpha": 128,
+            "attachment": "plane2",
+            "version": 65536,
+            "frame": 1,
+            "before": 1,
+            "now": 1,
+            "executed": true,
+            "results": {
+              "128": 1091567616,
+              "132": 1084227584
+            },
+            "buffers": [
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAQQQAAoEAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AACAPwAAgD8AAIA/AAAAAA==",
+              "AQAAAA=="
+            ],
+            "table": "particle-v1"
+          }
+        },
+        {
+          "phase": 9,
+          "label": "normal independent fresh Plane owner retirement request",
+          "caller": [1, 1, 1, 1, 1, 1, 1, 1, 0],
+          "zeroedRegisterSource": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": false
+            },
+            {
+              "role": "plane2",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": false
+          }
+        },
+        {
+          "phase": 10,
+          "label": "normal following Root collects Plane2 after the particle has retired",
+          "caller": [1, 1, 1, 1, 1, 1, 1, 1, 0],
+          "zeroedRegisterSource": [
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+          ],
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": false
+            },
+            {
+              "role": "plane2",
+              "alive": false
+            }
+          ],
+          "particle": {
+            "alive": false
+          }
+        }
+      ],
+      "calls": [
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 46,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": "plane1"
+        },
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 47,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": 1
+        },
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 48,
+          "args": [72, 76],
+          "control": 2,
+          "written": false,
+          "outputs": [1073741824, 1077936128]
+        },
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 49,
+          "args": [80, 84, 88],
+          "control": 2,
+          "written": false,
+          "outputs": [1092616192, 1094713344, 0]
+        },
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 27,
+          "args": [1092616192, 1094713344, 0],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 50,
+          "args": [1],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 2,
+          "table": "particle-v2",
+          "id": 46,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": "plane1"
+        },
+        {
+          "phase": 2,
+          "table": "particle-v2",
+          "id": 47,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": 1
+        },
+        {
+          "phase": 2,
+          "table": "particle-v2",
+          "id": 48,
+          "args": [72, 76],
+          "control": 2,
+          "written": false,
+          "outputs": [1073741824, 1077936128]
+        },
+        {
+          "phase": 2,
+          "table": "particle-v2",
+          "id": 49,
+          "args": [80, 84, 88],
+          "control": 2,
+          "written": false,
+          "outputs": [1092616192, 1094713344, 0]
+        },
+        {
+          "phase": 2,
+          "table": "particle-v2",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 2,
+          "table": "particle-v2",
+          "id": 27,
+          "args": [1092616192, 1094713344, 0],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 2,
+          "table": "particle-v2",
+          "id": 50,
+          "args": [1],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 3,
+          "table": "particle-v2",
+          "id": 46,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": "plane1"
+        },
+        {
+          "phase": 3,
+          "table": "particle-v2",
+          "id": 47,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": 1
+        },
+        {
+          "phase": 3,
+          "table": "particle-v2",
+          "id": 48,
+          "args": [72, 76],
+          "control": 2,
+          "written": false,
+          "outputs": [1073741824, 1077936128]
+        },
+        {
+          "phase": 3,
+          "table": "particle-v2",
+          "id": 49,
+          "args": [80, 84, 88],
+          "control": 2,
+          "written": false,
+          "outputs": [1099956224, 1088421888, 0]
+        },
+        {
+          "phase": 3,
+          "table": "particle-v2",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 3,
+          "table": "particle-v2",
+          "id": 27,
+          "args": [1099956224, 1088421888, 0],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 3,
+          "table": "particle-v2",
+          "id": 50,
+          "args": [1],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 4,
+          "table": "particle-v2",
+          "id": 46,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": 4294967295
+        },
+        {
+          "phase": 4,
+          "table": "particle-v2",
+          "id": 47,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": 0
+        },
+        {
+          "phase": 4,
+          "table": "particle-v2",
+          "id": 48,
+          "args": [72, 76],
+          "control": 2,
+          "written": false,
+          "outputs": [0, 0]
+        },
+        {
+          "phase": 4,
+          "table": "particle-v2",
+          "id": 49,
+          "args": [80, 84, 88],
+          "control": 2,
+          "written": false,
+          "outputs": [0, 0, 0]
+        },
+        {
+          "phase": 4,
+          "table": "particle-v2",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 4,
+          "table": "particle-v2",
+          "id": 27,
+          "args": [0, 0, 0],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 4,
+          "table": "particle-v2",
+          "id": 50,
+          "args": [1],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 5,
+          "table": "particle-v2",
+          "id": 46,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": "plane1"
+        },
+        {
+          "phase": 5,
+          "table": "particle-v2",
+          "id": 47,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": 1
+        },
+        {
+          "phase": 5,
+          "table": "particle-v2",
+          "id": 48,
+          "args": [72, 76],
+          "control": 2,
+          "written": false,
+          "outputs": [1073741824, 1077936128]
+        },
+        {
+          "phase": 5,
+          "table": "particle-v2",
+          "id": 49,
+          "args": [80, 84, 88],
+          "control": 2,
+          "written": false,
+          "outputs": [1099956224, 1088421888, 0]
+        },
+        {
+          "phase": 5,
+          "table": "particle-v2",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 5,
+          "table": "particle-v2",
+          "id": 27,
+          "args": [1099956224, 1088421888, 0],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 5,
+          "table": "particle-v2",
+          "id": 50,
+          "args": [1],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 6,
+          "table": "particle-v2",
+          "id": 46,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": "plane1"
+        },
+        {
+          "phase": 6,
+          "table": "particle-v2",
+          "id": 47,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": 0
+        },
+        {
+          "phase": 6,
+          "table": "particle-v2",
+          "id": 48,
+          "args": [72, 76],
+          "control": 2,
+          "written": false,
+          "outputs": [0, 0]
+        },
+        {
+          "phase": 6,
+          "table": "particle-v2",
+          "id": 49,
+          "args": [80, 84, 88],
+          "control": 2,
+          "written": false,
+          "outputs": [0, 0, 0]
+        },
+        {
+          "phase": 6,
+          "table": "particle-v2",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 6,
+          "table": "particle-v2",
+          "id": 27,
+          "args": [0, 0, 0],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 6,
+          "table": "particle-v2",
+          "id": 50,
+          "args": [1],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 7,
+          "table": "particle-v1",
+          "id": 35,
+          "args": [128],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 7,
+          "table": "particle-v1",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 7,
+          "table": "particle-v1",
+          "id": 27,
+          "args": [1091567616, 1084227584, 0],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 8,
+          "table": "particle-v1",
+          "id": 35,
+          "args": [128],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 8,
+          "table": "particle-v1",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 8,
+          "table": "particle-v1",
+          "id": 27,
+          "args": [1091567616, 1084227584, 0],
+          "control": 2,
+          "written": false
+        }
+      ],
+      "draws": [
+        {
+          "phase": 1,
+          "triangles": [
+            [
+              {
+                "x": 10,
+                "y": 12,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 14,
+                "y": 12,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 10,
+                "y": 16,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 0,
+                "v": 1
+              }
+            ],
+            [
+              {
+                "x": 10,
+                "y": 16,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 0,
+                "v": 1
+              },
+              {
+                "x": 14,
+                "y": 12,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 14,
+                "y": 16,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 1,
+                "v": 1
+              }
+            ]
+          ],
+          "atlas": {
+            "width": 4,
+            "height": 4,
+            "rgba": "lWuJAKBkklWrXZuqtlak/2mHZQB0gG5Vf3l3qopygP89o0EASJxKVVOVU6pejlz/Eb8dABy4JlUnsS+qMqo4/w=="
+          }
+        },
+        {
+          "phase": 5,
+          "triangles": [
+            [
+              {
+                "x": 18,
+                "y": 7,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 22,
+                "y": 7,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 18,
+                "y": 11,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 1
+              }
+            ],
+            [
+              {
+                "x": 18,
+                "y": 11,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 0,
+                "v": 1
+              },
+              {
+                "x": 22,
+                "y": 7,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 22,
+                "y": 11,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 4294967295,
+                "u": 1,
+                "v": 1
+              }
+            ]
+          ],
+          "atlas": {
+            "width": 4,
+            "height": 4,
+            "rgba": "lWuJAKBkklWrXZuqtlak/2mHZQB0gG5Vf3l3qopygP89o0EASJxKVVOVU6pejlz/Eb8dABy4JlUnsS+qMqo4/w=="
+          }
+        }
+      ]
+    },
+    {
+      "name": "restart",
+      "cold": [2, 3],
+      "inputs": {
+        "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48ZnBzPjYwPC9mcHM+PC9TQ1JFRU4+PEVUQz48Y2FjaGU+MDwvY2FjaGU+PC9FVEM+PEFQUD48aW1nY2FjaGU+MDwvaW1nY2FjaGU+PC9BUFA+PFRFWFRVUkU+PHNpemU+PHg+ODwveD48eT44PC95Pjwvc2l6ZT48dnQ+PHg+MjwveD48eT4xPC95PjwvdnQ+PGFyZWEwMD48c3g+MDwvc3g+PHN5PjA8L3N5PjxkeD4yPC9keD48ZHk+MTwvZHk+PC9hcmVhMDA+PGJwcDMyeT4wPC9icHAzMnk+PGJwcDE2eT4xPC9icHAxNnk+PGJwcD4zMjwvYnBwPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPnB0Y2w8L25hbWU+PGludD5wdGNsLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5wdGNsLWxvb3NlPC9kaXI+PC9pbnQwMj48aW50MDM+PG5hbWU+c2NlbmU8L25hbWU+PGludD5zY2VuZS5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmUtbG9vc2U8L2Rpcj48L2ludDAzPjwvSU5UPjwvZG9jdW1lbnQ+",
+        "archives": [
+          {
+            "name": "scripts.int",
+            "bytes": "S0lGAAMAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAE4AAAByZXNvdXJjZTYzLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALgEAAE4AAABhdHRhY2htZW50LW1haW4ua2NzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfAEAADwCAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAqAUAANwFAAAHAAAAkAAAAAAQAAAAEAAAbAYAAAAAAABQCwAAeJyF1DFME1EYB/D/u5yEBBIv1oHB4ZLnVfAgqcaBgeFQjAwkdmBgYOCgRzrUYuQihDh0YGBgYHBwYKgJCY12YCCkQ4cOmjgwODg4ODg4ODA4ODiYKN+7O/1zNXF5+d33ve979+Ve62mlDlc8DQBFDRvIbJMHycNkh3yVPEK+RnbJ18mj5HFyiXyHPEmeIgfkGfIseY5cJs+TF8iL5CVyhVwl18iPyTF5k/wstTNd1I3UzaCot2nPDnmXvEd+Tn5B3ic3yQfkFrlNPiIfkzvkLrlHfkN+Rz4lvyd/IH8kfyJ/Jn8hfyWfkb+Rv5N/kH8avx3belnUTfz1AblFbpOPyMfkDrlL7gHw9QyA7OKbpCVrITGUbLkrW4aT34NJjiN942lZe4GnlwL3l68fykaHtihzxKKEB03AoeZBvnnJJEtJc0vWhpV18TSC/fue+VPw9WUF6JHkFlFRwxz3SmXHJWHzLr5+fTHsa0cCtinsDEngAdLADb1hA4VCdwjQhwNZICu8khVm36Wv/CRffmLnR+up/47W4tFMsvBnhv4zb17KnSmB/ln7Z2j/u99Wvp8Exsw6KfdFAbMA5CsunD83FFA5f5a5apK3gE3JW8CO5C1g9Um0XnXLtbAeuWv1CGEchyvVR1E9dsvz9+bS56gy8fQ2wrgWrk+EFLt1oT7eWEv3LOM3THC/Dg=="
+          },
+          {
+            "name": "images.int",
+            "bytes": "S0lGAAIAAABhdGxhcy1hLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAKIAAABhdGxhcy1iLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOgEAAKMAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARgAAAAAAAAAEAAAAIgAAAEAAAAAMAAAABAAAAHic42hoaBBEAsoTJ06UQQJMc+bMUUMGy5Yt40ECAJJvC8F4nGtkEGAAAAIoAJJIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARwAAAAAAAAAEAAAAIwAAAEAAAAAMAAAABAAAAHicE2poaGBBAlItLS2mSEB169atkkggMjIy0hgJAACaCQ0deJxrZBBgAAACKACS"
+          },
+          {
+            "name": "ptcl.int",
+            "bytes": "S0lGAAIAAABhdHRhY2hlZC12Mi5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAI0AAABhdHRhY2hlZC12MS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJQEAAGYAAABLQ1MAAgAAAAIAAAA0AAAAlgAAAMoAAAAAAAAAAAAAAAAQAAAAEAAAygAAAAAAAAAsAQAAeJzTVtZjYGBQZmBgYFBTdmBgYNBW1kcIuDAwMKgqe4BJH7CkAUiSAywQACZDwGQEWNIQJMkDFmBgAgnIgQRYQALCYNXCYNXCENXSCNWMYAEjmGprAFmKCulLQ1MAAgAAAAEAAAA0AAAAQAAAAHQAAAAAAAAAAAAAAAAQAAAAEAAAdAAAAAAAAACAAAAAeJxTVW5gYGDQVlZmYGBQZmFgYFBVZmACCcjBBYQbwGQLRBKsWhokycPAwGANAKWsBM0="
+          },
+          {
+            "name": "scene.int",
+            "bytes": "S0lGAAAAAAA="
+          }
+        ],
+        "main": "S0NTAAIAAAAAAAAANAAAAKgFAADcBQAABwAAAJAAAAAAEAAAABAAAGwGAAAAAAAAUAsAAHichdQxTBNRGAfw/7uchAQSL9aBweGS51XwIKnGgYHhUIwMJHZgYGDgoEc61GLkIoQ4dGBgYGBwcGCoCQmNdmAgpEOHDpo4MDg4ODg4ODgwODg4mCjfuzv9czVxefnd973ve/flXutppQ5XPA0ARQ0byGyTB8nDZId8lTxCvkZ2ydfJo+Rxcol8hzxJniIH5BnyLHmOXCbPkxfIi+QlcoVcJdfIj8kxeZP8LLUzXdSN1M2gqLdpzw55l7xHfk5+Qd4nN8kH5Ba5TT4iH5M75C65R35Dfkc+Jb8nfyB/JH8ifyZ/IX8ln5G/kb+Tf5B/Gr8d23pZ1E389QG5RW6Tj8jH5A65S+4B8PUMgOzim6QlayExlGy5K1uGk9+DSY4jfeNpWXuBp5cC95evH8pGh7Yoc8SihAdNwKHmQb55ySRLSXNL1oaVdfE0gv37nvlT8PVlBeiR5BZRUcMc90plxyVh8y6+fn0x7GtHArYp7AxJ4AHSwA29YQOFQncI0IcDWSArvJIVZt+lr/wkX35i50frqf+O1uLRTLLwZ4b+M29eyp0pgf5Z+2do/7vfVr6fBMbMOin3RQGzAOQrLpw/NxRQOX+WuWqSt4BNyVvAjuQtYPVJtF51y7WwHrlr9QhhHIcr1UdRPXbL8/fm0ueoMvH0NsK4Fq5PhBS7daE+3lhL9yzjN0xwvw4=",
+        "v1": "S0NTAAIAAAABAAAANAAAAEAAAAB0AAAAAAAAAAAAAAAAEAAAABAAAHQAAAAAAAAAgAAAAHicU1VuYGBg0FZWZmBgUGZhYGBQVWZgAgnIwQWEG8BkC0QSrFoaJMnDwMBgDQClrATN",
+        "v2": "S0NTAAIAAAACAAAANAAAAJYAAADKAAAAAAAAAAAAAAAAEAAAABAAAMoAAAAAAAAALAEAAHic01bWY2BgUGZgYGBQU3ZgYGDQVtZHCLgwMDCoKnuASR+wpAFIkgMsEAAmQ8BkBFjSECTJAxZgYAIJyIEEWEACwmDVwmDVwhDV0gjVjGABI5hqawBZigrp"
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "fresh v1 source/atlas and normal explicit start",
+          "caller": [
+            1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861
+          ],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 128,
+            "attachment": "plane1",
+            "version": 65536,
+            "frame": 0,
+            "before": 0,
+            "now": 0,
+            "executed": false,
+            "results": null,
+            "buffers": null,
+            "table": "particle-v1"
+          }
+        },
+        {
+          "phase": 1,
+          "label": "fresh v1 actual idle and real quad/atlas consumer",
+          "caller": [
+            1, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 128,
+            "attachment": "plane1",
+            "version": 65536,
+            "frame": 0,
+            "before": 0,
+            "now": 1,
+            "executed": true,
+            "results": {
+              "128": 0,
+              "132": 0
+            },
+            "buffers": [
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AACAPwAAgD8AAIA/AAAAAA==",
+              "AQAAAA=="
+            ],
+            "table": "particle-v1"
+          },
+          "drawCount": 1
+        },
+        {
+          "phase": 2,
+          "label": "normal active v1 source reload removes callback before actual collector",
+          "caller": [
+            1, 1, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 128,
+            "attachment": "plane1",
+            "version": 65536,
+            "frame": 0,
+            "before": 0,
+            "now": 1,
+            "executed": false,
+            "results": null,
+            "buffers": null,
+            "table": "particle-v1"
+          },
+          "drawCount": 0
+        },
+        {
+          "phase": 3,
+          "label": "new v1 idle keeps active but only explicit normal restart binds callback",
+          "caller": [1, 1, 1, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 128,
+            "attachment": "plane1",
+            "version": 65536,
+            "frame": 0,
+            "before": 0,
+            "now": 1,
+            "executed": true,
+            "results": {
+              "128": 1091567616,
+              "132": 1084227584
+            },
+            "buffers": [
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAQQQAAoEAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AACAPwAAgD8AAIA/AAAAAA==",
+              "AQAAAA=="
+            ],
+            "table": "particle-v1"
+          },
+          "drawCount": 1
+        }
+      ],
+      "calls": [
+        {
+          "phase": 1,
+          "table": "particle-v1",
+          "id": 35,
+          "args": [128],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 1,
+          "table": "particle-v1",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 1,
+          "table": "particle-v1",
+          "id": 27,
+          "args": [0, 0, 0],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 2,
+          "table": "particle-v1",
+          "id": 35,
+          "args": [128],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 2,
+          "table": "particle-v1",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 2,
+          "table": "particle-v1",
+          "id": 27,
+          "args": [0, 0, 0],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 3,
+          "table": "particle-v1",
+          "id": 35,
+          "args": [128],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 3,
+          "table": "particle-v1",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 3,
+          "table": "particle-v1",
+          "id": 27,
+          "args": [1091567616, 1084227584, 0],
+          "control": 2,
+          "written": false
+        }
+      ],
+      "draws": [
+        {
+          "phase": 1,
+          "triangles": [
+            [
+              {
+                "x": 0,
+                "y": 0,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 4,
+                "y": 0,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 0,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 0,
+                "v": 1
+              }
+            ],
+            [
+              {
+                "x": 0,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 0,
+                "v": 1
+              },
+              {
+                "x": 4,
+                "y": 0,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 4,
+                "y": 4,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 1,
+                "v": 1
+              }
+            ]
+          ],
+          "atlas": {
+            "width": 4,
+            "height": 4,
+            "rgba": "f5eJ/3iihqpxrYNVariAAJtrlf+UdpKqjYGPVYaMjAC3P6H/sEqeqqlVm1WiYJgA0xOt/8weqqrFKadVvjSkAA=="
+          }
+        },
+        {
+          "phase": 3,
+          "triangles": [
+            [
+              {
+                "x": 9,
+                "y": 5,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 13,
+                "y": 5,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 9,
+                "y": 9,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 0,
+                "v": 1
+              }
+            ],
+            [
+              {
+                "x": 9,
+                "y": 9,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 0,
+                "v": 1
+              },
+              {
+                "x": 13,
+                "y": 5,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 13,
+                "y": 9,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 1,
+                "v": 1
+              }
+            ]
+          ],
+          "atlas": {
+            "width": 4,
+            "height": 4,
+            "rgba": "lWuJAKBkklWrXZuqtlak/2mHZQB0gG5Vf3l3qopygP89o0EASJxKVVOVU6pejlz/Eb8dABy4JlUnsS+qMqo4/w=="
+          }
+        }
+      ]
+    }
+  ]
+}

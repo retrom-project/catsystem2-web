@@ -347,6 +347,7 @@ export default {
     yawPitchRollUsesSSEWords: true,
   },
   particle: {
+    scriptStartPreservesState: true,
     debugUsesNativeLogger: true,
     taskMessageStart: 303,
     deferGraphAttachment: true,

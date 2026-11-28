@@ -1469,8 +1469,6 @@ export default {
     frameScale: 'x87-uint32',
     scriptUsesTaskFrameRate: true,
     scriptStartPreservesState: true,
-    drawPortEnabledByIdle: true,
-    drawPortRequiresStart: true,
     drawPortPersistsAfterExit: true,
     quadUsesX87: true,
     textureCoordinatesUseX87: true,
