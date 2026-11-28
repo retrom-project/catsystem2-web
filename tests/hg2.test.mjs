@@ -72,7 +72,8 @@ test('native F1/FB store a bitmap in a CTS entry and rebuild owned wrappers afte
       });
     },
     first = create(),
-    recordID = await first.objects.create({ kind: 12 }),
+    root = await first.objects.create({ kind: 1, name: 'BASE TASK' }),
+    recordID = await first.objects.create({ kind: 12, parent: root }),
     task = { id: recordID, context: {} },
     machine = {},
     call = (world, id, args) =>

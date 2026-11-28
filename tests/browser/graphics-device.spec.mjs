@@ -805,7 +805,10 @@ test('full-size native presentation keeps the primary RGBA and existing 2D canva
     canvas.height = 3;
     const renderer = new CanvasRenderer(canvas),
       stage = new StageRenderer(renderer),
-      capture = new NativeScreenCapture({ stageRenderer: stage }),
+      capture = new NativeScreenCapture({
+        profile: 'nekopara-vol3-engine-2.6.1.76',
+        stageRenderer: stage,
+      }),
       gpu = stage.gpu,
       gl = gpu.gl,
       primary = gpu.primaryTarget,

@@ -5,7 +5,6 @@ import { readFile } from 'node:fs/promises';
 import { CatSystem2 } from '../src/engine.mjs';
 import { NativeFileStorage } from '../src/native/storage.mjs';
 import { NativeMT19937, ParticleRandom } from '../src/ppi/random.mjs';
-import { NativeSystemClock } from '../src/native/clock.mjs';
 import { StartupBlowfish } from '../src/native/startup-blowfish.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { nativeStartupSeed } from '../src/native/startup-author.mjs';
@@ -313,9 +312,6 @@ for (const profile of startupProfiles) {
         const checkpoint = await player.snapshot();
         await saveStartupPreferences(game, { [file]: new Uint8Array(63) });
         beginRestore();
-        t.mock.method(NativeSystemClock.prototype, 'utcNow', () => {
-          throw new Error('Restore must not reseed MT');
-        });
         const fresh = new CatSystem2({
           game,
           nativeProfile: profile,
@@ -329,6 +325,10 @@ for (const profile of startupProfiles) {
           },
         });
         try {
+          for (const stream of [fresh.random.integer, fresh.random.real])
+            t.mock.method(stream, 'seed', () => {
+              throw new Error('Restore must not reseed MT');
+            });
           await fresh.initialize({ checkpoint });
           assert.equal(fresh.world.configuration.authorMode, 1);
           assert.equal(fresh.world.runtime.variableBank(fresh.world.main, false).get(5), 1);

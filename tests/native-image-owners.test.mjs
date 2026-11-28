@@ -263,7 +263,9 @@ test('2.6.1.67 KCS Draw keeps a generated image owner through replacement and re
   await world.runtime.scheduler.execute(task);
   assert.equal(m.sp, floor + 4);
   assert.equal(m.load(floor), 0xd73a4719);
-  assert.equal(world.runtime.handles.records.has(m.load(84)), false);
+  const handle = m.load(84);
+  assert.equal(world.runtime.handles.get(handle, 'image-owner').owner, null);
+  assert.equal(world.runtime.handles.get(handle, 'image-owner').refs, 1);
   assert.deepEqual([m.load(92), m.load(96)], [0xffffffff, -7 >>> 0]);
   assert.deepEqual(enabled, [0, 1]);
   assert.deepEqual(
@@ -279,6 +281,8 @@ test('2.6.1.67 KCS Draw keeps a generated image owner through replacement and re
     await world.graphics.images.get(draw.entry(key).image).pixels(),
     Uint8ClampedArray.of(49, 115, 178, 255),
   );
+  await world.objects.release(id);
+  assert.equal(world.runtime.handles.records.has(handle), false);
 });
 
 test('23 Script resolves a base image and owns its decoded and generated canvases', async (t) => {

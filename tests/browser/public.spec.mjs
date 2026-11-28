@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, dirname, resolve } from 'node:path';
 import { hg3, kcsProgram, kif } from '../helpers.mjs';
-import { startupVersionImage, startupXML } from '../fixtures/ordinary-startup.mjs';
+import { startupXML } from '../fixtures/ordinary-startup.mjs';
 
 test('embedded browser preparation keeps first native text and compression available offline', async ({
   page,
@@ -1025,6 +1025,7 @@ for (const profile of [sdkProfile, gameProfile])
           await task.initialize(parent.context.variableBank);
           await world.sendEngine(id, parent.id, 334, 0, surface);
           await task.loadSource('screen');
+          await world.sendEngine(id, parent.id, 333);
           await task.tick();
           await task.tick();
           const object = task.player.root.byKey.get('label'),
@@ -1362,6 +1363,7 @@ for (const profile of [sdkProfile, gameProfile])
           await task.initialize(parent.context.variableBank);
           await world.sendEngine(id, parent.id, 334, 0, surface);
           await task.loadSource('screen');
+          await world.sendEngine(id, parent.id, 333);
           await task.tick();
           const before = await render(world),
             calls = trace(world, task);
@@ -1483,7 +1485,6 @@ for (const profile of [sdkProfile, gameProfile])
                   return files.has(file) ? file : null;
                 },
                 readCategory(name, category) {
-                  if (category === 'mot') reads.push(name);
                   const file = this.resolveCategory(name, category);
                   return file === null ? null : this.read(file);
                 },
@@ -1504,7 +1505,12 @@ for (const profile of [sdkProfile, gameProfile])
                 storage: { read: async () => null, write: async () => true },
                 host: {},
               }),
-              canvas = new OffscreenCanvas(128, 96),
+              readCategory = world.game.readCategory;
+            world.game.readCategory = (name, category) => {
+              if (category === 'mot') reads.push(name);
+              return readCategory(name, category);
+            };
+            const canvas = new OffscreenCanvas(128, 96),
               renderer = {
                 canvas,
                 ctx: canvas.getContext('2d'),
@@ -1542,6 +1548,7 @@ for (const profile of [sdkProfile, gameProfile])
             await task.initialize(parent.context.variableBank);
             await owner.sendEngine(id, parent.id, 334, 0, surface);
             await task.loadSource('screen');
+            await owner.sendEngine(id, parent.id, 333);
             await task.tick();
             return { id, task };
           },
@@ -1595,7 +1602,7 @@ for (const profile of [sdkProfile, gameProfile])
       },
       { profile, program: [...kcsProgram([[37, 240], [43, 0x47, 4], [59]])] },
     );
-    expect(result.reads).toEqual(['pColor', 'pPos']);
+    expect(result.reads).toEqual(['pColor.kcs', 'pPos.kcs']);
     expect(result.restoreReads).toEqual([]);
     expect(result.visible).toBe(true);
     expect(result.exact).toBe(true);
@@ -2786,7 +2793,7 @@ for (const native of [true, false])
       export class CatSystem2 {
         constructor(options) {
           this.options=options;this.game=options.game;this.vmEvidence=[];
-          this.world=${native ? '{window:{}}' : 'null'};this.story=${native ? 'null' : '{}'};
+          this.world=${native ? '{window:{},stageRenderer:{presentNative(){return 0;}}}' : 'null'};this.story=${native ? 'null' : '{}'};
           window.toolbarCalls=[];const calls=window.toolbarCalls;
           this.inputBindings={gamepad(){}};
           this.host={systemAction:async code=>calls.push(['action',code]),
@@ -2795,6 +2802,7 @@ for (const native of [true, false])
         }
         status(){return {mode:this.world?'running':'story',story:this.story,stack:[]};}
         activeFES(){return {root:{}};}
+        beginFrameWait(){return null;}
         async initialize(){this.options.onState(this.status());}
         async render(){} async step(){} async dispose(){} hover(){}
         async openModal(name){window.toolbarCalls.push(['legacy-modal',name]);}
@@ -2935,6 +2943,7 @@ test('JS save slots and scene checkpoints survive an IndexedDB-backed browser re
       bank.set(2, 0);
       strings.set(4, 'changed');
       world.main.context.contextName = 'authored';
+      world.objects.objects.get(world.main.id).nativeSaveDirectory = 'authored';
       world.main.machine.writeString('save0007.dat', 128);
       const loaded = (await call(0xf7, [128])).value;
       await call(0xfa, [loaded, 1, world.nativeTaskID(world.main.id), 0]);
@@ -2971,8 +2980,7 @@ test('production app routes Game language keyboard and selects through its curre
   const directory = testInfo.outputPath('owned-language-game'),
     text = (value) => new TextEncoder().encode(value),
     files = {
-      // This existing owned builder emits version-resource metadata, not executable code.
-      'authored.exe': startupVersionImage('2.6.1.76'),
+      // Executable-free authored folder paired with explicit profile selection.
       'startup.xml': startupXML(
         gameProfile,
         `
@@ -3009,6 +3017,21 @@ test('production app routes Game language keyboard and selects through its curre
     await writeFile(resolve(directory, name), bytes);
   let failure, cleanupFailure;
   try {
+    await page.route('**/src/engine.mjs', (route) => {
+      if (new URL(route.request().url()).searchParams.has('real')) return route.continue();
+      return route.fulfill({
+        contentType: 'text/javascript',
+        body: `
+          export * from '/src/engine.mjs?real';
+          import { CatSystem2 as RealCatSystem2 } from '/src/engine.mjs?real';
+          export class CatSystem2 extends RealCatSystem2 {
+            constructor(options) {
+              super({ nativeProfile: '${gameProfile}', ...options });
+            }
+          }
+        `,
+      });
+    });
     await page.goto('/');
     await expect(page.locator('#language-controls')).toBeHidden();
     const chooser = page.waitForEvent('filechooser');

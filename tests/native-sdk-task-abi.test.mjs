@@ -222,7 +222,10 @@ for (const engine of [profile, legacy])
       assert.deepEqual(entry.signature.controlCodes, [1]);
       assert.deepEqual(entry.observedArgumentWords, [4]);
       assert.equal(entry.signature.resultWritten, true);
-      assert.match(entry.evidence, /(?:SDK-2\.6\.1\.74-main70|2\.6\.1\.23 Main 70).*deferred/);
+      assert.match(
+        entry.evidence,
+        /(?:SDK-2\.6\.1\.74-main70|Own 2\.6\.1\.23 Main69\/70 wrappers).*deferred/,
+      );
     } finally {
       await world.close({ flushFiles: false });
     }

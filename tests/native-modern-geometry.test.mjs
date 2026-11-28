@@ -22,7 +22,9 @@ for (const [profile, record] of Object.entries(golden.profiles)) {
       );
     await unmappedModernScalar(profile, 'generic', 18);
   });
-  test(`${profile} own identical Main geometry wrappers retain raw words and cold World`, async () => {
+  test(`${profile} own identical Main geometry wrappers retain raw words and cold World`, async (t) => {
+    // Both independent worlds receive the same local-clock seed for Tile's private MT.
+    t.mock.method(Date, 'now', () => 1794520984567);
     for (const input of record.cases.filter(
       (input) =>
         input.mainId !== null && ['data', 'NaN', 'mapped', 'short', 'tail'].includes(input.mode),

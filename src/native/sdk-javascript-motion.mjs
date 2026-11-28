@@ -101,7 +101,14 @@ export class SDKJavaScriptMotions {
       if (!state || !Array.isArray(state.records))
         throw new Error('Invalid JavaScript object motion checkpoint');
       for (const key of new Set(state.records.map((entry) => entry.script))) {
-        const file = sources.get(key);
+        const file =
+          typeof key === 'string' &&
+          sources.get(
+            key
+              .replaceAll('\\', '/')
+              .toLowerCase()
+              .replace(/\.kcs$/, ''),
+          );
         if (!file) throw new Error('Invalid JavaScript object motion script checkpoint');
         const script = await registry.library.optional(file, {
           read: (name) => readNativeResource(this.world, name, 3),

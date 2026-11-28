@@ -828,6 +828,7 @@ test('63 startup GCALLs read the clock, configuration and viewport before a Scri
     machine.bytes(600, 8).fill(0xa5);
     machine.writeString('古', 600);
     await world.tick();
+    await world.processWindowMessages();
 
     assert.equal(world.menu.get(0x77), false);
     assert.deepEqual([machine.load(512), machine.load(516)], world.graphics.virtualSize());
@@ -1546,6 +1547,7 @@ test('2.6.1.23 FES continues through an authored common-table miss', async (t) =
   bank.initialize(16);
   await flow.initialize(main.context.variableBank);
   assert.equal(await flow.loadSource('transition.fes'), true);
+  await world.sendEngine(owner, main.id, 333);
   await world.tick();
   assert.equal(bank.words[9], 17);
 });
@@ -2316,7 +2318,11 @@ test('63 textured Plane coordinate mode belongs to its current render model', as
       [20.5, 12.25],
     );
     assert.deepEqual(await call(78, [target, width, height]), { control: 2 });
+    assert.equal(plane.state.coordMode, 2);
+    assert.deepEqual(await call(83, [target]), { control: 2 });
+    assert.deepEqual(await call(78, [target, width, height]), { control: 2 });
     assert.equal(plane.state.coordMode, 0);
+    assert.deepEqual(await call(83, [target]), { control: 2 });
     assert.deepEqual(await call(79, [target, width, height, 0xffeeeeee]), { control: 2 });
     assert.deepEqual(await call(466, [target, 1]), { control: 2 });
     assert.equal(plane.state.coordMode, 1);
@@ -2385,6 +2391,9 @@ test('2.6.1.23 Plane draws its own textured rectangle and applies the native tra
   assert.equal(plane.state.blendMode, 3);
   assert.deepEqual(await call(402, [target, 7]), { control: 2 });
   assert.equal(plane.state.blendMode, 0);
+  assert.deepEqual(await call(78, [target, width, height]), { control: 2 });
+  assert.equal(plane.graph.style.coordMode, 2);
+  assert.deepEqual(await call(83, [target]), { control: 2 });
   assert.deepEqual(await call(78, [target, width, height]), { control: 2 });
   assert.equal(plane.graph.style.coordMode, 0);
 });
@@ -2683,6 +2692,7 @@ test('63 Flow and warning FES honor the configured Control key only during the s
   await flow.initialize(main.context.variableBank);
   await world.sendEngine(owner, main.id, 334, 0, world.nativeTaskID(draw));
   assert.equal(await flow.loadSource('flow.fes'), true);
+  await world.sendEngine(owner, main.id, 333);
   for (let frame = 0; frame < 4 && bank.get(8) === 0; frame++) await step();
   const warningID = flow.player.root.childTaskID,
     warning = world.objects.objects.get(warningID).implementation.player.root,
@@ -2782,6 +2792,7 @@ test('63 startup file GCALLs import bounded flags through the selected Script ow
       call = (id, args) =>
         world.runtime.native('main', id, args, machine, main, world.runtime.scheduler);
     main.context.contextName = 'owned';
+    world.objects.objects.get(main.id).nativeSaveDirectory = 'owned';
     assert.deepEqual(call(209, [2048]), { control: 2 });
     const bank = world.runtime.variableBank(main, false);
     machine.writeString('missing-flags.css', 128);
@@ -3328,7 +3339,8 @@ test('63 FES sound loads, plays and closes through its own Sound receiver', asyn
   });
 
   assert.equal(await task.loadSource('sounds.fes'), true);
-  for (let frame = 1; frame <= 4; frame++) await world.tick(frame);
+  await world.sendEngine(id, main.id, 333);
+  for (let frame = 1; frame <= 4; frame++) await world.tick();
   const nativeSound = world.sound.primary(main.id);
   assert.equal(world.sound.bankCount, 32);
   assert.ok(packets.every((packet) => packet.sender === id));
@@ -3371,7 +3383,7 @@ test('63 FES sound loads, plays and closes through its own Sound receiver', asyn
     packets.filter((packet) => packet.message === 204).map(({ w }) => w),
     [0, 2],
   );
-  await world.tick(5);
+  await world.tick();
   assert.equal(world.objects.objects.has(id), false);
 });
 
@@ -3428,6 +3440,7 @@ test('63 title Particle FES runs selected native calls and restores its own bank
   await fes.initialize(main.context.variableBank);
   await world.sendEngine(owner, main.id, 334, 0, world.nativeTaskID(draw));
   assert.equal(await fes.loadSource('particle.fes'), true);
+  await world.sendEngine(owner, main.id, 333);
   for (let step = 0; step < 4; step++) await world.tick();
 
   const object = fes.player.root.objects.find((value) => value.nativeType === 23),
@@ -3531,7 +3544,8 @@ test('67 first-title models use real FES services and restore without warm repla
       if (spec.type === 8) wipes++;
       return declare.call(this, spec);
     };
-    for (let frame = 1; frame <= 12; frame++) await world.tick(frame);
+    await world.sendEngine(id, world.main.id, 333);
+    for (let frame = 1; frame <= 12; frame++) await world.tick();
     const instance = task.player.root,
       types = new Set(instance.objects.map((object) => object.nativeType));
     for (const type of [1, 2, 3, 4, 6, 9]) assert.ok(types.has(type));

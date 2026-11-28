@@ -214,7 +214,7 @@ for (const profile of startupProfiles) {
         let clockSamples = 0;
         const original = NativeSystemClock.prototype.utcNow;
         t.mock.method(NativeSystemClock.prototype, 'utcNow', function () {
-          clockSamples++;
+          if (this === player?.world?.clock) clockSamples++;
           return original.call(this);
         });
         player = startupPlayer(await ordinaryStartupGame(profile), profile, {
@@ -274,7 +274,7 @@ for (const profile of startupProfiles) {
       let clockSamples = 0;
       const originalClock = NativeSystemClock.prototype.utcNow;
       t.mock.method(NativeSystemClock.prototype, 'utcNow', function () {
-        clockSamples++;
+        if (this === restored?.world?.clock) clockSamples++;
         return originalClock.call(this);
       });
       let opens = 0;
@@ -287,6 +287,10 @@ for (const profile of startupProfiles) {
           },
         },
       });
+      for (const stream of [restored.random.integer, restored.random.real])
+        t.mock.method(stream, 'seed', () => {
+          throw new Error('Restore must not reseed MT');
+        });
       await restored.initialize({ checkpoint: snapshot });
       assert.equal(opens, 0);
       assert.deepEqual(reads, []);

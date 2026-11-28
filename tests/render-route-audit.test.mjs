@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { RENDER_ROUTE_AUDIT, reviewRenderIndirect } from '../scripts/render-route-audit.mjs';
+import { nativeABI } from '../src/native/abi/index.mjs';
 import { NATIVE_GRAPHICS_IDS, installNativeGraphics } from '../src/native/graphics.mjs';
 import { NATIVE_DRAW_IDS } from '../src/native/draw-task.mjs';
 import { NATIVE_MESH_IDS } from '../src/native/mesh.mjs';
@@ -17,7 +18,11 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
     const world = {
       profile,
       game: { width: 64, height: 64 },
-      objects: { register: (kind, factory) => factories.set(kind, factory) },
+      resolveTaskID: (target) => target,
+      objects: {
+        objects: new Map([[17, { kind: 2, implementation: {} }]]),
+        register: (kind, factory) => factories.set(kind, factory),
+      },
       runtime: {
         handles: new NativeHandles(),
         register: (_table, id, handler) => handlers.set(id, handler),
@@ -25,7 +30,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       sendNativeEngine(_target, _sender, message, _w, _l, context) {
         messages.push(message);
         if (message === 285) context.payload.store(0, 0x13579bdf);
-        if (message === 61)
+        if (message === 61 || message === 62)
           [0x3f800000, 0x40000000, 0x40400000].forEach((word, i) =>
             context.payload.store(i * 4, word),
           );
@@ -33,6 +38,9 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
       },
     };
     installNativeGraphics(world);
+    world.graphics.device = { attachment: {} };
+    world.graphics.view = { active: true };
+    world.graphics.drawTasks = new Map([[17, { async resizeRenderer() {} }]]);
     world.graphics.initializeTextures = () => {};
     world.graphics.texturePages = {
       releaseRectangle() {},
@@ -45,6 +53,7 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
     );
     assert.ok([2, 6, 15].every((kind) => factories.has(kind)));
     const machine = { load: () => 0, store() {}, bytes: (_at, count) => new Uint8Array(count) };
+    const entries = nativeABI(profile).tables.main.entries;
     for (const row of RENDER_ROUTE_AUDIT) {
       messages.length = 0;
       const count =
@@ -58,9 +67,12 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
           [0x1d0]: 2,
           [0x1d2]: 2,
           [0x1d3]: 3,
-        }[row.id] ?? 13;
+        }[row.id] ??
+        entries[row.id]?.signature?.argumentWords ??
+        13;
       const args = new Array(count).fill(0);
       if (count) args[0] = 17;
+      if (row.id === 0x1d3) args[2] = 1;
       const reply = await handlers.get(row.id)(args, machine, { id: 9 });
       assert.deepEqual(messages, row.messages, row.semanticName);
       assert.ok([1, 2].includes(reply.control), row.semanticName);

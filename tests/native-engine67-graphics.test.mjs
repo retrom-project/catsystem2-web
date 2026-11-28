@@ -746,6 +746,7 @@ test('2.6.1.67 plane GCALLs create a textured region and preserve its transform 
     'opaque.kcs': planeProgram([[94, [target, 256]]]),
   });
   t.after(() => world.close({ flushFiles: false }));
+  world.graphics.createLogicalDevice();
   const owner = world.main.id;
   const id = await world.objects.create({ kind: 2, parent: owner });
   const plane = world.graphics.get(id);
@@ -793,6 +794,8 @@ test('2.6.1.67 plane GCALLs set coordinates on a loaded graph and expand divided
     'mode-after.kcs': planeProgram([[466, [target, 128]]]),
   });
   t.after(() => world.close({ flushFiles: false }));
+  world.graphics.createLogicalDevice();
+  world.graphics.view.active = true;
   const parent = world.main.id,
     id = await world.objects.create({ kind: 2, parent }),
     plane = world.graphics.get(id);
@@ -943,6 +946,7 @@ test('2.6.1.67 Plane poses copy selected F32 words and reset drops graph-tracked
     'reset.kcs': planeProgram([[83, [target]]]),
   });
   t.after(() => world.close({ flushFiles: false }));
+  world.graphics.createLogicalDevice();
   const parent = world.main.id,
     id = await world.objects.create({ kind: 2, parent }),
     nativeID = world.nativeTaskID(id),
@@ -1016,7 +1020,10 @@ test('2.6.1.67 plane GCALLs apply blend selectors and update their retained disp
         [402, [0, 5]],
       ]),
       'bind.kcs': planeProgram([[102, [target, receiver]]]),
-      'release.kcs': planeProgram([[80, [target]]]),
+      'release.kcs': planeProgram([
+        [83, [target]],
+        [80, [target]],
+      ]),
       ...Object.fromEntries(
         [0, 1, 2, 3, 4, 5, 6, -1].map((mode) => [
           `blend-${mode}.kcs`,

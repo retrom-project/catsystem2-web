@@ -1734,7 +1734,11 @@ export class EmoteD3D9 {
         ? {
             primary: {
               bytes: this.gpu.pixels(this.gpu.primaryTarget),
-              depth: this.gpu.snapshotDepthStencil(this.gpu.primaryDepthStencil),
+              depth:
+                this.gpu.primaryDepthStencil.validMask ===
+                (this.gpu.primaryDepthStencil.format === 75 ? 6 : 2)
+                  ? this.gpu.snapshotDepthStencil(this.gpu.primaryDepthStencil)
+                  : null,
             },
             targets: [...this.gpuTargets].map(([pointer, target]) => [
               pointer,
@@ -1796,7 +1800,9 @@ export class EmoteD3D9 {
         height: this.gpu.primaryTarget.height,
         rgba: state.gpu.primary.bytes,
       });
-      this.gpu.restoreDepthStencil(this.gpu.primaryDepthStencil, state.gpu.primary.depth);
+      if (state.gpu.primary.depth)
+        this.gpu.restoreDepthStencil(this.gpu.primaryDepthStencil, state.gpu.primary.depth);
+      else this.gpu.primaryDepthStencil.validMask = 0;
       for (const [pointer, target] of state.gpu.targets)
         this.gpuTargets.set(
           pointer,

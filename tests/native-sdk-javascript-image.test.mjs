@@ -1070,8 +1070,8 @@ test('normal SDK CsPlane motion restores live aliases without guest or RNG repla
     );
     assert.equal(
       motionReads(fresh.events).length,
-      1,
-      'fresh restoration may reread immutable MOT bytecode without executing it',
+      0,
+      'the checkpoint owns immutable MOT bytecode without executing or rereading it',
     );
     assert.deepEqual(cell(fresh.world, 'plane'), cell(fresh.world, 'alias'));
     const bad = structuredClone(checkpoint),
@@ -1156,14 +1156,14 @@ test('normal SDK CsPlane motion preserves mode3 reads and cancels pending owner 
   };
   const library = new MotionLibrary(game, { profile }),
     script = await library.optional('owned-default');
-  assert.strictEqual(
-    await library.optional('owned-default', {
-      read() {
-        throw new Error('cache hit consumed an override reader');
-      },
-    }),
-    script,
-  );
+  const cached = await library.optional('owned-default', {
+    read() {
+      throw new Error('cache hit consumed an override reader');
+    },
+  });
+  assert.deepEqual(cached, script);
+  assert.notStrictEqual(cached, script, 'Each record owns its filename descriptor');
+  assert.strictEqual(cached.body, script.body, 'The immutable cached code is shared');
   assert.equal(reads, 1);
 });
 
@@ -1260,7 +1260,7 @@ test('normal SDK selected Plane motion queries stay pure across aliases and fres
       fresh.events.files.some((read) => read.path === 'image.js'),
       false,
     );
-    assert.equal(motionReads(fresh.events).length, 1, 'only the permitted immutable MOT reread');
+    assert.equal(motionReads(fresh.events).length, 0, 'owned immutable MOT source needs no reread');
     for (let loop = 3; loop <= 6; loop++) {
       await fresh.world.tick();
       assert.equal(cell(fresh.world, 'loops'), loop);
@@ -1670,7 +1670,7 @@ test('normal SDK pending Image and Plane setters restore cold without replay or 
     assert.equal(draws, 0);
     assert.deepEqual(fresh.events.native, []);
     assert.deepEqual(fresh.events.packets, []);
-    assert.deepEqual(fresh.events.reads, ['main.kcs', 'mot.int/pDisp.kcs']);
+    assert.deepEqual(fresh.events.reads, ['main.kcs']);
     assert.deepEqual(cell(fresh.world, 'pl'), cell(fresh.world, 'alias'));
     const firstImage = hostImageByName(first.world, 'img'),
       image = hostImageByName(fresh.world, 'img');

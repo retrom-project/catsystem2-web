@@ -255,7 +255,13 @@ for (const profile of startupProfiles) {
       assert.deepEqual(restored.imageCacheModel.snapshot(), [[name, pointer]]);
       assert.equal(fresh.world.runtime.imageDataBuffers.words(pointer)[3], 1);
       assert.equal(buffers.words(pointer)[3], 1);
-      await fresh.world.objects.release(current.id);
+      await fresh.world.objects.destroy(current.id);
+      assert.equal(
+        fresh.world.runtime.imageDataBuffers.owns(pointer),
+        true,
+        'Task deletion retires at the next normal logic phase',
+      );
+      await fresh.world.tick();
       assert.equal(fresh.world.runtime.imageDataBuffers.owns(pointer), false);
       assert.equal(buffers.words(pointer)[3], 1);
     } finally {
@@ -266,7 +272,10 @@ for (const profile of startupProfiles) {
   test(`held lazy IMAGE data checkpoints in the real object, not in residency or source replay: ${profile}`, async (t) => {
     const source =
         '#DEFINE\nIMAGE held\n#OBJECT FILE IDN DISP\nheld assets.int/tile.hg3 -1 1\n#START\nbreak\n',
-      h = await environment(profile, { 'assets.int/screen.fes': ascii(source) });
+      h = await environment(profile, {
+        'assets.int/screen.fes': ascii(source),
+        'assets.int/empty.fes': ascii('#START\nbreak\n'),
+      });
     let fresh;
     try {
       const current = await task(h.world),
@@ -303,7 +312,13 @@ for (const profile of startupProfiles) {
       assert.equal(next.words(pointer)[3], 1);
       expectedPrefix(next, pointer, encoded);
       assert.deepEqual(next.data(pointer), buffers.data(pointer));
-      await fresh.world.objects.release(current.id);
+      await fresh.world.objects.destroy(current.id);
+      assert.equal(
+        next.owns(pointer),
+        true,
+        'Task deletion retires at the next normal logic phase',
+      );
+      await fresh.world.tick();
       assert.equal(next.owns(pointer), false);
       assert.equal(buffers.words(pointer)[3], 1);
       await h.world.sendEngine(
@@ -313,6 +328,14 @@ for (const profile of startupProfiles) {
         0,
         h.world.main.context.variableBank,
       );
+      assert.equal(
+        buffers.owns(pointer),
+        true,
+        'pending Core handoff retains held object until replacement source loads',
+      );
+      await h.world.sendEngine(current.id, h.world.main.id, 332, 0, 0, {
+        payload: { string: () => 'assets.int/empty.fes' },
+      });
       assert.equal(buffers.owns(pointer), false);
       assert.equal(current.cache.entries.size, 0);
     } finally {

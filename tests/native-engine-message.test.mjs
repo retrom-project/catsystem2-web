@@ -95,9 +95,9 @@ test('63 Main571 and Main572 deliver their native DWORD packets to the live Top'
       control: 2,
     });
   assert.deepEqual(received, [
-    [sender, 445, 0, result, 0],
-    [sender, 445, 0, 0, 0],
-    [sender, 444, 0, 0, 0],
+    [sender, 426, 0, result, 0],
+    [sender, 426, 0, 0, 0],
+    [sender, 425, 0, 0, 0],
   ]);
   assert.equal(runtime.imageDataBuffers.process.load(address), result);
   runtime.imageDataBuffers.process.free(address);
@@ -465,8 +465,8 @@ test('ordinary Game D0 formats the actual header packet, pushes its native zero 
   const unknown = await dataWorld(sdk);
   try {
     await assert.rejects(
-      async () => unknown.runtime.native('main', 82, [0], unknown.main.machine, unknown.main),
-      (error) => error.details?.id === 82 && error.details.profile === sdk,
+      async () => unknown.runtime.native('main', 279, [0], unknown.main.machine, unknown.main),
+      (error) => error.details?.id === 279 && error.details.profile === sdk,
     );
     assert.equal(unknown.nativeEngine, undefined);
   } finally {

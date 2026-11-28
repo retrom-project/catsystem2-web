@@ -592,9 +592,15 @@ test('2.6.1.63 KX2 keeps occupied Plane registrations and selects the original m
 });
 
 test('2.6.1.63 Plane trail uses retained rectangle dimensions and native matrix rounding', async (t) => {
+  const kx2 = new Uint8Array(24),
+    kx2View = new DataView(kx2.buffer);
+  kx2View.setUint32(0, 0x0032584b, true);
+  kx2View.setFloat32(12, 792, true);
+  kx2View.setFloat32(16, 587, true);
   const world = await dataWorld(profile, {
     'main-398.kcs': mainProgram(398, 12),
     'main-399.kcs': mainProgram(399, 7),
+    'trail.kx2': kx2,
   });
   t.after(() => world.close({ flushFiles: false }));
   const graphics = world.graphics,
@@ -603,6 +609,7 @@ test('2.6.1.63 Plane trail uses retained rectangle dimensions and native matrix 
     target = owner.record.nativeID;
   graphics.createLogicalDevice();
   owner.state.vramType = 1;
+  owner.state.modelFilename = 'trail.kx2';
   owner.state.shapeWords = [0, 0, 0, floatBits(131), floatBits(18)];
   owner.makeGraph({ type: 6, width: 792, height: 587, vram: true, registrationEnabled: true });
   const display = (graph, word) =>
@@ -711,18 +718,21 @@ test('2.6.1.63 Plane lifecycle and poses use an attached graph and the original 
   assert.equal(owner.state.inputTracksGraph, true);
   assert.ok(owner.input.get(id));
   await call(80);
-  assert.equal(owner.graph.type, 5);
-  assert.deepEqual(
-    [owner.graph.width, owner.graph.height, owner.graph.triangles.length],
-    [0, 0, 0],
-  );
-  assert.ok(owner.input.get(id));
+  assert.equal(owner.graph, first);
   await call(83);
   assert.equal(owner.graph, null);
   assert.equal(owner.input.get(id), null);
   assert.equal(owner.state.inputTracksGraph, false);
   assert.deepEqual(owner.state.rect, [0, 0, 0, 0]);
   await assert.rejects(() => call(86, [156, 160, 0]), /initialized 32-bit output word/);
+  await call(80);
+  assert.equal(owner.graph.type, 5);
+  assert.deepEqual(
+    [owner.graph.width, owner.graph.height, owner.graph.triangles.length],
+    [0, 0, 0],
+  );
+  await call(83);
+  assert.equal(owner.graph, null);
 });
 
 test('2.6.1.63 tile creation owns its row-major child planes and preserves an existing graph', async (t) => {
@@ -1218,6 +1228,7 @@ test('2.6.1.63 KCS configures, appends and clears the original narrow Text owner
         for (const [index, word] of [
           [2, 96],
           [3, 48],
+          [4, 4],
           [5, 1],
           [6, 12],
           [15, enabled ? 32 : 0],
@@ -2184,7 +2195,10 @@ test('2.6.1.63 KCS queries retained MOT filenames and copies its live working ba
     handle = registry.create(world.main.id),
     manager = registry.get(handle),
     guest = 256;
-  world.motionLibrary.game.nativeResources = { entries: [category] };
+  world.motionLibrary.game.nativeResources = {
+    entries: [category],
+    resolve: (name) => (name.includes('.') ? name : name + '.kcs'),
+  };
   const query = (name, value) =>
     executeMain(world, 514, [handle, guest], (m) => m.writeString(name, guest), value);
   await query('pBase', 0);
@@ -2196,7 +2210,7 @@ test('2.6.1.63 KCS queries retained MOT filenames and copies its live working ba
   await query('ア', 1);
   await query('folder/pBase.kcs', 0);
   await query('pBase.mot', 0);
-  category.directory = 'mot';
+  category.archive = 'mot';
   await query('pBase', 0);
   await executeMain(world, 514, [0, 0xffffffff], undefined, 0);
   assert.equal(manager.records.size, 2);

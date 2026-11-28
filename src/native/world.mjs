@@ -305,8 +305,8 @@ export class NativeWorld {
     this.objects.childrenProvider = (record) => this.engineMessages.children(record);
     this.objects.eachChildProvider = (record, callback, options) =>
       this.engineMessages.eachChild(record, callback, options);
-    this.objects.identity = ({ parent }) =>
-      parent === null ? {} : this.engineMessages.creation(parent);
+    this.objects.identity = ({ kind, parent }) =>
+      parent === null ? (kind === 1 ? { nativeID: 0 } : {}) : this.engineMessages.creation(parent);
     this.menu = new Map();
     this.frame = 0;
     this.running = false;

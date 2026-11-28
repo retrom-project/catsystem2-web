@@ -7,6 +7,8 @@ import { KCSScheduler } from '../src/kcs/scheduler.mjs';
 import { NativeFileStorage } from '../src/native/storage.mjs';
 import { NativeGlobalFile, nativePersistence } from '../src/native/persistence.mjs';
 import { SaveStore } from '../src/saves.mjs';
+import { loadNativeZlib } from '../src/native/zlib.mjs';
+import { StartupCanvas, startupEnvironment } from './fixtures/ordinary-startup.mjs';
 
 function transactionalSaves() {
   let stored = new Map();
@@ -129,29 +131,36 @@ function owner(database, identity, { story = true, implicitReader = true, textOw
       },
     };
   nativeStorage.store.db = nativeStorage.platformStore.db = saves.db = database;
-  const engine = {
-    world,
-    saves,
-    nativeStorage,
-    identity,
-    quickSaveStart: 42,
-    adv: { value: () => '2' },
-    nativeRuntime: { scheduler, sceneData: () => (implicitReader ? { reader } : null) },
-    activeFES: () => sender.implementation.player,
-    inputBindings: { sample() {} },
-    audio: { setFrame() {} },
-    async snapshot() {
-      calls.snapshots++;
-      return {
-        format: 'catsystem2-web',
-        sourceIdentity: identity,
-        world: structuredClone(storyState),
-      };
+  const engine = Object.assign(
+    new CatSystem2({
+      game: { width: 2, height: 2 },
+      canvas: new StartupCanvas(),
+      audioContext: { currentTime: 0, close: async () => {} },
+    }),
+    {
+      world,
+      saves,
+      nativeStorage,
+      identity,
+      quickSaveStart: 42,
+      adv: { value: () => '2' },
+      nativeRuntime: { scheduler, sceneData: () => (implicitReader ? { reader } : null) },
+      activeFES: () => sender.implementation.player,
+      inputBindings: { sample() {} },
+      audio: { setFrame() {} },
+      async snapshot() {
+        calls.snapshots++;
+        return {
+          format: 'catsystem2-web',
+          sourceIdentity: identity,
+          world: structuredClone(storyState),
+        };
+      },
+      async restore(value) {
+        calls.restored.push(value);
+      },
     },
-    async restore(value) {
-      calls.restored.push(value);
-    },
-  };
+  );
   const host = new EngineHost(engine);
   const writeCSS = (name, octet, author = writer) => {
     calls.cssWrites++;
@@ -166,7 +175,7 @@ function owner(database, identity, { story = true, implicitReader = true, textOw
         world: { objects: { objects: new Map([[author.id, author]]) } },
         handles: { get: () => file },
         persistence: nativeStorage,
-        contextName: 'saves',
+        saveDirectory: 'saves',
         format: () => name,
       },
     );
@@ -189,7 +198,10 @@ function owner(database, identity, { story = true, implicitReader = true, textOw
 const readStored = (store, slot) =>
   store.request('readonly', (records) => records.get(`${store.namespace}:${slot}`));
 
-test('toolbar checkpoints follow actual native CSS commits and resume a fresh title before the save action', async () => {
+test('toolbar checkpoints follow actual native CSS commits and resume a fresh title before the save action', async (t) => {
+  await loadNativeZlib();
+  const environment = startupEnvironment();
+  t.after(() => environment.restore());
   const disk = transactionalSaves(),
     first = owner(disk, 'source-one'),
     name = 'saves/save0042.dat';
@@ -274,7 +286,9 @@ test('toolbar checkpoints follow actual native CSS commits and resume a fresh ti
   assert.equal(afterFailure.calls.restored.length, 3);
 });
 
-test('a native save from an advanced story does not get the earlier toolbar checkpoint', async () => {
+test('a native save from an advanced story does not get the earlier toolbar checkpoint', async (t) => {
+  const environment = startupEnvironment();
+  t.after(() => environment.restore());
   const disk = transactionalSaves(),
     first = owner(disk, 'source-one');
   assert.equal(await first.host.quickSave(), 1);
@@ -286,6 +300,8 @@ test('a native save from an advanced story does not get the earlier toolbar chec
 });
 
 test('explicit scene resources can use a visible text generation from the receiving Script', async (t) => {
+  const environment = startupEnvironment();
+  t.after(() => environment.restore());
   await t.test('retains the unchanged visible text through the CSS commit', async () => {
     const first = owner(transactionalSaves(), 'source-one', { implicitReader: false });
     assert.equal(await first.host.quickSave(), 1);

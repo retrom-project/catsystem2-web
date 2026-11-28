@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MPL-2.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { nativeABI } from '../src/native/abi/index.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
 import { NativeConfiguration } from '../src/native/config.mjs';
 import { MotionLibrary } from '../src/motion/library.mjs';
@@ -88,10 +89,10 @@ test('2.6.1.23 task notifications preserve the directed word without changing gu
     return Reflect.apply(send, this, args);
   });
   for (const [id, message, args, value] of [
-    [570, 442, [target], 0],
-    [571, 445, [target, word], 0xdeadbeef],
-    [571, 445, [target, 0], 0],
-    [572, 444, [0], 0],
+    [570, 400, [target], 0],
+    [571, 403, [target, word], 0xdeadbeef],
+    [571, 403, [target, 0], 0],
+    [572, 402, [0], 0],
   ]) {
     assert.deepEqual(await world.runtime.native('main', id, args, main.machine, main), {
       control: 2,
@@ -270,10 +271,15 @@ for (const profile of ['nekopara-vol3-engine-2.6.1.76', 'sdk-4.01-engine-2.6.1.7
         trace.push([args.slice(0, 5), result]);
         return result;
       };
+      const notifications = nativeABI(profile).messages.scriptNotifications ?? {
+        570: 442,
+        571: 445,
+        572: 444,
+      };
       for (const [id, message] of [
-        [0x23a, 442],
-        [0x23b, 445],
-        [0x23c, 444],
+        [0x23a, notifications[570]],
+        [0x23b, notifications[571]],
+        [0x23c, notifications[572]],
       ])
         for (const target of [0, world.nativeTaskID(task.id), 0xffffffff]) {
           const result = await world.runtime.native(

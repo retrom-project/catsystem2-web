@@ -18,6 +18,8 @@ const routes = {
     [0x5c, 'plane.setShown', [47]],
     [0x5d, 'plane.setRotation', [55]],
     [0x5e, 'plane.setAlpha', [63]],
+    [0x60, 'plane.setButtonStates', [72]],
+    [0x61, 'plane.setButtonEnabled', [73]],
     [0x62, 'plane.buttonState', [74]],
     [0x63, 'plane.unregisterInput', [90]],
     [0x64, 'plane.setColor', [59]],
@@ -59,6 +61,7 @@ const routes = {
     [0x1d0, 'draw.refreshEntry', [300]],
     [0x216, 'draw.setDirty', [304]],
     [0x291, 'draw.entryBitmap', [307]],
+    [0x297, 'draw.resizeRenderer', []],
     [0x35e, 'draw.renderRectangle', [310]],
   ],
   mesh: [

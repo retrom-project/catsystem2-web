@@ -170,6 +170,11 @@ export class MotionLibrary {
       const filename = this.nativeFilenameQuery
           ? this.nativeFilename(this.#inputName(name, nameBytes))
           : name,
+        fallbackName = this.nativeFilenameQuery
+          ? typeof filename === 'string'
+            ? filename
+            : cp932.decode(filename)
+          : `${key}.kcs`,
         bytes = read
           ? await read(name)
           : this.read
@@ -179,8 +184,8 @@ export class MotionLibrary {
               : this.game.requireCategory
                 ? await this.game.requireCategory(name, 'mot')
                 : this.game.read
-                  ? await this.game.read(`${key}.kcs`)
-                  : await this.game.require(`${key}.kcs`);
+                  ? await this.game.read(fallbackName)
+                  : await this.game.require(fallbackName);
       // A missing or zero-size source is not inserted in the native source list.
       if (!bytes || bytes.byteLength === 0) return null;
       this.scripts.set(key, { source: bytes.slice(), script: null, pending: null });

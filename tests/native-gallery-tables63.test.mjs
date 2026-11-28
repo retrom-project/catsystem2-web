@@ -177,5 +177,5 @@ test('63 twelve gallery entry points match forty own GCALLs and eight independen
   assert.equal(live.size, 0);
   for (let id = 405; id <= 416; id++)
     assert.equal(nativeABI(profile).tables.main.entries[id].status, 'recovered');
-  assert.equal(nativeABI(profile).tables.main.entries[391].status, 'unknown');
+  assert.equal(nativeABI(profile).tables.main.entries[688].status, 'unknown');
 });

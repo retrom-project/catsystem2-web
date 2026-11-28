@@ -913,7 +913,11 @@ test('2.6.1.23 both Particle tables write only the current quad UV words and pub
       assert.equal(wrong.instance.calls.size, 0);
     }
     const debug = await guest(table, 0, [64]);
-    assert.throws(() => debug.instance.update(0), /Unreviewed PTCL native .*\/0/);
+    assert.doesNotThrow(() => debug.instance.update(0));
+    assert.equal(debug.instance.calls.get(0), 1);
+    const missing = table === 'particle-v1' ? 44 : 51;
+    const guarded = await guest(table, missing, [64]);
+    assert.throws(() => guarded.instance.update(0), /Unreviewed PTCL native/);
   }
 });
 

@@ -7,11 +7,7 @@
     "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0"
   },
   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><document><INT><int00><int>cst</int><ext>cst</ext><dir>loose-scene</dir><name>scene</name></int00><int01><name>kcs</name><ext>kcs</ext></int01></INT><language><default>0</default><L00><code>1041</code><prefix>jp</prefix><lang>Japanese</lang></L00><L01><code>1033</code><prefix>en</prefix><lang>English</lang></L01><L02><code>2052</code><prefix>cn</prefix><lang>Chinese</lang></L02></language></document>",
-  "languages": [
-    "jp",
-    "en",
-    "cn"
-  ],
+  "languages": ["jp", "en", "cn"],
   "input": {
     "cst": "Q2F0U2NlbmUAAAAAXQAAAE0AAAACAAAAEAAAACQAAAAEAAAAAAAAAAEAAAAEAAAAAAAAAAcAAAAQAAAAGQAAACAAAAABIZhijtIAASCMtJW2iOoAASCMtJW2k/EAATCJuZC6AAEgj0mC7YLoAA==",
     "cstl": "Q1NUTAAAAAADAmpwAmVuAmNuAgjnv7voqLNKUAboqLPmlocHU3BlYWtlcgxGaXJzdB9TZWNvbmQJ6K6y6L+w6ICFC+eUsh8f5Lii5byDAAbntYLoqLMAAAAG57uT5p2f",
@@ -37,10 +33,7 @@
     },
     {
       "id": 325,
-      "args": [
-        537310772,
-        64
-      ],
+      "args": [537310772, 64],
       "declaredCount": 2,
       "owner": 537289136,
       "control": 1,
@@ -53,12 +46,7 @@
     },
     {
       "id": 327,
-      "args": [
-        537310772,
-        512,
-        0,
-        1
-      ],
+      "args": [537310772, 512, 0, 1],
       "declaredCount": 4,
       "owner": 537289136,
       "control": 1,
@@ -71,12 +59,7 @@
     },
     {
       "id": 1037,
-      "args": [
-        537310772,
-        512,
-        0,
-        1
-      ],
+      "args": [537310772, 512, 0, 1],
       "declaredCount": 4,
       "owner": 537289136,
       "control": 1,
@@ -89,13 +72,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        0,
-        128
-      ],
+      "args": [537310772, 512, 0, 0, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -108,13 +85,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -127,13 +98,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        2,
-        128
-      ],
+      "args": [537310772, 512, 0, 2, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -146,13 +111,7 @@
     },
     {
       "id": 1038,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -165,13 +124,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        1,
-        0,
-        128
-      ],
+      "args": [537310772, 512, 1, 0, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -184,13 +137,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        0,
-        128
-      ],
+      "args": [537310772, 512, 0, 0, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -203,13 +150,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -222,13 +163,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        2,
-        128
-      ],
+      "args": [537310772, 512, 0, 2, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -241,13 +176,7 @@
     },
     {
       "id": 1038,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -260,13 +189,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        1,
-        0,
-        128
-      ],
+      "args": [537310772, 512, 1, 0, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -279,13 +202,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        0,
-        128
-      ],
+      "args": [537310772, 512, 0, 0, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -298,13 +215,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -317,13 +228,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        2,
-        128
-      ],
+      "args": [537310772, 512, 0, 2, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -336,13 +241,7 @@
     },
     {
       "id": 1038,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -355,13 +254,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        1,
-        0,
-        128
-      ],
+      "args": [537310772, 512, 1, 0, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -374,13 +267,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -393,13 +280,7 @@
     },
     {
       "id": 1038,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -412,13 +293,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        3,
-        128
-      ],
+      "args": [537310772, 512, 0, 3, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -431,13 +306,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        -1,
-        -1,
-        128
-      ],
+      "args": [537310772, 512, -1, -1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -450,13 +319,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        1073741824,
-        0,
-        1,
-        1073741824
-      ],
+      "args": [537310772, 1073741824, 0, 1, 1073741824],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -469,13 +332,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        99,
-        0,
-        128
-      ],
+      "args": [537310772, 512, 99, 0, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -501,9 +358,7 @@
     },
     {
       "id": 220,
-      "args": [
-        64
-      ],
+      "args": [64],
       "declaredCount": 1,
       "owner": 537289136,
       "control": 1,
@@ -516,12 +371,7 @@
     },
     {
       "id": 1035,
-      "args": [
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [512, 0, 1, 128],
       "declaredCount": 4,
       "owner": 537289136,
       "control": 1,
@@ -534,12 +384,7 @@
     },
     {
       "id": 1035,
-      "args": [
-        512,
-        0,
-        2,
-        128
-      ],
+      "args": [512, 0, 2, 128],
       "declaredCount": 4,
       "owner": 537289136,
       "control": 1,
@@ -552,12 +397,7 @@
     },
     {
       "id": 1035,
-      "args": [
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [512, 0, 1, 128],
       "declaredCount": 4,
       "owner": 537289136,
       "control": 1,
@@ -570,12 +410,7 @@
     },
     {
       "id": 1035,
-      "args": [
-        512,
-        99,
-        0,
-        128
-      ],
+      "args": [512, 99, 0, 128],
       "declaredCount": 4,
       "owner": 537289136,
       "control": 1,
@@ -588,10 +423,7 @@
     },
     {
       "id": 325,
-      "args": [
-        537310772,
-        64
-      ],
+      "args": [537310772, 64],
       "declaredCount": 2,
       "owner": 537289136,
       "control": 1,
@@ -604,13 +436,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -623,13 +449,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -642,10 +462,7 @@
     },
     {
       "id": 325,
-      "args": [
-        537310772,
-        64
-      ],
+      "args": [537310772, 64],
       "declaredCount": 2,
       "owner": 537289136,
       "control": 1,
@@ -658,13 +475,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -677,13 +488,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -696,10 +501,7 @@
     },
     {
       "id": 325,
-      "args": [
-        537310772,
-        64
-      ],
+      "args": [537310772, 64],
       "declaredCount": 2,
       "owner": 537289136,
       "control": 1,
@@ -712,13 +514,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -731,13 +527,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -750,9 +540,7 @@
     },
     {
       "id": 324,
-      "args": [
-        537310772
-      ],
+      "args": [537310772],
       "declaredCount": 1,
       "owner": 537289136,
       "control": 2,

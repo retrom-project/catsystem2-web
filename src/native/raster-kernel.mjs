@@ -316,8 +316,13 @@ export function rasterizeRetainedBitmap(
       for (let column = 0; column < count; column++) {
         const source = start + column * 4,
           destination = at + column * 4;
-        if (useBlend) blendTypePixel(output, destination, input, source, item.alpha, blend, false);
-        else if (mask)
+        if (useBlend) {
+          if (
+            preserveTransparentRGB ||
+            (((input[source + 3] + 1) * (item.alpha & 65535)) >>> 8) & 255
+          )
+            blendTypePixel(output, destination, input, source, item.alpha, blend, false);
+        } else if (mask)
           output[destination + 3] =
             (((output[destination + 3] + 1) * (input[source + channel] + 1) - 1) & 65535) >>> 8;
         else if (

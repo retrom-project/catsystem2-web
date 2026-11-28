@@ -394,7 +394,13 @@ for (const profile of startupProfiles) {
       assert.deepEqual(restoreExpansions, []);
       assert.equal(imageReads, 1);
       prefix(next, pointer, encoded);
-      await fresh.world.objects.release(current.id);
+      await fresh.world.objects.destroy(current.id);
+      assert.equal(
+        next.owns(pointer),
+        true,
+        'Task deletion retires at the next normal logic phase',
+      );
+      await fresh.world.tick();
       assert.equal(next.owns(pointer), false);
       assert.equal(buffers.words(pointer)[3], 2);
       phase = 'reload';
@@ -405,7 +411,11 @@ for (const profile of startupProfiles) {
         0,
         h.world.main.context.variableBank,
       );
-      assert.equal(buffers.words(pointer)[3], 1);
+      assert.equal(
+        buffers.words(pointer)[3],
+        2,
+        'pending Core handoff retains held IMAGE ref until replacement source loads',
+      );
       assert.equal(imageReads, 1);
       await load(h.world, current);
       assert.equal(imageReads, 2, 'explicit332 reload reads even an existing resident key');

@@ -541,6 +541,9 @@ export class NativeRetainedDraw {
   async update(draw, frame) {
     for (const record of this.items.values())
       if (record.surface === draw.record.id) {
+        const source = this.sources.get(record.source);
+        if (nativeABI(this.world.profile).graphics.retainedSourceUpdateGate && !source.enabled)
+          continue;
         await this.syncOwner(record.source);
         this.advance(record.source, frame);
         if (this.needsPull(record)) await this.pull(draw, record);
@@ -667,10 +670,11 @@ export class NativeRetainedDraw {
   async rasterize(draw, areas, forceOutput) {
     for (const record of this.items.values())
       if (record.surface === draw.record.id) {
-        await this.syncOwner(record.source);
-        if (!nativeABI(this.world.profile).graphics.drawRasterKeepsSourceState)
+        if (!nativeABI(this.world.profile).graphics.drawRasterKeepsSourceState) {
+          await this.syncOwner(record.source);
           this.advance(record.source);
-        if (this.needsPull(record)) await this.pull(draw, record);
+          if (this.needsPull(record)) await this.pull(draw, record);
+        }
       }
     for (const item of draw.state.renderer.items) {
       if (!item.image) continue;

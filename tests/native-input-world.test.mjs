@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { nativeABI } from '../src/native/abi/index.mjs';
 import { createNativeTouchState, pollNativeTouch } from '../src/native/input-touch.mjs';
 import { nativeRectangleUnion } from '../src/native/windows-rectangles.mjs';
 import { NativeWorld } from '../web/transitional-entry.mjs';
@@ -669,7 +670,14 @@ for (const profile of ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.7
         return send.apply(this, args);
       };
       assert.deepEqual(await call(0x23b, [world.nativeTaskID(task.id), address]), { control: 2 });
-      assert.deepEqual(packets.at(-1), [world.nativeTaskID(task.id), task.id, 445, 0, 0x73abcdef]);
+      const notifyMessage = nativeABI(profile).messages.scriptNotifications?.[0x23b] ?? 445;
+      assert.deepEqual(packets.at(-1), [
+        world.nativeTaskID(task.id),
+        task.id,
+        notifyMessage,
+        0,
+        0x73abcdef,
+      ]);
       assert.deepEqual(features, []);
       assert.equal(world.nativeEngine, undefined);
     } finally {

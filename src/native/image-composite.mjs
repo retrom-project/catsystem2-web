@@ -7,12 +7,11 @@ import { encodeCP932 } from '../kcs/strings.mjs';
 import { nativeImageMetadata } from './image-buffer-info.mjs';
 import { nativeImagePathParts } from './image-file.mjs';
 import { nativeABI } from './abi/index.mjs';
-import { blendBitmapPixel } from './image.mjs';
 import { HG2 } from '../formats/hg2.mjs';
 import { HG3 } from '../formats/hg3.mjs';
 import { PSD } from '../formats/psd.mjs';
 import { rasterImageHeader } from '../formats/raster.mjs';
-import { blendTypePixel } from './raster-kernel.mjs';
+import { rasterizeRetainedBitmap } from './raster-kernel.mjs';
 export const NATIVE_IMAGE_COMPOSITE_CONTRACTS = Object.freeze([
   Object.freeze({ id: 0x1cc, words: 1, control: 1 }),
 ]);
@@ -194,18 +193,38 @@ export class NativeImageComposites {
                 modes = nativeABI(this.world.profile).graphics.imageCompositeBlendTypes ?? [0];
               if (![3, 4].includes(v.bpp) || !modes.includes(blend))
                 throw new Error('Selector composition requires the reviewed scalar pixel format');
-              const pixels = await output.pixels(),
-                input = await source.pixels();
-              for (let y = 0; y < height; y++)
-                for (let x = 0; x < width; x++) {
-                  const from = ((source.height - 1 - sy - y) * source.width + sx + x) * 4,
-                    to = ((output.height - 1 - dy - y) * output.width + dx + x) * 4;
-                  if (input[from + 3]) {
-                    if (!blend) blendBitmapPixel(pixels, to, input, from);
-                    else if (v.bpp === 4)
-                      blendTypePixel(pixels, to, input, from, 255, blend, false);
-                  }
-                }
+              if (!(v.bpp === 3 && blend)) {
+                const pixels = await output.pixels(),
+                  input = await source.pixels();
+                rasterizeRetainedBitmap(
+                  pixels,
+                  output.width,
+                  output.height,
+                  input,
+                  {
+                    ...v,
+                    alphaHint: 2,
+                    offsetX: dx,
+                    offsetY: dy,
+                    clip: [sx, sy, sx + width, sy + height],
+                  },
+                  {
+                    visible: true,
+                    alpha: 255,
+                    mode: 0,
+                    position: [0, 0],
+                    base: [0, 0],
+                    clip: [0, 0, output.width, output.height],
+                  },
+                  [0, 0, output.width, output.height],
+                  {
+                    flipDestinationY: true,
+                    preserveTransparentRGB: Boolean(
+                      nativeABI(this.world.profile).graphics.imageOwnerBlendTransparentEdges,
+                    ),
+                  },
+                );
+              }
               s.source = null;
               await output.changed();
             } else

@@ -927,7 +927,7 @@ export class NativeGraphicTask {
       graph.registrationEnabled !== enabled
     ) {
       this.markBoundsDirty();
-      this.world.screenEffects.rendering.collectDirty();
+      this.world.screenEffects?.rendering.collectDirty();
     }
     if (
       this.graphics.particleAttachmentReadsRegistrationWord &&

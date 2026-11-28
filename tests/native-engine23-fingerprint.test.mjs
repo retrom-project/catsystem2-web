@@ -272,7 +272,10 @@ test('fixed 2.6.1.23 MOT filename GCALL resolves the formatted narrow name and r
   const resource = { name: 'mot', extension: 'kcs', directory: '' };
   const registry = world.runtime.services.motion;
   const game = registry.library.game;
-  game.nativeResources = { entries: [resource] };
+  game.nativeResources = {
+    entries: [resource],
+    resolve: (name) => (name.includes('.') ? name : name + '.kcs'),
+  };
   game.readCategory = (name) => game.read(name.includes('.') ? name : name + '.kcs');
   const handle = registry.create(42);
   const manager = registry.get(handle);
@@ -319,7 +322,7 @@ test('fixed 2.6.1.23 MOT filename GCALL resolves the formatted narrow name and r
       ['.kcs', 1], // The old record setter treats the CP932 trail 0x5c as a path separator.
     ])
       assert.equal(await query(name), expected, name);
-    resource.directory = 'motions';
+    resource.archive = 'motions';
     assert.equal(await query('owned-7'), 0);
     assert.equal(await query('motions/owned-7.kcs'), 0);
     assert.equal(manager.records.size, 4);

@@ -525,7 +525,6 @@ test('StageRenderer orders a real native plane and JS particle task into one des
         { NativeHandles } = await import('/src/native/handles.mjs'),
         { NativeBufferMemory } = await import('/src/native/buffer-memory.mjs'),
         { installNativeGraphics, nativeGraphics } = await import('/src/native/graphics.mjs'),
-        { NativePlaneMovies } = await import('/src/native/plane-movie-session.mjs'),
         { installNativeParticles, nativeParticles } = await import('/src/native/particles.mjs'),
         { StageRenderer } = await import('/src/render/stage.mjs'),
         { ParticleRandom } = await import('/src/ppi/random.mjs'),
@@ -536,6 +535,7 @@ test('StageRenderer orders a real native plane and JS particle task into one des
         image = { width: 8, height: 8, rgba: new Uint8Array(256).fill(255) },
         images = { frame: async () => image },
         world = {
+          profile: 'nekopara-vol3-engine-2.6.1.76',
           frame: 0,
           objects,
           images,
@@ -565,8 +565,8 @@ test('StageRenderer orders a real native plane and JS particle task into one des
             objects.objects.get(target).implementation.message([sender, message, w, l], context),
         };
       objects.register(0, (record) => world.base(record));
-      world.planeMovies = new NativePlaneMovies(world);
       installNativeGraphics(world);
+      world.graphics.createLogicalDevice();
       installNativeParticles(world, {
         atlas: undefined,
         registry: authoredPPIRegistry(['probe'], { color: 0x804080c0 }),
@@ -590,6 +590,7 @@ test('StageRenderer orders a real native plane and JS particle task into one des
         sender,
         world,
       );
+      await nativeGraphics(0x5c, [plane, 1], machine, sender, world);
       await nativeParticles(
         0x2b5,
         [particle, 32, 64, 1, floatBits(10000), 128],

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { BrowserNativeClipboard } from '../src/native/clipboard-browser.mjs';
@@ -43,15 +44,21 @@ test('fixed SDK debug GCALL keeps original CP932 bounds and literal percent outp
     ['100%%%%', '100%'],
     ['%% line %%', '% line %'],
     ['x'.repeat(499), 'x'.repeat(499)],
-    ['x'.repeat(501), 'x'.repeat(500)],
-    ['x'.repeat(499) + '猫', 'x'.repeat(499) + '\ufffd'],
+    ['x'.repeat(501), null],
+    ['x'.repeat(499) + '猫', null],
   ]) {
-    const machine = await runGuest(world, 'debug.kcs', (machine) => {
-      machine.writeString(source, 256);
-      machine.store(192, -41);
-    });
-    assert.equal(machine.string(256), source);
-    assert.equal(output.pop(), expected);
+    const run = () =>
+      runGuest(world, 'debug.kcs', (machine) => {
+        machine.writeString(source, 256);
+        machine.store(192, -41);
+      });
+    if (expected === null) {
+      await assert.rejects(run(), /original terminated 500-byte buffer/);
+    } else {
+      const machine = await run();
+      assert.equal(machine.string(256), source);
+      assert.equal(output.pop(), expected);
+    }
   }
   assert.deepEqual(output, []);
   assert.equal(nativeABI(profile).tables.main.entries[1].signature.resultWritten, false);
@@ -213,20 +220,16 @@ test('fixed SDK name pairs append and query original bytes through the owned fou
 
 for (const matrixProfile of [profile, 'nekopara-vol3-engine-2.6.1.76']) {
   test(
-    matrixProfile + ' Main662 writes the native x87 yaw, pitch and roll matrix in place',
+    matrixProfile + ' Main662 writes the initialized native yaw, pitch and roll matrix in place',
     async (t) => {
-      const fixtures = [
-        [
-          129,
-          [0, 0x80000000, 0],
-          '3f800000 00000000 00000000 00000000 00000000 3f800000 00000000 00000000 00000000 00000000 3f800000 00000000 00000000 00000000 00000000 3f800000',
-        ],
-        [
-          0x80000103,
-          [0x3f99999a, 0xbf266666, 0x3f66a7f0],
-          'be5e71b0 3f1fc442 bf402402 00000000 bf225e4c 3efd0bae 3f1832ea 00000000 3f3df27a 3f1aed80 3e93b1f6 00000000 00000000 00000000 00000000 3f800000',
-        ],
-      ];
+      // The older scalar-copy capture predates normal SIMD dispatch initialization.
+      // Reuse the sealed own Main662 samples; do not derive golden words from Web math.
+      const own = JSON.parse(
+        await readFile(
+          new URL('./fixtures/modern-interpreter-geometry-golden.json', import.meta.url),
+        ),
+      ).profiles[matrixProfile].mainYawPitchRoll.slice(0, 2);
+      const fixtures = own.map((row, i) => [i ? 0x80000103 : 129, row.args.slice(1), row.words]);
       const world = await dataWorld(
         matrixProfile,
         Object.fromEntries(
@@ -240,7 +243,7 @@ for (const matrixProfile of [profile, 'nekopara-vol3-engine-2.6.1.76']) {
         });
         assert.deepEqual(
           Array.from({ length: 16 }, (_, word) => m.load(at + word * 4)),
-          expected.split(' ').map((word) => Number.parseInt(word, 16)),
+          expected,
         );
         assert.deepEqual([m.load(at - 4), m.load(at + 64)], [0x1e1e1e1e, 0x1e1e1e1e]);
       }

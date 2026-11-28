@@ -225,7 +225,7 @@ for (const profile of startupProfiles) {
         return draw.call(this);
       });
       t.mock.method(NativeSystemClock.prototype, 'utcNow', function () {
-        events.push(['clock']);
+        if (this === owner?.world?.clock) events.push(['clock']);
         return clock.call(this);
       });
       await run(t, profile, {
@@ -384,9 +384,6 @@ for (const profile of startupProfiles)
       t.mock.method(NativeFileStorage.prototype, 'size', () => {
         throw new Error('Restore must not recheck credentials');
       });
-      t.mock.method(NativeSystemClock.prototype, 'utcNow', () => {
-        throw new Error('Restore must not reset author MT');
-      });
       t.mock.method(NativeMT19937.prototype, 'nextUint32', () => {
         throw new Error('Restore must not repeat author draws');
       });
@@ -395,6 +392,10 @@ for (const profile of startupProfiles)
         canvas: new StartupCanvas(),
         audioContext: { currentTime: 0, close: async () => {} },
       });
+      for (const stream of [restored.random.integer, restored.random.real])
+        t.mock.method(stream, 'seed', () => {
+          throw new Error('Restore must not reset author MT');
+        });
       await restored.initialize({ checkpoint });
       assert.deepEqual(restored.random.snapshot(), checkpoint.world.random);
       assert.equal(restored.world.frame, 1);

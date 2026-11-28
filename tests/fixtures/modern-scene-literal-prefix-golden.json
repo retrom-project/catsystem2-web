@@ -8,12 +8,7 @@
     "sha256": "10802e47cfa385c50720ed6422b27b0af647ffe57c536afe30b3392c3996ede8",
     "peSha256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0"
   },
-  "languages": [
-    "jp",
-    "en",
-    "cn",
-    "__proto__"
-  ],
+  "languages": ["jp", "en", "cn", "__proto__"],
   "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><document><INT><int00><int>cst</int><ext>cst</ext><dir>loose-scene</dir><name>scene</name></int00><int01><name>kcs</name><ext>kcs</ext></int01></INT><language><default>0</default><L00><code>1041</code><prefix>jp</prefix><lang>Japanese</lang></L00><L01><code>1033</code><prefix>en</prefix><lang>English</lang></L01><L02><code>2052</code><prefix>cn</prefix><lang>Chinese</lang></L02><L03><code>1041</code><prefix>__proto__</prefix><lang>Literal prefix</lang></L03></language></document>",
   "input": {
     "cst": "Q2F0U2NlbmUAAAAAXQAAAE0AAAACAAAAEAAAACQAAAAEAAAAAAAAAAEAAAAEAAAAAAAAAAcAAAAQAAAAGQAAACAAAAABIZhijtIAASCMtJW2iOoAASCMtJW2k/EAATCJuZC6AAEgj0mC7YLoAA==",
@@ -35,10 +30,7 @@
     },
     {
       "id": 325,
-      "args": [
-        537310772,
-        64
-      ],
+      "args": [537310772, 64],
       "declaredCount": 2,
       "owner": 537289136,
       "control": 1,
@@ -51,13 +43,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -70,13 +56,7 @@
     },
     {
       "id": 1033,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -89,13 +69,7 @@
     },
     {
       "id": 1038,
-      "args": [
-        537310772,
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [537310772, 512, 0, 1, 128],
       "declaredCount": 5,
       "owner": 537289136,
       "control": 1,
@@ -121,9 +95,7 @@
     },
     {
       "id": 220,
-      "args": [
-        64
-      ],
+      "args": [64],
       "declaredCount": 1,
       "owner": 537289136,
       "control": 1,
@@ -136,12 +108,7 @@
     },
     {
       "id": 1035,
-      "args": [
-        512,
-        0,
-        1,
-        128
-      ],
+      "args": [512, 0, 1, 128],
       "declaredCount": 4,
       "owner": 537289136,
       "control": 1,
@@ -154,9 +121,7 @@
     },
     {
       "id": 324,
-      "args": [
-        537310772
-      ],
+      "args": [537310772],
       "declaredCount": 1,
       "owner": 537289136,
       "control": 2,

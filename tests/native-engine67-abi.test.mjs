@@ -1298,8 +1298,12 @@ for (const version of [1, 2]) {
     assert.equal(m.pop(), marker);
     assert.equal(m.sp, sp);
     assert.deepEqual(instance.update(10), { active: false, executed: 0 });
-    const guarded = await particle([...particleCall(0, [64]), [59]]);
-    assert.throws(() => guarded.update(9), /Unreviewed PTCL native .*\/0/);
+    const debug = await particle([...particleCall(0, [64]), [59]]);
+    assert.doesNotThrow(() => debug.update(9));
+    assert.equal(debug.calls.get(0), 1);
+    const missing = table === 'particle-v1' ? 44 : 51;
+    const guarded = await particle([...particleCall(missing, [64]), [59]]);
+    assert.throws(() => guarded.update(9), /Unreviewed PTCL native/);
   });
 
   test(`2.6.1.67 ${table} distance and triangle wave retain the native x87 words`, async () => {
@@ -1698,7 +1702,10 @@ test('2.6.1.67 Main514 queries the retained Motion names and refreshes the worki
     handle = registry.create(world.main.id),
     manager = registry.get(handle);
   t.after(() => world.close({ flushFiles: false }));
-  world.motionLibrary.game.nativeResources = { entries: [category] };
+  world.motionLibrary.game.nativeResources = {
+    entries: [category],
+    resolve: (name) => (name.includes('.') ? name : name + '.kcs'),
+  };
   for (const name of ['pBase', '.kcs']) manager.add(await world.motionLibrary.load(name));
   manager.base.fill(0x9b);
   const query = async (owner, address, name) => {
@@ -1725,7 +1732,7 @@ test('2.6.1.67 Main514 queries the retained Motion names and refreshes the worki
   assert.deepEqual(manager.working, new Uint8Array(144).fill(0xa1));
   assert.equal(await query(handle, 200, ''), 1);
   assert.deepEqual(manager.working, manager.base);
-  category.directory = 'mot';
+  category.archive = 'mot';
   assert.equal(await query(handle, 200, 'pBase'), 0);
   assert.equal(await query(0, 0xefffffff), 0);
 });
@@ -2294,7 +2301,7 @@ test('2.6.1.67 KCS copies only FES private words, preserves raw names and querie
   assert.equal(local.names.size, 1);
   assert.deepEqual(bank.words.slice(0, 3), Uint32Array.of(7, 8, 9));
 
-  await fes.tick();
+  await world.sendEngine(fesID, parent, 333);
   const read = await spawn('read');
   await world.runtime.scheduler.execute(read);
   assert.deepEqual([read.machine.pop(), read.machine.pop()], [0x89ca3216, marker]);
