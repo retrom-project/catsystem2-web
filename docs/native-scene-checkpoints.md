@@ -334,3 +334,14 @@ producer proof, not a replacement for FES initialization. The own74 raw preserve
 a post-output author count failure: 28 observed GCALLs include the one loader,
 while the parsed programs contain 27; all four output stages and normal cleanup
 completed. Its accounting appendix corrects this without another original run.
+
+The modern image-entry bridge uses an authored asymmetric 4×3 RGB24 HG2 entry,
+Main251's actual decode and 24-to-32-bit conversion, and mutable bitmap Main117.
+Main241 writes an owned HG2 snapshot before the source bitmap is changed or
+released. A separate Script loads the original CSS into a new owner, releases
+that container, mutates the independent bitmap and writes a second CSS file.
+Independent image decoding matches native pixels on both exact builds; own74
+also preserves two different snapshots while their bitmap source changes. Cold
+controls retain the live bitmap and first saved snapshot. This finite software
+codec proof does not qualify arbitrary HG2 content, the ImageOwner table family,
+physical pointer trees, GPU output or native GAME_SAVE product persistence.

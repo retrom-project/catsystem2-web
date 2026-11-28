@@ -1,0 +1,242 @@
+{
+  "scope": "Finite HG2 RGB24 4x3 to independent mutable RGBA bitmap and native CSS image snapshots; independent writer/newreader after all source containers/bitmaps release. Software data only, not GPU/wide ImageOwner family.",
+  "builds": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "startup": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp>32</bpp></TEXTURE><APP><imgcache>0</imgcache></APP><ETC><cache>0</cache></ETC><INT><int00><name>kcs</name><ext>kcs</ext><dir></dir></int00><int01><name>scene</name><ext>cst</ext><dir></dir></int01></INT></document>",
+      "marker": 1304776709,
+      "inputs": [
+        {
+          "name": "startup.xml",
+          "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjY0PC93aWR0aD48aGVpZ2h0PjY0PC9oZWlnaHQ+PHZfd2lkdGg+NjQ8L3Zfd2lkdGg+PHZfaGVpZ2h0PjY0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48ZXh0PmtjczwvZXh0PjxkaXI+PC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2NlbmU8L25hbWU+PGV4dD5jc3Q8L2V4dD48ZGlyPjwvZGlyPjwvaW50MDE+PC9JTlQ+PC9kb2N1bWVudD4="
+        },
+        {
+          "name": "writer.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAADMFAABnBQAAAAAAAAAAAAAAEAAAABAAAGcFAAAAAAAAZgoAAHicfdQxa1NRFAfwE3zBBw0SSJGIRSqn75D4mhLaDAWDRAiYIcIbUujg0JAEFWwtiZYgDoKF0kkFB4cMFhpw0DWfoJ1c/AROzqIQXRzU+3+x+QvV5fLjvHPOPe9y3wv0OP/owFQSIsHEHtknp8hp8iw5S54jz5MXyDnyIrlILpFXyWVyhVwl18h1ckRukNfhzfvtjql4zt2twl1TD95s3u6Y+vBSq9czTcEiIqZpb1pbodoq1dbgQrfTNK3D7U53yTSCW72emDbg2o3Csqn4zin09+AA9mEPTsFn4hngLDzrT2fLkufgC/A8fBFegM/DOfgcvAjn4CL1KdEMqzRDmXIq5Cq5Rq6TI3ID7g9aM6brcPLp4QfTW3C0P6qabsD7o6ORaRs+WiuK6Z24z961GdN78Jf+oGW6DX/aLpZNH8AbhfGBaR9+0Xw2Nn0Mn92SS6ZP4F3v/e/z34WHw+HQ9Hli6pfkV+QB+TX5kPyG/BZeEZFQP4vI5GgrIhJksOplrHtY3dUIdewS00jEN0yJof5wD/348E+6hPr9T/Mgg7Am/rGmi9HPUB+69CwCpf8Nlz/pGOpXlzK5tgkXuO4CQnsKrZgFtyfQbjn7156T5ldOb47/0yTcnb5WXOM+4FC/TQ8hlTjlEDIZNyHeOKeWdIVrO+8+xv+CvC4jkoyOb8aRq78AbjPTOA=="
+        },
+        {
+          "name": "reader.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAAAkFAAA9BQAAAAAAAAAAAAAAEAAAABAAAD0FAAAAAAAAEgoAAHicbdS/a1NRFAfw8/QVH/QhlRSJWKR4mkPiS0qoFQoGeULAN0TIkEIHh4YkqGBrSVRCcRAsSCcVHBwyWGjAQdf8Be3k4l/g5CwKVQcF9X1f0nypXS4f7vmRcy/3JaP7uc0dU3FEMkO7ZI/sk6fI0+Q0eYY8S54jZ8l5cpG8SF4il8ghuUyOyBVylVwjr8Br95stU3Fjt9cLd01deK1+u2XqwfONTsfUh0VETKfccW1ItWWqjeBCu1U3rcDNVnvetAo3Oh0xrcHRjcKCqXixffR34QzswS7swyeTGeA0PO2NZ0uTZ+Bz8Cx8Hp6Dz8JZ+DSch7Nwkfos0gxLNEOJckJymRyRK+QquQZ3e41J0xV44unuR9NbcHV7UDZdhbcHewPTJry3XBTTO0mfZ9cmTe/BX7u9hukG/HmjWDJ9AK8WDnZMu/DL+vMD08fwqXW5YPoE3nI//Lv/Lbjf7/dNXzhjvyK/JvfIb8i75Lfkd3D86gL9KSLDqw1FJJPCqjmJg7/ioJfcKQUvHQ1Gh8FAf4waBno9piCGcj2B1flvvXzxzJ9AH8bpaWxcQf2X42cLDjsG+i1OGb5aZ5ySR0p0NAV/MsPt9qj5qBVtJE1CXND38TF955hjplLxD+MgWf2NL2r50ftPyReeU28C76m6fzPZufoXd+HPzg=="
+        },
+        {
+          "name": "owned.cst",
+          "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+        },
+        {
+          "name": "scene/owned.cst",
+          "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+        },
+        {
+          "name": "scripts/writer.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAADMFAABnBQAAAAAAAAAAAAAAEAAAABAAAGcFAAAAAAAAZgoAAHicfdQxa1NRFAfwE3zBBw0SSJGIRSqn75D4mhLaDAWDRAiYIcIbUujg0JAEFWwtiZYgDoKF0kkFB4cMFhpw0DWfoJ1c/AROzqIQXRzU+3+x+QvV5fLjvHPOPe9y3wv0OP/owFQSIsHEHtknp8hp8iw5S54jz5MXyDnyIrlILpFXyWVyhVwl18h1ckRukNfhzfvtjql4zt2twl1TD95s3u6Y+vBSq9czTcEiIqZpb1pbodoq1dbgQrfTNK3D7U53yTSCW72emDbg2o3Csqn4zin09+AA9mEPTsFn4hngLDzrT2fLkufgC/A8fBFegM/DOfgcvAjn4CL1KdEMqzRDmXIq5Cq5Rq6TI3ID7g9aM6brcPLp4QfTW3C0P6qabsD7o6ORaRs+WiuK6Z24z961GdN78Jf+oGW6DX/aLpZNH8AbhfGBaR9+0Xw2Nn0Mn92SS6ZP4F3v/e/z34WHw+HQ9Hli6pfkV+QB+TX5kPyG/BZeEZFQP4vI5GgrIhJksOplrHtY3dUIdewS00jEN0yJof5wD/348E+6hPr9T/Mgg7Am/rGmi9HPUB+69CwCpf8Nlz/pGOpXlzK5tgkXuO4CQnsKrZgFtyfQbjn7156T5ldOb47/0yTcnb5WXOM+4FC/TQ8hlTjlEDIZNyHeOKeWdIVrO+8+xv+CvC4jkoyOb8aRq78AbjPTOA=="
+        },
+        {
+          "name": "scripts/reader.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAAAkFAAA9BQAAAAAAAAAAAAAAEAAAABAAAD0FAAAAAAAAEgoAAHicbdS/a1NRFAfw8/QVH/QhlRSJWKR4mkPiS0qoFQoGeULAN0TIkEIHh4YkqGBrSVRCcRAsSCcVHBwyWGjAQdf8Be3k4l/g5CwKVQcF9X1f0nypXS4f7vmRcy/3JaP7uc0dU3FEMkO7ZI/sk6fI0+Q0eYY8S54jZ8l5cpG8SF4il8ghuUyOyBVylVwjr8Br95stU3Fjt9cLd01deK1+u2XqwfONTsfUh0VETKfccW1ItWWqjeBCu1U3rcDNVnvetAo3Oh0xrcHRjcKCqXixffR34QzswS7swyeTGeA0PO2NZ0uTZ+Bz8Cx8Hp6Dz8JZ+DSch7Nwkfos0gxLNEOJckJymRyRK+QquQZ3e41J0xV44unuR9NbcHV7UDZdhbcHewPTJry3XBTTO0mfZ9cmTe/BX7u9hukG/HmjWDJ9AK8WDnZMu/DL+vMD08fwqXW5YPoE3nI//Lv/Lbjf7/dNXzhjvyK/JvfIb8i75Lfkd3D86gL9KSLDqw1FJJPCqjmJg7/ioJfcKQUvHQ1Gh8FAf4waBno9piCGcj2B1flvvXzxzJ9AH8bpaWxcQf2X42cLDjsG+i1OGb5aZ5ySR0p0NAV/MsPt9qj5qBVtJE1CXND38TF955hjplLxD+MgWf2NL2r50ftPyReeU28C76m6fzPZufoXd+HPzg=="
+        }
+      ],
+      "projections": {
+        "writer": {
+          "outputs": [
+            256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320,
+            324, 328, 332, 336, 340, 344
+          ],
+          "spans": [
+            {
+              "at": 400,
+              "size": 32
+            }
+          ]
+        },
+        "reader": {
+          "outputs": [
+            256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320,
+            324, 328, 332, 336, 340, 344
+          ],
+          "spans": [
+            {
+              "at": 400,
+              "size": 32
+            }
+          ]
+        }
+      },
+      "rows": [
+        {
+          "kind": "writer",
+          "words": [
+            1, 1, 1, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 1304776709
+          ],
+          "spans": ["paWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU="]
+        },
+        {
+          "kind": "reader",
+          "words": [
+            2709137861, 1, 1, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 1304776709
+          ],
+          "spans": ["paWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU="]
+        }
+      ],
+      "decoded": {
+        "modern-image.css": [
+          {
+            "id": 41,
+            "width": 4,
+            "height": 3,
+            "bpp": 32,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9QMBD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          {
+            "id": 42,
+            "width": 4,
+            "height": 3,
+            "bpp": 32,
+            "rgba": "GDxy/xg8cv8YPHL/GDxy/xg8cv8YPHL/GDxy/xg8cv8YPHL/GDxy/xg8cv8YPHL/"
+          }
+        ],
+        "modern-image-reader.css": [
+          {
+            "id": 43,
+            "width": 4,
+            "height": 3,
+            "bpp": 32,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9QMBD/ESIz/158kP9piZn/dJai/3+jq/+KsLT/"
+          },
+          {
+            "id": 44,
+            "width": 4,
+            "height": 3,
+            "bpp": 32,
+            "rgba": "GDxy/xg8cv8YPHL/GDxy/xg8cv8YPHL/GDxy/xg8cv8YPHL/GDxy/xg8cv8YPHL/"
+          }
+        ]
+      },
+      "nativeFiles": {
+        "modern-image.css": "Q1NTALAAAAA1AQAANAAAAHja02RgYNgExB7uukY8QFoViFmAmBmIFRgQwAyKVYBYFog1oOIwtbhAxa1kYVEhUdGp4qKx21Y1enOemBIwZcKEhCkTIhifMEdGaUVFRVVFRXE33tFRmDxTcokAgwg79yagricFAWUBfw6oXjh9o8rhdqO7V0um7eGjIt9WOvRxMuTVcxhqAU0vJsLlPFBxfiDmJs3l2x+XMDAw6jD0g91jEcDf9o1BMoyVDQDOKDP5",
+        "modern-image-reader.css": "Q1NTANIAAABRAQAANQAAAHja02ZgYJgHxB7uukY8QFoViFmAmBmIFRgQQA+INYBYAogFoGwGJLW4QMWtZGHRJBHRqdvFQ4VERacGXJk6IWHKdAYmXdFUXV1b6bU6urq6acVpYgxhN1iOAlU/KQhIuzDdYoHu14MnuzP5hRmkTZi/6gBNWkyEK9WBWA6IVYBYmjRXpm/hPs3DE7k1eypj+ollvtq3vq0VEijgEDa8eWXrqTZ2hjVHuXPAzitY8f/Avv8J39jXzWr+Kb/k24an9RPWJUbVT5BmmB/AfQEAEvBE5g=="
+      },
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-scene-css-consumers-20261128/ORIGINAL-G3IMAGE-74.json",
+        "sha256": "23220aded0eacd8e46d19fbe35c367615bc1893a93f1831e5e9a3336508f9d0b"
+      },
+      "currentPhases": "Same semantic GCALL order and inputs as original; qualified Main65 yields add meaningful current owned checkpoint boundaries after first snapshot and old-container release. These are not extra native phases."
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "startup": "<?xml version=\"1.0\" encoding=\"Shift_JIS\"?><document><SCREEN><width>64</width><height>64</height><v_width>64</v_width><v_height>64</v_height></SCREEN><TEXTURE><size><x>8</x><y>8</y></size><vt><x>2</x><y>1</y></vt><area00><sx>0</sx><sy>0</sy><dx>2</dx><dy>1</dy></area00><bpp>32</bpp></TEXTURE><APP><imgcache>0</imgcache></APP><ETC><cache>0</cache></ETC><INT><int00><name>kcs</name><ext>kcs</ext><dir></dir></int00><int01><name>scene</name><ext>cst</ext><dir></dir></int01></INT></document>",
+      "marker": 1304776709,
+      "inputs": [
+        {
+          "name": "startup.xml",
+          "data": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjY0PC93aWR0aD48aGVpZ2h0PjY0PC9oZWlnaHQ+PHZfd2lkdGg+NjQ8L3Zfd2lkdGg+PHZfaGVpZ2h0PjY0PC92X2hlaWdodD48L1NDUkVFTj48VEVYVFVSRT48c2l6ZT48eD44PC94Pjx5Pjg8L3k+PC9zaXplPjx2dD48eD4yPC94Pjx5PjE8L3k+PC92dD48YXJlYTAwPjxzeD4wPC9zeD48c3k+MDwvc3k+PGR4PjI8L2R4PjxkeT4xPC9keT48L2FyZWEwMD48YnBwPjMyPC9icHA+PC9URVhUVVJFPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48ZXh0PmtjczwvZXh0PjxkaXI+PC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2NlbmU8L25hbWU+PGV4dD5jc3Q8L2V4dD48ZGlyPjwvZGlyPjwvaW50MDE+PC9JTlQ+PC9kb2N1bWVudD4="
+        },
+        {
+          "name": "writer.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAAOEEAAAVBQAAAAAAAAAAAAAAEAAAABAAABUFAAAAAAAAwgkAAHicfdOxa1NRFAbw8/AVHzRIIEUiFqmcvkPCa0qwGQoGiRAwQ4Q3pNDBoSEJKthaEi1BHAQLpZMKDg4ZLDTgoGv+gnZycXAWB2dRiC4O6v1ebL5BXS4/zjv38HF5J9Tj/IMDU/FEwol9ckBOkdPkOXKWPE9eIC+Sc+QlcpFcIq+Sy+QKuUqukevkmNwgr8Obd9sdU/Gdu1uF26Y+vNm82TEN4OVWr2eagkVETNP+9G6F7lbpbg0udDtN0zrc7nSXTWO41euJaQOuXStcMpXAOYX5PhzCAezDKfhUkgHOwnPBNFuWPA+fgxfg8/AifBbOwWfgJTgHF2lOiTKsUoYy9VTIVXKNXCfH5AbcH7RmTdfhmceH70xvwPH+qGq6Ae+PjkambfhorSimt5I5e1dmTe/AX/qDluk2/Gm7WDa9B28UxgemffhZ88nY9CF8eksumD6Cd/23v99/Fx4Oh0PTp97Uz8kvyAPyS/Ih+RX5NbwiIpF+FpHJ01ZEJMzg1Is493C6XyPSsWtMoxE7TI2R/nAfg+TxT6ZE+v3P8DCDsnr/ONPF+Gek9117FoXS/8LlTyZG+tW1TH5bzxWuuoJQR3caIrnu1i3Sb9PIKe8vkTMZNw/5cvoem7K28+ZDsrl5/YjKTHx8Palc/gXjBcy+"
+        },
+        {
+          "name": "reader.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAALgEAADsBAAAAAAAAAAAAAAAEAAAABAAAOwEAAAAAAAAcAkAAHicbdS/axNhGAfwJ3rFgwappEjEIsWneUi4poRaoWCQEwJmiHBDCh0cGpKggq0l0RLEQbAgnVRwcMhgoQFBXeM/0E4u/gVOzqJQdXBQ3+8lvS/q8vLhfX7ccy/vXU4PCvd3TSUlkhvZI/vkNHmKPE3OkmfIs+Q5cp48Ty6Rl8jL5DI5JFfIVXKNHJHr5FV4/U6rbSqec2ejeMvUg9cbN9qmPrzQ7HZN07CIiOmUl9SGVFuh2ipc7LQbpjW41e4smEZws9sV0zpcvVpcNBXfOY3+HpyDfdiD0/DxeAY4C0/7yWxZ8gx8Bp6Fz8Jz8Gk4D5+E5+E8XKI+SzTDMs1QppyQXCFXyTVyRK7DvX5z0nQVnni098H0OhztDCuma/DOcH9o2oL3V0piejPu8/jypOlt+Euv3zTdhD9tlsqmd+G14uGuaQ9+1nhyaPoAPrEh50wfwtve+z/nvw0PBoOB6dNU4ufkF+Q++SV5j/yK/AZ2ty7QHyIyOtpQRHIZrFoQF/zpgn58pkfBQL+PawK94iiIIUOPYU39s144f+pXoPdcehYbF1H/+f+PD446BvrVpYwuZirZ7owrxzUh3udbMjJ+I3+PnMm4Jhgqr6/xAaxsvf0Yf5AFfYediejgWrxz6TfHrcip"
+        },
+        {
+          "name": "owned.cst",
+          "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+        },
+        {
+          "name": "scene/owned.cst",
+          "data": "Q2F0U2NlbmUyAAAAQAAAAHicM2BgYGBiYGAQYGBgkIGyQYARic3BwMDABxJTdMzJTE5lYFTwzwORIeX5DABI0QUY"
+        },
+        {
+          "name": "scripts/writer.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAAOEEAAAVBQAAAAAAAAAAAAAAEAAAABAAABUFAAAAAAAAwgkAAHicfdOxa1NRFAbw8/AVHzRIIEUiFqmcvkPCa0qwGQoGiRAwQ4Q3pNDBoSEJKthaEi1BHAQLpZMKDg4ZLDTgoGv+gnZycXAWB2dRiC4O6v1ebL5BXS4/zjv38HF5J9Tj/IMDU/FEwol9ckBOkdPkOXKWPE9eIC+Sc+QlcpFcIq+Sy+QKuUqukevkmNwgr8Obd9sdU/Gdu1uF26Y+vNm82TEN4OVWr2eagkVETNP+9G6F7lbpbg0udDtN0zrc7nSXTWO41euJaQOuXStcMpXAOYX5PhzCAezDKfhUkgHOwnPBNFuWPA+fgxfg8/AifBbOwWfgJTgHF2lOiTKsUoYy9VTIVXKNXCfH5AbcH7RmTdfhmceH70xvwPH+qGq6Ae+PjkambfhorSimt5I5e1dmTe/AX/qDluk2/Gm7WDa9B28UxgemffhZ88nY9CF8eksumD6Cd/23v99/Fx4Oh0PTp97Uz8kvyAPyS/Ih+RX5NbwiIpF+FpHJ01ZEJMzg1Is493C6XyPSsWtMoxE7TI2R/nAfg+TxT6ZE+v3P8DCDsnr/ONPF+Gek9117FoXS/8LlTyZG+tW1TH5bzxWuuoJQR3caIrnu1i3Sb9PIKe8vkTMZNw/5cvoem7K28+ZDsrl5/YjKTHx8Palc/gXjBcy+"
+        },
+        {
+          "name": "scripts/reader.kcs",
+          "data": "S0NTAAIAAAAAAAAANAAAALgEAADsBAAAAAAAAAAAAAAAEAAAABAAAOwEAAAAAAAAcAkAAHicbdS/axNhGAfwJ3rFgwappEjEIsWneUi4poRaoWCQEwJmiHBDCh0cGpKggq0l0RLEQbAgnVRwcMhgoQFBXeM/0E4u/gVOzqJQdXBQ3+8lvS/q8vLhfX7ccy/vXU4PCvd3TSUlkhvZI/vkNHmKPE3OkmfIs+Q5cp48Ty6Rl8jL5DI5JFfIVXKNHJHr5FV4/U6rbSqec2ejeMvUg9cbN9qmPrzQ7HZN07CIiOmUl9SGVFuh2ipc7LQbpjW41e4smEZws9sV0zpcvVpcNBXfOY3+HpyDfdiD0/DxeAY4C0/7yWxZ8gx8Bp6Fz8Jz8Gk4D5+E5+E8XKI+SzTDMs1QppyQXCFXyTVyRK7DvX5z0nQVnni098H0OhztDCuma/DOcH9o2oL3V0piejPu8/jypOlt+Euv3zTdhD9tlsqmd+G14uGuaQ9+1nhyaPoAPrEh50wfwtve+z/nvw0PBoOB6dNU4ufkF+Q++SV5j/yK/AZ2ty7QHyIyOtpQRHIZrFoQF/zpgn58pkfBQL+PawK94iiIIUOPYU39s144f+pXoPdcehYbF1H/+f+PD446BvrVpYwuZirZ7owrxzUh3udbMjJ+I3+PnMm4Jhgqr6/xAaxsvf0Yf5AFfYediejgWrxz6TfHrcip"
+        }
+      ],
+      "projections": {
+        "writer": {
+          "outputs": [
+            256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320,
+            324, 328, 332, 336, 340, 344
+          ],
+          "spans": [
+            {
+              "at": 400,
+              "size": 32
+            }
+          ]
+        },
+        "reader": {
+          "outputs": [
+            256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320,
+            324, 328, 332, 336, 340, 344
+          ],
+          "spans": [
+            {
+              "at": 400,
+              "size": 32
+            }
+          ]
+        }
+      },
+      "rows": [
+        {
+          "kind": "writer",
+          "words": [
+            1, 1, 2709137861, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 1304776709
+          ],
+          "spans": ["paWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU="]
+        },
+        {
+          "kind": "reader",
+          "words": [
+            2709137861, 1, 2709137861, 1, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            1304776709
+          ],
+          "spans": ["paWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaWlpaU="]
+        }
+      ],
+      "decoded": {
+        "modern-image.css": [
+          {
+            "id": 41,
+            "width": 4,
+            "height": 3,
+            "bpp": 32,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9QMBD/U2+H/158kP9piZn/dJai/3+jq/+KsLT/"
+          }
+        ],
+        "modern-image-reader.css": [
+          {
+            "id": 43,
+            "width": 4,
+            "height": 3,
+            "bpp": 32,
+            "rgba": "ESFR/xwuWv8nO2P/Mkhs/z1Vdf9QMBD/ESIz/158kP9piZn/dJai/3+jq/+KsLT/"
+          }
+        ]
+      },
+      "nativeFiles": {
+        "modern-image.css": "Q1NTAIsAAAC6AAAANAAAAHja02RgYNgExB7uukY8QFoViFmAmBmIFRgQwAyKVYBYFog1oOIwtbhAxa1kYVEhUdGp4qKx21Y1enOemBIwZcKEhCkTIhifMEdGaUVFRVVFRXE33tFRmDxTcokAgwg79yagricFAWUBfw6oXjh9o8rhdqO7V0um7eGjIt9WOvRxMuTVcxgCADAVJ6g=",
+        "modern-image-reader.css": "Q1NTAHcAAACmAAAANQAAAHja02ZgYJgHxB7uukY8QFoViFmAmBmIFRgQQA+INYBYAogFoGwGJLW4QMWtZGHRJBHRqdvFQ4VERacGXJk6IWHKdAYmXdFUXV1b6bU6urq6acVpYgxhN1iOAlU/KQhIuzDdYoHu14MnuzP5hRmkTZi/AgD2yByQ"
+      },
+      "original": {
+        "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-scene-css-consumers-20261128/ORIGINAL-G3IMAGE-76.json",
+        "sha256": "d5e702d8a0ee48538bc3a867377e806fb7124048f5965280bea08cb29fedd4fc"
+      },
+      "currentPhases": "Same semantic GCALL order and inputs as original; qualified Main65 yields add meaningful current owned checkpoint boundaries after first snapshot and old-container release. These are not extra native phases."
+    }
+  ]
+}
