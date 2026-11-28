@@ -57,14 +57,14 @@ test('raw byte copies, real inout append and conditional XML output remain disti
   assert.equal(main(game, 0x40f).parameters[0].type.target.decoderContract, 'native-permissive');
 });
 
-test('unknown, ignored and variadic argument evidence is retained in reviewed declarations', () => {
-  assert.equal(main(sdk, 0x52).parameters, null);
+test('unknown, ignored and bounded format-string evidence is retained in reviewed declarations', () => {
+  assert.equal(main(sdk, 688).parameters, null);
   assert.equal(main(sdk, 0).parameters.kind, 'ignored');
   assert.equal(main(sdk, 0).argumentWords, null);
   const formatted = main(sdk, 0x7c).parameters.at(-1).type;
-  assert.equal(formatted.kind, 'variadic');
-  assert.equal(formatted.role, 'format-arguments');
-  assert.equal(formatted.elementType.kind, 'unknown');
+  assert.equal(formatted.kind, 'pointer');
+  assert.equal(formatted.target.kind, 'format-string');
+  assert.equal(formatted.target.encoding, 'unknown');
 });
 
 test('signature comparisons expose real encoding differences and unresolved semantic slots', () => {
@@ -75,7 +75,7 @@ test('signature comparisons expose real encoding differences and unresolved sema
   assert.equal(xml.relation, 'declaration-difference');
   assert.ok(xml.differences.includes('parameters'));
   assert.equal(
-    comparison.entries.find((entry) => entry.id === 0x52).relation,
+    comparison.entries.find((entry) => entry.id === 688).relation,
     'unresolved-semantic',
   );
   assert.equal(

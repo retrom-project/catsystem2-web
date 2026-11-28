@@ -464,7 +464,9 @@ test('D6 diagnoses unknown registration without changing ordinary messages or fa
     await to(parentID, 83, 0, mesh, 1);
     assert.equal(parent.graph.type, 3);
     assert.equal(parent.graph.mesh.length, 1);
-    assert.equal(parent.graph.registrationEnabled, 'unverified');
+    assert.equal(parent.graph.registrationEnabled, false, 'reviewed83 starts the new mesh hidden');
+    // Keep this negative diagnostic distinct from the now-reviewed83 producer.
+    parent.setRegistrationEnabled('unverified');
     for (const [id, value] of [
       [47, 0],
       [47, 1],

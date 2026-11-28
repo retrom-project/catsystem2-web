@@ -36,7 +36,7 @@ function declaration(profile) {
     for (const id of [428, 361])
       assert.equal(nativeABI(profile).tables.main.entries[id].status, 'unknown');
   }
-  assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
+  assert.equal(nativeABI(profile).tables.main.entries[688].status, 'unknown');
 }
 
 for (const profile of profiles) {
@@ -92,6 +92,8 @@ for (const profile of profiles) {
         await Promise.all(calls.map((call) => call.reply)),
         Array.from({ length: 4 }, () => ({ control: 2 })),
       );
+      assert.deepEqual(requests, [], 'Window requests are posted, not synchronously handled');
+      await world.processWindowMessages();
       assert.deepEqual(requests, [
         [0x77, false],
         [0x77, true],

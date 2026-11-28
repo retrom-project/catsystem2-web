@@ -290,7 +290,7 @@ test('per-version ABI data covers every slot and preserves unresolved facts', ()
     assert.deepEqual(signature.controlCodes, [control]);
   }
   for (const id of [287, 288, 688]) assert.equal(base.main.entries[id].status, 'unknown');
-  const unknown = nativeABI('sdk-4.01-engine-2.6.1.74').tables.main.entries[0x52];
+  const unknown = nativeABI('sdk-4.01-engine-2.6.1.74').tables.main.entries[688];
   assert.equal(unknown.name, null);
   assert.equal(unknown.signature.parameters, null);
   assert.equal(unknown.signature.review, 'needs-review');

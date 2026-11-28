@@ -59,10 +59,10 @@ test('registration rejects uncovered, overlapping, duplicate and out-of-range sl
 test('missing semantics and malformed table/status records cannot acquire meanings', () => {
   const missing = registration();
   missing.main = {
-    count: 83,
-    slots: { unknown: Array.from({ length: 82 }, (_, id) => id), recovered: [82] },
+    count: 142,
+    slots: { unknown: Array.from({ length: 141 }, (_, id) => id), recovered: [141] },
   };
-  assert.throws(() => resolveNativeTables(missing), /Unreviewed native semantic main\/82/);
+  assert.throws(() => resolveNativeTables(missing), /Unreviewed native semantic main\/141/);
   const status = registration();
   status.main.slots.enabled = [0];
   assert.throws(() => resolveNativeTables(status), /Invalid native slot status/);

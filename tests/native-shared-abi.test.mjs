@@ -15,16 +15,16 @@ const sdk = nativeABI(sdkRegistration.profile),
   earlierDrawProfile = 'bokutomo-engine-2.6.1.67';
 
 test('shared semantics do not name or enable explicitly unknown profile slots', () => {
-  const earlierDraw = nativeABI(earlierDrawProfile).tables.main.entries[0x108];
+  const earlierDraw = nativeABI(earlierDrawProfile).tables.main.entries[688];
   assert.equal(NATIVE_SEMANTICS.main[0x108].name, 'draw.countEntries');
   assert.equal(earlierDraw.name, null);
   assert.equal(earlierDraw.status, 'unknown');
   assert.equal(sdk.tables.main.entries[0x108].name, 'draw.countEntries');
   assert.equal(game.tables.main.entries[0x108].name, 'draw.countEntries');
   assert.equal(NATIVE_SEMANTICS.main[0x52].name, 'plane.loadColoredKX2');
-  assert.equal(sdk.tables.main.entries[0x52].status, 'unknown');
-  assert.equal(sdk.tables.main.entries[0x52].name, null);
-  assert.deepEqual(sdk.tables.main.entries[0x52].controlCodes, []);
+  assert.equal(sdk.tables.main.entries[688].status, 'unknown');
+  assert.equal(sdk.tables.main.entries[688].name, null);
+  assert.deepEqual(sdk.tables.main.entries[688].controlCodes, []);
   assert.deepEqual(game.tables.main.entries[0x52].controlCodes, [2]);
   assert.throws(() => nativeABI('unregistered'), /Unregistered/);
   for (const version of ['2.6.1.37', '2.6.1.58', '2.6.1.75', '2.6.1.90'])
@@ -75,16 +75,16 @@ for (const registration of [sdkRegistration, gameRegistration]) {
       const noop = registration === sdkRegistration ? 0x38a : 0x3ce;
       assert.deepEqual(invoke(noop), { control: 2 });
       assert.throws(
-        () => invoke(0x52),
+        () => invoke(688),
         (error) =>
           error.name === 'UnsupportedKCSNative' &&
-          error.details.id === 0x52 &&
+          error.details.id === 688 &&
           error.details.profile === registration.profile &&
           error.details.task === task.id,
       );
       assert.throws(() => invoke(registration.tables.main.count), /outside/);
       const catalog = nativeCatalog(registration.profile);
-      assert.equal(catalog[0x52].name, null);
+      assert.equal(catalog[688].name, null);
       assert.equal(catalog[noop].status, 'reserved');
       assert.equal(catalog[0x181].argumentWords, 5);
     } finally {
@@ -123,7 +123,7 @@ test('SDK main447 explicitly binds its existing two-word unwritten FES contract'
   assert.deepEqual(entry.observedArgumentWords, [2]);
   assert.match(entry.evidence, /SDK-2\.6\.1\.74-main447-full-wrapper/);
   assert.notEqual(entry.evidence, gameEntry.evidence);
-  for (const id of [361, 467]) {
+  for (const id of [361, 688]) {
     assert.equal(sdk.tables.main.entries[id].status, 'unknown');
     assert.equal(sdk.tables.main.entries[id].name, null);
   }
@@ -272,7 +272,7 @@ for (const registration of [sdkRegistration, gameRegistration]) {
   });
 }
 
-test('older unknown Main264 blocks its installed drawing handler without side effects', async () => {
+test('unknown Main688 blocks an installed handler without side effects', async () => {
   const world = await dataWorld(earlierDrawProfile, { 'case.kcs': kcsProgram([[59]]) });
   try {
     const task = world.main,
@@ -291,19 +291,23 @@ test('older unknown Main264 blocks its installed drawing handler without side ef
       calls: [...runtime.calls],
       imageBuffers: runtime.imageDataBuffers.snapshot(),
     });
+    runtime.register('main', 688, () => {
+      sends.push('unreachable');
+      return { control: 2 };
+    });
     const before = capture();
     assert.throws(
-      () => runtime.native('main', 264, args, task.machine, task, runtime.scheduler),
+      () => runtime.native('main', 688, args, task.machine, task, runtime.scheduler),
       (error) => {
         assert.ok(error instanceof UnsupportedKCSNative);
         assert.equal(
           error.message,
-          `Unsupported ${earlierDrawProfile}/main native 0x108 in ${task.name} at 0x${task.machine.pc.toString(16)}`,
+          `Unsupported ${earlierDrawProfile}/main native 0x2b0 in ${task.name} at 0x${task.machine.pc.toString(16)}`,
         );
         assert.deepEqual(error.details, {
           profile: earlierDrawProfile,
           table: 'main',
-          id: 264,
+          id: 688,
           task: task.id,
           script: task.name,
           pc: task.machine.pc,
@@ -313,11 +317,11 @@ test('older unknown Main264 blocks its installed drawing handler without side ef
         return true;
       },
     );
-    assert.equal(runtime.handlers.has('main:264'), true);
-    assert.equal(runtime.tables.get('main')[264].status, 'unknown');
-    assert.equal(runtime.tables.get('main')[264].name, null);
-    assert.equal(runtime.tables.get('main')[264].argumentWords, null);
-    assert.deepEqual(runtime.tables.get('main')[264].controlCodes, []);
+    assert.equal(runtime.handlers.has('main:688'), true);
+    assert.equal(runtime.tables.get('main')[688].status, 'unknown');
+    assert.equal(runtime.tables.get('main')[688].name, null);
+    assert.equal(runtime.tables.get('main')[688].argumentWords, null);
+    assert.deepEqual(runtime.tables.get('main')[688].controlCodes, []);
     assert.deepEqual(sends, []);
     assert.deepEqual(capture(), before);
   } finally {
@@ -368,7 +372,7 @@ for (const registration of [sdkRegistration, gameRegistration]) {
         trigger = [world.nativeTaskID(world.main.id), receiverNative, 0xfeed, 0xbeef],
         beforeFrame = world.frame,
         sent = [],
-        send = world.sendNativeEngine;
+        send = world.sendEngine;
       assert.equal(caller.status, 'waiting');
       assert.equal(caller.context.variableBank, receiver.context.variableBank);
       assert.equal(caller.context.variableBank, world.main.context.variableBank);
@@ -376,13 +380,15 @@ for (const registration of [sdkRegistration, gameRegistration]) {
       assert.equal(caller.machine.sp, 4096);
       assert.equal(receiver.machine.sp, 4096);
       trigger.forEach((word, i) => caller.machine.store(512 + i * 4, word));
-      world.sendNativeEngine = function (...args) {
+      world.sendEngine = function (...args) {
         const context = args[5];
-        sent.push([
-          ...args.slice(0, 5),
-          context.flags,
-          Array.from({ length: 4 }, (_, i) => context.payload.load(args[4] + i * 4)),
-        ]);
+        if (context?.flags === 1)
+          sent.push([
+            world.nativeTaskID(args[0]),
+            ...args.slice(1, 5),
+            context.flags,
+            Array.from({ length: 4 }, (_, i) => context.payload.load(args[4] + i * 4)),
+          ]);
         return send.apply(this, args);
       };
       assert.equal(

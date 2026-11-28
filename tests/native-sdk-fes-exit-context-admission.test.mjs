@@ -53,7 +53,7 @@ function declaration(profile, id) {
     assert.match(entry.evidence, new RegExp('SDK-2\\.6\\.1\\.74-main' + id + '-full-wrapper'));
     assert.notEqual(entry.evidence, nativeABI(profiles[1]).tables.main.entries[id].evidence);
   }
-  for (const unknown of [467, 361])
+  for (const unknown of [688, 361])
     assert.equal(nativeABI(profiles[0]).tables.main.entries[unknown].status, 'unknown');
 }
 

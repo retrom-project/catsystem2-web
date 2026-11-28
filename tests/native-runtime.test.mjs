@@ -81,7 +81,7 @@ test('the native runtime continues guest instructions after a FES request and ac
 test('missing native services and unknown slots preserve exact ABI, arguments and guest PC', async () => {
   for (const [id, status] of [
     [393, 'recovered'],
-    [467, 'unknown'],
+    [688, 'unknown'],
   ]) {
     assert.equal(nativeABI(profile).tables.main.entries[id].status, status);
     const runtime = new NativeRuntime({
@@ -279,11 +279,11 @@ test('unknown admission precedes registered handlers and service preparation', a
   );
 });
 
-test('unknown admission precedes the main built-in fallback and resource services', async () => {
+test('unknown admission precedes dispatch and resource services', async () => {
   let releases = 0,
     preparation = 0,
     error;
-  const id = 0xed,
+  const id = 688,
     runtime = new NativeRuntime({
       profile: 'bokutomo-engine-2.6.1.67',
       read: async () => compiled([[59]]),
