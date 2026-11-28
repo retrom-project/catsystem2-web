@@ -41,6 +41,23 @@ reference while JS owns a source, and lends separate references to consumers.
 Fonts consume the supplied script reference. FES retains its canonical source
 before assigning a font, so replacement of the font preserves the source cache.
 
+Main738 retains the encoded descriptor under a FES cache key. A duplicate key
+retains neither the same descriptor nor a different candidate. A second key can
+retain the same descriptor independently. Main366 releases only the caller's
+reference; Main67 marks the FES for retirement, and actual collection releases
+its cache references. A bitmap already decoded by Main364 owns independent
+pixels and remains usable after the last encoded descriptor and payload free.
+The cache and those independent pixels survive a fresh World with separate
+allocation ownership.
+
+`tests/native-modern-image-descriptor.test.mjs` follows this chain through a
+parsed Script for exact .74 and plain ee6 .76. Original evidence uses a real
+kind1 Top and same-Top Script/FES, normal Settings XML and FileServer loose
+resources, 20-byte descriptors, duplicate/shared keys, normal Top collection,
+and a later 2×1 bitmap mutation. It joins the existing .23/.63/.67 cache proof;
+it does not qualify arbitrary pointers, every encoded format, KIF rebind,
+physical textures or GPU output.
+
 0x16D returns a raw source handle. 0x16C returns a task-owned JS bitmap whose
 pixels use the existing top-down RGBA representation. The independent oracle
 lane converts the original bottom-up BGR(A) bitmap before comparing pixels.

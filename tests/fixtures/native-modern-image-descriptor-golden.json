@@ -1,0 +1,549 @@
+{
+  "scope": "Exact74/plain-ee6-76 real kind1 Top/same-Top Main143 Script, normal Settings XML and loose FileServer; Main365 encoded HG3 descriptor, FES738 shared ownership, real Top retirement and independent bitmap. COM-memory host, no physical Stage/pixel claim.",
+  "program": "S0NTAAIAAAAAAAAANAAAADEDAABlAwAAAAAAAAAAAAAAEAAAABAAAGUDAAAAAAAAYgYAAHiclVA9S8NQFL0pQTp0EOrgWDzkLqFCcHTxo9q1UEeHhuTRFNNWEou4dXBwcHBwEP0xOjg4+wuKOPgvlHdfnqYYBJfL4dzzzjn3eeh3gq4HNYmmDHKIPMQqbjHcAucRoy44G52eMRqCp1nrkLEq+KBPxFgTHIVRwtgRrEjzHcGjcThkzA2ft1PGpfGZ5opxJfhYTSLGteFjFTNuBG8mwy3GrWASz7tS1pPxbJ8oxrPgC9G8lDSLQhOmjHfTJ8yJ8eEQ+egQUWF8RHq5oWfTYBLJnpY0RNKTpUy508ejQ4S6EHMhxppwRT2opmPSxK4Ntn5yS3Mgy7daEfmPZVy9XFS9XIo3Dye2oBGb3/aR2vsYCf04ldTJt9pOpzQfZsGnj5lOWy/La3q6Ne11TlWtekLsk80BrWiia4klcVJK/N0huH+t6lCXDo0/OiRCZDZy+wtvwmc0",
+  "image": "SEctMwwAAAAAAwAAAAAAAAAAAABzdGRpbmZvADgAAAAoAAAAAgAAAAEAAAAgAAAAAAAAAAAAAAACAAAAAQAAAAAAAAAAAAAAAAAAAGltZzAwMDAAAAAAADIAAAAAAAAAAQAAABAAAAAIAAAACgAAAAIAAAB4nGO4ynCa9UPSIwAOXAPaeJwT5AAAACwAGg==",
+  "imageSHA256": "c5d931a307b7cce09e490fc9b63cc85814c3439815d036a6e09f660d388a97df",
+  "phases": [
+    {
+      "label": "real FES and two independent encoded sources",
+      "calls": [
+        {
+          "id": 68,
+          "args": [],
+          "out": 84
+        },
+        {
+          "id": 66,
+          "args": [34, [19, 84], 256],
+          "out": 80
+        },
+        {
+          "id": 447,
+          "args": [[19, 80], 320],
+          "out": null
+        },
+        {
+          "id": 365,
+          "args": [384],
+          "out": 96
+        },
+        {
+          "id": 365,
+          "args": [384],
+          "out": 100
+        }
+      ]
+    },
+    {
+      "label": "new/duplicate/other/shared cache keys",
+      "calls": [
+        {
+          "id": 738,
+          "args": [[19, 80], 448, [19, 96]],
+          "out": null
+        },
+        {
+          "id": 738,
+          "args": [[19, 80], 448, [19, 96]],
+          "out": null
+        },
+        {
+          "id": 738,
+          "args": [[19, 80], 448, [19, 100]],
+          "out": null
+        },
+        {
+          "id": 738,
+          "args": [[19, 80], 480, [19, 96]],
+          "out": null
+        }
+      ]
+    },
+    {
+      "label": "caller release and independent decoded bitmap consumer",
+      "calls": [
+        {
+          "id": 366,
+          "args": [[19, 100]],
+          "out": null
+        },
+        {
+          "id": 364,
+          "args": [[19, 96], 0],
+          "out": 104
+        },
+        {
+          "id": 366,
+          "args": [[19, 96]],
+          "out": null
+        },
+        {
+          "id": 117,
+          "args": [[19, 104], 0, 0, 1, 1, 4281431451],
+          "out": null
+        },
+        {
+          "id": 119,
+          "args": [[19, 104], 512, 516],
+          "out": null
+        }
+      ]
+    },
+    {
+      "label": "normal retirement and wait for a real Script message before Top collection",
+      "calls": [
+        {
+          "id": 67,
+          "args": [[19, 80]],
+          "out": null
+        },
+        {
+          "id": 71,
+          "args": [1536],
+          "out": null
+        }
+      ]
+    },
+    {
+      "label": "independent decoded pixels survive last encoded owner",
+      "calls": [
+        {
+          "id": 117,
+          "args": [[19, 104], 1, 0, 1, 1, 4291992113],
+          "out": null
+        },
+        {
+          "id": 119,
+          "args": [[19, 104], 520, 524],
+          "out": null
+        }
+      ]
+    },
+    {
+      "label": "normal decoded bitmap release",
+      "calls": [
+        {
+          "id": 114,
+          "args": [[19, 104]],
+          "out": null
+        }
+      ]
+    }
+  ],
+  "versions": [
+    {
+      "version": "74",
+      "profile": "sdk-4.01-engine-2.6.1.74",
+      "source": {
+        "raw": "ORIGINAL-G1MESSAGE-74.json",
+        "sha256": "115d887fe8a9d523f617c7b62867181d6174b5111a9f599db4cf8a0d375c392a",
+        "executableSHA256": "0e1dde51e86e9152d8e1d27b82efb15916cb9f82d23dd30990212fafd96c8b9f"
+      },
+      "rows": [
+        {
+          "index": 0,
+          "label": "real FES and two independent encoded sources",
+          "output": [0, 0, 0, 0],
+          "words": [142, 142, 1, 0],
+          "payloadRef": 1
+        },
+        {
+          "index": 1,
+          "label": "new/duplicate/other/shared cache keys",
+          "output": [0, 0, 0, 0],
+          "words": [142, 142, 3, 0],
+          "payloadRef": 1
+        },
+        {
+          "index": 2,
+          "label": "caller release and independent decoded bitmap consumer",
+          "output": [2, 1, 0, 0],
+          "words": [142, 142, 2, 0],
+          "payloadRef": 1,
+          "bitmap": {
+            "width": 2,
+            "height": 1,
+            "bpp": 4,
+            "rgba": [49, 117, 155, 255, 40, 50, 60, 127]
+          }
+        },
+        {
+          "index": 3,
+          "label": "normal retirement and wait for a real Script message before Top collection",
+          "output": [2, 1, 0, 0],
+          "words": [142, 142, 2, 0],
+          "payloadRef": 1
+        },
+        {
+          "index": 4,
+          "label": "independent decoded pixels survive last encoded owner",
+          "output": [2, 1, 2, 1],
+          "bitmap": {
+            "width": 2,
+            "height": 1,
+            "bpp": 4,
+            "rgba": [49, 117, 155, 255, 210, 154, 49, 255]
+          }
+        },
+        {
+          "index": 5,
+          "label": "normal decoded bitmap release",
+          "output": [2, 1, 2, 1]
+        }
+      ],
+      "lastOwner": {
+        "descriptorBytes": 20,
+        "payloadBytes": 146
+      },
+      "calls": [
+        {
+          "id": 66,
+          "args": 3,
+          "control": 1
+        },
+        {
+          "id": 66,
+          "args": 3,
+          "control": 1
+        },
+        {
+          "id": 143,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 68,
+          "args": 0,
+          "control": 1
+        },
+        {
+          "id": 66,
+          "args": 3,
+          "control": 1
+        },
+        {
+          "id": 447,
+          "args": 2,
+          "control": 2
+        },
+        {
+          "id": 365,
+          "args": 1,
+          "control": 1
+        },
+        {
+          "id": 365,
+          "args": 1,
+          "control": 1
+        },
+        {
+          "id": 65,
+          "args": 0,
+          "control": 4
+        },
+        {
+          "id": 738,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 738,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 738,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 738,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 65,
+          "args": 0,
+          "control": 4
+        },
+        {
+          "id": 366,
+          "args": 1,
+          "control": 2
+        },
+        {
+          "id": 364,
+          "args": 2,
+          "control": 1
+        },
+        {
+          "id": 366,
+          "args": 1,
+          "control": 2
+        },
+        {
+          "id": 117,
+          "args": 6,
+          "control": 2
+        },
+        {
+          "id": 119,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 65,
+          "args": 0,
+          "control": 4
+        },
+        {
+          "id": 67,
+          "args": 1,
+          "control": 2
+        },
+        {
+          "id": 71,
+          "args": 1,
+          "control": 4
+        },
+        {
+          "id": 65,
+          "args": 0,
+          "control": 4
+        },
+        {
+          "id": 69,
+          "args": 4,
+          "control": 1
+        },
+        {
+          "id": 117,
+          "args": 6,
+          "control": 2
+        },
+        {
+          "id": 119,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 65,
+          "args": 0,
+          "control": 4
+        },
+        {
+          "id": 114,
+          "args": 1,
+          "control": 2
+        }
+      ]
+    },
+    {
+      "version": "76",
+      "profile": "nekopara-vol3-engine-2.6.1.76",
+      "source": {
+        "raw": "ORIGINAL-G1MESSAGE-76.json",
+        "sha256": "55d0fbd16111376d8145d8bb2e78572103e83bc13d5d8c428b8959fd9a63cd5c",
+        "executableSHA256": "ee6bf5cbb84191f3e998d033cdcd774763a78cd06912f7da053b329038bc8be0"
+      },
+      "rows": [
+        {
+          "index": 0,
+          "label": "real FES and two independent encoded sources",
+          "output": [0, 0, 0, 0],
+          "words": [142, 142, 1, 0],
+          "payloadRef": 1
+        },
+        {
+          "index": 1,
+          "label": "new/duplicate/other/shared cache keys",
+          "output": [0, 0, 0, 0],
+          "words": [142, 142, 3, 0],
+          "payloadRef": 1
+        },
+        {
+          "index": 2,
+          "label": "caller release and independent decoded bitmap consumer",
+          "output": [2, 1, 0, 0],
+          "words": [142, 142, 2, 0],
+          "payloadRef": 1,
+          "bitmap": {
+            "width": 2,
+            "height": 1,
+            "bpp": 4,
+            "rgba": [49, 117, 155, 255, 40, 50, 60, 127]
+          }
+        },
+        {
+          "index": 3,
+          "label": "normal retirement and wait for a real Script message before Top collection",
+          "output": [2, 1, 0, 0],
+          "words": [142, 142, 2, 0],
+          "payloadRef": 1
+        },
+        {
+          "index": 4,
+          "label": "independent decoded pixels survive last encoded owner",
+          "output": [2, 1, 2, 1],
+          "bitmap": {
+            "width": 2,
+            "height": 1,
+            "bpp": 4,
+            "rgba": [49, 117, 155, 255, 210, 154, 49, 255]
+          }
+        },
+        {
+          "index": 5,
+          "label": "normal decoded bitmap release",
+          "output": [2, 1, 2, 1]
+        }
+      ],
+      "lastOwner": {
+        "descriptorBytes": 20,
+        "payloadBytes": 146
+      },
+      "calls": [
+        {
+          "id": 66,
+          "args": 3,
+          "control": 1
+        },
+        {
+          "id": 66,
+          "args": 3,
+          "control": 1
+        },
+        {
+          "id": 143,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 68,
+          "args": 0,
+          "control": 1
+        },
+        {
+          "id": 66,
+          "args": 3,
+          "control": 1
+        },
+        {
+          "id": 447,
+          "args": 2,
+          "control": 2
+        },
+        {
+          "id": 365,
+          "args": 1,
+          "control": 1
+        },
+        {
+          "id": 365,
+          "args": 1,
+          "control": 1
+        },
+        {
+          "id": 65,
+          "args": 0,
+          "control": 4
+        },
+        {
+          "id": 738,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 738,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 738,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 738,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 65,
+          "args": 0,
+          "control": 4
+        },
+        {
+          "id": 366,
+          "args": 1,
+          "control": 2
+        },
+        {
+          "id": 364,
+          "args": 2,
+          "control": 1
+        },
+        {
+          "id": 366,
+          "args": 1,
+          "control": 2
+        },
+        {
+          "id": 117,
+          "args": 6,
+          "control": 2
+        },
+        {
+          "id": 119,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 65,
+          "args": 0,
+          "control": 4
+        },
+        {
+          "id": 67,
+          "args": 1,
+          "control": 2
+        },
+        {
+          "id": 71,
+          "args": 1,
+          "control": 4
+        },
+        {
+          "id": 65,
+          "args": 0,
+          "control": 4
+        },
+        {
+          "id": 69,
+          "args": 4,
+          "control": 1
+        },
+        {
+          "id": 117,
+          "args": 6,
+          "control": 2
+        },
+        {
+          "id": 119,
+          "args": 3,
+          "control": 2
+        },
+        {
+          "id": 65,
+          "args": 0,
+          "control": 4
+        },
+        {
+          "id": 114,
+          "args": 1,
+          "control": 2
+        }
+      ]
+    }
+  ]
+}
