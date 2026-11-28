@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {
   profiles,
   defaultFESWorld,
+  defaultParticleFESWorld,
   loadDefaultFES,
   drawPixels,
 } from './fixtures/default-fes-world.mjs';
@@ -179,11 +180,14 @@ test('2.6.1.23 authored Slider owns its low task, decoded skin, click and drag',
     assert.deepEqual(input.get(thumb).bounds, [35, 12, 43, 20]);
     assert.deepEqual([slider.model.state.value, slider.model.state.pixel], [3, 19]);
 
-    for (const kind of [40, 41])
-      await assert.rejects(
-        world.objects.create({ kind, parent: world.main.id }),
-        /Unreviewed .*controlResources/,
-      );
+    // These constructors are now admitted by the fixed .23 controlResources
+    // declaration. Retain a real create/release check instead of the old guard.
+    for (const kind of [40, 41]) {
+      const child = await world.objects.create({ kind, parent: world.main.id });
+      assert.equal(world.objects.objects.get(child).kind, kind);
+      await world.objects.release(child);
+      assert.equal(world.objects.objects.has(child), false);
+    }
     for (const [raw, canonical] of [
       [5, 6],
       [8, 9],
@@ -642,24 +646,20 @@ for (const profile of profiles) {
 
   test(`${profile} default FES STRING, sound, PTCL/PPI and M2 children share one restore authority`, async () => {
     const source =
-      '#MACRO\nEMPTY_TEXTURE $str0\n#DEFINE\nSTRING label\nNVSTRING nv\nSOUND sound\nPARTICLE script\nPARTICLE plugin\nM2PLANE model\nSTRTABLE words\n#OBJECT SIZE PRI DISP\nlabel 24,16 60000 1\nnv 24,16 60001 1\n#OBJECT FILE\nmodel ' +
+      '#MACRO\nPARTICLE_TEXTURE dot\n#DEFINE\nSTRING label\nNVSTRING nv\nSOUND sound\nPARTICLE script\nPARTICLE plugin\nM2PLANE model\nSTRTABLE words\n#OBJECT SIZE PRI DISP\nlabel 24,16 60000 1\nnv 24,16 60001 1\n#OBJECT FILE\nmodel ' +
       nativeM2Program +
-      '\nwords words.cnf\n#START\nlabel layout size 4\nlabel layout shadow 0\nlabel str ABC\nlabel draw\nnv insert\nnv apend DEF\nnv draw\nscript init 0 probe EMPTY_TEXTURE 1 12\nscript start\nplugin init 1 rain EMPTY_TEXTURE 1 13\nplugin param 4 8\nplugin start\nnext IDLE\n#IDLE\n';
-    const world = await defaultFESWorld(profile, {
+      '\nwords words.cnf\n#START\nlabel layout size 4\nlabel layout shadow 0\nlabel str ABC\nlabel draw\nnv insert\nnv apend DEF\nnv draw\nscript init 0 probe PARTICLE_TEXTURE 1 12\nscript start\nplugin init 1 rain PARTICLE_TEXTURE 1 13\nplugin param 4 8\nplugin start\nnext IDLE\n#IDLE\n';
+    const world = await defaultParticleFESWorld(profile, {
       ...nativeM2Files(),
       'screen.fes': bytes(source),
+      'dot.hg3': hg3(2, 2, pixel),
       'words.cnf': bytes('0\tA\tB\n'),
       'ptcl/probe.kcs': kcsProgram([[59]]),
       'ptclpi/rain.ppi': bytes('authored diagnostic identity'),
     });
     let fresh;
     try {
-      const bank = world.runtime.stringBank(world.objects.objects.get(world.main.id)),
-        originalTexture = bank.getBytes(0);
-      bank.setBytes(0, bytes('$str0'));
       const h = await loadDefaultFES(world);
-      if (originalTexture === undefined) bank.entries.delete(0);
-      else bank.setBytes(0, originalTexture);
       await h.task.tick();
       const initializedScript = h.instance.byKey.get('script'),
         initializedPlugin = h.instance.byKey.get('plugin');
@@ -671,7 +671,7 @@ for (const profile of profiles) {
           initializedScript.count,
           initializedScript.priority,
         ],
-        [0, 'probe', '', 1, 12],
+        [0, 'probe', 'dot', 1, 12],
       );
       assert.deepEqual(
         [
@@ -681,7 +681,7 @@ for (const profile of profiles) {
           initializedPlugin.count,
           initializedPlugin.priority,
         ],
-        [1, 'rain', '', 1, 13],
+        [1, 'rain', 'dot', 1, 13],
       );
       for (let frame = 0; frame < 12; frame++) await world.tick();
       const label = h.instance.byKey.get('label'),
@@ -711,7 +711,7 @@ for (const profile of profiles) {
       const saved = structuredClone(world.snapshot()),
         expected = writer.frame();
       const m2Files = nativeM2Files();
-      fresh = await defaultFESWorld(
+      fresh = await defaultParticleFESWorld(
         profile,
         { ...m2Files, 'ptcl/probe.kcs': kcsProgram([[59]]) },
         { initialize: false },

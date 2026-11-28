@@ -85,7 +85,11 @@ export async function runNativeTests(root, args) {
   console.log(
     `Node group ${group}, ${files.length} files. Actual groups ${JSON.stringify(inventory.counts)}.`,
   );
-  const child = spawn(process.execPath, ['--test', ...files], { cwd: root, env, stdio: 'inherit' });
+  const child = spawn(process.execPath, ['--test', '--test-concurrency=4', ...files], {
+    cwd: root,
+    env,
+    stdio: 'inherit',
+  });
   return await new Promise((resolve, reject) => {
     child.once('error', reject);
     child.once('close', (code, signal) => resolve(code ?? (signal ? 1 : 0)));
