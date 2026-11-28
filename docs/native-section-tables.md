@@ -26,3 +26,11 @@ older wrapper and detailed verification tool.
 
 Run `node --test tests/native-section-table.test.mjs` and, with private images,
 `node --test tests/differential/native-data-tables.test.mjs`.
+
+Modern `.74` also has a normal FileServer and parsed-Script owner chain for a
+nonempty CP932 section file. Duplicate-key ordinal output becomes a numeric
+variable and expression result. After one owner is released and the file is
+replaced, an existing reader retains its old rows while a newly loaded reader
+observes the replacement. The complete plain ee6 `.76` wrapper/parser/lookup
+context supplies the finite cross-build bridge, with separate current Script
+and checkpoint controls. These inputs do not qualify every possible text grammar.
