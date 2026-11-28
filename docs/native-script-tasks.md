@@ -11,6 +11,18 @@ Script returns1 without delivery. A wait's idle return0 leaves its destination
 unchanged. A queue retained over reload can be dropped by the first update
 before the replacement VM has armed a wait; retention does not promise delivery.
 
+Main570/571/572 use each executable's raw notification namespace: SDK23
+400/403/402, SDK63 423/426/425, SDK67 424/427/426, SDK74 437/440/439
+and plain ee6 SDK76 442/445/444. Own SDK63/74 complete GCALL bridges
+observe the exact selector at both the real sender transport and Script
+receiver, plus a separately registered factory Top. Their control2 leaves
+the result untouched; these ordinary recipients ignore the notifications,
+so this evidence does not establish delivery to an armed Script waiter.
+Main571's external-word shape is limited to null in this group. Other owned
+recipient classes remain guarded. Parsed current recipients and fresh cold
+continuations are covered by `tests/native-cross-build-script-notifications.test.mjs`;
+Root0/full Application and physical address space are separate qualifications.
+
 Final World shutdown preserves each live Top's already owned Input service until
 all task destruction callbacks finish. The native child retirement order still
 removes the Input task before later Script/FES children. A parsed child handling

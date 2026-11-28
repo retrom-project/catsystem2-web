@@ -662,6 +662,9 @@ export function installNativeScripts(world) {
     world.runtime.register('main', id, async (args, _machine, task) => {
       if (args.length !== count)
         throw new Error(`KCS task message ${message} expects ${count} arguments`);
+      const target = world.objects.objects.get(world.resolveTaskID(args[0], task.id));
+      if (target && ![1, 12].includes(target.kind))
+        throw new Error('Script notifications require a qualified Top or Script recipient');
       let value = 0;
       if (id === 0x23b && args[1]) {
         const memory = world.runtime.imageDataBuffers.process;
