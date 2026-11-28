@@ -183,8 +183,13 @@ test('fixed SDK BasePlane owners preserve the source conversion, receiver and se
     [base.target, base.owner],
   ]) {
     graphic.state.inheritPosition = true;
-    await call(91, [machineTarget]);
-    assert.equal(graphic.state.inheritPosition, false);
+    if (graphic === base.owner) {
+      await assert.rejects(() => call(91, [machineTarget]), /reviewed Plane receiver/);
+      assert.equal(graphic.state.inheritPosition, true);
+    } else {
+      await call(91, [machineTarget]);
+      assert.equal(graphic.state.inheritPosition, false);
+    }
     for (const [source, result] of [
       [0, 0],
       [1, 1],

@@ -518,7 +518,7 @@ test('fixed 2.6.1.23 tiled Plane keeps registered owners and declines undefined 
       send = (message, w, l, payload) =>
         world.sendNativeEngine(target, world.main.id, message, w, l, payload ? { payload } : {});
     await call(world, 433, [0, ...grid], memory);
-    await call(world, 433, [0xffffffff, ...grid], memory);
+    await call(world, 433, [0xffffffff, ...grid], memory, /reviewed Plane receiver/);
     await call(world, 433, [target, ...grid], memory);
     assert.equal(owner.graph, null);
 
@@ -736,6 +736,8 @@ test('fixed 2.6.1.23 loads an untextured KX2 model with bounded original ownersh
   assert.equal(installed.vram, false);
   assert.equal(installed.filename, 'models.int/模型.kx2');
   assert.deepEqual(installed.triangles, [vertices]);
+  assert.equal(installed.registrationWord, 0, 'a new model starts hidden');
+  await call(world, 92, [target, 1], memory);
   assert.equal(installed.registrationWord, 1);
   const observed = [];
   await owner.drawGPU({ drawGeometry: (triangles) => observed.push(triangles) });

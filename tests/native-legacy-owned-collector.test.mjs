@@ -318,6 +318,7 @@ for (const version of ['63', '67']) {
         m.store(1024, textureID);
         await call(467, [planeID, 1024, 1]);
         if (textureID === 0) await call(541, [0, 0, 8, 8]);
+        await call(92, [planeID, 1]);
         let draws = 0;
         await assert.rejects(
           () => plane.drawGPU({ drawGeometry: () => draws++ }),

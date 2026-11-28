@@ -109,7 +109,7 @@ test('native plane construction retains an unloaded graph and fails unknown mess
   await assert.rejects(() => object.message([0, 0x700, 0, 0]), /unimplemented engine message/);
 });
 
-test('2.6.1.23 loads a formatted KX2 mesh and resets its owned Plane', async (t) => {
+test('2.6.1.23 loads a formatted KX2 mesh and retains it on occupied empty-model registration', async (t) => {
   const bytes = new Uint8Array(72),
     view = new DataView(bytes.buffer),
     vertices = [
@@ -143,8 +143,8 @@ test('2.6.1.23 loads a formatted KX2 mesh and resets its owned Plane', async (t)
   assert.deepEqual(plane.graph.triangles, [vertices]);
   assert.deepEqual(plane.state.rect, [-2, 3, 8, 6]);
   assert.deepEqual(await call(80, [target]), { control: 2 });
-  assert.deepEqual(plane.graph.triangles, []);
-  assert.deepEqual(plane.state.rect, [0, 0, 0, 0]);
+  assert.deepEqual(plane.graph.triangles, [vertices]);
+  assert.deepEqual(plane.state.rect, [-2, 3, 8, 6]);
 });
 
 test('plane input switches use active/enabled/source and forward engine events to the receiver', async () => {
@@ -265,7 +265,11 @@ test('native graph snapshots own their bytes and restore actual loaded geometry'
     b = second.world.graphics.get(h);
   assert.deepEqual(a.graph, b.graph);
   assert.notEqual(a.graph.kx2, b.graph.kx2);
-  assert.equal(second.world.graphics.attachment(h).display, true);
+  assert.equal(
+    second.world.graphics.attachment(h).display,
+    false,
+    'new models remain hidden across restore',
+  );
 });
 
 const rectangleProfiles = ['sdk-4.01-engine-2.6.1.74', 'nekopara-vol3-engine-2.6.1.76'];
@@ -315,9 +319,9 @@ function rectangleDeclaration(profile) {
   assert.deepEqual(entry.controlCodes, [2]);
   assert.equal(entry.signature.result.kind, 'void');
   assert.equal(entry.signature.resultWritten, false);
-  for (const id of [361, 467])
+  for (const id of [361, 688])
     assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
-  assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
+  assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[688].status, 'unknown');
 }
 
 function rectangleContinuation(caller) {
@@ -768,9 +772,9 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[1].type.kind, 'float');
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [361, 467])
+      for (const id of [361, 688])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
-      assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[688].status, 'unknown');
     } finally {
       await scene.close();
     }
@@ -986,9 +990,9 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[1].type.bits, 32);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [361, 467])
+      for (const id of [361, 688])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
-      assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[688].status, 'unknown');
     } finally {
       await scene.close();
     }
@@ -1281,9 +1285,9 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.parameters[6].name, 'bindingWord');
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      for (const id of [361, 467])
+      for (const id of [361, 688])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
-      assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[467].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[1]).tables.main.entries[688].status, 'unknown');
     } finally {
       await scene.close();
     }
@@ -1546,7 +1550,7 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
+      assert.equal(nativeABI(profile).tables.main.entries[688].status, 'unknown');
       assert.equal(base.state.receiver !== -1, true);
     } finally {
       await fresh?.close();
@@ -1783,7 +1787,7 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
+      assert.equal(nativeABI(profile).tables.main.entries[688].status, 'unknown');
     } finally {
       await fresh?.close();
       await scene.close();
@@ -2008,7 +2012,7 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
+      assert.equal(nativeABI(profile).tables.main.entries[688].status, 'unknown');
     } finally {
       await missing?.close();
       await fresh?.close();
@@ -2252,7 +2256,7 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
+      assert.equal(nativeABI(profile).tables.main.entries[688].status, 'unknown');
     } finally {
       await missing?.close();
       await fresh?.close();
@@ -2472,7 +2476,7 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.result.kind, 'void');
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
+      assert.equal(nativeABI(profile).tables.main.entries[688].status, 'unknown');
     } finally {
       await fresh?.close();
       await scene.close();
@@ -2626,7 +2630,7 @@ for (const profile of rectangleProfiles)
       assert.deepEqual(scene.snapshot(), checkpoint, 'the source owner is isolated');
       assert.equal(nativeABI(profile).tables.main.entries[108].name, 'plane.setInputReturn');
       assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[361].status, 'unknown');
-      assert.equal(nativeABI(profile).tables.main.entries[467].status, 'unknown');
+      assert.equal(nativeABI(profile).tables.main.entries[688].status, 'unknown');
       for (const current of [scene, fresh])
         assert.ok(!current.nativeEngine && !current.nativeEngineLoading);
     } finally {
@@ -2782,7 +2786,7 @@ for (const profile of rectangleProfiles)
       assert.equal(declaration.signature.resultWritten, false);
       for (const field of declaration.signature.parameters.slice(1))
         assert.deepEqual(field.type, { kind: 'float', bits: 32 });
-      for (const unknown of [279, 361, 467])
+      for (const unknown of [279, 361, 688])
         assert.equal(
           nativeABI(rectangleProfiles[0]).tables.main.entries[unknown].status,
           'unknown',
@@ -3010,7 +3014,7 @@ for (const profile of rectangleProfiles)
       assert.equal(declaration.signature.argumentWords, 4);
       assert.deepEqual(declaration.controlCodes, [2]);
       assert.equal(declaration.signature.resultWritten, false);
-      for (const id of [279, 361, 467])
+      for (const id of [279, 361, 688])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
 
       const saved = scene.snapshot(),
@@ -3328,7 +3332,7 @@ for (const profile of rectangleProfiles)
       assert.equal(declaration.signature.argumentWords, 5);
       assert.deepEqual(declaration.controlCodes, [2]);
       assert.equal(declaration.signature.resultWritten, false);
-      for (const id of [279, 361, 467])
+      for (const id of [279, 361, 688])
         assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[id].status, 'unknown');
       const saved = scene.snapshot(),
         decoded = await deserializeCheckpoint(await serializeCheckpoint(saved));
@@ -3556,7 +3560,7 @@ for (const profile of rectangleProfiles)
       assert.equal(entry.signature.argumentWords, 5);
       assert.deepEqual(entry.controlCodes, [2]);
       assert.equal(entry.signature.resultWritten, false);
-      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[467].status, 'unknown');
+      assert.equal(nativeABI(rectangleProfiles[0]).tables.main.entries[688].status, 'unknown');
       const dto = scene.snapshot(),
         decoded = await deserializeCheckpoint(await serializeCheckpoint(dto));
       fresh = await dataWorld(profile, files, { initialize: false });
