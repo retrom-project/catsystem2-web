@@ -123,3 +123,17 @@ from the minimal normal writer/independent-reader completion. Current tests also
 consume the actual native CSS bytes and preserve live owners across checkpoints.
 This qualifies the finite typed data/virtual-file contract, without changing
 GAME_SAVE layout, enabling physical trees, or claiming full Application startup.
+
+The SDK63 records consumer group adds an authored CGL and real CST text as
+producers for CG registration and a nonempty display log. The existing six-DWORD
+log-block layout is retained. A new CG/log owner reads the native CSS after the
+original owners are cleared or released; replacing CGL/CST sources does not
+replace saved registration keys or speaker data. A later parsed Scene can append
+new text, then log clear is observed by a subsequent speaker read.
+
+Fixed-record stack copying uses two fully initialized eight-byte records before
+pop/copy and source disposal. CSS stores the popped byte spans; the independent
+reader reconstructs and consumes their LIFO order after releasing the file.
+Unused or uninitialized capacity is not generalized. Existing SDK63 cursor and
+gallery/name/variant groups are reused within their previously recorded typed
+owner, finite-capacity and resource-layout boundaries, without replaying them.
