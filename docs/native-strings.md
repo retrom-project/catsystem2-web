@@ -212,3 +212,27 @@ continuation. See `native-arguments.md` for the bank/context proof and the retai
 early-marker observer correction. Across G1–G3, all 36 existing mapped Main
 entries now have a fixed-build normal VM bridge for the documented finite shapes;
 this does not introduce new ABI registrations or widen unsupported string inputs.
+
+## SDK63 Script and resource consumers
+
+`native-sdk63-string-bank-consumers` runs an authored parsed Script and its
+normally created, independently loaded child against the exact SDK63 resource
+host. Raw CP932 copy/append, finite formatted append, reversed comparison,
+separator copy, replacement, character length/search and space-group selection
+retain their result/control words and bounded NUL/canary bytes. The ordinary
+self-copy and backward-copy cases have complete results; forward overwrites of
+an unread terminator remain outside that qualification.
+
+The parent stores a filename in its owned numbered-string bank, then overwrites
+the source buffer. The child inherits that same bank through normal parent
+attachment. Get/expansion outputs load two different real Scene resources and
+reach their parsed text consumers before and after bank replacement. Retiring
+the child preserves the parent owner; the parent continues to read and expand,
+then releases its bank on teardown. Initialized missing and empty entries are
+separate cases. Eight independent checkpoints preserve the complete chain.
+
+The existing SDK63 XML/name consumer fixture supplies Main14 formatted-copy and
+Main17 byte-length witnesses; its original group is reused. Existing S1–S3
+CP932/CRT and W62 ordinary string-bank evidence also remain limited to their
+recorded contexts. This adds no runtime registration, formatter grammar, locale,
+unknown-span support, file format, OS capability or full Application claim.
