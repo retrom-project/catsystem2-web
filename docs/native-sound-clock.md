@@ -318,3 +318,20 @@ stream/decoder shapes. The SDK74 probe's by-type group miss and incorrect
 final comparison remain author-input observations; SDK76 separately exercises
 positive by-ID allocation and the result-dependent Script branch. The original
 pause/resume cancels the pending fade, so its later queried value remains 37.
+
+The nonempty modern SoundConfig group uses the original Engine-class reader,
+resource-authored Settings INT rows, normal FileServer mounts and real WAV/TAG
+sources. Its parsed Script consumes master/filename/type/key fields in an
+arithmetic checksum, uses effective volume and TAG values in peer bank setters,
+and loads a source from the actual configured group. The CP932 TAG first-insert
+value remains independent after peer replacement. The original reader releases
+its XML input; current owners also survive source-buffer overwrite and a fresh
+checkpoint owner constructed from changed configuration XML.
+
+SDK74 executes the complete finite field group. SDK76 independently executes the
+same nonempty producer and each selector context; its remaining field getters
+reuse complete equivalent bodies, preserving record offsets, defaults, control
+flow and actual lookup context. A separate SDK76 parsed program consumes that
+whole group. Counts distinguish these bridges from new native executions. This
+is a qualified Engine-class/data-owner and controlled filesystem scope, not
+WinMain, full Application startup or a physical audio device.

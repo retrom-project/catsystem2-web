@@ -1,0 +1,158 @@
+{
+  "scope": "Nonempty actual original Engine SoundConfig XML reader and Settings/FileServer categories; parsed Script queries enter actual bank volume, TAG and group/PCM consumers and an arithmetic checksum. Complete 21 field getter bodies + actual same authored XML/class owner/filename-type-key traversals bridge SDK74 all21 to SDK76; SDK76 native subset retains distinct actual counts/rows. No fullApp/physical AV/new codec/stream.",
+  "fieldBodyContextReceipt": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-primary-sound-20261128/CONFIG-FIELD-BODY-CONTEXT-BRIDGE.json",
+  "fieldBodyContextReceiptSha256": "10116f25df05195aabcce317d1fe103e281bc0151abb66ddd7ed71cc01c75fb2",
+  "versions": [
+    {
+      "version": "74",
+      "files": {
+        "main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+        "scripts-loose/main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+        "source.kcs": "S0NTAAIAAAAAAAAANAAAAPkNAAAtDgAAAAAAAAAAAAAAEAAAABAAAC0OAAAAAAAA8hsAAHichdY/SFtBHMDxS3xChgxCMjg4CKePQBwyOFjqkNIMQi04ODgEKjSRDNZKDdTBQgahDhYcHIRaSIuCtGlr27S1rW3T1sHBwcHBwUGogwUHBwcHh/LuJfl9c1q7yIfvu/dP7t2lU1+fGLvTqZeXl5ddrQJK1ezAITgMt8BRuBVug9vhDjgGd8EJuBvugXvhJJyC++B+eAAehIfgNDwMZ+AcPAqPw3l4Ep6CC/A0PAPPwnPwPLwAL8JFeAlegUvwKlyG1+B1uAJvwJvwFrwN78C78B68Dx/Ah/ARfAyfwKfwGayCmP9wCA7DLXAUboXb4Ha4A47BXXAC7oZ74F44CafgPrgfHoAH4SE4DQ/DGTgHj8LjcB6ehKfgAjwNz8Cz8Bw8Dy/Ai3ARXoJX4BK8CpfhNXgdrsAb8Ca8BW/DO/AuvAfvwwfwIXwEH8Mn8Cl8Zjwyeeuuq5Xj+f5YNuNqx1gppVwdcmRM0jify95zdQpj+ownsp4LxtmRkayrK8a38xPK1RvGjx7OPXC1apZznWal4vp5k1LV4G1Ecf1CgmNCSULIhJcSwia8kuBvTt4rxfVrLzsmR5FXJbciv5HchvxWcjvyO8kdyGXJMeT3kv2drmDyB8kJ5I+Su5HXJPcgf5Lci/xZchL5i+QU8rpkf9usmPxVcj/yN8kDyN8lDyJXJA8h/5CcRv4peRj5l+QM/rEbknPIvyWPIh9KHkf+I9nfr72pVDvozQUdMgf9hap6sD6kUweVN/CxUkq3mBzAkOTFQ8zBSNRM36eqegs/x/UzVX8gf0E0F4zk7NEBe/QMn9B8Xg+b6o8/i0t5vvxS/ip789zL+u/mv4+3S+ioGW4W4sh8UK71pPGt/pFdrZqUCkS8vxFvAWgIjh1CdgjbocUOUTu02qHNDu126LBDzA5ddkjYodsOPXbotUPSDik79Nmh3w4Ddhi0w5Ad0nYYtkPGDjk7jNph3A75eojra6q6gNe+gBvB+kRcCEouyvxcDNpf2iUfY1xfkQsWeab9kSzV53FcL9buVrs9QqAxNOxj/g+Lc3tQKdj4qtW74MlWLz6x/N8T13AiVjPzK8X8t13tNCl19S8leIDi",
+        "scripts-loose/source.kcs": "S0NTAAIAAAAAAAAANAAAAPkNAAAtDgAAAAAAAAAAAAAAEAAAABAAAC0OAAAAAAAA8hsAAHichdY/SFtBHMDxS3xChgxCMjg4CKePQBwyOFjqkNIMQi04ODgEKjSRDNZKDdTBQgahDhYcHIRaSIuCtGlr27S1rW3T1sHBwcHBwUGogwUHBwcHh/LuJfl9c1q7yIfvu/dP7t2lU1+fGLvTqZeXl5ddrQJK1ezAITgMt8BRuBVug9vhDjgGd8EJuBvugXvhJJyC++B+eAAehIfgNDwMZ+AcPAqPw3l4Ep6CC/A0PAPPwnPwPLwAL8JFeAlegUvwKlyG1+B1uAJvwJvwFrwN78C78B68Dx/Ah/ARfAyfwKfwGayCmP9wCA7DLXAUboXb4Ha4A47BXXAC7oZ74F44CafgPrgfHoAH4SE4DQ/DGTgHj8LjcB6ehKfgAjwNz8Cz8Bw8Dy/Ai3ARXoJX4BK8CpfhNXgdrsAb8Ca8BW/DO/AuvAfvwwfwIXwEH8Mn8Cl8Zjwyeeuuq5Xj+f5YNuNqx1gppVwdcmRM0jify95zdQpj+ownsp4LxtmRkayrK8a38xPK1RvGjx7OPXC1apZznWal4vp5k1LV4G1Ecf1CgmNCSULIhJcSwia8kuBvTt4rxfVrLzsmR5FXJbciv5HchvxWcjvyO8kdyGXJMeT3kv2drmDyB8kJ5I+Su5HXJPcgf5Lci/xZchL5i+QU8rpkf9usmPxVcj/yN8kDyN8lDyJXJA8h/5CcRv4peRj5l+QM/rEbknPIvyWPIh9KHkf+I9nfr72pVDvozQUdMgf9hap6sD6kUweVN/CxUkq3mBzAkOTFQ8zBSNRM36eqegs/x/UzVX8gf0E0F4zk7NEBe/QMn9B8Xg+b6o8/i0t5vvxS/ip789zL+u/mv4+3S+ioGW4W4sh8UK71pPGt/pFdrZqUCkS8vxFvAWgIjh1CdgjbocUOUTu02qHNDu126LBDzA5ddkjYodsOPXbotUPSDik79Nmh3w4Ddhi0w5Ad0nYYtkPGDjk7jNph3A75eojra6q6gNe+gBvB+kRcCEouyvxcDNpf2iUfY1xfkQsWeab9kSzV53FcL9buVrs9QqAxNOxj/g+Lc3tQKdj4qtW74MlWLz6x/N8T13AiVjPzK8X8t13tNCl19S8leIDi",
+        "startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VORENPTkZJRz5wcmltYXJ5LnhtbDwvU09VTkRDT05GSUc+PElOVD48aW50MDA+PG5hbWU+a2NzPC9uYW1lPjxpbnQ+c2NyaXB0cy5pbnQ8L2ludD48ZXh0PmtjczwvZXh0PjxkaXI+c2NyaXB0cy1sb29zZTwvZGlyPjwvaW50MDA+PGludDAxPjxuYW1lPnNlPC9uYW1lPjxpbnQ+c2UuaW50PC9pbnQ+PGV4dD53YXY8L2V4dD48ZGlyPnNvdW5kLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+dGFnPC9uYW1lPjxpbnQ+dGFnLmludDwvaW50PjxleHQ+dGFnPC9leHQ+PGRpcj50YWctbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5jb25maWc8L25hbWU+PGludD5jb25maWcuaW50PC9pbnQ+PGV4dD54bWw8L2V4dD48ZGlyPmNvbmZpZy1sb29zZTwvZGlyPjwvaW50MDM+PC9JTlQ+PC9kb2N1bWVudD4=",
+        "config/startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VORENPTkZJRz5wcmltYXJ5LnhtbDwvU09VTkRDT05GSUc+PElOVD48aW50MDA+PG5hbWU+a2NzPC9uYW1lPjxpbnQ+c2NyaXB0cy5pbnQ8L2ludD48ZXh0PmtjczwvZXh0PjxkaXI+c2NyaXB0cy1sb29zZTwvZGlyPjwvaW50MDA+PGludDAxPjxuYW1lPnNlPC9uYW1lPjxpbnQ+c2UuaW50PC9pbnQ+PGV4dD53YXY8L2V4dD48ZGlyPnNvdW5kLWxvb3NlPC9kaXI+PC9pbnQwMT48aW50MDI+PG5hbWU+dGFnPC9uYW1lPjxpbnQ+dGFnLmludDwvaW50PjxleHQ+dGFnPC9leHQ+PGRpcj50YWctbG9vc2U8L2Rpcj48L2ludDAyPjxpbnQwMz48bmFtZT5jb25maWc8L25hbWU+PGludD5jb25maWcuaW50PC9pbnQ+PGV4dD54bWw8L2V4dD48ZGlyPmNvbmZpZy1sb29zZTwvZGlyPjwvaW50MDM+PC9JTlQ+PC9kb2N1bWVudD4=",
+        "config-loose/primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VOREdST1VQPjxlZmZlY3RzPjxpZD43NzwvaWQ+PHR5cGU+c2U8L3R5cGU+PGxhYmVsPkVmZmVjdHM8L2xhYmVsPjxtaW4+MjwvbWluPjxtYXg+NDwvbWF4PjwvZWZmZWN0cz48L1NPVU5ER1JPVVA+PE1BU1RFUj48dm9sdW1lPjc5PC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5PjxtdXRlPjA8L211dGU+PHZvaWNldm9sPjgxPC92b2ljZXZvbD48c2tpcHZvbD4zNTwvc2tpcHZvbD48L01BU1RFUj48UEFSVD48ZWZmZWN0cz48aWQ+NDwvaWQ+PGdyb3VwPjc3PC9ncm91cD48c2FtZWlkPjE8L3NhbWVpZD48bmFtZT6M+InKibk8L25hbWU+PHR5cGU+c2U8L3R5cGU+PGhlYWQ+RlhfPC9oZWFkPjxpbnQ+c2U8L2ludD48bWFzdGVydm9sPjYyPC9tYXN0ZXJ2b2w+PHZvbHVtZT44Mjwvdm9sdW1lPjxwbGF5PjE8L3BsYXk+PHN5c3BsYXk+MTwvc3lzcGxheT48dm9pY2V2b2w+NTU8L3ZvaWNldm9sPjxza2lwdm9sPjMxPC9za2lwdm9sPjxtdXRlPjA8L211dGU+PC9lZmZlY3RzPjwvUEFSVD48L2RvY3VtZW50Pg==",
+        "primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTT1VOREdST1VQPjxlZmZlY3RzPjxpZD43NzwvaWQ+PHR5cGU+c2U8L3R5cGU+PGxhYmVsPkVmZmVjdHM8L2xhYmVsPjxtaW4+MjwvbWluPjxtYXg+NDwvbWF4PjwvZWZmZWN0cz48L1NPVU5ER1JPVVA+PE1BU1RFUj48dm9sdW1lPjc5PC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5PjxtdXRlPjA8L211dGU+PHZvaWNldm9sPjgxPC92b2ljZXZvbD48c2tpcHZvbD4zNTwvc2tpcHZvbD48L01BU1RFUj48UEFSVD48ZWZmZWN0cz48aWQ+NDwvaWQ+PGdyb3VwPjc3PC9ncm91cD48c2FtZWlkPjE8L3NhbWVpZD48bmFtZT6M+InKibk8L25hbWU+PHR5cGU+c2U8L3R5cGU+PGhlYWQ+RlhfPC9oZWFkPjxpbnQ+c2U8L2ludD48bWFzdGVydm9sPjYyPC9tYXN0ZXJ2b2w+PHZvbHVtZT44Mjwvdm9sdW1lPjxwbGF5PjE8L3BsYXk+PHN5c3BsYXk+MTwvc3lzcGxheT48dm9pY2V2b2w+NTU8L3ZvaWNldm9sPjxza2lwdm9sPjMxPC9za2lwdm9sPjxtdXRlPjA8L211dGU+PC9lZmZlY3RzPjwvUEFSVD48L2RvY3VtZW50Pg==",
+        "tag-loose/fx_owned.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+        "tag-loose/fx_other.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+        "scripts.int": "S0lGAAAAAAA=",
+        "se.int": "S0lGAAAAAAA=",
+        "tag.int": "S0lGAAAAAAA=",
+        "config.int": "S0lGAAAAAAA="
+      },
+      "phases": [
+        {
+          "frame": 20,
+          "advance": 0
+        },
+        {
+          "frame": 21,
+          "advance": 8000
+        },
+        {
+          "frame": 33,
+          "advance": 0
+        },
+        {
+          "frame": 34,
+          "advance": 0
+        }
+      ],
+      "outputs": [
+        256, 260, 264, 268, 272, 276, 280, 284, 288, 292, 296, 300, 304, 308, 312, 316, 320, 324,
+        328, 332, 336, 340, 344, 348, 352, 356, 360, 364, 368, 372, 640, 644, 648, 652, 656, 660,
+        664, 668, 672, 676, 680, 684, 688, 692, 696, 700, 768, 772
+      ],
+      "originalReceipt": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-primary-sound-20261128/ORIGINAL-G2C-74.json",
+      "originalReceiptSha256": "cbc68dac353e6a40865cd8d9d7a57942685d39cba29f3aa63f2341b2a34321e0",
+      "rows": [
+        {
+          "frame": 20,
+          "words": [
+            1, 79, 1, 1, 0, 82, 1, 1, 62, 55, 31, 0, 82, 1, 1, 62, 55, 31, 0, 82, 1, 1, 62, 55, 31,
+            0, 39, 26, 1, 4, 1, 82, 39, 37, 37, 2, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 848, 0
+          ]
+        },
+        {
+          "frame": 21,
+          "words": [
+            1, 79, 1, 1, 0, 82, 1, 1, 62, 55, 31, 0, 82, 1, 1, 62, 55, 31, 0, 82, 1, 1, 62, 55, 31,
+            0, 39, 26, 1, 4, 1, 82, 39, 37, 37, 2, 1, 0, 64000, 37, 1, 82, 2779096485, 2779096485,
+            2779096485, 2779096485, 848, 0
+          ]
+        },
+        {
+          "frame": 33,
+          "words": [
+            1, 79, 1, 1, 0, 82, 1, 1, 62, 55, 31, 0, 82, 1, 1, 62, 55, 31, 0, 82, 1, 1, 62, 55, 31,
+            0, 39, 26, 1, 4, 1, 82, 39, 37, 37, 2, 1, 0, 64000, 37, 1, 82, 64000, 82, 2779096485,
+            2779096485, 848, 0
+          ]
+        },
+        {
+          "frame": 34,
+          "words": [
+            1, 79, 1, 1, 0, 82, 1, 1, 62, 55, 31, 0, 82, 1, 1, 62, 55, 31, 0, 82, 1, 1, 62, 55, 31,
+            0, 39, 26, 1, 4, 1, 82, 39, 37, 37, 2, 1, 0, 64000, 37, 1, 82, 64000, 82, 0, 4, 848, 848
+          ]
+        }
+      ]
+    },
+    {
+      "version": "76",
+      "files": {
+        "main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+        "scripts-loose/main.kcs": "S0NTAAIAAAAAAAAANAAAABIAAABGAAAAAAAAAAAAAAAAEAAAABAAAEYAAAAAAAAAJAAAAHicU1X+wMDAoK3szsDAoMzCwMBgDQAbawIw",
+        "source.kcs": "S0NTAAIAAAAAAAAANAAAAMMKAAD3CgAAAAAAAAAAAAAAEAAAABAAAPcKAAAAAAAAhhUAAHichdUxSBtRHMfxfy4nZMgQSIYMGQJPD+EcHBwsdUipQ6AWHBwchAo14mCtNIFmsJBBMIOFDBmEppCWBKQV6iDFwUKGDA4ODg4ODkIdLDg4ODg4lHuX5H1zWrscH373f+/ee/fe3ZB6nl95M6SazWbTURIS6dqGI3AUjsEJOAmn4DQ8CA/DI/AoPAaPwxNwBp6Es/AUPA3PwLPwHDwPL8BL8DK8ChfgIrwGl+B1uAxvwhW4Cm/BNbgON+BteAfehffgffgAbsFt+BA+go/hE/gUPoPP4Qv4Er6Cr+Eb+Ba+g8XC/ocjcBSOwQk4CafgNDwID8Mj8Cg8Bo/DE3AGnoSz8BQ8Dc/As/AcPA8vwEvwMrwKF+AivAaX4HW4DG/CFbgKb8E1uA434G14B96F9+B9+ABuwW34ED6Cj+ET+BQ+g8/hC/gSvoKv4Rv4Fr7TXiy+eusosT2/X8ktOMrWFhFxVMQ2NRntwlLunaMmUZPVzuc8l7Rzi4s5R7W0Xxfy4qi29seNygdHyYBpaw+IuOpbWKQTeD8iV303gf838sbnqh9ebPsD03FJxz9N7P+jWjr+ZeIYOmmbOIH4t4mTiC9NnEL8x8T+r80bbPemV6gi+qa/rzs3eyVDyhKv8JOIqJiOQyjJPFyib8YjeoG+SOcRfuyqr9IbkH9+dIfxRLA6FKwuc4T6bWyEe8PfRFeeH+/KP5Qv703Wn5s/H++johK6XJ/beNUyfX3un9U/YkdJWCQU965xb7/0BXYwiASDaDCIBYNEMEgGg1QwSPcCVz2Tzu7tvpwXVm+NtiwT183S1azgJnhkn7jqiemwzpbB99foLbGrat2ndR+PINQf9J1I/xN57wDuWP1T7TwFI9t9uOHefxvuoyEOmv7e6tV2lB0WefoXYIs+fw==",
+        "scripts-loose/source.kcs": "S0NTAAIAAAAAAAAANAAAAMMKAAD3CgAAAAAAAAAAAAAAEAAAABAAAPcKAAAAAAAAhhUAAHichdUxSBtRHMfxfy4nZMgQSIYMGQJPD+EcHBwsdUipQ6AWHBwchAo14mCtNIFmsJBBMIOFDBmEppCWBKQV6iDFwUKGDA4ODg4ODkIdLDg4ODg4lHuX5H1zWrscH373f+/ee/fe3ZB6nl95M6SazWbTURIS6dqGI3AUjsEJOAmn4DQ8CA/DI/AoPAaPwxNwBp6Es/AUPA3PwLPwHDwPL8BL8DK8ChfgIrwGl+B1uAxvwhW4Cm/BNbgON+BteAfehffgffgAbsFt+BA+go/hE/gUPoPP4Qv4Er6Cr+Eb+Ba+g8XC/ocjcBSOwQk4CafgNDwID8Mj8Cg8Bo/DE3AGnoSz8BQ8Dc/As/AcPA8vwEvwMrwKF+AivAaX4HW4DG/CFbgKb8E1uA434G14B96F9+B9+ABuwW34ED6Cj+ET+BQ+g8/hC/gSvoKv4Rv4Fr7TXiy+eusosT2/X8ktOMrWFhFxVMQ2NRntwlLunaMmUZPVzuc8l7Rzi4s5R7W0Xxfy4qi29seNygdHyYBpaw+IuOpbWKQTeD8iV303gf838sbnqh9ebPsD03FJxz9N7P+jWjr+ZeIYOmmbOIH4t4mTiC9NnEL8x8T+r80bbPemV6gi+qa/rzs3eyVDyhKv8JOIqJiOQyjJPFyib8YjeoG+SOcRfuyqr9IbkH9+dIfxRLA6FKwuc4T6bWyEe8PfRFeeH+/KP5Qv703Wn5s/H++johK6XJ/beNUyfX3un9U/YkdJWCQU965xb7/0BXYwiASDaDCIBYNEMEgGg1QwSPcCVz2Tzu7tvpwXVm+NtiwT183S1azgJnhkn7jqiemwzpbB99foLbGrat2ndR+PINQf9J1I/xN57wDuWP1T7TwFI9t9uOHefxvuoyEOmv7e6tV2lB0WefoXYIs+fw==",
+        "startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNPVU5EQ09ORklHPnByaW1hcnkueG1sPC9TT1VORENPTkZJRz48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2U8L25hbWU+PGludD5zZS5pbnQ8L2ludD48ZXh0PndhdjwvZXh0PjxkaXI+c291bmQtbG9vc2U8L2Rpcj48L2ludDAxPjxpbnQwMj48bmFtZT50YWc8L25hbWU+PGludD50YWcuaW50PC9pbnQ+PGV4dD50YWc8L2V4dD48ZGlyPnRhZy1sb29zZTwvZGlyPjwvaW50MDI+PGludDAzPjxuYW1lPmNvbmZpZzwvbmFtZT48aW50PmNvbmZpZy5pbnQ8L2ludD48ZXh0PnhtbDwvZXh0PjxkaXI+Y29uZmlnLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+        "config/startup.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNPVU5EQ09ORklHPnByaW1hcnkueG1sPC9TT1VORENPTkZJRz48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+c2U8L25hbWU+PGludD5zZS5pbnQ8L2ludD48ZXh0PndhdjwvZXh0PjxkaXI+c291bmQtbG9vc2U8L2Rpcj48L2ludDAxPjxpbnQwMj48bmFtZT50YWc8L25hbWU+PGludD50YWcuaW50PC9pbnQ+PGV4dD50YWc8L2V4dD48ZGlyPnRhZy1sb29zZTwvZGlyPjwvaW50MDI+PGludDAzPjxuYW1lPmNvbmZpZzwvbmFtZT48aW50PmNvbmZpZy5pbnQ8L2ludD48ZXh0PnhtbDwvZXh0PjxkaXI+Y29uZmlnLWxvb3NlPC9kaXI+PC9pbnQwMz48L0lOVD48L2RvY3VtZW50Pg==",
+        "config-loose/primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNPVU5ER1JPVVA+PGVmZmVjdHM+PGlkPjc3PC9pZD48dHlwZT5zZTwvdHlwZT48bGFiZWw+RWZmZWN0czwvbGFiZWw+PG1pbj4yPC9taW4+PG1heD40PC9tYXg+PC9lZmZlY3RzPjwvU09VTkRHUk9VUD48TUFTVEVSPjx2b2x1bWU+Nzk8L3ZvbHVtZT48cGxheT4xPC9wbGF5PjxzeXNwbGF5PjE8L3N5c3BsYXk+PG11dGU+MDwvbXV0ZT48dm9pY2V2b2w+ODE8L3ZvaWNldm9sPjxza2lwdm9sPjM1PC9za2lwdm9sPjwvTUFTVEVSPjxQQVJUPjxlZmZlY3RzPjxpZD40PC9pZD48Z3JvdXA+Nzc8L2dyb3VwPjxzYW1laWQ+MTwvc2FtZWlkPjxuYW1lPuWKueaenOmfszwvbmFtZT48dHlwZT5zZTwvdHlwZT48aGVhZD5GWF88L2hlYWQ+PGludD5zZTwvaW50PjxtYXN0ZXJ2b2w+NjI8L21hc3RlcnZvbD48dm9sdW1lPjgyPC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5Pjx2b2ljZXZvbD41NTwvdm9pY2V2b2w+PHNraXB2b2w+MzE8L3NraXB2b2w+PG11dGU+MDwvbXV0ZT48L2VmZmVjdHM+PC9QQVJUPjwvZG9jdW1lbnQ+",
+        "primary.xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48ZG9jdW1lbnQ+PFNPVU5ER1JPVVA+PGVmZmVjdHM+PGlkPjc3PC9pZD48dHlwZT5zZTwvdHlwZT48bGFiZWw+RWZmZWN0czwvbGFiZWw+PG1pbj4yPC9taW4+PG1heD40PC9tYXg+PC9lZmZlY3RzPjwvU09VTkRHUk9VUD48TUFTVEVSPjx2b2x1bWU+Nzk8L3ZvbHVtZT48cGxheT4xPC9wbGF5PjxzeXNwbGF5PjE8L3N5c3BsYXk+PG11dGU+MDwvbXV0ZT48dm9pY2V2b2w+ODE8L3ZvaWNldm9sPjxza2lwdm9sPjM1PC9za2lwdm9sPjwvTUFTVEVSPjxQQVJUPjxlZmZlY3RzPjxpZD40PC9pZD48Z3JvdXA+Nzc8L2dyb3VwPjxzYW1laWQ+MTwvc2FtZWlkPjxuYW1lPuWKueaenOmfszwvbmFtZT48dHlwZT5zZTwvdHlwZT48aGVhZD5GWF88L2hlYWQ+PGludD5zZTwvaW50PjxtYXN0ZXJ2b2w+NjI8L21hc3RlcnZvbD48dm9sdW1lPjgyPC92b2x1bWU+PHBsYXk+MTwvcGxheT48c3lzcGxheT4xPC9zeXNwbGF5Pjx2b2ljZXZvbD41NTwvdm9pY2V2b2w+PHNraXB2b2w+MzE8L3NraXB2b2w+PG11dGU+MDwvbXV0ZT48L2VmZmVjdHM+PC9QQVJUPjwvZG9jdW1lbnQ+",
+        "tag-loose/fx_owned.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+        "tag-loose/fx_other.tag": "jYeQfQAAAAAAAAAAAAAAAAAAAAAlAAAAjYeQfQAAAAAAAAAAAAAAAAAAAABbAAAAlpaU9gAAAAAAAAAAAAAAAAAAAAA1AAAA",
+        "scripts.int": "S0lGAAAAAAA=",
+        "se.int": "S0lGAAAAAAA=",
+        "tag.int": "S0lGAAAAAAA=",
+        "config.int": "S0lGAAAAAAA="
+      },
+      "phases": [
+        {
+          "frame": 20,
+          "advance": 0
+        },
+        {
+          "frame": 21,
+          "advance": 8000
+        },
+        {
+          "frame": 33,
+          "advance": 0
+        },
+        {
+          "frame": 34,
+          "advance": 0
+        }
+      ],
+      "outputs": [
+        256, 260, 264, 268, 272, 276, 280, 284, 288, 640, 644, 648, 652, 656, 660, 664, 668, 672,
+        676, 680, 684, 688, 692, 696, 700, 768, 772
+      ],
+      "originalReceipt": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk-modern-primary-sound-20261128/ORIGINAL-G2C-76.json",
+      "originalReceiptSha256": "f73fdf26cb214b9667a87edc05023cea99b0395a33cf55f8a4c211a0a7c747c8",
+      "rows": [
+        {
+          "frame": 20,
+          "words": [
+            1, 79, 82, 82, 82, 39, 26, 1, 4, 1, 82, 39, 37, 37, 2, 2779096485, 2779096485,
+            2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485, 2779096485,
+            2779096485, 396, 0
+          ]
+        },
+        {
+          "frame": 21,
+          "words": [
+            1, 79, 82, 82, 82, 39, 26, 1, 4, 1, 82, 39, 37, 37, 2, 1, 0, 64000, 37, 1, 82,
+            2779096485, 2779096485, 2779096485, 2779096485, 396, 0
+          ]
+        },
+        {
+          "frame": 33,
+          "words": [
+            1, 79, 82, 82, 82, 39, 26, 1, 4, 1, 82, 39, 37, 37, 2, 1, 0, 64000, 37, 1, 82, 64000,
+            82, 2779096485, 2779096485, 396, 0
+          ]
+        },
+        {
+          "frame": 34,
+          "words": [
+            1, 79, 82, 82, 82, 39, 26, 1, 4, 1, 82, 39, 37, 37, 2, 1, 0, 64000, 37, 1, 82, 64000,
+            82, 0, 4, 396, 396
+          ]
+        }
+      ]
+    }
+  ]
+}

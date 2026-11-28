@@ -1,5 +1,11 @@
 // SPDX-License-Identifier: MPL-2.0
 import assert from 'node:assert/strict';
+import { BlobFile, GameFiles } from '../../src/files.mjs';
+import { NativeWorld } from '../../src/native/world.mjs';
+import { NativeConfiguration } from '../../src/native/config.mjs';
+import { NativeSoundConfiguration } from '../../src/native/sound-config.mjs';
+import { ParticleRandom } from '../../src/ppi/random.mjs';
+import { MotionLibrary } from '../../src/motion/library.mjs';
 import { AudioMixer } from '../../src/audio.mjs';
 import { encodeCP932 } from '../../src/kcs/strings.mjs';
 import { parseNativeXML } from '../../src/native/xml.mjs';
@@ -47,7 +53,21 @@ export async function primarySoundWorld(version, program, checkpoint) {
       },
       { initialize: false, startup: parseNativeXML(startup) },
     ),
-    { context } = audioFixture(),
+    audio = matchedPrimaryAudio(w);
+  if (checkpoint) await w.restore(checkpoint);
+  else {
+    await w.initialize('main.kcs');
+    await w.spawnScript('source.kcs');
+  }
+  const record = [...w.objects.objects.values()].find(
+    (r) => r.kind === 12 && r.name === 'source.kcs',
+  );
+  assert(record);
+  return { w, ...audio, task: record.implementation };
+}
+
+export function matchedPrimaryAudio(w) {
+  const { context } = audioFixture(),
     decoded = [];
   // The independent native decoder produced these exact finite PCM8 samples.
   // This browser-context port supplies the same samples and an explicit media clock.
@@ -67,6 +87,48 @@ export async function primarySoundWorld(version, program, checkpoint) {
     return buffer;
   };
   w.audio = w.sound.audio = new AudioMixer(w.game, context);
+  return { context, decoded };
+}
+
+// A data-only World receives the same resource-authored initialized owner that
+// the original Engine-class SoundConfig reader constructs in the native group.
+export async function configuredPrimarySoundWorld(version, inputs, checkpoint) {
+  const profile = version === '74' ? 'sdk-4.01-engine-2.6.1.74' : 'nekopara-vol3-engine-2.6.1.76',
+    game = new GameFiles(
+      new Map(
+        Object.entries(inputs).map(([name, bytes]) => [name, new BlobFile(new Blob([bytes]))]),
+      ),
+    );
+  await game.open();
+  const source = await game.readCategory('primary.xml', 'config');
+  assert(source);
+  const configuration = new NativeConfiguration({
+      profile,
+      startup: parseNativeXML(inputs['startup.xml']),
+      uiLanguage: 0x409,
+    }),
+    soundConfiguration = new NativeSoundConfiguration({
+      profile,
+      filename: 'primary.xml',
+      document: parseNativeXML(source),
+    }),
+    random = new ParticleRandom(),
+    w = new NativeWorld({
+      profile,
+      game,
+      configuration,
+      soundConfiguration,
+      random,
+      images: {},
+      host: {},
+      motionLibrary: new MotionLibrary(game, { profile, random }),
+      storage: { read: async () => null, write: async () => true },
+      prepareSceneWorkers: false,
+    }),
+    audio = matchedPrimaryAudio(w);
+  w.ensureNativeEngine = () => {
+    throw new Error('Current primary resource fixture attempted native PE');
+  };
   if (checkpoint) await w.restore(checkpoint);
   else {
     await w.initialize('main.kcs');
@@ -76,5 +138,5 @@ export async function primarySoundWorld(version, program, checkpoint) {
     (r) => r.kind === 12 && r.name === 'source.kcs',
   );
   assert(record);
-  return { w, context, decoded, task: record.implementation };
+  return { w, ...audio, source, task: record.implementation };
 }
