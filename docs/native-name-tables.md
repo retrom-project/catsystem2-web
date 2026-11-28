@@ -84,3 +84,30 @@ qualification. Its out-of-allocation witnesses are not repeated or promoted by
 this normal bridge. Main290 uses the typed name-pairs owner; the separate
 833/834 raw-allocation domain keeps its existing ownership guards. The new
 11-target/32-GCALL sequence requires no production, layout or ABI change.
+
+## Modern loaded resource consumers
+
+Exact `0e1dde51…` (74) and plain `ee6bf5cb…` (76) use real Settings XML
+initialization and the FileServer `fes` category to load two independent,
+nonempty authored tables. Canonical names, numeric IDs, fields, wildcard matching
+and replacement filenames feed parsed Script arguments and actual Scene text.
+The original 74 parser owns 100-byte fixed records and searches primary names;
+76 owns larger string/vector records and also searches fifth-column aliases.
+The finite alias miss in 74 and success in 76 are compared separately.
+
+The same original programs allocate two normal two-row name-pair owners, append
+short filenames, perform folded and reverse lookups, then use the returned words
+to select different Scene blocks. Source strings are overwritten; one owner and
+then both owners are released before subsequent consumers. A new table reader
+sees the replaced resource's ID while the existing owner retains the old ID.
+Complete VM outputs and canary spans match both originals, including ten
+independent current checkpoint continuations across this and the XML/tone group.
+`native-modern-xml-tone-name.test.mjs` preserves those consumer programs.
+
+This qualifies the existing common name-pair implementation for plain 76 and
+replaces its old unsupported migration decision; it adds no new record format
+or layout. The historical zero-call static survey remains unchanged. Resource
+reads use the qualified loose-file backend and finite Settings prefix. Full
+Engine teardown, KIF rebind's unqualified 64-bit seek leaf, physical Windows
+storage, arbitrary TSV grammar and the wrapped 638e executable remain outside
+this proof.

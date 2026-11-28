@@ -119,6 +119,7 @@ export default {
     implicitTextRecordRequired: true,
   },
   xmlEncoding: 'UTF-8',
+  nameTable: { fixedPairs: true },
   text: {
     legacyConfigurationBytes: 1128,
     legacyInitializerSlots: [123],
@@ -1233,9 +1234,9 @@ export default {
         {
           ids: [289, 290, 291, 292, 293],
           value: {
-            behavior: 'UnsupportedKCSNative preserves ABI/ID/VM/task/source diagnostics',
-            decision: 'retain-unsupported',
-            evidence: 'docs/native-domain4-review.md',
+            behavior: 'Typed owned 40-byte name pairs feed parsed Script Scene consumers',
+            decision: 'js-owned-inputs',
+            evidence: 'docs/native-name-tables.md#modern-loaded-resource-consumers',
             phase: 4,
             reachability: {
               dynamicNativeOperands: 0,

@@ -25,3 +25,14 @@ four independent cold points without rereading the parsed resource. Existing
 parser tests retain their own scope for comments, incomplete headers and other
 inputs; this normal bridge does not promote arbitrary table grammar, raw-byte
 alias equivalence, malformed files or other builds from SDK23 evidence.
+
+The exact 74/plain ee6-76 resource programs in
+`tests/native-modern-xml-tone-name.test.mjs` independently qualify the same
+finite two-group tone format in each loaded Script context. Two owners copy
+group/name mappings, including ASCII folding and first insertion of the repeated
+Alice alias. Returned small RGB words format a real Scene filename and its text
+is consumed after both tone owners retire. A missing group preserves initialized
+output canaries. Replacing the loose source yields 8/6/12 in a new reader while
+the old owner retains 7/9/11. Current cold continuations preserve the independent
+owners and copied words. This proves table selection and text consumption;
+pixel color, GPU output, general parsing and physical file ports remain separate.

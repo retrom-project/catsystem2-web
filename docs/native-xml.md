@@ -57,3 +57,23 @@ later consumers at four independent cold points, closing the old World first.
 Neither the remaining live owner nor its restored parsed state reopens that
 resource. This document-owner bridge is separate from startup XML configuration
 production and from native GAME_SAVE product persistence.
+
+## Modern Settings and document consumers
+
+The exact 74 and plain ee6-76 programs in
+`tests/native-modern-xml-tone-name.test.mjs` use a separate parsed Main590
+startup document and the intact Settings initializer/XML writer. That finite
+prefix produces the real `config` and `fes` rows; Main674's returned category
+index formats the filename selected by Main598. Actual FileServer reads then
+create two independent document owners. Version 74 requires Shift_JIS and 76
+requires UTF-8; text bytes, including literal entity spelling, match each own
+original rather than being converted by a browser XML parser.
+
+Present integer/text queries drive Script variables, an expression and an actual
+Scene filename. Defined absent queries preserve fallback or destination bytes.
+After one owner closes and the same loose source is replaced, the old owner
+still reads 17 and a new reader reads 31. Both original streams, temporary buffers
+and explicit document owners close normally; serialized current continuations
+preserve this owned state. The qualification covers existing virtual file ports
+and the finite Settings prefix. It excludes full Engine construction/destruction,
+KIF rebind's unqualified 64-bit seek leaf, arbitrary grammar and physical storage.
