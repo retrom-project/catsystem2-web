@@ -157,3 +157,16 @@ Two successive current cold restores per profile preserve remaining owners after
 source removal, independent mutation and normal releases. This does not qualify
 all condition codes, arbitrary files or unspecified raw export padding.
 Run `node --test tests/native-authored-mission-selection-consumers.test.mjs`.
+
+The remaining member/genre and Mission field operations retain separate complete
+original bodies and their initialized owner/producer context. Supplemental loaded
+Script controls exercise those bodies' finite contracts, including flags only
+after explicit clearing, character zero, real point/question fields and a present
+TYPE3 tag. They are body/context reuse, not new original executions. Native
+769/770 opcode identities are decoded from the executed original code despite
+sharing a handler. Their valid-owner empty members remain distinct from the
+operand-ignoring `.23` wrapper stubs. Unwritten member defaults, arbitrary sort
+ties, other condition/resource shapes and physical storage remain outside this
+bridge. The additional controls are in
+`native-authored-question-configuration.test.mjs` and
+`native-authored-database-body-context.test.mjs`.

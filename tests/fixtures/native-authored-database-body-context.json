@@ -1,0 +1,124 @@
+{
+  "scope": "Supplemental actual current Script consumers for the15 retained original body/context bridges. No new original execution, finite valid flags only after explicit clear, char0 and present TYPE3, no uninitialized defaults.",
+  "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxFVEM+PGNhY2hlPjA8L2NhY2hlPjwvRVRDPjxBUFA+PGltZ2NhY2hlPjA8L2ltZ2NhY2hlPjwvQVBQPjxJTlQ+PGludDAwPjxuYW1lPmtjczwvbmFtZT48aW50PnNjcmlwdHMuaW50PC9pbnQ+PGV4dD5rY3M8L2V4dD48ZGlyPnNjcmlwdHMtbG9vc2U8L2Rpcj48L2ludDAwPjxpbnQwMT48bmFtZT5kYXRhYmFzZTwvbmFtZT48aW50PmRhdGFiYXNlLmludDwvaW50PjxleHQ+ZGI8L2V4dD48ZGlyPmRhdGFiYXNlLWxvb3NlPC9kaXI+PC9pbnQwMT48L0lOVD48L2RvY3VtZW50Pg==",
+  "resources": [
+    [
+      "missions.db",
+      "S0NEQncBAAD0CAAAeJzFlc1Kw0AUhU/rz8K1a3HnRiQ3rX870xhpMK0xBm0NRaqttmBB2ux8BXeCz+PSZ/ER3EQnJFAzc6s0Ec9uvpm5c8+cDNkA4NccZLUoeNu1VNx0bKvpy9yzLgzvUOZHtiPVOQDgnF817Ka8XnCjJXPXMcxsobifk2bm1GS9Zyt9WS1Xyc8s01T5OrbayvWma3hGQ/Zl1g1P5ff00q859J2vp1xneIXhVZm7vqap+nR9jRiuM7zC8CrDtxm+w/Bdhu8xfF/NifFLjF9i/BLjlxi/xPglxi8xfonxS0q/C1/f0WsJWAFQAlAGIAzdDseTcOtmEmY3/VKiVlpTaAlALzkviqIo0DapE1BnzvKI98+7GUD3/mHQnTF/3Q9nTedWaepuitBacrfLyTgcDMe9AvLrT41TifxytotAy5Pez/n9tYrMTmg1eXvxvw3A88fL49P7/AGWp2qm47ekfvz+qBPoOSLI8XRj3XVHo//MDwVn+AnhWVzc"
+    ],
+    [
+      "selections.db",
+      "S0NEQqAAAAC0BgAAeJztkjsKwkAURS9BcAMuIEvI9Z/W2sLCDYzOEIPJJEiC2xdtBJM7IDYWc8vzfhx4MwDH3R6fmQA4ZNmApy9OweeCLwRfCr4SfC34RvCt4Pk4p/Cl8KXwpfCl8KXwpfCl8OW4bwLAJsAUgKnaixl0vXNyXaiMwtR1qKH3V9/cvaz/ej/O//f888fKwjc3Z1Pbt1V5Np0LLYyJ+TIPjhg8Jw=="
+    ],
+    [
+      "questions.db",
+      "S0NEQvEAAAA4BwAAeJzjYmBgcI93ZEAHLGBxJxzizljFPV1QxRhh4r7uWNUHYohCNDkaYgo7MDAwOBrhEDfGIW6CXZyZgYFBhAniPiYon5uBgYGdgYHBLbOouEQhsbQkI78oNUWhsDS1uCQzP88em1OHIwjKTM8ooUB/cGpyfl4K+fpDMjKLKNDO4JZfWlSSQb5+WJoApU8eBgYGDgYGhsm/plX3vGo6M+HutEcUOG3IgsmzmpZRor/pJGX2N21u+kiR/meU6QelB1YGBgY2BgYGMQYGBk5Q2ZKXX5KRWjTyCggowKwxSAOYNQtpALMGIg24EKEGHwAA3RQzHg=="
+    ],
+    [
+      "configurations.db",
+      "I2FscGhhDQpDTlQgMg0KTk9STUEgMQ0KUklWQUwgNw0KUlRZUEUgMg0KUklNRyByaXZhbC5wbmcNClJQT1MgMTAgMjANCk1FTUJFUiAwIDENClBBUlRORVIgMg0KQkcgZmllbGQucG5nDQpCR00gNg0KRVhQIDMwDQpQV0lOIDENClBMT1NFIDINClJXSU4gMw0KUkxPU0UgNA0KJEdFTg0KR0VOUkVfQSBADQpHRU5SRV9CIEANCkdFTlJFX0MgQA0KI2JldGENCkNOVCAxDQpOT1JNQSAyDQokR0VODQpHRU5SRV9BIDINCkdFTlJFX0IgNQ0KR0VOUkVfQyA2DQo="
+    ]
+  ],
+  "builds": [
+    {
+      "version": "63",
+      "program": "S0NTAAIAAAAAAAAANAAAAKQIAADYCAAADAAAAOkBAAAAEAAAABAAAMEKAAAAAAAASBEAAHic5VU9TFRBEJ579yPiH8nDGDXi6cgTXPwX/0A99QosTDSxuJITD7yEA/WgsfEKTSxMNMZECgsSLDTRhIKCghgKCgsKCwsLYyiIYmKk0/K8mfW92dt7+BsrXzG5+75vdmdnZ2abERwAhRujABgDAA9TANBcC6cJdjUZByI3EVkXwAqbRF0y1FEmN9vqpKhvGvBuH/bdIbAK9xC50iAjBrnXJz28bUjqDeFcjIQHSNjAwjs1QkiQZJusda8mlghvt92ORZPjMbITbCfZTrGdZjvDAewi16Rx6A770PUMH/Vz5uGDGnJLdUKD+ONkY3GSoH9QM0SFh2TZESZHGD4pF9IlPm6X7fOI4XRA+v6HJWejIvkeVgOH1WiHpRc/FXb86mwfkTt7bCTuoO2p1fsk2ieGur1arbDTBxSuoJ/ALudYwRYvsU1xN6ySG9dkjm13ONnLthROfoj+YNkkw6vlDM8CUuEauaVxw2cZk8ekJjTsMNwgS03UnE1n7LgdRMT2nPzV3U78NIgpg4za5LRB6qtJ2QvGbJ+ZP8jES4ZHOdfrJKkX2IctTjvSNOulumcNyZwjlVri0bFBKvUVe753gsrKsGfG2HnBCQJ6bZAQJfKzkG8MMsnkopBvA1JhXGo8YyQ4Ifkw4a+yyJy5vZGy5VIZeod6u4va7SZc4n34/dGucL9c2HzNIGsJG4EKW8Mno15wR/jY1ulQ4aSut7YwUuFOe7d/80gsOfZl4PsHbWLhVhI2hg5Vhc1SzQtLzF39EHpSzZ8AIOJSmbjzDHTGCSDrUvgephgg61JUHqYZoNfYnWWXFuJc6n/8Ui6XW/Bhna605+88bIsDtOIYI4sv1hY00tFN8TgAeQCg0TgEADQ5rwMAzd4bFZ7G7K0KT011t8JT596v8NSe9HRSP42RfxTgKf1PAHwkvwRAIV8s5gcHilDM9ed6hvhntv/K5SxczA1loS9bKGTh6nCuqKkzaTgPPYMDvfm+4WtZU3727z44/X9/8A2sijaf",
+      "labels": {
+        "level": 128,
+        "mission": 136,
+        "exportSize": 152,
+        "before": 180,
+        "source": 188,
+        "hole": 192,
+        "compiled": 204,
+        "membership": 224,
+        "special": 228,
+        "point": 232
+      },
+      "currentExpected": {
+        "membership": 1,
+        "special": 30,
+        "point": 0,
+        "stats": [1, 1, 1, 3, 4, 1],
+        "sum": 35,
+        "question": "alpha"
+      },
+      "expectedOrigin": "Actual current control checked against retained original setter/getter/constructor/selector body and related typed own resource/VM context; not new native execution."
+    },
+    {
+      "version": "67",
+      "program": "S0NTAAIAAAAAAAAANAAAAKEGAADVBgAADAAAAOkBAAAAEAAAABAAAL4IAAAAAAAAQg0AAHic5VS7a1NhFP81L7W+ArciKpboMdfUr75QUVAxaoY6CAodMjbWtAaaVk26uJhBwUGwSAcHh4AOCgoZOnQokqFDBwf/AukkuthNx5hzrveerzdXijh6h0Pye3znfI9zsoQYYGhfHKAEAJfyALK9cIFhxyOTYHI/k5sD2NCgqhsWfNyHfTuCaOgEk9ssss8iT/qkS48sSb8lXE2w8DQL0yJ80iNEiiWHdK2nIYmhA+u3EjiTHBNJlpCfwt6FobO+06U5IecEvqxHMaIeZyTsmRe4EJC+/5xW+0Ilv8tKS1kD4bK8xa/4mQ1t5Z+QRW6IQiLdlpiXC96ux++RZYlj0eSExEY0mRF4h+7tZUAa2qnn0bQ8m4S8qKfvwTGB07rU6x7y0oaeNxYZD5PvBG5Kybu1tlHxSKR2TG95j15Hy5KsBpIsNeSV7dWHuCDOL7HgDoriLFqZv8aCghYtEnEmvyu5ZJEZIdeUbAekoaS2WtHaeEoPy4Z/6iLLdnrrPLfoLXsZ+tc3s6Ez4e7+w3D4+ylg6JRe2EpP5+WietbQUHQrewseCeeBdRwmmvR6aTiKNHQ0nA1WtsPRC7YSHBckLkpcktiWuCwD7RhbMxvPKZ1Q/kYHRXiQhQO9A03IrL7mj5ESf2a6+po/Aehz+Jk4KwJcSDLA0eHyXcoLwNHhqlwqCMCD22mJJcecw31JPzqdTo7mU95Le//ZpeEkMERNQdY+7Kp6yPkxricGVADwhKkD4NH1AABPqYddngfS4y7PTfWsy3PnPu/y3J48YLmfXrE/Drzl/yngG/tSQLVSq1VmpmuolafK43X5WZq6e6eEW+V6CZOlarWEe7PlmkddK+AmxmemJyqTs/dLtvz6v324+n9/+AVWigq2",
+      "labels": {
+        "level": 128,
+        "mission": 132,
+        "exportSize": 144,
+        "before": 164,
+        "source": 168,
+        "hole": 172,
+        "compiled": 176,
+        "membership": 196,
+        "special": 200,
+        "point": 204
+      },
+      "currentExpected": {
+        "membership": 1,
+        "special": 30,
+        "point": 0,
+        "stats": [1, 1, 1, 3, 4, 1],
+        "sum": 35,
+        "question": "alpha"
+      },
+      "expectedOrigin": "Actual current control checked against retained original setter/getter/constructor/selector body and related typed own resource/VM context; not new native execution."
+    },
+    {
+      "version": "74",
+      "program": "S0NTAAIAAAAAAAAANAAAAKQIAADYCAAADAAAAOkBAAAAEAAAABAAAMEKAAAAAAAASBEAAHic5VU9TFRBEJ579yPiH8nDGDXi6cgTXPwX/0A99QosTDSxuJITD7yEA/WgsfEKTSxMNMZECgsSLDTRhIKCghgKCgsKCwsLYyiIYmKk0/K8mfW92dt7+BsrXzG5+75vdmdnZ2abERwAhRujABgDAA9TANBcC6cJdjUZByI3EVkXwAqbRF0y1FEmN9vqpKhvGvBuH/bdIbAK9xC50iAjBrnXJz28bUjqDeFcjIQHSNjAwjs1QkiQZJusda8mlghvt92ORZPjMbITbCfZTrGdZjvDAewi16Rx6A770PUMH/Vz5uGDGnJLdUKD+ONkY3GSoH9QM0SFh2TZESZHGD4pF9IlPm6X7fOI4XRA+v6HJWejIvkeVgOH1WiHpRc/FXb86mwfkTt7bCTuoO2p1fsk2ieGur1arbDTBxSuoJ/ALudYwRYvsU1xN6ySG9dkjm13ONnLthROfoj+YNkkw6vlDM8CUuEauaVxw2cZk8ekJjTsMNwgS03UnE1n7LgdRMT2nPzV3U78NIgpg4za5LRB6qtJ2QvGbJ+ZP8jES4ZHOdfrJKkX2IctTjvSNOulumcNyZwjlVri0bFBKvUVe753gsrKsGfG2HnBCQJ6bZAQJfKzkG8MMsnkopBvA1JhXGo8YyQ4Ifkw4a+yyJy5vZGy5VIZeod6u4va7SZc4n34/dGucL9c2HzNIGsJG4EKW8Mno15wR/jY1ulQ4aSut7YwUuFOe7d/80gsOfZl4PsHbWLhVhI2hg5Vhc1SzQtLzF39EHpSzZ8AIOJSmbjzDHTGCSDrUvgephgg61JUHqYZoNfYnWWXFuJc6n/8Ui6XW/Bhna605+88bIsDtOIYI4sv1hY00tFN8TgAeQCg0TgEADQ5rwMAzd4bFZ7G7K0KT011t8JT596v8NSe9HRSP42RfxTgKf1PAHwkvwRAIV8s5gcHilDM9ed6hvhntv/K5SxczA1loS9bKGTh6nCuqKkzaTgPPYMDvfm+4WtZU3727z44/X9/8A2sijaf",
+      "labels": {
+        "level": 128,
+        "mission": 136,
+        "exportSize": 152,
+        "before": 180,
+        "source": 188,
+        "hole": 192,
+        "compiled": 204,
+        "membership": 224,
+        "special": 228,
+        "point": 232
+      },
+      "currentExpected": {
+        "membership": 1,
+        "special": 30,
+        "point": 0,
+        "stats": [1, 1, 1, 3, 4, 1],
+        "sum": 35,
+        "question": "alpha"
+      },
+      "expectedOrigin": "Actual current control checked against retained original setter/getter/constructor/selector body and related typed own resource/VM context; not new native execution."
+    },
+    {
+      "version": "76",
+      "program": "S0NTAAIAAAAAAAAANAAAAKQIAADYCAAADAAAAOkBAAAAEAAAABAAAMEKAAAAAAAASBEAAHic5VU9TFRBEJ579yPiH8nDGDXi6cgTXPwX/0A99QosTDSxuJITD7yEA/WgsfEKTSxMNMZECgsSLDTRhIKCghgKCgsKCwsLYyiIYmKk0/K8mfW92dt7+BsrXzG5+75vdmdnZ2abERwAhRujABgDAA9TANBcC6cJdjUZByI3EVkXwAqbRF0y1FEmN9vqpKhvGvBuH/bdIbAK9xC50iAjBrnXJz28bUjqDeFcjIQHSNjAwjs1QkiQZJusda8mlghvt92ORZPjMbITbCfZTrGdZjvDAewi16Rx6A770PUMH/Vz5uGDGnJLdUKD+ONkY3GSoH9QM0SFh2TZESZHGD4pF9IlPm6X7fOI4XRA+v6HJWejIvkeVgOH1WiHpRc/FXb86mwfkTt7bCTuoO2p1fsk2ieGur1arbDTBxSuoJ/ALudYwRYvsU1xN6ySG9dkjm13ONnLthROfoj+YNkkw6vlDM8CUuEauaVxw2cZk8ekJjTsMNwgS03UnE1n7LgdRMT2nPzV3U78NIgpg4za5LRB6qtJ2QvGbJ+ZP8jES4ZHOdfrJKkX2IctTjvSNOulumcNyZwjlVri0bFBKvUVe753gsrKsGfG2HnBCQJ6bZAQJfKzkG8MMsnkopBvA1JhXGo8YyQ4Ifkw4a+yyJy5vZGy5VIZeod6u4va7SZc4n34/dGucL9c2HzNIGsJG4EKW8Mno15wR/jY1ulQ4aSut7YwUuFOe7d/80gsOfZl4PsHbWLhVhI2hg5Vhc1SzQtLzF39EHpSzZ8AIOJSmbjzDHTGCSDrUvgephgg61JUHqYZoNfYnWWXFuJc6n/8Ui6XW/Bhna605+88bIsDtOIYI4sv1hY00tFN8TgAeQCg0TgEADQ5rwMAzd4bFZ7G7K0KT011t8JT596v8NSe9HRSP42RfxTgKf1PAHwkvwRAIV8s5gcHilDM9ed6hvhntv/K5SxczA1loS9bKGTh6nCuqKkzaTgPPYMDvfm+4WtZU3727z44/X9/8A2sijaf",
+      "labels": {
+        "level": 128,
+        "mission": 136,
+        "exportSize": 152,
+        "before": 180,
+        "source": 188,
+        "hole": 192,
+        "compiled": 204,
+        "membership": 224,
+        "special": 228,
+        "point": 232
+      },
+      "currentExpected": {
+        "membership": 1,
+        "special": 30,
+        "point": 0,
+        "stats": [1, 1, 1, 3, 4, 1],
+        "sum": 35,
+        "question": "alpha"
+      },
+      "expectedOrigin": "Actual current control checked against retained original setter/getter/constructor/selector body and related typed own resource/VM context; not new native execution."
+    }
+  ]
+}
