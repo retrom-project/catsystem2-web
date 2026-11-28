@@ -340,3 +340,13 @@ fixture closes its inner Top before its outer supplying Script; the reused
 Root0 current fixture preserves that provider lifetime explicitly. Full
 Application/Device publication and broader replacement formats, callbacks and
 platform resources remain separate qualification boundaries.
+
+SDK63 generic17 and41 now have an intact manager/parsed-MOT-VM consumer receipt.
+Two finite rounding results control a real VM branch; two interpolations feed
+shared position words, which Main302 reads from the working bank. Clearing and
+rebinding the same named source creates a new live record before explicit
+manager deletion. The own table, VM callback,1/5-word packets and C1 writes are
+observed separately from Main307 dispatch. Current cold continuations cover
+loaded, evaluated, cleared and rebound states; the existing FES same-frame
+consumer proof is reused. No new ABI slot, renderer or full-Application claim is
+implied by these two scalar bridges.
