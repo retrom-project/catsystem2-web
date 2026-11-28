@@ -124,3 +124,23 @@ A prior multi-effect reuse oracle run exposed Break's uninitialized homogeneous
 pivot field. The fresh-World authored vectors and layered WebGL fixture remain
 finite. JS initializes the homogeneous pivot deterministically to zero. Raw
 heap-history evidence stays in `.local/phase6/` for later review.
+
+## Modern typed effect and capture-resource bridge
+
+The exact .74 `0e1dde51…` and plain .76 `ee6bf5cb…` builds now have a
+normal factory/registered Script bridge for Matrix (35), Rectangle (36) and
+Shade (37). The parsed caller initializes their typed packets, starts and stops
+them, queries Main520, retires each task, and reaches normal Root collection.
+Main858/859/568 additionally exercise the existing shared capture resource path
+with an empty drawing range. Both original builds use owned 64×64 COM targets;
+Main520 reports `1,0` for each initialized effect. The current fixture checks
+those original controls and output words through an independent cold restore.
+
+This bridge proves the declared constructors, packet shapes, activity and
+resource lifetime. It adds no new ABI entry. It does not prove arbitrary effect
+parameters, original captured pixels, or physical presentation. A separate
+partial original View frame submitted geometry but stopped at the required
+physical Present adapter; that failure remains evidence rather than a frame
+pass. In particular the exact .23 Main520/527/528/568/858/859 active-target
+qualification remains guarded. Existing vector, pixel and browser evidence
+above keeps its own original scope.
