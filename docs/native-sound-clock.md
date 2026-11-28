@@ -362,3 +362,20 @@ original owner, then feeds filename gain through an actual loaded-bank setter
 and readback into parsed Script arithmetic. The earlier pre-derivation zero
 observations remain separate; they do not establish an implicit refresh rule.
 SDK76 reuses the complete equivalent derivation and relevant owner context.
+
+The exact SDK63 bridge maps its own raw Sound selectors, 32 banks and 128-byte
+control records through the real factory/constructor and complete relevant
+receiver/Frame bodies. Its finite integer fade end branch is distinct from any
+claim about arbitrary floating-point trajectories. A parsed current Script
+uses normal legacy Settings, explicit FileServer paths and public Main602 group
+creation, consumes completed gain/pan, and then observes Play restoring the base
+gain. It replaces two prefixed PCM sources and completes pending release across
+four fresh current owners. This reuses the corrected original primary-source
+and bounded COM/allocator/CRT receipts plus the complete body/context bridges;
+it is no new native SDK63 execution or full Application qualification.
+
+The two normal loop-table entries are distinct. Duplicate-entry mutation,
+stream range playback, alternate backend104, spatial/physical output and other
+codec options remain outside this finite bridge. SDK63's original stereo default
+is established by its actual Settings initializer; the pan bridge does not
+invent a new profile flag or replace an uninitialized field.
