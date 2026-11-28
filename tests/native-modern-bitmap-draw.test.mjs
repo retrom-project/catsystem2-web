@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { dataWorld } from './fixtures/data-world.mjs';
 import { kcsProgram } from './helpers.mjs';
+import { floatBits } from '../src/kcs.mjs';
 const golden = JSON.parse(
   await readFile(new URL('./fixtures/native-modern-bitmap-draw-golden.json', import.meta.url)),
 );
@@ -177,5 +178,46 @@ for (const profile of [
       if (golden.versions.some((v) => v.profile === profile))
         assert.equal(Buffer.from(after).toString('base64'), golden.dirtyRegionControl.rgba[1]);
     }
+  });
+}
+
+for (const profile of ['rebellions-jp-engine-2.6.1.63', 'bokutomo-engine-2.6.1.67']) {
+  test(`${profile} affine dirty bounds retain the parent's stored clip rule`, async (t) => {
+    // This protects the existing parent behavior; it is not original affine
+    // evidence or a new version-specific semantic claim.
+    const world = await dataWorld(profile);
+    t.after(() => world.close({ flushFiles: false }));
+    world.graphics.createLogicalDevice();
+    const id = await world.objects.create({ kind: 15, parent: world.main.id }),
+      target = world.nativeTaskID(id),
+      image = world.graphics.images.create(2, 2, world.main.id),
+      draw = world.graphics.drawTasks.get(id),
+      call = (slot, args) =>
+        world.runtime.native('main', slot, args, world.main.machine, world.main),
+      packet = (x, y) => [
+        target,
+        7,
+        image,
+        floatBits(x),
+        floatBits(y),
+        0,
+        0,
+        0,
+        floatBits(1),
+        floatBits(1),
+        255,
+        1,
+        1,
+      ];
+    await call(256, [target, 8, 6]);
+    await call(257, packet(0, 0));
+    await call(339, [target, 7, 1, 1, 1, 1]);
+    const item = draw.state.renderer.items[0];
+    assert.equal(item.mode, 1);
+    assert.deepEqual(item.dirtyBounds, [1, 1, 2, 2]);
+    await call(259, packet(3, 3));
+    assert.deepEqual(draw.state.renderer.items[0].dirtyBounds, [1, 1, 2, 2]);
+    assert.deepEqual(draw.state.renderer.dirtyRects.at(-2), [1, 1, 2, 2]);
+    assert.deepEqual(draw.state.renderer.dirtyRects.at(-1), [1, 1, 2, 2]);
   });
 }

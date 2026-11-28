@@ -489,12 +489,11 @@ export class NativeDrawTask {
   mark(item, previous = false) {
     let bounds = previous ? item.dirtyBounds : this.bounds(item);
     if (!bounds) throw new Error('Drawing entry has no previous dirty bounds');
-    if (!previous && nativeABI(this.world.profile).graphics.drawAccumulatesBounds) {
-      bounds = nativeRectangleUnion(item.dirtyBounds ?? [0, 0, 0, 0], bounds);
-    }
-    // Native scalar invalidation intersects the entry's stored clip before
-    // marking the renderer. Pixels outside that clip were never dirtied.
-    if (!item.mode)
+    const accumulate = !previous && nativeABI(this.world.profile).graphics.drawAccumulatesBounds;
+    if (accumulate) bounds = nativeRectangleUnion(item.dirtyBounds ?? [0, 0, 0, 0], bounds);
+    // The shared correction covers scalar invalidation. Accumulated affine
+    // bounds retain their existing clip rule until that original path is proved.
+    if (!item.mode || accumulate)
       bounds = [
         Math.max(bounds[0], item.clip[0]),
         Math.max(bounds[1], item.clip[1]),

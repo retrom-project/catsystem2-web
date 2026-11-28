@@ -267,3 +267,9 @@ cold continuations include source-free use after the array owner releases.
 A separate unchanged translucent middle entry checks that separated updates
 do not blend it over its previous pixels. These are bounded CPU/COM-memory
 results; they do not establish physical texture sampling or every format.
+
+The common clipped-invalidation correction applies to scalar entries. The
+existing .63/.67 accumulated-affine clipping rule is preserved from the parent
+implementation: the current evidence does not establish an original affine
+change. Its regression control protects that retained behavior without using
+a current/parent comparison as native proof.
