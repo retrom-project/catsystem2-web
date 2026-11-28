@@ -111,3 +111,22 @@ reads use the qualified loose-file backend and finite Settings prefix. Full
 Engine teardown, KIF rebind's unqualified 64-bit seek leaf, physical Windows
 storage, arbitrary TSV grammar and the wrapped 638e executable remain outside
 this proof.
+
+## SDK63 parsed resource consumer bridge
+
+`tests/native-sdk63-xml-name-resources.test.mjs` binds all eight table operations
+to exact `c8d4d709…`, normal Settings `fes` selection and the original `.tbl`
+extension. Two nonempty owners supply canonical names, row IDs, fields, wildcard
+matches and replacement filenames to the same actual Script/Scene consumer.
+The native constructor owns 100-byte records and frees its temporary resource
+buffer. Fifth-column aliases remain disabled.
+
+The authored table includes a 31-byte CP932 primary name, a 32-byte primary name
+that the parser skips, and a longer filename field that it clamps to 31 bytes.
+Original return codes, copied names/fields, NUL bytes and destination canaries
+match current behavior. After source/query overwrite and first-owner release,
+the other owner still returns ID 7. A normal source remount and independent
+reader return ID 8. Both old owners and the new reader retire before continued
+consumption of the previously selected Scene. The combined XML/name program has
+39 target and 73 total GCALLs, with eight independent current cold continuations.
+No production algorithm, ABI registration or parser layout changed.

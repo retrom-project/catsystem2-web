@@ -77,3 +77,26 @@ and explicit document owners close normally; serialized current continuations
 preserve this owned state. The qualification covers existing virtual file ports
 and the finite Settings prefix. It excludes full Engine construction/destruction,
 KIF rebind's unqualified 64-bit seek leaf, arbitrary grammar and physical storage.
+
+## SDK63 resource owner and caller bridge
+
+The exact `c8d4d709…` program in
+`tests/native-sdk63-xml-name-resources.test.mjs` uses the qualified native
+Settings/FileServer producer, including a real `config` category at index 4.
+Main674 selects that index; Main598 formats the resource base; two Main590
+owners parse the nonempty Shift_JIS XML. Integer/text outputs reach loaded
+Script variables, an expression and an actual Scene filename. Defined absent
+queries preserve the integer fallback or the existing text destination.
+
+The original parsed Script runs ten normal virtual Frame calls across this and
+the name-table group. It uses the already qualified Main71 idle-wait carrier on
+initialized scratch storage; the separate Main65 guard is unchanged. Replacing
+the controlled archive and calling the normal FileServer mount API leaves the
+old document at 17 while a new reader observes 31. Both XML owners retire before
+later Scene/text consumers, and eight independent current cold continuations
+match the original initialized outputs and canaries.
+
+This reuses the existing SDK63 virtual file port's normal finite KIF seek path.
+It does not qualify a new general Win32 leaf, physical storage, full Application
+or Root0 Input namespace. The modern KIF-rebind host gap recorded above remains
+separate; this SDK63 context does not remove it or promote other builds.
