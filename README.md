@@ -1,8 +1,11 @@
 # CatSystem2 Web
 
 独立运行的 CatSystem2 浏览器实现，使用 JavaScript、WebGL2、Canvas2D、Web Audio 和 IndexedDB。
-当前以经过解包、解密的 NEKOPARA Vol. 3 为兼容性样本；尚未接入 retrom-runtime。
+已通过 retrom-runtime 与 Retrom 命名 PFB 的开发候选验证，
+以经过解包、解密的 NEKOPARA Vol. 3 为主要兼容性样本。
 这是开发中的引擎，不能据此认为所有 CatSystem2 游戏均已兼容。
+已验证范围与剩余限制见 [PFB 交接](docs/handoff/catsystem2-web-pfb/README.md)，
+正式资产与 tag 流程见 [发布](docs/releasing.md)。
 
 ## 运行
 
