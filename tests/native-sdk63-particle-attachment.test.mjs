@@ -4,6 +4,7 @@ import test from 'node:test';
 import { readFile } from 'node:fs/promises';
 import { modernParticleMessageWorld } from './fixtures/modern-particle-message-world.mjs';
 import { kcsProgram, hg3 } from './helpers.mjs';
+import { particleRenderState } from '../src/render/particles-gl.mjs';
 import { nativeABI } from '../src/native/abi/index.mjs';
 import { parseXML } from '../src/xml.mjs';
 import { serializeCheckpoint, deserializeCheckpoint } from '../src/checkpoint.mjs';
@@ -84,6 +85,8 @@ for (const c of f.cases)
           assert.equal(i.table, p.table);
           assert.equal(Number(t.active), p.active);
           assert.equal(t.state.alpha, p.alpha);
+          if (p.blendMode !== undefined)
+            assert.equal(i.blendMode, p.blendMode, 'task-owned blend survives source reload');
           assert.equal(role(t.state.attachment >>> 0), p.attachment);
           if (p.executed) {
             assert.equal(i.frame, p.frame);
@@ -107,10 +110,13 @@ for (const c of f.cases)
           const draws = [];
           for (const item of w.particles.drawItems())
             await item.drawGPU({
-              drawGeometry(geometry, image) {
+              drawGeometry(geometry, image, options) {
                 for (const q of geometry) {
                   const v = q.vertices;
                   draws.push({
+                    blendFactors: [19, 20].map((id) =>
+                      particleRenderState(options.blendMode).states.get(id),
+                    ),
                     triangles: [
                       [v[0], v[1], v[2]],
                       [v[2], v[1], v[3]],
@@ -128,7 +134,7 @@ for (const c of f.cases)
             draws,
             c.draws
               .filter((r) => r.phase === row.phase)
-              .map(({ triangles, atlas }) => ({ triangles, atlas })),
+              .map(({ triangles, atlas, blendFactors }) => ({ triangles, atlas, blendFactors })),
             'actual Root/View native quad and decoded atlas',
           );
         }
@@ -188,8 +194,9 @@ for (const [version, name] of [
 ])
   test(`own${version} native graph enable and callback binding remain independent through source replacement`, async () => {
     const profile = name + '-engine-2.6.1.' + version,
-      code = kcsProgram([[37, 512], [43, 30, 4], [59]]),
-      image = hg3(1, 1, new Uint8Array([17, 91, 203, 255])),
+      code = kcsProgram([[37, 512], [43, 30, 4], [37, 1], [43, 50, 4], [59]]);
+    new DataView(code.buffer, code.byteOffset).setUint16(8, 2, true);
+    const image = hg3(1, 1, new Uint8Array([17, 91, 203, 255])),
       w = await modernParticleMessageWorld(profile, { 'body.kcs': code, 'atlas.hg3': image });
     w.graphics.createLogicalDevice();
     const m = w.main.machine;
@@ -209,6 +216,7 @@ for (const [version, name] of [
       await call(271, [256, 320, 1, 0, 512]);
       const b = task().bank;
       assert.equal(Number(task().active), 1, 'load retains active independently of graph callback');
+      assert.equal(b.instance.blendMode, 1, 'same task owns mode across load');
       assert.equal(b.nativeDrawBound, false);
       assert.equal(b.nativeDrawEnabled, false);
       await w.objects.update(w.root, 701);
@@ -231,6 +239,13 @@ for (const [version, name] of [
           assert.fail('stopped native port must not draw');
         },
       });
+      await w.sendEngine(task().record.id, w.main.id, 317);
+      assert.equal(task().snapshot().blendMode, 1, 'explicit bank release retains task mode');
+      const missingMode = task().snapshot();
+      delete missingMode.blendMode;
+      assert.throws(() => task().restore(missingMode), /initialized blend mode/);
+      await call(271, [256, 320, 1, 0, 512]);
+      assert.equal(task().bank.instance.blendMode, 1, 'new bank uses its surviving task owner');
       assert.equal(nativeABI(profile).particle.drawPortRequiresStart, undefined);
       assert.equal(nativeABI(profile).particle.drawPortEnabledByIdle, undefined);
     } finally {

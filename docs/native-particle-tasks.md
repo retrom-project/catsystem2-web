@@ -286,7 +286,7 @@ A fresh Plane, v1 source/atlas and copied register bank can then be rebound.
 Active source replacement frees the previous interpreter/buffers/atlas and clears
 the graph callback; normal Main272 rebinds it without resetting the legacy
 vectors. Stop, next-update task collection and independent Plane retirement are
-separate observations. Ten independent current cold continuations cover the
+separate observations. Twelve independent current cold continuations cover the
 states on either side of those boundaries.
 
 The native fixtures preserve actual GCALL control/write status and complete
@@ -299,3 +299,13 @@ in the ignored acceptance index. Main271–275 producer/control and owner eviden
 is joined with the accepted auxiliary-table group, rather than counted again as
 new slots. Plugin693, unknown receivers/shapes, physical table0, absent resources,
 dense256, App0 and physical GPU/shader output remain outside this group.
+
+Blend mode is also a task field, not an interpreter-local initialization word.
+The five own v2 opcode50 bodies write that task word, and their full loaders leave
+it intact. The exact63 mode1 writer followed by v1 reload and normal Start still
+submits D3D source/destination factors5/2. Current mode ownership therefore spans
+bank replacement and explicit bank release, while the task remains alive. The
+current internal checkpoint stores it with the task and validates its initialized
+0–5 domain; no native GAME_SAVE layout or new format version is added. Geometry,
+atlas bytes and these finite render-state factors are qualified here, with no
+physical GPU or broader shader claim.

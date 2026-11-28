@@ -3,7 +3,7 @@
   "tag": 1703,
   "evidence": [
     {
-      "path": ".local/phase11/sdk63-particle-attachment-lifecycle-20261128/ORIGINAL-ATTACHMENT63.json",
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk63-particle-attachment-lifecycle-20261128/ORIGINAL-ATTACHMENT63.json",
       "sha256": "7c30aa8d416d15247f4a9be04decd6935505b7d9ad5d6eee3cff5708055954f0",
       "accounting": {
         "selectedTarget": 56,
@@ -17,7 +17,7 @@
       }
     },
     {
-      "path": ".local/phase11/sdk63-particle-attachment-lifecycle-20261128/ORIGINAL-RESTART63.json",
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk63-particle-attachment-lifecycle-20261128/ORIGINAL-RESTART63.json",
       "sha256": "f8ce48bf07a0def3eda55bf4347de2aaaed1bb5b4df63d78094eb8d9ee0cec5c",
       "accounting": {
         "selectedTarget": 11,
@@ -27,6 +27,20 @@
         "businessDirect": 10,
         "journalEntries": 71,
         "closed": 36,
+        "overlap": "PTCL/GCALL wrappers occur within actual Root frame; direct collector/View and setup/cleanup are separate actual journals, not added as independent function tests."
+      }
+    },
+    {
+      "path": "/home/sen/work/retrom-project/.worktree/catsystem2-web/project/retrom-core/catsystem2-web/.local/phase11/sdk63-particle-attachment-lifecycle-20261128/ORIGINAL-MODE63.json",
+      "sha256": "08b8371b9c8e90047d5a0755697538002b6b1767e25ec1ae55b7fbfaf49d46d6",
+      "accounting": {
+        "selectedTarget": 12,
+        "allGCALL": 36,
+        "observedGCALL": 33,
+        "bootstrap": 3,
+        "businessDirect": 5,
+        "journalEntries": 65,
+        "closed": 33,
         "overlap": "PTCL/GCALL wrappers occur within actual Root frame; direct collector/View and setup/cleanup are separate actual journals, not added as independent function tests."
       }
     }
@@ -973,7 +987,8 @@
             "width": 4,
             "height": 4,
             "rgba": "lWuJAKBkklWrXZuqtlak/2mHZQB0gG5Vf3l3qopygP89o0EASJxKVVOVU6pejlz/Eb8dABy4JlUnsS+qMqo4/w=="
-          }
+          },
+          "blendFactors": [5, 2]
         },
         {
           "phase": 5,
@@ -1041,7 +1056,8 @@
             "width": 4,
             "height": 4,
             "rgba": "lWuJAKBkklWrXZuqtlak/2mHZQB0gG5Vf3l3qopygP89o0EASJxKVVOVU6pejlz/Eb8dABy4JlUnsS+qMqo4/w=="
-          }
+          },
+          "blendFactors": [5, 2]
         }
       ]
     },
@@ -1354,7 +1370,8 @@
             "width": 4,
             "height": 4,
             "rgba": "f5eJ/3iihqpxrYNVariAAJtrlf+UdpKqjYGPVYaMjAC3P6H/sEqeqqlVm1WiYJgA0xOt/8weqqrFKadVvjSkAA=="
-          }
+          },
+          "blendFactors": [5, 6]
         },
         {
           "phase": 3,
@@ -1422,7 +1439,297 @@
             "width": 4,
             "height": 4,
             "rgba": "lWuJAKBkklWrXZuqtlak/2mHZQB0gG5Vf3l3qopygP89o0EASJxKVVOVU6pejlz/Eb8dABy4JlUnsS+qMqo4/w=="
+          },
+          "blendFactors": [5, 6]
+        }
+      ]
+    },
+    {
+      "name": "mode",
+      "cold": [1, 2],
+      "inputs": {
+        "startup": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iU2hpZnRfSklTIj8+PGRvY3VtZW50PjxTQ1JFRU4+PHdpZHRoPjMyPC93aWR0aD48aGVpZ2h0PjI0PC9oZWlnaHQ+PHZfd2lkdGg+MzI8L3Zfd2lkdGg+PHZfaGVpZ2h0PjI0PC92X2hlaWdodD48ZnBzPjYwPC9mcHM+PC9TQ1JFRU4+PEVUQz48Y2FjaGU+MDwvY2FjaGU+PC9FVEM+PEFQUD48aW1nY2FjaGU+MDwvaW1nY2FjaGU+PC9BUFA+PFRFWFRVUkU+PHNpemU+PHg+ODwveD48eT44PC95Pjwvc2l6ZT48dnQ+PHg+MjwveD48eT4xPC95PjwvdnQ+PGFyZWEwMD48c3g+MDwvc3g+PHN5PjA8L3N5PjxkeD4yPC9keD48ZHk+MTwvZHk+PC9hcmVhMDA+PGJwcDMyeT4wPC9icHAzMnk+PGJwcDE2eT4xPC9icHAxNnk+PGJwcD4zMjwvYnBwPjwvVEVYVFVSRT48SU5UPjxpbnQwMD48bmFtZT5rY3M8L25hbWU+PGludD5zY3JpcHRzLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5zY3JpcHRzLWxvb3NlPC9kaXI+PC9pbnQwMD48aW50MDE+PG5hbWU+aW1hZ2U8L25hbWU+PGludD5pbWFnZXMuaW50PC9pbnQ+PGV4dD5oZzM8L2V4dD48ZGlyPmltYWdlcy1sb29zZTwvZGlyPjwvaW50MDE+PGludDAyPjxuYW1lPnB0Y2w8L25hbWU+PGludD5wdGNsLmludDwvaW50PjxleHQ+a2NzPC9leHQ+PGRpcj5wdGNsLWxvb3NlPC9kaXI+PC9pbnQwMj48aW50MDM+PG5hbWU+c2NlbmU8L25hbWU+PGludD5zY2VuZS5pbnQ8L2ludD48ZXh0PmNzdDwvZXh0PjxkaXI+c2NlbmUtbG9vc2U8L2Rpcj48L2ludDAzPjwvSU5UPjwvZG9jdW1lbnQ+",
+        "archives": [
+          {
+            "name": "scripts.int",
+            "bytes": "S0lGAAMAAABtYWluLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAE4AAAByZXNvdXJjZTYzLmtjcwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALgEAAE4AAABhdHRhY2htZW50LW1haW4ua2NzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfAEAADICAABLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAEgAAAEYAAAAAAAAAAAAAAAAQAAAAEAAARgAAAAAAAAAkAAAAeJxTVf7AwMCgrezOwMCgzMLAwGANABtrAjBLQ1MAAgAAAAAAAAA0AAAAaQUAAJ0FAAAHAAAAkAAAAAAQAAAAEAAALQYAAAAAAADSCgAAeJyF1CFsE1Ecx/HfXQ6yZEtoKGIC0eTRwnJbMghiCRM3GGFiCRUTExM71pKK0hF22RaCmJiYQCAQiImSLFkDExMTFRUVkCAQCAQCgUCQDIFAIEhg7/UOvutIMC+f9///7/3/uXtt0Xje7lLRSFLJKJAyB/AAPATn4HPwMHweLsAX4EvwKDwOX4Un4Ek4gqfhGXgWLsNz8Dy8AC/CFbgG1+H7cAKvw49S56ZKZiN1MyqZTdRswY/hJ/BT+Bm8DTfhHbgF78H78AHchjtwF34Fv4Hfwu/g9/AH+CP8Cf4Mf4G/wt/g7/AP+Kfz65GHz0umqb/egVvwHrwPH8BtuAN3JYVmWlJ28V3St2u+Z3m25LotGer9HlxyVOnEU3btRkWzGBV+hea2LcyhxHMtFmx4wAVyODzqP3zcJd1qNjy7dr3slKJRtH2z6P4UQnPGk8xw7xbxIdfuhZe164XdLKF5eTwcmpwNBO7B9qAN3FIauGjWAimf7wxKZvd0FsjayHfN/P/O1uJsLpn/M8TJnof9PQ+Dfw2bBs5mgewSnDjv2qm+82xgxK0T9oN70owk+xnmj/b2jVeO9vad123el9Zt3pe2bN6X7j6ortQK5XrcqBaWG1XFSRIv1e5VG0mhPHdjNt1XK2OrVxQn9XhlLEbs8rHnk7XltOaOfgPt2bjn"
+          },
+          {
+            "name": "images.int",
+            "bytes": "S0lGAAIAAABhdGxhcy1hLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAKIAAABhdGxhcy1iLmhnMwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOgEAAKMAAABIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARgAAAAAAAAAEAAAAIgAAAEAAAAAMAAAABAAAAHic42hoaBBEAsoTJ06UQQJMc+bMUUMGy5Yt40ECAJJvC8F4nGtkEGAAAAIoAJJIRy0zDAAAAAADAAAAAAAAAAAAAHN0ZGluZm8AOAAAACgAAAAEAAAABAAAACAAAAAAAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAAAaW1nMDAwMAAAAAAARwAAAAAAAAAEAAAAIwAAAEAAAAAMAAAABAAAAHicE2poaGBBAlItLS2mSEB169atkkggMjIy0hgJAACaCQ0deJxrZBBgAAACKACS"
+          },
+          {
+            "name": "ptcl.int",
+            "bytes": "S0lGAAIAAABhdHRhY2hlZC12Mi5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmAAAAI0AAABhdHRhY2hlZC12MS5rY3MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJQEAAGYAAABLQ1MAAgAAAAIAAAA0AAAAlgAAAMoAAAAAAAAAAAAAAAAQAAAAEAAAygAAAAAAAAAsAQAAeJzTVtZjYGBQZmBgYFBTdmBgYNBW1kcIuDAwMKgqe4BJH7CkAUiSAywQACZDwGQEWNIQJMkDFmBgAgnIgQRYQALCYNXCYNXCENXSCNWMYAEjmGprAFmKCulLQ1MAAgAAAAEAAAA0AAAAQAAAAHQAAAAAAAAAAAAAAAAQAAAAEAAAdAAAAAAAAACAAAAAeJxTVW5gYGDQVlZmYGBQZmFgYFBVZmACCcjBBYQbwGQLRBKsWhokycPAwGANAKWsBM0="
+          },
+          {
+            "name": "scene.int",
+            "bytes": "S0lGAAAAAAA="
           }
+        ],
+        "main": "S0NTAAIAAAAAAAAANAAAAGkFAACdBQAABwAAAJAAAAAAEAAAABAAAC0GAAAAAAAA0goAAHichdQhbBNRHMfx310OsmRLaChiAtHk0cJyWzIIYgkTNxhhYgkVExMTO9aSitIRdtkWgpiYmEAgEIiJkixZAxMTExUVFZAgEAgEAoFAkAyBQCBIYO/1Dr7rSDAvn/f//+/9/7l7bdF43u5S0UhSySiQMgfwADwE5+Bz8DB8Hi7AF+BL8Cg8Dl+FJ+BJOIKn4Rl4Fi7Dc/A8vAAvwhW4Btfh+3ACr8OPUuemSmYjdTMqmU3UbMGP4SfwU/gZvA034R24Be/B+/AB3IY7cBd+Bb+B38Lv4PfwB/gj/An+DH+Bv8Lf4O/wD/in8+uRh89Lpqm/3oFb8B68Dx/AbbgDdyWFZlpSdvFd0rdrvmd5tuS6LRnq/R5cclTpxFN27UZFsxgVfoXmti3MocRzLRZseMAFcjg86j983CXdajY8u3a97JSiUbR9s+j+FEJzxpPMcO8W8SHX7oWXteuF3SyheXk8HJqcDQTuwfagDdxSGrho1gIpn+8MSmb3dBbI2sh3zfz/ztbibC6Z/zPEyZ6H/T0Pg38NmwbOZoHsEpw479qpvvNsYMStE/aDe9KMJPsZ5o/29o1Xjvb2nddt3pfWbd6Xtmzel+4+qK7UCuV63KgWlhtVxUkSL9XuVRtJoTx3YzbdVytjq1cUJ/V4ZSxG7PKx55O15bTmjn4D7dm45w==",
+        "v1": "S0NTAAIAAAABAAAANAAAAEAAAAB0AAAAAAAAAAAAAAAAEAAAABAAAHQAAAAAAAAAgAAAAHicU1VuYGBg0FZWZmBgUGZhYGBQVWZgAgnIwQWEG8BkC0QSrFoaJMnDwMBgDQClrATN",
+        "v2": "S0NTAAIAAAACAAAANAAAAJYAAADKAAAAAAAAAAAAAAAAEAAAABAAAMoAAAAAAAAALAEAAHic01bWY2BgUGZgYGBQU3ZgYGDQVtZHCLgwMDCoKnuASR+wpAFIkgMsEAAmQ8BkBFjSECTJAxZgYAIJyIEEWEACwmDVwmDVwhDV0gjVjGABI5hqawBZigrp"
+      },
+      "rows": [
+        {
+          "phase": 0,
+          "label": "fresh v2 normal task with actual opcode50 mode1 owner writer",
+          "caller": [
+            1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861,
+            2709137861
+          ],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 128,
+            "blendMode": 0,
+            "attachment": "plane1",
+            "version": 131072,
+            "frame": 0,
+            "before": 0,
+            "now": 0,
+            "executed": false,
+            "results": null,
+            "buffers": null,
+            "table": "particle-v2"
+          }
+        },
+        {
+          "phase": 1,
+          "label": "v2 actual idle sets mode1 before parent reloads normal v1 source/atlas",
+          "caller": [
+            1, 2709137861, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 128,
+            "blendMode": 1,
+            "attachment": "plane1",
+            "version": 65536,
+            "frame": 0,
+            "before": 0,
+            "now": 1,
+            "executed": false,
+            "results": null,
+            "buffers": null,
+            "table": "particle-v1"
+          }
+        },
+        {
+          "phase": 2,
+          "label": "v1 actual idle followed by normal restart consumes task-owned blend word",
+          "caller": [
+            1, 2709137861, 1, 1, 2709137861, 2709137861, 2709137861, 2709137861, 2709137861
+          ],
+          "zeroedRegisterSource": null,
+          "planes": [
+            {
+              "role": "plane1",
+              "alive": true
+            }
+          ],
+          "particle": {
+            "alive": true,
+            "active": 1,
+            "alpha": 128,
+            "blendMode": 1,
+            "attachment": "plane1",
+            "version": 65536,
+            "frame": 0,
+            "before": 0,
+            "now": 1,
+            "executed": true,
+            "results": {
+              "128": 1091567616,
+              "132": 1084227584
+            },
+            "buffers": [
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw==",
+              "AAAQQQAAoEAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AAAAAAAAAAAAAAAAAAAAAA==",
+              "AACAPwAAgD8AAIA/AAAAAA==",
+              "AQAAAA=="
+            ],
+            "table": "particle-v1"
+          },
+          "drawCount": 1
+        }
+      ],
+      "calls": [
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 46,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": "plane1"
+        },
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 47,
+          "args": [],
+          "control": 1,
+          "written": true,
+          "value": 1
+        },
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 48,
+          "args": [72, 76],
+          "control": 2,
+          "written": false,
+          "outputs": [0, 0]
+        },
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 49,
+          "args": [80, 84, 88],
+          "control": 2,
+          "written": false,
+          "outputs": [0, 0, 0]
+        },
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 27,
+          "args": [0, 0, 0],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 1,
+          "table": "particle-v2",
+          "id": 50,
+          "args": [1],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 2,
+          "table": "particle-v1",
+          "id": 35,
+          "args": [128],
+          "control": 2,
+          "written": false
+        },
+        {
+          "phase": 2,
+          "table": "particle-v1",
+          "id": 30,
+          "args": [512],
+          "control": 2,
+          "written": false,
+          "quad": "AAAAAAAAAAAAAAAAAACAP/////8AAAAAAAAAAAAAgEAAAAAAAAAAAAAAgD//////AACAPwAAAAAAAAAAAACAQAAAAAAAAIA//////wAAAAAAAIA/AACAQAAAgEAAAAAAAACAP/////8AAIA/AACAPw=="
+        },
+        {
+          "phase": 2,
+          "table": "particle-v1",
+          "id": 27,
+          "args": [1091567616, 1084227584, 0],
+          "control": 2,
+          "written": false
+        }
+      ],
+      "draws": [
+        {
+          "phase": 2,
+          "triangles": [
+            [
+              {
+                "x": 9,
+                "y": 5,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 0,
+                "v": 0
+              },
+              {
+                "x": 13,
+                "y": 5,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 9,
+                "y": 9,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 0,
+                "v": 1
+              }
+            ],
+            [
+              {
+                "x": 9,
+                "y": 9,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 0,
+                "v": 1
+              },
+              {
+                "x": 13,
+                "y": 5,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 1,
+                "v": 0
+              },
+              {
+                "x": 13,
+                "y": 9,
+                "z": 0.9230769276618958,
+                "w": 0.0010000000474974513,
+                "color": 2147483647,
+                "u": 1,
+                "v": 1
+              }
+            ]
+          ],
+          "atlas": {
+            "width": 4,
+            "height": 4,
+            "rgba": "f5eJ/3iihqpxrYNVariAAJtrlf+UdpKqjYGPVYaMjAC3P6H/sEqeqqlVm1WiYJgA0xOt/8weqqrFKadVvjSkAA=="
+          },
+          "blendFactors": [5, 2]
         }
       ]
     }
